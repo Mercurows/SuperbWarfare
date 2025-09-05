@@ -164,7 +164,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 && iLand instanceof WeaponVehicleEntity
                 && iLand instanceof MobileVehicleEntity mobileVehicle
                 && !(player.getVehicle() instanceof SpeedboatEntity)) {
-            int color = mobileVehicle.getHudColor();
+            int color = mobileVehicle.getHudColor() | 0xFF000000;
 
             poseStack.pushPose();
 
@@ -187,39 +187,38 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 int addW = (w / h) * 48;
                 int addH = (w / h) * 27;
                 preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, w + addW, h + addH, w + addW, h + addH);
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f - 64, h - 56, 0, 0.0F, 128, 1, 128, 1, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/land/line.png"), w / 2f - 64, h - 56, 0, 0.0F, 128, 1, 128, 1, color);
 
                 // 指南针
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), w / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), w / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
 
                 // 炮塔
                 ResourceLocation barrel = Mod.loc("textures/screens/land/line.png");
                 int turretHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(TURRET_HEALTH) / mobileVehicle.getTurretMaxHealth()));
-                preciseBlit(guiGraphics, barrel, w / 2f + 112, h - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, barrel, w / 2f + 112, h - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
 
-                //车身
+                // 车身
                 ResourceLocation body = Mod.loc("textures/screens/land/body.png");
-                //左轮
-                ResourceLocation left_wheel = Mod.loc("textures/screens/land/left_wheel.png");
-                //右轮
-                ResourceLocation right_wheel = Mod.loc("textures/screens/land/right_wheel.png");
-                //引擎
+                // 左轮
+                ResourceLocation leftWheel = Mod.loc("textures/screens/land/left_wheel.png");
+                // 右轮
+                ResourceLocation rightWheel = Mod.loc("textures/screens/land/right_wheel.png");
+                // 引擎
                 ResourceLocation engine = Mod.loc("textures/screens/land/engine.png");
 
                 // 车身方向
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), w / 2f + 112, h - 56, 0);
                 int bodyHeal = (int) (100 - (100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth()));
-                preciseBlit(guiGraphics, body, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, body, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
                 int leftWheelHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(L_WHEEL_HEALTH) / mobileVehicle.getWheelMaxHealth()));
-                preciseBlit(guiGraphics, left_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, leftWheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
                 int rightWheelHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(R_WHEEL_HEALTH) / mobileVehicle.getWheelMaxHealth()));
-                preciseBlit(guiGraphics, right_wheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, rightWheel, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
                 int engineHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(ENGINE_HEALTH) / mobileVehicle.getEngineMaxHealth()));
-                preciseBlit(guiGraphics, engine, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, engine, w / 2f + 96, h - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
                 poseStack.popPose();
-
 
                 // 时速
                 guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().dot(mobileVehicle.getViewVector(partialTick)) * 72, " km/h")),

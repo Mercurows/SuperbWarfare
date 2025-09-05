@@ -130,6 +130,41 @@ public class RenderHelper {
         preciseBlit(gui, atlasLocation, x, y, width, height, uOffset, vOffset, width, height, textureWidth, textureHeight);
     }
 
+    public static void preciseBlitWithColor(
+            GuiGraphics gui,
+            ResourceLocation atlasLocation,
+            float x, float y,
+            float uOffset, float vOffset,
+            float width, float height,
+            float textureWidth, float textureHeight,
+            int color
+    ) {
+        preciseBlitWithColor(gui, atlasLocation, x, y, uOffset, vOffset, 0, width, height, textureWidth, textureHeight, color);
+    }
+
+    public static void preciseBlitWithColor(
+            GuiGraphics gui,
+            ResourceLocation atlasLocation,
+            float x, float y,
+            float uOffset, float vOffset,
+            float blitOffset,
+            float width, float height,
+            float textureWidth, float textureHeight,
+            int color
+    ) {
+        innerBlit(
+                gui, atlasLocation,
+                x, x + width,
+                y, y + height,
+                blitOffset,
+                (uOffset + 0.0F) / textureWidth,
+                (uOffset + width) / textureWidth,
+                (vOffset + 0.0F) / textureHeight,
+                (vOffset + height) / textureHeight,
+                color
+        );
+    }
+
     /**
      * Performs the inner blit operation for rendering a texture with the specified coordinates and texture coordinates.
      *
