@@ -371,10 +371,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(Entity entity) {
+    public Vec3 getTurretShootPos(Entity entity, float ticks) {
         Vector4f worldPosition;
         if (entity == getNthEntity(0)) {
-            Matrix4f transform = getBarrelTransform(1);
+            Matrix4f transform = getBarrelTransform(ticks);
             if (getWeapon(0).mainGun) {
                 worldPosition = transformPosition(transform, 0, 0, 0);
             } else {
@@ -434,8 +434,10 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     }
     // 乘客武器站弹药发射位置
     @Override
-    public Vec3 passengerWeaponShootPos(Entity entity) {
-        return entity.getEyePosition();
+    public Vec3 passengerWeaponShootPos(Entity entity, float ticks) {
+        Matrix4f transform = getGunTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0, -0.25f, 0);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
@@ -503,11 +505,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 var cannonShell = (CannonShellWeapon) getWeapon(0);
                 var entityToSpawn = cannonShell.create(living);
 
-                entityToSpawn.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+                entityToSpawn.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
                 entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, cannonShell.velocity, 0.02f);
                 level().addFreshEntity(entityToSpawn);
 
-                playShootSound3p(living, 0, 8, 16, 32, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
+                playShootSound3p(living, 0, 8, 16, 32, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
                 this.entityData.set(LOADED_SHELL, "null");
@@ -524,9 +526,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                             this.getZ() + 5 * getBarrelVector(1).z,
                             300, 6, 0.02, 6, 0.005);
 
-                    double x = getTurretShootPos(living).x + 9 * getBarrelVector(1).x;
-                    double y = getTurretShootPos(living).y + 9 * getBarrelVector(1).y;
-                    double z = getTurretShootPos(living).z + 9 * getBarrelVector(1).z;
+                    double x = getTurretShootPos(living, 1).x + 9 * getBarrelVector(1).x;
+                    double y = getTurretShootPos(living, 1).y + 9 * getBarrelVector(1).y;
+                    double z = getTurretShootPos(living, 1).z + 9 * getBarrelVector(1).z;
 
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
                     server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
@@ -535,9 +537,9 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
                     for (float i = 9.5f; i < 23; i += .5f) {
                         server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                                getTurretShootPos(living).x + i * getBarrelVector(1).x,
-                                getTurretShootPos(living).y + i * getBarrelVector(1).y,
-                                getTurretShootPos(living).z + i * getBarrelVector(1).z,
+                                getTurretShootPos(living, 1).x + i * getBarrelVector(1).x,
+                                getTurretShootPos(living, 1).y + i * getBarrelVector(1).y,
+                                getTurretShootPos(living, 1).z + i * getBarrelVector(1).z,
                                 Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
                     }
 
@@ -567,15 +569,15 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
                 if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
                     var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId() + ".1");
 
-                    projectileRight.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
-                    projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
+                    projectileRight.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+                    projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 20,
                             0.25f);
                     this.level().addFreshEntity(projectileRight);
 
                     this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
                     this.entityData.set(FIRE_ANIM, 2);
 
-                    playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
+                    playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
 
                     if (!hasCreativeAmmo) {
                         ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
@@ -601,11 +603,11 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             var projectile = (ProjectileWeapon) getWeapon(1);
             var projectileEntity = projectile.create(living).setGunItemId(this.getType().getDescriptionId() + ".2");
 
-            projectileEntity.setPos(passengerWeaponShootPos(living).x, passengerWeaponShootPos(living).y, passengerWeaponShootPos(living).z);
+            projectileEntity.setPos(passengerWeaponShootPos(living, 1).x, passengerWeaponShootPos(living, 1).y, passengerWeaponShootPos(living, 1).z);
             projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y, getGunnerVector(1).z, 20, 0.3f);
 
             this.level().addFreshEntity(projectileEntity);
-            playShootSound3p(living, 1, 4, 12, 24, new Vec3(passengerWeaponShootPos(living).x, passengerWeaponShootPos(living).y, passengerWeaponShootPos(living).z));
+            playShootSound3p(living, 1, 4, 12, 24, new Vec3(passengerWeaponShootPos(living, 1).x, passengerWeaponShootPos(living, 1).y, passengerWeaponShootPos(living, 1).z));
 
             this.entityData.set(GUN_FIRE_TIME, 2);
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);

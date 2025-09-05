@@ -155,7 +155,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     }
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(Entity entity) {
+    public Vec3 getTurretShootPos(Entity entity, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 0.20106875f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -198,12 +198,12 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
         var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 
         projectile.bypassArmorRate(0.4f);
-        projectile.setPos(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z);
+        projectile.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
         projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living),
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
 
-        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living).x, getTurretShootPos(living).y, getTurretShootPos(living).z));
+        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 5);
 
