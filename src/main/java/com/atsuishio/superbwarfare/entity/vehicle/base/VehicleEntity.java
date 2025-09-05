@@ -644,8 +644,13 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     // energy end
 
+    /**
+     * 初始化武器数组
+     *
+     * @param weaponVehicle 待初始化的载具
+     * @return 武器数组
+     */
     private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {
-        // 初始化武器数组
         weaponVehicle.getAllWeapons();
 
         var selected = new int[this.getMaxPassengers()];
@@ -763,7 +768,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             }
             return InteractionResult.SUCCESS;
         } else if (!player.isShiftKeyDown() && this.getMaxPassengers() > 0) {
-
             List<Entity> entities = getPassengers();
             for (var passenger : entities) {
                 if (passenger.getTeam() != null && (passenger.getTeam().getName().equals("TDM") || passenger.getTeam() != player.getTeam())) {
@@ -797,7 +801,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return InteractionResult.PASS;
     }
 
-    // 将有炮塔的载具驾驶员设置为炮塔角度
+    /**
+     * 将有炮塔的载具驾驶员的面朝方向设置为炮塔角度
+     *
+     * @param player 载具驾驶员
+     */
     public void setDriverAngle(Player player) {
         if (this instanceof LandArmorEntity landArmorEntity) {
             player.xRotO = -(float) getXRotFromVector(landArmorEntity.getBarrelVec(1));
@@ -1091,7 +1099,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         entityData.set(MOUSE_SPEED_X, entityData.get(MOUSE_SPEED_X) * 0.95f);
         entityData.set(MOUSE_SPEED_Y, entityData.get(MOUSE_SPEED_Y) * 0.95f);
 
-
         if (this instanceof WeaponVehicleEntity weaponVehicle) {
             if (getFirstPassenger() instanceof Player) {
                 turretAngle();
@@ -1299,8 +1306,12 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         }
     }
 
+    /**
+     * 根据方向向量，使炮塔自动瞄准
+     *
+     * @param shootVec 需要让炮塔以这个角度发射的向量
+     */
     public void turretAutoAimFormVector(Vec3 shootVec) {
-        //shootVec是需要让炮塔以这个角度发射的向量
         float ySpeed = turretYSpeed();
         float xSpeed = turretXSpeed();
         float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getBarrelVec(1)));
@@ -1322,6 +1333,12 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         aiTurretDiff = VectorTool.calculateAngle(shootVec, getBarrelVector(1));
     }
 
+    /**
+     * 根据UUID，使炮塔自动瞄准
+     *
+     * @param uuid    目标的UUID字符串
+     * @param pLiving 操控载具的实体
+     */
     public void turretAutoAimFormUuid(String uuid, LivingEntity pLiving) {
         Entity target = EntityFindUtil.findEntity(level(), uuid);
         if (target != null) {
@@ -1346,46 +1363,80 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
             if (this instanceof WeaponVehicleEntity weaponVehicle) {
                 int rpm = 20 / Mth.clamp((weaponVehicle.mainGunRpm(pLiving) / 60), 1, 2147483647);
-                if (tickCount %rpm == 0) {
+                if (tickCount % rpm == 0) {
                     aiTurretShoot(pLiving);
                 }
             }
         }
     }
 
-    // 炮塔最大水平旋转速度
+    /**
+     * @return 炮塔最大水平旋转速度
+     */
     public float turretYSpeed() {
         return 5;
     }
-    // 炮塔最大俯仰旋转速度
+
+    /**
+     * @return 炮塔最大俯仰旋转速度
+     */
     public float turretXSpeed() {
         return 5;
     }
-    // 炮塔最小俯角
+
+    /**
+     * @return 炮塔最小俯角
+     */
     public float turretMinPitch() {
         return -10;
     }
-    // 炮塔最大仰角
+
+    /**
+     * @return 炮塔最大仰角
+     */
     public float turretMaxPitch() {
         return 30;
     }
-    // 炮弹发射位置
+
+    /**
+     * @param entity 操控载具的实体
+     * @return 炮弹发射位置
+     */
     public Vec3 getTurretShootPos(Entity entity) {
-        return getEyePosition();
+        return this.getEyePosition();
     }
-    // 炮弹发射速度
+
+    /**
+     * @param entity 操控载具的实体
+     * @return 炮弹发射时的初始速度
+     */
     public float projectileVelocity(Entity entity) {
         return 10;
     }
-    // 炮弹重力
+
+    /**
+     * @param entity 操控载具的实体
+     * @return 炮弹重力
+     */
     public float projectileGravity(Entity entity) {
         return 0.03f;
     }
-    // 炮弹重力(固定火炮用)
+
+    /**
+     * 本方法用于固定式火炮，其他载具应该使用 {@link VehicleEntity#projectileGravity(Entity)}
+     *
+     * @return 炮弹重力
+     */
     public float projectileGravity() {
         return 0.03f;
     }
 
+    /**
+     * 根据UUID，使乘客位武器自动瞄准
+     *
+     * @param uuid    目标的UUID字符串
+     * @param pLiving 操控载具的实体
+     */
     public void passengerWeaponAutoAimFormUuid(String uuid, LivingEntity pLiving) {
         Entity target = EntityFindUtil.findEntity(level(), uuid);
         if (target != null) {
@@ -1410,45 +1461,64 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
             if (this instanceof WeaponVehicleEntity weaponVehicle) {
                 int rpm = 20 / Mth.clamp((weaponVehicle.mainGunRpm(pLiving) / 60), 1, 2147483647);
-                if (tickCount %rpm == 0) {
+                if (tickCount % rpm == 0) {
                     aiPassengerWeaponShoot(pLiving);
                 }
             }
         }
     }
 
+    /**
+     * 根据方向向量，使乘客位武器自动瞄准
+     *
+     * @param shootVec 需要让武器站以这个角度发射的向量
+     */
     public void passengerWeaponAutoAimFormVector(Vec3 shootVec) {
         float ySpeed = passengerWeaponYSpeed();
         float xSpeed = passengerWeaponXSpeed();
-        //shootVec是需要让武器站以这个角度发射的向量
         float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getGunnerVector(1)));
         float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getGunnerVector(1)));
 
-        turretTurnSound(diffX, diffY, 0.95f);
+        this.turretTurnSound(diffX, diffY, 0.95f);
 
         this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -passengerWeaponMaxPitch(), -passengerWeaponMinPitch()));
         this.setGunYRot(this.getGunYRot() - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed));
 
-        aiPassengerDiff = VectorTool.calculateAngle(shootVec, getGunnerVector(1));
+        this.aiPassengerDiff = VectorTool.calculateAngle(shootVec, getGunnerVector(1));
     }
 
-    // 乘客武器站最大水平旋转速度
+    /**
+     * @return 乘客武器站最大水平旋转速度
+     */
     public float passengerWeaponYSpeed() {
         return 10;
     }
-    // 乘客武器站最大俯仰旋转速度
+
+    /**
+     * @return 乘客武器站最大俯仰旋转速度
+     */
     public float passengerWeaponXSpeed() {
         return 5;
     }
-    // 乘客武器站最小俯角
+
+    /**
+     * @return 乘客武器站最小俯角
+     */
     public float passengerWeaponMinPitch() {
         return -10;
     }
-    // 乘客武器站最大仰角
+
+    /**
+     * @return 乘客武器站最大仰角
+     */
     public float passengerWeaponMaxPitch() {
         return 30;
     }
-    // 乘客武器站弹药发射位置
+
+    /**
+     * @param entity 乘客
+     * @return 乘客武器站弹药发射位置
+     */
     public Vec3 passengerWeaponShootPos(Entity entity) {
         return entity.getEyePosition();
     }
