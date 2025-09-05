@@ -58,10 +58,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -108,6 +105,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public static final EntityDataAccessor<String> OVERRIDE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> LAST_DRIVER_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
+
     public static final EntityDataAccessor<String> AI_TURRET_TARGET_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<String> AI_PASSENGER_WEAPON_TARGET_UUID = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.STRING);
 
@@ -1093,17 +1091,20 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         entityData.set(MOUSE_SPEED_X, entityData.get(MOUSE_SPEED_X) * 0.95f);
         entityData.set(MOUSE_SPEED_Y, entityData.get(MOUSE_SPEED_Y) * 0.95f);
 
-        if (getFirstPassenger() instanceof Player) {
-            turretAngle();
-        } else if (getFirstPassenger() instanceof LivingEntity living) {
-            turretAutoAimFormUuid(entityData.get(AI_TURRET_TARGET_UUID), living);
+
+        if (this instanceof WeaponVehicleEntity weaponVehicle) {
+            if (getFirstPassenger() instanceof Player) {
+                turretAngle();
+            } else if (getFirstPassenger() instanceof Mob mob && weaponVehicle.canShoot(mob)) {
+                turretAutoAimFormUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
+            }
         }
 
         if (this instanceof LandArmorEntity landArmorEntity && landArmorEntity.hasPassengerTurretWeapon()) {
             if (getNthEntity(1) instanceof Player || getNthEntity(1) == null) {
                 gunnerAngle();
-            } else if (getNthEntity(1) instanceof LivingEntity living) {
-                passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), living);
+            } else if (getNthEntity(1) instanceof Mob mob && landArmorEntity.canShoot(mob)) {
+                passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), mob);
             }
         }
 
@@ -1286,32 +1287,16 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         }
     }
 
-    public boolean aiTurretShoot(LivingEntity living) {
-        if (this instanceof WeaponVehicleEntity weaponVehicle) {
-            if (aiTurretDiff < 1 && weaponVehicle.canShoot(living)) {
-                if (living.level() instanceof ServerLevel) {
-                    weaponVehicle.vehicleShoot(living, 0);
-                }
-                return true;
-            } else {
-                return false;
-            }
+    public void aiTurretShoot(LivingEntity living) {
+        if (this instanceof WeaponVehicleEntity weaponVehicle && aiTurretDiff < 2 && weaponVehicle.canShoot(living) && living.level() instanceof ServerLevel) {
+            weaponVehicle.vehicleShoot(living, 0);
         }
-        return false;
     }
 
-    public boolean aiPassengerWeaponShoot(LivingEntity living) {
-        if (this instanceof WeaponVehicleEntity weaponVehicle) {
-            if (aiPassengerDiff < 1 && weaponVehicle.canShoot(living)) {
-                if (living.level() instanceof ServerLevel) {
-                    weaponVehicle.vehicleShoot(living, 1);
-                }
-                return true;
-            } else {
-                return false;
-            }
+    public void aiPassengerWeaponShoot(LivingEntity living) {
+        if (this instanceof WeaponVehicleEntity weaponVehicle && aiPassengerDiff < 2 && weaponVehicle.canShoot(living) && living.level() instanceof ServerLevel) {
+            weaponVehicle.vehicleShoot(living, 1);
         }
-        return false;
     }
 
     public void turretAutoAimFormVector(Vec3 shootVec) {
@@ -1352,8 +1337,19 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 targetVel = targetVel.add(0, gravity, 0);
             }
 
+            if (target instanceof Player) {
+                targetVel = targetVel.multiply(2, 1, 2);
+            }
+
             Vec3 targetVec = RangeTool.calculateFiringSolution(getTurretShootPos(pLiving), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             turretAutoAimFormVector(targetVec);
+
+            if (this instanceof WeaponVehicleEntity weaponVehicle) {
+                int rpm = 20 / Mth.clamp((weaponVehicle.mainGunRpm(pLiving) / 60), 1, 2147483647);
+                if (tickCount %rpm == 0) {
+                    aiTurretShoot(pLiving);
+                }
+            }
         }
     }
 
@@ -1405,8 +1401,19 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 targetVel = targetVel.add(0, gravity, 0);
             }
 
+            if (target instanceof Player) {
+                targetVel = targetVel.multiply(2, 1, 2);
+            }
+
             Vec3 targetVec = RangeTool.calculateFiringSolution(passengerWeaponShootPos(pLiving), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             passengerWeaponAutoAimFormVector(targetVec);
+
+            if (this instanceof WeaponVehicleEntity weaponVehicle) {
+                int rpm = 20 / Mth.clamp((weaponVehicle.mainGunRpm(pLiving) / 60), 1, 2147483647);
+                if (tickCount %rpm == 0) {
+                    aiPassengerWeaponShoot(pLiving);
+                }
+            }
         }
     }
 

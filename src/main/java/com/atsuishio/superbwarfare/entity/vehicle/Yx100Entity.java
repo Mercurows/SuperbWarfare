@@ -45,10 +45,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -335,6 +332,13 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             }
 
             this.handleAmmo();
+        }
+
+        if (getNthEntity(2) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
+            int rpm = 20 / (mainGunRpm(mob) / 60);
+            if (tickCount %rpm == 0) {
+                vehicleShoot(mob, 2);
+            }
         }
 
         lowHealthWarning();
@@ -685,17 +689,32 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
             swarmDroneEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             swarmDroneEntity.shoot(direct.x, direct.y, direct.z, 1.2f, 10);
 
-            if (lookingEntity != null && !(lookingEntity instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() == living)) {
+            if (living instanceof Mob mob && mob.getTarget() != null) {
+                Entity target = mob.getTarget();
+                if (target.getVehicle() != null) {
+                    target = target.getVehicle();
+                }
+
                 swarmDroneEntity.setGuideType(0);
-                swarmDroneEntity.setTargetUuid(lookingEntity.getStringUUID());
-                swarmDroneEntity.setTargetVec(lookingEntity.getEyePosition());
-            } else {
-                swarmDroneEntity.setGuideType(1);
-                BlockHitResult result = level().clip(new ClipContext(living.getEyePosition(), living.getEyePosition().add(lookVec.scale(384)),
-                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-                Vec3 hitPos = result.getLocation();
-                swarmDroneEntity.setTargetVec(hitPos);
+                swarmDroneEntity.setTargetUuid(target.getStringUUID());
+                swarmDroneEntity.setTargetVec(target.getBoundingBox().getCenter());
+
+            } else if (living instanceof Player) {
+                if (lookingEntity != null && !(lookingEntity instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() == living)) {
+                    swarmDroneEntity.setGuideType(0);
+                    swarmDroneEntity.setTargetUuid(lookingEntity.getStringUUID());
+                    swarmDroneEntity.setTargetVec(lookingEntity.getEyePosition());
+                } else {
+                    swarmDroneEntity.setGuideType(1);
+                    BlockHitResult result = level().clip(new ClipContext(living.getEyePosition(), living.getEyePosition().add(lookVec.scale(384)),
+                            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+                    Vec3 hitPos = result.getLocation();
+                    swarmDroneEntity.setTargetVec(hitPos);
+                }
             }
+
+
+
 
             living.level().addFreshEntity(swarmDroneEntity);
 

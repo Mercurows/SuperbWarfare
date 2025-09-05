@@ -42,6 +42,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -137,7 +138,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         // 成员机枪
                         new ProjectileWeapon()
                                 .damage(9.5f)
-                                .headShot(2)
+                                .headShot(1.5f)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
@@ -150,7 +151,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         // 成员机枪
                         new ProjectileWeapon()
                                 .damage(9.5f)
-                                .headShot(2)
+                                .headShot(1.5f)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
@@ -163,7 +164,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         // 成员机枪
                         new ProjectileWeapon()
                                 .damage(9.5f)
-                                .headShot(2)
+                                .headShot(1.5f)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
@@ -176,7 +177,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         // 成员机枪
                         new ProjectileWeapon()
                                 .damage(9.5f)
-                                .headShot(2)
+                                .headShot(1.5f)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
@@ -189,7 +190,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         // 成员机枪
                         new ProjectileWeapon()
                                 .damage(9.5f)
-                                .headShot(2)
+                                .headShot(1.5f)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
@@ -202,7 +203,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         // 成员机枪
                         new ProjectileWeapon()
                                 .damage(9.5f)
-                                .headShot(2)
+                                .headShot(1.5f)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
@@ -215,7 +216,7 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         // 成员机枪
                         new ProjectileWeapon()
                                 .damage(9.5f)
-                                .headShot(2)
+                                .headShot(1.5f)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
@@ -296,6 +297,15 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
         inertiaRotate(1);
         releaseSmokeDecoy(getTurretVector(1));
         lowHealthWarning();
+
+        for (int i = 1; i < 7; i++) {
+            if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
+                int rpm = 20 / (mainGunRpm(mob) / 60);
+                if (tickCount %rpm == 0) {
+                    vehicleShoot(mob, i);
+                }
+            }
+        }
 
         this.refreshDimensions();
     }
@@ -482,10 +492,24 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                 if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
                     var projectile = ((ProjectileWeapon) getWeapon(i)).create(living).setGunItemId(this.getType().getDescriptionId());
 
+                    Vec3 shootVec = new Vec3(living.getLookAngle().x, living.getLookAngle().y, living.getLookAngle().z);
+                    float spread = 0.25f;
+
+                    if (living instanceof Mob mob && mob.getTarget() != null) {
+                        Entity target = mob.getTarget();
+                        if (target.getVehicle() != null) {
+                            target = target.getVehicle();
+                        }
+                        shootVec = RangeTool.calculateFiringSolution(shootPosition, target.getBoundingBox().getCenter(), target.getDeltaMovement(), 18, 0.05);
+                        spread = 1.2f;
+
+                        double angle = VectorTool.calculateAngle(shootVec, getPassengerVec(living, i));
+                        if (angle > 50) return;
+                    }
+
                     projectile.bypassArmorRate(0.2f);
                     projectile.setPos(shootPosition.x, shootPosition.y - 0.05, shootPosition.z);
-                    projectile.shoot(living, living.getLookAngle().x, living.getLookAngle().y, living.getLookAngle().z, 25,
-                            0.25f);
+                    projectile.shoot(living, shootVec.x, shootVec.y, shootVec.z, 18, spread);
                     this.level().addFreshEntity(projectile);
 
                     playShootSound3p(living, i, 3, 6, 12, shootPosition);
@@ -765,6 +789,20 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
             worldPosition = transformPosition(transformV, 0, 1, 0);
         }
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    public Vec3 getPassengerVec(Entity entity ,int i) {
+        Matrix4f transformV = getVehicleTransform(1);
+        Vector4f worldPosition = transformPosition(transformV, 0, 0, 0);
+        Vec3 root = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        Vector4f vector4f = switch (i) {
+            case 1, 3 -> transformPosition(transformV, 1, 0, 0);
+            case 2, 4, 6 -> transformPosition(transformV, -1, 0, 0);
+            case 5 -> transformPosition(transformV, 0, 0, -1);
+            default -> transformPosition(transformV, 0, 0, 0);
+        };
+        Vec3 v0 = new Vec3(vector4f.x, vector4f.y, vector4f.z);
+        return root.vectorTo(v0).normalize();
     }
 
     @Override

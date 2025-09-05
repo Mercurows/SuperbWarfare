@@ -15,10 +15,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -33,10 +30,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,6 +39,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -407,6 +402,28 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
         }
 
+        if (getFirstPassenger() instanceof Mob mob) {
+            Entity target = EntityFindUtil.findEntity(level(), entityData.get(AI_TURRET_TARGET_UUID));
+            if (target != null) {
+                if (target.getVehicle() != null) {
+                    target = target.getVehicle();
+                }
+                Vec3 targetVel = target.getDeltaMovement();
+                if (target instanceof LivingEntity living) {
+                    double gravity = living.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get());
+                    targetVel = targetVel.add(0, gravity, 0);
+                }
+                Vec3 launchVector = RangeTool.calculateFiringSolution(getEyePosition(), target.getBoundingBox().getCenter(), targetVel, 15, projectileGravity());
+
+                entityData.set(PITCH, (float) -getXRotFromVector(launchVector));
+                entityData.set(YAW, (float) -getYRotFromVector(launchVector));
+
+                if (VectorTool.calculateAngle(launchVector, getLookAngle()) < 5) {
+                    shoot(mob, false);
+                }
+            }
+        }
+
         countAmmo();
         lowHealthWarning();
     }
@@ -579,7 +596,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     @Override
     public void travel() {
         Entity passenger = this.getFirstPassenger();
-        if (passenger != null) {
+        if (passenger instanceof Player) {
             entityData.set(YAW, passenger.getYHeadRot());
             entityData.set(PITCH, passenger.getXRot() - 2f);
         }
