@@ -51,6 +51,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -500,7 +501,19 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
                         if (target.getVehicle() != null) {
                             target = target.getVehicle();
                         }
-                        shootVec = RangeTool.calculateFiringSolution(shootPosition, target.getBoundingBox().getCenter(), target.getDeltaMovement(), 18, 0.05);
+
+                        Vec3 targetVel = target.getDeltaMovement();
+
+                        if (target instanceof LivingEntity pLiving) {
+                            double gravity = pLiving.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get());
+                            targetVel = targetVel.add(0, gravity, 0);
+                        }
+
+                        if (target instanceof Player) {
+                            targetVel = targetVel.multiply(2, 1, 2);
+                        }
+
+                        shootVec = RangeTool.calculateFiringSolution(shootPosition, target.getBoundingBox().getCenter(), targetVel, 18, 0.05);
                         spread = 1.2f;
 
                         double angle = VectorTool.calculateAngle(shootVec, getPassengerVec(living, i));
