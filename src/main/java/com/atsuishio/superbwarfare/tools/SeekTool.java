@@ -26,7 +26,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
@@ -274,17 +273,17 @@ public class SeekTool {
             return false;
         }
 
-        AtomicBoolean onGround = new AtomicBoolean(false);
+        boolean[] onGround = {false};
         AABB aabb = entity.getBoundingBox().expandTowards(0, -height, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             if (pos.getY() < minY || pos.getY() > maxY) return;
 
             BlockState state = level.getBlockState(pos);
             if (!state.isAir()) {
-                onGround.set(true);
+                onGround[0] = true;
             }
         });
-        return entity.onGround() || entity.isInWater() || onGround.get();
+        return entity.onGround() || entity.isInWater() || onGround[0];
     }
 
     public static boolean smokeFilter(Entity pEntity) {

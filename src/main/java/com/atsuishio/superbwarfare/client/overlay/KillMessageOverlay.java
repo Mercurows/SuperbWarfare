@@ -376,6 +376,7 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         String[] name = {entity.getDisplayName().getString()};
         if (entity instanceof LivingEntity living && living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player player) {
             if (DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) {
+                name[0] = player.getDisplayName().getString() + " + " + name[0];
                 CuriosApi.getCuriosInventory(player).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
                     name[0] = s.stack().getHoverName().getString() + " + " + name[0];
                 });
