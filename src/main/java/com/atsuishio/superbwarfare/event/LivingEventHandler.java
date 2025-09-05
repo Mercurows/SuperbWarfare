@@ -33,10 +33,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -56,8 +53,25 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AI_PASSENGER_WEAPON_TARGET_UUID;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AI_TURRET_TARGET_UUID;
+
 @EventBusSubscriber
 public class LivingEventHandler {
+
+    @SubscribeEvent
+    public static void onLivingChangeTargetEvent(LivingChangeTargetEvent event) {
+        if (event.getEntity() instanceof Mob mob && mob.getVehicle() instanceof VehicleEntity vehicle) {
+            if (mob == vehicle.getFirstPassenger()) {
+                vehicle.getEntityData().set(AI_TURRET_TARGET_UUID, event.getEntity().getStringUUID());
+            }
+
+            if (mob == vehicle.getNthEntity(1)) {
+                vehicle.getEntityData().set(AI_PASSENGER_WEAPON_TARGET_UUID, event.getEntity().getStringUUID());
+            }
+
+        }
+    }
 
     @SubscribeEvent
     public static void onEntityAttacked(LivingIncomingDamageEvent event) {
