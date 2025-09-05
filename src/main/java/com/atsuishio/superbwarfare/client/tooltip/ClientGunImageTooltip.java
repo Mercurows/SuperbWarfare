@@ -25,10 +25,6 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     protected final ItemStack stack;
     protected final GunData data;
 
-    protected GunData getGunData() {
-        return GunData.from(stack);
-    }
-
     public ClientGunImageTooltip(GunImageComponent tooltip) {
         this.width = tooltip.width;
         this.height = tooltip.height;
@@ -147,8 +143,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器等级文本组件
      */
     protected Component getLevelComponent() {
-        int level = getGunData().level.get();
-        double rate = getGunData().exp.get() / (20 * Math.pow(level, 2) + 160 * level + 20);
+        int level = data.level.get();
+        double rate = data.exp.get() / (20 * Math.pow(level, 2) + 160 * level + 20);
 
         ChatFormatting formatting;
         if (level < 10) {
@@ -174,7 +170,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器强化点数文本组件
      */
     protected Component getUpgradePointComponent() {
-        int upgradePoint = Mth.floor(getGunData().upgradePoint.get());
+        int upgradePoint = Mth.floor(data.upgradePoint.get());
         return Component.translatable("des.superbwarfare.guns.upgrade_point").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
                 .append(Component.literal(String.valueOf(upgradePoint)).withStyle(ChatFormatting.WHITE).withStyle(ChatFormatting.BOLD));
