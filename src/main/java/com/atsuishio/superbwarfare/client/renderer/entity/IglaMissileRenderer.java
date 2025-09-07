@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.projectile.IglaMissleLayer;
+import com.atsuishio.superbwarfare.client.layer.projectile.IglaMissileLayer;
 import com.atsuishio.superbwarfare.client.model.entity.IglaMissileModel;
 import com.atsuishio.superbwarfare.entity.projectile.IglaMissileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,7 +16,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class IglaMissileRenderer extends GeoEntityRenderer<IglaMissileEntity> {
     public IglaMissileRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new IglaMissileModel());
-        this.addRenderLayer(new IglaMissleLayer(this));
+        this.addRenderLayer(new IglaMissileLayer(this));
     }
 
     @Override
