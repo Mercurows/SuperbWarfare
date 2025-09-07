@@ -58,7 +58,10 @@ public class ModTabs {
                     .title(Component.translatable("item_group.superbwarfare.perk"))
                     .icon(() -> new ItemStack(ModItems.AP_BULLET.get()))
                     .withTabsBefore(GUN_TAB.getKey())
-                    .displayItems((param, output) -> ModItems.PERKS.getEntries().forEach(registryObject -> output.accept(registryObject.get())))
+                    .displayItems((param, output) -> {
+                        output.accept(ModItems.REFORGING_TABLE.get());
+                        ModItems.PERKS.getEntries().forEach(registryObject -> output.accept(registryObject.get()));
+                    })
                     .build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> AMMO_TAB = TABS.register("ammo",
