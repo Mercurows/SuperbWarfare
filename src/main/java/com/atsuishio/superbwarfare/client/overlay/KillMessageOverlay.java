@@ -133,7 +133,7 @@ public class KillMessageOverlay implements IGuiOverlay {
 
         Font font = Minecraft.getInstance().font;
 
-        String targetName = getEntityName(record.target);
+        String targetName = getTargetName(record.target);
         int targetNameWidth = font.width(targetName);
 
         guiGraphics.pose().pushPose();
@@ -386,6 +386,24 @@ public class KillMessageOverlay implements IGuiOverlay {
                 name[0] = player.getDisplayName().getString() + " + " + entityName;
             }
         } else if (entity instanceof Player player) {
+            if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0];
+            CuriosApi.getCuriosInventory(player).ifPresent(
+                    c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
+                            s -> {
+                                if (s.stack().hasCustomHoverName()) {
+                                    name[0] = s.stack().getHoverName().getString();
+                                }
+                            }
+                    )
+            );
+        }
+        return name[0];
+    }
+
+    public static String getTargetName(Entity entity) {
+        String entityName = entity.getDisplayName().getString();
+        String[] name = {entityName};
+        if (entity instanceof Player player) {
             if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0];
             CuriosApi.getCuriosInventory(player).ifPresent(
                     c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
