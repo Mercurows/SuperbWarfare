@@ -378,17 +378,17 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         if (entity instanceof LivingEntity living && living instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player player) {
             if (DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) {
                 name[0] = player.getDisplayName().getString() + " + " + entityName;
-                CuriosApi.getCuriosInventory(player).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
-                    name[0] = s.stack().getHoverName().getString() + " + " + entityName;
-                });
+                CuriosApi.getCuriosInventory(player)
+                        .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
+                        .ifPresent(s -> name[0] = s.stack().getHoverName().getString() + " + " + entityName);
             } else {
                 name[0] = player.getDisplayName().getString() + " + " + entityName;
             }
         } else if (entity instanceof Player player) {
             if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0];
-            CuriosApi.getCuriosInventory(player).flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get())).ifPresent(s -> {
-                name[0] = s.stack().getHoverName().getString();
-            });
+            CuriosApi.getCuriosInventory(player)
+                    .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
+                    .ifPresent(s -> name[0] = s.stack().getHoverName().getString());
         }
         return name[0];
     }
@@ -398,15 +398,9 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         String[] name = {entityName};
         if (entity instanceof Player player) {
             if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0];
-            CuriosApi.getCuriosInventory(player).ifPresent(
-                    c -> c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
-                            s -> {
-                                if (s.stack().hasCustomHoverName()) {
-                                    name[0] = s.stack().getHoverName().getString();
-                                }
-                            }
-                    )
-            );
+            CuriosApi.getCuriosInventory(player)
+                    .flatMap(c -> c.findFirstCurio(ModItems.DOG_TAG.get()))
+                    .ifPresent(s -> name[0] = s.stack().getHoverName().getString());
         }
         return name[0];
     }
