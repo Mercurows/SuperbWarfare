@@ -59,7 +59,13 @@ public class HealClip extends Perk {
             healClipLevel = 1;
         }
 
-        living.heal(12.0f * (0.8f + 0.2f * healClipLevel));
+        float healAmount = 12 * (0.8f + 0.2f * healClipLevel);
+        float absorption = healAmount - living.getMaxHealth() + living.getHealth();
+        living.heal(healAmount);
+        if (absorption > 0) {
+            living.setAbsorptionAmount(absorption * 0.1f);
+        }
+
         List<Player> players = entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5))
                 .stream().filter(p -> p.isAlliedTo(entity) || (entity instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() == p)).toList();
         int finalHealClipLevel = healClipLevel;

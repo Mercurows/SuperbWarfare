@@ -25,10 +25,7 @@ public class CustomEventHandler {
     public static void onPreReload(ReloadEvent.Pre event) {
         var shooter = event.shooter;
         ItemStack stack = event.stack;
-        if (shooter == null
-                || !(stack.getItem() instanceof GunItem)
-                || shooter.level().isClientSide
-        ) return;
+        if (shooter == null || !(stack.getItem() instanceof GunItem) || shooter.level().isClientSide) return;
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {
@@ -43,11 +40,7 @@ public class CustomEventHandler {
     public static void onPostReload(ReloadEvent.Post event) {
         var shooter = event.shooter;
         ItemStack stack = event.stack;
-        if (shooter == null || !(stack.getItem() instanceof GunItem)) {
-            return;
-        }
-
-        if (shooter.level().isClientSide) {
+        if (shooter == null || !(stack.getItem() instanceof GunItem) || shooter.level().isClientSide) {
             return;
         }
 
