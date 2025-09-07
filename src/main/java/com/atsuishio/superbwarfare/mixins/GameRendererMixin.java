@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
@@ -60,39 +62,57 @@ public class GameRendererMixin {
             matrices.mulPose(Axis.ZP.rotationDegrees((float) Mth.nextDouble(RandomSource.create(), 8, 12) * shakeStrength));
         }
 
-        if (entity != null && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle instanceof LandArmorEntity && ClientEventHandler.zoomVehicle))) {
+        if (entity != null && entity instanceof LivingEntity living && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle instanceof LandArmorEntity && ClientEventHandler.zoomVehicle))) {
             // rotate camera
 
-            if (vehicle.passengerSeatLocation(entity) == 1) {
-                float a = vehicle.getTurretYaw(tickDelta);
-                float r = (Mth.abs(a) - 90f) / 90f;
-                float r2;
-                if (Mth.abs(a) <= 90f) {
-                    r2 = a / 90f;
-                } else {
-                    if (a < 0) {
-                        r2 = -(180f + a) / 90f;
+            if (!(vehicle instanceof CannonEntity)) {
+                if (vehicle.passengerSeatLocation(entity) == 0) {
+                    float a = Mth.wrapDegrees(living.getYRot() - vehicle.getYRot());
+                    float r = (Mth.abs(a) - 90f) / 90f;
+                    float r2;
+                    if (Mth.abs(a) <= 90f) {
+                        r2 = a / 90f;
                     } else {
-                        r2 = (180f - a) / 90f;
+                        if (a < 0) {
+                            r2 = -(180f + a) / 90f;
+                        } else {
+                            r2 = (180f - a) / 90f;
+                        }
                     }
-                }
 
-                matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) + r2 * vehicle.getViewXRot(tickDelta)));
-            } else {
-                float a = Mth.wrapDegrees(entity.getYRot() - vehicle.getYRot());
-                float r = (Mth.abs(a) - 90f) / 90f;
-                float r2;
-                if (Mth.abs(a) <= 90f) {
-                    r2 = a / 90f;
-                } else {
-                    if (a < 0) {
-                        r2 = -(180f + a) / 90f;
+                    matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) - r2 * vehicle.getViewXRot(tickDelta)));
+                } else if (vehicle.passengerSeatLocation(entity) == 1) {
+                    float a = vehicle.getTurretYaw(tickDelta);
+                    float r = (Mth.abs(a) - 90f) / 90f;
+                    float r2;
+                    if (Mth.abs(a) <= 90f) {
+                        r2 = a / 90f;
                     } else {
-                        r2 = (180f - a) / 90f;
+                        if (a < 0) {
+                            r2 = -(180f + a) / 90f;
+                        } else {
+                            r2 = (180f - a) / 90f;
+                        }
                     }
-                }
 
-                matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) - r2 * vehicle.getViewXRot(tickDelta)));
+                    matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) + r2 * vehicle.getViewXRot(tickDelta)));
+
+                } else if (vehicle.passengerSeatLocation(entity) == 2) {
+                    float a = Mth.wrapDegrees(living.yBodyRot - vehicle.getYRot());
+                    float r = (Mth.abs(a) - 90f) / 90f;
+                    float r2;
+                    if (Mth.abs(a) <= 90f) {
+                        r2 = a / 90f;
+                    } else {
+                        if (a < 0) {
+                            r2 = -(180f + a) / 90f;
+                        } else {
+                            r2 = (180f - a) / 90f;
+                        }
+                    }
+
+                    matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) - r2 * vehicle.getViewXRot(tickDelta)));
+                }
             }
 
             if (!vehicle.useFixedCameraPos(entity)) {

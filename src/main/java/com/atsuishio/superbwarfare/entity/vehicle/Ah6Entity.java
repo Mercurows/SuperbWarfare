@@ -575,7 +575,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
 
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
 
-            playShootSound3p(living, 0, 4, 12, 24, shootVec);
+            playShootSound3p(living, 0, 4, 12, 24, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
 
 
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
@@ -601,7 +601,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
             heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 7, 0.25f);
             living.level().addFreshEntity(heliRocketEntity);
 
-            playShootSound3p(living, 0, 6, 6, 6, shootVec);
+            playShootSound3p(living, 0, 6, 6, 6, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
 
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) - 1);
             reloadCoolDown = 30;
