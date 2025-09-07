@@ -155,6 +155,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:qbz_191_blueprint"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:igla_9k38_blueprint"
         }
       ],
       "rolls": 1.0

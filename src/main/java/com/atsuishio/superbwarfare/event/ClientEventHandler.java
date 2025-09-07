@@ -341,6 +341,13 @@ public class ClientEventHandler {
         handlePlayerSprint();
         handleLungeAttack(player, stack);
         handleGunMelee(player, stack);
+        iglaSeeking(stack);
+    }
+
+    public static void iglaSeeking(ItemStack stack) {
+        if (stack.getItem() == ModItems.IGLA.get()) {
+            Mod.PACKET_HANDLER.sendToServer(new IglaSeekMessage(zoomTime >= 1 ? 0 : 1));
+        }
     }
 
     // 耐力

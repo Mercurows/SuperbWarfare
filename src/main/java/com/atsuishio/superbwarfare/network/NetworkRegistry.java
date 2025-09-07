@@ -60,6 +60,7 @@ public class NetworkRegistry {
         playToServer(FireModeMessage.INSTANCE, FireModeMessage::handler);
         playToServer(PlayerStopRidingMessage.class, PlayerStopRidingMessage::encode, PlayerStopRidingMessage::decode, PlayerStopRidingMessage::handler);
         playToServer(ZoomMessage.class, ZoomMessage::encode, ZoomMessage::decode, ZoomMessage::handler);
+        playToServer(IglaSeekMessage.class, IglaSeekMessage::encode, IglaSeekMessage::decode, IglaSeekMessage::handler);
         playToServer(DroneFireMessage.class, DroneFireMessage::encode, DroneFireMessage::decode, DroneFireMessage::handler);
         playToServer(SetFiringParametersMessage.INSTANCE, SetFiringParametersMessage::handler);
         playToServer(ArtilleryIndicatorFireMessage.INSTANCE, ArtilleryIndicatorFireMessage::handler);

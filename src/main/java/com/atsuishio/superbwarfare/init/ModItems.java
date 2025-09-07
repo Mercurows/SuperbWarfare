@@ -16,10 +16,7 @@ import com.atsuishio.superbwarfare.item.curio.IffItem;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
 import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
-import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
-import com.atsuishio.superbwarfare.item.gun.launcher.M79Item;
-import com.atsuishio.superbwarfare.item.gun.launcher.RpgItem;
-import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
+import com.atsuishio.superbwarfare.item.gun.launcher.*;
 import com.atsuishio.superbwarfare.item.gun.machinegun.*;
 import com.atsuishio.superbwarfare.item.gun.rifle.*;
 import com.atsuishio.superbwarfare.item.gun.shotgun.Aa12Item;
@@ -95,6 +92,7 @@ public class ModItems {
     public static final RegistryObject<Item> SECONDARY_CATACLYSM = GUNS.register("secondary_cataclysm", SecondaryCataclysm::new);
     public static final RegistryObject<Item> RPG = GUNS.register("rpg", RpgItem::new);
     public static final RegistryObject<Item> JAVELIN = GUNS.register("javelin", JavelinItem::new);
+    public static final RegistryObject<Item> IGLA = GUNS.register("igla_9k38", IglaItem::new);
     public static final RegistryObject<Item> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptre::new);
     public static final RegistryObject<Item> BOCEK = GUNS.register("bocek", BocekItem::new);
 
@@ -117,6 +115,7 @@ public class ModItems {
     public static final RegistryObject<Item> TASER_ELECTRODE = AMMO.register("taser_electrode", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> GRENADE_40MM = AMMO.register("grenade_40mm", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> IGLA_MISSILE = AMMO.register("igla_9k38_missile", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
     public static final RegistryObject<Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
     public static final RegistryObject<Item> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);
@@ -278,6 +277,7 @@ public class ModItems {
     public static final RegistryObject<Item> QBZ_191_BLUEPRINT = ITEMS.register("qbz_191_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> K_98_BLUEPRINT = ITEMS.register("k_98_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> MOSIN_NAGANT_BLUEPRINT = ITEMS.register("mosin_nagant_blueprint", () -> new BlueprintItem(Rarity.RARE));
+    public static final RegistryObject<Item> IGLA_BLUEPRINT = ITEMS.register("igla_9k38_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
     public static final RegistryObject<Item> M_2_HB_BLUEPRINT = ITEMS.register("m_2_hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));

@@ -99,12 +99,10 @@ public class M60ItemModel extends CustomGunModel<M60Item> {
             b1.setScaleZ(0);
         }
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        double fpz = ClientEventHandler.firePosZ * 13 * times;
         double fp = ClientEventHandler.firePos;
         double fr = ClientEventHandler.fireRot;
 

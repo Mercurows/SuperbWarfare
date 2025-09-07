@@ -3635,5 +3635,53 @@
         "stream": false
       }
     ]
+  },
+  "igla_9k38_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:igla_9k38/igla_9k38_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "igla_9k38_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:igla_9k38/igla_9k38_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "igla_9k38_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:igla_9k38/igla_9k38_far",
+        "stream": false
+      }
+    ]
+  },
+  "igla_9k38_reload_empty": {
+    "sounds": [
+      {
+        "name": "superbwarfare:igla_9k38/igla_9k38_reload",
+        "stream": false
+      }
+    ]
+  },
+  "igla_9k38_lock": {
+    "sounds": [
+      {
+        "name": "superbwarfare:igla_9k38/igla_9k38_lock",
+        "stream": false
+      }
+    ]
+  },
+  "igla_9k38_lockon": {
+    "sounds": [
+      {
+        "name": "superbwarfare:igla_9k38/igla_9k38_lockon",
+        "stream": false
+      }
+    ]
   }
 }

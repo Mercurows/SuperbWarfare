@@ -60,6 +60,7 @@
   "item.superbwarfare.insidious": "Insidious",
   "item.superbwarfare.qbz_191": "QBZ-191",
   "item.superbwarfare.awm": "AWM",
+  "item.superbwarfare.igla_9k38": "IGLA-9K38 MANPADS",
 
   "des.superbwarfare.guns.damage": "Damage: ",
   "des.superbwarfare.guns.level": "Level: ",
@@ -127,6 +128,7 @@
   "item.superbwarfare.mp_5_blueprint": "MP5 Blueprint",
   "item.superbwarfare.qbz_191_blueprint": "QBZ-191 Blueprint",
   "item.superbwarfare.bl_132_blueprint": "130mm/58 BL-132 Blueprint",
+  "item.superbwarfare.igla_9k38_blueprint": "IGLA-9K38 MANPADS Blueprint",
 
   "item.superbwarfare.common_material_pack": "Common Material Pack",
   "item.superbwarfare.rare_material_pack": "Rare Material Pack",
@@ -196,6 +198,7 @@
   "des.superbwarfare.swarm_drone": "Suitable for YX-100 MBT",
   "item.superbwarfare.medium_aerial_bomb": "Medium Aerial Bomb",
   "des.superbwarfare.medium_aerial_bomb": "Suitable for A-10 Thunderbolt II",
+  "item.superbwarfare.igla_9k38_missile": "IGLA-9K38 SAM",
   "item.superbwarfare.agm": "Air-to-ground Missile",
   "des.superbwarfare.agm": "Suitable for A-10 Thunderbolt II",
   "item.superbwarfare.beast": "BEAST",
@@ -568,6 +571,7 @@
   "entity.superbwarfare.ptkm_1r": "PTKM-1R Anti-tank Mine",
   "entity.superbwarfare.ptkm_projectile": "PTKM-1R Anti-tank Mine",
   "entity.superbwarfare.waveforce_tower": "Wave-Force Tower",
+  "entity.superbwarfare.igla_9k38_missile": "IGLA-9K38 SAM",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",

@@ -166,6 +166,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:igla_9k38_blueprint",
+          "weight": 7
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:aa_12_blueprint",
           "weight": 3
         },

@@ -79,7 +79,9 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.AWM_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 1),
                                 new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 1),
-                                new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 1)
+                                new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 1),
+                                new ItemEntry(ModItems.IGLA_BLUEPRINT.get(), 1)
+
                         ))
                         .withPool(multiItems(2, 0,
                                 new ItemEntry(ModItems.HANDGUN_AMMO_BOX.get(), 12)
@@ -140,6 +142,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 10),
+                                new ItemEntry(ModItems.IGLA_BLUEPRINT.get(), 7),
 
                                 new ItemEntry(ModItems.AA_12_BLUEPRINT.get(), 3),
                                 new ItemEntry(ModItems.NTW_20_BLUEPRINT.get(), 3),
@@ -192,6 +195,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 10),
                                 new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 10),
+                                new ItemEntry(ModItems.IGLA_BLUEPRINT.get(), 7),
 
                                 new ItemEntry(ModItems.AA_12_BLUEPRINT.get(), 20),
                                 new ItemEntry(ModItems.NTW_20_BLUEPRINT.get(), 20),
@@ -270,6 +274,7 @@ public class ModCustomLootProvider implements LootTableSubProvider {
                                 new ItemEntry(ModItems.DEVOTION_BLUEPRINT.get(), 15),
                                 new ItemEntry(ModItems.INSIDIOUS_BLUEPRINT.get(), 15),
                                 new ItemEntry(ModItems.QBZ_191_BLUEPRINT.get(), 15),
+                                new ItemEntry(ModItems.IGLA_BLUEPRINT.get(), 10),
 
                                 new ItemEntry(ModItems.AA_12_BLUEPRINT.get(), 5),
                                 new ItemEntry(ModItems.NTW_20_BLUEPRINT.get(), 5),

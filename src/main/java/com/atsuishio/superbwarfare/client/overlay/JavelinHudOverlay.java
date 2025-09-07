@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -100,7 +101,7 @@ public class JavelinHudOverlay implements IGuiOverlay {
 
             if (stack.getOrCreateTag().getInt("GuideType") == 0) {
                 for (var e : entities) {
-                    Vec3 pos = e.getBoundingBox().getCenter();
+                    Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(e, partialTick);
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     boolean lockOn = stack.getOrCreateTag().getInt("SeekTime") > 20 && e == targetEntity;
                     boolean nearest = e == naerestEntity;

@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_high_energy_explosives": {
+    "has_ap_head": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:high_energy_explosives"
+              "superbwarfare:ap_head"
             ]
           }
         ]
@@ -34,7 +34,7 @@
   },
   "requirements": [
     [
-      "has_high_energy_explosives",
+      "has_ap_head",
       "has_missile_engine",
       "has_the_recipe"
     ]

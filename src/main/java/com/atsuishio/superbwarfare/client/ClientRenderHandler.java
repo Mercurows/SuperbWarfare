@@ -47,15 +47,16 @@ public class ClientRenderHandler {
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerBelowAll(KillMessageOverlay.ID, new KillMessageOverlay());
-        event.registerBelow(Mod.loc(KillMessageOverlay.ID), IFFOverlay.ID, new IFFOverlay());
+        event.registerBelow(Mod.loc(KillMessageOverlay.ID), ArmorPlateOverlay.ID, new ArmorPlateOverlay());
+        event.registerBelow(Mod.loc(ArmorPlateOverlay.ID), AmmoBarOverlay.ID, new AmmoBarOverlay());
+        event.registerBelow(Mod.loc(AmmoBarOverlay.ID), IFFOverlay.ID, new IFFOverlay());
         event.registerBelow(Mod.loc(IFFOverlay.ID), VehicleTeamOverlay.ID, new VehicleTeamOverlay());
         event.registerBelow(Mod.loc(VehicleTeamOverlay.ID), JavelinHudOverlay.ID, new JavelinHudOverlay());
-        event.registerBelow(Mod.loc(JavelinHudOverlay.ID), ArmorPlateOverlay.ID, new ArmorPlateOverlay());
-        event.registerBelow(Mod.loc(ArmorPlateOverlay.ID), VehicleHudOverlay.ID, new VehicleHudOverlay());
+        event.registerBelow(Mod.loc(JavelinHudOverlay.ID), IglaHudOverlay.ID, new IglaHudOverlay());
+        event.registerBelow(Mod.loc(IglaHudOverlay.ID), VehicleHudOverlay.ID, new VehicleHudOverlay());
         event.registerBelow(Mod.loc(VehicleHudOverlay.ID), VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
         event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
         event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
-        event.registerBelowAll(AmmoBarOverlay.ID, new AmmoBarOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
         event.registerBelowAll(ItemRendererFixOverlay.ID, new ItemRendererFixOverlay());
         event.registerBelowAll(CannonHudOverlay.ID, new CannonHudOverlay());

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "superbwarfare:ancient_cpu"
+  },
+  "base": {
+    "item": "superbwarfare:epic_material_pack"
+  },
+  "result": {
+    "item": "superbwarfare:igla_9k38"
+  },
+  "template": {
+    "item": "superbwarfare:igla_9k38_blueprint"
+  }
+}
