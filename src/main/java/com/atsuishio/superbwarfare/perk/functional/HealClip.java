@@ -63,7 +63,7 @@ public class HealClip extends Perk {
         float absorption = healAmount - living.getMaxHealth() + living.getHealth();
         living.heal(healAmount);
         if (absorption > 0) {
-            living.setAbsorptionAmount(absorption * 0.1f);
+            living.setAbsorptionAmount(absorption * 0.3f);
         }
 
         List<Player> players = entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5))
