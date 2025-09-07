@@ -287,9 +287,7 @@ public class GunEventHandler {
     }
 
     public static void finishGunNormalReload(@Nullable Entity shooter, @NotNull GunData data) {
-        var stack = data.stack();
         var gunItem = data.item();
-
         data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(data));
         NeoForge.EVENT_BUS.post(new ReloadEvent.Post(shooter, data));
     }
