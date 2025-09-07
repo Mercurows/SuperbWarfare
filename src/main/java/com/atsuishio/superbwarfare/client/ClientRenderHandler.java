@@ -47,15 +47,16 @@ public class ClientRenderHandler {
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiLayersEvent event) {
         event.registerBelowAll(KillMessageOverlay.ID, new KillMessageOverlay());
-        event.registerBelow(KillMessageOverlay.ID, IFFOverlay.ID, new IFFOverlay());
+        event.registerBelow(KillMessageOverlay.ID, ArmorPlateOverlay.ID, new ArmorPlateOverlay());
+        event.registerBelow(ArmorPlateOverlay.ID, AmmoBarOverlay.ID, new AmmoBarOverlay());
+        event.registerBelow(AmmoBarOverlay.ID, IFFOverlay.ID, new IFFOverlay());
         event.registerBelow(IFFOverlay.ID, VehicleTeamOverlay.ID, new VehicleTeamOverlay());
         event.registerBelow(VehicleTeamOverlay.ID, JavelinHudOverlay.ID, new JavelinHudOverlay());
-        event.registerBelow(JavelinHudOverlay.ID, ArmorPlateOverlay.ID, new ArmorPlateOverlay());
-        event.registerBelow(ArmorPlateOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
+        event.registerBelow(JavelinHudOverlay.ID, IglaHudOverlay.ID, new IglaHudOverlay());
+        event.registerBelow(IglaHudOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
         event.registerBelow(VehicleHudOverlay.ID, VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
         event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
         event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
-        event.registerBelowAll(AmmoBarOverlay.ID, new AmmoBarOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
         event.registerBelowAll(ItemRendererFixOverlay.ID, new ItemRendererFixOverlay());
         event.registerBelowAll(CannonHudOverlay.ID, new CannonHudOverlay());

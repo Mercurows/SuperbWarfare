@@ -135,7 +135,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(ModTags.Items.ANIMATED_RPG).add(
                 ModItems.RPG.get(),
-                ModItems.JAVELIN.get());
+                ModItems.JAVELIN.get(),
+                ModItems.IGLA.get());
 
         this.tag(ModTags.Items.ANIMATED_MG).add(
                 ModItems.DEVOTION.get(),
@@ -167,7 +168,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.AURELIA_SCEPTRE.get(), ModItems.QBZ_95.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.MP_443.get(), ModItems.INSIDIOUS.get(), ModItems.SECONDARY_CATACLYSM.get(),
                 ModItems.TASER.get(), ModItems.MINIGUN.get(), ModItems.MP_5.get(), ModItems.M_2_HB.get(), ModItems.QBZ_191.get(), ModItems.AWM.get());
 
-        this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get())
+        this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.IGLA.get())
                 .addTag(ModTags.Items.LAUNCHER_GRENADE);
         this.tag(ModTags.Items.LAUNCHER_GRENADE).add(ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());
 
@@ -186,7 +187,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(ModTags.Items.EPIC_BLUEPRINT).add(ModItems.TRACHELIUM_BLUEPRINT.get(), ModItems.HUNTING_RIFLE_BLUEPRINT.get(), ModItems.BOCEK_BLUEPRINT.get(),
                 ModItems.RPK_BLUEPRINT.get(), ModItems.VECTOR_BLUEPRINT.get(), ModItems.MK_14_BLUEPRINT.get(), ModItems.M_60_BLUEPRINT.get(), ModItems.SVD_BLUEPRINT.get(),
-                ModItems.M_98B_BLUEPRINT.get(), ModItems.DEVOTION_BLUEPRINT.get(), ModItems.INSIDIOUS_BLUEPRINT.get(), ModItems.QBZ_191_BLUEPRINT.get(), ModItems.AWM_BLUEPRINT.get());
+                ModItems.M_98B_BLUEPRINT.get(), ModItems.DEVOTION_BLUEPRINT.get(), ModItems.INSIDIOUS_BLUEPRINT.get(), ModItems.QBZ_191_BLUEPRINT.get(), ModItems.AWM_BLUEPRINT.get()
+                , ModItems.IGLA_BLUEPRINT.get());
 
         this.tag(ModTags.Items.LEGENDARY_BLUEPRINT).add(ModItems.AA_12_BLUEPRINT.get(), ModItems.NTW_20_BLUEPRINT.get(), ModItems.MINIGUN_BLUEPRINT.get(),
                 ModItems.SENTINEL_BLUEPRINT.get(), ModItems.JAVELIN_BLUEPRINT.get(), ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), ModItems.MK_42_BLUEPRINT.get(),

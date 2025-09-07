@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -73,7 +74,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            float deltaFrame = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+            float deltaFrame = deltaTracker.getGameTimeDeltaPartialTick(true);
             float moveX = (float) (-32 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 100 : 67) * ClientEventHandler.movePosX + 3 * ClientEventHandler.cameraRot[2]);
             float moveY = (float) (-32 * ClientEventHandler.turnRot[0] + 100 * (float) ClientEventHandler.velocityY - (player.isSprinting() ? 100 : 67) * ClientEventHandler.movePosY - 12 * ClientEventHandler.firePos + 3 * ClientEventHandler.cameraRot[1]);
             scopeScale = (float) Mth.lerp(0.5F * deltaFrame, scopeScale, 1.35F + (0.2f * ClientEventHandler.firePos));
@@ -112,7 +113,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             poseStack.pushPose();
             if (tag.getInt("GuideType") == 0) {
                 for (var e : entities) {
-                    Vec3 pos = e.getBoundingBox().getCenter();
+                    Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(e, deltaTracker.getGameTimeDeltaPartialTick(true));
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     boolean lockOn = tag.getInt("SeekTime") > 20 && e == targetEntity;
                     boolean nearest = e == naerestEntity;

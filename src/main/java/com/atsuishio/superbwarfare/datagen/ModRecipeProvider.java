@@ -479,11 +479,23 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern(" d ")
                 .define('a', ModItems.SEEKER.get())
                 .define('b', Tags.Items.INGOTS_IRON)
-                .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('c', ModItems.AP_HEAD.get())
                 .define('d', ModItems.MISSILE_ENGINE.get())
-                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+                .unlockedBy(getHasName(ModItems.AP_HEAD.get()), has(ModItems.AP_HEAD.get()))
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.IGLA_MISSILE.get())
+                .pattern("eae")
+                .pattern("bcb")
+                .pattern(" d ")
+                .define('a', ModItems.SEEKER.get())
+                .define('b', Tags.Items.INGOTS_IRON)
+                .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
+                .define('d', ModItems.MISSILE_ENGINE.get())
+                .define('e', Items.IRON_BARS)
+                .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
+                .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.IGLA_MISSILE.get())));
         ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.WIRE_GUIDE_MISSILE.get())
                 .requires(ModItems.JAVELIN_MISSILE.get())
                 .unlockedBy(getHasName(ModItems.JAVELIN_MISSILE.get()), has(ModItems.JAVELIN_MISSILE.get()))
@@ -1452,6 +1464,7 @@ public class ModRecipeProvider extends RecipeProvider {
         gunSmithing(writer, ModItems.K_98_BLUEPRINT.get(), GunRarity.RARE, ItemTags.LOGS, ModItems.K_98.get());
         gunSmithing(writer, ModItems.MOSIN_NAGANT_BLUEPRINT.get(), GunRarity.RARE, ItemTags.LOGS, ModItems.MOSIN_NAGANT.get());
         gunSmithing(writer, ModItems.JAVELIN_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.ANCIENT_CPU.get(), ModItems.JAVELIN.get());
+        gunSmithing(writer, ModItems.IGLA_BLUEPRINT.get(), GunRarity.EPIC, ModItems.ANCIENT_CPU.get(), ModItems.IGLA.get());
         gunSmithing(writer, ModItems.M_2_HB_BLUEPRINT.get(), GunRarity.RARE, ModTags.Items.STORAGE_BLOCK_STEEL, ModItems.M_2_HB.get());
         gunSmithing(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.KNIFE.get(), ModItems.SECONDARY_CATACLYSM.get());
         gunSmithing(writer, ModItems.INSIDIOUS_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.INSIDIOUS.get());
@@ -1505,6 +1518,7 @@ public class ModRecipeProvider extends RecipeProvider {
         copyBlueprint(writer, ModItems.K_98_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.MOSIN_NAGANT_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.JAVELIN_BLUEPRINT.get());
+        copyBlueprint(writer, ModItems.IGLA_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.M_2_HB_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.INSIDIOUS_BLUEPRINT.get());

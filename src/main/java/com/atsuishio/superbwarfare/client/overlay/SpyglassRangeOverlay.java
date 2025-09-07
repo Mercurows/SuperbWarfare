@@ -77,7 +77,7 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                float deltaFrame = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+                float deltaFrame = deltaTracker.getGameTimeDeltaPartialTick(true);
                 scopeScale = (float) Mth.lerp(0.5F * deltaFrame, scopeScale, 1.35F + (0.2f * ClientEventHandler.firePos));
                 float f = (float) Math.min(screenWidth, screenHeight);
                 float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * scopeScale;

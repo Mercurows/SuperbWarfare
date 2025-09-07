@@ -22,6 +22,7 @@
     "superbwarfare:grapeshot_hit * 0.25",
     "superbwarfare:laser * 1.25",
     "@#superbwarfare:aerial_bomb * 2",
+    "@superbwarfare:igla_9k38_missile * 0.75",
     "#superbwarfare:projectile * 0.1",
     "#superbwarfare:projectile_absolute * 0.7",
     "#superbwarfare:vehicle_strike * 13",

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
@@ -106,5 +107,9 @@ public class VectorTool {
         // 计算反射向量: v2 = v1 - 2 * (v1 · n) * n
 
         return v1.subtract(v0.scale(2 * dot));
+    }
+
+    public static Vec3 lerpGetEntityBoundingBoxCenter(Entity entity, float partialTick) {
+        return new Vec3(Mth.lerp(partialTick, entity.xo, entity.getX()), Mth.lerp(partialTick, entity.yo + entity.getBbHeight() / 2, entity.getY() + entity.getBbHeight() / 2), Mth.lerp(partialTick, entity.zo, entity.getZ()));
     }
 }

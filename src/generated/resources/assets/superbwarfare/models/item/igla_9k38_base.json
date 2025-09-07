@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/igla_9k38.item",
+  "textures": {
+    "layer0": "superbwarfare:item/igla_9k38"
+  }
+}

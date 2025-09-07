@@ -351,6 +351,13 @@ public class ClientEventHandler {
         handlePlayerSprint();
         handleLungeAttack(player, stack);
         handleGunMelee(player, stack);
+        iglaSeeking(stack);
+    }
+
+    public static void iglaSeeking(ItemStack stack) {
+        if (stack.getItem() == ModItems.IGLA.get()) {
+            PacketDistributor.sendToServer(new IglaSeekMessage(zoomTime >= 1 ? 0 : 1));
+        }
     }
 
 

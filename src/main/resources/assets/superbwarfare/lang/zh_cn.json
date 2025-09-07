@@ -60,6 +60,7 @@
   "item.superbwarfare.insidious": "阴险",
   "item.superbwarfare.qbz_191": "QBZ-191突击步枪",
   "item.superbwarfare.awm": "AWM狙击步枪",
+  "item.superbwarfare.igla_9k38": "IGLA-9K38便携式地空导弹发射器",
 
   "des.superbwarfare.guns.upgrade_point": "升级点数: ",
   "des.superbwarfare.guns.damage": "伤害: ",
@@ -127,6 +128,7 @@
   "item.superbwarfare.mp_5_blueprint": "MP5冲锋枪蓝图",
   "item.superbwarfare.qbz_191_blueprint": "QBZ-191突击步枪蓝图",
   "item.superbwarfare.bl_132_blueprint": "130mm/58 BL-132蓝图",
+  "item.superbwarfare.igla_9k38_blueprint": "IGLA-9K38便携式地空导弹发射器蓝图",
 
   "item.superbwarfare.common_material_pack": "普通材料包",
   "item.superbwarfare.rare_material_pack": "稀有材料包",
@@ -196,6 +198,7 @@
   "des.superbwarfare.swarm_drone": "适配YX-100主战坦克",
   "item.superbwarfare.medium_aerial_bomb": "中型航空炸弹",
   "des.superbwarfare.medium_aerial_bomb": "适配A-10攻击机",
+  "item.superbwarfare.igla_9k38_missile": "IGLA-9K38对空导弹",
   "item.superbwarfare.agm": "空对地导弹",
   "des.superbwarfare.agm": "适配A-10攻击机",
   "item.superbwarfare.beast": "BEAST",
@@ -568,6 +571,7 @@
   "entity.superbwarfare.ptkm_1r": "PTKM-1R反坦克地雷",
   "entity.superbwarfare.ptkm_projectile": "PTKM-1R反坦克地雷",
   "entity.superbwarfare.waveforce_tower": "波能塔",
+  "entity.superbwarfare.igla_9k38_missile": "IGLA-9K38对空导弹",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
