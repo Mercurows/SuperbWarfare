@@ -52,7 +52,7 @@ public class IglaItemModel extends CustomGunModel<IglaItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        ClientEventHandler.gunRootMove(getAnimationProcessor(), 4, 0, 2, false);
+        ClientEventHandler.gunRootMove(getAnimationProcessor(), 1, 0, 2, false);
 
         GeoBone camera = getAnimationProcessor().getBone("camera");
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
