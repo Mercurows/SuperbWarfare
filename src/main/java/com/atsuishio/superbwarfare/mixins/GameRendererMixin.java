@@ -7,10 +7,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -49,8 +51,10 @@ public class GameRendererMixin {
     private Camera mainCamera;
 
     @SuppressWarnings("ConstantValue")
-    @Inject(method = "bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V", at = @At("HEAD"))
-    public void superbWarfare$renderWorld(PoseStack matrices, float tickDelta, CallbackInfo ci) {
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"))
+    public void superbWarfare$renderWorld(DeltaTracker deltaTracker, CallbackInfo ci,
+                                          @Local(name = "posestack") PoseStack matrices,
+                                          @Local(name = "f") float tickDelta) {
         Entity entity = mainCamera.getEntity();
 
         matrices.mulPose(Axis.ZP.rotationDegrees(ClientEventHandler.cameraRoll));
