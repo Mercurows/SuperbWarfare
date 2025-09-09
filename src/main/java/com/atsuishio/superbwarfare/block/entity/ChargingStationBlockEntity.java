@@ -239,7 +239,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
             if (blockEntity == null) continue;
 
             var energy = level.getCapability(Capabilities.EnergyStorage.BLOCK, blockEntity.getBlockPos(), direction);
-            if (energy == null || blockEntity instanceof ChargingStationBlockEntity) return;
+            if (energy == null || blockEntity instanceof ChargingStationBlockEntity) continue;
 
             if (energy.canReceive() && energy.getEnergyStored() < energy.getMaxEnergyStored()) {
                 int receiveEnergy = energy.receiveEnergy(Math.min(handler.getEnergyStored(), CHARGE_OTHER_SPEED), false);
