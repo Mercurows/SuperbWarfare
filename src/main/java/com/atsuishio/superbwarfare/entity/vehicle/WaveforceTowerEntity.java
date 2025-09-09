@@ -61,14 +61,16 @@ import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable, DefenseEntity {
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> CHARGING_TIME = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> CHARGED_ENERGY = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final EntityDataAccessor<Float> WAVEFORCE_LENGTH = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
     public int changeTargetTimer = 60;
+    public int chargeTime = 60;
+    public int maxChargeEnergy = 250000;
+    public float damage = 350;
 
     public WaveforceTowerEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.WAVEFORCE_TOWER.get(), world);
@@ -96,7 +98,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         this.entityData.define(COOL_DOWN, 0);
         this.entityData.define(TARGET_UUID, "none");
         this.entityData.define(OWNER_UUID, Optional.empty());
-        this.entityData.define(CHARGING_TIME, 0);
+        this.entityData.define(CHARGED_ENERGY, 0);
         this.entityData.define(WAVEFORCE_LENGTH, 0f);
         this.entityData.define(ACTIVE, false);
     }
@@ -104,7 +106,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("ChargingTime", this.entityData.get(CHARGING_TIME));
+        compound.putInt("ChargedEnergy", this.entityData.get(CHARGED_ENERGY));
         compound.putBoolean("Active", this.entityData.get(ACTIVE));
         if (this.getOwnerUUID() != null) {
             compound.putUUID("Owner", this.getOwnerUUID());
@@ -114,7 +116,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(CHARGING_TIME, compound.getInt("ChargingTime"));
+        this.entityData.set(CHARGED_ENERGY, compound.getInt("ChargedEnergy"));
         this.entityData.set(ACTIVE, compound.getBoolean("Active"));
 
         UUID uuid;
@@ -198,8 +200,10 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
             this.entityData.set(COOL_DOWN, this.entityData.get(COOL_DOWN) - 1);
         }
 
-        if (this.entityData.get(CHARGING_TIME) < 60) {
-            this.entityData.set(CHARGING_TIME, this.entityData.get(CHARGING_TIME) + 1);
+        if (this.entityData.get(CHARGED_ENERGY) < maxChargeEnergy) {
+            float chargeSpeed = (float) Mth.clamp(maxChargeEnergy / chargeTime, 0, getEnergy());
+            this.entityData.set(CHARGED_ENERGY, (int) Mth.clamp(this.entityData.get(CHARGED_ENERGY) + chargeSpeed, 0, maxChargeEnergy));
+            this.consumeEnergy((int) Mth.clamp(chargeSpeed, 0, maxChargeEnergy - this.entityData.get(CHARGED_ENERGY)));
         }
         
         this.move(MoverType.SELF, this.getDeltaMovement());
@@ -235,7 +239,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     }
 
     public void autoAim() {
-        if (this.getEnergy() <= 0 || !entityData.get(ACTIVE)) {
+        if (!entityData.get(ACTIVE)) {
             return;
         }
 
@@ -279,11 +283,13 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                 turretAutoAimFormVector(targetVec);
             }
 
-            if (this.entityData.get(CHARGING_TIME) == 60 && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1) {
+            boolean canShoot = this.entityData.get(CHARGED_ENERGY) >= maxChargeEnergy;
+
+            if (canShoot && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1) {
                 changeTargetTimer++;
             }
 
-            if (this.entityData.get(CHARGING_TIME) == 60 && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
+            if (canShoot && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
                 if (level() instanceof ServerLevel) {
                     this.level().playSound(this, getOnPos(), ModSounds.WAVEFORCE_TOWER_FIRE.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.1f + 1);
                 }
@@ -297,7 +303,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                         sendParticle(serverLevel, ParticleTypes.END_ROD, hitPos.x, hitPos.y, hitPos.z, 12, 0, 0, 0, 0.05, true);
                         sendParticle(serverLevel, ParticleTypes.LAVA, hitPos.x, hitPos.y, hitPos.z, 4, 0, 0, 0, 0.15, true);
                     }
-                    DamageHandler.doDamage(entity, ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), 350);
+                    DamageHandler.doDamage(entity, ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), damage * Math.min((float) entityData.get(CHARGED_ENERGY) / maxChargeEnergy, 1));
                     target.invulnerableTime = 0;
                     if (Math.random() < 0.5 && target instanceof LivingEntity living) {
                         living.setSecondsOnFire(5);
@@ -309,8 +315,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                 if (!target.isAlive()) {
                     entityData.set(TARGET_UUID, "none");
                 }
-                this.consumeEnergy(250000);
-                this.entityData.set(CHARGING_TIME, 0);
+                this.entityData.set(CHARGED_ENERGY, 0);
                 this.entityData.set(COOL_DOWN, 25);
             }
 

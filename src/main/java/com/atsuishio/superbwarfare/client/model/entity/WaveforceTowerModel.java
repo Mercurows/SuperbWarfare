@@ -7,7 +7,7 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.CHARGING_TIME;
+import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.CHARGED_ENERGY;
 import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.WAVEFORCE_LENGTH;
 
 public class WaveforceTowerModel extends GeoModel<WaveforceTowerEntity> {
@@ -51,15 +51,16 @@ public class WaveforceTowerModel extends GeoModel<WaveforceTowerEntity> {
         CoreGeoBone lightOff6 = getAnimationProcessor().getBone("light_off6");
         CoreGeoBone lightOff7 = getAnimationProcessor().getBone("light_off7");
 
-        float coolDown = animatable.getEntityData().get(CHARGING_TIME);
+        float energy = animatable.getEntityData().get(CHARGED_ENERGY);
+        float c0 = energy / animatable.maxChargeEnergy;
 
-        lightOn.setHidden(coolDown < 12);
-        lightOn2.setHidden(coolDown < 20);
-        lightOn3.setHidden(coolDown < 28);
-        lightOn4.setHidden(coolDown < 36);
-        lightOn5.setHidden(coolDown < 44);
-        lightOn6.setHidden(coolDown < 52);
-        lightOn7.setHidden(coolDown < 60);
+        lightOn.setHidden(c0 < 1 / 7f);
+        lightOn2.setHidden(c0 < 2 / 7f);
+        lightOn3.setHidden(c0 < 3 / 7f);
+        lightOn4.setHidden(c0 < 4 / 7f);
+        lightOn5.setHidden(c0 < 5 / 7f);
+        lightOn6.setHidden(c0 < 6 / 7f);
+        lightOn7.setHidden(c0 < 1f);
 
         lightOff.setHidden(!lightOn.isHidden());
         lightOff2.setHidden(!lightOn2.isHidden());
@@ -70,6 +71,6 @@ public class WaveforceTowerModel extends GeoModel<WaveforceTowerEntity> {
         lightOff7.setHidden(!lightOn7.isHidden());
 
         CoreGeoBone charge = getAnimationProcessor().getBone("charge");
-        charge.setScaleZ((float) animatable.getEntityData().get(CHARGING_TIME) / 60);
+        charge.setScaleZ(c0);
     }
 }
