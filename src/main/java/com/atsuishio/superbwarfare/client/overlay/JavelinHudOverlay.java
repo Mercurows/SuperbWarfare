@@ -95,15 +95,15 @@ public class JavelinHudOverlay implements IGuiOverlay {
             float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
 
             Entity targetEntity = EntityFindUtil.findEntity(player.level(), stack.getOrCreateTag().getString("TargetEntity"));
-            List<Entity> entities = SeekTool.seekLivingEntities(player, player.level(), 512, 8 * fovAdjust);
-            Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 512, 6);
+            List<Entity> entities = SeekTool.getVehicleWithinRange(player, player.level(), 512);
+            Entity nearestEntity = SeekTool.seekCustomSizeEntity(player, player.level(), 512, 6, 1.0, true);
 
             if (stack.getOrCreateTag().getInt("GuideType") == 0) {
                 for (var e : entities) {
                     Vec3 pos = e.getBoundingBox().getCenter();
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     boolean lockOn = stack.getOrCreateTag().getInt("SeekTime") > 20 && e == targetEntity;
-                    boolean nearest = e == naerestEntity;
+                    boolean nearest = e == nearestEntity;
 
                     poseStack.pushPose();
                     float x = (float) point.x;
