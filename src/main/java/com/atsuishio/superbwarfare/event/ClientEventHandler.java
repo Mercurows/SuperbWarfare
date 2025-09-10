@@ -29,6 +29,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -1650,10 +1651,7 @@ public class ClientEventHandler {
             fov = event.getFOV();
 
             // 智慧芯片
-            if (zoom
-                    && !notInGame()
-                    && drawTime < 0.01
-                    && !isEditing) {
+            if (zoom && !notInGame() && drawTime < 0.01 && !isEditing) {
                 if (!player.isShiftKeyDown()) {
                     int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
                     double seekRange = 32 + 8 * (intelligentChipLevel - 1);
@@ -1673,7 +1671,17 @@ public class ClientEventHandler {
                                     Mth.lerp(event.getPartialTick(), player.zo - 0.1 * player.getViewVector(1).z, player.getZ() - 0.1 * player.getViewVector(1).z));
 
                             var hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
-                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.get(GunProp.VELOCITY), hasGravity ? 0.03 : 0);
+                            double velocity;
+
+                            if (stack.is(ModItems.BOCEK.get())) {
+                                velocity = zoomTime * 24;
+                            } else {
+                                velocity = data.get(GunProp.VELOCITY);
+                            }
+
+                            player.displayClientMessage(Component.literal(String.valueOf(velocity)), true);
+
+                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), velocity, hasGravity ? 0.03 : 0);
                             look(player, toVec);
 
                             if (player.distanceTo(entity) > seekRange) {
@@ -1681,9 +1689,9 @@ public class ClientEventHandler {
                             }
                         }
                     }
-                } else {
-                    entity = null;
                 }
+            } else {
+                entity = null;
             }
 
             lastX = player.getXRot();
