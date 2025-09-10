@@ -1239,9 +1239,9 @@ public class ClientEventHandler {
         float gunPosX = (float) (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon) * (float) (1 - 1 * zoomTime);
         float gunPosY = (float) (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY) * (float) (1 - 1 * zoomTime);
         float gunPosZ = (walkPosZ + basicSprintPosZ) * (float) (1 - 1 * zoomTime);
-        float gunRotX = (float) (walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime + Mth.DEG_TO_RAD * turnRot[0] - 0.15f * velocityY) * (float) (1 - 1 * zoomTime);
-        float gunRotY = (float) (walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime + Mth.DEG_TO_RAD * turnRot[1]) * (float) (1 - 1 * zoomTime);
-        float gunRotZ = (float) (walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon + Mth.DEG_TO_RAD * turnRot[2]) * (float) (1 - 1 * zoomTime);
+        float gunRotX = (float) ((walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime - 0.15f * velocityY) * (1 - 1 * zoomTime) + Mth.DEG_TO_RAD * turnRot[0]);
+        float gunRotY = (float) ((walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime) * (1 - 1 * zoomTime) + Mth.DEG_TO_RAD * turnRot[1]);
+        float gunRotZ = (float) ((walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon) * (1 - 1 * zoomTime) + Mth.DEG_TO_RAD * turnRot[2]);
 
         root.setPosX(gunPosX);
         root.setPosY(gunPosY);
@@ -1653,10 +1653,7 @@ public class ClientEventHandler {
             fov = event.getFOV();
 
             // 智慧芯片
-            if (zoom
-                    && !notInGame()
-                    && drawTime < 0.01
-                    && !isEditing) {
+            if (zoom && !notInGame() && drawTime < 0.01 && !isEditing) {
                 if (!player.isShiftKeyDown()) {
                     int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
                     double seekRange = 32 + 8 * (intelligentChipLevel - 1);
@@ -1676,7 +1673,15 @@ public class ClientEventHandler {
                                     Mth.lerp(event.getPartialTick(), player.zo - 0.1 * player.getViewVector(1).z, player.getZ() - 0.1 * player.getViewVector(1).z));
 
                             var hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
-                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), data.get(GunProp.VELOCITY), hasGravity ? 0.03 : 0);
+                            double velocity;
+
+                            if (stack.is(ModItems.BOCEK.get())) {
+                                velocity = zoomTime * 24;
+                            } else {
+                                velocity = data.get(GunProp.VELOCITY);
+                            }
+
+                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), velocity, hasGravity ? 0.03 : 0);
                             look(player, toVec);
 
                             if (player.distanceTo(entity) > seekRange) {
@@ -1684,9 +1689,9 @@ public class ClientEventHandler {
                             }
                         }
                     }
-                } else {
-                    entity = null;
                 }
+            } else {
+                entity = null;
             }
 
             lastX = player.getXRot();
