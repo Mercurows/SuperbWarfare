@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_laser_unit": {
+    "has_redstone": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:laser_unit"
+              "minecraft:redstone"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:waveforce_tower"
+        "recipe": "superbwarfare:laser_unit"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_laser_unit",
+      "has_redstone",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:waveforce_tower"
+      "superbwarfare:laser_unit"
     ]
   },
   "sends_telemetry_event": false

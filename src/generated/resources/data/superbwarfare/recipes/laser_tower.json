@@ -3,7 +3,7 @@
   "category": "defense",
   "inputs": [
     "#superbwarfare:storage_blocks/steel",
-    "minecraft:beacon",
+    "superbwarfare:laser_unit",
     "superbwarfare:small_battery_pack",
     "superbwarfare:motor"
   ],

@@ -718,6 +718,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', Tags.Items.NUGGETS_IRON)
                 .unlockedBy(getHasName(Items.GOLD_NUGGET), has(Items.GOLD_NUGGET))
                 .save(writer, Mod.loc(getItemName(ModItems.CELL.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.LASER_UNIT.get())
+                .pattern("eae")
+                .pattern("dbd")
+                .pattern("dcd")
+                .define('a', Items.AMETHYST_SHARD)
+                .define('b', Items.DIAMOND)
+                .define('c', Items.REDSTONE)
+                .define('d', ModTags.Items.INGOTS_STEEL)
+                .define('e', Items.COPPER_INGOT)
+                .unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
+                .save(writer, Mod.loc(getItemName(ModItems.LASER_UNIT.get())));
         SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()),
                         RecipeCategory.MISC,
                         ModItems.CEMENTED_CARBIDE_INGOT.get(),
@@ -1258,7 +1269,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         VehicleAssemblingRecipeBuilder.entity(ModEntities.ANNIHILATOR.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 24)
                 .require(Items.NETHERITE_BLOCK, 3)
-                .require(Items.BEACON, 3)
+                .require(ModItems.LASER_UNIT.get(), 32)
                 .require(ModItems.LARGE_BATTERY_PACK.get())
                 .require(ModItems.ANNIHILATOR_BLUEPRINT.get())
                 .unlockedBy(getHasName(ModItems.ANNIHILATOR_BLUEPRINT.get()), has(ModItems.ANNIHILATOR_BLUEPRINT.get()))
@@ -1298,19 +1309,19 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.HPJ_11.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.LASER_TOWER.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 1)
-                .require(Items.BEACON)
+                .require(ModItems.LASER_UNIT.get())
                 .require(ModItems.SMALL_BATTERY_PACK.get())
                 .require(ModItems.MOTOR.get())
-                .unlockedBy(getHasName(Items.BEACON), has(Items.BEACON))
+                .unlockedBy(getHasName(ModItems.LASER_UNIT.get()), has(ModItems.LASER_UNIT.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.LASER_TOWER.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.WAVEFORCE_TOWER.get(), VehicleAssemblingRecipe.Category.DEFENSE)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
                 .require(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 2)
                 .require(Items.REDSTONE_BLOCK, 8)
-                .require(Items.BEACON)
+                .require(ModItems.LASER_UNIT.get(), 9)
                 .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
                 .require(ModItems.LARGE_MOTOR.get())
-                .unlockedBy(getHasName(Items.BEACON), has(Items.BEACON))
+                .unlockedBy(getHasName(ModItems.LASER_UNIT.get()), has(ModItems.LASER_UNIT.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.WAVEFORCE_TOWER.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.WHEEL_CHAIR.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
                 .require(ModItems.WHEEL.get(), 2)
@@ -1337,7 +1348,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.BMP_2.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.PRISM_TANK.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 9)
-                .require(Items.BEACON)
+                .require(ModItems.LASER_UNIT.get(), 16)
                 .require(ModItems.LARGE_BATTERY_PACK.get())
                 .require(ModItems.TRACK.get(), 2)
                 .require(ModItems.LARGE_MOTOR.get())

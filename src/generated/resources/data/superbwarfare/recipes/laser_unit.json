@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "b": {
+      "item": "minecraft:diamond"
+    },
+    "c": {
+      "item": "minecraft:redstone"
+    },
+    "d": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "e": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "pattern": [
+    "eae",
+    "dbd",
+    "dcd"
+  ],
+  "result": {
+    "item": "superbwarfare:laser_unit"
+  },
+  "show_notification": true
+}
