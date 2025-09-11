@@ -51,3 +51,10 @@ mandatory = false
 versionRange = "[1.20.1-84,)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.superbwarfare]]
+modId = "realcamera"
+mandatory = false
+versionRange = "[0.7.0-beta,)"
+ordering = "NONE"
+side = "CLIENT"
