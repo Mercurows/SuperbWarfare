@@ -1099,10 +1099,10 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         entityData.set(MOUSE_SPEED_X, entityData.get(MOUSE_SPEED_X) * 0.95f);
         entityData.set(MOUSE_SPEED_Y, entityData.get(MOUSE_SPEED_Y) * 0.95f);
 
-        if (this instanceof WeaponVehicleEntity weaponVehicle) {
+        if (this instanceof WeaponVehicleEntity) {
             if (getFirstPassenger() instanceof Player) {
                 turretAngle();
-            } else if (getFirstPassenger() instanceof Mob mob && weaponVehicle.canShoot(mob)) {
+            } else if (getFirstPassenger() instanceof Mob mob) {
                 turretAutoAimFormUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
             }
         }
@@ -1110,7 +1110,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         if (this instanceof LandArmorEntity landArmorEntity && landArmorEntity.hasPassengerTurretWeapon()) {
             if (getNthEntity(1) instanceof Player || getNthEntity(1) == null) {
                 gunnerAngle();
-            } else if (getNthEntity(1) instanceof Mob mob && landArmorEntity.canShoot(mob)) {
+            } else if (getNthEntity(1) instanceof Mob mob) {
                 passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), mob);
             }
         }
