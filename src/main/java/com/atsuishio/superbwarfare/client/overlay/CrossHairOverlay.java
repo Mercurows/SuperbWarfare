@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
@@ -24,14 +25,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.fml.ModList;
-import com.xtracr.realcamera.util.CrosshairUtil;
-import com.xtracr.realcamera.RealCameraCore;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
@@ -74,12 +71,10 @@ public class CrossHairOverlay implements IGuiOverlay {
         if (DisplayConfig.FLOAT_CROSS_HAIR.get() && player.getVehicle() == null) {
             moveX = (float) (-6 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosX);
             moveY = (float) (-6 * ClientEventHandler.turnRot[0] + 6 * (float) ClientEventHandler.velocityY - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosY - 0.25 * ClientEventHandler.firePos);
-            //判断RC是否加载，用于适配动态准星
-            if(ModList.get().isLoaded("realcamera")){
-                if(RealCameraCore.isActive()){
-                    moveX += (float) CrosshairUtil.offset.x();
-                    moveY -= (float) CrosshairUtil.offset.y(); 
-                }
+            // 判断RC是否加载，用于适配动态准星
+            if (RealCameraCompatHolder.hasMod()) {
+                moveX = RealCameraCompatHolder.getCompatMoveX(moveX);
+                moveY = RealCameraCompatHolder.getCompatMoveY(moveY);
             }
         }
 
