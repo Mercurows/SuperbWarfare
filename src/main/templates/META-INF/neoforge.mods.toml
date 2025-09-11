@@ -50,5 +50,12 @@ type = "discouraged"
 modId = "geckoanimfix"
 type = "incompatible"
 
+[[dependencies.superbwarfare]]
+modId = "realcamera"
+type = "optional"
+versionRange = "[0.7.0-beta,)"
+ordering = "NONE"
+side = "CLIENT"
+
 [features.superbwarfare]
 openGLVersion = "[3.2,)"

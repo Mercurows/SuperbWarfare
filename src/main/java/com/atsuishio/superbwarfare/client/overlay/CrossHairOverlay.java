@@ -16,6 +16,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.xtracr.realcamera.RealCameraCore;
+import com.xtracr.realcamera.util.CrosshairUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -29,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
@@ -80,6 +83,11 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         if (DisplayConfig.FLOAT_CROSS_HAIR.get() && player.getVehicle() == null) {
             moveX = (float) (-6 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosX);
             moveY = (float) (-6 * ClientEventHandler.turnRot[0] + 6 * (float) ClientEventHandler.velocityY - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosY - 0.25 * ClientEventHandler.firePos);
+            //判断RC是否加载，用于适配动态准星
+            if (ModList.get().isLoaded("realcamera") && RealCameraCore.isActive()) {
+                moveX += (float) CrosshairUtil.offset.x();
+                moveY -= (float) CrosshairUtil.offset.y();
+            }
         }
 
         RenderSystem.disableDepthTest();
