@@ -175,7 +175,7 @@ dependencies {
     // 冷汗
     implementation "curse.maven:cold-sweat-506194:6176789"
 
-    //真实相机
+    // 真实相机
     implementation("curse.maven:real-camera-851574:${real_camera_id}")
     // 测试用mod
     implementation "curse.maven:better-combat-by-daedelus-639842:6532547"
