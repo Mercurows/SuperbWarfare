@@ -1593,7 +1593,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 for (int i = 0; i < VehicleConfig.SELF_EXPLOSION_COUNT.get(); i++) {
                     var tempAttacker = living == getAttacker() ? null : getAttacker();
                     living.invulnerableTime = 0;
-                    living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), VehicleConfig.SELF_EXPLOSION_DAMAGE.get());
+                    living.hurt(ModDamageTypes.causeVehicleExplosionDamage(this.level().registryAccess(), null, tempAttacker), VehicleConfig.SELF_EXPLOSION_DAMAGE.get());
                 }
             }
         }
