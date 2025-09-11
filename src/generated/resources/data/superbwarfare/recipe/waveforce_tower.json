@@ -5,7 +5,7 @@
     "10 #superbwarfare:storage_blocks/steel",
     "2 superbwarfare:cemented_carbide_block",
     "8 minecraft:redstone_block",
-    "minecraft:beacon",
+    "9 superbwarfare:laser_unit",
     "2 superbwarfare:medium_battery_pack",
     "superbwarfare:large_motor"
   ],

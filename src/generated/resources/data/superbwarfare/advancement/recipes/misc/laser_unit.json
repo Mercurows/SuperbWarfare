@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_laser_unit": {
+    "has_redstone": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:laser_unit"
+            "items": "minecraft:redstone"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:laser_tower"
+        "recipe": "superbwarfare:laser_unit"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_laser_unit"
+      "has_redstone"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:laser_tower"
+      "superbwarfare:laser_unit"
     ]
   }
 }

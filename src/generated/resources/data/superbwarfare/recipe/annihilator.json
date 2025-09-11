@@ -4,7 +4,7 @@
   "inputs": [
     "24 #superbwarfare:storage_blocks/steel",
     "3 minecraft:netherite_block",
-    "3 minecraft:beacon",
+    "32 superbwarfare:laser_unit",
     "superbwarfare:large_battery_pack",
     "superbwarfare:annihilator_blueprint"
   ],

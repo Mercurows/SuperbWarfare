@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_beacon": {
+    "has_laser_unit": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:beacon"
+            "items": "superbwarfare:laser_unit"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_beacon"
+      "has_laser_unit"
     ]
   ],
   "rewards": {
