@@ -79,6 +79,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         super(type, world);
     }
 
+    public VehicleType vehicleType = VehicleType.ARTILLERY;
     @Override
     public void onAddedToWorld() {
         super.onAddedToWorld();

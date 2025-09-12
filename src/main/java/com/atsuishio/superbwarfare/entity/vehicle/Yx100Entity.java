@@ -90,6 +90,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public OBB obb5;
     public OBB obbTurret;
     public OBB obbTurret2;
+    public VehicleType vehicleType = VehicleType.TANK;
 
     public Yx100Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.YX_100.get(), world);

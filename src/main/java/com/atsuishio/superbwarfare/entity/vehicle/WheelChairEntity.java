@@ -49,6 +49,7 @@ public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public int jumpCoolDown;
     public int handBusyTime;
+    public VehicleType vehicleType = VehicleType.CAR;
 
     public WheelChairEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.WHEEL_CHAIR.get(), world);

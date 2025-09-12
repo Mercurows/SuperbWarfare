@@ -79,6 +79,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public OBB obb5;
     public OBB obb6;
     public OBB obb7;
+    public VehicleType vehicleType = VehicleType.HELICOPTER;
 
     public Ah6Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.AH_6.get(), world);

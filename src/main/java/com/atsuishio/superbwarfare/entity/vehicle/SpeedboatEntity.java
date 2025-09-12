@@ -55,6 +55,7 @@ public class SpeedboatEntity extends ContainerMobileVehicleEntity implements Geo
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public OBB obb;
     public OBB obb2;
+    public VehicleType vehicleType = VehicleType.BOAT;
 
     public SpeedboatEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.SPEEDBOAT.get(), world);

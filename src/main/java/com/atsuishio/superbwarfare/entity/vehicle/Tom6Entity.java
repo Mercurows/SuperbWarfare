@@ -65,6 +65,7 @@ public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
 
     public float deltaX;
     public float deltaY;
+    public VehicleType vehicleType = VehicleType.AIRPLANE;
 
     public Tom6Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.TOM_6.get(), world);

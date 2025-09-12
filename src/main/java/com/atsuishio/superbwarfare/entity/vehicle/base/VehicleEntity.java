@@ -127,6 +127,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public static final EntityDataAccessor<Boolean> ENGINE1_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> ENGINE2_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
+    public VehicleType vehicleType = VehicleType.EMPTY;
     public VehicleWeapon[][] availableWeapons;
 
     protected int interpolationSteps;
@@ -2256,5 +2257,23 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
      */
     public @NotNull List<ItemStack> getRetrieveItems() {
         return List.of(ContainerBlockItem.createInstance(this));
+    }
+
+    public enum VehicleType {
+        EMPTY,
+        TANK,
+        APC,
+        AA,
+        AIRPLANE,
+        HELICOPTER,
+        CAR,
+        ARTILLERY,
+        DEFENSE,
+        BOAT,
+        DRONE
+    }
+
+    public VehicleType getVehicleType() {
+        return vehicleType;
     }
 }

@@ -56,6 +56,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
 
     public static final EntityDataAccessor<IntList> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public VehicleType vehicleType = VehicleType.ARTILLERY;
 
     public OBB[] barrel = new OBB[12];
     public OBB pitchController;

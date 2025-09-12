@@ -78,6 +78,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     public OBB obb4;
     public OBB obb5;
     public Vec3 barrelLookAt;
+    public VehicleType vehicleType = VehicleType.ARTILLERY;
 
     public AnnihilatorEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.ANNIHILATOR.get(), world);

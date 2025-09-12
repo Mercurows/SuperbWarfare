@@ -71,6 +71,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public static final EntityDataAccessor<Integer> AMMO_COUNT = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public VehicleType vehicleType = VehicleType.ARTILLERY;
 
     public Mle1934Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.MLE_1934.get(), world);

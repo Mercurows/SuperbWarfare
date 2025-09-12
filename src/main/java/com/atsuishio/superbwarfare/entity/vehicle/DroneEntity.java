@@ -93,6 +93,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public int holdTickX;
     public int holdTickY;
     public int holdTickZ;
+    public VehicleType vehicleType = VehicleType.DRONE;
 
     public DroneEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.DRONE.get(), world);

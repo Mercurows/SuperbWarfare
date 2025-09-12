@@ -75,6 +75,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     public float gunRot;
     public float gunRotO;
+    public VehicleType vehicleType = VehicleType.DEFENSE;
 
     public Hpj11Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.HPJ_11.get(), world);
