@@ -439,6 +439,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
         this.interpolationSteps = 10;
     }
 
+    @Override
     public Matrix4f getBarrelTransform(float ticks) {
         Matrix4f transformT = getVehicleFlatTransform(ticks);
 

@@ -1100,17 +1100,17 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         entityData.set(MOUSE_SPEED_Y, entityData.get(MOUSE_SPEED_Y) * 0.95f);
 
         if (this instanceof WeaponVehicleEntity) {
-            if (getFirstPassenger() instanceof Player) {
+            if (getNthEntity(mainWeaponControllerIndex()) instanceof Player) {
                 turretAngle();
-            } else if (getFirstPassenger() instanceof Mob mob) {
+            } else if (getNthEntity(mainWeaponControllerIndex()) instanceof Mob mob) {
                 turretAutoAimFormUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
             }
         }
 
         if (this instanceof LandArmorEntity landArmorEntity && landArmorEntity.hasPassengerTurretWeapon()) {
-            if (getNthEntity(1) instanceof Player || getNthEntity(1) == null) {
+            if (getNthEntity(secondWeaponControllerIndex()) instanceof Player || getNthEntity(secondWeaponControllerIndex()) == null) {
                 gunnerAngle();
-            } else if (getNthEntity(1) instanceof Mob mob) {
+            } else if (getNthEntity(secondWeaponControllerIndex()) instanceof Mob mob) {
                 passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), mob);
             }
         }
@@ -1269,7 +1269,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public void turretAngle() {
         float ySpeed = turretYSpeed();
         float xSpeed = turretXSpeed();
-        Entity driver = this.getFirstPassenger();
+        Entity driver = getNthEntity(mainWeaponControllerIndex());
         if (driver != null) {
             float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - this.getYRot());
 
@@ -1527,7 +1527,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         float ySpeed = passengerWeaponYSpeed();
         float xSpeed = passengerWeaponXSpeed();
 
-        Entity gunner = this.getNthEntity(1);
+        Entity gunner = this.getNthEntity(secondWeaponControllerIndex());
 
         float diffY = 0;
         float diffX = 0;
@@ -1649,12 +1649,132 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return transform;
     }
 
+    public Vec3 getTurretPosition() {
+        return new Vec3(0, 0, 0);
+    }
+
     public Matrix4f getTurretTransform(float ticks) {
-        return getVehicleTransform(ticks);
+        Matrix4f transformV = getVehicleTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, (float) getTurretPosition().x, (float) getTurretPosition().y, (float) getTurretPosition().z);
+
+        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+        transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
+        return transformV;
+    }
+
+    public Vec3 getTurretVector(float pPartialTicks) {
+        Matrix4f transform = getTurretTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
+    }
+
+    public Vec3 getBarrelPosition() {
+        return new Vec3(0, 0, 0);
+    }
+
+    public Matrix4f getBarrelTransform(float ticks) {
+        Matrix4f transformT = getTurretTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, (float) getBarrelPosition().x, (float) getBarrelPosition().y, (float) getBarrelPosition().z);
+
+        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        float a = getTurretYaw(ticks);
+
+        float r = (Mth.abs(a) - 90f) / 90f;
+
+        float r2;
+
+        if (Mth.abs(a) <= 90f) {
+            r2 = a / 90f;
+        } else {
+            if (a < 0) {
+                r2 = -(180f + a) / 90f;
+            } else {
+                r2 = (180f - a) / 90f;
+            }
+        }
+
+        float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
+        float xV = Mth.lerp(ticks, xRotO, getXRot());
+        float z = Mth.lerp(ticks, prevRoll, getRoll());
+
+        transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
+        return transformT;
+    }
+
+    public Vec3 getGunnerPosition() {
+        return new Vec3(0, 0, 0);
+    }
+
+    public Matrix4f getGunTransform(float ticks) {
+        Matrix4f transformT = getTurretTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, (float) getGunnerPosition().x, (float) getGunnerPosition().y, (float) getGunnerPosition().z);
+
+        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+        transformT.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, gunYRotO, getGunYRot()) - Mth.lerp(ticks, turretYRotO, getTurretYRot())));
+        return transformT;
+    }
+
+    public Vec3 getGunnerBarrelPosition() {
+        return new Vec3(0, 0, 0);
+    }
+
+    public Matrix4f getGunnerBarrelTransform(float ticks) {
+        Matrix4f transformG = getGunTransform(ticks);
+
+        Matrix4f transform = new Matrix4f();
+        Vector4f worldPosition = transformPosition(transform, (float) getGunnerBarrelPosition().x, (float) getGunnerBarrelPosition().y, (float) getGunnerBarrelPosition().z);
+
+        transformG.translate(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        float a = getTurretYaw(ticks);
+
+        float r = (Mth.abs(a) - 90f) / 90f;
+
+        float r2;
+
+        if (Mth.abs(a) <= 90f) {
+            r2 = a / 90f;
+        } else {
+            if (a < 0) {
+                r2 = -(180f + a) / 90f;
+            } else {
+                r2 = (180f - a) / 90f;
+            }
+        }
+
+        float x = Mth.lerp(ticks, gunXRotO, getGunXRot());
+        float xV = Mth.lerp(ticks, xRotO, getXRot());
+        float z = Mth.lerp(ticks, prevRoll, getRoll());
+
+        transformG.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
+        return transformG;
+    }
+
+    public Vec3 getGunnerVector(float pPartialTicks) {
+        Matrix4f transform = getGunnerBarrelTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     public Vector4f transformPosition(Matrix4f transform, float x, float y, float z) {
         return transform.transform(new Vector4f(x, y, z, 1));
+    }
+
+    public int mainWeaponControllerIndex() {
+        return 0;
+    }
+
+    public int secondWeaponControllerIndex() {
+        return 1;
     }
 
     public static Quaternionf eulerToQuaternion(float yaw, float pitch, float roll) {
@@ -1795,12 +1915,14 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return getEyePosition();
     }
 
-    public Vec3 getBarrelVector(float pPartialTicks) {
-        return this.calculateViewVector(this.getBarrelXRot(pPartialTicks), this.getBarrelYRot(pPartialTicks));
+    public Vec3 getBarrelVec(float ticks) {
+        return getBarrelVector(ticks);
     }
-
-    public Vec3 getGunnerVector(float pPartialTicks) {
-        return this.getViewVector(pPartialTicks);
+    public Vec3 getBarrelVector(float pPartialTicks) {
+        Matrix4f transform = getBarrelTransform(pPartialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     public float getBarrelXRot(float pPartialTicks) {
@@ -1837,10 +1959,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     public float turretXRot() {
         return turretXRot;
-    }
-
-    public Vec3 getBarrelVec(float ticks) {
-        return getBarrelVector(ticks);
     }
 
     public Vec3 getGunVec(float ticks) {
