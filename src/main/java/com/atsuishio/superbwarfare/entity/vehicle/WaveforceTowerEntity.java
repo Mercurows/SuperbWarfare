@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import com.mojang.math.Axis;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -360,38 +359,14 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                 || projectile.getOwner() == null;
     }
 
-
     @Override
-    public Matrix4f getTurretTransform(float ticks) {
-        Matrix4f transformV = getVehicleTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 2f, -0.05843125f);
-
-        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
-        return transformV;
-    }
-
-    public Matrix4f getBarrelTransform(float ticks) {
-        Matrix4f transformT = getTurretTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 0.41615625f, -0.02555f);
-
-        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
-        transformT.rotate(Axis.XP.rotationDegrees(x));
-        return transformT;
+    public Vec3 getTurretPosition() {
+        return new Vec3(0, 2, -0.05843125);
     }
 
     @Override
-    public Vec3 getBarrelVec(float pPartialTicks) {
-        Matrix4f transform = getBarrelTransform(pPartialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
-        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
+    public Vec3 getBarrelPosition() {
+        return new Vec3(0, 0.41615625, -0.02555);
     }
 
     public Vec3 getShootPos(float pPartialTicks) {

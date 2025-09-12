@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import com.mojang.math.Axis;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -382,28 +381,13 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public Matrix4f getTurretTransform(float ticks) {
-        Matrix4f transformV = getVehicleTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 0.45703125f, -0.1625f);
-
-        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
-        return transformV;
+    public Vec3 getTurretPosition() {
+        return new Vec3(0, 0.45703125, -0.1625);
     }
 
-    public Matrix4f getBarrelTransform(float ticks) {
-        Matrix4f transformT = getTurretTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 0.65f, -0.203125f);
-
-        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
-        transformT.rotate(Axis.XP.rotationDegrees(x));
-        return transformT;
+    @Override
+    public Vec3 getBarrelPosition() {
+        return new Vec3(0, 0.65, -0.203125);
     }
 
     public Vec3 getShootVector(float pPartialTicks) {

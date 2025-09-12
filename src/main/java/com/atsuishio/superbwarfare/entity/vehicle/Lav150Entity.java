@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -233,14 +232,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public Vec3 getBarrelVector(float pPartialTicks) {
-        Matrix4f transform = getBarrelTransform(pPartialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
-        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
-    }
-
-    @Override
     public void vehicleShoot(LivingEntity living, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
@@ -364,55 +355,14 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
-    public Matrix4f getBarrelTransform(float ticks) {
-        Matrix4f transformT = getTurretTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0.0234375f, 0.33795f, 0.825f);
-
-        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        float a = getTurretYaw(ticks);
-
-        float r = (Mth.abs(a) - 90f) / 90f;
-
-        float r2;
-
-        if (Mth.abs(a) <= 90f) {
-            r2 = a / 90f;
-        } else {
-            if (a < 0) {
-                r2 = -(180f + a) / 90f;
-            } else {
-                r2 = (180f - a) / 90f;
-            }
-        }
-
-        float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
-        float xV = Mth.lerp(ticks, xRotO, getXRot());
-        float z = Mth.lerp(ticks, prevRoll, getRoll());
-
-        transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
-        return transformT;
-    }
-
-    public Vec3 getTurretVector(float pPartialTicks) {
-        Matrix4f transform = getTurretTransform(pPartialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
-        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
+    @Override
+    public Vec3 getBarrelPosition() {
+        return new Vec3(0.0234375, 0.33795, 0.825);
     }
 
     @Override
-    public Matrix4f getTurretTransform(float ticks) {
-        Matrix4f transformV = getVehicleTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 2.4003f, 0);
-
-        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
-        return transformV;
+    public Vec3 getTurretPosition() {
+        return new Vec3(0, 2.4003, 0);
     }
 
     @Override
