@@ -461,6 +461,8 @@
   "des.superbwarfare.firefly": "完成精准击杀可以使目标产生一次燃烧爆炸",
   "item.superbwarfare.fair_means": "先礼后兵",
   "des.superbwarfare.fair_means": "第一次攻击造成部分伤害，第二次攻击造成高额伤害",
+  "item.superbwarfare.high_impact_reserves": "高强度型弹药储备",
+  "des.superbwarfare.high_impact_reserves": "弹匣中最后的几发弹药可造成更高伤害",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",

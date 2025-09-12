@@ -461,6 +461,8 @@
   "des.superbwarfare.firefly": "Precision kills cause the target to explode with fire.",
   "item.superbwarfare.fair_means": "Fair Means",
   "des.superbwarfare.fair_means": "First hit causes partial damage, second hit causes high damage",
+  "item.superbwarfare.high_impact_reserves": "High Impact Reserves",
+  "des.superbwarfare.high_impact_reserves": "Rounds at the end of the magazine deal more damage.",
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",
