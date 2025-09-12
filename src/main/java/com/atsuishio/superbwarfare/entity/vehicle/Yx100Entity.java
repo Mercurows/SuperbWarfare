@@ -85,6 +85,7 @@ public class Yx100Entity extends ContainerMobileVehicleEntity implements GeoEnti
     public OBB obb5;
     public OBB obbTurret;
     public OBB obbTurret2;
+    public VehicleType vehicleType = VehicleType.TANK;
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
         super(type, world);

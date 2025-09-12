@@ -81,6 +81,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public OBB obb5;
     public OBB obb6;
     public OBB obb7;
+    public VehicleType vehicleType = VehicleType.HELICOPTER;
 
     public Ah6Entity(EntityType<Ah6Entity> type, Level world) {
         super(type, world);

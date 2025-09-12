@@ -80,6 +80,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
     public OBB obb5;
     public OBB obb6;
     public OBB obbTurret;
+    public VehicleType vehicleType = VehicleType.TANK;
 
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);

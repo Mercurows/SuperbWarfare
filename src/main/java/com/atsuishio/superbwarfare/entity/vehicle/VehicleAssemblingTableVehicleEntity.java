@@ -62,6 +62,7 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     public float deltaY;
 
     public int jumpCooldown;
+    public VehicleType vehicleType = VehicleType.CAR;
 
     public VehicleAssemblingTableVehicleEntity(EntityType<?> type, Level world) {
         super(type, world);

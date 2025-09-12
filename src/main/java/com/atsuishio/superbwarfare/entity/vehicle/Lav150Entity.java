@@ -66,6 +66,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     public OBB obb7;
     public OBB obb8;
     public OBB obbTurret;
+    public VehicleType vehicleType = VehicleType.APC;
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
         super(type, world);

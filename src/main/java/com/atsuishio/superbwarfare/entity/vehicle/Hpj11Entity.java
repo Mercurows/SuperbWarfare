@@ -73,6 +73,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     public float gunRot;
     public float gunRotO;
+    public VehicleType vehicleType = VehicleType.DEFENSE;
 
     public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
         super(type, world);

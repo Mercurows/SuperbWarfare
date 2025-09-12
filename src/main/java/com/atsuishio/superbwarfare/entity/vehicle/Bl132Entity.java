@@ -70,6 +70,8 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public static final EntityDataAccessor<Integer> BARREL_ANIM_4 = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> AMMO_COUNT = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
 
+    public VehicleType vehicleType = VehicleType.ARTILLERY;
+
     public Bl132Entity(EntityType<Bl132Entity> type, Level world) {
         super(type, world);
     }

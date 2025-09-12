@@ -91,6 +91,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
     public int holdTickX;
     public int holdTickY;
     public int holdTickZ;
+    public VehicleType vehicleType = VehicleType.DRONE;
 
     public DroneEntity(EntityType<DroneEntity> type, Level world) {
         super(type, world);

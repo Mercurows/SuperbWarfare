@@ -66,6 +66,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    public VehicleType vehicleType = VehicleType.ARTILLERY;
     private LivingEntity shooter = null;
 
     public MortarEntity(EntityType<MortarEntity> type, Level level) {

@@ -98,6 +98,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     public OBB obb9;
     public OBB obb10;
     public OBB obb11;
+    public VehicleType vehicleType = VehicleType.AIRPLANE;
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);

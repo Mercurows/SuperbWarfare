@@ -66,6 +66,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     public int chargeTime = 60;
     public int maxChargeEnergy = 250000;
     public float damage = 350;
+    public VehicleType vehicleType = VehicleType.DRONE;
 
     public WaveforceTowerEntity(EntityType<WaveforceTowerEntity> type, Level world) {
         super(type, world);

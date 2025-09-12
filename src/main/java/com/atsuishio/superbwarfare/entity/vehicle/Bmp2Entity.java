@@ -82,6 +82,8 @@ public class Bmp2Entity extends ContainerMobileVehicleEntity implements GeoEntit
     public OBB obb5;
     public OBB obbTurret;
 
+    public VehicleType vehicleType = VehicleType.APC;
+
     public Bmp2Entity(EntityType<Bmp2Entity> type, Level world) {
         super(type, world);
         this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.1875f, 0.875f, 3.90625f), new Quaternionf(), OBB.Part.BODY);
