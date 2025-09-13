@@ -836,6 +836,20 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         if (source.is(DamageTypes.CACTUS) || source.is(DamageTypes.SWEET_BERRY_BUSH) || source.is(DamageTypes.IN_WALL))
             return false;
 
+        if (DamageTypeTool.isGunDamage(source) && source.getEntity() != null && source.getEntity().getVehicle() == this) {
+            return false;
+        }
+
+        if (source.getEntity() != null
+                && getFirstPassenger() != null
+                && SeekTool.friendlyToPlayer(source.getEntity(), source.getEntity())
+                && getFirstPassenger().getTeam() != null
+                && source.getEntity().getTeam() != null
+                && source.getEntity().getTeam() == getFirstPassenger().getTeam()
+                && !source.getEntity().getTeam().isAllowFriendlyFire()) {
+            return false;
+        }
+
         if (this.damageDebugResultReceiver != null) {
             this.damageDebugResultReceiver.sendSystemMessage(DamageHandler.getDamageInfo(this, source, amount));
         }
