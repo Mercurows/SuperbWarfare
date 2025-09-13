@@ -82,6 +82,7 @@ public class ModPerks {
     public static final RegistryObject<Perk> FIREFLY = DAMAGE_PERKS.register("firefly", Firefly::new);
     public static final RegistryObject<Perk> FAIR_MEANS = DAMAGE_PERKS.register("fair_means", FairMeans::new);
     public static final RegistryObject<Perk> HIGH_IMPACT_RESERVES = DAMAGE_PERKS.register("high_impact_reserves", HighImpactReserves::new);
+    public static final RegistryObject<Perk> ONE_TWO_PUNCH = DAMAGE_PERKS.register("one_two_punch", OneTwoPunch::new);
 
     public static void registerCompatPerks() {
         if (ModList.get().isLoaded(CompatHolder.DMV)) {
