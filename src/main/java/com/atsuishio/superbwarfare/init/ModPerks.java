@@ -63,6 +63,7 @@ public class ModPerks {
     public static final RegistryObject<Perk> POWERFUL_ATTRACTION = FUNC_PERKS.register("powerful_attraction", PowerfulAttraction::new);
     public static final RegistryObject<Perk> INTELLIGENT_CHIP = FUNC_PERKS.register("intelligent_chip", () -> new Perk("intelligent_chip", Perk.Type.FUNCTIONAL));
     public static final RegistryObject<Perk> BACKPACK_LINKED_MAGAZINE = FUNC_PERKS.register("backpack_linked_magazine", BackpackLinkedMagazine::new);
+    public static final RegistryObject<Perk> POWERFUL_COOLER = FUNC_PERKS.register("powerful_cooler", PowerfulCooler::new);
 
     /**
      * Damage Perks

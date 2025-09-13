@@ -440,6 +440,8 @@
   "des.superbwarfare.intelligent_chip": "Aims at enemies automatically (Do not use this in PVP mode)",
   "item.superbwarfare.backpack_linked_magazine": "Backpack Linked Magazine",
   "des.superbwarfare.backpack_linked_magazine": "Weapons can directly use backpack ammo",
+  "item.superbwarfare.powerful_cooler": "Powerful Cooler",
+  "des.superbwarfare.powerful_cooler": "Enhances the heat dissipation effect of the weapon and slightly reduces the heat generated during firing.",
 
   "item.superbwarfare.kill_clip": "Kill Clip",
   "des.superbwarfare.kill_clip": "Increases the damage of weapon after dealing a final blow.",
