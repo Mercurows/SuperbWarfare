@@ -16,5 +16,7 @@ public class CommandRegister {
 
         var result = event.getDispatcher().register(command);
         event.getDispatcher().register(Commands.literal("superbwarfare").redirect(result));
+
+        event.getDispatcher().register(TestCommand.get());
     }
 }
