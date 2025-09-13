@@ -9,8 +9,8 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -138,7 +138,7 @@ public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
 
         if (entity instanceof Player player) {
             for (var cell : player.getInventory().items) {
-                if (cell.is(ModItems.CELL.get())) {
+                if (cell.getItem() instanceof BatteryItem) {
                     var stackStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
                     if (stackStorage == null) continue;
                     int stackMaxEnergy = stackStorage.getMaxEnergyStored();

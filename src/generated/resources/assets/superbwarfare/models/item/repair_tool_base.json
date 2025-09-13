@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/repair_tool.item",
+  "textures": {
+    "layer0": "superbwarfare:item/repair_tool"
+  }
+}
