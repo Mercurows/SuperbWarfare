@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.SeekConfig;
+import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
@@ -81,7 +82,7 @@ public class SeekTool {
     public static boolean teamFilter(Entity e, Entity entity) {
         if (e == null) return false;
         if (entity == null) return false;
-        return e == entity || (entity.getTeam() != null && !entity.getTeam().getName().equals("TDM") && entity.getTeam() == e.getTeam());
+        return e == entity || (entity.getTeam() != null && !ModTeam.enabledDeathMatch(entity.getTeam()) && entity.getTeam() == e.getTeam());
     }
 
     public static boolean teammateDrone(Entity e, Player player) {

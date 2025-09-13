@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.mixin;
 
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Team;
 
 public interface ModTeam {
 
@@ -8,8 +9,9 @@ public interface ModTeam {
         return (ModTeam) team;
     }
 
-    static boolean enabledDeathMatch(PlayerTeam team) {
-        return of(team).superbWarfare$isDeathMatchEnabled();
+    static boolean enabledDeathMatch(Team team) {
+        if (!(team instanceof PlayerTeam playerTeam)) return false;
+        return of(playerTeam).superbWarfare$isDeathMatchEnabled();
     }
 
     void superbWarfare$setDeathMatch(boolean deathMatch);
