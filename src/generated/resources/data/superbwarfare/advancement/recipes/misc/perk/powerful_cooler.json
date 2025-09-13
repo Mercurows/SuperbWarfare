@@ -11,11 +11,11 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_ender_chest": {
+    "has_powder_snow_bucket": {
       "conditions": {
         "items": [
           {
-            "items": "#c:chests/ender"
+            "items": "minecraft:powder_snow_bucket"
           }
         ]
       },
@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:perk/backpack_linked_magazine"
+        "recipe": "superbwarfare:perk/powerful_cooler"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -32,12 +32,12 @@
     [
       "has_the_recipe",
       "has_empty_perk",
-      "has_ender_chest"
+      "has_powder_snow_bucket"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:perk/backpack_linked_magazine"
+      "superbwarfare:perk/powerful_cooler"
     ]
   }
 }
