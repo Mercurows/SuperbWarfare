@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -421,7 +422,7 @@ public class PrismTankEntity extends ContainerMobileVehicleEntity implements Geo
                         && baseFilter(e)
                         && SeekTool.smokeFilter(e)
                         && e.getVehicle() == null
-                        && (!e.isAlliedTo(this) || e.getTeam() == null || e.getTeam().getName().equals("TDM"))).toList();
+                        && (!e.isAlliedTo(this) || e.getTeam() == null || ModTeam.enabledDeathMatch(e.getTeam()))).toList();
     }
 
     public HitResult pickNew(Vec3 pos, double pHitDistance) {

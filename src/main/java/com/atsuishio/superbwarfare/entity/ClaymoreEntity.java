@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -184,7 +185,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
                         && (target instanceof LivingEntity || target instanceof VehicleEntity)
                         && !(target instanceof TargetEntity)
                         && !(target instanceof Player player && (player.isCreative() || player.isSpectator()))
-                        && (this.getOwner() != null && !this.getOwner().isAlliedTo(target) || target.getTeam() == null || target.getTeam().getName().equals("TDM"))
+                        && (this.getOwner() != null && !this.getOwner().isAlliedTo(target) || target.getTeam() == null || ModTeam.enabledDeathMatch(target.getTeam()))
                         && !target.isShiftKeyDown();
                 if (!condition) continue;
 

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.DefenseEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -348,7 +349,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         if (this.getOwner() == null) return false;
         if (pEntity.getTeam() == null) return false;
 
-        return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && pEntity.getTeam().getName().equals("TDM"));
+        return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && ModTeam.enabledDeathMatch(pEntity.getTeam()));
     }
 
     @Override
@@ -356,7 +357,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         if (this.getOwner() == null) return false;
         if (projectile.getOwner() != null && projectile.getOwner() == this.getOwner()) return false;
         return (projectile.getOwner() != null && !projectile.getOwner().isAlliedTo(this.getOwner()))
-                || (projectile.getOwner() != null && projectile.getOwner().getTeam() != null && projectile.getOwner().getTeam().getName().equals("TDM"))
+                || (projectile.getOwner() != null && projectile.getOwner().getTeam() != null && ModTeam.enabledDeathMatch(projectile.getOwner().getTeam()))
                 || projectile.getOwner() == null;
     }
 

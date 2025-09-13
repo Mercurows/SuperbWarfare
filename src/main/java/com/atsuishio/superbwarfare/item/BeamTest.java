@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.capability.laser.LaserHandler;
 import com.atsuishio.superbwarfare.client.TooltipTool;
+import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -127,7 +128,7 @@ public class BeamTest extends Item {
         }
 
         boolean canAttack = lookingEntity != player && !(lookingEntity instanceof Player player_ && (player_.isCreative() || player_.isSpectator()))
-                && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || lookingEntity.getTeam().getName().equals("TDM"));
+                && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || ModTeam.enabledDeathMatch(lookingEntity.getTeam()));
 
         if (canAttack) {
             PacketDistributor.sendToServer(new LaserShootMessage(45, lookingEntity.getUUID(), TraceTool.laserHeadshot));
