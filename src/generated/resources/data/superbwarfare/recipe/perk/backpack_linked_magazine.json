@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "tag": "c:chests/ender"
+    },
+    "c": {
+      "tag": "c:chests/wooden"
+    }
+  },
+  "pattern": [
+    "cbc",
+    "bab",
+    "cbc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:backpack_linked_magazine"
+  }
+}

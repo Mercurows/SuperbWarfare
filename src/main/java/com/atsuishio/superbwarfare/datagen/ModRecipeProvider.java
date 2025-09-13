@@ -1708,6 +1708,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('e', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.VOLT_OVERLOAD));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.BACKPACK_LINKED_MAGAZINE).get())
+                .pattern("cbc")
+                .pattern("bab")
+                .pattern("cbc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Tags.Items.CHESTS_ENDER)
+                .define('c', Tags.Items.CHESTS_WOODEN)
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, perkLoc(ModPerks.BACKPACK_LINKED_MAGAZINE));
     }
 
     private static void buildMiscRecipes(@NotNull RecipeOutput writer) {
