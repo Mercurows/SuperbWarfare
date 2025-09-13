@@ -181,4 +181,20 @@ public class DefaultGunData implements IDBasedData {
     @ServerOnly
     @SerializedName("DamageReduce")
     public DamageReduce damageReduce = new DamageReduce();
+
+    // 自然情况下每tick减少的热量
+    @SerializedName("NaturalCooldown")
+    public double naturalCooldown = 0.25;
+    // 在水中或雨中时的散热比例
+    @SerializedName("InWaterCooldownRate")
+    public double inWaterCooldownRate = 1.1;
+    // 在细雪中时的散热比例
+    @SerializedName("InSnowCooldownRate")
+    public double inSnowCooldownRate = 1.5;
+    // 在火焰中时的散热比例
+    @SerializedName("InFireCooldownRate")
+    public double inFireCooldownRate = 0.6;
+    // 在岩浆中时的散热比例
+    @SerializedName("InLavaCooldownRate")
+    public double inLavaCooldownRate = 0.2;
 }

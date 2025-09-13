@@ -179,18 +179,20 @@ public class GunEventHandler {
      * 减少过热值
      */
     public static void handleCooldown(@Nullable Entity shooter, @NotNull GunData data) {
-        double extraCooldown = 0;
+        double rate = 1;
         if (shooter != null) {
             if (shooter.wasInPowderSnow) {
-                extraCooldown = 0.15;
+                rate = data.get(GunProp.IN_SNOW_COOLDOWN_RATE);
             } else if (shooter.isInWaterOrRain()) {
-                extraCooldown = 0.04;
-            } else if (shooter.isOnFire() || shooter.isInLava()) {
-                extraCooldown = -0.1;
+                rate = data.get(GunProp.IN_WATER_COOLDOWN_RATE);
+            } else if (shooter.isOnFire()) {
+                rate = data.get(GunProp.IN_FIRE_COOLDOWN_RATE);
+            } else if (shooter.isInLava()) {
+                rate = data.get(GunProp.IN_LAVA_COOLDOWN_RATE);
             }
         }
 
-        data.heat.set(Mth.clamp(data.heat.get() - 0.25 - extraCooldown, 0, 100));
+        data.heat.set(Mth.clamp(data.heat.get() - data.get(GunProp.NATURAL_COOLDOWN) * rate, 0, 100));
 
         if (data.heat.get() < 80 && data.overHeat.get()) {
             data.overHeat.set(false);
