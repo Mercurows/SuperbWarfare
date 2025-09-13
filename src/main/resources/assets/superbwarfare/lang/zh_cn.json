@@ -636,6 +636,10 @@
   "commands.config.block_destroy.disabled": "已关闭子弹破坏方块",
   "commands.config.force_damage.enabled": "已开启强制伤害",
   "commands.config.force_damage.disabled": "已关闭强制伤害",
+  "commands.team.option.sbw_enable_death_match.enabled": "已为队伍%s启用死亡竞赛模式",
+  "commands.team.option.sbw_enable_death_match.disabled": "已为队伍%s禁用死亡竞赛模式",
+  "commands.team.option.sbw_enable_death_match.already_enabled": "无变化，该队伍已启用死亡竞赛模式",
+  "commands.team.option.sbw_enable_death_match.already_disabled": "无变化，该队伍已禁用死亡竞赛模式",
 
   "tips.superbwarfare.sensitivity": "当前枪械的灵敏度为：%1$s",
   "tips.superbwarfare.monitor.linked": "连接成功！",

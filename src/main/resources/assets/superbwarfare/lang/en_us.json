@@ -636,6 +636,10 @@
   "commands.config.block_destroy.disabled": "Disabled bullet breaking blocks",
   "commands.config.force_damage.enabled": "Enabled force damage",
   "commands.config.force_damage.disabled": "Disabled force damage",
+  "commands.team.option.sbw_enable_death_match.enabled": "Enabled Death Match Mode for team %s",
+  "commands.team.option.sbw_enable_death_match.disabled": "Disabled Death Match Mode for team %s",
+  "commands.team.option.sbw_enable_death_match.already_enabled": "Nothing changed. That team already enabled Death Match Mode",
+  "commands.team.option.sbw_enable_death_match.already_disabled": "Nothing changed. That team already disabled Death Match Mode",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect!",
