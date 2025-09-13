@@ -81,6 +81,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, Firefly> FIREFLY = DAMAGE_PERKS.register("firefly", Firefly::new);
     public static final DeferredHolder<Perk, FairMeans> FAIR_MEANS = DAMAGE_PERKS.register("fair_means", FairMeans::new);
     public static final DeferredHolder<Perk, HighImpactReserves> HIGH_IMPACT_RESERVES = DAMAGE_PERKS.register("high_impact_reserves", HighImpactReserves::new);
+    public static final DeferredHolder<Perk, OneTwoPunch> ONE_TWO_PUNCH = DAMAGE_PERKS.register("one_two_punch", OneTwoPunch::new);
 
 //    public static void registerCompatPerks() {
 //        if (ModList.get().isLoaded(CompatHolder.DMV)) {

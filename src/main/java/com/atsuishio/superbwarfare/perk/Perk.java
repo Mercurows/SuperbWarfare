@@ -117,6 +117,12 @@ public class Perk implements GunPropertyModifier {
         return reduce.getMinDistance();
     }
 
+    /**
+     * 用于处理武器近战攻击后的逻辑
+     */
+    public void onMeleeAttack(GunData data, PerkInstance instance, Entity target) {
+    }
+
     public enum Type {
         AMMO("Ammo", ChatFormatting.YELLOW),
         FUNCTIONAL("Functional", ChatFormatting.GREEN),

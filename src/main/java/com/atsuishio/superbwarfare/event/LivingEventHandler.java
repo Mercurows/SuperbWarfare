@@ -496,7 +496,7 @@ public class LivingEventHandler {
 
     private static void handleGunPerksWhenHurt(LivingIncomingDamageEvent event) {
         DamageSource source = event.getSource();
-        if (!DamageTypeTool.isGunDamage(source)) return;
+        if (!DamageTypeTool.isGunDamage(source) && !source.is(DamageTypes.PLAYER_ATTACK)) return;
 
         LivingEntity attacker = null;
         if (source.getEntity() instanceof LivingEntity living) {
@@ -520,8 +520,12 @@ public class LivingEventHandler {
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
             if (instance != null) {
-                damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
-                instance.perk().onHurtEntity(damage, data, instance, event.getEntity(), source);
+                if (DamageTypeTool.isGunDamage(source)) {
+                    damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
+                    instance.perk().onHurtEntity(damage, data, instance, event.getEntity(), source);
+                } else if (source.is(DamageTypes.PLAYER_ATTACK)) {
+                    instance.perk().onMeleeAttack(data, instance, event.getEntity());
+                }
             }
         }
 

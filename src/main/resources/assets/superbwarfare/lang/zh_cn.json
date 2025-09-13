@@ -467,6 +467,8 @@
   "des.superbwarfare.fair_means": "第一次攻击造成部分伤害，第二次攻击造成高额伤害",
   "item.superbwarfare.high_impact_reserves": "高强度型弹药储备",
   "des.superbwarfare.high_impact_reserves": "弹匣中最后的几发弹药可造成更高伤害",
+  "item.superbwarfare.one_two_punch": "雪上加霜",
+  "des.superbwarfare.one_two_punch": "一发弹药的所有弹片均命中时可在短时间内提高近战伤害",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",
