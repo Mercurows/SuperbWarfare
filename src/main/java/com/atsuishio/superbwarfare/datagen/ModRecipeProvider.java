@@ -1690,7 +1690,19 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('b', Tags.Items.CHESTS_ENDER)
                 .define('c', Tags.Items.CHESTS_WOODEN)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .unlockedBy(getHasName(Items.ENDER_CHEST), has(Tags.Items.CHESTS_ENDER))
                 .save(writer, perkLoc(ModPerks.BACKPACK_LINKED_MAGAZINE));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.POWERFUL_COOLER).get())
+                .pattern("cdc")
+                .pattern("bab")
+                .pattern("cdc")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', Items.POWDER_SNOW_BUCKET)
+                .define('c', Items.BLUE_ICE)
+                .define('d', commonItemTag("storage_blocks/silver"))
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .unlockedBy(getHasName(Items.POWDER_SNOW_BUCKET), has(Items.POWDER_SNOW_BUCKET))
+                .save(writer, perkLoc(ModPerks.POWERFUL_COOLER));
     }
 
     private static void buildMiscRecipes(Consumer<FinishedRecipe> writer) {

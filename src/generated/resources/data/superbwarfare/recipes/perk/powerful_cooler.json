@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "superbwarfare:empty_perk"
+    },
+    "b": {
+      "item": "minecraft:powder_snow_bucket"
+    },
+    "c": {
+      "item": "minecraft:blue_ice"
+    },
+    "d": {
+      "tag": "forge:storage_blocks/silver"
+    }
+  },
+  "pattern": [
+    "cdc",
+    "bab",
+    "cdc"
+  ],
+  "result": {
+    "item": "superbwarfare:powerful_cooler"
+  },
+  "show_notification": true
+}
