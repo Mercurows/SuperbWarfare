@@ -11,7 +11,9 @@
   "SoundRadius": 14,
   "RPM": 1200,
   "DefaultFireMode": "Auto",
-  "AvailableFireModes": ["Auto"],
+  "AvailableFireModes": [
+    "Auto"
+  ],
   "AmmoType": "@RifleAmmo",
   "ShootDelay": 10,
   "HeatPerShoot": 0.5,
@@ -24,6 +26,7 @@
     "superbwarfare:field_doctor",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
+    "superbwarfare:powerful_cooler",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:fair_means",

@@ -62,6 +62,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, PowerfulAttraction> POWERFUL_ATTRACTION = FUNC_PERKS.register("powerful_attraction", PowerfulAttraction::new);
     public static final DeferredHolder<Perk, Perk> INTELLIGENT_CHIP = FUNC_PERKS.register("intelligent_chip", () -> new Perk("intelligent_chip", Perk.Type.FUNCTIONAL));
     public static final DeferredHolder<Perk, BackpackLinkedMagazine> BACKPACK_LINKED_MAGAZINE = FUNC_PERKS.register("backpack_linked_magazine", BackpackLinkedMagazine::new);
+    public static final DeferredHolder<Perk, PowerfulCooler> POWERFUL_COOLER = FUNC_PERKS.register("powerful_cooler", PowerfulCooler::new);
 
     /**
      * Damage Perks
