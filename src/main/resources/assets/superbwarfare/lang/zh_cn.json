@@ -438,6 +438,8 @@
   "des.superbwarfare.powerful_attraction": "击杀目标后掉落的物品和经验会直接转移到自身",
   "item.superbwarfare.intelligent_chip": "智慧芯片",
   "des.superbwarfare.intelligent_chip": "自动瞄准敌人（请勿在PVP使用此模组）",
+  "item.superbwarfare.backpack_linked_magazine": "背包连弹夹",
+  "des.superbwarfare.backpack_linked_magazine": "武器可以直接使用背包弹药",
 
   "item.superbwarfare.kill_clip": "杀戮弹匣",
   "des.superbwarfare.kill_clip": "完成击杀后填装可提升武器伤害",
