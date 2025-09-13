@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
+import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.menu.EnergyMenu;
@@ -17,6 +18,8 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -112,6 +115,18 @@ public class ClientPacketHandler {
             if (minecraft.screen instanceof VehicleAssemblingScreen screen) {
                 screen.finishAssembling();
             }
+        }
+    }
+
+    public static void handleClientTeamSync(ClientTeamSyncMessage message, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+            var level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            Scoreboard scoreboard = level.getScoreboard();
+            PlayerTeam playerteam = scoreboard.getPlayerTeam(message.name());
+            if (playerteam == null) return;
+            ModTeam.of(playerteam).superbWarfare$setDeathMatch(message.flag());
         }
     }
 }
