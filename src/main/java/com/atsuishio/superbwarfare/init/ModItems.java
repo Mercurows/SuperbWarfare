@@ -26,6 +26,7 @@ import com.atsuishio.superbwarfare.item.gun.smg.Mp5Item;
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import com.atsuishio.superbwarfare.item.gun.sniper.*;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
+import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
@@ -53,6 +54,7 @@ public class ModItems {
      */
     public static final DeferredRegister<Item> GUNS = DeferredRegister.create(ForgeRegistries.ITEMS, Mod.MODID);
 
+    public static final RegistryObject<Item> REPAIR_TOOL = GUNS.register("repair_tool", RepairToolItem::new);
     public static final RegistryObject<Item> TASER = GUNS.register("taser", TaserItem::new);
     public static final RegistryObject<Item> GLOCK_17 = GUNS.register("glock_17", Glock17Item::new);
     public static final RegistryObject<Item> GLOCK_18 = GUNS.register("glock_18", Glock18Item::new);

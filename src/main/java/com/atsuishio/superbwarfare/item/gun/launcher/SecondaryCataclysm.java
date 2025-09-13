@@ -9,8 +9,8 @@ import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.RarityTool;
@@ -162,7 +162,7 @@ public class SecondaryCataclysm extends GunItem {
 
         if (entity instanceof Player player) {
             for (var cell : player.getInventory().items) {
-                if (cell.is(ModItems.CELL.get())) {
+                if (cell.getItem() instanceof BatteryItem) {
                     assert stack.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent();
                     var stackStorage = stack.getCapability(ForgeCapabilities.ENERGY).resolve().get();
                     int stackMaxEnergy = stackStorage.getMaxEnergyStored();
