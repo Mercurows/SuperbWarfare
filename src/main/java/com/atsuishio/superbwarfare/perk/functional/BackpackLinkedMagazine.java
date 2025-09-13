@@ -8,6 +8,6 @@ public class BackpackLinkedMagazine extends Perk {
     public BackpackLinkedMagazine() {
         super("backpack_linked_magazine", Perk.Type.FUNCTIONAL);
         appendModification(GunProp.MAGAZINE, (data, value) -> 0);
-        appendModification(GunProp.HEAT_PER_SHOOT, (data, value) -> value + (20 - data.perk.getLevel(this)) * 0.2);
+        appendModification(GunProp.HEAT_PER_SHOOT, (data, value) -> value + (20 - data.perk.getLevel(this)) * 0.15);
     }
 }

@@ -142,6 +142,16 @@
   "ShootDelay": 0,
   // heat added per shoot(heat is between 0 and 100)
   "HeatPerShoot": 0,
+  // heat decreased per tick in natural situation
+  "NaturalCooldown": 0.25,
+  // rate of heat decreased per tick in water
+  "InWaterCooldownRate": 1.1,
+  // rate of heat decreased per tick in powder snow
+  "InSnowCooldownRate": 1.5,
+  // rate of heat decreased per tick in fire
+  "InFireCooldownRate": 0.6,
+  // rate of heat decreased per tick in lava
+  "InLavaCooldownRate": 0.2,
   // Available perks for guns
   "AvailablePerks": [
     "@Ammo",
