@@ -18,7 +18,7 @@ public class TDMCommand {
                             var tdm = level.getDataStorage().computeIfAbsent(TDMSavedData::load, TDMSavedData::new, TDMSavedData.FILE_ID);
 
                             entities.forEach(entity -> tdm.addEntity(entity.getStringUUID()));
-                            tdm.setDirty();
+                            tdm.sync();
 
                             return 0;
                         })))
@@ -30,7 +30,7 @@ public class TDMCommand {
                             var tdm = level.getDataStorage().computeIfAbsent(TDMSavedData::load, TDMSavedData::new, TDMSavedData.FILE_ID);
 
                             entities.forEach(entity -> tdm.removeEntity(entity.getStringUUID()));
-                            tdm.setDirty();
+                            tdm.sync();
 
                             return 0;
                         })));

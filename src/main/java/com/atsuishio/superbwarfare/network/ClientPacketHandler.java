@@ -129,4 +129,10 @@ public class ClientPacketHandler {
             ModTeam.of(playerteam).superbWarfare$setDeathMatch(message.flag());
         }
     }
+
+    public static void handleTDMSyncMessage(TDMSyncMessage message, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+            ClientEventHandler.tdmSavedData = message.data();
+        }
+    }
 }
