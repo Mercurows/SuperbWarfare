@@ -13,7 +13,7 @@ public class RepairToolItemModel extends CustomGunModel<RepairToolItem> {
 
     @Override
     public ResourceLocation getAnimationResource(RepairToolItem animatable) {
-        return null;
+        return Mod.loc("animations/repair_tool.animation.json");
     }
 
     @Override
