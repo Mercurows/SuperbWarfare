@@ -146,7 +146,7 @@ dependencies {
     implementation fg.deobf("curse.maven:cold-sweat-506194:6503192")
 
     // 真实相机
-    implementation fg.deobf("curse.maven:real-camera-851574:${real_camera_id}")
+    compileOnly fg.deobf("curse.maven:real-camera-851574:${real_camera_id}")
     // 测试用mod
     // 这俩是仅客户端mod
     // implementation fg.deobf("curse.maven:oculus-581495:6020952")
