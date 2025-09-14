@@ -3,9 +3,12 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -28,6 +31,10 @@ public abstract class EnchantedCountIncreaseFunctionMixin {
     @Shadow
     private int limit;
 
+    @Final
+    @Shadow
+    private Holder<Enchantment> enchantment;
+
     @Shadow
     protected abstract boolean hasLimit();
 
@@ -35,7 +42,7 @@ public abstract class EnchantedCountIncreaseFunctionMixin {
             at = @At("HEAD"), cancellable = true)
     private void run(ItemStack stack, LootContext context, CallbackInfoReturnable<ItemStack> cir) {
         Entity entity = context.getParamOrNull(LootContextParams.ATTACKING_ENTITY);
-        if (entity instanceof LivingEntity living) {
+        if (entity instanceof LivingEntity living && this.enchantment.is(Enchantments.LOOTING)) {
             ItemStack mainHandItem = living.getMainHandItem();
             if (!(mainHandItem.getItem() instanceof GunItem)) return;
 
