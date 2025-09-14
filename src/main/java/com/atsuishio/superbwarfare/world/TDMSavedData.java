@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.world;
 
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.network.message.receive.TDMSyncMessage;
 import com.google.common.collect.Sets;
 import net.minecraft.core.HolderLookup;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -78,9 +80,22 @@ public class TDMSavedData extends SavedData {
         return this.entities.remove(entity);
     }
 
+    public boolean containsEntity(String entity) {
+        return this.entities.contains(entity);
+    }
+
     public void sync() {
         this.setDirty();
         PacketDistributor.sendToAllPlayers(new TDMSyncMessage(this));
+    }
+
+    public static boolean enabledTDM(Entity entity) {
+        var level = entity.level();
+        if (level instanceof ServerLevel serverLevel) {
+            return serverLevel.getDataStorage().computeIfAbsent(new SavedData.Factory<>(TDMSavedData::new, TDMSavedData::load, null), FILE_ID).containsEntity(entity.getStringUUID());
+        } else {
+            return ClientEventHandler.tdmSavedData.containsEntity(entity.getStringUUID());
+        }
     }
 
     @SubscribeEvent

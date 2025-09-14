@@ -2,13 +2,13 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.capability.laser.LaserHandler;
 import com.atsuishio.superbwarfare.client.TooltipTool;
-import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.init.ModCapabilities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.network.message.send.LaserShootMessage;
 import com.atsuishio.superbwarfare.tools.TraceTool;
+import com.atsuishio.superbwarfare.world.TDMSavedData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -128,7 +128,7 @@ public class BeamTest extends Item {
         }
 
         boolean canAttack = lookingEntity != player && !(lookingEntity instanceof Player player_ && (player_.isCreative() || player_.isSpectator()))
-                && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || ModTeam.enabledDeathMatch(lookingEntity.getTeam()));
+                && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || TDMSavedData.enabledTDM(lookingEntity));
 
         if (canAttack) {
             PacketDistributor.sendToServer(new LaserShootMessage(45, lookingEntity.getUUID(), TraceTool.laserHeadshot));

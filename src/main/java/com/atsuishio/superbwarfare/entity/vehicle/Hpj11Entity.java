@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
@@ -16,6 +15,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.mojang.math.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -357,7 +357,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (this.getOwner() == null) return false;
         if (pEntity.getTeam() == null) return false;
 
-        return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && ModTeam.enabledDeathMatch(pEntity.getTeam()));
+        return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && TDMSavedData.enabledTDM(pEntity));
     }
 
     @Override
@@ -365,7 +365,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         if (this.getOwner() == null) return false;
         if (projectile.getOwner() != null && projectile.getOwner() == this.getOwner()) return false;
         return (projectile.getOwner() != null && !projectile.getOwner().isAlliedTo(this.getOwner()))
-                || (projectile.getOwner() != null && projectile.getOwner().getTeam() != null && ModTeam.enabledDeathMatch(projectile.getOwner().getTeam()))
+                || (projectile.getOwner() != null && projectile.getOwner().getTeam() != null && TDMSavedData.enabledTDM(projectile.getOwner()))
                 || projectile.getOwner() == null;
     }
 

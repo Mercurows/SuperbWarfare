@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
-import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -702,7 +701,7 @@ public class ClientEventHandler {
             }
 
             boolean canAttack = lookingEntity != player && !(lookingEntity instanceof Player player_ && (player_.isCreative() || player_.isSpectator()))
-                    && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || ModTeam.enabledDeathMatch(lookingEntity.getTeam()));
+                    && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || TDMSavedData.enabledTDM(lookingEntity));
 
             if (canAttack) {
                 PacketDistributor.sendToServer(new LaserShootMessage(0, lookingEntity.getUUID(), TraceTool.laserHeadshot));
