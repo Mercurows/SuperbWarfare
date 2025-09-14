@@ -36,7 +36,6 @@ public class NetworkRegistry {
         playToClient(VehiclesDataMessage.class, VehiclesDataMessage::encode, VehiclesDataMessage::decode, (msg, ctx) -> VehiclesDataMessage.handler(msg));
         playToClient(ClientSetMotionMessage.class, ClientSetMotionMessage::encode, ClientSetMotionMessage::decode, ClientSetMotionMessage::handler);
         playToClient(FinishAssemblingVehicleMessage.class, FinishAssemblingVehicleMessage::encode, FinishAssemblingVehicleMessage::decode, FinishAssemblingVehicleMessage::handler);
-        playToClient(ClientTeamSyncMessage.class, ClientTeamSyncMessage::encode, ClientTeamSyncMessage::decode, ClientTeamSyncMessage::handler);
         playToClient(TDMSyncMessage.class, TDMSyncMessage::encode, TDMSyncMessage::decode, TDMSyncMessage::handler);
 
         playToServer(LaserShootMessage.class, LaserShootMessage::encode, LaserShootMessage::decode, LaserShootMessage::handler);
