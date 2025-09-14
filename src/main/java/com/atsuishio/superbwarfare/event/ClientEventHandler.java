@@ -23,6 +23,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.tools.animation.AnimationCurves;
+import com.atsuishio.superbwarfare.world.TDMSavedData;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -194,6 +195,8 @@ public class ClientEventHandler {
     public static int holdArtilleryIndicator;
     public static int holdToEjection;
     public static boolean isEditing = false;
+
+    public static TDMSavedData tdmSavedData = new TDMSavedData();
 
 
     @SubscribeEvent
