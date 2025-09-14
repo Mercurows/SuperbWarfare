@@ -5,8 +5,11 @@ import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
 import com.atsuishio.superbwarfare.client.renderer.gun.RepairToolItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -14,6 +17,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
@@ -22,7 +26,12 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -79,26 +88,26 @@ public class RepairToolItem extends GunItem {
         return RepairToolItemRenderer::new;
     }
 
-//    private PlayState idlePredicate(AnimationState<RepairToolItem> event) {
-//        LocalPlayer player = Minecraft.getInstance().player;
-//        if (player == null) return PlayState.STOP;
-//        ItemStack stack = player.getMainHandItem();
-//        if (!(stack.getItem() instanceof GunItem)) return PlayState.STOP;
-//        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-//            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.taser.idle"));
-//
-//        var data = GunData.from(stack);
-//        if (data.reload.empty()) {
-//            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.taser.reload"));
-//        }
-//
-//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.taser.idle"));
-//    }
+    private PlayState idlePredicate(AnimationState<RepairToolItem> event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return PlayState.STOP;
+        ItemStack stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem gunItem)) return PlayState.STOP;
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.repair_tool.idle"));
+
+        var data = GunData.from(stack);
+        if (ClientEventHandler.holdFire && gunItem.canShoot(data, player)) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.repair_tool.fire"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.repair_tool.idle"));
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-//        AnimationController<RepairToolItem> idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
-//        data.add(idleController);
+        AnimationController<RepairToolItem> idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
+        data.add(idleController);
     }
 
     @Override
