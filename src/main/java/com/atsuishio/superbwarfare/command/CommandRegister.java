@@ -13,6 +13,7 @@ public class CommandRegister {
         var command = Commands.literal("sbw");
         command.then(AmmoCommand.get());
         command.then(ConfigCommand.get());
+        command.then(TDMCommand.get());
 
         var result = event.getDispatcher().register(command);
         event.getDispatcher().register(Commands.literal("superbwarfare").redirect(result));
