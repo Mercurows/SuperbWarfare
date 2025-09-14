@@ -181,4 +181,9 @@ public class RepairToolItem extends GunItem {
 
         return super.canShoot(data, shooter);
     }
+
+    @Override
+    public boolean canZoom(GunData data, @Nullable Entity shooter) {
+        return false;
+    }
 }

@@ -9,10 +9,13 @@
   "Headshot": 0,
   "EmptyReloadTime": 1,
   "RPM": 1200,
-  "HeatPerShoot": 0.5,
+  "HeatPerShoot": 1,
+  "ShootDelay": 4,
   "DefaultFireMode": "Auto",
   "AvailableFireModes": [
     "Auto"
   ],
-  "AvailablePerks": []
+  "AvailablePerks": [
+    "superbwarfare:powerful_cooler"
+  ]
 }

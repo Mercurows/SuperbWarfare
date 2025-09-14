@@ -504,7 +504,8 @@ public class ClickHandler {
             return;
         }
 
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        if (!gunItem.canZoom(GunData.from(stack), player)) return;
 
         ClientEventHandler.zoom = true;
         int level = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);

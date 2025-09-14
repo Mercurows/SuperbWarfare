@@ -443,6 +443,13 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     }
 
     /**
+     * 判断武器能否瞄准
+     */
+    public boolean canZoom(GunData data, @Nullable Entity shooter) {
+        return true;
+    }
+
+    /**
      * 服务端在开火前的额外行为
      */
     public void beforeShoot(

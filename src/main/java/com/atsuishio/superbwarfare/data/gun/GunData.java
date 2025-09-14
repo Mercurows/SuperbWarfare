@@ -498,6 +498,13 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     /**
+     * 当前状态能否瞄准
+     */
+    public boolean canZoom(@Nullable Entity shooter) {
+        return item.canZoom(this, shooter);
+    }
+
+    /**
      * 无实体情况下开火
      */
     public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, double spread, boolean zoom) {
