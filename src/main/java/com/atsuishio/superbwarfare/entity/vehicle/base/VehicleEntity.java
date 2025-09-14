@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.mixin.ModTeam;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -20,6 +19,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -772,7 +772,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         } else if (!player.isShiftKeyDown() && this.getMaxPassengers() > 0) {
             List<Entity> entities = getPassengers();
             for (var passenger : entities) {
-                if (passenger.getTeam() != null && (ModTeam.enabledDeathMatch(passenger.getTeam()) || passenger.getTeam() != player.getTeam())) {
+                if (passenger.getTeam() != null && (TDMSavedData.enabledTDM(passenger) || passenger.getTeam() != player.getTeam())) {
                     return InteractionResult.PASS;
                 }
             }
