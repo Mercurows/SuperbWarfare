@@ -92,8 +92,5 @@
         1.2
       ]
     }
-  },
-  "textures": {
-    "particle": "item/repair_tool"
   }
 }
