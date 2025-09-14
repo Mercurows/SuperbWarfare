@@ -12,9 +12,7 @@
     "LevelMixin",
     "LivingEntityMixin",
     "PlayerMixin",
-    "PlayerTeamMixin",
     "ProjectileUtilMixin",
-    "ScoreboardSaveDataMixin",
     "SteelPipeFallMixin",
     "VillagerMixin"
   ],
