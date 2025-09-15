@@ -78,19 +78,19 @@ public class LivingEventHandler {
                     vehicle.getEntityData().set(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined");
                 }
             }
-
         }
     }
 
     @SubscribeEvent
     public static void onEntityAttacked(LivingAttackEvent event) {
-        if (!event.getSource().is(ModDamageTypes.VEHICLE_EXPLOSION) && event.getEntity().getVehicle() instanceof VehicleEntity vehicle) {
-            if (event.getEntity().getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.getVehicleEntity().isEnclosed(event.getEntity())) {
-                if (!event.getSource().is(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
-                    vehicle.hurt(event.getSource(), event.getAmount());
-                }
-                event.setCanceled(true);
+        if (!event.getSource().is(ModDamageTypes.VEHICLE_EXPLOSION)
+                && event.getEntity().getVehicle() instanceof VehicleEntity vehicle
+                && vehicle.isEnclosed(event.getEntity())
+        ) {
+            if (!event.getSource().is(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
+                vehicle.hurt(event.getSource(), event.getAmount());
             }
+            event.setCanceled(true);
         }
     }
 
