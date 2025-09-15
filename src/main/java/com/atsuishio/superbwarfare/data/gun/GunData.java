@@ -442,7 +442,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      * 当前状态在换弹前的可用射击次数
      */
     public int currentAvailableShots(@Nullable Entity entity) {
-        return currentAvailableAmmo(entity) / get(GunProp.AMMO_COST_PER_SHOOT);
+        var ammoCost = get(GunProp.AMMO_COST_PER_SHOOT);
+        if (ammoCost <= 0) return Integer.MAX_VALUE;
+
+        return currentAvailableAmmo(entity) / ammoCost;
     }
 
     /**
