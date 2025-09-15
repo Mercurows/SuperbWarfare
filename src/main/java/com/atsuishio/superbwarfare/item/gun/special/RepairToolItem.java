@@ -9,11 +9,17 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -24,6 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
@@ -88,6 +95,35 @@ public class RepairToolItem extends GunItem {
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return RepairToolItemRenderer::new;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public IClientItemExtensions getClientExtensions() {
+        return new IClientItemExtensions() {
+            private final BlockEntityWithoutLevelRenderer renderer = RepairToolItem.this.getRenderer().get();
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return renderer;
+            }
+
+            private static final HumanoidModel.ArmPose POSE = HumanoidModel.ArmPose.create("RepairTool", false, (model, entity, arm) -> {
+                if (arm != HumanoidArm.LEFT) {
+                    model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot;
+                    model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot;
+                }
+            });
+
+            @Override
+            public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
+                if (!stack.isEmpty()) {
+                    if (entityLiving.getUsedItemHand() == hand) {
+                        return POSE;
+                    }
+                }
+                return HumanoidModel.ArmPose.EMPTY;
+            }
+        };
     }
 
     @OnlyIn(Dist.CLIENT)
