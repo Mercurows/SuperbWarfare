@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -20,7 +19,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -32,7 +30,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class RepairToolItem extends GunItem implements EnergyStorageItem {
@@ -130,35 +127,6 @@ public class RepairToolItem extends GunItem implements EnergyStorageItem {
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new EnergyImageComponent(pStack));
-    }
-
-    @Override
-    public void afterShoot(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
-        super.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
-
-        var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        if (energyStorage != null) {
-            energyStorage.extractEnergy(50, false);
-        }
-    }
-
-    @Override
-    public boolean canShoot(GunData data, @Nullable Entity shooter) {
-        var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        var hasEnoughEnergy = energyStorage != null && energyStorage.getEnergyStored() >= 50;
-
-        if (!hasEnoughEnergy) return false;
-
-        return super.canShoot(data, shooter);
     }
 
     @Override

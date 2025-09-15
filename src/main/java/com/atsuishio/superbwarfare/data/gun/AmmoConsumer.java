@@ -71,6 +71,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         return this.modifiers;
     }
 
+    // TODO 整合弹药处理
     public enum AmmoConsumeType {
         INVALID,
         EMPTY,
@@ -78,6 +79,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
         PLAYER_AMMO,
         ITEM,
+        ENERGY,
     }
 
     /**
@@ -111,6 +113,14 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             }
         }
 
+        if (type == AmmoConsumeType.ENERGY) {
+            var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            if (energyStorage == null) {
+                return 0;
+            }
+            return energyStorage.extractEnergy(count, false);
+        }
+
         var handler = shooter.getCapability(Capabilities.ItemHandler.ENTITY);
         if (handler != null) {
             return consumed + consume(data, handler, count);
@@ -136,6 +146,12 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             var rest = consumed - count;
             data.virtualAmmo.add(rest);
             return count;
+        } else if (type == AmmoConsumeType.ENERGY) {
+            var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            if (energyStorage == null) {
+                return 0;
+            }
+            return energyStorage.extractEnergy(count, false);
         } else {
             return InventoryTool.consumeItem(handler, stack -> ItemStack.isSameItemSameComponents(stack, this.stack), count);
         }
@@ -144,7 +160,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     /**
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
-    public int count(@Nullable Entity entity) {
+    public int count(@NotNull GunData data, @Nullable Entity entity) {
         if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
         if (entity == null || type == AmmoConsumeType.EMPTY) return 0;
         if (!initialized) init();
@@ -154,19 +170,25 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             playerAmmoCount = playerAmmoType.get(player);
         }
 
-        return playerAmmoCount + count(entity.getCapability(Capabilities.ItemHandler.ENTITY));
+        return playerAmmoCount + count(data, entity.getCapability(Capabilities.ItemHandler.ENTITY));
     }
 
     /**
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
-    public int count(@Nullable IItemHandler handler) {
+    public int count(@NotNull GunData data, @Nullable IItemHandler handler) {
         if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
         if (handler == null || type == AmmoConsumeType.EMPTY) return 0;
         if (!initialized) init();
 
         if (type == AmmoConsumeType.ITEM) {
             return InventoryTool.countItem(handler, stack -> ItemStack.isSameItemSameComponents(stack, this.stack));
+        } else if (type == AmmoConsumeType.ENERGY) {
+            var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            if (energyStorage == null) {
+                return 0;
+            }
+            return energyStorage.getEnergyStored();
         }
 
         return InventoryTool.countAmmoItem(handler, this.playerAmmoType);
@@ -182,6 +204,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         if (type == AmmoConsumeType.INVALID
                 || type == AmmoConsumeType.INFINITE
                 || type == AmmoConsumeType.EMPTY
+                || type == AmmoConsumeType.ENERGY
                 || count <= 0
         ) {
             return 0;
@@ -219,6 +242,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         if (type == AmmoConsumeType.INVALID
                 || type == AmmoConsumeType.INFINITE
                 || type == AmmoConsumeType.EMPTY
+                || type == AmmoConsumeType.ENERGY
                 || count <= 0
         ) {
             return 0;
@@ -269,16 +293,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
         this.type = AmmoConsumeType.INVALID;
 
-        if (ammo == null || ammo.isEmpty() || ammo.toLowerCase(Locale.ROOT).equals("empty")) {
-            this.type = AmmoConsumeType.EMPTY;
-            return;
-        }
-
-        if (ammo.toLowerCase(Locale.ROOT).equals("infinity") || ammo.toLowerCase(Locale.ROOT).equals("infinite")) {
-            this.type = AmmoConsumeType.INFINITE;
-            return;
-        }
-
         var matcher = AMMO_PATTERN.matcher(ammo.trim());
         if (!matcher.matches()) {
             Mod.LOGGER.warn("invalid ammo value: {}", ammo);
@@ -292,6 +306,16 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         var id = matcher.group("id");
         var data = matcher.group("data");
 
+        if (prefix.isBlank()) {
+            this.type = switch (id.toLowerCase(Locale.ROOT)) {
+                case "infinity", "infinite" -> AmmoConsumeType.INFINITE;
+                case "empty" -> AmmoConsumeType.EMPTY;
+                case "fe", "rf", "energy" -> AmmoConsumeType.ENERGY;
+                default -> AmmoConsumeType.INVALID;
+            };
+        }
+
+        // Player Ammo
         if ("@".equals(prefix)) {
             this.playerAmmoType = Ammo.getType(id);
             if (this.playerAmmoType == null) {
@@ -300,6 +324,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             }
             this.type = AmmoConsumeType.PLAYER_AMMO;
         } else {
+            // Item
             var location = ResourceLocation.tryParse(id);
             if (location == null) {
                 Mod.LOGGER.warn("invalid item id: {}", id);
