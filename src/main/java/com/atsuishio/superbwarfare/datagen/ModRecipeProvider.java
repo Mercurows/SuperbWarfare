@@ -1712,11 +1712,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 .pattern("cbc")
                 .pattern("bab")
                 .pattern("cbc")
-                .define('a', ModItems.EMPTY_PERK.get())
+                .define('a', ModItems.PERK_ITEMS.get(ModPerks.SUBSISTENCE).get())
                 .define('b', Tags.Items.CHESTS_ENDER)
                 .define('c', Tags.Items.CHESTS_WOODEN)
-                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
-                .unlockedBy(getHasName(Items.ENDER_CHEST), has(Tags.Items.CHESTS_ENDER))
+                .unlockedBy(getHasName(ModItems.PERK_ITEMS.get(ModPerks.SUBSISTENCE).get()), has(ModItems.PERK_ITEMS.get(ModPerks.SUBSISTENCE).get()))
                 .save(writer, perkLoc(ModPerks.BACKPACK_LINKED_MAGAZINE));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.POWERFUL_COOLER).get())
                 .pattern("cdc")
