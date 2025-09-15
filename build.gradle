@@ -158,6 +158,8 @@ dependencies {
     // better combat相关
     implementation fg.deobf("curse.maven:better-combat-by-daedelus-639842:5625757")
     implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
+
+    implementation 'com.github.stephengold:jbullet:1.0.0'
 }
 
 mixin {
