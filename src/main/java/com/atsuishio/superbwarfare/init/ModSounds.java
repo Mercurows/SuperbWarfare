@@ -11,6 +11,10 @@ public class ModSounds {
 
     public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, Mod.MODID);
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> REPAIR_TOOL_FIRE_1P = REGISTRY.register("repair_tool_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repair_tool_fire_1p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> REPAIR_TOOL_FIRE_3P = REGISTRY.register("repair_tool_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repair_tool_fire_3p")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> REPAIRING = REGISTRY.register("repairing", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repairing")));
+
     public static final DeferredHolder<SoundEvent, SoundEvent> TASER_FIRE_1P = REGISTRY.register("taser_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_fire_1p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> TASER_FIRE_3P = REGISTRY.register("taser_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_fire_3p")));
     public static final DeferredHolder<SoundEvent, SoundEvent> TASER_RELOAD_EMPTY = REGISTRY.register("taser_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_reload_empty")));

@@ -13,9 +13,6 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
     public static final VehicleProp<Integer> REPAIR_COOLDOWN = new VehicleProp<Integer>("RepairCooldown")
             .withLimiter(v -> Math.max(0, v));
     public static final VehicleProp<Float> REPAIR_AMOUNT = new VehicleProp<>("RepairAmount");
-    public static final VehicleProp<String> REPAIR_MATERIAL = new VehicleProp<>("RepairMaterial");
-    public static final VehicleProp<Float> REPAIR_MATERIAL_HEAL_AMOUNT = new VehicleProp<>("RepairMaterialHealAmount");
-
     public static final VehicleProp<Float> SELF_HURT_PERCENT = new VehicleProp<>("SelfHurtPercent");
     public static final VehicleProp<Float> SELF_HURT_AMOUNT = new VehicleProp<>("SelfHurtAmount");
 

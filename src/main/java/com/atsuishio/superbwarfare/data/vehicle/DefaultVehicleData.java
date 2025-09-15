@@ -32,14 +32,6 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("RepairAmount")
     public float repairAmount = VehicleConfig.REPAIR_AMOUNT.get().floatValue();
 
-    @ServerOnly
-    @SerializedName("RepairMaterial")
-    public String repairMaterial = "minecraft:iron_ingot";
-
-    @ServerOnly
-    @SerializedName("RepairMaterialHealAmount")
-    public float repairMaterialHealAmount = 50;
-
     /**
      * 开始自动扣血时的血量比例
      */

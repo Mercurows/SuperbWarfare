@@ -127,14 +127,14 @@ public class TraceTool {
         return null;
     }
 
-    public static Vec3 playerFindLookingPos(Player player, Entity entity, double entityReach) {
+    public static Vec3 playerFindLookingPos(Entity pEntity, Entity entity, double entityReach) {
         double distance = entityReach * entityReach;
-        HitResult hitResult = player.pick(entityReach, 1.0f, false);
+        HitResult hitResult = pEntity.pick(entityReach, 1.0f, false);
 
-        Vec3 viewVec = player.getViewVector(1);
-        Vec3 toVec = player.getEyePosition().add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
+        Vec3 viewVec = pEntity.getViewVector(1);
+        Vec3 toVec = pEntity.getEyePosition().add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = entity.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(player.level(), player, player.getEyePosition(), toVec, aabb, p -> true, (float) distance);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(pEntity.level(), pEntity, pEntity.getEyePosition(), toVec, aabb, p -> true, (float) distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
 
