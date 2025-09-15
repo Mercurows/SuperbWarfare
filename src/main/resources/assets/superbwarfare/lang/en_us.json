@@ -528,6 +528,9 @@
   "death.attack.vehicle_explosion": "%1$s's vehicle was destroyed",
   "death.attack.vehicle_explosion.entity": "%1$s's vehicle was destroyed by %2$s",
   "death.attack.vehicle_explosion.item": "%1$s's vehicle was destroyed by %2$s using %3$s",
+  "death.attack.repair_tool": "%1$s被修理了一顿",
+  "death.attack.repair_tool.entity": "%1$s被%2$s修好了",
+  "death.attack.repair_tool.item": "%1$s被%2$s用%3$s修好了",
 
   "entity.superbwarfare.projectile": "Bullet",
   "entity.superbwarfare.mortar_shell": "Mortar Shell",

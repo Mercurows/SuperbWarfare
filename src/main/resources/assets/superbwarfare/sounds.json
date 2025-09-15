@@ -3683,5 +3683,29 @@
         "stream": false
       }
     ]
+  },
+  "repair_tool_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:repair_tool/repair_tool_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "repair_tool_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:repair_tool/repair_tool_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "repairing": {
+    "sounds": [
+      {
+        "name": "superbwarfare:repair_tool/repairing",
+        "stream": false
+      }
+    ]
   }
 }

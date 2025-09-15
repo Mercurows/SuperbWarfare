@@ -140,7 +140,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     public float roll;
     public float prevRoll;
-    public int lastHurtTick;
     public int repairCoolDown = maxRepairCoolDown();
     public boolean crash;
 
@@ -759,16 +758,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             this.remove(RemovalReason.DISCARDED);
             this.discard();
             return InteractionResult.SUCCESS;
-        } else if (this.getHealth() < this.getMaxHealth()
-                && data.canRepairManually()
-                && data.isRepairMaterial(stack)
-        ) {
-            this.heal(Math.min(data.get(VehicleProp.REPAIR_MATERIAL_HEAL_AMOUNT), this.getMaxHealth()));
-            stack.shrink(1);
-            if (!this.level().isClientSide) {
-                this.level().playSound(null, this, SoundEvents.IRON_GOLEM_REPAIR, this.getSoundSource(), 0.5f, 1);
-            }
-            return InteractionResult.SUCCESS;
         } else if (!player.isShiftKeyDown() && this.getMaxPassengers() > 0) {
             List<Entity> entities = getPassengers();
             for (var passenger : entities) {
@@ -863,12 +852,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             this.entityData.set(LAST_ATTACKER_UUID, source.getEntity().getStringUUID());
         }
 
-        // 受伤打断呼吸回血
-        if (computedAmount > 0) {
-            lastHurtTick = 0;
-            repairCoolDown = maxRepairCoolDown();
-        }
-
         if (source.getDirectEntity() instanceof Projectile projectile && this instanceof OBBEntity) {
             OBBHitter accessor = OBBHitter.getInstance(projectile);
             var part = accessor.sbw$getCurrentHitPart();
@@ -925,6 +908,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             }
 
             if (pHealAmount > 0 && this.getHealth() > 0 && send) {
+                repairCoolDown = maxRepairCoolDown();
                 List<Entity> passengers = this.getPassengers();
                 for (var entity : passengers) {
                     if (entity instanceof ServerPlayer player1) {
@@ -1015,8 +999,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     @Override
     public void baseTick() {
         super.baseTick();
-
-        this.lastHurtTick++;
 
         if (repairCoolDown > 0) {
             repairCoolDown--;

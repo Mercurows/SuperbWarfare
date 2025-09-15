@@ -6,6 +6,7 @@
     "superbwarfare:grapeshot_hit",
     "superbwarfare:laser",
     "superbwarfare:laser_headshot",
-    "superbwarfare:laser_static"
+    "superbwarfare:laser_static",
+    "superbwarfare:repair_tool"
   ]
 }

@@ -8,10 +8,6 @@
   "RepairCooldown": 200,
   // Self repair amount per tick
   "RepairAmount": 0.05,
-  // Repair material
-  "RepairMaterial": "minecraft:iron_ingot",
-  // Repair material heal amount per item
-  "RepairMaterialHealAmount": 50,
   // At which percent of health will the vehicle start hurting itself
   "SelfHurtPercent": 0.1,
   // Self hurt amount per tick

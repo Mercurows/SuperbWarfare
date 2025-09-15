@@ -10,6 +10,7 @@
     "superbwarfare:laser_static",
     "superbwarfare:vehicle_strike",
     "superbwarfare:vehicle_explosion",
-    "superbwarfare:air_crash"
+    "superbwarfare:air_crash",
+    "superbwarfare:repair_tool"
   ]
 }

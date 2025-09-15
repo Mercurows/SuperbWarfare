@@ -9,15 +9,10 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
@@ -91,33 +86,6 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
     public static VehicleData from(VehicleEntity entity) {
         return dataCache.getUnchecked(entity);
-    }
-
-    public boolean canRepairManually() {
-        var material = get(VehicleProp.REPAIR_MATERIAL);
-        if (material == null) return false;
-
-        if (material.startsWith("#")) {
-            material = material.substring(1);
-        }
-        return ResourceLocation.tryParse(material) != null;
-    }
-
-    public boolean isRepairMaterial(ItemStack stack) {
-        var material = get(VehicleProp.REPAIR_MATERIAL);
-        var useTag = false;
-
-        if (material.startsWith("#")) {
-            material = material.substring(1);
-            useTag = true;
-        }
-
-        var location = Objects.requireNonNull(ResourceLocation.tryParse(material));
-        if (!useTag) {
-            return stack.getItem() == ForgeRegistries.ITEMS.getValue(location);
-        } else {
-            return stack.is(ItemTags.create(location));
-        }
     }
 
     public DamageModifier damageModifier() {
