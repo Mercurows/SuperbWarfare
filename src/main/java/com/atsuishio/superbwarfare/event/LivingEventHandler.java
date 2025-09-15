@@ -82,13 +82,14 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onEntityAttacked(LivingIncomingDamageEvent event) {
-        if (!event.getSource().is(ModDamageTypes.VEHICLE_EXPLOSION) && event.getEntity().getVehicle() instanceof VehicleEntity vehicle) {
-            if (event.getEntity().getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.getVehicleEntity().isEnclosed(event.getEntity())) {
-                if (!event.getSource().is(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
-                    vehicle.hurt(event.getSource(), event.getAmount());
-                }
-                event.setCanceled(true);
+        if (!event.getSource().is(ModDamageTypes.VEHICLE_EXPLOSION)
+                && event.getEntity().getVehicle() instanceof VehicleEntity vehicle
+                && vehicle.isEnclosed(event.getEntity())
+        ) {
+            if (!event.getSource().is(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
+                vehicle.hurt(event.getSource(), event.getAmount());
             }
+            event.setCanceled(true);
         }
     }
 
