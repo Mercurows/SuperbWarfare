@@ -293,6 +293,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
         this.type = AmmoConsumeType.INVALID;
 
+        if (ammo == null) {
+            Mod.LOGGER.warn("ammo value is null!");
+            return;
+        }
+
         var matcher = AMMO_PATTERN.matcher(ammo.trim());
         if (!matcher.matches()) {
             Mod.LOGGER.warn("invalid ammo value: {}", ammo);
@@ -313,6 +318,8 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
                 case "fe", "rf", "energy" -> AmmoConsumeType.ENERGY;
                 default -> AmmoConsumeType.INVALID;
             };
+
+            if (this.type != AmmoConsumeType.INVALID) return;
         }
 
         // Player Ammo
