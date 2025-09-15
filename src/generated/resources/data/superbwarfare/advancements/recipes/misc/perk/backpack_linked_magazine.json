@@ -1,23 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_empty_perk": {
+    "has_subsistence": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:empty_perk"
+              "superbwarfare:subsistence"
             ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_ender_chest": {
-      "conditions": {
-        "items": [
-          {
-            "tag": "forge:chests/ender"
           }
         ]
       },
@@ -32,8 +22,7 @@
   },
   "requirements": [
     [
-      "has_empty_perk",
-      "has_ender_chest",
+      "has_subsistence",
       "has_the_recipe"
     ]
   ],
