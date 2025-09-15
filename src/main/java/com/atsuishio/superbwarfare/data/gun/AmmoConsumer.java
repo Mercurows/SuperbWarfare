@@ -46,7 +46,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     @SerializedName("Override")
     public JsonObject override = null;
 
-    public transient AmmoConsumeType type = AmmoConsumeType.INVALID;
+    public transient AmmoConsumeType type = AmmoConsumeType.EMPTY;
     public transient int loadAmount = 1;
 
     public static final AmmoConsumer INVALID = new AmmoConsumer();
@@ -286,12 +286,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             this.setProperty(GunProp.PROJECTILE, value -> projectile.value);
         }
 
-        this.type = AmmoConsumeType.INVALID;
-
-        if (ammo == null) {
-            Mod.LOGGER.warn("ammo value is null!");
-            return;
-        }
+        if (ammo == null) return;
 
         var matcher = AMMO_PATTERN.matcher(ammo.trim());
         if (!matcher.matches()) {
