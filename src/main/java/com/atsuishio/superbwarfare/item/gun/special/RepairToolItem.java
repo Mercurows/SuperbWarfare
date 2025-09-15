@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -32,7 +33,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -177,7 +177,6 @@ public class RepairToolItem extends GunItem implements EnergyStorageItem {
         if (!data.canShoot(shooter)) return;
 
         // 检测看到的目标或位置
-
         if (shooter != null) {
             double range = 3;
 
@@ -198,7 +197,6 @@ public class RepairToolItem extends GunItem implements EnergyStorageItem {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 lookingEntity = ((EntityHitResult) hitResult).getEntity();
             }
-
 
             BlockHitResult result = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(3)),
                     ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
@@ -235,7 +233,6 @@ public class RepairToolItem extends GunItem implements EnergyStorageItem {
                             vehicle.heal(0.5f + 0.0025f * vehicle.getMaxHealth());
                         }
                     }
-
                 } else if (lookingEntity instanceof LivingEntity living) {
                     if (shooter.isShiftKeyDown()) {
                         DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
@@ -246,8 +243,7 @@ public class RepairToolItem extends GunItem implements EnergyStorageItem {
                             PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
                         }
                     } else {
-                        // TODO 替换成能被喷枪治疗的生物tag
-                        if (lookingEntity instanceof IronGolem) {
+                        if (lookingEntity.getType().is(ModTags.EntityTypes.CAN_REPAIR)) {
                             living.heal(0.5f + 0.0025f * living.getMaxHealth());
                         } else {
                             DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
@@ -262,7 +258,7 @@ public class RepairToolItem extends GunItem implements EnergyStorageItem {
                 }
             }
 
-            //生成粒子
+            // 生成粒子
             if (pos != null) {
                 summonVectorParticle(level, state, pos, shootDirection.scale(-1).normalize());
                 if (lookingEntity == null) {
