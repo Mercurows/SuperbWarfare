@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.regex.Pattern;
@@ -51,12 +52,19 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     }
 
     private static String getGunAmmoString(GunData data, Player player) {
+        if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
+            // TODO 修改为dynamic energy storage
+            var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            double energy = cap != null ? cap.getEnergyStored() : 0;
+            return (int) (energy * 100) + "%";
+        }
         if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞";
         return data.useBackpackAmmo() ? data.countBackupAmmo(player) - data.virtualAmmo.get() + "" : data.ammo.get() + "";
     }
 
     private static String getBackupAmmoString(GunData data, Player player) {
-        if (data.meleeOnly() || data.useBackpackAmmo()) return "";
+        if (data.meleeOnly() || data.useBackpackAmmo() || data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY)
+            return "";
         return data.hasInfiniteBackupAmmo(player) ? "∞" : data.countBackupAmmo(player) - data.virtualAmmo.get() + "";
     }
 
@@ -224,10 +232,21 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                     if (consumerType == AmmoConsumer.AmmoConsumeType.INVALID) {
                         RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
                                 x - 50,
-                                y - 20,
+                                y - 19.5f,
                                 12,
                                 8.5f,
-                                4,
+                                5,
+                                8,
+                                24,
+                                24
+                        );
+                    } else if (consumerType == AmmoConsumer.AmmoConsumeType.ENERGY) {
+                        RenderHelper.preciseBlit(guiGraphics, AMMO_STACK,
+                                x - 50,
+                                y - 19.5f,
+                                12,
+                                16.5f,
+                                5,
                                 8,
                                 24,
                                 24
@@ -266,7 +285,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             poseStack.scale(1.5f, 1.5f, 1f);
 
             // 渲染当前弹药量
-            var gunAmmoY = data.useBackpackAmmo() ? y - 35 : y + 5 - 48;
+            var gunAmmoY = data.useBackpackAmmo() ? y - 38 : y + 5 - 48;
 
             guiGraphics.drawString(
                     font,
@@ -347,6 +366,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             return "Infinity";
         } else if (data.meleeOnly()) {
             return "Melee";
+        } else if (consumer.type == AmmoConsumer.AmmoConsumeType.ENERGY) {
+            return "Energy";
         } else if (!consumer.stack().isEmpty()) {
             var nameComponent = consumer.stack().getHoverName();
             if (nameComponent.getContents() instanceof TranslatableContents translatableComponent) {
