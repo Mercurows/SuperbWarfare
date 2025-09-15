@@ -55,7 +55,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
         if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
             // TODO 修改为dynamic energy storage
             var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
-            double energy = cap != null ? cap.getEnergyStored() : 0;
+            double energy = cap != null ? (double) cap.getEnergyStored() / cap.getMaxEnergyStored() : 0;
             return (int) (energy * 100) + "%";
         }
         if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞";
