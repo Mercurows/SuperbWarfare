@@ -15,6 +15,8 @@
   "AvailableFireModes": [
     "Auto"
   ],
+  "AmmoType": "FE",
+  "AmmoCostPerShoot": 50,
   "AvailablePerks": [
     "superbwarfare:regeneration",
     "superbwarfare:powerful_cooler"

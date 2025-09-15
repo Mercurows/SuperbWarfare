@@ -371,11 +371,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public int countBackupAmmoItem(@Nullable Entity entity) {
-        return this.selectedAmmoConsumer().count(entity);
+        return this.selectedAmmoConsumer().count(this, entity);
     }
 
     public int countBackupAmmoItem(@Nullable IItemHandler handler) {
-        return this.selectedAmmoConsumer().count(handler);
+        return this.selectedAmmoConsumer().count(this, handler);
     }
 
     /**
