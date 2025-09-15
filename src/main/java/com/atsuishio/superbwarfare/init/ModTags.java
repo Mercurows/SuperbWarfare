@@ -111,7 +111,8 @@ public class ModTags {
         public static final TagKey<EntityType<?>> DESTROYABLE_PROJECTILE = modEntityTag("destroyable_projectile");
         public static final TagKey<EntityType<?>> DECOY = modEntityTag("decoy");
         public static final TagKey<EntityType<?>> NO_EXPERIENCE = modEntityTag("no_experience");
-
+        public static final TagKey<EntityType<?>> CAN_REPAIR = modEntityTag("can_repair");
+        public static final TagKey<EntityType<?>> MINE = modEntityTag("mine");
     }
 
     private static TagKey<EntityType<?>> modEntityTag(String name) {

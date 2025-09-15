@@ -17,6 +17,7 @@ public class MiscConfig {
     public static ForgeConfigSpec.IntValue CHARGING_STATION_CHARGE_RADIUS;
     public static ForgeConfigSpec.IntValue CHARGING_STATION_DEFAULT_FUEL_TIME;
     public static ForgeConfigSpec.IntValue ARTILLERY_INDICATOR_LIST_SIZE;
+    public static ForgeConfigSpec.BooleanValue MINE_HITBOX_INVISIBLE;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         builder.push("misc");
@@ -59,6 +60,9 @@ public class MiscConfig {
 
         builder.comment("The max size of artillery indicator binding list");
         ARTILLERY_INDICATOR_LIST_SIZE = builder.defineInRange("artillery_indicator_list_size", 32, 1, Integer.MAX_VALUE);
+
+        builder.comment("Set true to make mine hitbox invisible");
+        MINE_HITBOX_INVISIBLE = builder.define("mine_hitbox_invisible", false);
 
         builder.pop();
     }

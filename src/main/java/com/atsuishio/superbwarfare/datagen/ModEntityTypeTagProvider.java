@@ -46,6 +46,17 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
         this.tag(ModTags.EntityTypes.NO_EXPERIENCE).add(ModEntities.TARGET.get(), ModEntities.DPS_GENERATOR.get())
                 .addOptional(new ResourceLocation("dummmmmmy", "target_dummy"))
                 .addOptional(new ResourceLocation("powerful_dummy", "test_dummy"));
+
+        this.tag(ModTags.EntityTypes.CAN_REPAIR).add(
+                EntityType.IRON_GOLEM
+        );
+
+        this.tag(ModTags.EntityTypes.MINE).add(
+                ModEntities.BLU_43.get(),
+                ModEntities.TM_62.get(),
+                ModEntities.PTKM_1R.get(),
+                ModEntities.CLAYMORE.get()
+        );
     }
 
     public static TagKey<EntityType<?>> forgeTag(String name) {
