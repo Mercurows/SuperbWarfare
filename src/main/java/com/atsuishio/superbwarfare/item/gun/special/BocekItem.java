@@ -28,7 +28,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +36,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -118,15 +116,6 @@ public class BocekItem extends GunItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-        if (GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") > 0) {
-            GunsTool.setGunIntTag(GunData.from(stack).tag, "ArrowEmpty", GunsTool.getGunIntTag(GunData.from(stack).tag, "ArrowEmpty") - 1);
-        }
-    }
-
-    @Override
     public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/bocek_icon.png");
     }
@@ -186,7 +175,6 @@ public class BocekItem extends GunItem {
                 }
             }
 
-            GunsTool.setGunIntTag(data.tag, "ArrowEmpty", 7);
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
             data.save();
         }
