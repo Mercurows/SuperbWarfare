@@ -1033,6 +1033,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.EPIC_MATERIAL_PACK.get()), has(ModItems.EPIC_MATERIAL_PACK.get()))
                 .unlockedBy(getHasName(Items.NETHER_STAR), has(Items.NETHER_STAR))
                 .save(writer, Mod.loc(getItemName(ModItems.SHORTCUT_PACK.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.REPAIR_TOOL.get())
+                .pattern(" aa")
+                .pattern("bcd")
+                .pattern("efg")
+                .define('a', Items.IRON_INGOT)
+                .define('b', ModItems.STEEL_MATERIALS.barrel().get())
+                .define('c', Items.FLINT_AND_STEEL)
+                .define('d', ModItems.MOTOR.get())
+                .define('e', Items.LAVA_BUCKET)
+                .define('f', ModItems.BATTERY.get())
+                .define('g', ModItems.STEEL_MATERIALS.trigger().get())
+                .unlockedBy(getHasName(Items.COMPASS), has(Items.COMPASS))
+                .save(writer, Mod.loc(getItemName(ModItems.REPAIR_TOOL.get())));
         SimpleCookingRecipeBuilder.generic(Ingredient.of(ModItems.RAW_SILVER.get()),
                         RecipeCategory.MISC,
                         ModItems.SILVER_INGOT.get(),
