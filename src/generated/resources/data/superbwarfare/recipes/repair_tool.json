@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:iron_ingot"
+    },
+    "b": {
+      "item": "superbwarfare:steel_barrel"
+    },
+    "c": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "d": {
+      "item": "superbwarfare:motor"
+    },
+    "e": {
+      "item": "minecraft:lava_bucket"
+    },
+    "f": {
+      "item": "superbwarfare:battery"
+    },
+    "g": {
+      "item": "superbwarfare:steel_trigger"
+    }
+  },
+  "pattern": [
+    " aa",
+    "bcd",
+    "efg"
+  ],
+  "result": {
+    "item": "superbwarfare:repair_tool"
+  },
+  "show_notification": true
+}
