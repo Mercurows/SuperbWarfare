@@ -6,10 +6,10 @@ import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.BeastEntityKiller;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage;
-import com.atsuishio.superbwarfare.tools.RarityTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -43,7 +43,7 @@ public class Beast extends SwordItem {
     public Beast() {
         super(Tiers.NETHERITE, 0, 0, new Properties()
                 .stacksTo(1)
-                .rarity(RarityTool.LEGENDARY)
+                .rarity(ModRarities.LEGENDARY)
                 .setNoRepair()
                 .durability(114514)
         );

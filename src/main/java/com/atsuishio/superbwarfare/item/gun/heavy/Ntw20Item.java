@@ -5,10 +5,10 @@ import com.atsuishio.superbwarfare.client.renderer.gun.Ntw20Renderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
-import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class Ntw20Item extends GunItem {
 
     public Ntw20Item() {
-        super(new Item.Properties().rarity(RarityTool.LEGENDARY));
+        super(new Item.Properties().rarity(ModRarities.LEGENDARY));
     }
 
     @Override

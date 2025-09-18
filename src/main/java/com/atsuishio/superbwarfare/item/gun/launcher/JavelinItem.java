@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -55,7 +56,7 @@ import java.util.function.Supplier;
 public class JavelinItem extends GunItem {
 
     public JavelinItem() {
-        super(new Properties().rarity(RarityTool.LEGENDARY));
+        super(new Properties().rarity(ModRarities.LEGENDARY));
     }
 
     @Override

@@ -9,11 +9,11 @@ import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -55,7 +55,7 @@ public class SecondaryCataclysm extends GunItem {
     private final Supplier<Integer> energyCapacity = () -> 24000;
 
     public SecondaryCataclysm() {
-        super(new Properties().fireResistant().rarity(RarityTool.LEGENDARY));
+        super(new Properties().fireResistant().rarity(ModRarities.LEGENDARY));
     }
 
     @Override

@@ -31,7 +31,6 @@ import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
-import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -240,11 +239,11 @@ public class ModItems {
     public static final RegistryObject<Item> COMMON_MATERIAL_PACK = ITEMS.register("common_material_pack", () -> new MaterialPack(Rarity.COMMON));
     public static final RegistryObject<Item> RARE_MATERIAL_PACK = ITEMS.register("rare_material_pack", () -> new MaterialPack(Rarity.RARE));
     public static final RegistryObject<Item> EPIC_MATERIAL_PACK = ITEMS.register("epic_material_pack", () -> new MaterialPack(Rarity.EPIC));
-    public static final RegistryObject<Item> LEGENDARY_MATERIAL_PACK = ITEMS.register("legendary_material_pack", () -> new MaterialPack(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> LEGENDARY_MATERIAL_PACK = ITEMS.register("legendary_material_pack", () -> new MaterialPack(ModRarities.LEGENDARY));
 
     public static final RegistryObject<Item> LIGHT_ARMAMENT_MODULE = ITEMS.register("light_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> MEDIUM_ARMAMENT_MODULE = ITEMS.register("medium_armament_module", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
-    public static final RegistryObject<Item> HEAVY_ARMAMENT_MODULE = ITEMS.register("heavy_armament_module", () -> new Item(new Item.Properties().rarity(RarityTool.LEGENDARY)));
+    public static final RegistryObject<Item> HEAVY_ARMAMENT_MODULE = ITEMS.register("heavy_armament_module", () -> new Item(new Item.Properties().rarity(ModRarities.LEGENDARY)));
 
     public static final RegistryObject<Item> TRACHELIUM_BLUEPRINT = ITEMS.register("trachelium_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> GLOCK_17_BLUEPRINT = ITEMS.register("glock_17_blueprint", () -> new BlueprintItem(Rarity.COMMON));
@@ -255,14 +254,14 @@ public class ModItems {
     public static final RegistryObject<Item> RPG_BLUEPRINT = ITEMS.register("rpg_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> BOCEK_BLUEPRINT = ITEMS.register("bocek_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> M_4_BLUEPRINT = ITEMS.register("m_4_blueprint", () -> new BlueprintItem(Rarity.RARE));
-    public static final RegistryObject<Item> AA_12_BLUEPRINT = ITEMS.register("aa_12_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> AA_12_BLUEPRINT = ITEMS.register("aa_12_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
     public static final RegistryObject<Item> HK_416_BLUEPRINT = ITEMS.register("hk_416_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> RPK_BLUEPRINT = ITEMS.register("rpk_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> SKS_BLUEPRINT = ITEMS.register("sks_blueprint", () -> new BlueprintItem(Rarity.RARE));
-    public static final RegistryObject<Item> NTW_20_BLUEPRINT = ITEMS.register("ntw_20_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> NTW_20_BLUEPRINT = ITEMS.register("ntw_20_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
     public static final RegistryObject<Item> MP_5_BLUEPRINT = ITEMS.register("mp_5_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> VECTOR_BLUEPRINT = ITEMS.register("vector_blueprint", () -> new BlueprintItem(Rarity.EPIC));
-    public static final RegistryObject<Item> MINIGUN_BLUEPRINT = ITEMS.register("minigun_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> MINIGUN_BLUEPRINT = ITEMS.register("minigun_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
     public static final RegistryObject<Item> MK_14_BLUEPRINT = ITEMS.register("mk_14_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> SENTINEL_BLUEPRINT = ITEMS.register("sentinel_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final RegistryObject<Item> M_60_BLUEPRINT = ITEMS.register("m_60_blueprint", () -> new BlueprintItem(Rarity.EPIC));
@@ -281,16 +280,16 @@ public class ModItems {
     public static final RegistryObject<Item> K_98_BLUEPRINT = ITEMS.register("k_98_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> MOSIN_NAGANT_BLUEPRINT = ITEMS.register("mosin_nagant_blueprint", () -> new BlueprintItem(Rarity.RARE));
     public static final RegistryObject<Item> IGLA_BLUEPRINT = ITEMS.register("igla_9k38_blueprint", () -> new BlueprintItem(Rarity.EPIC));
-    public static final RegistryObject<Item> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> JAVELIN_BLUEPRINT = ITEMS.register("javelin_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
     public static final RegistryObject<Item> M_2_HB_BLUEPRINT = ITEMS.register("m_2_hb_blueprint", () -> new BlueprintItem(Rarity.RARE));
-    public static final RegistryObject<Item> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
     public static final RegistryObject<Item> INSIDIOUS_BLUEPRINT = ITEMS.register("insidious_blueprint", () -> new BlueprintItem(Rarity.EPIC));
-    public static final RegistryObject<Item> AURELIA_SCEPTRE_BLUEPRINT = ITEMS.register("aurelia_sceptre_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
-    public static final RegistryObject<Item> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
-    public static final RegistryObject<Item> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
-    public static final RegistryObject<Item> BL_132_BLUEPRINT = ITEMS.register("bl_132_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
-    public static final RegistryObject<Item> HPJ_11_BLUEPRINT = ITEMS.register("hpj_11_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
-    public static final RegistryObject<Item> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(RarityTool.LEGENDARY));
+    public static final RegistryObject<Item> AURELIA_SCEPTRE_BLUEPRINT = ITEMS.register("aurelia_sceptre_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
+    public static final RegistryObject<Item> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
+    public static final RegistryObject<Item> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
+    public static final RegistryObject<Item> BL_132_BLUEPRINT = ITEMS.register("bl_132_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
+    public static final RegistryObject<Item> HPJ_11_BLUEPRINT = ITEMS.register("hpj_11_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
+    public static final RegistryObject<Item> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
 
     /**
      * Block

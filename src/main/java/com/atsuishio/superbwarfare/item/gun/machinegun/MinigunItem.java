@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.item.gun.machinegun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.MinigunItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.tools.RarityTool;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public class MinigunItem extends GunItem {
 
     public MinigunItem() {
-        super(new Item.Properties().rarity(RarityTool.LEGENDARY));
+        super(new Item.Properties().rarity(ModRarities.LEGENDARY));
     }
 
     @Override
