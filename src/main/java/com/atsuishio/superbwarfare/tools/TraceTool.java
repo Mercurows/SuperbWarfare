@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -76,7 +76,7 @@ public class TraceTool {
     }
 
     @Nullable
-    public static ProjectileEntity.EntityResult getLaserRayTraceResult(Entity shooter, double range) {
+    public static EntityResult getLaserRayTraceResult(Entity shooter, double range) {
         double distance = range * range;
         Vec3 eyePos = shooter.getEyePosition(1.0f);
         HitResult hitResult = shooter.pick(range, 1.0f, false);
@@ -110,7 +110,7 @@ public class TraceTool {
                         }
                     }
 
-                    return new ProjectileEntity.EntityResult(entity, hitPos, headshot, legShot);
+                    return new EntityResult(entity, hitPos, headshot, legShot);
                 }
             }
         }

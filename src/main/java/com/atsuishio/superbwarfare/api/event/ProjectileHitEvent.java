@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.api.event;
 
-import com.atsuishio.superbwarfare.tools.ExtendedEntityRayTraceResult;
+import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;

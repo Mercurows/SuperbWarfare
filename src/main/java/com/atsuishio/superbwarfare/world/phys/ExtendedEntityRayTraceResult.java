@@ -1,16 +1,15 @@
-package com.atsuishio.superbwarfare.tools;
+package com.atsuishio.superbwarfare.world.phys;
 
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import net.minecraft.world.phys.EntityHitResult;
 
 /**
- * Author: MrCrayFish
+ * @author MrCrayFish
  */
 public class ExtendedEntityRayTraceResult extends EntityHitResult {
     private final boolean headshot;
     private final boolean legShot;
 
-    public ExtendedEntityRayTraceResult(ProjectileEntity.EntityResult result) {
+    public ExtendedEntityRayTraceResult(EntityResult result) {
         super(result.getEntity(), result.getHitPos());
         this.headshot = result.isHeadshot();
         this.legShot = result.isLegShot();

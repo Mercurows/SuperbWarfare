@@ -17,6 +17,8 @@ import com.atsuishio.superbwarfare.item.Transcript;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.world.phys.EntityResult;
+import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -842,45 +844,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
-    }
-
-    public static class EntityResult {
-        private final Entity entity;
-        private final Vec3 hitVec;
-        private final boolean headshot;
-        private final boolean legShot;
-
-        public EntityResult(Entity entity, Vec3 hitVec, boolean headshot, boolean legShot) {
-            this.entity = entity;
-            this.hitVec = hitVec;
-            this.headshot = headshot;
-            this.legShot = legShot;
-        }
-
-        /**
-         * Gets the entity that was hit by the projectile
-         */
-        public Entity getEntity() {
-            return this.entity;
-        }
-
-        /**
-         * Gets the position the projectile hit
-         */
-        public Vec3 getHitPos() {
-            return this.hitVec;
-        }
-
-        /**
-         * Gets if this was a headshot
-         */
-        public boolean isHeadshot() {
-            return this.headshot;
-        }
-
-        public boolean isLegShot() {
-            return this.legShot;
-        }
     }
 
     @Override
