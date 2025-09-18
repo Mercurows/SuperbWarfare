@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.init.ModAttachments;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;

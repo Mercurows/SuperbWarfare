@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.item.common.ammo.box;
 
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.ChatFormatting;

@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.client;
+package com.atsuishio.superbwarfare.client.animation;
 
 /**
  * Code based on @EEEAB's EEEABsMobs and @Mercurows's DreamaticVoyage

@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.tools.animation;
+package com.atsuishio.superbwarfare.client.animation;
 
 
 import java.util.function.Function;

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.item;
 
-import com.atsuishio.superbwarfare.client.AnimationHelper;
+import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.LungeMineModel;
 import com.atsuishio.superbwarfare.item.LungeMine;
 import com.mojang.blaze3d.vertex.PoseStack;

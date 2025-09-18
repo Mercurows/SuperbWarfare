@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.tools;
+package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.init.ModAttachments;

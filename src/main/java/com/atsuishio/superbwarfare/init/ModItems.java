@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.item.*;
 import com.atsuishio.superbwarfare.item.armor.*;
@@ -31,7 +32,6 @@ import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.*;

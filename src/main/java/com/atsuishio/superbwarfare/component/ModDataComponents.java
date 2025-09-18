@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.component;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

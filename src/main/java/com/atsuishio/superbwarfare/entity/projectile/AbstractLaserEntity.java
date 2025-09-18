@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.client.AnimationTicker;
+import com.atsuishio.superbwarfare.client.animation.AnimationTicker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
