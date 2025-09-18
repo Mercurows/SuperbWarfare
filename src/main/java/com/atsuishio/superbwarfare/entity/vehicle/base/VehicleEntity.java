@@ -2204,6 +2204,10 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return List.of(ContainerBlockItem.createInstance(this));
     }
 
+    public int getHudColor() {
+        return 0x66FF00;
+    }
+
     public enum VehicleType {
         EMPTY,
         TANK,

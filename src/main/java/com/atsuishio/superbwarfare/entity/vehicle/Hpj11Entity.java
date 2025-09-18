@@ -100,6 +100,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
                                 .explosionDamage(VehicleConfig.HPJ11_EXPLOSION_DAMAGE.get().floatValue())
                                 .explosionRadius(VehicleConfig.HPJ11_EXPLOSION_RADIUS.get().floatValue())
                                 .aa(true)
+                                .aaProjectileWeapon(true)
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png"))
                 }
         };
@@ -314,7 +315,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
             Vec3 targetPos = target.getBoundingBox().getCenter();
             Vec3 targetVel = target.getDeltaMovement();
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel, 20, 0.03);
+            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel, projectileVelocity(player), projectileGravity(player));
 
             double d0 = targetVec.x;
             double d1 = targetVec.y;
@@ -448,7 +449,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
 
         entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 20, 0.25f);
+        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, projectileVelocity(living), 0.25f);
         level().addFreshEntity(entityToSpawn);
 
         this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
@@ -468,6 +469,30 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     public float shootingPitch() {
         return 0.8f + entityData.get(FIRE_TIME) * 0.1f;
+    }
+
+    @Override
+    public Vec3 getNewEyePos(float pPartialTicks) {
+        return getTurretShootPos(getFirstPassenger(), pPartialTicks);
+    }
+
+    @Override
+    public Vec3 getTurretShootPos(Entity entity, float ticks) {
+        Matrix4f transform = getBarrelTransform(1);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    // 炮弹发射速度
+    @Override
+    public float projectileVelocity(Entity entity) {
+        return 20;
+    }
+
+    // 炮弹重力
+    @Override
+    public float projectileGravity(Entity entity) {
+        return 0.03f;
     }
 
     public Matrix4f getBarrelTransform(float ticks) {
@@ -550,10 +575,7 @@ public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEnti
 
     @Override
     public Vec3 getBarrelVector(float pPartialTicks) {
-        if (getFirstPassenger() != null) {
-            return getFirstPassenger().getViewVector(pPartialTicks);
-        }
-        return super.getBarrelVector(pPartialTicks);
+        return getViewVector(pPartialTicks);
     }
 
     @Override
