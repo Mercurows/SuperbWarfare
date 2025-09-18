@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,17 +35,14 @@ public class ShootMessage {
     public static void handler(ShootMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            if (context.getSender() != null) {
-                pressAction(context.getSender(), message.spread, message.zoom, message.uuid);
+            var player = context.getSender();
+            if (player != null) {
+                var stack = player.getMainHandItem();
+                if (!(stack.getItem() instanceof GunItem)) return;
+
+                GunData.from(stack).shoot(player, message.spread, message.zoom, message.uuid);
             }
         });
         context.setPacketHandled(true);
-    }
-
-    public static void pressAction(Player player, double spread, boolean zoom, @Nullable UUID uuid) {
-        var stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
-
-        GunData.from(stack).shoot(player, spread, zoom, uuid);
     }
 }

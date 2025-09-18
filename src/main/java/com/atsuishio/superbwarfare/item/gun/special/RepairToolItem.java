@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.renderer.gun.RepairToolItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -356,8 +357,13 @@ public class RepairToolItem extends GunItem {
             }
         } else if (target instanceof LivingEntity living) {
             if (shooter.isShiftKeyDown()) {
+                ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
+                iCustomKnockback.superbWarfare$setKnockbackStrength(0);
+
                 DamageHandler.doDamage(target, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
                 target.invulnerableTime = 0;
+
+                iCustomKnockback.superbWarfare$resetKnockbackStrength();
 
                 if (shooter instanceof ServerPlayer player) {
                     player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
@@ -367,8 +373,13 @@ public class RepairToolItem extends GunItem {
                 if (target.getType().is(ModTags.EntityTypes.CAN_REPAIR)) {
                     living.heal(0.5f + 0.0025f * living.getMaxHealth());
                 } else {
+                    ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
+                    iCustomKnockback.superbWarfare$setKnockbackStrength(0);
+
                     DamageHandler.doDamage(target, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
                     target.invulnerableTime = 0;
+
+                    iCustomKnockback.superbWarfare$resetKnockbackStrength();
 
                     if (shooter instanceof ServerPlayer player) {
                         player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
