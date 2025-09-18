@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -31,14 +30,14 @@ public record ShootMessage(double spread, boolean zoom, Optional<UUID> uuid) imp
     );
 
     public static void handler(final ShootMessage message, final IPayloadContext context) {
-        pressAction(context.player(), message.spread, message.zoom, message.uuid.orElse(null));
+        pressAction(context.player(), message);
     }
 
-    public static void pressAction(Player player, double spread, boolean zoom, @Nullable UUID uuid) {
+    public static void pressAction(Player player, ShootMessage message) {
         var stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
 
-        GunData.from(stack).shoot(player, spread, zoom, uuid);
+        GunData.from(stack).shoot(player, message.spread, message.zoom, message.uuid.orElse(null));
     }
 
     @Override
