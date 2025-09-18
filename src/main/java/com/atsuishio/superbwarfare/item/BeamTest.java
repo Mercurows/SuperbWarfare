@@ -18,7 +18,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -113,7 +112,12 @@ public class BeamTest extends Item {
     }
 
     public static void beamShoot(Player player) {
-        Entity lookingEntity = TraceTool.laserfindLookingEntity(player, 512);
+        var result = TraceTool.getLaserRayTraceResult(player, 512);
+        if (result == null) {
+            return;
+        }
+
+        var lookingEntity = result.getEntity();
 
         if (lookingEntity == null) {
             return;
@@ -123,7 +127,7 @@ public class BeamTest extends Item {
                 && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || TDMSavedData.enabledTDM(lookingEntity));
 
         if (canAttack) {
-            Mod.PACKET_HANDLER.sendToServer(new LaserShootMessage(45, lookingEntity.getUUID(), TraceTool.laserHeadshot));
+            Mod.PACKET_HANDLER.sendToServer(new LaserShootMessage(45, lookingEntity.getUUID(), result.isHeadshot()));
         }
     }
 

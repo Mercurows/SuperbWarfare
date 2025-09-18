@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
+import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.Prop;
@@ -9,30 +10,36 @@ import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
+import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.projectile.CustomDamageProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.CustomGravityEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.CustomRendererItem;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.RangeTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -45,16 +52,19 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,11 +79,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
+import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber
 public abstract class GunItem extends Item implements GeoItem, CustomRendererItem, ItemScreenProvider, GunPropertyModifier {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    protected final RandomSource random = RandomSource.create();
 
     public GunItem(Properties properties) {
         super(properties.stacksTo(1));
@@ -666,6 +678,16 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     ) {
         var stack = data.stack;
 
+        var projectileInfo = data.get(GunProp.PROJECTILE);
+        var projectileType = projectileInfo.type;
+        var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
+
+        if (projectileTypeStr.equals("empty")) {
+            return true;
+        } else if (projectileTypeStr.equals("ray")) {
+            return this.shootRay(shooter, level, data, shootPosition, shootDirection, zoom, uuid);
+        }
+
         var headshot = data.get(GunProp.HEADSHOT);
         var damage = data.get(GunProp.DAMAGE);
         var velocity = data.get(GunProp.VELOCITY);
@@ -676,13 +698,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
         }
 
         var finalVelocity = velocity;
-
-        var projectileInfo = data.get(GunProp.PROJECTILE);
-        var projectileType = projectileInfo.type;
-
-        if (projectileType.trim().toLowerCase(Locale.ROOT).equals("empty")) {
-            return true;
-        }
 
         AtomicReference<Entity> entityHolder = new AtomicReference<>();
 
@@ -806,6 +821,103 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
         level.addFreshEntity(entity);
         return true;
+    }
+
+    public boolean shootRay(@Nullable Entity shooter, ServerLevel level, @NotNull GunData data, Vec3 shootPosition, Vec3 shootDirection, boolean zoom, UUID uuid) {
+        if (shooter == null) {
+            return false;
+        }
+
+        // TODO 替换为prop
+        double range = 3;
+
+        Entity target = null;
+
+        double distance = range * range;
+        Vec3 eyePos = shooter.getEyePosition(1.0f);
+        HitResult hitResult = shooter.pick(range, 1.0f, false);
+
+        Vec3 viewVec = shooter.getViewVector(1.0F);
+        Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
+        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
+        if (entityhitresult != null) {
+            hitResult = entityhitresult;
+        }
+        if (hitResult.getType() == HitResult.Type.ENTITY) {
+            target = ((EntityHitResult) hitResult).getEntity();
+        }
+
+        BlockHitResult result = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(3)),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
+
+        BlockPos blockPos = result.getBlockPos();
+        BlockState state = level.getBlockState(blockPos);
+
+        Vec3 pos = null;
+
+        if (state.canOcclude()) {
+            pos = result.getLocation();
+        }
+        if (target != null) {
+            pos = hitResult.getLocation();
+        }
+
+        if (target != null) {
+            this.onRayHitEntity(shooter, level, data, shootPosition, shootDirection, target);
+        }
+        if (pos != null) {
+            this.onRayHitBlock(shooter, level, target, data, shootDirection, blockPos, state, result.getDirection(), pos);
+        }
+
+        return true;
+    }
+
+    public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockPos blockPos, BlockState state, Direction direction, @NotNull Vec3 pos) {
+        this.summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
+        if (target == null) {
+            BulletDecalOption bulletDecalOption = new BulletDecalOption(direction, blockPos);
+            ParticleTool.sendParticle(level, bulletDecalOption, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, true);
+        }
+        // TODO 音效是不是可以替换？
+        level.playSound(null, pos.x, pos.y, pos.z, ModSounds.REPAIRING.get(), SoundSource.BLOCKS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
+    }
+
+    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, Vec3 shootPosition, Vec3 shootDirection, @NotNull Entity target) {
+        if (target instanceof LivingEntity living) {
+            ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
+            iCustomKnockback.superbWarfare$setKnockbackStrength(0);
+
+            DamageHandler.doDamage(living, ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter), data.get(GunProp.DAMAGE).floatValue());
+            target.invulnerableTime = 0;
+
+            iCustomKnockback.superbWarfare$resetKnockbackStrength();
+
+            if (shooter instanceof ServerPlayer player) {
+                player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
+                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+            }
+        }
+    }
+
+    public void summonRayHitParticle(ServerLevel serverLevel, BlockState state, Vec3 pos, Vec3 dir) {
+        BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+        for (int i = 0; i < 1; i++) {
+            Vec3 vec3 = this.randomVec(dir, 40);
+            sendParticle(serverLevel, particleData, pos.x + 0.05 * i * dir.x, pos.y + 0.05 * i * dir.y, pos.z + 0.05 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+        }
+        for (int i = 0; i < 3; i++) {
+            Vec3 vec3 = this.randomVec(dir, 20);
+            sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
+        }
+        for (int i = 0; i < 2; i++) {
+            Vec3 vec3 = this.randomVec(dir, 80);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.2 + 0.1 * Math.random(), true);
+        }
+    }
+
+    public Vec3 randomVec(Vec3 vec3, double spread) {
+        return vec3.normalize().add(random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread));
     }
 
     @Override

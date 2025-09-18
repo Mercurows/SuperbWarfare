@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.BlockPos;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.entity.PartEntity;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,8 +24,6 @@ import java.util.function.Predicate;
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public class TraceTool {
-
-    public static boolean laserHeadshot = false;
 
     public static Entity findLookingEntity(Entity entity, double entityReach) {
         double distance = entityReach * entityReach;
@@ -75,29 +75,43 @@ public class TraceTool {
         return null;
     }
 
-    public static Entity laserfindLookingEntity(Entity player, double entityReach) {
+    @Nullable
+    public static ProjectileEntity.EntityResult getLaserRayTraceResult(Entity shooter, double range) {
+        double distance = range * range;
+        Vec3 eyePos = shooter.getEyePosition(1.0f);
+        HitResult hitResult = shooter.pick(range, 1.0f, false);
 
-        double distance = entityReach * entityReach;
-        Vec3 eyePos = player.getEyePosition(1.0f);
-        HitResult hitResult = player.pick(entityReach, 1.0f, false);
-
-        Vec3 viewVec = player.getViewVector(1.0F);
-        Vec3 toVec = eyePos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
-        AABB aabb = player.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(player, eyePos, toVec, aabb, p -> !p.isSpectator() && player.getVehicle() != p && p.isAlive() && smokeFilter(p), distance);
+        Vec3 viewVec = shooter.getViewVector(1.0F);
+        Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
+        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && shooter.getVehicle() != p && p.isAlive() && smokeFilter(p), distance);
         if (entityhitresult != null) {
-            Vec3 hitVec = entityhitresult.getLocation();
-            if (checkNoClip(player, hitVec)) {
+            Vec3 hitPos = entityhitresult.getLocation();
+            if (checkNoClip(shooter, hitPos)) {
                 hitResult = entityhitresult;
             }
 
-            if (hitResult.getType() == HitResult.Type.ENTITY && ((EntityHitResult) hitResult).getEntity().isAlive()) {
-                if (((EntityHitResult) hitResult).getEntity() instanceof LivingEntity living) {
-                    laserHeadshot = living.getEyeY() - 0.4 < hitVec.y && hitVec.y < living.getEyeY() + 0.5;
-                } else {
-                    laserHeadshot = false;
+            if (hitResult.getType() == HitResult.Type.ENTITY) {
+                var entity = ((EntityHitResult) hitResult).getEntity();
+
+                if (entity.isAlive()) {
+                    Vec3 hitBoxPos = hitPos.subtract(entity.position());
+                    boolean headshot = false;
+                    boolean legShot = false;
+                    float eyeHeight = entity.getEyeHeight();
+                    float bodyHeight = entity.getBbHeight();
+
+                    if (entity instanceof LivingEntity) {
+                        if (eyeHeight - 0.25 < hitBoxPos.y && hitBoxPos.y < eyeHeight + 0.3) {
+                            headshot = true;
+                        }
+                        if (hitBoxPos.y < 0.33 * bodyHeight) {
+                            legShot = true;
+                        }
+                    }
+
+                    return new ProjectileEntity.EntityResult(entity, hitPos, headshot, legShot);
                 }
-                return ((EntityHitResult) hitResult).getEntity();
             }
         }
 
@@ -253,10 +267,10 @@ public class TraceTool {
     /**
      * 获取从起点开始，沿方向向量射线上的所有实体
      *
-     * @param world         世界对象
-     * @param start         射线起点
-     * @param direction     方向向量 (不需要标准化，但长度会影响射线速度)
-     * @param maxDistance   射线最大长度
+     * @param world           世界对象
+     * @param start           射线起点
+     * @param direction       方向向量 (不需要标准化，但长度会影响射线速度)
+     * @param maxDistance     射线最大长度
      * @param filterPredicate 可选的实体过滤器 (例如，排除发射者本身，只选择特定类型的实体)
      * @return 一个包含射线击中的所有实体的列表，以及它们与射线交点的最近距离。
      */
@@ -303,10 +317,10 @@ public class TraceTool {
      * 射线与轴向包围盒（AABB）的相交测试
      * 使用经典的SLAB方法
      *
-     * @param start     射线起点
-     * @param dir       标准化后的射线方向
-     * @param box       实体的AABB
-     * @param maxDist   射线最大长度
+     * @param start   射线起点
+     * @param dir     标准化后的射线方向
+     * @param box     实体的AABB
+     * @param maxDist 射线最大长度
      * @return 如果相交，返回相交的最近距离值t；否则返回null
      */
     private static Double rayIntersectsAABB(Vec3 start, Vec3 dir, AABB box, double maxDist) {
