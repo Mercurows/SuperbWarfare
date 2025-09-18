@@ -690,8 +690,12 @@ public class ClientEventHandler {
 
     public static void beamShoot(Player player, ItemStack stack) {
         if (stack.is(ModItems.BEAM_TEST.get()) && player.getUseItem() == stack) {
-            Entity lookingEntity = TraceTool.laserfindLookingEntity(player, 512);
-            if (lookingEntity == null) return;
+            var result = TraceTool.getLaserRayTraceResult(player, 512);
+            if (result == null) {
+                return;
+            }
+
+            var lookingEntity = result.getEntity();
 
             if (player.isCrouching()) {
                 Entity seekingEntity = SeekTool.seekLivingEntity(player, player.level(), 64, 32);
@@ -704,7 +708,7 @@ public class ClientEventHandler {
                     && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || TDMSavedData.enabledTDM(lookingEntity));
 
             if (canAttack) {
-                PacketDistributor.sendToServer(new LaserShootMessage(0, lookingEntity.getUUID(), TraceTool.laserHeadshot));
+                PacketDistributor.sendToServer(new LaserShootMessage(1, lookingEntity.getUUID(), result.isHeadshot()));
             }
         }
     }
