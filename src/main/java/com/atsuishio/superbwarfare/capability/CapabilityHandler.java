@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.capability;
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
-import com.atsuishio.superbwarfare.tools.Ammo;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;

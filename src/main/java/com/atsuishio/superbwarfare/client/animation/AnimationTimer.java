@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.tools.animation;
+package com.atsuishio.superbwarfare.client.animation;
 
 import net.minecraft.util.Mth;
 

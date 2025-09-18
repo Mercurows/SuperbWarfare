@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.command;
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
-import com.atsuishio.superbwarfare.tools.Ammo;
+import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
