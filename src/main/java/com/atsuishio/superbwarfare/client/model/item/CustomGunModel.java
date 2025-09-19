@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.client.molang.MolangVariable;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.mixins.AnimationProcessorAccessor;
 import com.atsuishio.superbwarfare.mixins.GeoModelAccessor;
@@ -20,7 +21,7 @@ import software.bernie.geckolib.core.molang.MolangQueries;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.util.RenderUtils;
 
-public abstract class CustomGunModel<T extends GunItem & GeoAnimatable> extends GeoModel<T> {
+public abstract class CustomGunModel<T extends GunGeoItem & GeoAnimatable> extends GeoModel<T> {
 
     public ResourceLocation getLODModelResource(T animatable) {
         return this.getModelResource(animatable);

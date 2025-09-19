@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer;
 
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,7 +15,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;
 
-public class SimpleGunRenderer<T extends GunItem & GeoAnimatable> extends CustomGunRenderer<T> {
+public class SimpleGunRenderer<T extends GunGeoItem & GeoAnimatable> extends CustomGunRenderer<T> {
 
     private final double x;
     private final double y;

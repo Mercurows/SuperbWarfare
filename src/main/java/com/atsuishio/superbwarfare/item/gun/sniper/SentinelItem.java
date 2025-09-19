@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageCompone
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -40,7 +41,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class SentinelItem extends GunItem {
+public class SentinelItem extends GunGeoItem {
 
     private final Supplier<Integer> energyCapacity;
 

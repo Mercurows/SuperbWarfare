@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.model.item.AureliaSceptreModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModRarities;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -43,7 +44,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class AureliaSceptre extends GunItem {
+public class AureliaSceptre extends GunGeoItem {
 
     public AureliaSceptre() {
         super(new Properties().rarity(ModRarities.LEGENDARY));

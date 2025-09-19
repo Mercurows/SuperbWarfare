@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.renderer.gun.RpgItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
@@ -35,7 +36,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class RpgItem extends GunItem {
+public class RpgItem extends GunGeoItem {
 
     public RpgItem() {
         super(new Item.Properties().rarity(Rarity.RARE));
