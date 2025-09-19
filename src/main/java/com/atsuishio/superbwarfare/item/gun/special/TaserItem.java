@@ -4,10 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.BatteryItem;
-import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
@@ -37,9 +37,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class TaserItem extends GunGeoItem implements EnergyStorageItem {
-
-    public static final int MAX_ENERGY = 6000;
+public class TaserItem extends GunGeoItem {
 
     public TaserItem() {
         super(new Properties().rarity(Rarity.COMMON));
@@ -54,7 +52,7 @@ public class TaserItem extends GunGeoItem implements EnergyStorageItem {
     @Override
     public int getBarWidth(@NotNull ItemStack stack) {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / MAX_ENERGY);
+        return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / GunData.from(stack).get(GunProp.MAX_ENERGY));
     }
 
     @Override
@@ -163,11 +161,6 @@ public class TaserItem extends GunGeoItem implements EnergyStorageItem {
         if (!hasEnoughEnergy) return false;
 
         return super.canShoot(data, shooter);
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return MAX_ENERGY;
     }
 
 }

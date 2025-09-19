@@ -2,14 +2,23 @@ package com.atsuishio.superbwarfare.capability.energy;
 
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.energy.EnergyStorage;
 
-public class ItemEnergyStorage extends EnergyStorage {
+import java.util.function.Function;
+
+public class ItemEnergyStorage extends DynamicEnergyStorage {
 
     private final ItemStack stack;
 
     public ItemEnergyStorage(ItemStack stack, int capacity) {
-        super(capacity, Integer.MAX_VALUE, Integer.MAX_VALUE);
+        this(stack, capacity, capacity, capacity);
+    }
+
+    public ItemEnergyStorage(ItemStack stack, int capacity, int maxReceive, int maxExtract) {
+        this(stack, s -> capacity, s -> maxReceive, s -> maxExtract);
+    }
+
+    public ItemEnergyStorage(ItemStack stack, Function<ItemStack, Integer> capacityGetter, Function<ItemStack, Integer> maxReceiveGetter, Function<ItemStack, Integer> maxExtractGetter) {
+        super(() -> capacityGetter.apply(stack), () -> maxReceiveGetter.apply(stack), () -> maxExtractGetter.apply(stack));
 
         this.stack = stack;
         var component = stack.get(ModDataComponents.ENERGY);

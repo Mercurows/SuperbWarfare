@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.BatteryItem;
-import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -45,7 +44,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class SecondaryCataclysm extends GunGeoItem implements EnergyStorageItem {
+public class SecondaryCataclysm extends GunGeoItem {
 
     public SecondaryCataclysm() {
         super(new Properties().fireResistant().rarity(ModEnumExtensions.getLegendary()));
@@ -60,7 +59,7 @@ public class SecondaryCataclysm extends GunGeoItem implements EnergyStorageItem 
     @Override
     public int getBarWidth(@NotNull ItemStack stack) {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / 24000F);
+        return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / GunData.from(stack).get(GunProp.MAX_ENERGY));
     }
 
     @Override
@@ -224,10 +223,4 @@ public class SecondaryCataclysm extends GunGeoItem implements EnergyStorageItem 
             super.playFireSounds(data, shooter, zoom);
         }
     }
-
-    @Override
-    public int getMaxEnergy() {
-        return 24000;
-    }
-
 }

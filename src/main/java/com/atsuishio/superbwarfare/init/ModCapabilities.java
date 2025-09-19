@@ -62,7 +62,7 @@ public class ModCapabilities {
             if (item instanceof EnergyStorageItem) {
                 event.registerItem(
                         Capabilities.EnergyStorage.ITEM,
-                        (stack, ctx) -> new ItemEnergyStorage(stack, ((EnergyStorageItem) stack.getItem()).getMaxEnergy()),
+                        (stack, ctx) -> new ItemEnergyStorage(stack, s -> ((EnergyStorageItem) item).getMaxEnergy(s), s -> ((EnergyStorageItem) item).getMaxReceiveEnergy(s), s -> ((EnergyStorageItem) item).getMaxExtractEnergy(s)),
                         item
                 );
             }

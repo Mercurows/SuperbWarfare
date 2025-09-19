@@ -40,7 +40,7 @@ public interface PropertyModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>
     @SuppressWarnings("unchecked")
     default <T, P extends Prop<DATA, DEFAULT_DATA, T>> void setProperty(P prop, @Nullable Prop.PropModifyContext<DATA, DEFAULT_DATA, T> modifier) {
         if (modifier == null) return;
-        getPropModifiers().put(prop, (pm, data, value) -> modifier.apply((PropModifier<DATA, ?, T>) pm, data, (T) value));
+        getPropModifiers().put(prop, (pm, data, value) -> modifier.apply((PropModifier<DATA, DEFAULT_DATA, T>) pm, data, (T) value));
     }
 
 
@@ -74,8 +74,8 @@ public interface PropertyModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>
             setProperty(prop, modifier);
         } else {
             modifiers.put(prop, (pm, data, v) -> {
-                var value = current.apply((PropModifier<DATA, ?, T>) pm, data, (T) v);
-                return modifier.apply((PropModifier<DATA, ?, T>) pm, data, value);
+                var value = current.apply((PropModifier<DATA, DEFAULT_DATA, T>) pm, data, (T) v);
+                return modifier.apply((PropModifier<DATA, DEFAULT_DATA, T>) pm, data, value);
             });
         }
     }

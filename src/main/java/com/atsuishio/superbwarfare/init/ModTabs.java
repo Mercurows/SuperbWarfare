@@ -46,7 +46,7 @@ public class ModTabs {
                         var newStack = stack.copy();
                         var cap = newStack.getCapability(Capabilities.EnergyStorage.ITEM);
 
-                        if (cap != null) {
+                        if (cap != null && cap.getMaxEnergyStored() > 0) {
                             cap.receiveEnergy(Integer.MAX_VALUE, false);
                             output.accept(newStack);
                         }

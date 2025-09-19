@@ -19,6 +19,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -73,9 +74,24 @@ import java.util.function.Consumer;
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier {
+public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier, EnergyStorageItem {
 
     protected final RandomSource random = RandomSource.create();
+
+    @Override
+    public int getMaxEnergy(ItemStack stack) {
+        return GunData.from(stack).get(GunProp.MAX_ENERGY);
+    }
+
+    @Override
+    public int getMaxReceiveEnergy(ItemStack stack) {
+        return GunData.from(stack).get(GunProp.MAX_RECEIVE_ENERGY);
+    }
+
+    @Override
+    public int getMaxExtractEnergy(ItemStack stack) {
+        return GunData.from(stack).get(GunProp.MAX_EXTRACT_ENERGY);
+    }
 
     public GunItem(Properties properties) {
         super(properties.stacksTo(1));

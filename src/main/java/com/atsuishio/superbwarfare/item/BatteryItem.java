@@ -56,7 +56,7 @@ public class BatteryItem extends Item implements EnergyStorageItem {
     }
 
     @Override
-    public int getMaxEnergy() {
+    public int getMaxEnergy(ItemStack stack) {
         return maxEnergy;
     }
 }
