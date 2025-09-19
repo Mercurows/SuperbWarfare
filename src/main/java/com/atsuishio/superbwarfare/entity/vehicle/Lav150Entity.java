@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
@@ -272,7 +273,7 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
             this.entityData.set(CANNON_RECOIL_TIME, 40);
             this.entityData.set(YAW, getTurretYRot());
 
-            this.entityData.set(HEAT, this.entityData.get(HEAT) + 7);
+            this.entityData.set(HEAT, this.entityData.get(HEAT) + data.get(GunProp.HEAT_PER_SHOOT).intValue());
             this.entityData.set(FIRE_ANIM, 3);
 
             if (hasCreativeAmmo) return;
@@ -446,7 +447,9 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public int mainGunRpm(LivingEntity living) {
         if (getWeaponIndex(0) == 0) {
-            return 300;
+            ItemStack lav150_cannon = new ItemStack(ModItems.LAV_150_20MM_CANNON.get());
+            var data = GunData.from(lav150_cannon);
+            return data.get(GunProp.RPM);
         } else if (getWeaponIndex(0) == 1) {
             return 600;
         }

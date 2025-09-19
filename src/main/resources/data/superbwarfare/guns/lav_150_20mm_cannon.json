@@ -5,8 +5,8 @@
   "ExplosionDamage": 12,
   "ExplosionRadius": 1,
   "Velocity": 35,
-  "BypassesArmor": 0,
-  "SoundRadius": 11,
+  "HeatPerShoot": 7,
+  "RPM": 300,
   "Projectile": "superbwarfare:small_shell",
   "AmmoType": "superbwarfare:small_cannon_shell"
 }
