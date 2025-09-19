@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -33,7 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class SentinelItem extends GunItem implements EnergyStorageItem {
+public class SentinelItem extends GunGeoItem implements EnergyStorageItem {
 
     public SentinelItem() {
         super(new Item.Properties().rarity(Rarity.EPIC));

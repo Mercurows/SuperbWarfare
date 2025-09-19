@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
@@ -15,6 +16,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.vehicle.Lav15020MMCannon;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
@@ -90,9 +92,6 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
                         new SmallCannonShellWeapon()
-                                .damage(VehicleConfig.LAV_150_CANNON_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.LAV_150_CANNON_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.LAV_150_CANNON_EXPLOSION_RADIUS.get().floatValue())
                                 .sound(ModSounds.INTO_MISSILE.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png"))
                                 .sound1p(ModSounds.LAV_CANNON_FIRE_1P.get())
@@ -248,12 +247,22 @@ public class Lav150Entity extends ContainerMobileVehicleEntity implements GeoEnt
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
 
-            var smallCannonShell = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
+//            var smallCannonShell = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
+//
+//            smallCannonShell.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+//            smallCannonShell.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 35,
+//                    0.25f);
+//            this.level().addFreshEntity(smallCannonShell);
 
-            smallCannonShell.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
-            smallCannonShell.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 35,
-                    0.25f);
-            this.level().addFreshEntity(smallCannonShell);
+            ItemStack lav150_cannon = new ItemStack(ModItems.LAV_150_20MM_CANNON.get());
+            var data = GunData.from(lav150_cannon);
+
+            Lav15020MMCannon.summonBullet(living,
+                    (ServerLevel) this.level(),
+                    new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z),
+                    new Vec3(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z),
+                    data,
+                    false);
 
             sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
             playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));

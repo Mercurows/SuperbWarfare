@@ -30,6 +30,7 @@ import com.atsuishio.superbwarfare.item.gun.sniper.*;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
+import com.atsuishio.superbwarfare.item.gun.vehicle.Lav15020MMCannon;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -98,6 +99,8 @@ public class ModItems {
     public static final DeferredHolder<Item, IglaItem> IGLA = GUNS.register("igla_9k38", IglaItem::new);
     public static final DeferredHolder<Item, AureliaSceptre> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptre::new);
     public static final DeferredHolder<Item, BocekItem> BOCEK = GUNS.register("bocek", BocekItem::new);
+
+    public static final DeferredHolder<Item, Lav15020MMCannon> LAV_150_20MM_CANNON = GUNS.register("lav_150_20mm_cannon", Lav15020MMCannon::new);
 
     /**
      * Ammo

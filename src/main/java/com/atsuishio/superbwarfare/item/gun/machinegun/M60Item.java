@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.model.item.M60ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -29,7 +30,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class M60Item extends GunItem {
+public class M60Item extends GunGeoItem {
 
     public M60Item() {
         super(new Properties().rarity(Rarity.EPIC));

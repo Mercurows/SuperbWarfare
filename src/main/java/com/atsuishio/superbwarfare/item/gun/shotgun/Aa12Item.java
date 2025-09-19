@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.model.item.Aa12ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -21,7 +22,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class Aa12Item extends GunItem {
+public class Aa12Item extends GunGeoItem {
 
     public Aa12Item() {
         super(new Properties().rarity(ModEnumExtensions.getLegendary()));

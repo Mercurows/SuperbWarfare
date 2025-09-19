@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.DevotionItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -20,7 +21,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class DevotionItem extends GunItem {
+public class DevotionItem extends GunGeoItem {
 
     public DevotionItem() {
         super(new Properties().rarity(Rarity.EPIC));

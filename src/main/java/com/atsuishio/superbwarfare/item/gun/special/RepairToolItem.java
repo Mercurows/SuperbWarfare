@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
@@ -53,7 +54,7 @@ import java.util.function.Supplier;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
 import static com.atsuishio.superbwarfare.tools.SeekTool.teamFilter;
 
-public class RepairToolItem extends GunItem implements EnergyStorageItem {
+public class RepairToolItem extends GunGeoItem implements EnergyStorageItem {
 
     public static final int MAX_ENERGY = 100000;
 

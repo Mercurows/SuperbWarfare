@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -49,7 +50,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class JavelinItem extends GunItem {
+public class JavelinItem extends GunGeoItem {
 
     public JavelinItem() {
         super(new Properties().rarity(ModEnumExtensions.getLegendary()));

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -22,7 +23,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class VectorItem extends GunItem {
+public class VectorItem extends GunGeoItem {
 
     public VectorItem() {
         super(new Properties().rarity(Rarity.EPIC));

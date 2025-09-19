@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.ModEnumExtensions;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.ChatFormatting;
@@ -44,7 +45,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class SecondaryCataclysm extends GunItem implements EnergyStorageItem {
+public class SecondaryCataclysm extends GunGeoItem implements EnergyStorageItem {
 
     public SecondaryCataclysm() {
         super(new Properties().fireResistant().rarity(ModEnumExtensions.getLegendary()));

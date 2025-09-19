@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.HomemadeShotgunItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
@@ -29,7 +30,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class HomemadeShotgunItem extends GunItem {
+public class HomemadeShotgunItem extends GunGeoItem {
 
     public HomemadeShotgunItem() {
         super(new Item.Properties().rarity(Rarity.COMMON));

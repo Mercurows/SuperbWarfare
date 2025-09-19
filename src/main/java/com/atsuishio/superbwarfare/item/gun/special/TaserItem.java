@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.EnergyStorageItem;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -36,7 +37,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class TaserItem extends GunItem implements EnergyStorageItem {
+public class TaserItem extends GunGeoItem implements EnergyStorageItem {
 
     public static final int MAX_ENERGY = 6000;
 

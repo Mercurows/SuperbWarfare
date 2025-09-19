@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
@@ -16,8 +15,10 @@ import com.atsuishio.superbwarfare.entity.projectile.CustomGravityEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.item.CustomRendererItem;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import com.atsuishio.superbwarfare.init.ModPerks;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
@@ -27,8 +28,6 @@ import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -61,17 +60,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -81,10 +73,8 @@ import java.util.function.Consumer;
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
-public abstract class GunItem extends Item implements GeoItem, CustomRendererItem, ItemScreenProvider, GunPropertyModifier {
+public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier {
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     protected final RandomSource random = RandomSource.create();
 
     public GunItem(Properties properties) {
@@ -92,7 +82,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
 
         addReloadTimeBehavior(this.reloadTimeBehaviors);
         addBoltTimeBehavior(this.boltTimeBehaviors);
-        SingletonGeoAnimatable.registerSyncedAnimatable(this);
 
         setProperty(GunProp.DAMAGE, (data, v) -> v + getCustomDamage(data));
         setProperty(GunProp.HEADSHOT, (data, v) -> v + getCustomHeadshot(data));
@@ -112,16 +101,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
     @SuppressWarnings("unchecked")
     public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> getPropModifiers() {
         return this.propertyModifiers;
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    @Override
-    public boolean isPerspectiveAware() {
-        return true;
     }
 
     @Override
@@ -936,33 +915,6 @@ public abstract class GunItem extends Item implements GeoItem, CustomRendererIte
      * @param player 玩家
      */
     public void onChangeSlot(ItemStack stack, Player player) {
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-        return PoseTool.pose(entityLiving, hand, stack);
-    }
-
-    @SubscribeEvent
-    private static void registerGunExtensions(RegisterClientExtensionsEvent event) {
-        for (var item : ModItems.GUNS.getEntries()) {
-            if (item.get() instanceof GunItem gun) {
-                event.registerItem(new IClientItemExtensions() {
-                    private final BlockEntityWithoutLevelRenderer renderer = gun.getRenderer().get();
-
-                    @Override
-                    public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                        return renderer;
-                    }
-
-                    @Override
-                    @ParametersAreNonnullByDefault
-                    public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
-                        return gun.getArmPose(entityLiving, hand, stack);
-                    }
-                }, item);
-            }
-        }
     }
 
     @OnlyIn(Dist.CLIENT)

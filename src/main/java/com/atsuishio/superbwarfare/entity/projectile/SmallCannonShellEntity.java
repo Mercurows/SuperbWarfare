@@ -45,7 +45,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     private float explosionRadius = 5f;
     private boolean aa;
     private float gravity = 0.03f;
-    private Explosion.BlockInteraction blockInteraction;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SmallCannonShellEntity(EntityType<? extends SmallCannonShellEntity> type, Level world) {
@@ -64,11 +63,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         if (aa) {
             crushProjectile(getDeltaMovement());
         }
-    }
-
-    public SmallCannonShellEntity setBlockInteraction(Explosion.BlockInteraction blockInteraction) {
-        this.blockInteraction = blockInteraction;
-        return this;
     }
 
     @Override
@@ -140,7 +134,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         if (this.level() instanceof ServerLevel) {
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.blockInteraction == null) {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
                     boolean destroy = Math.random() < Mth.clamp(1 - (hardness / 50), 0.1, 1);
                     if (destroy) {
                         this.level().destroyBlock(resultPos, true);
@@ -165,7 +159,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                 .radius(explosionRadius)
                 .position(vec3)
                 .withParticleType(ParticleTool.ParticleType.SMALL)
-                .destroyBlock(() -> hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? (this.blockInteraction != null ? this.blockInteraction : Explosion.BlockInteraction.DESTROY) : Explosion.BlockInteraction.KEEP))
+                .destroyBlock(() -> hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP))
                 .damageMultiplier(1.25F)
                 .explode();
     }
