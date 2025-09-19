@@ -60,20 +60,7 @@ public class RepairToolItem extends GunGeoItem {
     }
 
     @Override
-    public boolean isBarVisible(@NotNull ItemStack stack) {
-        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return cap != null && cap.getEnergyStored() != 0;
-    }
-
-    @Override
-    public int getBarWidth(@NotNull ItemStack stack) {
-        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / GunData.from(stack).get(GunProp.MAX_ENERGY));
-    }
-
-
-    @Override
-    public int getBarColor(@NotNull ItemStack pStack) {
+    public int getEnergyBarColor(GunData data) {
         return 0xFFFF00;
     }
 

@@ -40,24 +40,6 @@ public class SentinelItem extends GunGeoItem {
     }
 
     @Override
-    public boolean isBarVisible(@NotNull ItemStack stack) {
-        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return cap != null && cap.getEnergyStored() > 0;
-    }
-
-    @Override
-    public int getBarWidth(@NotNull ItemStack stack) {
-        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-
-        return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / GunData.from(stack).get(GunProp.MAX_ENERGY));
-    }
-
-    @Override
-    public int getBarColor(@NotNull ItemStack pStack) {
-        return 0x95E9FF;
-    }
-
-    @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return SentinelItemRenderer::new;
     }

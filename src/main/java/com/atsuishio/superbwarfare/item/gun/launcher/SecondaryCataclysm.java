@@ -51,18 +51,6 @@ public class SecondaryCataclysm extends GunGeoItem {
     }
 
     @Override
-    public boolean isBarVisible(@NotNull ItemStack stack) {
-        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return cap != null && cap.getEnergyStored() > 0;
-    }
-
-    @Override
-    public int getBarWidth(@NotNull ItemStack stack) {
-        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / GunData.from(stack).get(GunProp.MAX_ENERGY));
-    }
-
-    @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.empty());
@@ -71,11 +59,6 @@ public class SecondaryCataclysm extends GunGeoItem {
         TooltipTool.addHideText(tooltipComponents, Component.empty());
         TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.trachelium_3").withStyle(ChatFormatting.WHITE));
         TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.secondary_cataclysm_2").withStyle(Style.EMPTY.withColor(0x68B9F6)));
-    }
-
-    @Override
-    public int getBarColor(@NotNull ItemStack pStack) {
-        return 0x95E9FF;
     }
 
     @Override

@@ -61,6 +61,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -109,6 +110,48 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data));
         setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data));
         setProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data));
+    }
+
+    @Override
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        var data = GunData.from(stack);
+        if (data.get(GunProp.MAX_DURABILITY) > 0) return super.isBarVisible(stack);
+
+        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        return cap != null && cap.getEnergyStored() > 0 && cap.getMaxEnergyStored() > 0;
+    }
+
+    @Override
+    public int getBarWidth(@NotNull ItemStack stack) {
+        var data = GunData.from(stack);
+        if (data.get(GunProp.MAX_DURABILITY) > 0) {
+            return super.getBarWidth(stack);
+        }
+
+        if (data.get(GunProp.MAX_ENERGY) > 0) {
+            var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            return Math.round((float) (cap != null ? cap.getEnergyStored() : 0) * 13.0F / GunData.from(stack).get(GunProp.MAX_ENERGY));
+        }
+
+        return super.getBarWidth(stack);
+    }
+
+    @Override
+    public int getBarColor(@NotNull ItemStack stack) {
+        var data = GunData.from(stack);
+        if (data.get(GunProp.MAX_DURABILITY) > 0) {
+            return super.getBarColor(stack);
+        }
+
+        if (data.get(GunProp.MAX_ENERGY) > 0) {
+            return getEnergyBarColor(data);
+        }
+
+        return super.getBarColor(stack);
+    }
+
+    public int getEnergyBarColor(GunData data) {
+        return 0x95E9FF;
     }
 
     protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
