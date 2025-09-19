@@ -41,8 +41,10 @@ public class ModTabs {
 
                         var stack = new ItemStack(registryObject.get());
                         stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
-                            energy.receiveEnergy(Integer.MAX_VALUE, false);
-                            output.accept(stack);
+                            if (energy.getMaxEnergyStored() > 0) {
+                                energy.receiveEnergy(Integer.MAX_VALUE, false);
+                                output.accept(stack);
+                            }
                         });
                     }))
                     .build());

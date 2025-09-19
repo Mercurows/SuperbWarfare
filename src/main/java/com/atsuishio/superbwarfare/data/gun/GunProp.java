@@ -14,6 +14,24 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Integer> DURABILITY_PER_SHOOT = new GunProp<Integer>("DurabilityPerShoot")
             .withLimiter(v -> Math.max(0, v));
 
+    public static final GunProp<Integer> MAX_ENERGY = new GunProp<Integer>("MaxEnergy")
+            .withLimiter(v -> Math.max(0, v));
+
+    public static final GunProp<Integer> MAX_RECEIVE_ENERGY = new GunProp<Integer>("MaxReceiveEnergy")
+            .withLimiter((m, d, v) -> {
+                var maxEnergy = m.get(MAX_ENERGY);
+                var value = Mth.clamp(v, -1, m.get(MAX_ENERGY));
+                return value < 0 ? maxEnergy : value;
+            });
+
+    public static final GunProp<Integer> MAX_EXTRACT_ENERGY = new GunProp<Integer>("MaxExtractEnergy")
+            .withLimiter((m, d, v) -> {
+                var maxEnergy = m.get(MAX_ENERGY);
+                var value = Mth.clamp(v, -1, m.get(MAX_ENERGY));
+                return value < 0 ? maxEnergy : value;
+            });
+
+
     public static final GunProp<Double> RECOIL_X = new GunProp<>("RecoilX");
     public static final GunProp<Double> RECOIL_Y = new GunProp<>("RecoilY");
     public static final GunProp<Double> RECOIL = new GunProp<>("Recoil");
@@ -27,7 +45,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
             .withLimiter(v -> Math.max(1, v));
 
     public static final GunProp<Integer> MELEE_DAMAGE_TIME = new GunProp<Integer>("MeleeDamageTime")
-            .withLimiter((data, v) -> Math.min(data.get(MELEE_DURATION) - 1, v));
+            .withLimiter((m, d, v) -> Math.min(m.get(MELEE_DURATION) - 1, v));
 
     public static final GunProp<ProjectileInfo> PROJECTILE = new GunProp<>("Projectile");
     public static final GunProp<Integer> AMMO_COST_PER_SHOOT = new GunProp<Integer>("AmmoCostPerShoot")
@@ -41,8 +59,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
             .withLimiter(v -> v == null ? Set.of() : v);
 
     public static final GunProp<Integer> MAGAZINE = new GunProp<Integer>("Magazine")
-            // TODO 正确使用modifier判断
-            .withLimiter((modifier, data, v) -> data.meleeOnly() ? 0 : Math.max(0, v));
+            .withLimiter((m, d, v) -> (m.get(PROJECTILE_AMOUNT) <= 0 && m.get(MELEE_DAMAGE) > 0) ? 0 : Math.max(0, v));
 
 
     public static final GunProp<Set<ReloadType>> RELOAD_TYPES = new GunProp<Set<ReloadType>>("ReloadTypes")

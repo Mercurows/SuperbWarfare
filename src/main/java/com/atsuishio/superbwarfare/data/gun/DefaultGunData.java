@@ -29,6 +29,16 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("DurabilityPerShoot")
     public int durabilityPerShoot = 1;
 
+    @SerializedName("MaxEnergy")
+    public int maxEnergy = 0;
+
+    @SerializedName("MaxReceiveEnergy")
+    public int maxReceiveEnergy = -1;
+
+    @SerializedName("MaxExtractEnergy")
+    public int maxExtractEnergy = -1;
+
+
     @SerializedName("RecoilX")
     public double recoilX;
     @SerializedName("RecoilY")

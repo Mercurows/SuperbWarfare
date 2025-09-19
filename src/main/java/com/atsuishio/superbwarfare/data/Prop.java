@@ -54,7 +54,6 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         return (T) this;
     }
 
-    // TODO 解决类型推断问题
     @SuppressWarnings("unchecked")
     protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(Prop.PropModifyContext<DATA, DEFAULT_DATA, FIELD> limiter) {
         this.limiter = limiter;
@@ -95,7 +94,7 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
 
     @FunctionalInterface
     public interface PropModifyContext<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
-        FIELD apply(@NotNull PropModifier<DATA, ?, FIELD> modifier, @NotNull DATA data, @NotNull FIELD value);
+        FIELD apply(@NotNull PropModifier<DATA, DEFAULT_DATA, FIELD> modifier, @NotNull DATA data, @NotNull FIELD value);
     }
 
 }

@@ -16,7 +16,11 @@ public class ItemEnergyProvider implements ICapabilityProvider {
     private final LazyOptional<IEnergyStorage> capability;
 
     public ItemEnergyProvider(ItemStack stack, int energyCapacity) {
-        this.capability = LazyOptional.of(() -> new ItemEnergyStorage(stack, energyCapacity));
+        this(stack, LazyOptional.of(() -> new ItemEnergyStorage(stack, energyCapacity)));
+    }
+
+    public ItemEnergyProvider(ItemStack stack, LazyOptional<IEnergyStorage> provider) {
+        this.capability = provider;
     }
 
     @Nonnull

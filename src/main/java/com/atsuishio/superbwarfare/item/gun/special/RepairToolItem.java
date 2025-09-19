@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.renderer.gun.RepairToolItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.EnergyImageComponent;
@@ -26,7 +25,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,7 +47,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,13 +67,8 @@ import static com.atsuishio.superbwarfare.tools.SeekTool.teamFilter;
 
 public class RepairToolItem extends GunGeoItem {
 
-    public static final int MAX_ENERGY = 100000;
-
-    private final Supplier<Integer> energyCapacity;
-
     public RepairToolItem() {
         super(new Properties().rarity(Rarity.COMMON));
-        this.energyCapacity = () -> MAX_ENERGY;
     }
 
     @Override
@@ -99,12 +91,7 @@ public class RepairToolItem extends GunGeoItem {
                 e -> energy[0] = e.getEnergyStored()
         );
 
-        return Math.round((float) energy[0] * 13.0F / MAX_ENERGY);
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag tag) {
-        return new ItemEnergyProvider(stack, energyCapacity.get());
+        return Math.round((float) energy[0] * 13.0F / GunData.from(pStack).get(GunProp.MAX_ENERGY));
     }
 
     @Override

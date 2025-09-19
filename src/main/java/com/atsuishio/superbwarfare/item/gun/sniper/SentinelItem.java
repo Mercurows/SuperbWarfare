@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.sniper;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
 import com.atsuishio.superbwarfare.client.renderer.gun.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -11,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -24,7 +22,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
@@ -43,12 +40,8 @@ import java.util.function.Supplier;
 
 public class SentinelItem extends GunGeoItem {
 
-    private final Supplier<Integer> energyCapacity;
-
     public SentinelItem() {
         super(new Item.Properties().rarity(Rarity.EPIC));
-
-        this.energyCapacity = () -> 24000;
     }
 
     @Override
@@ -71,12 +64,7 @@ public class SentinelItem extends GunGeoItem {
                 e -> energy[0] = e.getEnergyStored()
         );
 
-        return Math.round((float) energy[0] * 13.0F / 24000F);
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag tag) {
-        return new ItemEnergyProvider(stack, energyCapacity.get());
+        return Math.round((float) energy[0] * 13.0F / GunData.from(pStack).get(GunProp.MAX_ENERGY));
     }
 
     @Override

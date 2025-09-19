@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
@@ -19,7 +18,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -34,7 +32,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
@@ -52,8 +49,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class SecondaryCataclysm extends GunGeoItem {
-
-    private final Supplier<Integer> energyCapacity = () -> 24000;
 
     public SecondaryCataclysm() {
         super(new Properties().fireResistant().rarity(ModRarities.LEGENDARY));
@@ -79,12 +74,7 @@ public class SecondaryCataclysm extends GunGeoItem {
                 e -> energy[0] = e.getEnergyStored()
         );
 
-        return Math.round((float) energy[0] * 13.0F / 24000F);
-    }
-
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag tag) {
-        return new ItemEnergyProvider(stack, energyCapacity.get());
+        return Math.round((float) energy[0] * 13.0F / GunData.from(pStack).get(GunProp.MAX_ENERGY));
     }
 
     @Override

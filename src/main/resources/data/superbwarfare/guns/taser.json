@@ -3,6 +3,7 @@
   "Spread": 2,
   "RecoilX": 0.0001,
   "RecoilY": 0.002,
+  "MaxEnergy": 24000,
   "Damage": 5,
   "Velocity": 3,
   "Magazine": 1,

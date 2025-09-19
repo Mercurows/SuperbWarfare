@@ -3,6 +3,7 @@
   "Spread": 5,
   "RecoilX": 0.004,
   "RecoilY": 0.023,
+  "MaxEnergy": 24000,
   "Damage": 30,
   "MeleeDamage": 19,
   "MeleeDuration": 20,

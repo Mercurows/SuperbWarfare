@@ -1,19 +1,30 @@
 package com.atsuishio.superbwarfare.capability.energy;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.EnergyStorage;
 
-public class ItemEnergyStorage extends EnergyStorage {
+import java.util.function.Function;
+
+public class ItemEnergyStorage extends DynamicEnergyStorage {
 
     private static final String NBT_ENERGY = "Energy";
 
     private final ItemStack stack;
 
     public ItemEnergyStorage(ItemStack stack, int capacity) {
-        super(capacity, Integer.MAX_VALUE, Integer.MAX_VALUE);
+        this(stack, capacity, capacity, capacity);
+    }
+
+    public ItemEnergyStorage(ItemStack stack, int capacity, int maxReceive, int maxExtract) {
+        this(stack, s -> capacity, s -> maxReceive, s -> maxExtract);
+    }
+
+    public ItemEnergyStorage(ItemStack stack, Function<ItemStack, Integer> capacityGetter, Function<ItemStack, Integer> maxReceiveGetter, Function<ItemStack, Integer> maxExtractGetter) {
+        super(() -> capacityGetter.apply(stack), () -> maxReceiveGetter.apply(stack), () -> maxExtractGetter.apply(stack));
 
         this.stack = stack;
-        this.energy = stack.hasTag() && stack.getTag().contains(NBT_ENERGY) ? stack.getTag().getInt(NBT_ENERGY) : 0;
+        if (stack.getTag() != null) {
+            this.energy = stack.hasTag() && stack.getTag().contains(NBT_ENERGY) ? stack.getTag().getInt(NBT_ENERGY) : 0;
+        }
     }
 
     @Override

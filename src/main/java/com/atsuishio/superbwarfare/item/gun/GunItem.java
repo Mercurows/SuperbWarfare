@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
+import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
@@ -31,6 +33,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,6 +62,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -77,6 +82,17 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier {
 
     protected final RandomSource random = RandomSource.create();
+
+    @Override
+    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        var cap = new ItemEnergyStorage(stack,
+                s -> GunData.from(stack).get(GunProp.MAX_ENERGY),
+                s -> GunData.from(stack).get(GunProp.MAX_RECEIVE_ENERGY),
+                s -> GunData.from(stack).get(GunProp.MAX_EXTRACT_ENERGY)
+        );
+
+        return new ItemEnergyProvider(stack, LazyOptional.of(() -> cap));
+    }
 
     public GunItem(Properties properties) {
         super(properties.stacksTo(1));
