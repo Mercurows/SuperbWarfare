@@ -62,8 +62,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -110,6 +112,51 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data));
         setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data));
         setProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data));
+    }
+
+    @Override
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        var data = GunData.from(stack);
+        if (data.get(GunProp.MAX_DURABILITY) > 0) return super.isBarVisible(stack);
+
+        return stack.getCapability(ForgeCapabilities.ENERGY)
+                .map(cap -> cap.getEnergyStored() > 0 && cap.getMaxEnergyStored() > 0)
+                .orElse(false);
+    }
+
+    @Override
+    public int getBarWidth(@NotNull ItemStack stack) {
+        var data = GunData.from(stack);
+        if (data.get(GunProp.MAX_DURABILITY) > 0) {
+            return super.getBarWidth(stack);
+        }
+
+        if (data.get(GunProp.MAX_ENERGY) > 0) {
+            var energy = stack.getCapability(ForgeCapabilities.ENERGY)
+                    .map(IEnergyStorage::getEnergyStored)
+                    .orElse(0);
+            return Math.round((float) energy * 13.0F / GunData.from(stack).get(GunProp.MAX_ENERGY));
+        }
+
+        return super.getBarWidth(stack);
+    }
+
+    @Override
+    public int getBarColor(@NotNull ItemStack stack) {
+        var data = GunData.from(stack);
+        if (data.get(GunProp.MAX_DURABILITY) > 0) {
+            return super.getBarColor(stack);
+        }
+
+        if (data.get(GunProp.MAX_ENERGY) > 0) {
+            return getEnergyBarColor(data);
+        }
+
+        return super.getBarColor(stack);
+    }
+
+    public int getEnergyBarColor(GunData data) {
+        return 0x95E9FF;
     }
 
     protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();

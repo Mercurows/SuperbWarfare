@@ -45,34 +45,6 @@ public class SentinelItem extends GunGeoItem {
     }
 
     @Override
-    public boolean isBarVisible(@NotNull ItemStack pStack) {
-        if (!pStack.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
-            return false;
-        }
-
-        int[] energy = {0};
-        pStack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                e -> energy[0] = e.getEnergyStored()
-        );
-        return energy[0] != 0;
-    }
-
-    @Override
-    public int getBarWidth(@NotNull ItemStack pStack) {
-        int[] energy = {0};
-        pStack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
-                e -> energy[0] = e.getEnergyStored()
-        );
-
-        return Math.round((float) energy[0] * 13.0F / GunData.from(pStack).get(GunProp.MAX_ENERGY));
-    }
-
-    @Override
-    public int getBarColor(@NotNull ItemStack pStack) {
-        return 0x95E9FF;
-    }
-
-    @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return SentinelItemRenderer::new;
     }
