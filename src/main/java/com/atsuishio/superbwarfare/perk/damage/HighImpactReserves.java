@@ -1,8 +1,5 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
-import com.atsuishio.superbwarfare.data.PropModifier;
-import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 
@@ -11,7 +8,7 @@ public class HighImpactReserves extends Perk {
     public HighImpactReserves() {
         super("high_impact_reserves", Perk.Type.DAMAGE);
         appendModification(GunProp.DAMAGE, (pm, data, damage) -> {
-            double rate = (double) data.ammo.get() / Math.max(1, ((PropModifier<GunData, DefaultGunData, Double>) pm).<Integer>get(GunProp.MAGAZINE));
+            double rate = (double) data.ammo.get() / Math.max(1, pm.<Integer>get(GunProp.MAGAZINE));
             int level = data.perk.getLevel(this);
             double limit = 0.5 + (level - 1) * 0.02;
             if (rate <= limit) {

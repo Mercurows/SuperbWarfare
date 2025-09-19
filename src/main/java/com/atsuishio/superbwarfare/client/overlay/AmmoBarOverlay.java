@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -53,12 +54,10 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
     private static String getGunAmmoString(GunData data, Player player) {
         if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
-            // TODO 修改为dynamic energy storage
-            double[] energy = {0};
-            data.stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(storage ->
-                    energy[0] = Mth.clamp((double) storage.getEnergyStored() / Math.max(1, storage.getMaxEnergyStored()), 0, 1)
-            );
-            return (int) (energy[0] * 100) + "%";
+            double energy = data.stack.getCapability(ForgeCapabilities.ENERGY)
+                    .map(storage -> Mth.clamp((double) storage.getEnergyStored() / Math.max(1, storage.getMaxEnergyStored()), 0, 1))
+                    .orElse(0d);
+            return FormatTool.format1DZZ(energy * 100) + "%";
         }
         if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞";
         return data.useBackpackAmmo() ? data.countBackupAmmo(player) - data.virtualAmmo.get() + "" : data.ammo.get() + "";
