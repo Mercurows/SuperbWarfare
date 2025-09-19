@@ -7,7 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
-public class ClientSentinelImageTooltip extends ClientEnergyImageTooltip {
+public class ClientSentinelImageTooltip extends ClientGunImageTooltip {
 
     public ClientSentinelImageTooltip(GunImageComponent tooltip) {
         super(tooltip);
