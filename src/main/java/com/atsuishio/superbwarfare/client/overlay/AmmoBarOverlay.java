@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.DeltaTracker;
@@ -19,6 +20,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -53,10 +55,9 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
 
     private static String getGunAmmoString(GunData data, Player player) {
         if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
-            // TODO 修改为dynamic energy storage
-            var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
-            double energy = cap != null ? (double) cap.getEnergyStored() / cap.getMaxEnergyStored() : 0;
-            return (int) (energy * 100) + "%";
+            var storage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            double energy = storage == null ? 0 : Mth.clamp((double) storage.getEnergyStored() / Math.max(1, storage.getMaxEnergyStored()), 0, 1);
+            return FormatTool.format1DZZ(energy * 100) + "%";
         }
         if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞";
         return data.useBackpackAmmo() ? data.countBackupAmmo(player) - data.virtualAmmo.get() + "" : data.ammo.get() + "";
