@@ -14,8 +14,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 
 public class ClientGunImageTooltip implements ClientTooltipComponent {
@@ -44,6 +46,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             renderBypassAndHeadshotTooltip(font, guiGraphics, x, y + yo);
             yo += 10;
         }
+
+        if (shouldRenderEnergyTooltip()) {
+            yo += 10;
+            renderEnergyTooltip(font, guiGraphics, x, y + yo);
+            yo += 10;
+        }
+
         if (shouldRenderEditTooltip()) {
             renderWeaponEditTooltip(font, guiGraphics, x, y + yo);
             yo += 20;
@@ -68,6 +77,10 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         return data.perk.get(Perk.Type.AMMO) != null
                 || data.perk.get(Perk.Type.DAMAGE) != null
                 || data.perk.get(Perk.Type.FUNCTIONAL) != null;
+    }
+
+    protected boolean shouldRenderEnergyTooltip() {
+        return stack.getCapability(ForgeCapabilities.ENERGY).map(storage -> storage.getMaxEnergyStored() > 0).orElse(false);
     }
 
     protected boolean shouldRenderEditTooltip() {
@@ -206,6 +219,47 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     }
 
     /**
+     * 渲染武器能量信息
+     */
+    protected void renderEnergyTooltip(Font font, GuiGraphics guiGraphics, int x, int y) {
+        guiGraphics.drawString(font, getEnergyComponent(), x, y, 0xFFFFFF);
+    }
+
+    /**
+     * 获取武器能量文本组件
+     */
+    protected Component getEnergyComponent() {
+        assert stack.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent();
+        var storage = stack.getCapability(ForgeCapabilities.ENERGY).resolve().get();
+        int energy = storage.getEnergyStored();
+        int maxEnergy = storage.getMaxEnergyStored();
+        float percentage = Mth.clamp((float) energy / maxEnergy, 0, 1);
+        MutableComponent component = Component.empty();
+
+        ChatFormatting format;
+        if (percentage <= .2f) {
+            format = ChatFormatting.RED;
+        } else if (percentage <= .6f) {
+            format = ChatFormatting.YELLOW;
+        } else {
+            format = ChatFormatting.GREEN;
+        }
+
+        int count = (int) (percentage * 50);
+        for (int i = 0; i < count; i++) {
+            component.append(Component.literal("|").withStyle(format));
+        }
+        component.append(Component.empty().withStyle(ChatFormatting.RESET));
+        for (int i = 0; i < 50 - count; i++) {
+            component.append(Component.literal("|").withStyle(ChatFormatting.GRAY));
+        }
+
+        component.append(Component.literal(" " + energy + "/" + maxEnergy + " FE").withStyle(ChatFormatting.GRAY));
+
+        return component;
+    }
+
+    /**
      * 渲染武器改装信息
      */
     protected void renderWeaponEditTooltip(Font font, GuiGraphics guiGraphics, int x, int y) {
@@ -316,6 +370,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         int height = Math.max(20, this.height);
 
         if (shouldRenderBypassAndHeadshotTooltip()) height += 10;
+        if (shouldRenderEnergyTooltip()) height += 20;
         if (shouldRenderEditTooltip()) height += 20;
         if (shouldRenderPerks()) {
             height += 16;
@@ -334,11 +389,22 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
     @Override
     public int getWidth(@NotNull Font font) {
+        int width = getMaxPerkDesWidth(font);
+
         if (Screen.hasShiftDown()) {
-            int width = getMaxPerkDesWidth(font);
-            return width == 0 ? Math.max(this.width, getDefaultMaxWidth(font)) : Math.max(width, getDefaultMaxWidth(font));
+            if (width == 0) {
+                width = Math.max(this.width, getDefaultMaxWidth(font));
+            } else {
+                width = Math.max(width, getDefaultMaxWidth(font));
+            }
         } else {
-            return getDefaultMaxWidth(font);
+            width = getDefaultMaxWidth(font);
         }
+
+        if (shouldRenderEnergyTooltip()) {
+            width = Math.max(width, font.width(getEnergyComponent().getVisualOrderText()) + 10);
+        }
+
+        return width;
     }
 }

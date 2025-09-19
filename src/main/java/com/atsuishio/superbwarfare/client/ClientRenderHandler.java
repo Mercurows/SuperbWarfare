@@ -27,7 +27,6 @@ public class ClientRenderHandler {
     public static void registerTooltip(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(GunImageComponent.class, ClientGunImageTooltip::new);
         event.register(BocekImageComponent.class, ClientBocekImageTooltip::new);
-        event.register(EnergyImageComponent.class, ClientEnergyImageTooltip::new);
         event.register(CellImageComponent.class, ClientCellImageTooltip::new);
         event.register(SentinelImageComponent.class, ClientSentinelImageTooltip::new);
         event.register(ChargingStationImageComponent.class, ClientChargingStationImageTooltip::new);

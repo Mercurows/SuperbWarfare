@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
 
-public class ClientSentinelImageTooltip extends ClientEnergyImageTooltip {
+public class ClientSentinelImageTooltip extends ClientGunImageTooltip {
 
     public ClientSentinelImageTooltip(GunImageComponent tooltip) {
         super(tooltip);
