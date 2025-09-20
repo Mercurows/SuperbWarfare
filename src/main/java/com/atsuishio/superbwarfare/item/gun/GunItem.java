@@ -28,9 +28,9 @@ import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -40,6 +40,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -883,62 +884,97 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         Vec3 viewVec = shooter.getViewVector(1.0F);
         Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
         AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
-        if (entityhitresult != null) {
-            hitResult = entityhitresult;
-        }
-        if (hitResult.getType() == HitResult.Type.ENTITY) {
-            target = ((EntityHitResult) hitResult).getEntity();
+        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
+
+        if (entityHitResult != null) {
+            hitResult = entityHitResult;
+
+            var hitPos = entityHitResult.getLocation();
+            target = entityHitResult.getEntity();
+
+            if (target.isAlive()) {
+                var hitBoxPos = hitPos.subtract(target.position());
+                boolean headshot = false;
+                boolean legShot = false;
+                float eyeHeight = target.getEyeHeight();
+                float bodyHeight = target.getBbHeight();
+
+                if (target instanceof LivingEntity) {
+                    if (eyeHeight - 0.25 < hitBoxPos.y && hitBoxPos.y < eyeHeight + 0.3) {
+                        headshot = true;
+                    }
+                    if (hitBoxPos.y < 0.33 * bodyHeight) {
+                        legShot = true;
+                    }
+                }
+
+                var res = new EntityResult(target, hitPos, headshot, legShot);
+                this.onRayHitEntity(shooter, level, data, res);
+            }
         }
 
-        BlockHitResult result = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(3)),
+        BlockHitResult blockHitResult = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(3)),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
 
-        BlockPos blockPos = result.getBlockPos();
+        BlockPos blockPos = blockHitResult.getBlockPos();
         BlockState state = level.getBlockState(blockPos);
 
         Vec3 pos = null;
 
         if (state.canOcclude()) {
-            pos = result.getLocation();
+            pos = blockHitResult.getLocation();
         }
         if (target != null) {
             pos = hitResult.getLocation();
         }
 
-        if (target != null) {
-            this.onRayHitEntity(shooter, level, data, shootPosition, shootDirection, target);
-        }
         if (pos != null) {
-            this.onRayHitBlock(shooter, level, target, data, shootDirection, blockPos, state, result.getDirection(), pos);
+            this.onRayHitBlock(shooter, level, target, data, shootDirection, blockHitResult, pos);
         }
 
         return true;
     }
 
-    public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockPos blockPos, BlockState state, Direction direction, @NotNull Vec3 pos) {
+    public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockHitResult result, @NotNull Vec3 pos) {
+        BlockPos blockPos = result.getBlockPos();
+        BlockState state = level.getBlockState(blockPos);
+
         this.summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
         if (target == null) {
-            BulletDecalOption bulletDecalOption = new BulletDecalOption(direction, blockPos);
+            BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), blockPos);
             sendParticle(level, bulletDecalOption, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, true);
         }
-        // TODO 音效是不是可以替换？
-        level.playSound(null, pos.x, pos.y, pos.z, ModSounds.REPAIRING.get(), SoundSource.BLOCKS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
+        level.playSound(null, pos.x, pos.y, pos.z, this.getRayHitBlockSound(data), SoundSource.BLOCKS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
     }
 
-    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, Vec3 shootPosition, Vec3 shootDirection, @NotNull Entity target) {
+    public SoundEvent getRayHitBlockSound(GunData data) {
+        return SoundEvents.EMPTY;
+    }
+
+    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result) {
+        var target = result.getEntity();
         if (target instanceof LivingEntity living) {
             ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
             iCustomKnockback.superbWarfare$setKnockbackStrength(0);
 
-            DamageHandler.doDamage(living, ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter), data.get(GunProp.DAMAGE).floatValue());
+            float damage = data.get(GunProp.DAMAGE).floatValue();
+            float headshot = data.get(GunProp.HEADSHOT).floatValue();
+
+            if (result.isHeadshot()) {
+                DamageHandler.doDamage(living, ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), null, shooter), damage * headshot);
+            } else if (result.isLegShot()) {
+                DamageHandler.doDamage(living, ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter), damage * 0.5f);
+            } else {
+                DamageHandler.doDamage(living, ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter), damage);
+            }
+
             target.invulnerableTime = 0;
 
             iCustomKnockback.superbWarfare$resetKnockbackStrength();
 
             if (shooter instanceof ServerPlayer player) {
-                player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                player.level().playSound(null, player.blockPosition(), result.isHeadshot() ? ModSounds.HEADSHOT.get() : ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
+                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(result.isHeadshot() ? 1 : 0, 5));
             }
         }
     }
@@ -959,7 +995,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
     }
 
-    public Vec3 randomVec(Vec3 vec3, double spread) {
+    protected Vec3 randomVec(Vec3 vec3, double spread) {
         return vec3.normalize().add(random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread));
     }
 
