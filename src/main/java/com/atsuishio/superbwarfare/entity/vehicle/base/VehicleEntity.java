@@ -994,6 +994,10 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             repairCoolDown--;
         }
 
+        if (getHealth() >= getMaxHealth()) {
+            repairCoolDown = maxRepairCoolDown();
+        }
+
         if (this.entityData.get(HEAT) > 0) {
             this.entityData.set(HEAT, this.entityData.get(HEAT) - 1);
         }
