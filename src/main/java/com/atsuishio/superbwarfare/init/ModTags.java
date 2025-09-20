@@ -50,8 +50,8 @@ public class ModTags {
         public static final TagKey<Item> HAMMER = modItemTag("hammer");
 
         public static final TagKey<Item> WRENCHES = commonItemTag("wrenches");
-        public static final TagKey<Item> WRENCH = commonItemTag("tools/wrench");
-        public static final TagKey<Item> CROWBAR = commonItemTag("tools/crowbar");
+        public static final TagKey<Item> TOOLS_WRENCH = commonItemTag("tools/wrench");
+        public static final TagKey<Item> TOOLS_CROWBAR = commonItemTag("tools/crowbar");
         public static final TagKey<Item> TOOLS_HAMMER = commonItemTag("tools/hammer");
 
         // 专门给其他模组添加动画用的枪械武器分类 tag

@@ -358,7 +358,7 @@ public class ClientEventHandler {
     }
 
     public static void iglaSeeking(ItemStack stack) {
-        if (stack.getItem() == ModItems.IGLA.get()) {
+        if (stack.getItem() == ModItems.IGLA_9K38.get()) {
             PacketDistributor.sendToServer(new IglaSeekMessage(zoomTime >= 1 ? 0 : 1));
         }
     }

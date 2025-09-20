@@ -229,7 +229,7 @@ public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        if (stack.is(ModTags.Items.CROWBAR) || stack.is(Items.FLINT_AND_STEEL)) {
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) || stack.is(Items.FLINT_AND_STEEL)) {
             // 发射
             if (lookingAtBarrel(player)) {
                 // 精准发射

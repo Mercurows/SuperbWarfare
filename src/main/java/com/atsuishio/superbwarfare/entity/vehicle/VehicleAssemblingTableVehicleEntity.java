@@ -81,7 +81,7 @@ public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity imp
     // 变回方块
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        if (player.getMainHandItem().is(ModTags.Items.CROWBAR) && !player.isCrouching()) {
+        if (player.getMainHandItem().is(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching()) {
             if (!this.level().isClientSide && this.getPassengers().isEmpty()) {
                 var facing = getDirection();
                 var currentPos = this.position();

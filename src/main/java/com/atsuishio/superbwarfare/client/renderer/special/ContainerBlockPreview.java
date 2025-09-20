@@ -26,7 +26,7 @@ public class ContainerBlockPreview {
 
         // 仅在手持撬棍时检测
         var item = player.getMainHandItem();
-        if (!item.is(ModTags.Items.CROWBAR)) return;
+        if (!item.is(ModTags.Items.TOOLS_CROWBAR)) return;
 
         var level = player.level();
         var look = player.getLookAngle();

@@ -96,7 +96,7 @@ public class ModItems {
     public static final DeferredHolder<Item, SecondaryCataclysm> SECONDARY_CATACLYSM = GUNS.register("secondary_cataclysm", SecondaryCataclysm::new);
     public static final DeferredHolder<Item, RpgItem> RPG = GUNS.register("rpg", RpgItem::new);
     public static final DeferredHolder<Item, JavelinItem> JAVELIN = GUNS.register("javelin", JavelinItem::new);
-    public static final DeferredHolder<Item, IglaItem> IGLA = GUNS.register("igla_9k38", IglaItem::new);
+    public static final DeferredHolder<Item, IglaItem> IGLA_9K38 = GUNS.register("igla_9k38", IglaItem::new);
     public static final DeferredHolder<Item, AureliaSceptre> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptre::new);
     public static final DeferredHolder<Item, BocekItem> BOCEK = GUNS.register("bocek", BocekItem::new);
 

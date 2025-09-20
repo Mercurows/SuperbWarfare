@@ -152,7 +152,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             return InteractionResult.SUCCESS;
         }
 
-        if (stack.is(ModTags.Items.CROWBAR) && !player.isCrouching()) {
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching()) {
             if (this.entityData.get(COOL_DOWN) == 0) {
                 vehicleShoot(player, 0);
                 entityData.set(SHOOTER_UUID, player.getStringUUID());

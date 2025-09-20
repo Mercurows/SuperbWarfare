@@ -65,7 +65,7 @@ public class ContainerBlock extends BaseEntityBlock {
                 || !(level.getBlockEntity(pos) instanceof ContainerBlockEntity containerBlockEntity)
         ) return ItemInteractionResult.FAIL;
 
-        if (!stack.is(ModTags.Items.CROWBAR)) {
+        if (!stack.is(ModTags.Items.TOOLS_CROWBAR)) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
             return ItemInteractionResult.FAIL;
         }
