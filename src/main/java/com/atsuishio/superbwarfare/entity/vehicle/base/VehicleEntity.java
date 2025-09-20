@@ -751,7 +751,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
             return InteractionResult.SUCCESS;
         }
 
-        if (player.isShiftKeyDown() && stack.is(ModTags.Items.CROWBAR) && this.getPassengers().isEmpty()) {
+        if (player.isShiftKeyDown() && stack.is(ModTags.Items.TOOLS_CROWBAR) && this.getPassengers().isEmpty()) {
             for (var item : getRetrieveItems()) {
                 ItemHandlerHelper.giveItemToPlayer(player, item);
             }

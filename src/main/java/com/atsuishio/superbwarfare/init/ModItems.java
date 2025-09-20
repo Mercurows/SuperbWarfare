@@ -94,7 +94,7 @@ public class ModItems {
     public static final RegistryObject<Item> SECONDARY_CATACLYSM = GUNS.register("secondary_cataclysm", SecondaryCataclysm::new);
     public static final RegistryObject<Item> RPG = GUNS.register("rpg", RpgItem::new);
     public static final RegistryObject<Item> JAVELIN = GUNS.register("javelin", JavelinItem::new);
-    public static final RegistryObject<Item> IGLA = GUNS.register("igla_9k38", IglaItem::new);
+    public static final RegistryObject<Item> IGLA_9K38 = GUNS.register("igla_9k38", IglaItem::new);
     public static final RegistryObject<Item> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptre::new);
     public static final RegistryObject<Item> BOCEK = GUNS.register("bocek", BocekItem::new);
 

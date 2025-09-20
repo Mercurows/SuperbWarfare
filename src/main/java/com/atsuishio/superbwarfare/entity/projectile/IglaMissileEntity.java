@@ -232,7 +232,7 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
 
                     lostTarget = VectorTool.calculateAngle(getDeltaMovement(), toVec) > 120 && !lostTarget;
 
-                    if (getOwner() instanceof Player player && player.getMainHandItem().is(ModItems.IGLA.get()) && !lost) {
+                    if (getOwner() instanceof Player player && player.getMainHandItem().is(ModItems.IGLA_9K38.get()) && !lost) {
                         var handItem = player.getMainHandItem();
                         var tag = handItem.getOrCreateTag();
                         lost = !tag.getBoolean("Seeking");

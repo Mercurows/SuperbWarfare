@@ -126,7 +126,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ModTags.Items.ANIMATED_RPG).add(
                 ModItems.RPG.get(),
                 ModItems.JAVELIN.get(),
-                ModItems.IGLA.get());
+                ModItems.IGLA_9K38.get());
 
         this.tag(ModTags.Items.ANIMATED_MG).add(
                 ModItems.DEVOTION.get(),
@@ -158,7 +158,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.GLOCK_18.get(), ModItems.M_1911.get(), ModItems.AURELIA_SCEPTRE.get(), ModItems.QBZ_95.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.MP_443.get(), ModItems.INSIDIOUS.get(), ModItems.SECONDARY_CATACLYSM.get(),
                 ModItems.TASER.get(), ModItems.MINIGUN.get(), ModItems.MP_5.get(), ModItems.M_2_HB.get(), ModItems.QBZ_191.get(), ModItems.AWM.get(), ModItems.REPAIR_TOOL.get());
 
-        this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.IGLA.get())
+        this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.IGLA_9K38.get())
                 .addTag(ModTags.Items.LAUNCHER_GRENADE);
         this.tag(ModTags.Items.LAUNCHER_GRENADE).add(ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());
 

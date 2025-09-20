@@ -1462,7 +1462,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         gunSmithing(writer, ModItems.K_98_BLUEPRINT.get(), GunRarity.RARE, ItemTags.LOGS, ModItems.K_98.get());
         gunSmithing(writer, ModItems.MOSIN_NAGANT_BLUEPRINT.get(), GunRarity.RARE, ItemTags.LOGS, ModItems.MOSIN_NAGANT.get());
         gunSmithing(writer, ModItems.JAVELIN_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.ANCIENT_CPU.get(), ModItems.JAVELIN.get());
-        gunSmithing(writer, ModItems.IGLA_BLUEPRINT.get(), GunRarity.EPIC, ModItems.ANCIENT_CPU.get(), ModItems.IGLA.get());
+        gunSmithing(writer, ModItems.IGLA_BLUEPRINT.get(), GunRarity.EPIC, ModItems.ANCIENT_CPU.get(), ModItems.IGLA_9K38.get());
         gunSmithing(writer, ModItems.M_2_HB_BLUEPRINT.get(), GunRarity.RARE, ModTags.Items.STORAGE_BLOCK_STEEL, ModItems.M_2_HB.get());
         gunSmithing(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.KNIFE.get(), ModItems.SECONDARY_CATACLYSM.get());
         gunSmithing(writer, ModItems.INSIDIOUS_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.INSIDIOUS.get());

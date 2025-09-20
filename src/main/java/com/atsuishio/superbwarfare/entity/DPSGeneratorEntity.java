@@ -172,7 +172,7 @@ public class DPSGeneratorEntity extends LivingEntity implements GeoEntity {
 
     @Override
     public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
-        if (!player.getMainHandItem().isEmpty() && !player.getMainHandItem().is(ModTags.Items.CROWBAR)) {
+        if (!player.getMainHandItem().isEmpty() && !player.getMainHandItem().is(ModTags.Items.TOOLS_CROWBAR)) {
             return InteractionResult.PASS;
         }
 

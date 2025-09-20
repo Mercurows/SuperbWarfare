@@ -152,7 +152,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
         if (player.isCrouching()) {
-            if (stack.is(ModTags.Items.CROWBAR) && (getOwner() == null || player == getOwner())) {
+            if (stack.is(ModTags.Items.TOOLS_CROWBAR) && (getOwner() == null || player == getOwner())) {
                 ItemStack container = ContainerBlockItem.createInstance(this);
                 if (!player.addItem(container)) {
                     player.drop(container, false);

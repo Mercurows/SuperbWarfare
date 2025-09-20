@@ -56,7 +56,7 @@ public class SmallContainerBlock extends BaseEntityBlock {
         }
 
         ItemStack stack = pPlayer.getItemInHand(pHand);
-        if (!stack.is(ModTags.Items.CROWBAR)) {
+        if (!stack.is(ModTags.Items.TOOLS_CROWBAR)) {
             pPlayer.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
             return InteractionResult.PASS;
         }

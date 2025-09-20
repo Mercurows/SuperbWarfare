@@ -175,7 +175,7 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         } else {
             ItemStack stack = pPlayer.getItemInHand(pHand);
-            if (stack.is(ModTags.Items.CROWBAR) && pLevel instanceof ServerLevel serverLevel) {
+            if (stack.is(ModTags.Items.TOOLS_CROWBAR) && pLevel instanceof ServerLevel serverLevel) {
                 var facing = pState.getValue(FACING);
                 var part = pState.getValue(BLOCK_PART);
                 var originalPos = part.relativeNegative(pPos, facing);

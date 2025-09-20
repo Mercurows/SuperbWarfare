@@ -53,7 +53,7 @@ public class CreativeSuperbItemInterfaceBlock extends SuperbItemInterfaceBlock {
     @ParametersAreNonnullByDefault
     public @NotNull InteractionResult use(BlockState state, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         ItemStack stack = pPlayer.getItemInHand(pHand);
-        if (stack.is(ModTags.Items.CROWBAR) || stack.is(ModTags.Items.WRENCHES) || stack.is(ModTags.Items.WRENCH)) {
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) || stack.is(ModTags.Items.WRENCHES) || stack.is(ModTags.Items.TOOLS_WRENCH)) {
             var facing = pHit.getDirection();
             if (state.getValue(FACING) == facing) {
                 facing = facing.getOpposite();

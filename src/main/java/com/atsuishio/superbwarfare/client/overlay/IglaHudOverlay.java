@@ -61,7 +61,7 @@ public class IglaHudOverlay implements IGuiOverlay {
         if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
             return;
 
-        if ((stack.getItem() == ModItems.IGLA.get() && ClientEventHandler.zoomPos > 0.83) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && ClientEventHandler.zoom) {
+        if ((stack.getItem() == ModItems.IGLA_9K38.get() && ClientEventHandler.zoomPos > 0.83) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && ClientEventHandler.zoom) {
             var data = GunData.from(stack);
 
             poseStack.pushPose();

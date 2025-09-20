@@ -37,7 +37,7 @@ public class IglaSeekMessage {
             ServerPlayer player = context.getSender();
             if (player == null) return;
             if (message.type == 0) {
-                if (player.getMainHandItem().getItem() == ModItems.IGLA.get()) {
+                if (player.getMainHandItem().getItem() == ModItems.IGLA_9K38.get()) {
                     var handItem = player.getMainHandItem();
                     var tag = handItem.getOrCreateTag();
                     GunData data = GunData.from(handItem);
@@ -68,7 +68,7 @@ public class IglaSeekMessage {
             }
 
             if (message.type == 1) {
-                if (player.getMainHandItem().getItem() == ModItems.IGLA.get()) {
+                if (player.getMainHandItem().getItem() == ModItems.IGLA_9K38.get()) {
                     var handItem = player.getMainHandItem();
                     var tag = handItem.getOrCreateTag();
                     tag.putBoolean("Seeking", false);

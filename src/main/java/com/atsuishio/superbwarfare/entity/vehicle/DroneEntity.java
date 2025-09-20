@@ -353,7 +353,7 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 }
             }
         } else if (player.isCrouching()) {
-            if (stack.isEmpty() || stack.is(ModTags.Items.CROWBAR)) {
+            if (stack.isEmpty() || stack.is(ModTags.Items.TOOLS_CROWBAR)) {
                 // 无人机拆除
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.DRONE.get()));
 

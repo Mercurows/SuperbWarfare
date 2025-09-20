@@ -222,7 +222,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             return indicator.bind(stack, player, this);
         }
 
-        if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
             if (this.items.get(0).getItem() instanceof CannonShellItem) {
                 ItemStack item = this.getItem(0);
 
