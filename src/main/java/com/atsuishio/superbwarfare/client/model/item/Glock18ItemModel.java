@@ -17,9 +17,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 
 public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
-
     @Override
     public ResourceLocation getAnimationResource(Glock18Item animatable) {
         return Mod.loc("animations/glock_17.animation.json");
@@ -27,7 +24,7 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
     @Override
     public ResourceLocation getModelResource(Glock18Item animatable) {
-        return Mod.loc("geo/glock18.geo.json");
+        return Mod.loc("geo/glock_18.geo.json");
     }
 
     @Override
