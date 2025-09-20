@@ -27,7 +27,7 @@ public record IglaSeekMessage(int msgType) implements CustomPacketPayload {
 
     public static void handler(IglaSeekMessage message, final IPayloadContext context) {
         var player = (ServerPlayer) context.player();
-        if (player.getMainHandItem().getItem() != ModItems.IGLA.get()) return;
+        if (player.getMainHandItem().getItem() != ModItems.IGLA_9K38.get()) return;
 
         var handItem = player.getMainHandItem();
         var data = GunData.from(handItem);

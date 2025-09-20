@@ -148,7 +148,7 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
     @SubscribeEvent
     public static void interact(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getLevel() instanceof ServerLevel server && event.getEntity().getMainHandItem().is(ModTags.Items.CROWBAR)) {
+        if (event.getLevel() instanceof ServerLevel server && event.getEntity().getMainHandItem().is(ModTags.Items.TOOLS_CROWBAR)) {
             var pos = event.getHitVec().getBlockPos();
             var state = server.getBlockState(pos);
             if (state.getBlock() instanceof VehicleAssemblingTableBlock) {

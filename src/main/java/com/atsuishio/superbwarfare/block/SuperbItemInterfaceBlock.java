@@ -81,7 +81,7 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     @Override
     @ParametersAreNonnullByDefault
     protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (stack.is(ModTags.Items.CROWBAR) || stack.is(ModTags.Items.WRENCHES) || stack.is(ModTags.Items.WRENCH)) {
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) || stack.is(ModTags.Items.WRENCHES) || stack.is(ModTags.Items.TOOLS_WRENCH)) {
             var facing = hitResult.getDirection();
             if (state.getValue(FACING) == facing) {
                 facing = facing.getOpposite();

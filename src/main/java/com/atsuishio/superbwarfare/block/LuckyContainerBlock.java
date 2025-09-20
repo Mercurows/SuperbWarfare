@@ -64,7 +64,7 @@ public class LuckyContainerBlock extends BaseEntityBlock {
                 || !(level.getBlockEntity(pos) instanceof LuckyContainerBlockEntity)
         ) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-        if (!stack.is(ModTags.Items.CROWBAR)) {
+        if (!stack.is(ModTags.Items.TOOLS_CROWBAR)) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }

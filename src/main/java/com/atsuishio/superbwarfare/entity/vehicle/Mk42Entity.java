@@ -188,7 +188,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             return indicator.bind(stack, player, this);
         }
 
-        if (stack.is(ModTags.Items.CROWBAR) && !player.isShiftKeyDown()) {
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
             if (this.items.getFirst().getItem() instanceof CannonShellItem) {
                 ItemStack item = this.getItem(0);
 
