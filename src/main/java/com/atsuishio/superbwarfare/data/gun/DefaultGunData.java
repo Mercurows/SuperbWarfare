@@ -31,13 +31,10 @@ public class DefaultGunData implements IDBasedData {
 
     @SerializedName("MaxEnergy")
     public int maxEnergy = 0;
-
     @SerializedName("MaxReceiveEnergy")
     public int maxReceiveEnergy = -1;
-
     @SerializedName("MaxExtractEnergy")
     public int maxExtractEnergy = -1;
-
 
     @SerializedName("RecoilX")
     public double recoilX;
@@ -63,6 +60,9 @@ public class DefaultGunData implements IDBasedData {
     public double velocity;
     @SerializedName("Magazine")
     public int magazine;
+
+    @SerializedName("Range")
+    public int range = 128;
 
     @SerializedName("MeleeDamage")
     public double meleeDamage;

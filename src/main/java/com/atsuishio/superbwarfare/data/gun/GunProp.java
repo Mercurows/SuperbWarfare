@@ -10,27 +10,23 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability")
             .withLimiter(v -> Math.max(0, v));
-
     public static final GunProp<Integer> DURABILITY_PER_SHOOT = new GunProp<Integer>("DurabilityPerShoot")
             .withLimiter(v -> Math.max(0, v));
 
     public static final GunProp<Integer> MAX_ENERGY = new GunProp<Integer>("MaxEnergy")
             .withLimiter(v -> Math.max(0, v));
-
     public static final GunProp<Integer> MAX_RECEIVE_ENERGY = new GunProp<Integer>("MaxReceiveEnergy")
             .withLimiter((m, d, v) -> {
                 var maxEnergy = m.get(MAX_ENERGY);
                 var value = Mth.clamp(v, -1, m.get(MAX_ENERGY));
                 return value < 0 ? maxEnergy : value;
             });
-
     public static final GunProp<Integer> MAX_EXTRACT_ENERGY = new GunProp<Integer>("MaxExtractEnergy")
             .withLimiter((m, d, v) -> {
                 var maxEnergy = m.get(MAX_ENERGY);
                 var value = Mth.clamp(v, -1, m.get(MAX_ENERGY));
                 return value < 0 ? maxEnergy : value;
             });
-
 
     public static final GunProp<Double> RECOIL_X = new GunProp<>("RecoilX");
     public static final GunProp<Double> RECOIL_Y = new GunProp<>("RecoilY");
@@ -42,6 +38,9 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> VELOCITY = new GunProp<>("Velocity");
     public static final GunProp<Double> MELEE_DAMAGE = new GunProp<>("MeleeDamage");
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
+            .withLimiter(v -> Math.max(1, v));
+
+    public static final GunProp<Integer> RANGE = new GunProp<Integer>("Range")
             .withLimiter(v -> Math.max(1, v));
 
     public static final GunProp<Integer> MELEE_DAMAGE_TIME = new GunProp<Integer>("MeleeDamageTime")
