@@ -872,8 +872,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             return false;
         }
 
-        // TODO 替换为prop
-        double range = 3;
+        int range = data.get(GunProp.RANGE);
 
         Entity target = null;
 
@@ -881,6 +880,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         Vec3 eyePos = shooter.getEyePosition(1.0f);
         HitResult hitResult = shooter.pick(range, 1.0f, false);
 
+        // TODO 添加射线是否会被方块阻挡的判断
         Vec3 viewVec = shooter.getViewVector(1.0F);
         Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
         AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
@@ -913,7 +913,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             }
         }
 
-        BlockHitResult blockHitResult = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(3)),
+        BlockHitResult blockHitResult = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(range)),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
 
         BlockPos blockPos = blockHitResult.getBlockPos();
