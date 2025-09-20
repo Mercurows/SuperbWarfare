@@ -100,6 +100,8 @@ public class ModTags {
         // 能够由枪械造成的伤害，可用于perk效果判定
         public static final TagKey<DamageType> GUN_DAMAGE = modDamageTag("gun_damage");
 
+        // 载具减伤不会计算的伤害类型
+        public static final TagKey<DamageType> BYPASSES_VEHICLE = modDamageTag("bypasses_vehicle");
     }
 
     public static TagKey<DamageType> modDamageTag(String name) {

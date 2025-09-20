@@ -67,6 +67,7 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH);
         this.tag(DamageTypeTags.IS_EXPLOSION).add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.LUNGE_MINE);
         this.tag(DamageTypeTags.IS_FIRE).add(ModDamageTypes.BURN);
+        this.tag(ModTags.DamageTypes.BYPASSES_VEHICLE).add(ModDamageTypes.REPAIR_TOOL);
 
         this.tag(otherModTag("cataclysm", "bypasses_hurt_time")).add(
                 ModDamageTypes.GUN_FIRE_ABSOLUTE,

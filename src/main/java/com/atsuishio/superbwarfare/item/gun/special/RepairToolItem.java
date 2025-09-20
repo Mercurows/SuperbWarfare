@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.renderer.gun.RepairToolItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
@@ -17,16 +16,15 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -39,8 +37,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -162,167 +158,36 @@ public class RepairToolItem extends GunGeoItem {
         }
     }
 
-//    @Override
-//    public void shoot(
-//            @Nullable Entity shooter,
-//            @NotNull ServerLevel level,
-//            @NotNull Vec3 shootPosition,
-//            @NotNull Vec3 shootDirection,
-//            @NotNull GunData data,
-//            double spread,
-//            boolean zoom,
-//            @Nullable UUID uuid
-//    ) {
-//        if (!data.canShoot(shooter)) return;
-//
-//        // 检测看到的目标或位置
-//        if (shooter != null) {
-//            double range = 3;
-//
-//            Entity lookingEntity = null;
-//
-//            double distance = range * range;
-//            Vec3 eyePos = shooter.getEyePosition(1.0f);
-//            HitResult hitResult = shooter.pick(range, 1.0f, false);
-//
-//            Vec3 viewVec = shooter.getViewVector(1.0F);
-//            Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
-//            AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
-//            EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
-//            if (entityhitresult != null) {
-//                hitResult = entityhitresult;
-//
-//            }
-//            if (hitResult.getType() == HitResult.Type.ENTITY) {
-//                lookingEntity = ((EntityHitResult) hitResult).getEntity();
-//            }
-//
-//            BlockHitResult result = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(3)),
-//                    ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
-//
-//            BlockPos blockPos = result.getBlockPos();
-//            BlockState state = level.getBlockState(blockPos);
-//
-//            Vec3 pos = null;
-//
-//            if (state.canOcclude()) {
-//                pos = result.getLocation();
-//            }
-//
-//            if (lookingEntity != null) {
-//                pos = hitResult.getLocation();
-//
-//                //修理实体（多重含义）
-//                if (lookingEntity instanceof VehicleEntity vehicle) {
-//                    Entity lastDriver = EntityFindUtil.findEntity(level, vehicle.getEntityData().get(LAST_DRIVER_UUID));
-//                    if (shooter.isShiftKeyDown()) {
-//                        vehicle.onHurt(0.5f, shooter, false);
-//                        if (shooter instanceof ServerPlayer player) {
-//                            player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-//                            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-//                        }
-//                    } else {
-//                        if (lastDriver != null && !teamFilter(shooter, lastDriver) && lastDriver.getTeam() != null) {
-//                            vehicle.onHurt(0.5f, shooter, false);
-//                            if (shooter instanceof ServerPlayer player) {
-//                                player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-//                                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-//                            }
-//                        } else {
-//                            vehicle.heal(0.5f + 0.0025f * vehicle.getMaxHealth());
-//                        }
-//                    }
-//                } else if (lookingEntity instanceof LivingEntity living) {
-//                    if (shooter.isShiftKeyDown()) {
-//                        DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
-//                        lookingEntity.invulnerableTime = 0;
-//
-//                        if (shooter instanceof ServerPlayer player) {
-//                            player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-//                            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-//                        }
-//                    } else {
-//                        if (lookingEntity.getType().is(ModTags.EntityTypes.CAN_REPAIR)) {
-//                            living.heal(0.5f + 0.0025f * living.getMaxHealth());
-//                        } else {
-//                            DamageHandler.doDamage(lookingEntity, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
-//                            lookingEntity.invulnerableTime = 0;
-//
-//                            if (shooter instanceof ServerPlayer player) {
-//                                player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-//                                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            // 生成粒子
-//            if (pos != null) {
-//                summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
-//                if (lookingEntity == null) {
-//                    BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), result.getBlockPos());
-//                    ParticleTool.sendParticle(level, bulletDecalOption, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, true);
-//                }
-//                level.playSound(null, pos.x, pos.y, pos.z, ModSounds.REPAIRING.get(), SoundSource.BLOCKS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
-//            }
-//        }
-//
-//        // 添加热量
-//        data.heat.set(Mth.clamp(data.heat.get() + data.get(GunProp.HEAT_PER_SHOOT), 0, 100));
-//
-//        // 过热
-//        if (data.heat.get() >= 100 && !data.overHeat.get()) {
-//            data.overHeat.set(true);
-//            if (shooter instanceof ServerPlayer serverPlayer) {
-//                SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_OVERHEAT.get(), 2f, 1f);
-//            }
-//        }
-//
-//        playFireSounds(data, shooter, zoom);
-//
-//        // 开火后事件
-//        data.item.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
-//    }
-
     @Override
-    public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockPos blockPos, BlockState state, Direction direction, @NotNull Vec3 pos) {
-        this.summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
-        if (target == null) {
-            BulletDecalOption bulletDecalOption = new BulletDecalOption(direction, blockPos);
-            ParticleTool.sendParticle(level, bulletDecalOption, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, true);
-        }
-        level.playSound(null, pos.x, pos.y, pos.z, ModSounds.REPAIRING.get(), SoundSource.BLOCKS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
+    public SoundEvent getRayHitBlockSound(GunData data) {
+        return ModSounds.REPAIRING.get();
     }
 
     @Override
-    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, Vec3 shootPosition, Vec3 shootDirection, @NotNull Entity target) {
+    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result) {
+        var target = result.getEntity();
+
         // 修理实体（多重含义）
         if (target instanceof VehicleEntity vehicle) {
             Entity lastDriver = EntityFindUtil.findEntity(level, vehicle.getEntityData().get(LAST_DRIVER_UUID));
-            if (shooter.isShiftKeyDown()) {
-                vehicle.onHurt(0.5f, shooter, false);
+            if ((lastDriver != null && !teamFilter(shooter, lastDriver) && lastDriver.getTeam() != null) || shooter.isShiftKeyDown()) {
+                vehicle.hurt(ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), 0.5f);
                 if (shooter instanceof ServerPlayer player) {
                     player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
                     Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
                 }
             } else {
-                if (lastDriver != null && !teamFilter(shooter, lastDriver) && lastDriver.getTeam() != null) {
-                    vehicle.onHurt(0.5f, shooter, false);
-                    if (shooter instanceof ServerPlayer player) {
-                        player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-                        Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-                    }
-                } else {
-                    vehicle.heal(0.5f + 0.0025f * vehicle.getMaxHealth());
-                }
+                vehicle.heal(0.5f + 0.0025f * vehicle.getMaxHealth());
             }
         } else if (target instanceof LivingEntity living) {
-            if (shooter.isShiftKeyDown()) {
+            if (target.getType().is(ModTags.EntityTypes.CAN_REPAIR) && !shooter.isShiftKeyDown()) {
+                living.heal(0.5f + 0.0025f * living.getMaxHealth());
+            } else {
                 ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
                 iCustomKnockback.superbWarfare$setKnockbackStrength(0);
 
-                DamageHandler.doDamage(target, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
+                float damage = data.get(GunProp.DAMAGE).floatValue();
+                DamageHandler.doDamage(living, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), damage);
                 target.invulnerableTime = 0;
 
                 iCustomKnockback.superbWarfare$resetKnockbackStrength();
@@ -330,23 +195,6 @@ public class RepairToolItem extends GunGeoItem {
                 if (shooter instanceof ServerPlayer player) {
                     player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
                     Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-                }
-            } else {
-                if (target.getType().is(ModTags.EntityTypes.CAN_REPAIR)) {
-                    living.heal(0.5f + 0.0025f * living.getMaxHealth());
-                } else {
-                    ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
-                    iCustomKnockback.superbWarfare$setKnockbackStrength(0);
-
-                    DamageHandler.doDamage(target, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), data.get(GunProp.DAMAGE).floatValue());
-                    target.invulnerableTime = 0;
-
-                    iCustomKnockback.superbWarfare$resetKnockbackStrength();
-
-                    if (shooter instanceof ServerPlayer player) {
-                        player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-                        Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-                    }
                 }
             }
         }

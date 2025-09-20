@@ -845,7 +845,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         }
 
         // 计算减伤后的伤害
-        float computedAmount = getDamageModifier().compute(source, amount);
+        float computedAmount = amount;
+        if (!source.is(ModTags.DamageTypes.BYPASSES_VEHICLE)) {
+            computedAmount = this.getDamageModifier().compute(source, amount);
+        }
+
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
 
         if (source.getEntity() != null) {
@@ -1920,6 +1924,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public Vec3 getBarrelVec(float ticks) {
         return getBarrelVector(ticks);
     }
+
     public Vec3 getBarrelVector(float pPartialTicks) {
         Matrix4f transform = getBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
