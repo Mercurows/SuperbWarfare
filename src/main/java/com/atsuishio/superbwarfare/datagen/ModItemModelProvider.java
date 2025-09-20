@@ -127,7 +127,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         handheldItem(ModItems.CROWBAR.getId());
         handheldItem(ModItems.DEFUSER.getId());
         simpleItem(ModItems.FIRING_PARAMETERS);
-        simpleItem(ModItems.BEAM_TEST);
         simpleItem(ModItems.HANDGUN_AMMO);
         simpleItem(ModItems.RIFLE_AMMO);
         simpleItem(ModItems.SNIPER_AMMO);

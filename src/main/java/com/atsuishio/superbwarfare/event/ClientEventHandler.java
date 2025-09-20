@@ -27,7 +27,6 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -278,7 +277,6 @@ public class ClientEventHandler {
         }
 
         isProne(player);
-        beamShoot(player, stack);
 
         var options = Minecraft.getInstance().options;
         short keys = 0;
@@ -347,7 +345,6 @@ public class ClientEventHandler {
         }
 
         isProne(player);
-        beamShoot(player, stack);
         handleVariableDecrease();
         aimAtVillager(player);
         staminaSystem();
@@ -686,31 +683,6 @@ public class ClientEventHandler {
         }
 
         data.save();
-    }
-
-    public static void beamShoot(Player player, ItemStack stack) {
-        if (stack.is(ModItems.BEAM_TEST.get()) && player.getUseItem() == stack) {
-            var result = TraceTool.getLaserRayTraceResult(player, 512);
-            if (result == null) {
-                return;
-            }
-
-            var lookingEntity = result.getEntity();
-
-            if (player.isCrouching()) {
-                Entity seekingEntity = SeekTool.seekLivingEntity(player, player.level(), 64, 32);
-                if (seekingEntity != null && seekingEntity.isAlive()) {
-                    player.lookAt(EntityAnchorArgument.Anchor.EYES, seekingEntity.getEyePosition());
-                }
-            }
-
-            boolean canAttack = lookingEntity != player && !(lookingEntity instanceof Player player_ && (player_.isCreative() || player_.isSpectator()))
-                    && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || TDMSavedData.enabledTDM(lookingEntity));
-
-            if (canAttack) {
-                PacketDistributor.sendToServer(new LaserShootMessage(1, lookingEntity.getUUID(), result.isHeadshot()));
-            }
-        }
     }
 
     public static void shootClient(Player player) {
