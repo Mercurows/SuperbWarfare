@@ -146,7 +146,6 @@ public class ModItems {
     public static final RegistryObject<Item> AGM = AMMO.register("agm", AgmItem::new);
     public static final RegistryObject<Item> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
     public static final RegistryObject<Item> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);
-    public static final RegistryObject<Item> BEAM_TEST = AMMO.register("beam_test", BeamTest::new);
 
     /**
      * items

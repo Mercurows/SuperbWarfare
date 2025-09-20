@@ -2,11 +2,9 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -14,7 +12,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.entity.PartEntity;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -73,53 +70,6 @@ public class TraceTool {
             return ((EntityHitResult) hitResult).getEntity();
         }
         return null;
-    }
-
-    @Nullable
-    public static EntityResult getLaserRayTraceResult(Entity shooter, double range) {
-        double distance = range * range;
-        Vec3 eyePos = shooter.getEyePosition(1.0f);
-        HitResult hitResult = shooter.pick(range, 1.0f, false);
-
-        Vec3 viewVec = shooter.getViewVector(1.0F);
-        Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
-        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && shooter.getVehicle() != p && p.isAlive() && smokeFilter(p), distance);
-        if (entityhitresult != null) {
-            Vec3 hitPos = entityhitresult.getLocation();
-            if (checkNoClip(shooter, hitPos)) {
-                hitResult = entityhitresult;
-            }
-
-            if (hitResult.getType() == HitResult.Type.ENTITY) {
-                var entity = ((EntityHitResult) hitResult).getEntity();
-
-                if (entity.isAlive()) {
-                    Vec3 hitBoxPos = hitPos.subtract(entity.position());
-                    boolean headshot = false;
-                    boolean legShot = false;
-                    float eyeHeight = entity.getEyeHeight();
-                    float bodyHeight = entity.getBbHeight();
-
-                    if (entity instanceof LivingEntity) {
-                        if (eyeHeight - 0.25 < hitBoxPos.y && hitBoxPos.y < eyeHeight + 0.3) {
-                            headshot = true;
-                        }
-                        if (hitBoxPos.y < 0.33 * bodyHeight) {
-                            legShot = true;
-                        }
-                    }
-
-                    return new EntityResult(entity, hitPos, headshot, legShot);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public static boolean checkNoClip(Entity entity, Vec3 target) {
-        return entity.level().clip(new ClipContext(entity.getEyePosition(), target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
     }
 
     public static Vec3 vehicleFindLookingPos(Projectile projectile, VehicleEntity vehicle, Vec3 eye, double entityReach) {
@@ -237,7 +187,6 @@ public class TraceTool {
 
         // 标准化方向向量
         Vec3 normalizedDir = direction.normalize();
-        Vec3 end = start.add(normalizedDir.scale(maxDistance));
 
         // DDA算法参数
         double step = 0.1; // 步长（越小精度越高）

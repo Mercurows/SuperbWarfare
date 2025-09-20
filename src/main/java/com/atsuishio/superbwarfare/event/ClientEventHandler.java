@@ -28,7 +28,6 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -336,7 +335,6 @@ public class ClientEventHandler {
         }
 
         isProne(player);
-        beamShoot(player, stack);
         handleVariableDecrease();
         aimAtVillager(player);
         CrossHairOverlay.handleRenderDamageIndicator();
@@ -674,35 +672,6 @@ public class ClientEventHandler {
 
         if (stack.getItem() == ModItems.DEVOTION.get() && (GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty())) {
             customRpm = 0;
-        }
-    }
-
-    public static void beamShoot(Player player, ItemStack stack) {
-        if (stack.is(ModItems.BEAM_TEST.get()) && player.getUseItem() == stack) {
-            var result = TraceTool.getLaserRayTraceResult(player, 512);
-            if (result == null) {
-                return;
-            }
-
-            var lookingEntity = result.getEntity();
-
-            if (player.isCrouching()) {
-                Entity seekingEntity = SeekTool.seekLivingEntity(player, player.level(), 64, 32);
-                if (seekingEntity != null && seekingEntity.isAlive()) {
-                    player.lookAt(EntityAnchorArgument.Anchor.EYES, seekingEntity.getEyePosition());
-                }
-            }
-
-            if (lookingEntity == null) {
-                return;
-            }
-
-            boolean canAttack = lookingEntity != player && !(lookingEntity instanceof Player player_ && (player_.isCreative() || player_.isSpectator()))
-                    && (!player.isAlliedTo(lookingEntity) || lookingEntity.getTeam() == null || TDMSavedData.enabledTDM(lookingEntity));
-
-            if (canAttack) {
-                Mod.PACKET_HANDLER.sendToServer(new LaserShootMessage(1, lookingEntity.getUUID(), result.isHeadshot()));
-            }
         }
     }
 
