@@ -131,6 +131,20 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             // 渲染开火模式
             ResourceLocation fireMode = getFireMode(data);
 
+            var selectedFireMode = data.selectedFireMode.get();
+            var fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES);
+
+            // 如果开火模式种类大于3，渲染开火模式信息
+            if (DisplayConfig.ADVANCED_AMMO_HUD.get() && fireModes.size() > 3) {
+                guiGraphics.drawCenteredString(
+                        font,
+                        (selectedFireMode + 1) + "/" + fireModes.size(),
+                        x - 75,
+                        y - 20,
+                        0xCCCCCC
+                );
+            }
+
             if (stack.getItem() == ModItems.MINIGUN.get()) {
                 fireMode = MOUSE;
                 // 渲染加特林射速
