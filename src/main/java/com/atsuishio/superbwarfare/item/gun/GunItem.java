@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.api.event.ShootEvent;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
@@ -63,6 +64,7 @@ import net.minecraft.world.phys.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -517,6 +519,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             double spread,
             boolean zoom
     ) {
+        NeoForge.EVENT_BUS.post(new ShootEvent.Pre(shooter, level, data, spread, zoom));
+
         // 空仓挂机
         if (data.currentAvailableShots(shooter) == 1) {
             data.holdOpen.set(true);
@@ -541,6 +545,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             boolean zoom,
             @Nullable UUID uuid
     ) {
+        NeoForge.EVENT_BUS.post(new ShootEvent.Post(shooter, level, data, spread, zoom));
+
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
             data.isEmpty.set(true);
