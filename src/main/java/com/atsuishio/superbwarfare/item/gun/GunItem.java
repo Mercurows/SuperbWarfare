@@ -972,6 +972,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return SoundEvents.EMPTY;
     }
 
+    public SoundEvent getRayHitEntitySound(GunData data) {
+        return SoundEvents.EMPTY;
+    }
+
     public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result, Vec3 shootPosition, Vec3 shootDirection) {
         var target = result.getEntity();
         if (target instanceof LivingEntity living) {
@@ -998,6 +1002,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(result.isHeadshot() ? 1 : 0, 5));
             }
         }
+
+        level.playSound(null, result.getHitPos().x, result.getHitPos().y, result.getHitPos().z, this.getRayHitEntitySound(data), SoundSource.PLAYERS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
     }
 
     protected Vec3 randomVec(Vec3 vec3, double spread) {

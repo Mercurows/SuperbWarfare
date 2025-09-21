@@ -180,9 +180,15 @@ public class RepairToolItem extends GunGeoItem {
     }
 
     @Override
+    public SoundEvent getRayHitEntitySound(GunData data) {
+        return ModSounds.REPAIRING.get();
+    }
+
+    @Override
     public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result, Vec3 shootPosition, Vec3 shootDirection) {
         var target = result.getEntity();
         var pos = result.getHitPos();
+        level.playSound(null, result.getHitPos().x, result.getHitPos().y, result.getHitPos().z, this.getRayHitEntitySound(data), SoundSource.PLAYERS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
 
         // 修理实体（多重含义）
         if (target instanceof VehicleEntity vehicle) {
