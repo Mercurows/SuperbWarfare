@@ -85,6 +85,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Integer> ITERATIVE_AMMO_LOAD_TIME = new GunProp<>("IterativeAmmoLoadTime");
     public static final GunProp<Integer> ITERATIVE_LOAD_AMOUNT = new GunProp<>("IterativeLoadAmount");
     public static final GunProp<Integer> FINISH_TIME = new GunProp<>("FinishTime");
+    public static final GunProp<Integer> BURST_COOLDOWN = new GunProp<>("BurstCooldown");
 
     public static final GunProp<Double> SOUND_RADIUS = new GunProp<>("SoundRadius");
 

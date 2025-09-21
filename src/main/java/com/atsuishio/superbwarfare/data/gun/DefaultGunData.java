@@ -172,6 +172,10 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("FinishTime")
     public int finishTime;
 
+    // 连发模式下的射击间隔时间
+    @SerializedName("BurstCooldown")
+    public int burstCooldown = 30;
+
     @SerializedName("SoundRadius")
     public double soundRadius;
     @SerializedName("RPM")
