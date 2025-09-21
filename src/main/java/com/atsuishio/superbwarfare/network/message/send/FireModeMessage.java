@@ -6,38 +6,42 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public enum FireModeMessage {
-    INSTANCE;
+public record FireModeMessage(boolean forward) {
 
-    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> {
-            if (context.getSender() == null) return;
-
-            changeFireMode(context.getSender());
-        });
-        context.setPacketHandled(true);
+    public static void encode(FireModeMessage message, FriendlyByteBuf buffer) {
+        buffer.writeBoolean(message.forward());
     }
 
-    public static void changeFireMode(Player player) {
-        ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() instanceof GunItem) {
+    public static FireModeMessage decode(FriendlyByteBuf buffer) {
+        return new FireModeMessage(buffer.readBoolean());
+    }
+
+    public static void handler(FireModeMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+        NetworkEvent.Context context = contextSupplier.get();
+        context.enqueueWork(() -> {
+            var player = context.getSender();
+            if (player == null) return;
+
+            ItemStack stack = player.getMainHandItem();
+            if (!(stack.getItem() instanceof GunItem)) {
+                return;
+            }
             var data = GunData.from(stack);
 
             var selectedFireMode = data.selectedFireMode.get();
             var fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES);
 
             if (fireModes.size() > 1) {
-                data.selectedFireMode.set((selectedFireMode + 1) % fireModes.size());
-                playChangeModeSound(player);
+                int mode = (selectedFireMode + (message.forward() ? -1 : 1) + fireModes.size()) % fireModes.size();
+                data.selectedFireMode.set(mode);
+                SoundTool.playLocalSound(player, ModSounds.FIRE_RATE.get());
                 return;
             }
 
@@ -61,15 +65,10 @@ public enum FireModeMessage {
                 }
             }
 
-            if (stack.getItem() == ModItems.JAVELIN.get() && player instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_ZOOM_OUT.get());
+            if (stack.getItem() == ModItems.JAVELIN.get()) {
+                SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get());
             }
-        }
-    }
-
-    private static void playChangeModeSound(Player player) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            SoundTool.playLocalSound(serverPlayer, ModSounds.FIRE_RATE.get());
-        }
+        });
+        context.setPacketHandled(true);
     }
 }

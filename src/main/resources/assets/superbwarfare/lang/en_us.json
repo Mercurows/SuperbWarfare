@@ -606,6 +606,8 @@
   "key.superbwarfare.unload": "Unload",
   "key.superbwarfare.change_ammo_forward": "Change Ammo Forward",
   "key.superbwarfare.change_ammo_backward": "Change Ammo Backward",
+  "key.superbwarfare.change_fire_mode_forward": "Change Fire Mode Forward",
+  "key.superbwarfare.change_fire_mode_backward": "Change Fire Mode Backward",
 
   "effect.superbwarfare.shock": "Shock",
   "effect.superbwarfare.burn": "Burn",

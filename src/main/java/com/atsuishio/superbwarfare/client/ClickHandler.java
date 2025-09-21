@@ -278,8 +278,11 @@ public class ClickHandler {
                 isEditing = false;
                 Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
             }
-            if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(FireModeMessage.INSTANCE);
+            if (key == ModKeyMappings.FIRE_MODE.getKey().getValue() || key == ModKeyMappings.CHANGE_FIRE_MODE_BACKWARD.getKey().getValue()) {
+                Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(false));
+            }
+            if (key == ModKeyMappings.CHANGE_FIRE_MODE_FORWARD.getKey().getValue()) {
+                Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(true));
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 if (stack.getItem() instanceof GunItem) {
