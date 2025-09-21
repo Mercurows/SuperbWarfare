@@ -454,7 +454,7 @@ public class ClickHandler {
                         && !data.bolt.needed.get())
                         && drawTime < 0.01
                 ) {
-                    if (data.fireMode.get() == FireMode.BURST) {
+                    if (data.selectedFireModeInfo().mode == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             cantSprint = 8;
                             player.setSprinting(false);

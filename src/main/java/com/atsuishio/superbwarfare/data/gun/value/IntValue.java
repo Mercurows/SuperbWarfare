@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 public class IntValue {
     private final CompoundTag tag;
     private final String name;
-    private final int defaultValue;
+    public int defaultValue;
 
     public IntValue(CompoundTag tag, String name, int defaultValue) {
         this.tag = tag;

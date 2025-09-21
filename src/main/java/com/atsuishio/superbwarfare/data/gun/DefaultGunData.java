@@ -83,9 +83,9 @@ public class DefaultGunData implements IDBasedData {
     public double weight = 1;
 
     @SerializedName("DefaultFireMode")
-    public FireMode defaultFireMode = FireMode.SEMI;
+    public String defaultFireMode = FireMode.SEMI.name;
     @SerializedName("AvailableFireModes")
-    public Set<FireMode> availableFireModes = Set.of(FireMode.SEMI);
+    public ObjectToList<StringToObject<FireModeInfo>> availableFireModes = new ObjectToList<>(new StringToObject<>(new FireModeInfo()));
 
     @SerializedName("ReloadTypes")
     public Set<ReloadType> reloadTypes = Set.of(ReloadType.MAGAZINE);
@@ -123,6 +123,21 @@ public class DefaultGunData implements IDBasedData {
         }
 
         return this.ammoConsumersCache;
+    }
+
+    private transient List<FireModeInfo> fireModesCache;
+
+    public List<FireModeInfo> getFireModes() {
+        if (fireModesCache == null) {
+            this.fireModesCache = this.availableFireModes.list.stream()
+                    .map(c -> {
+                        c.value.init();
+                        return c.value;
+                    })
+                    .toList();
+        }
+
+        return this.fireModesCache;
     }
 
     @SerializedName("NormalReloadTime")
