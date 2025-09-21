@@ -122,7 +122,7 @@ public class ClientEventHandler {
     public static double bowPullPos = 0;
     public static double gunSpread = 0;
     public static double fireSpread = 0;
-    public static double cantFireTime = 0;
+    public static double fireCooldown = 0;
     public static double lookDistance = 0;
     public static double cameraLocation = 0.6;
 
@@ -486,7 +486,7 @@ public class ClientEventHandler {
                     && !data.charging() && !player.getCooldowns().isOnCooldown(stack.getItem())
             ) {
                 gunMelee = data.get(GunProp.MELEE_DURATION);
-                cantFireTime = gunMelee + 4;
+                fireCooldown = gunMelee + 4;
             }
             if (gunMelee == data.get(GunProp.MELEE_DURATION) - data.get(GunProp.MELEE_DAMAGE_TIME)) {
                 doGunMeleeAttack(player);
@@ -605,10 +605,10 @@ public class ClientEventHandler {
         double weight = data.get(GunProp.WEIGHT);
         double speed = 5 / (weight + 4);
 
-        if (ClientEventHandler.cantSprint == 0 && player.isSprinting() && !zoom && !holdFire) {
-            cantFireTime = Mth.clamp(cantFireTime + 3 * times, 0, 24);
+        if (cantSprint == 0 && player.isSprinting() && !zoom && !holdFire) {
+            fireCooldown = Mth.clamp(fireCooldown + 3 * times, 0, 24);
         } else {
-            cantFireTime = Mth.clamp(cantFireTime - 6 * speed * times, 0, 40);
+            fireCooldown = Mth.clamp(fireCooldown - 6 * speed * times, 0, 40);
         }
 
         int rpm = Mth.clamp(data.get(GunProp.RPM) + customRpm, 1, 114514);
@@ -630,7 +630,7 @@ public class ClientEventHandler {
                 && !holdFireVehicle
                 && gunItem.canShoot(data, player)
                 && stack.is(ModTags.Items.NORMAL_GUN)
-                && cantFireTime == 0
+                && fireCooldown == 0
                 && sprintBasicRotX * sprintBasicRotY * sprintBasicRotZ < 0.0001
                 && drawTime < 0.01
                 && !notInGame()
@@ -698,7 +698,7 @@ public class ClientEventHandler {
             }
 
             if (mode == FireMode.BURST && burstFireAmount == 1) {
-                cantFireTime = 30;
+                fireCooldown = data.get(GunProp.BURST_COOLDOWN);
             }
 
             if (burstFireAmount > 0) {
@@ -1247,7 +1247,7 @@ public class ClientEventHandler {
             if (Minecraft.getInstance().player != null) {
                 cantSprint = 5;
             }
-            if (cantFireTime <= 10) {
+            if (fireCooldown <= 10) {
                 zoomTime = Mth.clamp(zoomTime + 0.03 * speed * times, 0, 1);
             }
         } else {
