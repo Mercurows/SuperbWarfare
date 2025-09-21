@@ -912,13 +912,13 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             if (eyePos.distanceToSqr(pos) < eyePos.distanceToSqr(hitPos)) {
                 this.onRayHitBlock(shooter, level, target, data, shootDirection, blockHitResult, pos);
             } else {
-                rayHitEntity(shooter, target, level, data, hitPos);
+                this.rayHitEntity(shooter, target, level, data, hitPos, shootPosition, shootDirection);
             }
             return true;
         }
 
         if (hitPos != null) {
-            rayHitEntity(shooter, target, level, data, hitPos);
+            this.rayHitEntity(shooter, target, level, data, hitPos, shootPosition, shootDirection);
             return true;
         }
 
@@ -930,15 +930,15 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return true;
     }
 
-    private void rayHitEntity(Entity shooter, Entity target, ServerLevel level, @NotNull GunData data, Vec3 hitPos) {
+    protected void rayHitEntity(Entity shooter, Entity target, ServerLevel level, @NotNull GunData data, Vec3 hitPos, Vec3 shootPosition, Vec3 shootDirection) {
         if (target != null && target.isAlive()) {
             var hitBoxPos = hitPos.subtract(target.position());
             var res = getEntityResult(target, hitBoxPos, hitPos);
-            this.onRayHitEntity(shooter, level, data, res);
+            this.onRayHitEntity(shooter, level, data, res, shootPosition, shootDirection);
         }
     }
 
-    private static EntityResult getEntityResult(Entity target, Vec3 hitBoxPos, Vec3 hitPos) {
+    protected static EntityResult getEntityResult(Entity target, Vec3 hitBoxPos, Vec3 hitPos) {
         boolean headshot = false;
         boolean legShot = false;
         float eyeHeight = target.getEyeHeight();
@@ -969,7 +969,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return SoundEvents.EMPTY;
     }
 
-    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result) {
+    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result, Vec3 shootPosition, Vec3 shootDirection) {
         var target = result.getEntity();
         if (target instanceof LivingEntity living) {
             ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);

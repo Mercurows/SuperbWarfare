@@ -137,8 +137,9 @@ public class RepairToolItem extends GunGeoItem {
     }
 
     @Override
-    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result) {
+    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result, Vec3 shootPosition, Vec3 shootDirection) {
         var target = result.getEntity();
+        var pos = result.getHitPos();
 
         // 修理实体（多重含义）
         if (target instanceof VehicleEntity vehicle) {
@@ -152,6 +153,7 @@ public class RepairToolItem extends GunGeoItem {
             } else {
                 vehicle.heal(0.5f + 0.0025f * vehicle.getMaxHealth());
             }
+            this.summonRayHitParticle(level, null, pos, shootDirection.scale(-1).normalize());
         } else if (target instanceof LivingEntity living) {
             if (target.getType().is(ModTags.EntityTypes.CAN_REPAIR) && !shooter.isShiftKeyDown()) {
                 living.heal(0.5f + 0.0025f * living.getMaxHealth());
@@ -170,6 +172,7 @@ public class RepairToolItem extends GunGeoItem {
                     PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
                 }
             }
+            this.summonRayHitParticle(level, null, pos, shootDirection.scale(-1).normalize());
         }
     }
 
@@ -183,12 +186,15 @@ public class RepairToolItem extends GunGeoItem {
         return false;
     }
 
-    public void summonRayHitParticle(ServerLevel serverLevel, BlockState state, Vec3 pos, Vec3 dir) {
-        BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
-        for (int i = 0; i < 1; i++) {
-            Vec3 vec3 = this.randomVec(dir, 40);
-            sendParticle(serverLevel, particleData, pos.x + 0.05 * i * dir.x, pos.y + 0.05 * i * dir.y, pos.z + 0.05 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+    public void summonRayHitParticle(ServerLevel serverLevel, @Nullable BlockState state, Vec3 pos, Vec3 dir) {
+        if (state != null) {
+            BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+            for (int i = 0; i < 1; i++) {
+                Vec3 vec3 = this.randomVec(dir, 40);
+                sendParticle(serverLevel, particleData, pos.x + 0.05 * i * dir.x, pos.y + 0.05 * i * dir.y, pos.z + 0.05 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+            }
         }
+
         for (int i = 0; i < 3; i++) {
             Vec3 vec3 = this.randomVec(dir, 20);
             sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
