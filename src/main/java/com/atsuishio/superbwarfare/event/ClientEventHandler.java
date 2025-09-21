@@ -560,7 +560,7 @@ public class ClientEventHandler {
         var data = GunData.from(stack);
 
         var perk = data.perk.get(Perk.Type.AMMO);
-        var mode = data.fireMode.get();
+        var mode = data.selectedFireModeInfo().mode;
 
         // 精准度
         float times = (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
@@ -682,7 +682,7 @@ public class ClientEventHandler {
         if (!gunItem.canShoot(data, player)) return;
 
         if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            var mode = data.fireMode.get();
+            var mode = data.selectedFireModeInfo().mode;
             if (mode != FireMode.AUTO) {
                 holdFire = false;
             }

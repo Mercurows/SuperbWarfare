@@ -625,7 +625,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
 
         // n连发模式开火数据设置
-        if (data.fireMode.get() == FireMode.BURST) {
+        if (data.selectedFireModeInfo().mode == FireMode.BURST) {
             var amount = data.burstAmount.get();
             data.burstAmount.set(amount == 0 ? data.get(GunProp.BURST_AMOUNT) - 1 : Math.max(0, amount - 1));
         }

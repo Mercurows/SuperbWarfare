@@ -68,6 +68,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         propertyOverrideString = new StringValue(this.data, "Override");
 
         selectedAmmoType = new IntValue(data, "SelectedAmmoType");
+        selectedFireMode = new IntValue(data, "SelectedFireMode", 0);
 
         // 可持久化属性
         reload = new Reload(this);
@@ -100,9 +101,16 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         ammoConsumers = get(GunProp.AMMO_CONSUMER);
         var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
         if (defaultFireMode == null) {
-            defaultFireMode = FireMode.SEMI;
+            defaultFireMode = FireMode.SEMI.name;
         }
-        fireMode = new StringEnumValue<>(data, "FireMode", defaultFireMode, FireMode::fromValue);
+
+        var fireModes = get(GunProp.AVAILABLE_FIRE_MODES);
+        for (int i = 0; i < fireModes.size(); i++) {
+            if (fireModes.get(i).name.equals(defaultFireMode)) {
+                selectedFireMode.defaultValue = i;
+                break;
+            }
+        }
     }
 
     private CompoundTag getOrPut(String name) {
@@ -232,6 +240,9 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         // gun modifiers
         modifier.apply(this.item);
 
+        // FireMode
+        modifier.apply(selectedFireModeInfo(modifier.get(GunProp.AVAILABLE_FIRE_MODES)));
+
         // AmmoConsumer
         modifier.apply(selectedAmmoConsumer(modifier.get(GunProp.AMMO_CONSUMER)));
 
@@ -295,6 +306,17 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public void changeAmmoConsumer(int index) {
         this.selectedAmmoType.set(Mth.clamp(index, 0, this.ammoConsumers.size() - 1));
+    }
+
+    public FireModeInfo selectedFireModeInfo(List<FireModeInfo> fireModes) {
+        if (fireModes == null || fireModes.isEmpty()) {
+            return new FireModeInfo();
+        }
+        return fireModes.get(Mth.clamp(this.selectedFireMode.get(), 0, fireModes.size() - 1));
+    }
+
+    public FireModeInfo selectedFireModeInfo() {
+        return selectedFireModeInfo(get(GunProp.AVAILABLE_FIRE_MODES));
     }
 
     // 开火相关流程开始
@@ -664,7 +686,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final AmmoSlot ammoSlot;
 
     public final IntValue burstAmount;
-    public final StringEnumValue<FireMode> fireMode;
+    public final IntValue selectedFireMode;
     public final IntValue level;
     public final DoubleValue exp;
     public final DoubleValue upgradePoint;

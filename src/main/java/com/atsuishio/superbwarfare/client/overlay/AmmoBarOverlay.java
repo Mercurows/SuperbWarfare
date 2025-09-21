@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -26,6 +27,7 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 @OnlyIn(Dist.CLIENT)
@@ -34,22 +36,33 @@ public class AmmoBarOverlay implements IGuiOverlay {
     public static final String ID = Mod.MODID + "_ammo_bar";
 
     private static final ResourceLocation LINE = Mod.loc("textures/gun_icon/fire_mode/line.png");
-    private static final ResourceLocation SEMI = Mod.loc("textures/gun_icon/fire_mode/semi.png");
-    private static final ResourceLocation BURST = Mod.loc("textures/gun_icon/fire_mode/burst.png");
-    private static final ResourceLocation AUTO = Mod.loc("textures/gun_icon/fire_mode/auto.png");
-    private static final ResourceLocation TOP = Mod.loc("textures/gun_icon/fire_mode/top.png");
-    private static final ResourceLocation DIR = Mod.loc("textures/gun_icon/fire_mode/dir.png");
     private static final ResourceLocation MOUSE = Mod.loc("textures/gun_icon/fire_mode/mouse.png");
     private static final ResourceLocation CHOSEN = Mod.loc("textures/gui/attachment/chosen.png");
     private static final ResourceLocation NOT_CHOSEN = Mod.loc("textures/gui/attachment/not_chosen.png");
     private static final ResourceLocation AMMO_STACK = Mod.loc("textures/gui/attachment/ammo_stack.png");
 
+    private static final Function<String, ResourceLocation> toResourceLocation = Util.memoize((str) -> Mod.loc("textures/gun_icon/fire_mode/" + str + ".png"));
+
     private static ResourceLocation getFireMode(GunData data) {
-        return switch (data.fireMode.get()) {
-            case SEMI -> SEMI;
-            case BURST -> BURST;
-            case AUTO -> AUTO;
-        };
+        return toResourceLocation.apply(toUnderScores(data.selectedFireModeInfo().name));
+    }
+
+    private static String toUnderScores(String str) {
+        var builder = new StringBuilder();
+
+        for (int i = 0; i < str.length(); i++) {
+            var c = str.charAt(i);
+            if (Character.isUpperCase(c)) {
+                if (i != 0) {
+                    builder.append('_');
+                }
+                builder.append(Character.toLowerCase(c));
+            } else {
+                builder.append(c);
+            }
+        }
+
+        return builder.toString();
     }
 
     private static String getGunAmmoString(GunData data, Player player) {
@@ -115,10 +128,6 @@ public class AmmoBarOverlay implements IGuiOverlay {
 
             // 渲染开火模式
             ResourceLocation fireMode = getFireMode(data);
-
-            if (stack.getItem() == ModItems.JAVELIN.get()) {
-                fireMode = stack.getOrCreateTag().getBoolean("TopMode") ? TOP : DIR;
-            }
 
             if (stack.getItem() == ModItems.MINIGUN.get()) {
                 fireMode = MOUSE;

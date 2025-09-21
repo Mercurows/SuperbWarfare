@@ -53,9 +53,9 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
             .withLimiter(v -> Math.max(0, v));
     public static final GunProp<Double> WEIGHT = new GunProp<Double>("Weight")
             .withLimiter(v -> Math.max(1, v));
-    public static final GunProp<FireMode> DEFAULT_FIRE_MODE = new GunProp<>("DefaultFireMode");
-    public static final GunProp<Set<FireMode>> AVAILABLE_FIRE_MODES = new GunProp<Set<FireMode>>("AvailableFireModes")
-            .withLimiter(v -> v == null ? Set.of() : v);
+    public static final GunProp<String> DEFAULT_FIRE_MODE = new GunProp<>("DefaultFireMode");
+    public static final GunProp<List<FireModeInfo>> AVAILABLE_FIRE_MODES = new GunProp<List<FireModeInfo>>("AvailableFireModes")
+            .withSupplier(DefaultGunData::getFireModes);
 
     public static final GunProp<Integer> MAGAZINE = new GunProp<Integer>("Magazine")
             .withLimiter((m, d, v) -> (m.get(PROJECTILE_AMOUNT) <= 0 && m.get(MELEE_DAMAGE) > 0) ? 0 : Math.max(0, v));

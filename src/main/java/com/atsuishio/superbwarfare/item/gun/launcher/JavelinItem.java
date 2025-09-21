@@ -201,7 +201,7 @@ public class JavelinItem extends GunGeoItem {
             missileEntity.setPos(player.getX() + firePos.x, player.getEyeY() + firePos.y, player.getZ() + firePos.z);
             missileEntity.shoot(player.getLookAngle().x, player.getLookAngle().y + 0.3, player.getLookAngle().z, 3f, 1);
             missileEntity.setTargetUuid(tag.getString("TargetEntity"));
-            missileEntity.setAttackMode(tag.getBoolean("TopMode"));
+            missileEntity.setAttackMode(data.selectedFireModeInfo().name.equals("Top"));
 
             level.addFreshEntity(missileEntity);
             ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,

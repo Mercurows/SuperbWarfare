@@ -27,6 +27,15 @@ public enum FireMode {
         return FireMode.SEMI;
     }
 
+    public static FireMode tryParse(String value) {
+        for (var enumConstant : FireMode.values()) {
+            if (enumConstant.toString().equals(value)) {
+                return enumConstant;
+            }
+        }
+        return FireMode.SEMI;
+    }
+
     @Override
     public String toString() {
         return this.name;
