@@ -41,10 +41,10 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation NOT_CHOSEN = Mod.loc("textures/gui/attachment/not_chosen.png");
     private static final ResourceLocation AMMO_STACK = Mod.loc("textures/gui/attachment/ammo_stack.png");
 
-    private static final Function<String, ResourceLocation> toResourceLocation = Util.memoize((str) -> Mod.loc("textures/gun_icon/fire_mode/" + str + ".png"));
+    private static final Function<String, ResourceLocation> TO_RESOURCE_LOCATION = Util.memoize((str) -> Mod.loc("textures/gun_icon/fire_mode/" + str + ".png"));
 
     private static ResourceLocation getFireMode(GunData data) {
-        return toResourceLocation.apply(toUnderScores(data.selectedFireModeInfo().name));
+        return TO_RESOURCE_LOCATION.apply(toUnderScores(data.selectedFireModeInfo().name));
     }
 
     private static String toUnderScores(String str) {
@@ -162,9 +162,6 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                         8,
                         8,
                         8);
-            }
-
-            if (stack.getItem() != ModItems.MINIGUN.get()) {
                 guiGraphics.blit(LINE,
                         x - 95,
                         y - 16,
