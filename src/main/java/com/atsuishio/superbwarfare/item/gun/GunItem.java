@@ -19,7 +19,6 @@ import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
@@ -35,8 +34,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -964,9 +961,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockHitResult result, @NotNull Vec3 pos) {
         BlockPos blockPos = result.getBlockPos();
-        BlockState state = level.getBlockState(blockPos);
-
-        this.summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
         if (target == null) {
             BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), blockPos);
             sendParticle(level, bulletDecalOption, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, true);
@@ -1003,22 +997,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 player.level().playSound(null, player.blockPosition(), result.isHeadshot() ? ModSounds.HEADSHOT.get() : ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
                 Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(result.isHeadshot() ? 1 : 0, 5));
             }
-        }
-    }
-
-    public void summonRayHitParticle(ServerLevel serverLevel, BlockState state, Vec3 pos, Vec3 dir) {
-        BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
-        for (int i = 0; i < 1; i++) {
-            Vec3 vec3 = this.randomVec(dir, 40);
-            sendParticle(serverLevel, particleData, pos.x + 0.05 * i * dir.x, pos.y + 0.05 * i * dir.y, pos.z + 0.05 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
-        }
-        for (int i = 0; i < 3; i++) {
-            Vec3 vec3 = this.randomVec(dir, 20);
-            sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
-        }
-        for (int i = 0; i < 2; i++) {
-            Vec3 vec3 = this.randomVec(dir, 80);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.2 + 0.1 * Math.random(), true);
         }
     }
 
