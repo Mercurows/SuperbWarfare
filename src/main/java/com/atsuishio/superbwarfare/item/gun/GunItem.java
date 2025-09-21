@@ -26,7 +26,10 @@ import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
+import com.atsuishio.superbwarfare.tools.RangeTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -87,6 +90,8 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier {
 
     protected final RandomSource random = RandomSource.create();
+
+    public static HitResult hitResult0;
 
     @Override
     public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
@@ -884,40 +889,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
         double distance = range * range;
         Vec3 eyePos = shooter.getEyePosition(1.0f);
-        HitResult hitResult = shooter.pick(range, 1.0f, false);
-
-        // TODO 添加射线是否会被方块阻挡的判断
-        Vec3 viewVec = shooter.getViewVector(1.0F);
-        Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
-        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
-
-        if (entityHitResult != null) {
-            hitResult = entityHitResult;
-
-            var hitPos = entityHitResult.getLocation();
-            target = entityHitResult.getEntity();
-
-            if (target.isAlive()) {
-                var hitBoxPos = hitPos.subtract(target.position());
-                boolean headshot = false;
-                boolean legShot = false;
-                float eyeHeight = target.getEyeHeight();
-                float bodyHeight = target.getBbHeight();
-
-                if (target instanceof LivingEntity) {
-                    if (eyeHeight - 0.25 < hitBoxPos.y && hitBoxPos.y < eyeHeight + 0.3) {
-                        headshot = true;
-                    }
-                    if (hitBoxPos.y < 0.33 * bodyHeight) {
-                        legShot = true;
-                    }
-                }
-
-                var res = new EntityResult(target, hitPos, headshot, legShot);
-                this.onRayHitEntity(shooter, level, data, res);
-            }
-        }
 
         BlockHitResult blockHitResult = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(range)),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
@@ -930,15 +901,65 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         if (state.canOcclude()) {
             pos = blockHitResult.getLocation();
         }
-        if (target != null) {
-            pos = hitResult.getLocation();
+
+        Vec3 viewVec = shooter.getViewVector(1.0F);
+        Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
+        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
+        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
+
+        Vec3 hitPos = null;
+
+        if (entityHitResult != null) {
+            hitPos = entityHitResult.getLocation();
+            target = entityHitResult.getEntity();
+        }
+
+        if (pos != null && hitPos != null) {
+            if (eyePos.distanceToSqr(pos) < eyePos.distanceToSqr(hitPos)) {
+                this.onRayHitBlock(shooter, level, target, data, shootDirection, blockHitResult, pos);
+            } else {
+                rayHitEntity(shooter, target, level, data, hitPos);
+            }
+            return true;
+        }
+
+        if (hitPos != null) {
+            rayHitEntity(shooter, target, level, data, hitPos);
+            return true;
         }
 
         if (pos != null) {
             this.onRayHitBlock(shooter, level, target, data, shootDirection, blockHitResult, pos);
+            return true;
         }
 
         return true;
+    }
+
+    private void rayHitEntity(Entity shooter, Entity target, ServerLevel level, @NotNull GunData data, Vec3 hitPos) {
+        if (target != null && target.isAlive()) {
+            var hitBoxPos = hitPos.subtract(target.position());
+            var res = getEntityResult(target, hitBoxPos, hitPos);
+            this.onRayHitEntity(shooter, level, data, res);
+        }
+    }
+
+    private static EntityResult getEntityResult(Entity target, Vec3 hitBoxPos, Vec3 hitPos) {
+        boolean headshot = false;
+        boolean legShot = false;
+        float eyeHeight = target.getEyeHeight();
+        float bodyHeight = target.getBbHeight();
+
+        if (target instanceof LivingEntity) {
+            if (eyeHeight - 0.25 < hitBoxPos.y && hitBoxPos.y < eyeHeight + 0.3) {
+                headshot = true;
+            }
+            if (hitBoxPos.y < 0.33 * bodyHeight) {
+                legShot = true;
+            }
+        }
+
+        return new EntityResult(target, hitPos, headshot, legShot);
     }
 
     public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockHitResult result, @NotNull Vec3 pos) {
@@ -948,7 +969,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         this.summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
         if (target == null) {
             BulletDecalOption bulletDecalOption = new BulletDecalOption(result.getDirection(), blockPos);
-            ParticleTool.sendParticle(level, bulletDecalOption, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, true);
+            sendParticle(level, bulletDecalOption, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0, true);
         }
         level.playSound(null, pos.x, pos.y, pos.z, this.getRayHitBlockSound(data), SoundSource.BLOCKS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
     }
