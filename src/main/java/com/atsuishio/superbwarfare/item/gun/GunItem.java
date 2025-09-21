@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.api.event.ShootEvent;
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider;
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
@@ -63,6 +64,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -517,6 +519,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             double spread,
             boolean zoom
     ) {
+        MinecraftForge.EVENT_BUS.post(new ShootEvent.Pre(shooter, level, data, spread, zoom));
+
         // 空仓挂机
         if (data.currentAvailableShots(shooter) == 1) {
             data.holdOpen.set(true);
@@ -541,6 +545,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             boolean zoom,
             @Nullable UUID uuid
     ) {
+        MinecraftForge.EVENT_BUS.post(new ShootEvent.Post(shooter, level, data, spread, zoom));
+
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
             data.isEmpty.set(true);
