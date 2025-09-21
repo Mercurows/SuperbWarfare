@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.BatteryItem;
@@ -19,6 +20,9 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,6 +36,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -46,6 +53,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
+import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.teamFilter;
 
 public class RepairToolItem extends GunGeoItem {
@@ -85,6 +93,14 @@ public class RepairToolItem extends GunGeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         AnimationController<RepairToolItem> idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
         data.add(idleController);
+    }
+
+    @Override
+    public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockHitResult result, @NotNull Vec3 pos) {
+        super.onRayHitBlock(shooter, level, target, data, shootDirection, result, pos);
+        BlockPos blockPos = result.getBlockPos();
+        BlockState state = level.getBlockState(blockPos);
+        this.summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
     }
 
     @Override
@@ -165,5 +181,21 @@ public class RepairToolItem extends GunGeoItem {
     @Override
     public boolean canZoom(GunData data, @Nullable Entity shooter) {
         return false;
+    }
+
+    public void summonRayHitParticle(ServerLevel serverLevel, BlockState state, Vec3 pos, Vec3 dir) {
+        BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+        for (int i = 0; i < 1; i++) {
+            Vec3 vec3 = this.randomVec(dir, 40);
+            sendParticle(serverLevel, particleData, pos.x + 0.05 * i * dir.x, pos.y + 0.05 * i * dir.y, pos.z + 0.05 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
+        }
+        for (int i = 0; i < 3; i++) {
+            Vec3 vec3 = this.randomVec(dir, 20);
+            sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
+        }
+        for (int i = 0; i < 2; i++) {
+            Vec3 vec3 = this.randomVec(dir, 80);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.2 + 0.1 * Math.random(), true);
+        }
     }
 }
