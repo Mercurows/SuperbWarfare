@@ -277,8 +277,11 @@ public class ClickHandler {
                 isEditing = false;
                 PacketDistributor.sendToServer(ReloadMessage.INSTANCE);
             }
-            if (key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
-                PacketDistributor.sendToServer(FireModeMessage.INSTANCE);
+            if (key == ModKeyMappings.FIRE_MODE.getKey().getValue() || key == ModKeyMappings.CHANGE_FIRE_MODE_BACKWARD.getKey().getValue()) {
+                PacketDistributor.sendToServer(new FireModeMessage(false));
+            }
+            if (key == ModKeyMappings.CHANGE_FIRE_MODE_FORWARD.getKey().getValue()) {
+                PacketDistributor.sendToServer(new FireModeMessage(true));
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 if (stack.getItem() instanceof GunItem) {

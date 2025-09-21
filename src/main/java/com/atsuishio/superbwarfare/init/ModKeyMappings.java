@@ -28,6 +28,8 @@ public class ModKeyMappings {
     public static final KeyMapping EDIT_MODE = new KeyMapping("key.superbwarfare.edit_mode", GLFW.GLFW_KEY_H, "key.categories.superbwarfare");
     public static final KeyMapping CHANGE_AMMO_FORWARD = new KeyMapping("key.superbwarfare.change_ammo_forward", GLFW.GLFW_KEY_LEFT, "key.categories.superbwarfare");
     public static final KeyMapping CHANGE_AMMO_BACKWARD = new KeyMapping("key.superbwarfare.change_ammo_backward", GLFW.GLFW_KEY_RIGHT, "key.categories.superbwarfare");
+    public static final KeyMapping CHANGE_FIRE_MODE_FORWARD = new KeyMapping("key.superbwarfare.change_fire_mode_forward", GLFW.GLFW_KEY_UP, "key.categories.superbwarfare");
+    public static final KeyMapping CHANGE_FIRE_MODE_BACKWARD = new KeyMapping("key.superbwarfare.change_fire_mode_backward", GLFW.GLFW_KEY_DOWN, "key.categories.superbwarfare");
     public static final KeyMapping UNLOAD = new KeyMapping("key.superbwarfare.unload", InputConstants.UNKNOWN.getValue(), "key.categories.superbwarfare");
 
     public static final KeyMapping FIRE = new KeyMapping("key.superbwarfare.fire", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, "key.categories.superbwarfare");
@@ -58,6 +60,8 @@ public class ModKeyMappings {
         event.register(MARK);
         event.register(CHANGE_AMMO_FORWARD);
         event.register(CHANGE_AMMO_BACKWARD);
+        event.register(CHANGE_FIRE_MODE_FORWARD);
+        event.register(CHANGE_FIRE_MODE_BACKWARD);
         event.register(UNLOAD);
     }
 }

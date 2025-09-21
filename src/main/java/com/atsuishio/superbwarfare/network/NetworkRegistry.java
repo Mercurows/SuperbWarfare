@@ -50,7 +50,7 @@ public class NetworkRegistry {
         playToServer(SwitchScopeMessage.TYPE, SwitchScopeMessage.STREAM_CODEC, SwitchScopeMessage::handler);
         playToServer(FireKeyMessage.TYPE, FireKeyMessage.STREAM_CODEC, FireKeyMessage::handler);
         playToServer(ReloadMessage.TYPE, ReloadMessage.STREAM_CODEC, (message2, context2) -> ReloadMessage.handler(context2));
-        playToServer(FireModeMessage.TYPE, FireModeMessage.STREAM_CODEC, (message1, context1) -> FireModeMessage.handler(context1));
+        playToServer(FireModeMessage.TYPE, FireModeMessage.STREAM_CODEC, FireModeMessage::handler);
         playToServer(PlayerStopRidingMessage.TYPE, PlayerStopRidingMessage.STREAM_CODEC, PlayerStopRidingMessage::handler);
         playToServer(ZoomMessage.TYPE, ZoomMessage.STREAM_CODEC, ZoomMessage::handler);
         playToServer(IglaSeekMessage.TYPE, IglaSeekMessage.STREAM_CODEC, IglaSeekMessage::handler);
