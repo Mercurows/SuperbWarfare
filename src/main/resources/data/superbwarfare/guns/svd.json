@@ -10,6 +10,7 @@
   "Velocity": 42,
   "Magazine": 10,
   "Weight": 5,
+  "ZoomSpreadRate": 0.005,
   "NormalReloadTime": 59,
   "EmptyReloadTime": 78,
   "BypassesArmor": 0.45,

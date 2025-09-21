@@ -9,6 +9,7 @@
   "Velocity": 43,
   "Magazine": 100,
   "Weight": 17,
+  "ZoomSpreadRate": 0.005,
   "DefaultFireMode": "Auto",
   "NormalReloadTime": 100,
   "EmptyReloadTime": 124,

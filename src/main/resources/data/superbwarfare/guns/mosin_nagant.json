@@ -13,6 +13,7 @@
   ],
   "BoltActionTime": 22,
   "Weight": 5,
+  "ZoomSpreadRate": 0.005,
   "PrepareTime": 29,
   "PrepareEmptyTime": 16,
   "IterativeTime": 11,

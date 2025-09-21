@@ -11,6 +11,7 @@
   "Velocity": 70,
   "BoltActionTime": 22,
   "Weight": 7,
+  "ZoomSpreadRate": 0.005,
   "NormalReloadTime": 59,
   "EmptyReloadTime": 89,
   "BypassesArmor": 0.8,

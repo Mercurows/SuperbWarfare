@@ -20,7 +20,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
@@ -559,7 +558,6 @@ public class ClientEventHandler {
         }
         var data = GunData.from(stack);
 
-        var perk = data.perk.get(Perk.Type.AMMO);
         var mode = data.selectedFireModeInfo().mode;
 
         // 精准度
@@ -573,21 +571,7 @@ public class ClientEventHandler {
         double jump = player.onGround() ? 0 * basicDev : 0.35 * basicDev;
         double ride = player.onGround() ? -0.25 * basicDev : 0;
 
-        double zoomSpread;
-
-        if (stack.is(ModTags.Items.SNIPER_RIFLE) || stack.is(ModTags.Items.HEAVY_WEAPON)) {
-            zoomSpread = 1 - (0.995 * zoomTime);
-        } else if (stack.is(ModTags.Items.SHOTGUN)) {
-            if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-                zoomSpread = 1 - (0.85 * zoomTime);
-            } else {
-                zoomSpread = 1 - (0.25 * zoomTime);
-            }
-        } else if (stack.is(ModItems.MINIGUN.get())) {
-            zoomSpread = 1 - (0.25 * zoomTime);
-        } else {
-            zoomSpread = 1 - (0.9 * zoomTime);
-        }
+        double zoomSpread = 1 - (1 - data.get(GunProp.ZOOM_SPREAD_RATE)) * zoomTime;
 
         double spread = stack.is(ModTags.Items.SHOTGUN) || stack.is(ModItems.MINIGUN.get()) ? 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread) : zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread);
 

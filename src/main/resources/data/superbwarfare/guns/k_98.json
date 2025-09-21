@@ -9,6 +9,7 @@
   "Magazine": 5,
   "BoltActionTime": 22,
   "Weight": 5,
+  "ZoomSpreadRate": 0.005,
   "DefaultFireMode": "Auto",
   "ReloadTypes": [
     "Clip",

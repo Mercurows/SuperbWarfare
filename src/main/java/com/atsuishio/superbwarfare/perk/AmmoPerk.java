@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.DamageReduce;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -48,6 +49,14 @@ public class AmmoPerk extends Perk {
             var perk = data.perk.get(Perk.Type.AMMO);
             if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
                 return 1;
+            }
+            return amount;
+        });
+
+        appendModification(GunProp.ZOOM_SPREAD_RATE, (data, amount) -> {
+            var perk = data.perk.get(Perk.Type.AMMO);
+            if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug && data.stack.is(ModTags.Items.SHOTGUN)) {
+                return 0.15;
             }
             return amount;
         });

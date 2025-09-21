@@ -8,6 +8,7 @@
   "Headshot": 1.5,
   "Velocity": 15,
   "Magazine": 2,
+  "ZoomSpreadRate": 0.75,
   "ProjectileAmount": 12,
   "Weight": 1,
   "NormalReloadTime": 66,
