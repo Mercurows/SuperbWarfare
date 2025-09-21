@@ -7,6 +7,7 @@
   "Headshot": 1.5,
   "Velocity": 17,
   "Magazine": 25,
+  "ZoomSpreadRate": 0.75,
   "ProjectileAmount": 12,
   "Weight": 7,
   "DefaultFireMode": "Auto",
@@ -15,7 +16,10 @@
   "BypassesArmor": 0.05,
   "SoundRadius": 18,
   "RPM": 360,
-  "AvailableFireModes": ["Semi", "Auto"],
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
   "DamageReduce": {
     "Type": "Shotgun"
   },

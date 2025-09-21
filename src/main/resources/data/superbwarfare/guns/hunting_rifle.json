@@ -8,6 +8,7 @@
   "Velocity": 38,
   "Magazine": 1,
   "Weight": 5,
+  "ZoomSpreadRate": 0.005,
   "EmptyReloadTime": 64,
   "BypassesArmor": 0.7,
   "SoundRadius": 20,

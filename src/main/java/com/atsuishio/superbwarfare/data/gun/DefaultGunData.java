@@ -226,4 +226,8 @@ public class DefaultGunData implements IDBasedData {
     // 在岩浆中时的散热比例
     @SerializedName("InLavaCooldownRate")
     public double inLavaCooldownRate = 0.2;
+
+    // 瞄准时的扩散比例
+    @SerializedName("ZoomSpreadRate")
+    public double zoomSpreadRate = 0.1;
 }

@@ -9,6 +9,7 @@
   "Headshot": 3,
   "Velocity": 36,
   "Magazine": 3,
+  "ZoomSpreadRate": 0.005,
   "BoltActionTime": 37,
   "Weight": 13,
   "NormalReloadTime": 84,
