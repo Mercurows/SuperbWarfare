@@ -40,7 +40,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Integer> MELEE_DURATION = new GunProp<Integer>("MeleeDuration")
             .withLimiter(v -> Math.max(1, v));
     public static final GunProp<Double> ZOOM_SPREAD_RATE = new GunProp<Double>("ZoomSpreadRate")
-            .withLimiter(v -> Math.max(0, 1d));
+            .withLimiter(v -> Mth.clamp(v, 0, 1));
 
     public static final GunProp<Integer> RANGE = new GunProp<Integer>("Range")
             .withLimiter(v -> Math.max(1, v));
