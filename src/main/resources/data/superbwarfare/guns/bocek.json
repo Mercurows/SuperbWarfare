@@ -5,6 +5,7 @@
   "Damage": 48,
   "Weight": 3,
   "BypassesArmor": 0.25,
+  "Velocity": 24,
   "Magazine": 1,
   "EmptyReloadTime": 6,
   "AutoReload": true,

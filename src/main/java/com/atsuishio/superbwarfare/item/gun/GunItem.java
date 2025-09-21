@@ -23,7 +23,6 @@ import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.RangeTool;
@@ -61,7 +60,10 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -87,8 +89,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier {
 
     protected final RandomSource random = RandomSource.create();
-
-    public static HitResult hitResult0;
 
     @Override
     public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
@@ -696,13 +696,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
      * 服务端处理松开开火按键时的额外行为
      */
     public void onFireKeyRelease(final GunData data, Player player, double power, boolean zoom) {
-    }
-
-    public static double perkDamage(Perk perk) {
-        if (perk instanceof AmmoPerk ammoPerk) {
-            return ammoPerk.damageRate;
-        }
-        return 1;
     }
 
     /**
