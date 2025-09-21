@@ -603,7 +603,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             }
         }
 
-        this.damage *= (float) (getDeltaMovement().length() / velocity);
+        this.damage *= (float) Mth.clamp(getDeltaMovement().length() / velocity, 0, 1);
 
         if (headshot) {
             if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer player) {

@@ -185,21 +185,19 @@ public class BocekItem extends GunGeoItem {
     public void spawnBullet(GunData data, Player player, double power, boolean zoom) {
         ItemStack stack = data.stack;
 
-        var perk = data.perk.get(Perk.Type.AMMO);
         float headshot = data.get(GunProp.HEADSHOT).floatValue();
-        float velocity = (float) (24 * power);
+        float velocity = (float) (data.get(GunProp.VELOCITY) * power);
         float bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR).floatValue();
-        double damage;
+        float explosionRadius = data.get(GunProp.EXPLOSION_RADIUS).floatValue();
+        float explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE).floatValue();
+        int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
 
-        float spread;
-        if (zoom) {
-            spread = 0.01f;
-            damage = 0.08333333 * data.get(GunProp.DAMAGE) *
-                    12 * power * perkDamage(perk);
-        } else {
-            spread = perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.5f : 2.5f;
-            damage = (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 0.08333333 : 0.008333333) *
-                    data.get(GunProp.DAMAGE) * 12 * power * perkDamage(perk);
+        double damage = data.get(GunProp.DAMAGE) * power;
+        float spread = 0.01f;
+
+        if (!zoom) {
+            spread = projectileAmount <= 1 ? 0.5f : 2.5f;
+            damage /= Math.max(1, projectileAmount);
         }
 
         ProjectileEntity projectile = new ProjectileEntity(player.level())
@@ -207,7 +205,11 @@ public class BocekItem extends GunGeoItem {
                 .headShot(headshot)
                 .zoom(zoom)
                 .bypassArmorRate(bypassArmorRate)
+                .velocity(velocity)
                 .setGunItemId(stack);
+
+        projectile.setExplosionDamage(explosionDamage);
+        projectile.setExplosionRadius(explosionRadius);
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
@@ -217,7 +219,7 @@ public class BocekItem extends GunGeoItem {
         }
 
         projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
-        projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, (!zoom && perk == ModPerks.INCENDIARY_BULLET.get() ? 0.2f : 1) * velocity, spread);
+        projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, velocity, spread);
         projectile.damage((float) damage);
 
         player.level().addFreshEntity(projectile);

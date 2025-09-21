@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.perk;
 
-import com.atsuishio.superbwarfare.data.PropModifier;
 import com.atsuishio.superbwarfare.data.gun.DamageReduce;
-import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
@@ -40,7 +38,7 @@ public class AmmoPerk extends Perk {
         appendModification(GunProp.DAMAGE, (pm, data, damage) -> {
             if (data.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk) {
                 if (ammoPerk.slug) {
-                    return damage * ammoPerk.damageRate * ((PropModifier<GunData, DefaultGunData, Double>) pm).<Integer>get(GunProp.PROJECTILE_AMOUNT);
+                    return damage * ammoPerk.damageRate * pm.<Integer>get(GunProp.PROJECTILE_AMOUNT);
                 }
                 return damage * ammoPerk.damageRate;
             }
