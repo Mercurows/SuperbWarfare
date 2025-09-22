@@ -19,6 +19,6 @@ public class RpgRocketTBGModel extends GeoModel<RpgRocketTBG> {
 
     @Override
     public ResourceLocation getTextureResource(RpgRocketTBG animatable) {
-        return Mod.loc("textures/entity/rpg_rocket.png");
+        return Mod.loc("textures/entity/rpg_rocket_tbg.png");
     }
 }

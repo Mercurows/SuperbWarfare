@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.item.common.ammo;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.PoseTool;
 import com.atsuishio.superbwarfare.client.renderer.item.RpgRocketTBGRenderer;
-import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
+import com.atsuishio.superbwarfare.entity.projectile.RpgRocketTBGEntity;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -67,7 +67,7 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
                 return PoseTool.pose(entityLiving, hand, stack);
             }
-        }, ModItems.RPG_ROCKET_TBG.get());
+        }, ModItems.RPG_ROCKET_TBG_TBG.get());
     }
 
     @Override
@@ -125,7 +125,7 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
 
     public static class RocketDispenseBehavior extends ProjectileDispenseBehavior {
         public RocketDispenseBehavior() {
-            super(ModItems.RPG_ROCKET_TBG.get());
+            super(ModItems.RPG_ROCKET_TBG_TBG.get());
         }
 
         @Override
@@ -137,7 +137,7 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, 270, 130, 10, 0.03f);
+        return new RpgRocketTBGEntity(ModEntities.RPG_ROCKET_TBG.get(), pos.x(), pos.y(), pos.z(), level, 270, 130, 10, 0.03f);
     }
 
     @Override

@@ -47,7 +47,7 @@ public class ModEntities {
             EntityType.Builder.<Tm62Entity>of(Tm62Entity::new, MobCategory.MISC).setTrackingRange(32).setUpdateInterval(1).sized(0.5f, 0.15f));
     public static final DeferredHolder<EntityType<?>, EntityType<Ptkm1rEntity>> PTKM_1R = register("ptkm_1r",
             EntityType.Builder.<Ptkm1rEntity>of(Ptkm1rEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.2f, 0.7f).eyeHeight(0.2F));
-public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = register("c4",
+    public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = register("c4",
             EntityType.Builder.<C4Entity>of(C4Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
 
     public static final DeferredHolder<EntityType<?>, EntityType<MedicalKitEntity>> MEDICAL_KIT = register("medical_kit",
@@ -63,8 +63,10 @@ public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = re
     // Fast Projectiles
     public static final DeferredHolder<EntityType<?>, EntityType<SmallCannonShellEntity>> SMALL_CANNON_SHELL = register("small_cannon_shell",
             EntityType.Builder.<SmallCannonShellEntity>of(SmallCannonShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.25f, 0.25f));
-    public static final DeferredHolder<EntityType<?>, EntityType<RpgRocketEntity>> RPG_ROCKET = register("rpg_rocket",
-            EntityType.Builder.<RpgRocketEntity>of(RpgRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
+    public static final DeferredHolder<EntityType<?>, EntityType<RpgRocketTBGEntity>> RPG_ROCKET_TBG = register("rpg_rocket_tbg",
+            EntityType.Builder.<RpgRocketTBGEntity>of(RpgRocketTBGEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
+    public static final DeferredHolder<EntityType<?>, EntityType<RpgRocketStandardEntity>> RPG_ROCKET_STANDARD = register("rpg_rocket_standard",
+            EntityType.Builder.<RpgRocketStandardEntity>of(RpgRocketStandardEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<MortarShellEntity>> MORTAR_SHELL = register("mortar_shell",
             EntityType.Builder.<MortarShellEntity>of(MortarShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<ProjectileEntity>> PROJECTILE = register("projectile",
@@ -118,7 +120,7 @@ public static final DeferredHolder<EntityType<?>, EntityType<C4Entity>> C_4 = re
             EntityType.Builder.of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(13f, 4.2f));
     public static final DeferredHolder<EntityType<?>, EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
             EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.9f, 1.65f));
-public static final DeferredHolder<EntityType<?>, EntityType<WaveforceTowerEntity>> WAVEFORCE_TOWER = register("waveforce_tower",
+    public static final DeferredHolder<EntityType<?>, EntityType<WaveforceTowerEntity>> WAVEFORCE_TOWER = register("waveforce_tower",
             EntityType.Builder.<WaveforceTowerEntity>of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1.75f, 3.3f));
 
     // Boats
