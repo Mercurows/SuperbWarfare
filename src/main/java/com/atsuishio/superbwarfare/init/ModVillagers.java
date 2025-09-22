@@ -167,7 +167,7 @@ public class ModVillagers {
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
                     new ItemStack(ModItems.C4_BOMB.get(), 1), 16, 5, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
-                    new ItemStack(ModItems.RPG_ROCKET_TBG.get(), 1), 16, 5, 0.05f));
+                    new ItemStack(ModItems.RPG_ROCKET_TBG_TBG.get(), 1), 16, 5, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 4),
                     new ItemStack(ModItems.TM_62.get(), 1), 16, 5, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 3),
@@ -185,7 +185,7 @@ public class ModVillagers {
                     new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.C4_BOMB.get(), 1),
                     new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.RPG_ROCKET_TBG.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.RPG_ROCKET_TBG_TBG.get(), 1),
                     new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.TM_62.get(), 1),
                     new ItemStack(Items.EMERALD, 2), 32, 5, 0.05f));

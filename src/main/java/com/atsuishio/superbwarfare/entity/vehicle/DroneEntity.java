@@ -701,12 +701,25 @@ public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
                 .orElse(null);
         if (bomb == null) return;
 
+        float radius = data.explosionRadius;
+        ParticleTool.ParticleType particleType;
+
+        if (radius < 4) {
+            particleType = ParticleTool.ParticleType.SMALL;
+        } else if (radius >= 4 && radius < 10) {
+            particleType = ParticleTool.ParticleType.MEDIUM;
+        } else if (radius >= 10 && radius < 20) {
+            particleType = ParticleTool.ParticleType.HUGE;
+        } else {
+            particleType = ParticleTool.ParticleType.GIANT;
+        }
+
         createCustomExplosion()
                 .source(bomb)
                 .attacker(attacker)
                 .damage(data.explosionDamage)
-                .radius(data.explosionRadius)
-                .withParticleType(ParticleTool.ParticleType.HUGE)
+                .radius(radius)
+                .withParticleType(particleType)
                 .explode();
 
         // TODO 药水迫击炮炮弹

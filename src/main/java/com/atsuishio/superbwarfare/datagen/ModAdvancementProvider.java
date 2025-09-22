@@ -108,7 +108,7 @@ public class ModAdvancementProvider implements DataProvider {
             .parent(ENCLAVE)),
 
     // 哑弹棒（？）
-    BOOMSTICK_MELEE = advancement("boomstick_melee", builder -> builder.icon(ModItems.RPG_ROCKET_TBG.get())
+    BOOMSTICK_MELEE = advancement("boomstick_melee", builder -> builder.icon(ModItems.RPG_ROCKET_TBG_TBG.get())
             .externalTrigger(RPGMeleeExplosionTrigger.TriggerInstance.get())
             .type(ModAdvancement.Type.SECRET_CHALLENGE)
             .parent(MAIN_ROOT)),

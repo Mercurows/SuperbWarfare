@@ -1,6 +1,6 @@
 {
   "Item": "superbwarfare:rpg_rocket_tbg",
-  "Entity": "superbwarfare:rpg_rocket",
+  "Entity": "superbwarfare:rpg_rocket_tbg",
   "HitDamage": 250,
   "ExplosionDamage": 150,
   "ExplosionRadius": 11,

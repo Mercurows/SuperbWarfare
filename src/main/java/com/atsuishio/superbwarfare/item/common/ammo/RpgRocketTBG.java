@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.advancement.CriteriaRegister;
 import com.atsuishio.superbwarfare.client.renderer.item.RpgRocketTBGRenderer;
-import com.atsuishio.superbwarfare.entity.projectile.RpgRocketEntity;
+import com.atsuishio.superbwarfare.entity.projectile.RpgRocketTBGEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.DispenserLaunchable;
@@ -111,7 +111,7 @@ public class RpgRocketTBG extends Item implements GeoItem, DispenserLaunchable {
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new RpgRocketEntity(ModEntities.RPG_ROCKET.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 270, 130, 10, 0.03f);
+                return new RpgRocketTBGEntity(ModEntities.RPG_ROCKET_TBG.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 270, 130, 10, 0.03f);
             }
 
             @Override

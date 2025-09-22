@@ -42,7 +42,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -51,13 +51,13 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
     private float explosionRadius = 10;
     private float gravity = 0.03f;
 
-    public RpgRocketEntity(EntityType<? extends RpgRocketEntity> type, Level world) {
+    public RpgRocketTBGEntity(EntityType<? extends RpgRocketTBGEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
         this.durability = 20;
     }
 
-    public RpgRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float explosionDamage, float explosionRadius, float gravity) {
+    public RpgRocketTBGEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float explosionDamage, float explosionRadius, float gravity) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.durability = 20;
@@ -67,8 +67,8 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         this.gravity = gravity;
     }
 
-    public RpgRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.RPG_ROCKET.get(), level);
+    public RpgRocketTBGEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
+        this(ModEntities.RPG_ROCKET_TBG.get(), level);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.RPG_ROCKET_TBG.get();
+        return ModItems.RPG_ROCKET_TBG_TBG.get();
     }
 
     @Override
@@ -221,7 +221,7 @@ public class RpgRocketEntity extends FastThrowableProjectile implements GeoEntit
         destroyBlock();
     }
 
-    private PlayState movementPredicate(AnimationState<RpgRocketEntity> event) {
+    private PlayState movementPredicate(AnimationState<RpgRocketTBGEntity> event) {
         if (getDeltaMovement().lengthSqr() > 0) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.rpg.idle"));
         } else {
