@@ -103,34 +103,35 @@ public class IFFOverlay implements LayeredDraw.Layer {
     private static ResourceLocation getResourceLocation(Entity team) {
         ResourceLocation icon = FRIENDLY_INDICATOR;
 
-        if ((team instanceof VehicleEntity vehicle && vehicle.vehicleType == VehicleEntity.VehicleType.BOAT) || team instanceof Boat) {
+        // TODO 载具类型判断没生效？
+        if ((team instanceof VehicleEntity vehicle && vehicle.getVehicleType() == VehicleEntity.VehicleType.BOAT) || team instanceof Boat) {
             icon = FRIENDLY_BOAT;
         } else if (team instanceof VehicleEntity vehicle) {
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.AIRPLANE) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE) {
                 icon = FRIENDLY_AIRCRAFT;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.HELICOPTER) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER) {
                 icon = FRIENDLY_HELICOPTER;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.APC) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.APC) {
                 icon = FRIENDLY_APC;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.CAR) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.CAR) {
                 icon = FRIENDLY_CAR;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.AA) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.AA) {
                 icon = FRIENDLY_AA;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.TANK) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.TANK) {
                 icon = FRIENDLY_TANK;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.ARTILLERY) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.ARTILLERY) {
                 icon = FRIENDLY_ARTILLERY;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.DRONE) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.DRONE) {
                 icon = FRIENDLY_DRONE;
             }
-            if (vehicle.vehicleType == VehicleEntity.VehicleType.DEFENSE) {
+            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.DEFENSE) {
                 icon = FRIENDLY_DEFENSE;
             }
         } else if (team instanceof MineEntity) {
