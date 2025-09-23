@@ -49,8 +49,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -66,10 +66,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
     public static Consumer<VehicleEntity> fireSound = vehicle -> {
     };
 
@@ -1032,7 +1028,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             }
 
             Matrix4f transform = getClientVehicleTransform(partialTicks);
-            Vector4f maxCameraPosition = transformPosition(transform, 0, 6.375f, -14 - (float) ClientMouseHandler.custom3pDistanceLerp);
+            Vector4f maxCameraPosition = transformPosition(transform, 0, 4, -14 - (float) ClientMouseHandler.custom3pDistanceLerp);
             Vec3 finalPos = CameraTool.getMaxZoom(transform, maxCameraPosition);
 
             if (isFirstPerson) {
@@ -1106,5 +1102,10 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public VehicleType getVehicleType() {
         return VehicleType.AIRPLANE;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 102;
     }
 }

@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -35,18 +34,13 @@ public class AACalculatorOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
     private static final ResourceLocation SHOOT_INDICATOR = Mod.loc("textures/screens/igla_9k38/frame.png");
-    private static final ResourceLocation SHOOT = Mod.loc("textures/screens/igla_9k38/shoot.png");
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
         var options = mc.options;
         PoseStack poseStack = guiGraphics.pose();
-        var screenWidth = guiGraphics.guiWidth();
-        var screenHeight = guiGraphics.guiHeight();
         var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         if (!shouldRenderCrossHair(player)) return;
@@ -138,6 +132,7 @@ public class AACalculatorOverlay implements LayeredDraw.Layer {
         if (player == null) return false;
         return !player.isSpectator() && player.getVehicle() instanceof VehicleEntity vehicle
                 && vehicle instanceof WeaponVehicleEntity weaponVehicle
+                && weaponVehicle.getWeapon(vehicle.getSeatIndex(player)) != null
                 && weaponVehicle.getWeapon(vehicle.getSeatIndex(player)).aaProjectileWeapon;
     }
 }

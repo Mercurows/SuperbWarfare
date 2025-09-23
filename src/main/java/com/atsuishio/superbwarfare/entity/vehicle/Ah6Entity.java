@@ -46,8 +46,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -60,10 +60,7 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Float> PROPELLER_ROT = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.INT);
@@ -443,11 +440,11 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         } else if (i == 2) {
-            Vector4f worldPosition = transformPosition(transform, -1.4f, 0.4f, 0);
+            Vector4f worldPosition = transformPosition(transform, -1.4f, -1.05f, 0);
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         } else if (i == 3) {
-            Vector4f worldPosition = transformPosition(transform, 1.4f, 0.4f, 0);
+            Vector4f worldPosition = transformPosition(transform, 1.4f, -1.05f, 0);
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         }
@@ -716,7 +713,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (this.getSeatIndex(player) == 0) {
             Matrix4f transform = getClientVehicleTransform(partialTicks);
-            Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 2.45f, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
+            Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 1, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
             Vec3 finalPos = CameraTool.getMaxZoom(transform, maxCameraPosition);
 
             if (isFirstPerson) {
@@ -779,5 +776,10 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public VehicleType getVehicleType() {
         return VehicleType.HELICOPTER;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 102;
     }
 }
