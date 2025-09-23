@@ -55,7 +55,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
     public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public VehicleType vehicleType = VehicleType.ARTILLERY;
 
     public OBB[] barrel = new OBB[12];
     public OBB pitchController;
@@ -538,5 +537,10 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     @Override
     public int getMaxPassengers() {
         return 0;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.ARTILLERY;
     }
 }

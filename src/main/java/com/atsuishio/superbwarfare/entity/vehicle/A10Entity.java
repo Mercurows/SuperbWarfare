@@ -105,7 +105,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public OBB obb9;
     public OBB obb10;
     public OBB obb11;
-    public VehicleType vehicleType = VehicleType.AIRPLANE;
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);
@@ -1122,5 +1121,10 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Vector4f worldPosition11 = transformPosition(transform, 2.703125f, 1.921875f - 2.375f, 0.03125f);
         this.obb11.center().set(new Vector3f(worldPosition11.x, worldPosition11.y, worldPosition11.z));
         this.obb11.setRotation(VectorTool.combineRotations(1, this));
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.AIRPLANE;
     }
 }

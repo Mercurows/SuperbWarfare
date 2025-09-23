@@ -90,7 +90,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, LandArmorEn
     public OBB obb5;
     public OBB obbTurret;
     public OBB obbTurret2;
-    public VehicleType vehicleType = VehicleType.TANK;
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
         super(type, world);
@@ -1259,5 +1258,10 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, LandArmorEn
     @Override
     public boolean hasPassengerTurretWeapon() {
         return true;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.TANK;
     }
 }

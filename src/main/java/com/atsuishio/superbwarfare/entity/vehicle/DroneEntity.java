@@ -95,7 +95,6 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     public int holdTickX;
     public int holdTickY;
     public int holdTickZ;
-    public VehicleType vehicleType = VehicleType.DRONE;
 
     public DroneEntity(EntityType<DroneEntity> type, Level world) {
         super(type, world);
@@ -814,5 +813,10 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     @Override
     public boolean hasEnergyStorage() {
         return false;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.DRONE;
     }
 }

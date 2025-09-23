@@ -78,7 +78,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     public OBB obb4;
     public OBB obb5;
     public Vec3 barrelLookAt;
-    public VehicleType vehicleType = VehicleType.ARTILLERY;
 
     public AnnihilatorEntity(EntityType<AnnihilatorEntity> type, Level world) {
         super(type, world);
@@ -629,5 +628,10 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         Vector4f worldPosition5 = transformPosition(transform, 0, 2.46875f, -5.28125f);
         this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
         this.obb5.setRotation(VectorTool.combineRotationsYaw(1, this));
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.ARTILLERY;
     }
 }

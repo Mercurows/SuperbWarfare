@@ -66,7 +66,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
 
     public float deltaX;
     public float deltaY;
-    public VehicleType vehicleType = VehicleType.AIRPLANE;
 
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
         super(type, world);
@@ -392,5 +391,10 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.AIRPLANE;
     }
 }

@@ -73,7 +73,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public static final EntityDataAccessor<Integer> AMMO_COUNT = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public VehicleType vehicleType = VehicleType.ARTILLERY;
 
     public Mle1934Entity(EntityType<Mle1934Entity> type, Level world) {
         super(type, world);
@@ -784,5 +783,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     @Override
     public boolean hasEnergyStorage() {
         return false;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.ARTILLERY;
     }
 }

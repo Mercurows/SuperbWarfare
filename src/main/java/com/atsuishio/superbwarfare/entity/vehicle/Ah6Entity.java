@@ -87,7 +87,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public OBB obb5;
     public OBB obb6;
     public OBB obb7;
-    public VehicleType vehicleType = VehicleType.HELICOPTER;
 
     public Ah6Entity(EntityType<Ah6Entity> type, Level world) {
         super(type, world);
@@ -790,5 +789,10 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Vector4f worldPosition7 = transformPosition(transform, 0.1875f, 2.09375f - 1.45f, -6.15625f);
         this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
         this.obb7.setRotation(VectorTool.combineRotations(1, this));
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.HELICOPTER;
     }
 }

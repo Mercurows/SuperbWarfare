@@ -63,7 +63,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     public float deltaY;
 
     public int jumpCooldown;
-    public VehicleType vehicleType = VehicleType.CAR;
 
     public VehicleAssemblingTableVehicleEntity(EntityType<?> type, Level world) {
         super(type, world);
@@ -394,5 +393,10 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     @ParametersAreNonnullByDefault
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
         return new VehicleAssemblingMenu(i, inventory, true);
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.CAR;
     }
 }

@@ -86,7 +86,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, LandArm
     public OBB obb5;
     public OBB obb6;
     public OBB obbTurret;
-    public VehicleType vehicleType = VehicleType.TANK;
 
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);
@@ -767,5 +766,10 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, LandArm
     @Override
     public boolean hasPassengerTurretWeapon() {
         return false;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.TANK;
     }
 }

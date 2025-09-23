@@ -87,8 +87,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, LandArmorEnt
     public OBB obb5;
     public OBB obbTurret;
 
-    public VehicleType vehicleType = VehicleType.APC;
-
     public Bmp2Entity(EntityType<Bmp2Entity> type, Level world) {
         super(type, world);
         this.obb = new OBB(this.position().toVector3f(), new Vector3f(2.1875f, 0.875f, 3.90625f), new Quaternionf(), OBB.Part.BODY);
@@ -1023,5 +1021,10 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, LandArmorEnt
     @Override
     public boolean hasPassengerTurretWeapon() {
         return false;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.APC;
     }
 }
