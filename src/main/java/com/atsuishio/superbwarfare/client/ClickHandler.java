@@ -108,6 +108,8 @@ public class ClickHandler {
         if (player == null) return;
         if (player.isSpectator()) return;
 
+        player.displayClientMessage(Component.literal("Mouse " + event.getButton() + " Pressed"), false);
+
         ItemStack stack = player.getMainHandItem();
 
         int button = event.getButton();
@@ -260,6 +262,8 @@ public class ClickHandler {
         ItemStack stack = player.getMainHandItem();
 
         int key = event.getKey();
+        if (key < 0) return;
+
         if (event.getAction() == GLFW.GLFW_PRESS) {
             if (player.hasEffect(ModMobEffects.SHOCK.get())) {
                 return;
