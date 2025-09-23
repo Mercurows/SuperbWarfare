@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
+import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -55,9 +58,12 @@ import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
-public class Hpj11Entity extends ContainerMobileVehicleEntity implements GeoEntity, CannonEntity, OwnableEntity, AutoAimable, DefenseEntity {
-
-    public static Consumer<MobileVehicleEntity> fireSound = vehicle -> {
+public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntity, OwnableEntity, AutoAimable {
+    @Override
+    public int getContainerSize() {
+        return 102;
+    }
+    public static Consumer<VehicleEntity> fireSound = vehicle -> {
     };
 
     public static final EntityDataAccessor<Integer> ANIM_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);

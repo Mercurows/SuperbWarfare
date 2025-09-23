@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
-import com.atsuishio.superbwarfare.entity.vehicle.base.DefenseEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -55,7 +54,11 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.friendlyToPlayer;
 import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
-public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable, DefenseEntity {
+public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable {
+    @Override
+    public boolean hasMenu() {
+        return false;
+    }
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> CHARGED_ENERGY = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.STRING);
@@ -413,10 +416,5 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     @Override
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/waveforce_tower_icon.png");
-    }
-
-    @Override
-    public boolean hasEnergyStorage() {
-        return true;
     }
 }

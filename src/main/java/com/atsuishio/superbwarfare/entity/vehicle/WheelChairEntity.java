@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -42,7 +42,12 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class WheelChairEntity extends MobileVehicleEntity implements GeoEntity {
+public class WheelChairEntity extends VehicleEntity implements GeoEntity {
+    @Override
+    public boolean hasMenu() {
+        return false;
+    }
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public int jumpCoolDown;
     public int handBusyTime;

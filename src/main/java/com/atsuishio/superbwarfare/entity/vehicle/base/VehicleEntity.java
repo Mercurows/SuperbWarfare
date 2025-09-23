@@ -11,12 +11,16 @@ import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
+import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.menu.VehicleMenu;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
@@ -33,6 +37,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
@@ -45,52 +50,64 @@ import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
+import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector4f;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.teamFilter;
 
-public abstract class VehicleEntity extends Entity implements Container, VehiclePropertyModifier {
+public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
 
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
@@ -119,6 +136,28 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public static final EntityDataAccessor<Boolean> R_WHEEL_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> ENGINE1_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> ENGINE2_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+
+    public static Consumer<VehicleEntity> trackSound = vehicle -> {
+    };
+    public static Consumer<VehicleEntity> engineSound = vehicle -> {
+    };
+    public static Consumer<VehicleEntity> swimSound = vehicle -> {
+    };
+
+    public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+
+    public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+
+    public static final EntityDataAccessor<Integer> FIRE_ANIM = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> COAX_HEAT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+
+    public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> DECOY_COUNT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> GEAR_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> GEAR_UP = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> LANDING_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public VehicleType vehicleType = VehicleType.EMPTY;
     public VehicleWeapon[][] availableWeapons;
@@ -153,6 +192,110 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     public double aiPassengerDiff;
 
     public @Nullable Player damageDebugResultReceiver = null;
+
+    private Vec3 previousVelocity = Vec3.ZERO;
+
+    public double acceleration;
+    public int decoyReloadCoolDown;
+    public boolean leftInputDown;
+    public boolean rightInputDown;
+    public boolean forwardInputDown;
+    public boolean backInputDown;
+    public boolean upInputDown;
+    public boolean downInputDown;
+    public boolean decoyInputDown;
+    public boolean fireInputDown;
+    public boolean sprintInputDown;
+    public double lastTickSpeed;
+    public double lastTickVerticalSpeed;
+    public int collisionCoolDown;
+
+    private boolean wasEngineRunning = false;
+
+    public float rudderRot;
+    public float rudderRotO;
+
+    public float leftWheelRot;
+    public float rightWheelRot;
+    public float leftWheelRotO;
+    public float rightWheelRotO;
+
+    public float leftTrackO;
+    public float rightTrackO;
+    public float leftTrack;
+    public float rightTrack;
+
+    public float rotorRot;
+    public float rotorRotO;
+
+    public float propellerRot;
+    public float propellerRotO;
+
+    public double recoilShake;
+    public double recoilShakeO;
+
+    public boolean cannotFireCoax;
+    public int reloadCoolDown;
+
+    public double velocityO;
+    public double velocity;
+
+    public float flap1LRot;
+    public float flap1LRotO;
+    public float flap1RRot;
+    public float flap1RRotO;
+    public float flap1L2Rot;
+    public float flap1L2RotO;
+    public float flap1R2Rot;
+    public float flap1R2RotO;
+    public float flap2LRot;
+    public float flap2LRotO;
+    public float flap2RRot;
+    public float flap2RRotO;
+    public float flap3Rot;
+    public float flap3RotO;
+    public float gearRotO;
+
+    @Override
+    public void processInput(short keys) {
+        leftInputDown
+                = (keys & 0b000000001) > 0;
+        rightInputDown
+                = (keys & 0b000000010) > 0;
+        forwardInputDown
+                = (keys & 0b000000100) > 0;
+        backInputDown
+                = (keys & 0b000001000) > 0;
+
+        entityData.set(LANDING_INPUT_DOWN, (keys & 0b000001000) > 0);
+
+        upInputDown
+                = (keys & 0b000010000) > 0;
+        downInputDown
+                = (keys & 0b000100000) > 0;
+        decoyInputDown
+                = (keys & 0b001000000) > 0;
+        fireInputDown
+                = (keys & 0b010000000) > 0;
+        sprintInputDown
+                = (keys & 0b100000000) > 0;
+    }
+
+    @Override
+    public void playerTouch(Player pPlayer) {
+        if (pPlayer.isCrouching()
+                && !this.level().isClientSide
+                && pPlayer.getY() < this.getY() + this.getBbHeight()
+                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
+        ) {
+            double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
+            double thisSize = this.getBbWidth() * this.getBbHeight();
+            double f = Math.min(entitySize / thisSize, 2);
+            double f1 = Math.min(thisSize / entitySize, 4);
+            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.15 * f * pPlayer.getDeltaMovement().length())));
+            pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
+        }
+    }
 
     protected final Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, DefaultVehicleData, ?>> propertyModifiers = new HashMap<>();
 
@@ -280,10 +423,6 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         this.items.clear();
     }
 
-    public boolean hasMenu() {
-        return false;
-    }
-
     @Override
     public boolean isEmpty() {
         return this.items.stream().allMatch(ItemStack::isEmpty);
@@ -305,13 +444,75 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         int combinedCount = currentCount + stackCount;
         if (combinedCount > this.getMaxStackSize() || combinedCount > stack.getMaxStackSize()) return false;
 
-        return Container.super.canPlaceItem(slot, stack);
+        return ContainerEntity.super.canPlaceItem(slot, stack);
     }
 
     @Override
     public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
-        return Container.super.canTakeItem(target, slot, stack);
+        return ContainerEntity.super.canTakeItem(target, slot, stack);
+    }
+
+    @Override
+    public void remove(@NotNull RemovalReason pReason) {
+        if (!this.level().isClientSide && pReason != RemovalReason.DISCARDED) {
+            Containers.dropContents(this.level(), this, this);
+        }
+        super.remove(pReason);
+    }
+
+    @Override
+    public void openCustomInventoryScreen(Player pPlayer) {
+        pPlayer.openMenu(this);
+        if (!pPlayer.level().isClientSide) {
+            this.gameEvent(GameEvent.CONTAINER_OPEN, pPlayer);
+        }
+    }
+
+    @Override
+    public ResourceKey<LootTable> getLootTable() {
+        return null;
+    }
+
+    @Override
+    public void setLootTable(@Nullable ResourceKey<LootTable> lootTable) {
+    }
+
+    @Override
+    public long getLootTableSeed() {
+        return 0;
+    }
+
+    @Override
+    public void setLootTableSeed(long pLootTableSeed) {
+    }
+
+    public boolean hasMenu() {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, Player pPlayer) {
+        if (!pPlayer.isSpectator() && this.hasMenu()) {
+            return new VehicleMenu(pContainerId, pPlayerInventory, this);
+        }
+        return null;
+    }
+
+    @Override
+    public void stopOpen(@NotNull Player pPlayer) {
+        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer));
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getItemStacks() {
+        return this.items;
+    }
+
+    @Override
+    public void clearItemStacks() {
+        this.items.clear();
     }
 
     // container end
@@ -526,7 +727,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         this.setHealth(this.getMaxHealth());
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
-            this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
+            this.entityData .set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
         }
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
@@ -561,6 +762,18 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 .define(R_WHEEL_DAMAGED, false)
                 .define(ENGINE1_DAMAGED, false)
                 .define(ENGINE2_DAMAGED, false)
+
+                .define(CANNON_RECOIL_TIME, 0)
+                .define(POWER, 0f)
+                .define(YAW, 0f)
+                .define(AMMO, 0)
+                .define(FIRE_ANIM, 0)
+                .define(COAX_HEAT, 0)
+                .define(DECOY_COUNT, 0)
+                .define(GEAR_ROT, 0)
+                .define(GEAR_UP, false)
+                .define(LANDING_INPUT_DOWN, false)
+                .define(PLANE_BREAK, 0f)
 
                 // 怎么还不给玩动态注册了（恼）
                 .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]))
@@ -629,7 +842,7 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
     }
 
     public boolean hasEnergyStorage() {
-        return false;
+        return true;
     }
 
     // energy end
@@ -676,6 +889,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         this.entityData.set(ENGINE1_DAMAGED, compound.getBoolean("Engine1Damaged"));
         this.entityData.set(ENGINE2_DAMAGED, compound.getBoolean("Engine2Damaged"));
 
+        this.entityData.set(POWER, compound.getFloat("Power"));
+        this.entityData.set(DECOY_COUNT, compound.getInt("DecoyCount"));
+        this.entityData.set(GEAR_ROT, compound.getInt("GearRot"));
+        this.entityData.set(GEAR_UP, compound.getBoolean("GearUp"));
+
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             var selected = compound.getIntArray("SelectedWeapon");
 
@@ -690,6 +908,8 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         if (this.hasEnergyStorage() && compound.get("Energy") instanceof IntTag energyNBT) {
             ((SyncedEntityEnergyStorage) energyStorage).deserializeNBT(level().registryAccess(), energyNBT);
         }
+
+        ContainerHelper.loadAllItems(compound, this.getItemStacks(), this.level().registryAccess());
     }
 
     @Override
@@ -711,6 +931,11 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         compound.putBoolean("Engine1Damaged", this.entityData.get(ENGINE1_DAMAGED));
         compound.putBoolean("Engine2Damaged", this.entityData.get(ENGINE2_DAMAGED));
 
+        compound.putFloat("Power", this.entityData.get(POWER));
+        compound.putInt("DecoyCount", this.entityData.get(DECOY_COUNT));
+        compound.putInt("GearRot", this.entityData.get(GEAR_ROT));
+        compound.putBoolean("GearUp", this.entityData.get(GEAR_UP));
+
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON));
         }
@@ -718,10 +943,20 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         if (this.hasEnergyStorage()) {
             compound.put("Energy", ((SyncedEntityEnergyStorage) energyStorage).serializeNBT(level().registryAccess()));
         }
+
+        ContainerHelper.saveAllItems(compound, this.getItemStacks(), this.level().registryAccess());
     }
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        if (player.getVehicle() == this) return InteractionResult.PASS;
+
+        if (this.hasMenu() && player.isShiftKeyDown() && !player.getMainHandItem().is(ModTags.Items.TOOLS_CROWBAR)) {
+            player.openMenu(this);
+            return InteractionResult.sidedSuccess(player.level().isClientSide);
+        }
+
+
         if (player.getVehicle() == this) return InteractionResult.PASS;
         var data = data();
 
@@ -992,6 +1227,52 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     @Override
     public void baseTick() {
+        if (!this.wasEngineRunning && this.engineRunning() && this.level().isClientSide()) {
+            engineSound.accept(this);
+            swimSound.accept(this);
+            if (this.hasTracks()) {
+                trackSound.accept(this);
+            }
+        }
+        this.wasEngineRunning = this.engineRunning();
+
+        turretYRotO = this.getTurretYRot();
+        turretXRotO = this.getTurretXRot();
+
+        gunYRotO = this.getGunYRot();
+        gunXRotO = this.getGunXRot();
+
+        leftWheelRotO = this.getLeftWheelRot();
+        rightWheelRotO = this.getRightWheelRot();
+
+        leftTrackO = this.getLeftTrack();
+        rightTrackO = this.getRightTrack();
+
+        rotorRotO = this.getRotorRot();
+
+        rudderRotO = this.getRudderRot();
+
+        propellerRotO = this.getPropellerRot();
+
+        recoilShakeO = this.getRecoilShake();
+
+        velocityO = this.getVelocity();
+
+        lastTickSpeed = new Vec3(this.getDeltaMovement().x, this.getDeltaMovement().y + 0.06, this.getDeltaMovement().z).length();
+        lastTickVerticalSpeed = this.getDeltaMovement().y + 0.06;
+        if (collisionCoolDown > 0) {
+            collisionCoolDown--;
+        }
+
+        flap1LRotO = this.getFlap1LRot();
+        flap1RRotO = this.getFlap1RRot();
+        flap1L2RotO = this.getFlap1L2Rot();
+        flap1R2RotO = this.getFlap1R2Rot();
+        flap2LRotO = this.getFlap2LRot();
+        flap2RRotO = this.getFlap2RRot();
+        flap3RotO = this.getFlap3Rot();
+        gearRotO = entityData.get(GEAR_ROT);
+
         super.baseTick();
 
         if (repairCoolDown > 0) {
@@ -1108,6 +1389,84 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
                 gunnerAngle();
             } else if (getNthEntity(secondWeaponControllerIndex()) instanceof Mob mob) {
                 passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), mob);
+            }
+        }
+
+        // 获取当前速度（deltaMovement 是当前速度向量）
+        Vec3 currentVelocity = this.getDeltaMovement();
+
+        // 计算加速度向量（时间间隔 Δt = 0.05秒）
+        Vec3 accelerationVec = currentVelocity.subtract(previousVelocity).scale(20); // scale(1/0.05) = scale(20)
+
+        // 计算加速度的绝对值
+        acceleration = accelerationVec.length() * 20;
+
+        // 更新前一时刻的速度
+        previousVelocity = currentVelocity;
+
+        double direct = (90 - calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+        setVelocity(Mth.lerp(0.4, getVelocity(), getDeltaMovement().horizontalDistance() * direct * 20));
+
+        float deltaT = java.lang.Math.abs(getTurretYRot() - turretYRotO);
+        while (getTurretYRot() > 180F) {
+            setTurretYRot(getTurretYRot() - 360F);
+            turretYRotO = getTurretYRot() - deltaT;
+        }
+        while (getTurretYRot() <= -180F) {
+            setTurretYRot(getTurretYRot() + 360F);
+            turretYRotO = deltaT + getTurretYRot();
+        }
+
+        if (this.entityData.get(COAX_HEAT) > 0) {
+            this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) - 1);
+        }
+
+        if (this.entityData.get(FIRE_ANIM) > 0) {
+            this.entityData.set(FIRE_ANIM, this.entityData.get(FIRE_ANIM) - 1);
+        }
+
+        if (this.entityData.get(COAX_HEAT) < 40) {
+            cannotFireCoax = false;
+        }
+
+        if (decoyReloadCoolDown > 0) {
+            decoyReloadCoolDown--;
+        }
+
+        if (this.entityData.get(COAX_HEAT) > 100) {
+            cannotFireCoax = true;
+            this.level().playSound(null, this.getOnPos(), ModSounds.MINIGUN_OVERHEAT.get(), SoundSource.PLAYERS, 1, 1);
+        }
+
+        if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
+            this.entityData.set(CANNON_RECOIL_TIME, this.entityData.get(CANNON_RECOIL_TIME) - 1);
+        }
+
+        this.setRecoilShake(java.lang.Math.pow(entityData.get(CANNON_RECOIL_TIME), 4) * 0.0000007 * java.lang.Math.sin(0.2 * java.lang.Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5)));
+
+        preventStacking();
+        crushEntities(this.getDeltaMovement());
+
+        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
+
+        this.move(MoverType.SELF, this.getDeltaMovement());
+        collideSoftBlock();
+        moveOnDragonTeeth();
+
+        if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
+            for (var stack : this.getItemStacks()) {
+                int neededEnergy = this.getMaxEnergy() - this.getEnergy();
+                if (neededEnergy <= 0) break;
+
+                var energyCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+                if (energyCap == null) continue;
+
+                var stored = energyCap.getEnergyStored();
+                if (stored <= 0) continue;
+
+                int energyToExtract = Math.min(stored, neededEnergy);
+                energyCap.extractEnergy(energyToExtract, false);
+                this.setEnergy(this.getEnergy() + energyToExtract);
             }
         }
 
@@ -2206,6 +2565,957 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
         return null;
     }
 
+    public boolean hasTracks() {
+        return false;
+    }
+
+    public boolean canCrushEntities() {
+        return true;
+    }
+
+    public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
+
+    public void trackEngine(boolean amphibious, double buoyancy, int EnergyConsume, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
+        if (amphibious) {
+            double fluidFloat = buoyancy * getSubmergedHeight(this);
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+        }
+
+        if (this.onGround()) {
+            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
+        }
+
+        if (this.isInWater()) {
+            float f1 = (float) (0.7f - (0.04f * Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.08f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
+
+            if (this.level() instanceof ServerLevel serverLevel && this.getDeltaMovement().lengthSqr() > 0.01) {
+                sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+                sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            }
+        }
+
+        Entity passenger0 = this.getFirstPassenger();
+
+        if (this.getEnergy() <= 0) return;
+
+        if (passenger0 == null) {
+            this.leftInputDown = false;
+            this.rightInputDown = false;
+            this.forwardInputDown = false;
+            this.backInputDown = false;
+            this.entityData.set(POWER, 0f);
+        }
+
+        if (forwardInputDown) {
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? powerAdd * 1.667f : powerAdd) * (1 + getXRot() / 55), maxPower));
+        }
+
+        if (backInputDown) {
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? powerReduce * 1.667f : powerReduce) * (1 - getXRot() / 55), minPower));
+            if (rightInputDown) {
+                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + steeringSpeed);
+            } else if (this.leftInputDown) {
+                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - steeringSpeed);
+            }
+        } else {
+            if (rightInputDown) {
+                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - steeringSpeed);
+            } else if (this.leftInputDown) {
+                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + steeringSpeed);
+            }
+        }
+
+        if (this.forwardInputDown || this.backInputDown) {
+            this.consumeEnergy(EnergyConsume);
+        }
+
+        this.entityData.set(POWER, this.entityData.get(POWER) * (upInputDown ? 0.5f : (rightInputDown || leftInputDown) ? 0.947f : 0.96f));
+        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * (float) Math.max(0.76f - 0.1f * this.getDeltaMovement().horizontalDistance(), 0.3));
+
+        double s0 = getDeltaMovement().dot(this.getViewVector(1));
+
+        this.setLeftWheelRot((float) ((this.getLeftWheelRot() - wheelRotSpeed * s0) + Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f)));
+        this.setRightWheelRot((float) ((this.getRightWheelRot() - wheelRotSpeed * s0) - Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f)));
+
+        setLeftTrack((float) ((getLeftTrack() - trackSpeed * Math.PI * s0) + Mth.clamp(trackDifferential * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
+        setRightTrack((float) ((getRightTrack() - trackSpeed * Math.PI * s0) - Mth.clamp(trackDifferential * Math.PI * this.entityData.get(DELTA_ROT), -5f, 5f)));
+
+        int i;
+
+        if (entityData.get(L_WHEEL_DAMAGED) && entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.93f);
+            i = 0;
+        } else if (entityData.get(L_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = 3;
+        } else if (entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = -3;
+        } else {
+            i = 0;
+        }
+
+        if (entityData.get(ENGINE1_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.85f);
+        }
+
+        this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT) - i * s0));
+        if (this.isInWater() || onGround()) {
+            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.13f : (isInWater() && !onGround() ? 2 : 2.4f)) * this.entityData.get(POWER))));
+        }
+    }
+
+    public void wheelEngine(boolean amphibious, double buoyancy, int EnergyConsume, double wheelRotSpeed, double wheelDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
+
+        if (amphibious) {
+            double fluidFloat = buoyancy * getSubmergedHeight(this);
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+        }
+
+        if (this.onGround()) {
+            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
+
+        } else if (this.isInWater()) {
+            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
+        }
+
+        if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
+            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+        }
+
+        Entity passenger0 = this.getFirstPassenger();
+
+        if (this.getEnergy() <= 0) return;
+
+        if (passenger0 == null) {
+            this.leftInputDown = false;
+            this.rightInputDown = false;
+            this.forwardInputDown = false;
+            this.backInputDown = false;
+            this.entityData.set(POWER, 0f);
+        }
+
+        if (forwardInputDown) {
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? powerAdd * 2f : powerAdd) * (1 + getXRot() / 55), maxPower));
+        }
+
+        if (backInputDown) {
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? powerReduce * 2f : powerReduce) * (1 - getXRot() / 55), minPower));
+        }
+
+        if (rightInputDown) {
+            this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + steeringSpeed);
+        } else if (this.leftInputDown) {
+            this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - steeringSpeed);
+        }
+
+        if (this.forwardInputDown || this.backInputDown) {
+            this.consumeEnergy(EnergyConsume);
+        }
+
+        this.entityData.set(POWER, this.entityData.get(POWER) * (upInputDown ? 0.5f : (rightInputDown || leftInputDown) ? 0.977f : 0.99f));
+        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * (float) Math.max(0.76f - 0.1f * this.getDeltaMovement().horizontalDistance(), 0.3));
+
+        double s0 = getDeltaMovement().dot(this.getViewVector(1));
+
+        this.setLeftWheelRot((float) ((this.getLeftWheelRot() - wheelRotSpeed * s0) + Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f)));
+        this.setRightWheelRot((float) ((this.getRightWheelRot() - wheelRotSpeed * s0) - Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f)));
+
+        this.setRudderRot(Mth.clamp(this.getRudderRot() - this.entityData.get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
+
+        int i;
+
+        if (entityData.get(L_WHEEL_DAMAGED) && entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.93f);
+            i = 0;
+        } else if (entityData.get(L_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = 3;
+        } else if (entityData.get(R_WHEEL_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.975f);
+            i = -3;
+        } else {
+            i = 0;
+        }
+
+        if (entityData.get(ENGINE1_DAMAGED)) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.875f);
+        }
+
+        this.setYRot((float) (this.getYRot() - Math.max((isInWater() && !onGround() ? 5 : 10) * this.getDeltaMovement().horizontalDistance(), 0) * this.getRudderRot() * (this.entityData.get(POWER) > 0 ? 1 : -1) - i * s0));
+        if (this.isInWater() || onGround()) {
+            this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((!isInWater() && !onGround() ? 0.05f : (isInWater() && !onGround() ? 0.3f : 1)) * this.entityData.get(POWER))));
+        }
+    }
+
+    /**
+     * 查找实体下方半球区域内最近的降落辅助方块位置
+     *
+     * @param radius 搜索半径
+     * @return 钻石块顶面位置，如果未找到则返回null
+     */
+    public Vec3 findNearestLandingPos(int radius) {
+        Level world = this.level();
+        BlockPos entityPos = this.blockPosition();
+        List<BlockPos> landingBlocks = new ArrayList<>();
+
+        // 遍历半球区域内的所有方块
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                for (int y = -radius; y <= 0; y++) { // 只检查实体下方的区域
+                    // 检查是否在半球内 (x² + y² + z² ≤ r²)
+                    if (x * x + y * y + z * z <= radius * radius) {
+                        BlockPos checkPos = entityPos.offset(x, y, z);
+
+                        // 检查是否为降落辅助方块
+                        if (world.getBlockState(checkPos).is(ModTags.Blocks.AUTO_LANDING)) {
+                            landingBlocks.add(checkPos);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 如果没有找到降落辅助方块，返回null
+        if (landingBlocks.isEmpty()) {
+            return null;
+        }
+
+        // 按距离排序，找到最近的降落辅助方块
+        landingBlocks.sort(Comparator.comparingDouble(pos ->
+                this.position().distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5)));
+
+        return landingBlocks.get(0).getCenter();
+    }
+
+    public void updateAutoLanding(Vec3 landingTarget) {
+        // 计算水平方向上的偏移向量 (忽略Y轴)
+        Vec3 currentPos = this.position();
+        Vec3 horizontalOffset = new Vec3(
+                landingTarget.x - currentPos.x,
+                0,
+                landingTarget.z - currentPos.z
+        );
+
+        setDeltaMovement(getDeltaMovement().multiply(0.98, 0.99, 0.98));
+
+        // 计算距离和方向
+        double horizontalDistance = horizontalOffset.length();
+        Vec3 horizontalDirection = horizontalDistance > 0 ?
+                horizontalOffset.normalize() : Vec3.ZERO;
+
+        // 如果已经非常接近目标点，保持水平姿态
+        // 位置容差
+        float positionTolerance = 0.1f;
+        // 倾斜平滑因子
+        float tiltSmoothingFactor = 0.1f;
+        if (horizontalDistance < positionTolerance) {
+            // 平滑过渡到水平姿态
+            this.setXRot(lerpAngle(this.getXRot(), 0, tiltSmoothingFactor));
+            this.setZRot(lerpAngle(this.getRoll(), 0, tiltSmoothingFactor));
+            return;
+        }
+
+        // 计算需要的倾斜角度 (与距离成正比，但有最大限制)
+        // 直升机辅助降落这一块
+        // 最大倾斜角度(度)
+        float maxTiltAngle = 15.0f;
+        float targetTilt = (float) Math.min(maxTiltAngle, horizontalDistance * 2);
+
+        // 将世界方向转换为本地倾斜方向
+        // 需要考虑直升机的当前偏航角(yRot)
+        float yawRad = Math.toRadians(-this.getYRot());
+        Vec3 localDirection = new Vec3(
+                horizontalDirection.x * Math.cos(yawRad) - horizontalDirection.z * Math.sin(yawRad),
+                0,
+                horizontalDirection.x * Math.sin(yawRad) + horizontalDirection.z * Math.cos(yawRad)
+        );
+
+        // 计算目标俯仰和滚转
+        float targetXRot = (float) (-localDirection.z * targetTilt);
+        float targetZRot = (float) (localDirection.x * targetTilt);
+
+        // 平滑过渡到目标姿态
+        this.setXRot(lerpAngle(this.getXRot(), -targetXRot, tiltSmoothingFactor));
+        this.setZRot(lerpAngle(this.getRoll(), -targetZRot, tiltSmoothingFactor));
+    }
+
+    // 角度线性插值方法
+    private float lerpAngle(float current, float target, float factor) {
+        // 处理角度环绕
+        float diff = target - current;
+        while (diff < -180) diff += 360;
+        while (diff > 180) diff -= 360;
+
+        return current + diff * factor;
+    }
+
+    //烟雾诱饵
+    public void releaseSmokeDecoy(Vec3 vec3) {
+        if (decoyInputDown) {
+            if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
+                Entity passenger = getFirstPassenger();
+                for (int i = 0; i < 8; i++) {
+                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity((LivingEntity) passenger, this.level());
+                    smokeDecoyEntity.setPos(this.getX(), this.getY() + getBbHeight(), this.getZ());
+                    smokeDecoyEntity.decoyShoot(this, vec3.yRot((-78.75f + 22.5F * i) * Mth.DEG_TO_RAD), 4f, 8);
+                    this.level().addFreshEntity(smokeDecoyEntity);
+                }
+                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
+                decoyReloadCoolDown = 500;
+                this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
+            }
+            decoyInputDown = false;
+        }
+        if (this.entityData.get(DECOY_COUNT) < 1 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+            this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
+            this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
+            decoyReloadCoolDown = 500;
+        }
+    }
+
+    //热诱弹诱饵
+    public void releaseDecoy() {
+        if (decoyInputDown) {
+            if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
+                Entity passenger = getFirstPassenger();
+                for (int i = 0; i < 4; i++) {
+                    FlareDecoyEntity flareDecoyEntity = new FlareDecoyEntity(this.level());
+                    flareDecoyEntity.setPos(this.getX() + this.getDeltaMovement().x, this.getY() + 0.5 + this.getDeltaMovement().y, this.getZ() + this.getDeltaMovement().z);
+                    flareDecoyEntity.decoyShoot(this, this.getViewVector(1).yRot((45 + 90 * i) * Mth.DEG_TO_RAD), 0.8f, 8);
+                    this.level().addFreshEntity(flareDecoyEntity);
+                }
+                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 2, 1);
+                if (this.getEntityData().get(DECOY_COUNT) == 4) {
+                    decoyReloadCoolDown = 300;
+                }
+                this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
+            }
+            decoyInputDown = false;
+        }
+        if (this.entityData.get(DECOY_COUNT) < 4 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+            this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
+            this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
+            decoyReloadCoolDown = 300;
+        }
+    }
+
+    // 惯性倾斜
+
+    public void inertiaRotate(float multiple) {
+        float angleX = 0;
+        float diffX = (float) (getAcceleration() * multiple - angleX);
+        setXRot(getXRot() - 0.5f * diffX);
+    }
+
+    public static List<Entity> getPlayer(Level level) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> e instanceof Player)
+                .toList();
+    }
+
+    // 地形适应测试
+    public void terrainCompact(float w, float l) {
+        if (onGround()) {
+            Matrix4f transform = this.getWheelsTransform(1);
+
+            // 左前
+            Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
+            // 右前
+            Vector4f positionRF = transformPosition(transform, -w / 2, 0, l / 2);
+            // 左后
+            Vector4f positionLB = transformPosition(transform, w / 2, 0, -l / 2);
+            // 右后
+            Vector4f positionRB = transformPosition(transform, -w / 2, 0, -l / 2);
+
+            Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
+            Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
+            Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
+            Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+
+//            if (mainSupportingBlockPos.isPresent()) {
+//                BlockPos blockpos = this.mainSupportingBlockPos.get();
+//            }
+
+            // 确定点位是否在墙里来调整点位高度
+            float p1y = (float) this.traceBlockY(p1, 3);
+            float p2y = (float) this.traceBlockY(p2, 3);
+            float p3y = (float) this.traceBlockY(p3, 3);
+            float p4y = (float) this.traceBlockY(p4, 3);
+
+            p1 = new Vec3(positionLF.x, p1y, positionLF.z);
+            p2 = new Vec3(positionRF.x, p2y, positionRF.z);
+            p3 = new Vec3(positionLB.x, p3y, positionLB.z);
+            p4 = new Vec3(positionRB.x, p4y, positionRB.z);
+
+            // 测试用粒子效果，用于确定点位位置
+
+//            List<Entity> entities = getPlayer(level());
+//            for (var e : entities) {
+//                if (e instanceof ServerPlayer player) {
+//                    if (player.level() instanceof ServerLevel serverLevel) {
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p1.x, p1.y, p1.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p2.x, p2.y, p2.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p3.x, p3.y, p3.z, 1, 0, 0, 0, 0, true);
+//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p4.x, p4.y, p4.z, 1, 0, 0, 0, 0, true);
+//                    }
+//                }
+//            }
+
+            // 通过点位位置获取角度
+
+            // 左后-左前
+            Vec3 v0 = p3.vectorTo(p1);
+            // 右后-右前
+            Vec3 v1 = p4.vectorTo(p2);
+            // 左前-右前
+            Vec3 v2 = p1.vectorTo(p2);
+            // 左后-右后
+            Vec3 v3 = p3.vectorTo(p4);
+
+            double x1 = getXRotFromVector(v0);
+            double x2 = getXRotFromVector(v1);
+            double z1 = getXRotFromVector(v2);
+            double z2 = getXRotFromVector(v3);
+
+            float diffX = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
+            setXRot(Mth.clamp(getXRot() + 0.15f * diffX, -45f, 45f));
+
+            float diffZ = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
+            setZRot(Mth.clamp(getRoll() + 0.15f * diffZ, -45f, 45f));
+        } else if (isInWater()) {
+            setXRot(getXRot() * 0.9f);
+            setZRot(getRoll() * 0.9f);
+        }
+    }
+
+    //用于履带的地形适应
+    public float[] terrainCompactTrackValue(float w, float l) {
+        Matrix4f transform = this.getWheelsTransform(1);
+
+        // 左前
+        Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
+        // 右前
+        Vector4f positionRF = transformPosition(transform, -w / 2, 0, l / 2);
+        // 左后
+        Vector4f positionLB = transformPosition(transform, w / 2, 0, -l / 2);
+        // 右后
+        Vector4f positionRB = transformPosition(transform, -w / 2, 0, -l / 2);
+
+        Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
+        Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
+        Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
+        Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+
+        // 确定点位是否在墙里来调整点位高度
+        float p1y = (float) this.traceBlockY(p1, 3);
+        float p2y = (float) this.traceBlockY(p2, 3);
+        float p3y = (float) this.traceBlockY(p3, 3);
+        float p4y = (float) this.traceBlockY(p4, 3);
+
+        p1 = new Vec3(positionLF.x, p1y, positionLF.z);
+        p2 = new Vec3(positionRF.x, p2y, positionRF.z);
+        p3 = new Vec3(positionLB.x, p3y, positionLB.z);
+        p4 = new Vec3(positionRB.x, p4y, positionRB.z);
+
+        Vec3 v0 = p3.vectorTo(p1);
+        Vec3 v1 = p4.vectorTo(p2);
+        Vec3 v2 = p1.vectorTo(p2);
+        Vec3 v3 = p3.vectorTo(p4);
+
+        double x1 = getXRotFromVector(v0);
+        double x2 = getXRotFromVector(v1);
+
+        double z1 = getXRotFromVector(v2);
+        double z2 = getXRotFromVector(v3);
+
+        float x = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
+        float z = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
+
+        return new float[]{x, z};
+    }
+
+    public Matrix4f getWheelsTransform(float ticks) {
+        Matrix4f transform = new Matrix4f();
+        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
+        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
+        return transform;
+    }
+
+    public double traceBlockY(Vec3 pos, double maxLength) {
+        var res = this.level().clip(new ClipContext(pos, pos.add(0, -maxLength, 0),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+
+        double targetY;
+
+        BlockState state = level().getBlockState(BlockPos.containing(pos));
+        VoxelShape shape = state.getCollisionShape(level(), BlockPos.containing(pos));
+        if (!shape.isEmpty()) {
+            targetY = pos.y + shape.max(Direction.Axis.Y);
+        } else if (res.getType() == HitResult.Type.BLOCK && this.level().noCollision(new AABB(pos, pos))) {
+            targetY = res.getLocation().y;
+        } else {
+            targetY = pos.y - maxLength;
+        }
+
+        double diffY = targetY - pos.y;
+        return pos.y + 0.5f * diffY;
+    }
+
+    public void moveOnDragonTeeth() {
+        AABB aabb = this.getBoundingBox();
+        AABB aabb1 = new AABB(aabb.minX, aabb.minY - 1.0E-6D, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ);
+        Optional<BlockPos> optional = this.level().findSupportingBlock(this, aabb1);
+        if (optional.isPresent()) {
+            BlockState state = level().getBlockState(optional.get());
+            if (state.is(ModBlocks.DRAGON_TEETH.get())) {
+                entityData.set(POWER, entityData.get(POWER) * 0.8f);
+                setDeltaMovement(getDeltaMovement().multiply(-0.1, 0, -0.1));
+            }
+        }
+    }
+
+    public void collideSoftBlock() {
+        if (!VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
+                this.level().destroyBlock(pos, true);
+            }
+        });
+    }
+
+    public void collideNormalBlock() {
+        if (!VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) {
+                this.level().destroyBlock(pos, true);
+            }
+        });
+    }
+
+    public void collideHardBlock() {
+        if (!VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
+                this.level().destroyBlock(pos, true);
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
+            }
+        });
+    }
+
+    public void collideBlockBeastly() {
+        if (!VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return;
+        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.52, 1).move(this.getDeltaMovement().scale(1.2));
+        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+            BlockState blockstate = this.level().getBlockState(pos);
+            float hardness = blockstate.getBlock().defaultDestroyTime();
+            if (hardness > 0 && hardness <= 4) {
+                this.level().destroyBlock(pos, true);
+            }
+        });
+    }
+
+    public boolean canCollideHardBlock() {
+        return false;
+    }
+
+    public boolean canCollideBlockBeastly() {
+        return false;
+    }
+
+    @Override
+    public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
+        if (!this.level().isClientSide()) {
+            VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
+        }
+        if (level() instanceof ServerLevel && canCollideBlockBeastly()) {
+            collideBlockBeastly();
+        }
+
+        super.move(movementType, movement);
+        if (this.horizontalCollision) {
+            collideNormalBlock();
+            if (canCollideHardBlock()) {
+                collideHardBlock();
+            }
+        }
+
+        if (lastTickSpeed < 0.3 || collisionCoolDown > 0 || this instanceof DroneEntity) return;
+        Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
+
+        if ((verticalCollision)) {
+            if (this.vehicleType == VehicleType.HELICOPTER) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (60 * ((lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
+                this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
+            } else if (Mth.abs((float) lastTickVerticalSpeed) > 0.4) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (96 * ((Mth.abs((float) lastTickVerticalSpeed) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
+                if (!this.level().isClientSide) {
+                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                }
+                this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
+            }
+        }
+
+        if (this.horizontalCollision) {
+            this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (126 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
+            this.bounceHorizontal(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
+            if (!this.level().isClientSide) {
+                this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+            }
+            collisionCoolDown = 4;
+            crash = true;
+            this.entityData.set(POWER, 0.8f * entityData.get(POWER));
+        }
+    }
+
+    public void bounceHorizontal(Direction direction) {
+        switch (direction.getAxis()) {
+            case X:
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.99, 0.99));
+                break;
+            case Z:
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.8));
+                break;
+        }
+    }
+
+    public void bounceVertical(Direction direction) {
+        if (!this.level().isClientSide) {
+            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+        }
+        collisionCoolDown = 4;
+        crash = true;
+        if (direction.getAxis() == Direction.Axis.Y) {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.9, -0.8, 0.9));
+        }
+    }
+
+    /**
+     * 防止载具堆叠
+     */
+    public void preventStacking() {
+
+        var entities = level().getEntities(
+                EntityTypeTest.forClass(VehicleEntity.class),
+                getBoundingBox(),
+                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null
+        );
+
+        for (var entity : entities) {
+            Vec3 toVec = this.position().add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(entity.position());
+            Vec3 velAdd = toVec.normalize().scale(Math.max((this.getBbWidth() + 2) - position().distanceTo(entity.position()), 0) * 0.002);
+            double entitySize = entity.getBbWidth() * entity.getBbHeight();
+            double thisSize = this.getBbWidth() * this.getBbHeight();
+            double f = Math.min(entitySize / thisSize, 2);
+            double f1 = Math.min(thisSize / entitySize, 2);
+
+            this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
+            entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+        }
+    }
+
+    public void pushNew(double pX, double pY, double pZ) {
+        this.setDeltaMovement(this.getDeltaMovement().add(pX, pY, pZ));
+    }
+
+    /**
+     * 撞击实体并造成伤害
+     *
+     * @param velocity 动量
+     */
+    public void crushEntities(Vec3 velocity) {
+        if (level() instanceof ServerLevel) {
+            if (!this.canCrushEntities()) return;
+//            if (velocity.horizontalDistance() < 0.25) return;
+            if (isRemoved()) return;
+
+            List<Entity> entities;
+
+            if (this instanceof OBBEntity obbEntity) {
+                var frontBox = getBoundingBox().move(velocity).inflate(4);
+                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                        .stream().filter(entity -> {
+                                    if (entity.isAlive() && isInObb(obbEntity, entity, velocity)) {
+                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+                                    }
+                                    return false;
+                                }
+                        )
+                        .toList();
+
+            } else {
+                var frontBox = getBoundingBox().move(velocity);
+                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                        .stream().filter(entity -> {
+                                    if (entity.isAlive()) {
+                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
+                                                || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+                                                || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+                                    }
+                                    return false;
+                                }
+                        )
+                        .toList();
+            }
+
+            for (var entity : entities) {
+                double entitySize = entity.getBoundingBox().getSize();
+                double thisSize = this.getBoundingBox().getSize();
+                double f;
+                double f1;
+
+                // TODO 给非载具实体也设置质量
+
+                if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION))
+                    return;
+
+                if (entity instanceof VehicleEntity vehicle) {
+                    f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
+                    f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
+                } else {
+                    f = Mth.clamp(entitySize / thisSize, 0.25, 4);
+                    f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
+
+                }
+
+                float v = (float) velocity.dot(position().vectorTo(entity.position()));
+                var velAdd = position().vectorTo(entity.position()).normalize().scale(0.1 * v);
+
+                if (Mth.abs(v) > 0.3) {
+                    if (!this.level().isClientSide) {
+                        this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                    }
+
+                    if (entity instanceof LivingEntity) {
+                        DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 5 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                    } else {
+                        entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 2 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                    }
+
+                    if (entity instanceof VehicleEntity) {
+                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                    }
+
+                    if (!(entity instanceof TargetEntity)) {
+                        this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
+                    }
+
+                    if (entity instanceof VehicleEntity mobileVehicle) {
+                        mobileVehicle.pushNew(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+                    } else {
+                        entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+                    }
+                } else {
+                    entity.push(0.3 * f1 * velAdd.x, 0.3 * f1 * velAdd.y, 0.3 * f1 * velAdd.z);
+                }
+            }
+        }
+    }
+
+    public boolean isInObb(OBBEntity obbEntity, Entity entity, Vec3 velocity) {
+        var obbList = obbEntity.getOBBs();
+        for (var obb : obbList) {
+            obb = obb.move(velocity);
+            if (entity instanceof OBBEntity obbEntity2) {
+                var obbList2 = obbEntity2.getOBBs();
+                for (var obb2 : obbList2) {
+                    return OBB.isColliding(obb, obb2);
+                }
+            } else {
+                return OBB.isColliding(obb, entity.getBoundingBox());
+            }
+        }
+        return false;
+    }
+
+    public Vector3f getForwardDirection() {
+        return new Vector3f(
+                Mth.sin(-getYRot() * ((float) Math.PI / 180)),
+                0.0f,
+                Mth.cos(getYRot() * ((float) Math.PI / 180))
+        ).normalize();
+    }
+
+    public Vector3f getRightDirection() {
+        return new Vector3f(
+                Mth.cos(-getYRot() * ((float) Math.PI / 180)),
+                0.0f,
+                Mth.sin(getYRot() * ((float) Math.PI / 180))
+        ).normalize();
+    }
+
+    public SoundEvent getEngineSound() {
+        return SoundEvents.EMPTY;
+    }
+
+    public float getEngineSoundVolume() {
+        return (float) Mth.lerp(Mth.clamp(getDeltaMovement().length(), 0F, 0.5F), 0.0F, 0.7F);
+    }
+
+    public double getVelocity() {
+        return this.velocity;
+    }
+
+    public void setVelocity(double pV) {
+        this.velocity = pV;
+    }
+
+    public double getAcceleration() {
+        return getVelocity() - velocityO;
+    }
+
+    public float getRudderRot() {
+        return this.rudderRot;
+    }
+
+    public void setRudderRot(float pRudderRot) {
+        this.rudderRot = pRudderRot;
+    }
+
+    public float getLeftWheelRot() {
+        return this.leftWheelRot;
+    }
+
+    public void setLeftWheelRot(float pLeftWheelRot) {
+        this.leftWheelRot = pLeftWheelRot;
+    }
+
+    public float getRightWheelRot() {
+        return this.rightWheelRot;
+    }
+
+    public void setRightWheelRot(float pRightWheelRot) {
+        this.rightWheelRot = pRightWheelRot;
+    }
+
+
+    public float getLeftTrack() {
+        return this.leftTrack;
+    }
+
+    public void setLeftTrack(float pLeftTrack) {
+        this.leftTrack = pLeftTrack;
+    }
+
+    public float getRightTrack() {
+        return this.rightTrack;
+    }
+
+    public void setRightTrack(float pRightTrack) {
+        this.rightTrack = pRightTrack;
+    }
+
+    public float getRotorRot() {
+        return this.rotorRot;
+    }
+
+    public void setRotorRot(float pRotorRot) {
+        this.rotorRot = pRotorRot;
+    }
+
+    public float getPropellerRot() {
+        return this.propellerRot;
+    }
+
+    public void setPropellerRot(float pPropellerRot) {
+        this.propellerRot = pPropellerRot;
+    }
+
+    public double getRecoilShake() {
+        return this.recoilShake;
+    }
+
+    public void setRecoilShake(double pRecoilShake) {
+        this.recoilShake = pRecoilShake;
+    }
+
+    public float getFlap1LRot() {
+        return this.flap1LRot;
+    }
+
+    public void setFlap1L2Rot(float pFlap1L2Rot) {
+        this.flap1L2Rot = pFlap1L2Rot;
+    }
+
+    public float getFlap1R2Rot() {
+        return this.flap1R2Rot;
+    }
+
+    public void setFlap1R2Rot(float pFlap1R2Rot) {
+        this.flap1R2Rot = pFlap1R2Rot;
+    }
+
+    public float getFlap1L2Rot() {
+        return this.flap1L2Rot;
+    }
+
+    public void setFlap1LRot(float pFlap1LRot) {
+        this.flap1LRot = pFlap1LRot;
+    }
+
+    public float getFlap1RRot() {
+        return this.flap1RRot;
+    }
+
+    public void setFlap1RRot(float pFlap1RRot) {
+        this.flap1RRot = pFlap1RRot;
+    }
+
+    public float getFlap2LRot() {
+        return this.flap2LRot;
+    }
+
+    public void setFlap2LRot(float pFlap2LRot) {
+        this.flap2LRot = pFlap2LRot;
+    }
+
+    public float getFlap2RRot() {
+        return this.flap2RRot;
+    }
+
+    public void setFlap2RRot(float pFlap2RRot) {
+        this.flap2RRot = pFlap2RRot;
+    }
+
+    public float getFlap3Rot() {
+        return this.flap3Rot;
+    }
+
+    public void setFlap3Rot(float pFlap3Rot) {
+        this.flap3Rot = pFlap3Rot;
+    }
+
+    public boolean hasDecoy() {
+        return false;
+    }
+
+    public boolean engineRunning() {
+        return Math.abs(this.entityData.get(POWER)) > 0;
+    }
+
     /**
      * 撬棍shift+右键收回载具时返还的物品
      */
@@ -2215,6 +3525,14 @@ public abstract class VehicleEntity extends Entity implements Container, Vehicle
 
     public int getHudColor() {
         return 0x66FF00;
+    }
+
+    public float getPower() {
+        return entityData.get(POWER);
+    }
+
+    public int getDecoyCount() {
+        return entityData.get(DECOY_COUNT);
     }
 
     public enum VehicleType {

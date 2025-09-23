@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -53,8 +52,11 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteControllableTurret, ArtilleryEntity {
-
+public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteControllableTurret {
+    @Override
+    public boolean hasMenu() {
+        return false;
+    }
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
@@ -470,5 +472,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     @Override
     public int getMaxPassengers() {
         return 0;
+    }
+
+    @Override
+    public boolean hasEnergyStorage() {
+        return false;
     }
 }

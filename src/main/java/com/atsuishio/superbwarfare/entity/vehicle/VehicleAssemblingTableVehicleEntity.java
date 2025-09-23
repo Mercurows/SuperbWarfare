@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
@@ -51,7 +51,8 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
-public class VehicleAssemblingTableVehicleEntity extends MobileVehicleEntity implements GeoEntity, HasCustomInventoryScreen, MenuProvider {
+public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implements GeoEntity, HasCustomInventoryScreen, MenuProvider {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;
 

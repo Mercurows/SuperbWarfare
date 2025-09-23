@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -281,11 +280,8 @@ public class ClientEventHandler {
         short keys = 0;
 
         // 正在游戏内控制载具或无人机
-        if (!notInGame() && (player.getVehicle() instanceof MobileVehicleEntity mobileVehicle
-                && mobileVehicle.getFirstPassenger() == player)
-                || (stack.is(ModItems.MONITOR.get())
-                && tag.getBoolean("Using")
-                && tag.getBoolean("Linked"))
+        if (!notInGame() && (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.getFirstPassenger() == player)
+                || (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked"))
         ) {
             if (options.keyLeft.isDown()) {
                 keys |= 0b000000001;

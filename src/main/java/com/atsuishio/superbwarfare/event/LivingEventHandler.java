@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
@@ -566,10 +565,10 @@ public class LivingEventHandler {
     @SubscribeEvent
     public static void onPickup(ItemEntityPickupEvent.Pre event) {
         if (!VehicleConfig.VEHICLE_ITEM_PICKUP.get()) return;
-        if (event.getPlayer().getVehicle() instanceof ContainerMobileVehicleEntity containerMobileVehicleEntity) {
+        if (event.getPlayer().getVehicle() instanceof VehicleEntity vehicleEntity) {
             var pickUp = event.getItemEntity();
-            if (!containerMobileVehicleEntity.level().isClientSide) {
-                HopperBlockEntity.addItem(containerMobileVehicleEntity, pickUp);
+            if (!vehicleEntity.level().isClientSide) {
+                HopperBlockEntity.addItem(vehicleEntity, pickUp);
             }
             event.setCanPickup(TriState.FALSE);
         }
@@ -609,7 +608,7 @@ public class LivingEventHandler {
 
         // 创生物收集掉落物
         if (VehicleConfig.COLLECT_DROPS_BY_CRASHING.get()
-                && player.getVehicle() instanceof ContainerMobileVehicleEntity containerMobileVehicleEntity
+                && player.getVehicle() instanceof VehicleEntity containerVehicleEntity
                 && source.is(ModDamageTypes.VEHICLE_STRIKE)
         ) {
             var drops = event.getDrops();
@@ -618,7 +617,7 @@ public class LivingEventHandler {
             drops.forEach(itemEntity -> {
                 ItemStack stack = itemEntity.getItem();
 
-                InventoryTool.insertItem(containerMobileVehicleEntity.getItemStacks(), stack);
+                InventoryTool.insertItem(containerVehicleEntity.getItemStacks(), stack);
 
                 if (stack.getCount() <= 0) {
                     player.drop(stack, false);

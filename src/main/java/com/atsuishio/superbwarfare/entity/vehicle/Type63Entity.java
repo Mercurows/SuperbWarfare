@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSerializers;
@@ -46,8 +45,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Type63Entity extends ContainerMobileVehicleEntity implements GeoEntity, OBBEntity {
-
+public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity {
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> BODY_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);

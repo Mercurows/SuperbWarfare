@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.YAW;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW;
 
 public class SpeedboatRenderer extends GeoEntityRenderer<SpeedboatEntity> {
 
