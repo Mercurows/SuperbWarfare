@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -58,8 +61,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret, ArtilleryEntity {
-
+public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
+    @Override
+    public boolean hasMenu() {
+        return false;
+    }
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Mk42Entity.class, EntityDataSerializers.FLOAT);
@@ -717,5 +723,10 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
+    }
+
+    @Override
+    public boolean hasEnergyStorage() {
+        return false;
     }
 }

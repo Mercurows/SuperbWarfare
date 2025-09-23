@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.sound;
 
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -63,12 +63,12 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
 
     public static class A10FireSound extends VehicleSoundInstance {
 
-        public A10FireSound(MobileVehicleEntity mobileVehicle) {
+        public A10FireSound(VehicleEntity mobileVehicle) {
             super(ModSounds.A_10_FIRE.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
-        protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
+        protected boolean canPlay(VehicleEntity mobileVehicle) {
             if (mobileVehicle instanceof A10Entity a10Entity) {
                 return a10Entity.isFiring();
             }
@@ -76,7 +76,7 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
         }
 
         @Override
-        protected float getPitch(MobileVehicleEntity mobileVehicle) {
+        protected float getPitch(VehicleEntity mobileVehicle) {
             if (mobileVehicle instanceof A10Entity a10Entity) {
                 return a10Entity.shootingPitch();
             }
@@ -84,7 +84,7 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
         }
 
         @Override
-        protected float getVolume(MobileVehicleEntity mobileVehicle) {
+        protected float getVolume(VehicleEntity mobileVehicle) {
             if (mobileVehicle instanceof A10Entity a10Entity) {
                 return a10Entity.shootingVolume();
             }
@@ -94,12 +94,12 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
 
     public static class HPJ11CloseFireSound extends VehicleSoundInstance {
 
-        public HPJ11CloseFireSound(MobileVehicleEntity mobileVehicle) {
+        public HPJ11CloseFireSound(VehicleEntity mobileVehicle) {
             super(ModSounds.HPJ_11_FIRE_3P.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
-        protected boolean canPlay(MobileVehicleEntity mobileVehicle) {
+        protected boolean canPlay(VehicleEntity mobileVehicle) {
             if (mobileVehicle instanceof Hpj11Entity hpj11Entity) {
                 return hpj11Entity.isFiring();
             }
@@ -107,7 +107,7 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
         }
 
         @Override
-        protected float getPitch(MobileVehicleEntity mobileVehicle) {
+        protected float getPitch(VehicleEntity mobileVehicle) {
             if (mobileVehicle instanceof Hpj11Entity hpj11Entity) {
                 return hpj11Entity.shootingPitch();
             }
@@ -115,7 +115,7 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
         }
 
         @Override
-        protected float getVolume(MobileVehicleEntity mobileVehicle) {
+        protected float getVolume(VehicleEntity mobileVehicle) {
             if (mobileVehicle instanceof Hpj11Entity hpj11Entity) {
                 return hpj11Entity.shootingVolume();
             }

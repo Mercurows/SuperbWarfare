@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData;
 import com.atsuishio.superbwarfare.entity.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Monitor;
@@ -66,8 +66,12 @@ import java.util.stream.Collectors;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
-public class DroneEntity extends MobileVehicleEntity implements GeoEntity {
+public class DroneEntity extends VehicleEntity implements GeoEntity {
 
+    @Override
+    public boolean hasMenu() {
+        return false;
+    }
     public static final EntityDataAccessor<Boolean> LINKED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> CONTROLLER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> IS_KAMIKAZE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);

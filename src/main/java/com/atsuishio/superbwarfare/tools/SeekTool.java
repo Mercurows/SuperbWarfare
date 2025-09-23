@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.config.server.SeekConfig;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -36,7 +35,7 @@ public class SeekTool {
     public static List<Entity> getVehicleWithinRange(Player player, Level level, double range) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> e.position().distanceTo(player.getEyePosition()) <= range
-                        && e instanceof MobileVehicleEntity)
+                        && e instanceof VehicleEntity)
                 .toList();
     }
 

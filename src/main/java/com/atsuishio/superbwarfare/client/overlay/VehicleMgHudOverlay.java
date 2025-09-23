@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -34,8 +34,8 @@ import org.joml.Math;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicator3P;
 import static com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity.MG_AMMO;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.AMMO;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.HEAT;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AMMO;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HEAT;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleMgHudOverlay implements IGuiOverlay {
@@ -64,7 +64,7 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        if (player.getVehicle() instanceof LandArmorEntity iLand && iLand instanceof WeaponVehicleEntity weaponVehicle && iLand instanceof MobileVehicleEntity mobileVehicle && weaponVehicle.hasWeapon(mobileVehicle.getSeatIndex(player))) {
+        if (player.getVehicle() instanceof LandArmorEntity iLand && iLand instanceof WeaponVehicleEntity weaponVehicle && iLand instanceof VehicleEntity vehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
 
@@ -79,9 +79,9 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 pos;
                 if (player.getVehicle() instanceof SpeedboatEntity) {
-                    pos = mobileVehicle.getTurretShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
+                    pos = vehicle.getTurretShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
                 } else {
-                    pos = mobileVehicle.passengerWeaponShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
+                    pos = vehicle.passengerWeaponShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
                 }
 
                 Vec3 p = VectorUtil.worldToScreen(pos);
@@ -111,10 +111,10 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
                         guiGraphics.drawString(mc.font, Component.literal(".50 HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : speedboat.getEntityData().get(AMMO))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
                     }
 
-                    double heal = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
+                    double heal = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
 
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                            FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
+                            FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
 
                     poseStack.popPose();
                 }

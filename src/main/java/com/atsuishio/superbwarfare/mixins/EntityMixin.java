@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.core.BlockPos;
@@ -42,7 +42,7 @@ public abstract class EntityMixin implements OBBHitter {
 
     @Inject(method = "collide", at = @At("HEAD"))
     private void sbw$spoofGroundStart(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-        if (MobileVehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING) {
+        if (VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING) {
             this.sbw$cacheOnGround = this.onGround;
             this.onGround = true;
         }
@@ -50,9 +50,9 @@ public abstract class EntityMixin implements OBBHitter {
 
     @Inject(method = "collide", at = @At("TAIL"))
     private void sbw$spoofGroundEnd(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-        if (MobileVehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING) {
+        if (VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING) {
             this.onGround = this.sbw$cacheOnGround;
-            MobileVehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
+            VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
         }
     }
 

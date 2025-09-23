@@ -3,8 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
@@ -40,7 +39,10 @@ public class IFFOverlay implements IGuiOverlay {
 
     public static final ResourceLocation FRIENDLY_INDICATOR = Mod.loc("textures/screens/teammate/friendly_indicator.png");
     public static final ResourceLocation FRIENDLY_AIRCRAFT = Mod.loc("textures/screens/teammate/friendly_aircraft.png");
-    public static final ResourceLocation FRIENDLY_ARMOR = Mod.loc("textures/screens/teammate/friendly_armor.png");
+    public static final ResourceLocation FRIENDLY_TANK = Mod.loc("textures/screens/teammate/friendly_tank.png");
+    public static final ResourceLocation FRIENDLY_APC = Mod.loc("textures/screens/teammate/friendly_apc.png");
+    public static final ResourceLocation FRIENDLY_AA = Mod.loc("textures/screens/teammate/friendly_aa.png");
+    public static final ResourceLocation FRIENDLY_CAR = Mod.loc("textures/screens/teammate/friendly_car.png");
     public static final ResourceLocation FRIENDLY_ARTILLERY = Mod.loc("textures/screens/teammate/friendly_artillery.png");
     public static final ResourceLocation FRIENDLY_BOAT = Mod.loc("textures/screens/teammate/friendly_boat.png");
     public static final ResourceLocation FRIENDLY_DEFENSE = Mod.loc("textures/screens/teammate/friendly_defense.png");
@@ -99,25 +101,34 @@ public class IFFOverlay implements IGuiOverlay {
     private static ResourceLocation getResourceLocation(Entity team) {
         ResourceLocation icon = FRIENDLY_INDICATOR;
 
-        if (team instanceof BoatVehicleEntity || team instanceof Boat) {
+        if ((team instanceof VehicleEntity vehicle && vehicle.vehicleType == VehicleEntity.VehicleType.BOAT) || team instanceof Boat) {
             icon = FRIENDLY_BOAT;
         } else if (team instanceof VehicleEntity vehicle) {
-            if (vehicle instanceof AircraftEntity) {
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.AIRPLANE) {
                 icon = FRIENDLY_AIRCRAFT;
             }
-            if (vehicle instanceof HelicopterEntity) {
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.HELICOPTER) {
                 icon = FRIENDLY_HELICOPTER;
             }
-            if (vehicle instanceof LandArmorEntity) {
-                icon = FRIENDLY_ARMOR;
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.APC) {
+                icon = FRIENDLY_APC;
             }
-            if (vehicle instanceof ArtilleryEntity) {
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.CAR) {
+                icon = FRIENDLY_CAR;
+            }
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.AA) {
+                icon = FRIENDLY_AA;
+            }
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.TANK) {
+                icon = FRIENDLY_TANK;
+            }
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.ARTILLERY) {
                 icon = FRIENDLY_ARTILLERY;
             }
-            if (vehicle instanceof DroneEntity) {
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.DRONE) {
                 icon = FRIENDLY_DRONE;
             }
-            if (vehicle instanceof DefenseEntity) {
+            if (vehicle.vehicleType == VehicleEntity.VehicleType.DEFENSE) {
                 icon = FRIENDLY_DEFENSE;
             }
         } else if (team instanceof MineEntity) {

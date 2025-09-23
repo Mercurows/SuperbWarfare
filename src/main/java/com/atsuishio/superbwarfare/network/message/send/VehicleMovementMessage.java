@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.ControllableVehicle;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -32,15 +30,15 @@ public record VehicleMovementMessage(short keys) {
                 ItemStack stack = player.getMainHandItem();
 
                 VehicleEntity vehicle = null;
-                if (entity instanceof MobileVehicleEntity mobileVehicleEntity && mobileVehicleEntity.getFirstPassenger() == player) {
-                    vehicle = mobileVehicleEntity;
+                if (entity instanceof VehicleEntity vehicleEntity && vehicleEntity.getFirstPassenger() == player) {
+                    vehicle = vehicleEntity;
                 } else if (stack.is(ModItems.MONITOR.get())
                         && ItemNBTTool.getBoolean(stack, "Using", false)
                         && ItemNBTTool.getBoolean(stack, "Linked", false)
                 ) vehicle = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone"));
 
-                if (!(vehicle instanceof ControllableVehicle controllable)) return;
-                controllable.processInput(message.keys);
+                if (vehicle == null) return;
+                vehicle.processInput(message.keys);
             }
         });
         context.setPacketHandled(true);

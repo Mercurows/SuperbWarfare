@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -61,9 +64,13 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity, OBBEntity {
+public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity, OBBEntity {
 
-    public static Consumer<MobileVehicleEntity> fireSound = vehicle -> {
+    @Override
+    public int getContainerSize() {
+        return 102;
+    }
+    public static Consumer<VehicleEntity> fireSound = vehicle -> {
     };
 
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
@@ -606,7 +613,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
         if (!this.level().isClientSide()) {
-            MobileVehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
+            VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
         }
         if (level() instanceof ServerLevel && canCollideBlockBeastly()) {
             collideBlockBeastly();
@@ -967,31 +974,6 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public float getRotX(float tickDelta) {
-        return this.getPitch(tickDelta);
-    }
-
-    @Override
-    public float getRotY(float tickDelta) {
-        return this.getYaw(tickDelta);
-    }
-
-    @Override
-    public float getRotZ(float tickDelta) {
-        return this.getRoll(tickDelta);
-    }
-
-    @Override
-    public float getPower() {
-        return this.entityData.get(POWER);
-    }
-
-    @Override
-    public int getDecoy() {
-        return this.entityData.get(DECOY_COUNT);
-    }
-
-    @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return 0;
     }
@@ -1059,7 +1041,7 @@ public class A10Entity extends ContainerMobileVehicleEntity implements GeoEntity
             if (getWeaponIndex(0) == 2 && zoomVehicle) {
                 return new Vec2((float) (-getYRotFromVector(p2) - freeCameraYaw), (float) (-getXRotFromVector(p2) + freeCameraPitch));
             }
-            return new Vec2((float) (getRotY(partialTicks) - freeCameraYaw), (float) (getRotX(partialTicks) + freeCameraPitch));
+            return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
         }
 
         return super.getCameraRotation(partialTicks, player, false, false);

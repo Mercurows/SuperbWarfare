@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -54,8 +54,11 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
-public class Tom6Entity extends MobileVehicleEntity implements GeoEntity {
-
+public class Tom6Entity extends VehicleEntity implements GeoEntity {
+    @Override
+    public boolean hasMenu() {
+        return false;
+    }
     public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private float yRotSync;

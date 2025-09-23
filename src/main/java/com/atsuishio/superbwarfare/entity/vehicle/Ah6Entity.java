@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ContainerMobileVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
@@ -58,8 +58,11 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity, HelicopterEntity, WeaponVehicleEntity, OBBEntity {
-
+public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity, AirEntity {
+    @Override
+    public int getContainerSize() {
+        return 102;
+    }
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Float> PROPELLER_ROT = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.INT);
@@ -645,31 +648,6 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     }
 
     @Override
-    public float getRotX(float tickDelta) {
-        return this.getPitch(tickDelta);
-    }
-
-    @Override
-    public float getRotY(float tickDelta) {
-        return this.getYaw(tickDelta);
-    }
-
-    @Override
-    public float getRotZ(float tickDelta) {
-        return this.getRoll(tickDelta);
-    }
-
-    @Override
-    public float getPower() {
-        return this.entityData.get(POWER);
-    }
-
-    @Override
-    public int getDecoy() {
-        return this.entityData.get(DECOY_COUNT);
-    }
-
-    @Override
     public int getMaxPassengers() {
         return 4;
     }
@@ -746,7 +724,7 @@ public class Ah6Entity extends ContainerMobileVehicleEntity implements GeoEntity
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (this.getSeatIndex(player) == 0) {
-            return new Vec2((float) (getRotY(partialTicks) - freeCameraYaw), (float) (getRotX(partialTicks) + freeCameraPitch));
+            return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
         }
 
         return super.getCameraRotation(partialTicks, player, false, false);

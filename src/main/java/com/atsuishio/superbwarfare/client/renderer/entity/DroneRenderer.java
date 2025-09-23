@@ -24,7 +24,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.AMMO;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AMMO;
 
 public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 	public DroneRenderer(EntityRendererProvider.Context renderManager) {

@@ -6,7 +6,10 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
@@ -43,7 +46,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.DECOY_COUNT;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
 @OnlyIn(Dist.CLIENT)
@@ -156,9 +158,9 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         if (player.getVehicle() instanceof LandArmorEntity iLand && iLand.isDriver(player)
                 && iLand instanceof WeaponVehicleEntity
-                && iLand instanceof MobileVehicleEntity mobileVehicle
+                && iLand instanceof VehicleEntity vehicle
                 && !(player.getVehicle() instanceof SpeedboatEntity)) {
-            int color = mobileVehicle.getHudColor();
+            int color = vehicle.getHudColor();
 
             poseStack.pushPose();
 
@@ -186,7 +188,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
                 // 炮塔
                 ResourceLocation barrel = Mod.loc("textures/screens/land/line.png");
-                int turretHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(TURRET_HEALTH) / mobileVehicle.getTurretMaxHealth()));
+                int turretHeal = (int) (100 - (100 * vehicle.getEntityData().get(TURRET_HEALTH) / vehicle.getTurretMaxHealth()));
                 RenderHelper.blit(poseStack, barrel, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
 
                 //车身
@@ -201,27 +203,27 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 // 车身方向
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
-                int bodyHeal = (int) (100 - (100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth()));
+                int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
                 RenderHelper.blit(poseStack, body, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
-                int leftWheelHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(L_WHEEL_HEALTH) / mobileVehicle.getWheelMaxHealth()));
+                int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
                 RenderHelper.blit(poseStack, left_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
-                int rightWheelHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(R_WHEEL_HEALTH) / mobileVehicle.getWheelMaxHealth()));
+                int rightWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(R_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
                 RenderHelper.blit(poseStack, right_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
-                int engineHeal = (int) (100 - (100 * mobileVehicle.getEntityData().get(ENGINE_HEALTH) / mobileVehicle.getEngineMaxHealth()));
+                int engineHeal = (int) (100 - (100 * vehicle.getEntityData().get(ENGINE_HEALTH) / vehicle.getEngineMaxHealth()));
                 RenderHelper.blit(poseStack, engine, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
                 poseStack.popPose();
 
 
                 // 时速
-                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(mobileVehicle.getDeltaMovement().dot(mobileVehicle.getViewVector(partialTick)) * 72, " km/h")),
+                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
                         screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
 
                 // 低电量警告
-                if (mobileVehicle.hasEnergyStorage()) {
-                    if (mobileVehicle.getEnergy() < 0.02 * mobileVehicle.getMaxEnergy()) {
+                if (vehicle.hasEnergyStorage()) {
+                    if (vehicle.getEnergy() < 0.02 * vehicle.getMaxEnergy()) {
                         guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
                                 screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
-                    } else if (mobileVehicle.getEnergy() < 0.2 * mobileVehicle.getMaxEnergy()) {
+                    } else if (vehicle.getEnergy() < 0.2 * vehicle.getMaxEnergy()) {
                         guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
                                 screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
                     }
@@ -258,18 +260,18 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 }
 
                 // 载具自定义第一人称渲染
-                mobileVehicle.renderFirstPersonOverlay(guiGraphics, poseStack, mc.font, player, screenWidth, screenHeight, scale, color);
+                vehicle.renderFirstPersonOverlay(guiGraphics, poseStack, mc.font, player, screenWidth, screenHeight, scale, color);
 
                 // 血量
-                int heal = (int) (100 - (100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth()));
+                int heal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 - heal)), screenWidth / 2 - 165, screenHeight / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
 
                 //诱饵
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), screenWidth / 2 - 165, screenHeight / 2 - 36, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getEntityData().get(DECOY_COUNT)), screenWidth / 2 - 165, screenHeight / 2 - 36, color, false);
 
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 pos = mobileVehicle.getTurretShootPos(player, partialTick).add(iLand.getBarrelVec(partialTick).scale(192));
+                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(iLand.getBarrelVec(partialTick).scale(192));
                 Vec3 p = VectorUtil.worldToScreen(pos);
                 // 第三人称准星
                 if (VectorUtil.canSee(pos)) {
@@ -285,15 +287,15 @@ public class VehicleHudOverlay implements IGuiOverlay {
                     poseStack.scale(0.75f, 0.75f, 1);
 
                     // 载具自定义第三人称准心
-                    mobileVehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, screenWidth, screenHeight, scale);
+                    vehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, screenWidth, screenHeight, scale);
 
-                    double health = 1 - mobileVehicle.getHealth() / mobileVehicle.getMaxHealth();
+                    double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
 
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                            FormatTool.format0D(100 * mobileVehicle.getHealth() / mobileVehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
+                            FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
 
-                    if (mobileVehicle.hasDecoy()) {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + mobileVehicle.getEntityData().get(DECOY_COUNT)), 30, 11, -1, false);
+                    if (vehicle.hasDecoy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getEntityData().get(DECOY_COUNT)), 30, 11, -1, false);
                     }
 
                     poseStack.popPose();
