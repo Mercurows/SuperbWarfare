@@ -214,7 +214,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 // 车身方向
                 poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO(), vehicle.turretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
                 int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
                 RenderHelper.preciseBlitWithColor(guiGraphics, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
                 int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
@@ -282,7 +282,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(vehicle.getBarrelVec(partialTick).scale(192));
+                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(vehicle.getBarrelVector(partialTick).scale(192));
                 Vec3 p = VectorUtil.worldToScreen(pos);
                 // 第三人称准星
                 if (VectorUtil.canSee(pos)) {

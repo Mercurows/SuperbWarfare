@@ -281,17 +281,17 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
 
             boolean canShoot = this.entityData.get(CHARGED_ENERGY) >= maxChargeEnergy;
 
-            if (canShoot && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1) {
+            if (canShoot && VectorTool.calculateAngle(getBarrelVector(1), targetVec) < 1) {
                 changeTargetTimer++;
             }
 
-            if (canShoot && VectorTool.calculateAngle(getBarrelVec(1), targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
+            if (canShoot && VectorTool.calculateAngle(getBarrelVector(1), targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
                 if (level() instanceof ServerLevel) {
                     this.level().playSound(this, getOnPos(), ModSounds.WAVEFORCE_TOWER_FIRE.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.1f + 1);
                 }
 
                 Predicate<Entity> filter = entity -> entity != this && !friendlyToPlayer(this.getOwner(), entity);
-                List<TraceTool.RayTraceResultEntity> hitList = TraceTool.getEntitiesAlongVector(level(), getShootPos(1), getBarrelVec(1), getShootPos(1).distanceTo(target.getEyePosition()) + 0.5, filter);
+                List<TraceTool.RayTraceResultEntity> hitList = TraceTool.getEntitiesAlongVector(level(), getShootPos(1), getBarrelVector(1), getShootPos(1).distanceTo(target.getEyePosition()) + 0.5, filter);
                 for (TraceTool.RayTraceResultEntity hit : hitList) {
                     Entity entity = hit.entity;
                     Vec3 hitPos = hit.hitVec;

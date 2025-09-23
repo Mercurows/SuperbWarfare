@@ -214,7 +214,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
         if (tickCount > 5 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {
             Entity shooter = this.getOwner();
 
-            Vec3 lookVec = vehicle.getBarrelVec(1).normalize();
+            Vec3 lookVec = vehicle.getBarrelVector(1).normalize();
             Vec3 vec3 = TraceTool.vehicleFindLookingPos(this, vehicle, vehicle.getNewEyePos(1), 512);
             Vec3 toVec;
 
