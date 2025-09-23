@@ -108,7 +108,7 @@ public class ClickHandler {
         if (player == null) return;
         if (player.isSpectator()) return;
 
-        player.displayClientMessage(Component.literal("Mouse " + event.getButton() + " Pressed"), false);
+//        player.displayClientMessage(Component.literal("Mouse " + event.getButton() + " Pressed"), false);
 
         ItemStack stack = player.getMainHandItem();
 

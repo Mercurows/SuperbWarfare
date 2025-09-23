@@ -431,7 +431,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0.45f;
-        float y = 1.2f - 1.45f;
+        float y = 1.2f;
         float z = 1f;
         y += (float) passenger.getMyRidingOffset();
 
@@ -446,11 +446,11 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         } else if (i == 2) {
-            Vector4f worldPosition = transformPosition(transform, -1.4f, -1.05f, 0);
+            Vector4f worldPosition = transformPosition(transform, -1.4f, 0.4f, 0);
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         } else if (i == 3) {
-            Vector4f worldPosition = transformPosition(transform, 1.4f, -1.05f, 0);
+            Vector4f worldPosition = transformPosition(transform, 1.4f, 0.4f, 0);
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         }
@@ -492,16 +492,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 1.45f, getY() + 1.45f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
@@ -513,7 +503,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public Vec3 shootPos(float tickDelta) {
         Matrix4f transform = getVehicleTransform(tickDelta);
-        Vector4f worldPosition = transformPosition(transform, 0f, -0.83f, 0.8f);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.62f, 0.8f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
@@ -543,12 +533,12 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             Vector4f worldPosition2;
 
             if (fireIndex == 0) {
-                worldPosition = transformPosition(transform, 1.15f, -0.83f, 0.8f);
-                worldPosition2 = transformPosition(transform, 1.15f + 0.009f - 0.002f, -0.83f + 0.012f, 1.8f);
+                worldPosition = transformPosition(transform, 1.15f, 0.62f, 0.8f);
+                worldPosition2 = transformPosition(transform, 1.157f, 0.632f, 1.8f);
                 fireIndex = 1;
             } else {
-                worldPosition = transformPosition(transform, -1.15f, -0.83f, 0.8f);
-                worldPosition2 = transformPosition(transform, -1.15f + 0.009f + 0.002f, -0.83f + 0.012f, 1.8f);
+                worldPosition = transformPosition(transform, -1.15f, 0.62f, 0.8f);
+                worldPosition2 = transformPosition(transform, -1.139f, 0.632f, 1.8f);
                 fireIndex = 0;
             }
 
@@ -593,12 +583,12 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             Vector4f worldPosition2;
 
             if (fireIndex == 0) {
-                worldPosition = transformPosition(transform, 1.7f, -0.83f, 0.8f);
-                worldPosition2 = transformPosition(transform, 1.7f + 0.009f - 0.0025f, -0.83f + 0.012f, 1.8f);
+                worldPosition = transformPosition(transform, 1.7f, 0.62f, 0.8f);
+                worldPosition2 = transformPosition(transform, 1.7875f, 0.632f, 1.8f);
                 fireIndex = 1;
             } else {
-                worldPosition = transformPosition(transform, -1.7f, -0.83f, 0.8f);
-                worldPosition2 = transformPosition(transform, -1.7f + 0.009f + 0.0025f, -0.83f + 0.012f, 1.8f);
+                worldPosition = transformPosition(transform, -1.7f, 0.62f, 0.8f);
+                worldPosition2 = transformPosition(transform, -1.6885f, 0.632f, 1.8f);
                 fireIndex = 0;
             }
 
@@ -681,18 +671,23 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
+    public float rotateYOffset() {
+        return 1.45f;
+    }
+
+    @Override
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         Matrix4f transform = getVehicleTransform(1);
         Vector4f worldPosition;
 
         if (index == 0) {
-            worldPosition = transformPosition(transform, 2f, -0.25f, 1f);
+            worldPosition = transformPosition(transform, 2f, 1.2f, 1f);
         } else if (index == 1) {
-            worldPosition = transformPosition(transform, -2f, -0.25f, 1f);
+            worldPosition = transformPosition(transform, -2f, 1.2f, 1f);
         } else if (index == 2) {
-            worldPosition = transformPosition(transform, -2f, -0.25f, 0);
+            worldPosition = transformPosition(transform, -2f, 1.2f, 0);
         } else {
-            worldPosition = transformPosition(transform, 2f, -0.25f, 0);
+            worldPosition = transformPosition(transform, 2f, 1.2f, 0);
         }
 
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -707,15 +702,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             return Pair.of(Axis.XP.rotationDegrees(this.getRoll(tickDelta)), Axis.ZP.rotationDegrees(-this.getViewXRot(tickDelta)));
         }
         return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
-    }
-
-    public Matrix4f getClientVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 1.45f, getY() + 1.45f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(ticks, yRotO, getYRot()) + freeCameraYaw)));
-        transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(ticks, xRotO, getXRot()) + freeCameraPitch)));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -733,7 +719,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (this.getSeatIndex(player) == 0) {
             Matrix4f transform = getClientVehicleTransform(partialTicks);
-            Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 1, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
+            Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 2.45f, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
             Vec3 finalPos = CameraTool.getMaxZoom(transform, maxCameraPosition);
 
             if (isFirstPerson) {
@@ -764,31 +750,31 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public void updateOBB() {
         Matrix4f transform = getVehicleTransform(1);
 
-        Vector4f worldPosition = transformPosition(transform, 0, 1.86875f - 1.45f, -0.15625f);
+        Vector4f worldPosition = transformPosition(transform, 0, 1.86875f, -0.15625f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
         this.obb.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition2 = transformPosition(transform, 0, 1.5f - 1.45f, 1.90625f);
+        Vector4f worldPosition2 = transformPosition(transform, 0, 1.5f, 1.90625f);
         this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.obb2.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition3 = transformPosition(transform, 0, 2.3125f - 1.45f, -4.1875f);
+        Vector4f worldPosition3 = transformPosition(transform, 0, 2.3125f, -4.1875f);
         this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
         this.obb3.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition4 = transformPosition(transform, -0.125f, 2.34375f - 1.45f, -6.34375f);
+        Vector4f worldPosition4 = transformPosition(transform, -0.125f, 2.34375f, -6.34375f);
         this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
         this.obb4.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition5 = transformPosition(transform, -0.125f, 3.5625f - 1.45f, -6.65625f);
+        Vector4f worldPosition5 = transformPosition(transform, -0.125f, 3.5625f, -6.65625f);
         this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
         this.obb5.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition6 = transformPosition(transform, 0, 3.28125f - 1.45f, -0.53125f);
+        Vector4f worldPosition6 = transformPosition(transform, 0, 3.28125f, -0.53125f);
         this.obb6.center().set(new Vector3f(worldPosition6.x, worldPosition6.y, worldPosition6.z));
         this.obb6.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition7 = transformPosition(transform, 0.1875f, 2.09375f - 1.45f, -6.15625f);
+        Vector4f worldPosition7 = transformPosition(transform, 0.1875f, 2.09375f, -6.15625f);
         this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
         this.obb7.setRotation(VectorTool.combineRotations(1, this));
     }

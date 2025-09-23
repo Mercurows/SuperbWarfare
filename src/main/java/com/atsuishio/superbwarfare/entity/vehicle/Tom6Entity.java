@@ -209,7 +209,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
 
                 Matrix4f transform = getVehicleTransform(1);
                 Vector4f worldPosition;
-                worldPosition = transformPosition(transform, 0, -0.2f, 0);
+                worldPosition = transformPosition(transform, 0, 0.3f, 0);
 
                 MelonBombEntity melonBomb = new MelonBombEntity(player, player.level());
                 melonBomb.setExplosionDamage(VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get());
@@ -275,7 +275,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = 0.45f + (float) passenger.getMyRidingOffset();
+        float y = 0.95f + (float) passenger.getMyRidingOffset();
         float z = -0.4f;
 
         int i = this.getSeatIndex(passenger);
@@ -302,16 +302,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         entity.setYRot(entity.getYRot() + g - f + yRotSync * Mth.abs(i));
         entity.setYHeadRot(entity.getYRot());
         entity.setYBodyRot(getYRot());
-    }
-
-    @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.5f, getY() + 0.5f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
     }
 
     @Override
@@ -349,13 +339,9 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         return Mod.loc("textures/gui/vehicle/type/aircraft.png");
     }
 
-    public Matrix4f getClientVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.5f, getY() + 0.5f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(ticks, yRotO, getYRot()) + freeCameraYaw)));
-        transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(ticks, xRotO, getXRot()) + freeCameraPitch)));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
+    @Override
+    public float rotateYOffset() {
+        return 0.5f;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -374,7 +360,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         if (isFreeCam(player) && this.getSeatIndex(player) == 0 && Mth.abs((float) (freeCameraYaw * freeCameraPitch)) > 0.01) {
             Matrix4f transform = getClientVehicleTransform(partialTicks);
 
-            Vector4f maxCameraPosition = transformPosition(transform, 0, 2.5f, -6 - (float) ClientMouseHandler.custom3pDistanceLerp);
+            Vector4f maxCameraPosition = transformPosition(transform, 0, 3f, -6 - (float) ClientMouseHandler.custom3pDistanceLerp);
             Vec3 finalPos = CameraTool.getMaxZoom(transform, maxCameraPosition);
 
             if (isFirstPerson) {
