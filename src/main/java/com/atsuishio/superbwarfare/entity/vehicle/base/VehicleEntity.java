@@ -1031,11 +1031,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     public void setDriverAngle(Player player) {
         if (hasTurret()) {
-            player.xRotO = -(float) getXRotFromVector(getBarrelVec(1));
-            player.setXRot(-(float) getXRotFromVector(getBarrelVec(1)));
-            player.yRotO = -(float) getYRotFromVector(getBarrelVec(1));
-            player.setYRot(-(float) getYRotFromVector(getBarrelVec(1)));
-            player.setYHeadRot(-(float) getYRotFromVector(getBarrelVec(1)));
+            player.xRotO = -(float) getXRotFromVector(getBarrelVector(1));
+            player.setXRot(-(float) getXRotFromVector(getBarrelVector(1)));
+            player.yRotO = -(float) getYRotFromVector(getBarrelVector(1));
+            player.setYRot(-(float) getYRotFromVector(getBarrelVector(1)));
+            player.setYHeadRot(-(float) getYRotFromVector(getBarrelVector(1)));
         } else {
             player.xRotO = this.getXRot();
             player.setXRot(this.getXRot());
@@ -1677,8 +1677,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void turretAutoAimFormVector(Vec3 shootVec) {
         float ySpeed = turretYSpeed();
         float xSpeed = turretXSpeed();
-        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getBarrelVec(1)));
-        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getBarrelVec(1)));
+        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getBarrelVector(1)));
+        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getBarrelVector(1)));
 
         this.turretTurnSound(diffX, diffY, 0.95f);
 
@@ -2277,11 +2277,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getNewEyePos(float pPartialTicks) {
         return getEyePosition();
     }
-
-    public Vec3 getBarrelVec(float ticks) {
-        return getBarrelVector(ticks);
-    }
-
+    
     public Vec3 getBarrelVector(float pPartialTicks) {
         Matrix4f transform = getBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
@@ -2307,22 +2303,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public float getGunYRot(float pPartialTick) {
         return -Mth.lerp(pPartialTick, gunYRotO - this.yRotO, getGunYRot() - this.getYRot());
-    }
-
-    public float turretYRotO() {
-        return turretYRotO;
-    }
-
-    public float turretYRot() {
-        return turretYRot;
-    }
-
-    public float turretXRotO() {
-        return turretXRotO;
-    }
-
-    public float turretXRot() {
-        return turretXRot;
     }
 
     public Vec3 getGunVec(float ticks) {
