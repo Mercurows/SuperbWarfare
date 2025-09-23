@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -61,9 +61,9 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
         if (ClientEventHandler.isEditing)
             return;
 
-        if (player.getVehicle() instanceof AirEntity airEntity
+        if (player.getVehicle() instanceof ArmedVehicleEntity armedVehicle
                 && player.getVehicle() instanceof VehicleEntity vehicle
-                && airEntity.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
+                && armedVehicle.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
                 && vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER) {
             // TODO 载具类型判断没生效？
             poseStack.pushPose();
@@ -127,9 +127,9 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
                 if (vehicle instanceof Ah6Entity ah6Entity) {
                     if (weaponVehicle.getWeaponIndex(0) == 0) {
                         int heat = ah6Entity.getEntityData().get(HEAT);
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : airEntity.getAmmoCount(player))), screenWidth / 2 - 160, screenHeight / 2 - 60, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : armedVehicle.getAmmoCount(player))), screenWidth / 2 - 160, screenHeight / 2 - 60, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
                     } else {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + airEntity.getAmmoCount(player)), screenWidth / 2 - 160, screenHeight / 2 - 60, color, false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + armedVehicle.getAmmoCount(player)), screenWidth / 2 - 160, screenHeight / 2 - 60, color, false);
                     }
                 }
 
@@ -156,7 +156,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
 
             }
 
-            Vec3 pos = airEntity.shootPos(partialTick).add(airEntity.shootVec(partialTick).scale(192));
+            Vec3 pos = vehicle.shootPos(partialTick).add(vehicle.shootVec(partialTick).scale(192));
             Vec3 p = VectorUtil.worldToScreen(pos);
 
             poseStack.pushPose();
@@ -180,9 +180,9 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
                 if (vehicle instanceof Ah6Entity ah6Entity) {
                     if (weaponVehicle.getWeaponIndex(0) == 0) {
                         double heat = ah6Entity.getEntityData().get(HEAT) / 100.0F;
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : airEntity.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : armedVehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
                     } else {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + airEntity.getAmmoCount(player)), 25, -9, -1, false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
                     }
                 }
 

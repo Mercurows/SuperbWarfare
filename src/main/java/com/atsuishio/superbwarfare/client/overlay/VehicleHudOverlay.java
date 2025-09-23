@@ -6,8 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
@@ -87,9 +86,10 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
         Player player = Minecraft.getInstance().player;
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         if (!shouldRenderHud(player)) {
             wasRenderingWeapons = false;
@@ -101,7 +101,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
         // 渲染地面武装HUD
-        renderLandArmorHud(guiGraphics, deltaTracker, w, h);
+        renderLandArmorHud(guiGraphics, deltaTracker, screenWidth, screenHeight);
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
@@ -115,35 +115,35 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         if (vehicle instanceof VehicleEntity vehicleEntity && vehicleEntity.hasEnergyStorage()) {
             float energy = vehicleEntity.getEnergy();
             float maxEnergy = vehicleEntity.getMaxEnergy();
-            preciseBlit(guiGraphics, ENERGY, 10, h - 22 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
-            preciseBlit(guiGraphics, HEALTH_FRAME, 20, h - 21 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
-            preciseBlit(guiGraphics, HEALTH, 20, h - 21 - compatHeight, 100, 0, 0, (int) (60 * energy / maxEnergy), 6, 60, 6);
+            preciseBlit(guiGraphics, ENERGY, 10, screenHeight - 22 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
+            preciseBlit(guiGraphics, HEALTH_FRAME, 20, screenHeight - 21 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
+            preciseBlit(guiGraphics, HEALTH, 20, screenHeight - 21 - compatHeight, 100, 0, 0, (int) (60 * energy / maxEnergy), 6, 60, 6);
         }
 
         if (vehicle instanceof VehicleEntity pVehicle) {
             float health = pVehicle.getHealth();
             float maxHealth = pVehicle.getMaxHealth();
-            preciseBlit(guiGraphics, ARMOR, 10, h - 13 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
-            preciseBlit(guiGraphics, HEALTH_FRAME, 20, h - 12 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
-            preciseBlit(guiGraphics, HEALTH, 20, h - 12 - compatHeight, 100, 0, 0, (int) (60 * health / maxHealth), 6, 60, 6);
+            preciseBlit(guiGraphics, ARMOR, 10, screenHeight - 13 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
+            preciseBlit(guiGraphics, HEALTH_FRAME, 20, screenHeight - 12 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
+            preciseBlit(guiGraphics, HEALTH, 20, screenHeight - 12 - compatHeight, 100, 0, 0, (int) (60 * health / maxHealth), 6, 60, 6);
 
-            renderWeaponInfo(guiGraphics, pVehicle, w, h);
-            renderPassengerInfo(guiGraphics, pVehicle, w, h);
-        }
+            renderWeaponInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
+            renderPassengerInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
 
-        if (vehicle instanceof AircraftEntity aircraftEntity) {
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.enableBlend();
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            float angle = aircraftEntity.gearRot(deltaTracker.getGameTimeDeltaPartialTick(true));
-            poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, h - 20, 0);
-            preciseBlit(guiGraphics, GEAR, 86, h - 36, 0, 0, 32, 32, 32, 32);
-            poseStack.popPose();
+            if (pVehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE) {
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.enableBlend();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+                float angle = pVehicle.gearRot(partialTick);
+                poseStack.pushPose();
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
+                preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
+                poseStack.popPose();
 
+            }
         }
 
         poseStack.popPose();
@@ -172,10 +172,12 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
         assert player != null;
 
-        if (player.getVehicle() instanceof LandArmorEntity iLand && iLand.isDriver(player)
-                && iLand instanceof WeaponVehicleEntity
-                && iLand instanceof VehicleEntity vehicle
-                && !(player.getVehicle() instanceof SpeedboatEntity)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle
+                && vehicle.amphibiousVehicle()
+                && vehicle instanceof WeaponVehicleEntity weaponVehicle
+                && weaponVehicle.isDriver(player)
+                && !(player.getVehicle() instanceof SpeedboatEntity)
+                && !(player.getVehicle() instanceof CannonEntity)) {
             int color = vehicle.getHudColor();
 
             poseStack.pushPose();
@@ -212,7 +214,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 // 车身方向
                 poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO(), vehicle.turretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
                 int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
                 RenderHelper.preciseBlitWithColor(guiGraphics, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
                 int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
@@ -280,7 +282,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(iLand.getBarrelVec(partialTick).scale(192));
+                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(vehicle.getBarrelVec(partialTick).scale(192));
                 Vec3 p = VectorUtil.worldToScreen(pos);
                 // 第三人称准星
                 if (VectorUtil.canSee(pos)) {

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
@@ -66,7 +65,7 @@ public class GameRendererMixin {
             matrices.mulPose(Axis.ZP.rotationDegrees((float) Mth.nextDouble(RandomSource.create(), 8, 12) * shakeStrength));
         }
 
-        if (entity != null && entity instanceof LivingEntity living && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle instanceof LandArmorEntity && ClientEventHandler.zoomVehicle))) {
+        if (entity != null && entity instanceof LivingEntity living && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle.amphibiousVehicle()&& ClientEventHandler.zoomVehicle))) {
             // rotate camera
 
             if (!(vehicle instanceof CannonEntity)) {
