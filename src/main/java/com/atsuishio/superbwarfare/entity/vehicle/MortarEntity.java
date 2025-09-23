@@ -69,7 +69,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public VehicleType vehicleType = VehicleType.ARTILLERY;
     private LivingEntity shooter = null;
 
     public MortarEntity(PlayMessages.SpawnEntity packet, Level level) {
@@ -479,5 +478,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     @Override
     public boolean hasEnergyStorage() {
         return false;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.ARTILLERY;
     }
 }

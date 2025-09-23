@@ -93,8 +93,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, LandArmorEnt
     public OBB obb5;
     public OBB obbTurret;
 
-    public VehicleType vehicleType = VehicleType.APC;
-
     public Bmp2Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.BMP_2.get(), world);
     }
@@ -1026,5 +1024,10 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, LandArmorEnt
     @Override
     public boolean hasPassengerTurretWeapon() {
         return false;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.APC;
     }
 }

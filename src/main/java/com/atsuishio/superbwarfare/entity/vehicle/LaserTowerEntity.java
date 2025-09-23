@@ -65,7 +65,6 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public VehicleType vehicleType = VehicleType.DEFENSE;
 
     public int changeTargetTimer = 60;
 
@@ -379,5 +378,10 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.DEFENSE;
     }
 }

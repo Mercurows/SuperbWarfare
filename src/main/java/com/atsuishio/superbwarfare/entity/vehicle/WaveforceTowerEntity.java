@@ -74,7 +74,6 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     public int chargeTime = 60;
     public int maxChargeEnergy = 250000;
     public float damage = 350;
-    public VehicleType vehicleType = VehicleType.DRONE;
 
     public WaveforceTowerEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.WAVEFORCE_TOWER.get(), world);
@@ -423,5 +422,10 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     @Override
     public ResourceLocation getVehicleIcon() {
         return Mod.loc("textures/vehicle_icon/waveforce_tower_icon.png");
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.DEFENSE;
     }
 }

@@ -82,7 +82,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, LandArmorE
     public OBB obb7;
     public OBB obb8;
     public OBB obbTurret;
-    public VehicleType vehicleType = VehicleType.APC;
 
     public Lav150Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.LAV_150.get(), world);
@@ -638,5 +637,10 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, LandArmorE
     @Override
     public boolean hasPassengerTurretWeapon() {
         return false;
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.APC;
     }
 }

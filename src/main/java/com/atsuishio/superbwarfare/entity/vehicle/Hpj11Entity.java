@@ -82,7 +82,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     public float gunRot;
     public float gunRotO;
-    public VehicleType vehicleType = VehicleType.DEFENSE;
 
     public Hpj11Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.HPJ_11.get(), world);
@@ -635,5 +634,10 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.DEFENSE;
     }
 }

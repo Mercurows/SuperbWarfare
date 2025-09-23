@@ -53,7 +53,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public int jumpCoolDown;
     public int handBusyTime;
-    public VehicleType vehicleType = VehicleType.CAR;
 
     public WheelChairEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.WHEEL_CHAIR.get(), world);
@@ -313,5 +312,10 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/otto.png");
+    }
+
+    @Override
+    public VehicleType getVehicleType() {
+        return VehicleType.CAR;
     }
 }
