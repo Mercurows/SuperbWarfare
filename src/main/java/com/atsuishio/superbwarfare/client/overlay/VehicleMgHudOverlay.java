@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -64,7 +63,7 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        if (player.getVehicle() instanceof LandArmorEntity iLand && iLand instanceof WeaponVehicleEntity weaponVehicle && iLand instanceof VehicleEntity vehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+        if (player.getVehicle()  instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle instanceof VehicleEntity vehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
 
@@ -79,9 +78,9 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 pos;
                 if (player.getVehicle() instanceof SpeedboatEntity) {
-                    pos = vehicle.getTurretShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
+                    pos = vehicle.getTurretShootPos(player, partialTick).add(vehicle.getGunVec(partialTick).scale(192));
                 } else {
-                    pos = vehicle.passengerWeaponShootPos(player, partialTick).add(iLand.getGunVec(partialTick).scale(192));
+                    pos = vehicle.passengerWeaponShootPos(player, partialTick).add(vehicle.getGunVec(partialTick).scale(192));
                 }
 
                 Vec3 p = VectorUtil.worldToScreen(pos);

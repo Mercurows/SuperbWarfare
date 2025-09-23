@@ -1030,12 +1030,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param player 载具驾驶员
      */
     public void setDriverAngle(Player player) {
-        if (this instanceof LandArmorEntity landArmorEntity) {
-            player.xRotO = -(float) getXRotFromVector(landArmorEntity.getBarrelVec(1));
-            player.setXRot(-(float) getXRotFromVector(landArmorEntity.getBarrelVec(1)));
-            player.yRotO = -(float) getYRotFromVector(landArmorEntity.getBarrelVec(1));
-            player.setYRot(-(float) getYRotFromVector(landArmorEntity.getBarrelVec(1)));
-            player.setYHeadRot(-(float) getYRotFromVector(landArmorEntity.getBarrelVec(1)));
+        if (hasTurret()) {
+            player.xRotO = -(float) getXRotFromVector(getBarrelVec(1));
+            player.setXRot(-(float) getXRotFromVector(getBarrelVec(1)));
+            player.yRotO = -(float) getYRotFromVector(getBarrelVec(1));
+            player.setYRot(-(float) getYRotFromVector(getBarrelVec(1)));
+            player.setYHeadRot(-(float) getYRotFromVector(getBarrelVec(1)));
         } else {
             player.xRotO = this.getXRot();
             player.setXRot(this.getXRot());
@@ -1383,7 +1383,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(MOUSE_SPEED_X, entityData.get(MOUSE_SPEED_X) * 0.95f);
         entityData.set(MOUSE_SPEED_Y, entityData.get(MOUSE_SPEED_Y) * 0.95f);
 
-        if (this instanceof WeaponVehicleEntity) {
+        if (hasTurret()) {
             if (getNthEntity(mainWeaponControllerIndex()) instanceof Player) {
                 turretAngle();
             } else if (getNthEntity(mainWeaponControllerIndex()) instanceof Mob mob) {
@@ -1391,7 +1391,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
 
-        if (this instanceof LandArmorEntity landArmorEntity && landArmorEntity.hasPassengerTurretWeapon()) {
+        if (turretHasPassengerWeapon()) {
             if (getNthEntity(secondWeaponControllerIndex()) instanceof Player || getNthEntity(secondWeaponControllerIndex()) == null) {
                 gunnerAngle();
             } else if (getNthEntity(secondWeaponControllerIndex()) instanceof Mob mob) {
@@ -2383,6 +2383,25 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public double getMouseSpeedY() {
         return 0.4;
+    }
+
+    public boolean hasTurret() {
+        return false;
+    }
+    public boolean turretHasPassengerWeapon() {
+        return false;
+    }
+
+    public float gearRot(float tickDelta) {
+        return Mth.lerp(tickDelta, gearRotO, entityData.get(GEAR_ROT));
+    }
+
+    public Vec3 shootPos(float tickDelta) {
+        return getEyePosition();
+    }
+
+    public Vec3 shootVec(float tickDelta) {
+        return getViewVector(tickDelta);
     }
 
     @Override
@@ -3585,6 +3604,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getDecoyCount() {
         return entityData.get(DECOY_COUNT);
+    }
+
+    public boolean amphibiousVehicle() {
+        return getVehicleType() == VehicleType.TANK
+                || getVehicleType() == VehicleType.APC
+                || getVehicleType() == VehicleType.AA
+                || getVehicleType() == VehicleType.CAR
+                || getVehicleType() == VehicleType.BOAT;
     }
 
     public enum VehicleType {

@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
@@ -74,7 +73,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class Yx100Entity extends VehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
+public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
     @Override
     public int getContainerSize() {
@@ -1263,7 +1262,12 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, LandArmorEn
     }
 
     @Override
-    public boolean hasPassengerTurretWeapon() {
+    public boolean turretHasPassengerWeapon() {
+        return true;
+    }
+
+    @Override
+    public boolean hasTurret() {
         return true;
     }
 

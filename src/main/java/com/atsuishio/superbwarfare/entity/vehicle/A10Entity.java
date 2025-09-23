@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
@@ -64,7 +63,7 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, AircraftEntity, OBBEntity {
+public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
     @Override
     public int getContainerSize() {
@@ -780,11 +779,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             worldPosition2 = transformPosition(transform, 0, -0.03f, 1);
         }
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
-    }
-
-    @Override
-    public Float gearRot(float tickDelta) {
-        return Mth.lerp(tickDelta, gearRotO, entityData.get(GEAR_ROT));
     }
 
     @Override

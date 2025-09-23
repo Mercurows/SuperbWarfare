@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import net.minecraft.client.model.PlayerModel;
@@ -48,7 +49,8 @@ public class PlayerModelMixin<T extends LivingEntity> {
             }
 
             // 飞行器
-            if (player.getVehicle() instanceof AirEntity airEntity && airEntity.banHand(player)) {
+            if (player.getVehicle() instanceof ArmedVehicleEntity armedVehicle && armedVehicle.banHand(player) && player.getVehicle() instanceof VehicleEntity vehicle
+                    && (vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER)) {
                 model.head.xRot = 0;
                 model.head.yRot = 0;
                 model.head.zRot = 0;

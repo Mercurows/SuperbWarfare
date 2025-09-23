@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.MouseMovementHandler;
 import com.atsuishio.superbwarfare.config.client.ControlConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AirEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -104,7 +103,8 @@ public class ClientMouseHandler {
 
             int y = 1;
 
-            if (vehicle instanceof AirEntity && ControlConfig.INVERT_AIRCRAFT_CONTROL.get()) {
+            if ((vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER)
+                    && ControlConfig.INVERT_AIRCRAFT_CONTROL.get()) {
                 y = -1;
             }
 
@@ -186,7 +186,9 @@ public class ClientMouseHandler {
         // 反转鼠标
         if (player == null) return 1;
 
-        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof AirEntity && vehicle.getFirstPassenger() == player) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle
+                && (vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER)
+                && vehicle.getFirstPassenger() == player) {
             return ControlConfig.INVERT_AIRCRAFT_CONTROL.get() ? -1 : 1;
         }
         return 1;

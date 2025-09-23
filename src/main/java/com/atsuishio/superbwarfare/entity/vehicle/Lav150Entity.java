@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
@@ -67,7 +66,7 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class Lav150Entity extends VehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
+public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
     @Override
     public int getContainerSize() {
         return 102;
@@ -635,8 +634,8 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, LandArmorE
     }
 
     @Override
-    public boolean hasPassengerTurretWeapon() {
-        return false;
+    public boolean hasTurret() {
+        return true;
     }
 
     @Override

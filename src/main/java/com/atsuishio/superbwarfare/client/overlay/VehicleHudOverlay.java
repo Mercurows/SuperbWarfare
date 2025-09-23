@@ -6,8 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AircraftEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.LandArmorEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
@@ -113,21 +112,21 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
             renderWeaponInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
             renderPassengerInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
-        }
 
-        if (vehicle instanceof AircraftEntity aircraftEntity) {
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.enableBlend();
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            float angle = aircraftEntity.gearRot(partialTick);
-            poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
-            preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
-            poseStack.popPose();
+            if (pVehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE) {
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.enableBlend();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+                float angle = pVehicle.gearRot(partialTick);
+                poseStack.pushPose();
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
+                preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
+                poseStack.popPose();
 
+            }
         }
 
         poseStack.popPose();
@@ -156,10 +155,12 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         assert player != null;
 
-        if (player.getVehicle() instanceof LandArmorEntity iLand && iLand.isDriver(player)
-                && iLand instanceof WeaponVehicleEntity
-                && iLand instanceof VehicleEntity vehicle
-                && !(player.getVehicle() instanceof SpeedboatEntity)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle
+                && vehicle.amphibiousVehicle()
+                && vehicle instanceof WeaponVehicleEntity weaponVehicle
+                && weaponVehicle.isDriver(player)
+                && !(player.getVehicle() instanceof SpeedboatEntity)
+                && !(player.getVehicle() instanceof CannonEntity)) {
             int color = vehicle.getHudColor();
 
             poseStack.pushPose();
@@ -202,7 +203,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
                 // 车身方向
                 poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, iLand.turretYRotO(), iLand.turretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO(), vehicle.turretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
                 int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
                 RenderHelper.blit(poseStack, body, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
                 int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
@@ -271,7 +272,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(iLand.getBarrelVec(partialTick).scale(192));
+                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(vehicle.getBarrelVec(partialTick).scale(192));
                 Vec3 p = VectorUtil.worldToScreen(pos);
                 // 第三人称准星
                 if (VectorUtil.canSee(pos)) {

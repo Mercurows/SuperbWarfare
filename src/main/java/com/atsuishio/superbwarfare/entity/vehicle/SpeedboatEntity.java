@@ -4,7 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -51,7 +54,7 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVehicleEntity, WeaponVehicleEntity, LandArmorEntity, OBBEntity {
+public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVehicleEntity, WeaponVehicleEntity, OBBEntity {
     @Override
     public int getContainerSize() {
         return 102;
@@ -525,8 +528,8 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     @Override
-    public boolean hasPassengerTurretWeapon() {
-        return false;
+    public boolean hasTurret() {
+        return true;
     }
 
     @Override
