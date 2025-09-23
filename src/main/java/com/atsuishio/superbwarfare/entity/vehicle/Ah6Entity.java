@@ -417,16 +417,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 1.45f, getY() + 1.45f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
-    }
-
-    @Override
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
         // From Immersive_Aircraft
         if (!this.hasPassenger(passenger)) {
@@ -436,7 +426,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0.45f;
-        float y = -0.65f;
+        float y = -0.65f + rotateYOffset();
         float z = 1f;
 
         int i = this.getOrderedPassengers().indexOf(passenger);
@@ -577,10 +567,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
 
             playShootSound3p(living, 0, 4, 12, 24, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
-
-
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
-
             var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(living);
 
             Vector4f worldPosition;

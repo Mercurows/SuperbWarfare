@@ -672,7 +672,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = -1.0f + (float) passenger.getVehicleAttachmentPoint(this).y;
+        float y = -1.0f + (float) passenger.getVehicleAttachmentPoint(this).y + rotateYOffset();
         float z = 3.95f;
 
         Vector4f worldPosition = transformPosition(transform, x, y, z);
@@ -714,16 +714,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         entity.setYHeadRot(entity.getYHeadRot() + delta_y);
         entity.setYRot(entity.getYRot() + delta_y);
         entity.setYBodyRot(this.getYRot());
-    }
-
-    @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 2.375f, getY() + 2.375f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
     }
 
     @Override
