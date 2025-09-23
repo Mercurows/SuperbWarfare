@@ -63,7 +63,12 @@ public class AircraftOverlay implements IGuiOverlay {
         if (ClientEventHandler.isEditing)
             return;
 
-        if (player.getVehicle() instanceof AircraftEntity aircraftEntity && aircraftEntity instanceof VehicleEntity vehicle && aircraftEntity.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle) {
+        if (player.getVehicle() instanceof AircraftEntity aircraftEntity
+                && aircraftEntity instanceof VehicleEntity vehicle
+                && aircraftEntity.isDriver(player)
+                && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
+                && vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE) {
+            // TODO 载具类型判断没生效？
             poseStack.pushPose();
 
             int color = vehicle.getHudColor();

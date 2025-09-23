@@ -57,7 +57,8 @@ public class HelicopterHudOverlay implements IGuiOverlay {
         if (player.getVehicle() instanceof AirEntity airEntity
                 && player.getVehicle() instanceof VehicleEntity vehicle
                 && airEntity.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
-                && vehicle.vehicleType == VehicleEntity.VehicleType.HELICOPTER) {
+                && vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER) {
+            // TODO 载具类型判断没生效？
             poseStack.pushPose();
 
             int color = vehicle.getHudColor();
