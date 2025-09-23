@@ -53,6 +53,9 @@ public class AircraftOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation IND_3 = Mod.loc("textures/screens/aircraft/locking_ind3.png");
     private static final ResourceLocation IND_4 = Mod.loc("textures/screens/aircraft/locking_ind4.png");
 
+    private static final ResourceLocation BOMB_SCOPE = Mod.loc("textures/screens/aircraft/bomb_scope.png");
+    private static final ResourceLocation BOMB_SCOPE_PITCH = Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png");
+
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
@@ -78,7 +81,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             // TODO 载具类型判断没生效？
             poseStack.pushPose();
 
-            int color = vehicle.getHudColor();
+            int color = vehicle.getHudColor() | 0xFF000000;
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
@@ -119,192 +122,188 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -11, 1, false);
                         poseStack.popPose();
 
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope.png"), x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+                        preciseBlit(guiGraphics, BOMB_SCOPE, x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
 
                         poseStack.pushPose();
                         poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png"), x - 1.5f * i, y - 1.5f * j - 4 * a10Entity.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+                        preciseBlit(guiGraphics, BOMB_SCOPE_PITCH, x - 1.5f * i, y - 1.5f * j - 4 * a10Entity.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
                         renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                         poseStack.popPose();
                         return;
                     }
                 }
-
             }
 
-            {
-                poseStack.pushPose();
+            poseStack.pushPose();
+
+            if (mc.options.getCameraType() == CameraType.FIRST_PERSON && VectorUtil.canSee(pos)) {
                 float x = (float) p.x;
                 float y = (float) p.y;
 
-                if (mc.options.getCameraType() == CameraType.FIRST_PERSON && VectorUtil.canSee(pos)) {
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.enableBlend();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                    RenderSystem.disableDepthTest();
-                    RenderSystem.depthMask(false);
-                    RenderSystem.enableBlend();
-                    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                    RenderSystem.setShaderColor(1, 1, 1, 1);
+                if (vehicle instanceof A10Entity && weaponVehicle.getWeaponIndex(0) == 3) {
+                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base_missile.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+                } else {
+                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+                }
 
-                    if (vehicle instanceof A10Entity && weaponVehicle.getWeaponIndex(0) == 3) {
-                        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base_missile.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
-                    } else {
-                        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+                //指南针
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/compass.png"), x - 128, y - 122, 128 + ((float) 64 / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 130, 0, 0, 8, 8, 8, 8, color);
+
+                //滚转指示
+                poseStack.pushPose();
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y + 48, 0);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), x - 4, y + 144, 0, 0, 8, 8, 8, 8, color);
+                poseStack.popPose();
+
+                //时速
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 72)),
+                        (int) x - 105, (int) y - 61, color, false);
+                //高度
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getY())),
+                        (int) x + 111 - 36, (int) y - 61, color, false);
+                //框
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x - 108, y - 64, 0, 0, 36, 12, 36, 12, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12, color);
+                //垂直速度
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, color, false);
+                //加速度
+                lerpG = (float) Mth.lerp(0.1f * partialTick, lerpG, vehicle.acceleration / 9.8);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("M"), (int) x - 105, (int) y + 70, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("0.2"), (int) x - 96, (int) y + 70, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("G"), (int) x - 105, (int) y + 78, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG)), (int) x - 96, (int) y + 78, color, false);
+
+                // 热诱弹
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyCount()), (int) x + 72, (int) y, color, false);
+
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TGT"), (int) x + 76, (int) y + 78, color, false);
+
+                if (vehicle instanceof A10Entity a10Entity) {
+                    if (weaponVehicle.getWeaponIndex(0) == 0) {
+                        int heat = a10Entity.getEntityData().get(HEAT);
+                        String name = "30MM CANNON";
+                        int width = Minecraft.getInstance().font.width(name);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+
+                        String count = InventoryTool.hasCreativeAmmoBox(player) ? "∞" : String.valueOf(armedVehicle.getAmmoCount(player));
+                        int width2 = Minecraft.getInstance().font.width(count);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+                    } else if (weaponVehicle.getWeaponIndex(0) == 1) {
+                        String name = "70MM ROCKET";
+                        int width = Minecraft.getInstance().font.width(name);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
+
+                        String count = String.valueOf(armedVehicle.getAmmoCount(player));
+                        int width2 = Minecraft.getInstance().font.width(count);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
+                    } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                        String name = "MK82 BOMB";
+                        int width = Minecraft.getInstance().font.width(name);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
+
+                        String count = String.valueOf(armedVehicle.getAmmoCount(player));
+                        int width2 = Minecraft.getInstance().font.width(count);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
+                    } else if (weaponVehicle.getWeaponIndex(0) == 3) {
+                        String name = "AGM-65";
+                        int width = Minecraft.getInstance().font.width(name);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
+
+                        String count = String.valueOf(armedVehicle.getAmmoCount(player));
+                        int width2 = Minecraft.getInstance().font.width(count);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
                     }
+                }
 
-                    //指南针
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/compass.png"), x - 128, y - 122, 128 + ((float) 64 / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 130, 0, 0, 8, 8, 8, 8, color);
+                //角度
+                poseStack.pushPose();
 
-                    //滚转指示
-                    poseStack.pushPose();
-                    poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y + 48, 0);
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), x - 4, y + 144, 0, 0, 8, 8, 8, 8, color);
-                    poseStack.popPose();
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.enableBlend();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                    //时速
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 72)),
-                            (int) x - 105, (int) y - 61, color, false);
-                    //高度
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getY())),
-                            (int) x + 111 - 36, (int) y - 61, color, false);
-                    //框
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x - 108, y - 64, 0, 0, 36, 12, 36, 12, color);
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12, color);
-                    //垂直速度
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, color, false);
-                    //加速度
-                    lerpG = (float) Mth.lerp(0.1f * partialTick, lerpG, vehicle.acceleration / 9.8);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("M"), (int) x - 105, (int) y + 70, color, false);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("0.2"), (int) x - 96, (int) y + 70, color, false);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("G"), (int) x - 105, (int) y + 78, color, false);
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG)), (int) x - 96, (int) y + 78, color, false);
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), x, y, 0);
+                float pitch = vehicle.getPitch(partialTick);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_line.png"), x - 96 + diffY, y - 128, 0, 448 + 4.10625f * pitch, 192, 256, 192, 1152, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_ind.png"), x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24, color);
+                poseStack.popPose();
 
-                    // 热诱弹
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyCount()), (int) x + 72, (int) y, color, false);
-
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TGT"), (int) x + 76, (int) y + 78, color, false);
-
-                    if (vehicle instanceof A10Entity a10Entity) {
-                        if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            int heat = a10Entity.getEntityData().get(HEAT);
-                            String name = "30MM CANNON";
-                            int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-
-                            String count = InventoryTool.hasCreativeAmmoBox(player) ? "∞" : String.valueOf(armedVehicle.getAmmoCount(player));
-                            int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                            String name = "70MM ROCKET";
-                            int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
-
-                            String count = String.valueOf(armedVehicle.getAmmoCount(player));
-                            int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                            String name = "MK82 BOMB";
-                            int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
-
-                            String count = String.valueOf(armedVehicle.getAmmoCount(player));
-                            int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
-                        } else if (weaponVehicle.getWeaponIndex(0) == 3) {
-                            String name = "AGM-65";
-                            int width = Minecraft.getInstance().font.width(name);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
-
-                            String count = String.valueOf(armedVehicle.getAmmoCount(player));
-                            int width2 = Minecraft.getInstance().font.width(count);
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
-                        }
-                    }
-
-                    //角度
-                    poseStack.pushPose();
-
-                    RenderSystem.disableDepthTest();
-                    RenderSystem.depthMask(false);
-                    RenderSystem.enableBlend();
-                    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                    RenderSystem.setShaderColor(1, 1, 1, 1);
-
-                    poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), x, y, 0);
-                    float pitch = vehicle.getPitch(partialTick);
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_line.png"), x - 96 + diffY, y - 128, 0, 448 + 4.10625f * pitch, 192, 256, 192, 1152, color);
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_ind.png"), x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24, color);
-                    poseStack.popPose();
-
-                    // 能量警告
-                    if (vehicle.hasEnergyStorage()) {
-                        if (vehicle.getEnergy() < 0.02 * vehicle.getMaxEnergy()) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("NO POWER!"),
-                                    (int) x - 144, (int) y + 14, -65536, false);
-                        } else if (vehicle.getEnergy() < 0.2 * vehicle.getMaxEnergy()) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("LOW POWER"),
-                                    (int) x - 144, (int) y + 14, 0xFF6B00, false);
-                        }
+                // 能量警告
+                if (vehicle.hasEnergyStorage()) {
+                    if (vehicle.getEnergy() < 0.02 * vehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("NO POWER!"),
+                                (int) x - 144, (int) y + 14, -65536, false);
+                    } else if (vehicle.getEnergy() < 0.2 * vehicle.getMaxEnergy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("LOW POWER"),
+                                (int) x - 144, (int) y + 14, 0xFF6B00, false);
                     }
                 }
             }
 
             // 准星
-            {
-                poseStack.pushPose();
+            poseStack.pushPose();
+
+            if (VectorUtil.canSee(posCross)) {
                 float x = (float) pCross.x;
                 float y = (float) pCross.y;
 
-                if (VectorUtil.canSee(posCross)) {
-                    if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(vehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
-                        RenderSystem.disableDepthTest();
-                        RenderSystem.depthMask(false);
-                        RenderSystem.enableBlend();
-                        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                        RenderSystem.setShaderColor(1, 1, 1, 1);
+                if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !(vehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3)) {
+                    RenderSystem.disableDepthTest();
+                    RenderSystem.depthMask(false);
+                    RenderSystem.enableBlend();
+                    RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                    RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
+                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
 
-                        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32, color);
-                        renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-                    } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
-                        poseStack.pushPose();
-                        poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
-                        poseStack.pushPose();
-                        poseStack.translate(x, y, 0);
-                        poseStack.scale(0.75f, 0.75f, 1);
+                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32, color);
+                    renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
+                    poseStack.pushPose();
+                    poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
+                    poseStack.pushPose();
+                    poseStack.translate(x, y, 0);
+                    poseStack.scale(0.75f, 0.75f, 1);
 
-                        ResourceLocation cross = Mod.loc("textures/screens/drone.png");
-                        float size = 16;
+                    ResourceLocation cross = Mod.loc("textures/screens/drone.png");
+                    float size = 16;
 
-                        if (vehicle instanceof A10Entity a10Entity) {
-                            if (weaponVehicle.getWeaponIndex(0) == 0) {
-                                double heat = a10Entity.getEntityData().get(HEAT) / 100.0F;
-                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : armedVehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
-                            } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
-                            } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                                cross = Mod.loc("textures/screens/shotgun_hud.png");
-                                size = 24;
-                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
-                            } else if (weaponVehicle.getWeaponIndex(0) == 3) {
-                                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
-                            }
+                    if (vehicle instanceof A10Entity a10Entity) {
+                        if (weaponVehicle.getWeaponIndex(0) == 0) {
+                            double heat = a10Entity.getEntityData().get(HEAT) / 100.0F;
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : armedVehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+                        } else if (weaponVehicle.getWeaponIndex(0) == 1) {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
+                        } else if (weaponVehicle.getWeaponIndex(0) == 2) {
+                            cross = Mod.loc("textures/screens/shotgun_hud.png");
+                            size = 24;
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
+                        } else if (weaponVehicle.getWeaponIndex(0) == 3) {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
                         }
-
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyCount()), 25, 1, -1, false);
-                        poseStack.popPose();
-                        preciseBlit(guiGraphics, cross, x - 0.5f * size, y - 0.5f * size, 0, 0, size, size, size, size);
-                        renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-                        poseStack.popPose();
                     }
-                }
 
-                poseStack.popPose();
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyCount()), 25, 1, -1, false);
+                    poseStack.popPose();
+                    preciseBlit(guiGraphics, cross, x - 0.5f * size, y - 0.5f * size, 0, 0, size, size, size, size);
+                    renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                    poseStack.popPose();
+                }
             }
+
+            poseStack.popPose();
 
             // A-10的导弹锁定
             if (vehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3) {

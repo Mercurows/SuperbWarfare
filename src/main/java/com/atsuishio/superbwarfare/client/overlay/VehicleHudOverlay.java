@@ -178,7 +178,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 && weaponVehicle.isDriver(player)
                 && !(player.getVehicle() instanceof SpeedboatEntity)
                 && !(player.getVehicle() instanceof CannonEntity)) {
-            int color = vehicle.getHudColor();
+            int color = vehicle.getHudColor() | 0xFF000000;
 
             poseStack.pushPose();
 

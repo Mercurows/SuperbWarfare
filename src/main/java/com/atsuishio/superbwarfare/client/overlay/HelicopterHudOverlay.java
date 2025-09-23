@@ -68,7 +68,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
             // TODO 载具类型判断没生效？
             poseStack.pushPose();
 
-            int color = vehicle.getHudColor();
+            int color = vehicle.getHudColor() | 0xFF000000;
 
             poseStack.translate(-6 * ClientEventHandler.turnRot[1], -6 * ClientEventHandler.turnRot[0], 0);
             RenderSystem.disableDepthTest();
