@@ -277,13 +277,8 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.4f, getY() + 0.4f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
+    public float rotateYOffset() {
+        return 0.4f;
     }
 
     @Override

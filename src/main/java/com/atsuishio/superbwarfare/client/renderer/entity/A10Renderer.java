@@ -37,7 +37,7 @@ public class A10Renderer extends GeoEntityRenderer<A10Entity> {
     @Override
     public void render(A10Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        Vec3 root = new Vec3(0, 2.375, 0);
+        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.getRoll())), (float) root.x, (float) root.y, (float) root.z);
