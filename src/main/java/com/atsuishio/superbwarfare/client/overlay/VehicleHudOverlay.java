@@ -64,6 +64,17 @@ public class VehicleHudOverlay implements IGuiOverlay {
     private static final ResourceLocation NUMBER = Mod.loc("textures/screens/vehicle_weapon/number.png");
     private static final ResourceLocation GEAR = Mod.loc("textures/screens/aircraft/gear.png");
 
+    // 炮塔
+    private static final ResourceLocation BARREL = Mod.loc("textures/screens/land/line.png");
+    //车身
+    private static final ResourceLocation BODY= Mod.loc("textures/screens/land/body.png");
+    //左轮
+    private static final ResourceLocation LEFT_WHEEL= Mod.loc("textures/screens/land/left_wheel.png");
+    //右轮
+    private static final ResourceLocation RIGHT_WHEEL = Mod.loc("textures/screens/land/right_wheel.png");
+    //引擎
+    private static final ResourceLocation ENGINE = Mod.loc("textures/screens/land/engine.png");
+
     public static final int ANIMATION_TIME = 300;
     private static final AnimationTimer[] weaponSlotsTimer = AnimationTimer.createTimers(9, ANIMATION_TIME, AnimationCurves.EASE_OUT_CIRC);
     private static boolean wasRenderingWeapons = false;
@@ -187,31 +198,20 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 RenderHelper.blit(poseStack, Mod.loc("textures/screens/compass.png"), (float) screenWidth / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
                 RenderHelper.blit(poseStack, Mod.loc("textures/screens/helicopter/roll_ind.png"), screenWidth / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
 
-                // 炮塔
-                ResourceLocation barrel = Mod.loc("textures/screens/land/line.png");
                 int turretHeal = (int) (100 - (100 * vehicle.getEntityData().get(TURRET_HEALTH) / vehicle.getTurretMaxHealth()));
-                RenderHelper.blit(poseStack, barrel, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
-
-                //车身
-                ResourceLocation body= Mod.loc("textures/screens/land/body.png");
-                //左轮
-                ResourceLocation left_wheel= Mod.loc("textures/screens/land/left_wheel.png");
-                //右轮
-                ResourceLocation right_wheel = Mod.loc("textures/screens/land/right_wheel.png");
-                //引擎
-                ResourceLocation engine = Mod.loc("textures/screens/land/engine.png");
+                RenderHelper.blit(poseStack, BARREL, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
 
                 // 车身方向
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
                 int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
-                RenderHelper.blit(poseStack, body, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
+                RenderHelper.blit(poseStack, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
                 int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
-                RenderHelper.blit(poseStack, left_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
+                RenderHelper.blit(poseStack, LEFT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
                 int rightWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(R_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
-                RenderHelper.blit(poseStack, right_wheel, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
+                RenderHelper.blit(poseStack, RIGHT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
                 int engineHeal = (int) (100 - (100 * vehicle.getEntityData().get(ENGINE_HEALTH) / vehicle.getEngineMaxHealth()));
-                RenderHelper.blit(poseStack, engine, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
+                RenderHelper.blit(poseStack, ENGINE, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
                 poseStack.popPose();
 
 

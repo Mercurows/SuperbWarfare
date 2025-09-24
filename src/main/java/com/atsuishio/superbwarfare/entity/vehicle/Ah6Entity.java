@@ -431,9 +431,8 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0.45f;
-        float y = 1.2f;
+        float y = 0.85f;
         float z = 1f;
-        y += (float) passenger.getMyRidingOffset();
 
         int i = this.getOrderedPassengers().indexOf(passenger);
 

@@ -279,7 +279,7 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
         Matrix4f transform = getVehicleTransform(1);
 
         float x = -0.4f;
-        float y = -0.6f + (float) passenger.getMyRidingOffset();
+        float y = -0.95f;
         float z = 0.2f;
 
         int i = this.getSeatIndex(passenger);

@@ -131,6 +131,7 @@ public class AACalculatorOverlay implements IGuiOverlay {
         if (player == null) return false;
         return !player.isSpectator() && player.getVehicle() instanceof VehicleEntity vehicle
                 && vehicle instanceof WeaponVehicleEntity weaponVehicle
+                && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))
                 && weaponVehicle.getWeapon(vehicle.getSeatIndex(player)).aaProjectileWeapon;
     }
 }
