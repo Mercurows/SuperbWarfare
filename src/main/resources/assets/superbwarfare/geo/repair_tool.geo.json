@@ -33,7 +33,8 @@
 				{
 					"name": "flame_illuminated",
 					"parent": "body",
-					"pivot": [0, 4.0594, -9.2813]
+					"pivot": [0, 4.0594, -9.2813],
+					"rotation": [0, 0, -45]
 				},
 				{
 					"name": "flame_1_illuminated",
