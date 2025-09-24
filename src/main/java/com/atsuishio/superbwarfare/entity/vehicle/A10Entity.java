@@ -672,8 +672,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = -1.0f + (float) passenger.getVehicleAttachmentPoint(this).y + rotateYOffset();
-        float z = 3.95f;
+        float y = 2.125f;
+        float z = 3.7f;
 
         Vector4f worldPosition = transformPosition(transform, x, y, z);
         passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -686,7 +686,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         Matrix4f transform = getVehicleTransform(1);
         if ((!onGround() || getDeltaMovement().length() >= 0.1)) {
-            Vector4f worldPosition = transformPosition(transform, 0, 2f + (float) passenger.getVehicleAttachmentPoint(this).y, 3.95f);
+            Vector4f worldPosition = transformPosition(transform, 0, 4.025f, 3.7f);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         } else {
             return super.getDismountLocationForIndex(passenger, index);

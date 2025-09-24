@@ -426,7 +426,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0.45f;
-        float y = -0.65f + rotateYOffset();
+        float y = 0.85f;
         float z = 1f;
 
         int i = this.getOrderedPassengers().indexOf(passenger);
@@ -440,11 +440,11 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         } else if (i == 2) {
-            Vector4f worldPosition = transformPosition(transform, -1.4f, -1.05f, 0);
+            Vector4f worldPosition = transformPosition(transform, -1.4f, 0.4f, 0);
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         } else if (i == 3) {
-            Vector4f worldPosition = transformPosition(transform, 1.4f, -1.05f, 0);
+            Vector4f worldPosition = transformPosition(transform, 1.4f, 0.4f, 0);
             passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         }

@@ -65,6 +65,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation NUMBER = Mod.loc("textures/screens/vehicle_weapon/number.png");
     private static final ResourceLocation GEAR = Mod.loc("textures/screens/aircraft/gear.png");
 
+    // 炮塔
+    private static final ResourceLocation BARREL = Mod.loc("textures/screens/land/line.png");
     // 车身
     private static final ResourceLocation BODY = Mod.loc("textures/screens/land/body.png");
     // 左轮
@@ -207,10 +209,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/compass.png"), (float) screenWidth / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
                 RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), screenWidth / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
 
-                // 炮塔
-                ResourceLocation barrel = Mod.loc("textures/screens/land/line.png");
                 int turretHeal = (int) (100 - (100 * vehicle.getEntityData().get(TURRET_HEALTH) / vehicle.getTurretMaxHealth()));
-                RenderHelper.preciseBlitWithColor(guiGraphics, barrel, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, BARREL, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
 
                 // 车身方向
                 poseStack.pushPose();

@@ -260,7 +260,7 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = 0f;
+        float y = 0.35f;
         float z = 0f;
 
         int i = this.getSeatIndex(passenger);

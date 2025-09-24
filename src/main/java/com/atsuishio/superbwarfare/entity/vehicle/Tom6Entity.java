@@ -282,7 +282,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         Matrix4f transform = getVehicleTransform(1);
 
         float x = 0f;
-        float y = -0.45f + (float) passenger.getVehicleAttachmentPoint(this).y;
+        float y = 0.6f;
         float z = -0.4f;
 
         int i = this.getSeatIndex(passenger);
