@@ -38,10 +38,10 @@ public class ClientPacketHandler {
     public static void handleClientIndicatorMessage(ClientIndicatorMessage message, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             switch (message.type) {
-                case 1 -> CrossHairOverlay.HEAD_INDICATOR = message.value;
-                case 2 -> CrossHairOverlay.KILL_INDICATOR = message.value;
-                case 3 -> CrossHairOverlay.VEHICLE_INDICATOR = message.value;
-                default -> CrossHairOverlay.HIT_INDICATOR = message.value;
+                case 1 -> CrossHairOverlay.headIndicator = message.value;
+                case 2 -> CrossHairOverlay.killIndicator = message.value;
+                case 3 -> CrossHairOverlay.vehicleIndicator = message.value;
+                default -> CrossHairOverlay.hitIndicator = message.value;
             }
         }
     }

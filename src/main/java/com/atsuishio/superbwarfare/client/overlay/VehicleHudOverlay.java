@@ -311,21 +311,21 @@ public class VehicleHudOverlay implements IGuiOverlay {
     public static void renderKillIndicator(GuiGraphics guiGraphics, float w, float h) {
         float posX = w / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
         float posY = h / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
-        float rate = (40 - KILL_INDICATOR * 5) / 5.5f;
+        float rate = (40 - killIndicator * 5) / 5.5f;
 
-        if (HIT_INDICATOR > 0) {
+        if (hitIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (VEHICLE_INDICATOR > 0) {
+        if (vehicleIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker_vehicle.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (HEAD_INDICATOR > 0) {
+        if (headIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/headshot_mark.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (KILL_INDICATOR > 0) {
+        if (killIndicator > 0) {
             float posX1 = w / 2f - 7.5f - 2 + rate;
             float posY1 = h / 2f - 7.5f - 2 + rate;
             float posX2 = w / 2f - 7.5f + 2 - rate;
@@ -339,21 +339,21 @@ public class VehicleHudOverlay implements IGuiOverlay {
     }
 
     public static void renderKillIndicator3P(GuiGraphics guiGraphics, float posX, float posY) {
-        float rate = (40 - KILL_INDICATOR * 5) / 5.5f;
+        float rate = (40 - killIndicator * 5) / 5.5f;
 
-        if (HIT_INDICATOR > 0) {
+        if (hitIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (VEHICLE_INDICATOR > 0) {
+        if (vehicleIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker_vehicle.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (HEAD_INDICATOR > 0) {
+        if (headIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/headshot_mark.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (KILL_INDICATOR > 0) {
+        if (killIndicator > 0) {
             float posX1 = posX - 2 + rate;
             float posY1 = posY - 2 + rate;
             float posX2 = posX + 2 - rate;
