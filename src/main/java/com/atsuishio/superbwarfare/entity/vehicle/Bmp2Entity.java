@@ -428,7 +428,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                         0.25f);
                 this.level().addFreshEntity(smallCannonShell);
 
-                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
+                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
                 playShootSound3p(living, 0, 4, 12, 24, getTurretShootPos(living, 1));
                 ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
