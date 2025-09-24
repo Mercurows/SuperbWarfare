@@ -45,6 +45,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
     private static float lerpVy = 1;
     private static float lerpLock = 1;
     private static float lerpG = 1;
+
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/aircraft/frame.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/aircraft/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/aircraft/frame_lock.png");
@@ -52,9 +53,22 @@ public class AircraftOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation IND_2 = Mod.loc("textures/screens/aircraft/locking_ind2.png");
     private static final ResourceLocation IND_3 = Mod.loc("textures/screens/aircraft/locking_ind3.png");
     private static final ResourceLocation IND_4 = Mod.loc("textures/screens/aircraft/locking_ind4.png");
-
     private static final ResourceLocation BOMB_SCOPE = Mod.loc("textures/screens/aircraft/bomb_scope.png");
     private static final ResourceLocation BOMB_SCOPE_PITCH = Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png");
+    private static final ResourceLocation HUD_BASE_MISSILE = Mod.loc("textures/screens/aircraft/hud_base_missile.png");
+    private static final ResourceLocation HUD_BASE = Mod.loc("textures/screens/aircraft/hud_base.png");
+    private static final ResourceLocation HUD_LINE = Mod.loc("textures/screens/aircraft/hud_line.png");
+    private static final ResourceLocation HUD_IND = Mod.loc("textures/screens/aircraft/hud_ind.png");
+    private static final ResourceLocation HUD_BASE2 = Mod.loc("textures/screens/aircraft/hud_base2.png");
+    private static final ResourceLocation COMPASS_IND = Mod.loc("textures/screens/aircraft/compass_ind.png");
+    private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/screens/aircraft/crosshair_ind.png");
+
+    private static final ResourceLocation HELICOPTER_ROLL_IND = Mod.loc("textures/screens/helicopter/roll_ind.png");
+    private static final ResourceLocation HELICOPTER_SPEED_FRAME = Mod.loc("textures/screens/helicopter/speed_frame.png");
+
+    private static final ResourceLocation COMPASS = Mod.loc("textures/screens/compass.png");
+    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
+    private static final ResourceLocation SHOTGUN_HUD = Mod.loc("textures/screens/shotgun_hud.png");
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -148,19 +162,19 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                 RenderSystem.setShaderColor(1, 1, 1, 1);
 
                 if (vehicle instanceof A10Entity && weaponVehicle.getWeaponIndex(0) == 3) {
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base_missile.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+                    RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE_MISSILE, x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
                 } else {
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base.png"), x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+                    RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE, x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
                 }
 
                 //指南针
-                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/compass.png"), x - 128, y - 122, 128 + ((float) 64 / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
-                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/compass_ind.png"), x - 4, y - 130, 0, 0, 8, 8, 8, 8, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, x - 128, y - 122, 128 + ((float) 64 / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS_IND, x - 4, y - 130, 0, 0, 8, 8, 8, 8, color);
 
                 //滚转指示
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y + 48, 0);
-                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/roll_ind.png"), x - 4, y + 144, 0, 0, 8, 8, 8, 8, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, HELICOPTER_ROLL_IND, x - 4, y + 144, 0, 0, 8, 8, 8, 8, color);
                 poseStack.popPose();
 
                 //时速
@@ -170,8 +184,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getY())),
                         (int) x + 111 - 36, (int) y - 61, color, false);
                 //框
-                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x - 108, y - 64, 0, 0, 36, 12, 36, 12, color);
-                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/helicopter/speed_frame.png"), x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, HELICOPTER_SPEED_FRAME, x - 108, y - 64, 0, 0, 36, 12, 36, 12, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, HELICOPTER_SPEED_FRAME, x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12, color);
                 //垂直速度
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, color, false);
                 //加速度
@@ -183,7 +197,6 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                 // 热诱弹
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyCount()), (int) x + 72, (int) y, color, false);
-
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TGT"), (int) x + 76, (int) y + 78, color, false);
 
                 if (vehicle instanceof A10Entity a10Entity) {
@@ -235,8 +248,8 @@ public class AircraftOverlay implements LayeredDraw.Layer {
 
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), x, y, 0);
                 float pitch = vehicle.getPitch(partialTick);
-                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_line.png"), x - 96 + diffY, y - 128, 0, 448 + 4.10625f * pitch, 192, 256, 192, 1152, color);
-                RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_ind.png"), x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, HUD_LINE, x - 96 + diffY, y - 128, 0, 448 + 4.10625f * pitch, 192, 256, 192, 1152, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, HUD_IND, x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24, color);
                 poseStack.popPose();
 
                 // 能量警告
@@ -266,9 +279,9 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
 
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/hud_base2.png"), x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
+                    RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE2, x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
 
-                    RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/aircraft/crosshair_ind.png"), x - 16, y - 16, 0, 0, 32, 32, 32, 32, color);
+                    RenderHelper.preciseBlitWithColor(guiGraphics, CROSSHAIR_IND, x - 16, y - 16, 0, 0, 32, 32, 32, 32, color);
                     renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                 } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK) {
                     poseStack.pushPose();
@@ -277,7 +290,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     poseStack.translate(x, y, 0);
                     poseStack.scale(0.75f, 0.75f, 1);
 
-                    ResourceLocation cross = Mod.loc("textures/screens/drone.png");
+                    ResourceLocation cross = DRONE;
                     float size = 16;
 
                     if (vehicle instanceof A10Entity a10Entity) {
@@ -287,7 +300,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                            cross = Mod.loc("textures/screens/shotgun_hud.png");
+                            cross = SHOTGUN_HUD;
                             size = 24;
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 3) {

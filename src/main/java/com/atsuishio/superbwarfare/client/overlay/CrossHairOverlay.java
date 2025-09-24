@@ -45,11 +45,20 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
 
     private static final ResourceLocation REX_HORIZONTAL = Mod.loc("textures/screens/rex_horizontal.png");
     private static final ResourceLocation REX_VERTICAL = Mod.loc("textures/screens/rex_vertical.png");
+    private static final ResourceLocation POINT = Mod.loc("textures/screens/point.png");
+    private static final ResourceLocation SHOTGUN_HUD = Mod.loc("textures/screens/shotgun_hud.png");
+    private static final ResourceLocation HIT_MARKER = Mod.loc("textures/screens/hit_marker.png");
+    private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/screens/hit_marker_vehicle.png");
+    private static final ResourceLocation HEADSHOT_MARK = Mod.loc("textures/screens/headshot_mark.png");
+    private static final ResourceLocation KILL_MARK1 = Mod.loc("textures/screens/kill_mark1.png");
+    private static final ResourceLocation KILL_MARK2 = Mod.loc("textures/screens/kill_mark2.png");
+    private static final ResourceLocation KILL_MARK3 = Mod.loc("textures/screens/kill_mark3.png");
+    private static final ResourceLocation KILL_MARK4 = Mod.loc("textures/screens/kill_mark4.png");
 
-    public static int HIT_INDICATOR = 0;
-    public static int HEAD_INDICATOR = 0;
-    public static int KILL_INDICATOR = 0;
-    public static int VEHICLE_INDICATOR = 0;
+    public static int hitIndicator = 0;
+    public static int headIndicator = 0;
+    public static int killIndicator = 0;
+    public static int vehicleIndicator = 0;
     private static float scopeScale = 1f;
     public static float gunRot;
 
@@ -103,7 +112,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         float finPosY = ((h - finLength) / 2) + moveY;
 
         if (shouldRenderCrossHair(player) || (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && (stack.is(ModItems.MINIGUN.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()) || stack.is(ModItems.M_2_HB.get()))) || (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0))) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, POINT, w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
             if (!player.isSprinting() || ClientEventHandler.cantSprint > 0) {
                 if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
                     shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
@@ -115,7 +124,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
 
         if (stack.is(ModItems.BOCEK.get())) {
             if (ClientEventHandler.zoomPos < 0.7) {
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+                preciseBlit(guiGraphics, POINT, w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
                 if (!player.isSprinting() || ClientEventHandler.cantSprint > 0 || ClientEventHandler.bowPullPos > 0) {
                     if (ClientEventHandler.zoomTime < 0.1) {
                         if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
@@ -155,7 +164,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
     }
 
     private static void shotgunCrossHair(GuiGraphics guiGraphics, float finPosX, float finPosY, float finLength) {
-        preciseBlit(guiGraphics, Mod.loc("textures/screens/shotgun_hud.png"), finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
+        preciseBlit(guiGraphics, SHOTGUN_HUD, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
     }
 
     private static boolean shouldRenderCrossHair(Player player) {
@@ -172,38 +181,38 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
     private static void renderKillIndicator(GuiGraphics guiGraphics, int w, int h, float moveX, float moveY) {
         float posX = w / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
         float posY = h / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
-        float rate = (40 - KILL_INDICATOR * 5) / 5.5f;
+        float rate = (40 - killIndicator * 5) / 5.5f;
 
-        if (HIT_INDICATOR > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker.png"), posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
+        if (hitIndicator > 0) {
+            preciseBlit(guiGraphics, HIT_MARKER, posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (VEHICLE_INDICATOR > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker_vehicle.png"), posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
+        if (vehicleIndicator > 0) {
+            preciseBlit(guiGraphics, HIT_MARKER_VEHICLE, posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (HEAD_INDICATOR > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/headshot_mark.png"), posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
+        if (headIndicator > 0) {
+            preciseBlit(guiGraphics, HEADSHOT_MARK, posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (KILL_INDICATOR > 0) {
+        if (killIndicator > 0) {
             float posX1 = w / 2f - 7.5f - 2 + rate + moveX;
             float posY1 = h / 2f - 7.5f - 2 + rate + moveY;
             float posX2 = w / 2f - 7.5f + 2 - rate + moveX;
             float posY2 = h / 2f - 7.5f + 2 - rate + moveY;
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark1.png"), posX1, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark2.png"), posX2, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark3.png"), posX1, posY2, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark4.png"), posX2, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK1, posX1, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK2, posX2, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK3, posX1, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK4, posX2, posY2, 0, 0, 16, 16, 16, 16);
         }
     }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
-        HEAD_INDICATOR = Math.max(0, HEAD_INDICATOR - 1);
-        HIT_INDICATOR = Math.max(0, HIT_INDICATOR - 1);
-        KILL_INDICATOR = Math.max(0, KILL_INDICATOR - 1);
-        VEHICLE_INDICATOR = Math.max(0, VEHICLE_INDICATOR - 1);
+        headIndicator = Math.max(0, headIndicator - 1);
+        hitIndicator = Math.max(0, hitIndicator - 1);
+        killIndicator = Math.max(0, killIndicator - 1);
+        vehicleIndicator = Math.max(0, vehicleIndicator - 1);
     }
 }

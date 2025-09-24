@@ -34,6 +34,7 @@ public class AACalculatorOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
     private static final ResourceLocation SHOOT_INDICATOR = Mod.loc("textures/screens/igla_9k38/frame.png");
+    private static final ResourceLocation BLOCK = Mod.loc("textures/screens/block.png");
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -118,7 +119,7 @@ public class AACalculatorOverlay implements LayeredDraw.Layer {
                         for (double i = 3; i < dis - 3; i += 3) {
                             Vec3 toVec = targetHudPos.vectorTo(shootHudPos).normalize();
                             Vec3 p0 = targetHudPos.add(toVec.scale(i));
-                            RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/block.png"), (float) (p0.x - 0.5), (float) (p0.y - 0.5), 0, 0, 1, 1, 1, 1);
+                            RenderHelper.preciseBlit(guiGraphics, BLOCK, (float) (p0.x - 0.5), (float) (p0.y - 0.5), 0, 0, 1, 1, 1, 1);
                         }
                     }
                 }

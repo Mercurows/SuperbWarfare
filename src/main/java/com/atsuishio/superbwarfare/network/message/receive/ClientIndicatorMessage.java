@@ -23,10 +23,10 @@ public record ClientIndicatorMessage(int messageType, int value) implements Cust
     public static void handler(final ClientIndicatorMessage message, final IPayloadContext context) {
         var type = message.messageType();
         switch (type) {
-            case 1 -> CrossHairOverlay.HEAD_INDICATOR = message.value();
-            case 2 -> CrossHairOverlay.KILL_INDICATOR = message.value();
-            case 3 -> CrossHairOverlay.VEHICLE_INDICATOR = message.value();
-            default -> CrossHairOverlay.HIT_INDICATOR = message.value();
+            case 1 -> CrossHairOverlay.headIndicator = message.value();
+            case 2 -> CrossHairOverlay.killIndicator = message.value();
+            case 3 -> CrossHairOverlay.vehicleIndicator = message.value();
+            default -> CrossHairOverlay.hitIndicator = message.value();
         }
     }
 

@@ -226,7 +226,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 poseStack.popPose();
 
                 // 时速
-                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
+                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/screenHeight")),
                         screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
 
                 // 低电量警告
@@ -318,28 +318,28 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         }
     }
 
-    public static void renderKillIndicator(GuiGraphics guiGraphics, float w, float h) {
-        float posX = w / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
-        float posY = h / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
-        float rate = (40 - KILL_INDICATOR * 5) / 5.5f;
+    public static void renderKillIndicator(GuiGraphics guiGraphics, float screenWidth, float screenHeight) {
+        float posX = screenWidth / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
+        float posY = screenHeight / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
+        float rate = (40 - killIndicator * 5) / 5.5f;
 
-        if (HIT_INDICATOR > 0) {
+        if (hitIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (VEHICLE_INDICATOR > 0) {
+        if (vehicleIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker_vehicle.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (HEAD_INDICATOR > 0) {
+        if (headIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/headshot_mark.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (KILL_INDICATOR > 0) {
-            float posX1 = w / 2f - 7.5f - 2 + rate;
-            float posY1 = h / 2f - 7.5f - 2 + rate;
-            float posX2 = w / 2f - 7.5f + 2 - rate;
-            float posY2 = h / 2f - 7.5f + 2 - rate;
+        if (killIndicator > 0) {
+            float posX1 = screenWidth / 2f - 7.5f - 2 + rate;
+            float posY1 = screenHeight / 2f - 7.5f - 2 + rate;
+            float posX2 = screenWidth / 2f - 7.5f + 2 - rate;
+            float posY2 = screenHeight / 2f - 7.5f + 2 - rate;
 
             preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark1.png"), posX1, posY1, 0, 0, 16, 16, 16, 16);
             preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark2.png"), posX2, posY1, 0, 0, 16, 16, 16, 16);
@@ -349,21 +349,21 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     }
 
     public static void renderKillIndicator3P(GuiGraphics guiGraphics, float posX, float posY) {
-        float rate = (40 - KILL_INDICATOR * 5) / 5.5f;
+        float rate = (40 - killIndicator * 5) / 5.5f;
 
-        if (HIT_INDICATOR > 0) {
+        if (hitIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (VEHICLE_INDICATOR > 0) {
+        if (vehicleIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker_vehicle.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (HEAD_INDICATOR > 0) {
+        if (headIndicator > 0) {
             preciseBlit(guiGraphics, Mod.loc("textures/screens/headshot_mark.png"), posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
-        if (KILL_INDICATOR > 0) {
+        if (killIndicator > 0) {
             float posX1 = posX - 2 + rate;
             float posY1 = posY - 2 + rate;
             float posX2 = posX + 2 - rate;
@@ -376,14 +376,14 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         }
     }
 
-    private static void renderPassengerInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h) {
+    private static void renderPassengerInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int screenWidth, int screenHeight) {
         var passengers = vehicle.getOrderedPassengers();
 
         int index = 0;
         for (int i = passengers.size() - 1; i >= 0; i--) {
             var passenger = passengers.get(i);
 
-            int y = h - 35 - index * 12;
+            int y = screenHeight - 35 - index * 12;
             AtomicReference<String> name = new AtomicReference<>("---");
 
             if (passenger != null) {
@@ -406,7 +406,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         }
     }
 
-    private static void renderWeaponInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h) {
+    private static void renderWeaponInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int screenWidth, int screenHeight) {
         Player player = Minecraft.getInstance().player;
 
         if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player))) return;
@@ -488,21 +488,21 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             // 当前选中武器
             if (weaponIndex == i) {
                 var startY = Mth.lerp(progress,
-                        h - (weapons.size() - 1 - oldRenderWeaponIndex) * 18 - 16,
-                        h - (weapons.size() - 1 - weaponIndex) * 18 - 16
+                        screenHeight - (weapons.size() - 1 - oldRenderWeaponIndex) * 18 - 16,
+                        screenHeight - (weapons.size() - 1 - weaponIndex) * 18 - 16
                 );
 
-                preciseBlit(guiGraphics, SELECTED, w - 95, startY, 100, 0, 0, 8, 8, 8, 8);
+                preciseBlit(guiGraphics, SELECTED, screenWidth - 95, startY, 100, 0, 0, 8, 8, 8, 8);
                 if (InventoryTool.hasCreativeAmmoBox(player) && !(weapon instanceof LaserWeapon) && !(weapon instanceof SmallRocketWeapon) && !(weapon instanceof SwarmDroneWeapon)) {
-                    preciseBlit(guiGraphics, NUMBER, w - 28 + xOffset, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
+                    preciseBlit(guiGraphics, NUMBER, screenWidth - 28 + xOffset, screenHeight - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
                 } else {
                     renderNumber(guiGraphics, weaponVehicle.getAmmoCount(player), weapon instanceof LaserWeapon,
-                            w - 20 + xOffset, h - frameIndex * 18 - 15.5f, 0.25f);
+                            screenWidth - 20 + xOffset, screenHeight - frameIndex * 18 - 15.5f, 0.25f);
                 }
             }
 
-            preciseBlit(guiGraphics, frame, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
-            preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+            preciseBlit(guiGraphics, frame, screenWidth - 85 + xOffset, screenHeight - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+            preciseBlit(guiGraphics, weapon.icon, screenWidth - 85 + xOffset, screenHeight - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
             pose.popPose();
 
