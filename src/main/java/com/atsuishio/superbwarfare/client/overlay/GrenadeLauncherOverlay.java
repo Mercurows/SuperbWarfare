@@ -15,6 +15,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +30,10 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class GrenadeLauncherOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_grenade_launcher";
+
+    private static final ResourceLocation POINT = Mod.loc("textures/screens/point.png");
+    private static final ResourceLocation SHOTGUN_HUD = Mod.loc("textures/screens/shotgun_hud.png");
+    private static final ResourceLocation REX = Mod.loc("textures/screens/rex.png");
 
     private static float scopeScale = 1f;
 
@@ -74,10 +79,10 @@ public class GrenadeLauncherOverlay implements IGuiOverlay {
             float finPosX = ((screenWidth - finLength) / 2) + moveX;
             float finPosY = ((screenHeight - finLength) / 2) + moveY;
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/point.png"), screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/shotgun_hud.png"), finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
+            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, SHOTGUN_HUD, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
         } else {
-            guiGraphics.blit(Mod.loc("textures/screens/rex.png"), screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
+            guiGraphics.blit(REX, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
         }
 
         RenderSystem.depthMask(true);

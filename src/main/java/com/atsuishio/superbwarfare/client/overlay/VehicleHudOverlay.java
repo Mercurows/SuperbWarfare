@@ -63,17 +63,29 @@ public class VehicleHudOverlay implements IGuiOverlay {
     private static final ResourceLocation SELECTED = Mod.loc("textures/screens/vehicle_weapon/selected.png");
     private static final ResourceLocation NUMBER = Mod.loc("textures/screens/vehicle_weapon/number.png");
     private static final ResourceLocation GEAR = Mod.loc("textures/screens/aircraft/gear.png");
+    private static final ResourceLocation LAND_LINE = Mod.loc("textures/screens/land/line.png");
+    private static final ResourceLocation ROLL_IND = Mod.loc("textures/screens/helicopter/roll_ind.png");
 
     // 炮塔
     private static final ResourceLocation BARREL = Mod.loc("textures/screens/land/line.png");
-    //车身
-    private static final ResourceLocation BODY= Mod.loc("textures/screens/land/body.png");
-    //左轮
-    private static final ResourceLocation LEFT_WHEEL= Mod.loc("textures/screens/land/left_wheel.png");
-    //右轮
+    // 车身
+    private static final ResourceLocation BODY = Mod.loc("textures/screens/land/body.png");
+    // 左轮
+    private static final ResourceLocation LEFT_WHEEL = Mod.loc("textures/screens/land/left_wheel.png");
+    // 右轮
     private static final ResourceLocation RIGHT_WHEEL = Mod.loc("textures/screens/land/right_wheel.png");
-    //引擎
+    // 引擎
     private static final ResourceLocation ENGINE = Mod.loc("textures/screens/land/engine.png");
+
+    private static final ResourceLocation HIT_MARKER = Mod.loc("textures/screens/hit_marker.png");
+    private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/screens/hit_marker_vehicle.png");
+    private static final ResourceLocation HEADSHOT_MARK = Mod.loc("textures/screens/headshot_mark.png");
+    private static final ResourceLocation KILL_MARK1 = Mod.loc("textures/screens/kill_mark1.png");
+    private static final ResourceLocation KILL_MARK2 = Mod.loc("textures/screens/kill_mark2.png");
+    private static final ResourceLocation KILL_MARK3 = Mod.loc("textures/screens/kill_mark3.png");
+    private static final ResourceLocation KILL_MARK4 = Mod.loc("textures/screens/kill_mark4.png");
+    private static final ResourceLocation COMPASS = Mod.loc("textures/screens/compass.png");
+    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
 
     public static final int ANIMATION_TIME = 300;
     private static final AnimationTimer[] weaponSlotsTimer = AnimationTimer.createTimers(9, ANIMATION_TIME, AnimationCurves.EASE_OUT_CIRC);
@@ -136,7 +148,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
                 preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
                 poseStack.popPose();
-
             }
         }
 
@@ -192,11 +203,11 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 int addW = (screenWidth / screenHeight) * 48;
                 int addH = (screenWidth / screenHeight) * 27;
                 preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
-                RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/line.png"), screenWidth / 2f - 64, screenHeight - 56, 0, 0.0F, 128, 1, 128, 1, color);
+                RenderHelper.blit(poseStack, LAND_LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0.0F, 128, 1, 128, 1, color);
 
                 // 指南针
-                RenderHelper.blit(poseStack, Mod.loc("textures/screens/compass.png"), (float) screenWidth / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
-                RenderHelper.blit(poseStack, Mod.loc("textures/screens/helicopter/roll_ind.png"), screenWidth / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
+                RenderHelper.blit(poseStack, COMPASS, (float) screenWidth / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.blit(poseStack, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
 
                 int turretHeal = (int) (100 - (100 * vehicle.getEntityData().get(TURRET_HEALTH) / vehicle.getTurretMaxHealth()));
                 RenderHelper.blit(poseStack, BARREL, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
@@ -279,7 +290,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
                     float x = (float) p.x;
                     float y = (float) p.y;
 
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                    preciseBlit(guiGraphics, DRONE, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
                     renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
                     poseStack.pushPose();
@@ -314,15 +325,15 @@ public class VehicleHudOverlay implements IGuiOverlay {
         float rate = (40 - killIndicator * 5) / 5.5f;
 
         if (hitIndicator > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker.png"), posX, posY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, HIT_MARKER, posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
         if (vehicleIndicator > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker_vehicle.png"), posX, posY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, HIT_MARKER_VEHICLE, posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
         if (headIndicator > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/headshot_mark.png"), posX, posY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, HEADSHOT_MARK, posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
         if (killIndicator > 0) {
@@ -331,10 +342,10 @@ public class VehicleHudOverlay implements IGuiOverlay {
             float posX2 = w / 2f - 7.5f + 2 - rate;
             float posY2 = h / 2f - 7.5f + 2 - rate;
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark1.png"), posX1, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark2.png"), posX2, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark3.png"), posX1, posY2, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark4.png"), posX2, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK1, posX1, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK2, posX2, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK3, posX1, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK4, posX2, posY2, 0, 0, 16, 16, 16, 16);
         }
     }
 
@@ -342,15 +353,15 @@ public class VehicleHudOverlay implements IGuiOverlay {
         float rate = (40 - killIndicator * 5) / 5.5f;
 
         if (hitIndicator > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker.png"), posX, posY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, HIT_MARKER, posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
         if (vehicleIndicator > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/hit_marker_vehicle.png"), posX, posY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, HIT_MARKER_VEHICLE, posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
         if (headIndicator > 0) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/headshot_mark.png"), posX, posY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, HEADSHOT_MARK, posX, posY, 0, 0, 16, 16, 16, 16);
         }
 
         if (killIndicator > 0) {
@@ -359,10 +370,10 @@ public class VehicleHudOverlay implements IGuiOverlay {
             float posX2 = posX + 2 - rate;
             float posY2 = posY + 2 - rate;
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark1.png"), posX1, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark2.png"), posX2, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark3.png"), posX1, posY2, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/kill_mark4.png"), posX2, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK1, posX1, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK2, posX2, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK3, posX1, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARK4, posX2, posY2, 0, 0, 16, 16, 16, 16);
         }
     }
 
@@ -409,7 +420,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         var temp = wasRenderingWeapons;
         wasRenderingWeapons = false;
-
 
         assert player != null;
 

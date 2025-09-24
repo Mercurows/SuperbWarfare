@@ -98,41 +98,26 @@ public class IFFOverlay implements IGuiOverlay {
         );
     }
 
-    private static ResourceLocation getResourceLocation(Entity team) {
+    private static ResourceLocation getResourceLocation(Entity entity) {
         ResourceLocation icon = FRIENDLY_INDICATOR;
 
-        // TODO 载具类型判断没生效？
-        if ((team instanceof VehicleEntity vehicle && vehicle.getVehicleType() == VehicleEntity.VehicleType.BOAT) || team instanceof Boat) {
+        if (entity instanceof Boat) {
             icon = FRIENDLY_BOAT;
-        } else if (team instanceof VehicleEntity vehicle) {
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE) {
-                icon = FRIENDLY_AIRCRAFT;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER) {
-                icon = FRIENDLY_HELICOPTER;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.APC) {
-                icon = FRIENDLY_APC;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.CAR) {
-                icon = FRIENDLY_CAR;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.AA) {
-                icon = FRIENDLY_AA;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.TANK) {
-                icon = FRIENDLY_TANK;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.ARTILLERY) {
-                icon = FRIENDLY_ARTILLERY;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.DRONE) {
-                icon = FRIENDLY_DRONE;
-            }
-            if (vehicle.getVehicleType() == VehicleEntity.VehicleType.DEFENSE) {
-                icon = FRIENDLY_DEFENSE;
-            }
-        } else if (team instanceof MineEntity) {
+        } else if (entity instanceof VehicleEntity vehicle) {
+            icon = switch (vehicle.getVehicleType()) {
+                case AIRPLANE -> FRIENDLY_AIRCRAFT;
+                case HELICOPTER -> FRIENDLY_HELICOPTER;
+                case APC -> FRIENDLY_APC;
+                case CAR -> FRIENDLY_CAR;
+                case AA -> FRIENDLY_AA;
+                case TANK -> FRIENDLY_TANK;
+                case ARTILLERY -> FRIENDLY_ARTILLERY;
+                case DRONE -> FRIENDLY_DRONE;
+                case BOAT -> FRIENDLY_BOAT;
+                case DEFENSE -> FRIENDLY_DEFENSE;
+                default -> FRIENDLY_INDICATOR;
+            };
+        } else if (entity instanceof MineEntity) {
             icon = FRIENDLY_MINE;
         }
         return icon;

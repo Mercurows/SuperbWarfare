@@ -14,12 +14,12 @@ import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -41,13 +41,14 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_vehicle_mg_hud";
 
+    private static final ResourceLocation CANNON_CROSSHAIR_NOTZOOM = Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png");
+    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
+
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = gui.getMinecraft();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (!shouldRenderCrossHair(player)) return;
 
@@ -63,7 +64,7 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        if (player.getVehicle()  instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle instanceof VehicleEntity vehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+        if (player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle instanceof VehicleEntity vehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
 
@@ -73,7 +74,7 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
                 int j = Mth.floor(f * f1);
                 int k = (screenWidth - i) / 2;
                 int l = (screenHeight - j) / 2;
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
+                RenderHelper.preciseBlit(guiGraphics, CANNON_CROSSHAIR_NOTZOOM, k, l, 0, 0.0F, i, j, i, j);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 pos;
@@ -90,7 +91,7 @@ public class VehicleMgHudOverlay implements IGuiOverlay {
                     float x = (float) p.x;
                     float y = (float) p.y;
 
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                    preciseBlit(guiGraphics, DRONE, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
                     renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
                     poseStack.pushPose();

@@ -41,9 +41,11 @@ import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 public class SpyglassRangeOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_spyglass_range";
-    public static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
-    private static float scopeScale = 1;
 
+    private static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
+    private static final ResourceLocation SPYGLASS = Mod.loc("textures/screens/spyglass.png");
+
+    private static float scopeScale = 1;
     private static float lerpHoldArtilleryIndicator;
 
     @Override
@@ -80,7 +82,7 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                 float k = ((screenWidth - i) / 2);
                 float l = ((screenHeight - j) / 2);
                 float w = i * 21 / 9;
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/spyglass.png"), k - (2 * w / 7) , l, 0, 0.0F, w, j, w, j);
+                preciseBlit(guiGraphics, SPYGLASS, k - (2 * w / 7), l, 0, 0.0F, w, j, w, j);
 
                 double targetX = stack.getOrCreateTag().getDouble("TargetX");
                 double targetY = stack.getOrCreateTag().getDouble("TargetY");

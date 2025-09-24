@@ -29,6 +29,7 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
     public static final String ID = Mod.MODID + "_yx100_swarm_drone_hud";
 
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
+    private static final ResourceLocation LAV_MISSILE_CROSS = Mod.loc("textures/screens/land/lav_missile_cross.png");
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -61,7 +62,7 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
                 int j = Mth.floor(f * f1);
                 int k = (screenWidth - i) / 2;
                 int l = (screenHeight - j) / 2;
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j, color);
+                RenderHelper.preciseBlit(guiGraphics, LAV_MISSILE_CROSS, k, l, 0, 0.0F, i, j, i, j, color);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                 Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 384, 6);
 
