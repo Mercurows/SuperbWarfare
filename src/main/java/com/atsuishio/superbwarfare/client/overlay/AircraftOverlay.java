@@ -50,6 +50,9 @@ public class AircraftOverlay implements IGuiOverlay {
     private static final ResourceLocation IND_3 = Mod.loc("textures/screens/aircraft/locking_ind3.png");
     private static final ResourceLocation IND_4 = Mod.loc("textures/screens/aircraft/locking_ind4.png");
 
+    private static final ResourceLocation BOMB_SCOPE = Mod.loc("textures/screens/aircraft/bomb_scope.png");
+    private static final ResourceLocation BOMB_SCOPE_PITCH = Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png");
+
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = gui.getMinecraft();
@@ -112,11 +115,11 @@ public class AircraftOverlay implements IGuiOverlay {
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -11, 1, false);
                         poseStack.popPose();
 
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope.png"), x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+                        preciseBlit(guiGraphics, BOMB_SCOPE, x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
 
                         poseStack.pushPose();
                         poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
-                        preciseBlit(guiGraphics, Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png"), x - 1.5f * i, y - 1.5f * j - 4 * a10Entity.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+                        preciseBlit(guiGraphics, BOMB_SCOPE_PITCH, x - 1.5f * i, y - 1.5f * j - 4 * a10Entity.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
                         renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                         poseStack.popPose();
                         return;
