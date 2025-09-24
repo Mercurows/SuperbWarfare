@@ -435,14 +435,14 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     public Vec3 driverPos(float ticks) {
         Matrix4f transform = getVehicleFlatTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, -1.0625f, 3.25f, -1.0625f);
+        Vector4f worldPosition = transformPosition(transform, -1.0625f, 3f, -1.0625f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0f, 1f, 0);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.5f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
@@ -457,10 +457,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
-        Matrix4f transform = getBarrelTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
-
-        entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        entityToSpawn.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
         entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, projectileVelocity(living), 0.25f);
         level().addFreshEntity(entityToSpawn);
 
@@ -491,7 +488,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @Override
     public Vec3 getTurretShootPos(Entity entity, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0.35f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 

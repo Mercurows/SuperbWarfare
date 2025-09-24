@@ -1773,6 +1773,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     /**
      * @param entity 操控载具的实体
+     * @param barrelLength 炮管长度
+     * @return 炮口火焰位置
+     */
+    public Vec3 getTurretShootMuzzleFlashPos(Entity entity, float ticks, float barrelLength) {
+        return getTurretShootPos(entity, ticks).add(getBarrelVector(ticks).normalize().scale(barrelLength));
+    }
+
+    /**
+     * @param entity 操控载具的实体
      * @return 炮弹发射时的初始速度
      */
     public float projectileVelocity(Entity entity) {
