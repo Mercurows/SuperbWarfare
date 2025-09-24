@@ -31,12 +31,13 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
     public static final ResourceLocation ID = Mod.loc("yx100_swarm_drone_hud");
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
+    private static final ResourceLocation LAV_MISSILE_CROSS = Mod.loc("textures/screens/land/lav_missile_cross.png");
 
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
@@ -58,14 +59,14 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
                 int color = yx100.getHudColor();
                 float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
 
-                float f = (float) Math.min(w, h);
-                float f1 = Math.min((float) w / f, (float) h / f) * fovAdjust;
+                float f = (float) Math.min(screenWidth, screenHeight);
+                float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * fovAdjust;
                 int i = Mth.floor(f * f1);
                 int j = Mth.floor(f * f1);
-                int k = (w - i) / 2;
-                int l = (h - j) / 2;
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), k, l, 0, 0.0F, i, j, i, j, color);
-                VehicleHudOverlay.renderKillIndicator(guiGraphics, w, h);
+                int k = (screenWidth - i) / 2;
+                int l = (screenHeight - j) / 2;
+                RenderHelper.preciseBlit(guiGraphics, LAV_MISSILE_CROSS, k, l, 0, 0.0F, i, j, i, j, color);
+                VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                 Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 384, 6);
 
                 if (naerestEntity != null) {

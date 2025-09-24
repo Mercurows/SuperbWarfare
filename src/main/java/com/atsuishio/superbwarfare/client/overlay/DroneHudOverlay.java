@@ -38,7 +38,6 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_ARTILLERY;
 import static com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_INDICATOR;
-import static com.atsuishio.superbwarfare.client.overlay.SpyglassRangeOverlay.INDICATOR;
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
@@ -54,6 +53,10 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation TV_FRAME = Mod.loc("textures/screens/land/tv_frame.png");
+    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
+    private static final ResourceLocation DRONE_FOV = Mod.loc("textures/screens/drone_fov.png");
+    private static final ResourceLocation DRONE_FOV_MOVE = Mod.loc("textures/screens/drone_fov_move.png");
+    private static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
 
     @Override
     @ParametersAreNonnullByDefault
@@ -87,13 +90,13 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
 
         if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
             if (firstPerson) {
-                guiGraphics.blit(Mod.loc("textures/screens/drone.png"), screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
-                guiGraphics.blit(Mod.loc("textures/screens/drone_fov.png"), screenWidth / 2 + 100, screenHeight / 2 - 64, 0, 0, 64, 129, 64, 129);
+                guiGraphics.blit(DRONE, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
+                guiGraphics.blit(DRONE_FOV, screenWidth / 2 + 100, screenHeight / 2 - 64, 0, 0, 64, 129, 64, 129);
                 int addW = (screenWidth / screenHeight) * 48;
                 int addH = (screenWidth / screenHeight) * 27;
                 preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
 
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/drone_fov_move.png"), (float) screenWidth / 2 + 100, (float) (screenHeight / 2f - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
+                preciseBlit(guiGraphics, DRONE_FOV_MOVE, (float) screenWidth / 2 + 100, (float) (screenHeight / 2f - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
                 guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(ClientEventHandler.droneFovLerp, "x")),
                         screenWidth / 2 + 144, screenHeight / 2 + 56 - (int) ((ClientEventHandler.droneFovLerp - 1) * 23.8), -1, false);
 
@@ -163,7 +166,6 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                         }
                     }
 
-
                     List<Entity> entities = SeekTool.seekLivingEntities(entity, entity.level(), 256, 30);
                     for (var e : entities) {
                         Vec3 pos = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
@@ -178,7 +180,6 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 }
 
                 // 射击诸元标记
-
                 ItemStack offStack = player.getOffhandItem();
                 if (offStack.is(ModItems.FIRING_PARAMETERS.get()) || offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
                     var parameters = offStack.get(ModDataComponents.FIRING_PARAMETERS);
@@ -210,7 +211,6 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                     }
 
                     // 火炮位置
-
                     if (offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
                         ListTag tags = NBTTool.getTag(offStack).getList(TAG_CANNON, Tag.TAG_COMPOUND);
                         for (int m = 0; m < tags.size(); m++) {

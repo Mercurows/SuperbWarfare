@@ -34,6 +34,7 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class IglaHudOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("igla_hud");
+
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/igla_9k38/frame.png");
     private static final ResourceLocation PART_1 = Mod.loc("textures/screens/igla_9k38/part_1.png");
     private static final ResourceLocation PART_2 = Mod.loc("textures/screens/igla_9k38/part_2.png");
@@ -41,9 +42,10 @@ public class IglaHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation PART_4 = Mod.loc("textures/screens/igla_9k38/part_4.png");
     private static final ResourceLocation HOLD = Mod.loc("textures/screens/igla_9k38/hold.png");
     private static final ResourceLocation SHOOT = Mod.loc("textures/screens/igla_9k38/shoot.png");
+    private static final ResourceLocation IGLA_SCOPE = Mod.loc("textures/screens/igla_9k38/igla_scope.png");
+
     private static float scopeScale = 1;
     private static float lerpSeeking = 1;
-
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -88,7 +90,7 @@ public class IglaHudOverlay implements LayeredDraw.Layer {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor((float) combinedLightLevel / 15, (float) combinedLightLevel / 15, (float) combinedLightLevel / 15, 1);
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/igla_9k38/igla_scope.png"), x0 - 1.5f * i, y0 - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+            preciseBlit(guiGraphics, IGLA_SCOPE, x0 - 1.5f * i, y0 - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
 
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
@@ -112,24 +114,20 @@ public class IglaHudOverlay implements LayeredDraw.Layer {
 
                 poseStack.translate(x, y, 0);
                 //我去这框
-
                 RenderHelper.preciseBlit(guiGraphics, FRAME, -12, -12, 0, 0, 0, 24, 24, 24, 24);
 
                 //锁定进度
-
                 RenderHelper.preciseBlit(guiGraphics, PART_1, -12 - lerpSeeking, -12 - lerpSeeking, 0, 0, 0, 24, 24, 24, 24);
                 RenderHelper.preciseBlit(guiGraphics, PART_2, -12 + lerpSeeking, -12 - lerpSeeking, 0, 0, 0, 24, 24, 24, 24);
                 RenderHelper.preciseBlit(guiGraphics, PART_3, -12 - lerpSeeking, -12 + lerpSeeking, 0, 0, 0, 24, 24, 24, 24);
                 RenderHelper.preciseBlit(guiGraphics, PART_4, -12 + lerpSeeking, -12 + lerpSeeking, 0, 0, 0, 24, 24, 24, 24);
 
                 //状态
-
                 if (seekingTime >= 30 && data.ammo.get() > 0) {
                     RenderHelper.preciseBlit(guiGraphics, SHOOT, -12, -26, 0, 0, 0, 24, 24, 24, 24);
                 } else {
                     RenderHelper.preciseBlit(guiGraphics, HOLD, -12, -26, 0, 0, 0, 24, 24, 24, 24);
                 }
-
 
                 //测距
                 poseStack.pushPose();

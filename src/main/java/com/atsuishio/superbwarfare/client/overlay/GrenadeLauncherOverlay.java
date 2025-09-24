@@ -33,13 +33,17 @@ public class GrenadeLauncherOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("grenade_launcher");
 
+    private static final ResourceLocation POINT = Mod.loc("textures/screens/point.png");
+    private static final ResourceLocation SHOTGUN_HUD = Mod.loc("textures/screens/shotgun_hud.png");
+    private static final ResourceLocation REX = Mod.loc("textures/screens/rex.png");
+
     private static float scopeScale = 1f;
 
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -75,16 +79,16 @@ public class GrenadeLauncherOverlay implements LayeredDraw.Layer {
             }
 
             scopeScale = (float) Mth.lerp(0.5F * deltaFrame, scopeScale, 1 + 1.5f * spread);
-            float minLength = (float) Math.min(w, h);
-            float scaledMinLength = Math.min((float) w / minLength, (float) h / minLength) * 0.012f * scopeScale;
+            float minLength = (float) Math.min(screenWidth, screenHeight);
+            float scaledMinLength = Math.min((float) screenWidth / minLength, (float) screenHeight / minLength) * 0.012f * scopeScale;
             float finLength = Mth.floor(minLength * scaledMinLength);
-            float finPosX = ((w - finLength) / 2) + moveX;
-            float finPosY = ((h - finLength) / 2) + moveY;
+            float finPosX = ((screenWidth - finLength) / 2) + moveX;
+            float finPosY = ((screenHeight - finLength) / 2) + moveY;
 
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/point.png"), w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/shotgun_hud.png"), finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
+            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, SHOTGUN_HUD, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
         } else {
-            guiGraphics.blit(Mod.loc("textures/screens/rex.png"), w / 2 - 16, h / 2 - 16, 0, 0, 32, 32, 32, 32);
+            guiGraphics.blit(REX, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
         }
 
         RenderSystem.depthMask(true);

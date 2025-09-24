@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -44,16 +43,17 @@ public class VehicleMgHudOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("vehicle_mg_hud");
 
+    private static final ResourceLocation CANNON_CROSSHAIR_NOTZOOM = Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png");
+    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
+
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
 
         if (!shouldRenderCrossHair(player)) return;
 
@@ -67,18 +67,18 @@ public class VehicleMgHudOverlay implements LayeredDraw.Layer {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        if (player.getVehicle()  instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle instanceof VehicleEntity vehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+        if (player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle instanceof VehicleEntity vehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
 
-                float f = (float) Math.min(w, h);
-                float f1 = Math.min((float) w / f, (float) h / f) * fovAdjust;
+                float f = (float) Math.min(screenWidth, screenHeight);
+                float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * fovAdjust;
                 int i = Mth.floor(f * f1);
                 int j = Mth.floor(f * f1);
-                int k = (w - i) / 2;
-                int l = (h - j) / 2;
-                RenderHelper.preciseBlit(guiGraphics, Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png"), k, l, 0, 0.0F, i, j, i, j);
-                VehicleHudOverlay.renderKillIndicator(guiGraphics, w, h);
+                int k = (screenWidth - i) / 2;
+                int l = (screenHeight - j) / 2;
+                RenderHelper.preciseBlit(guiGraphics, CANNON_CROSSHAIR_NOTZOOM, k, l, 0, 0.0F, i, j, i, j);
+                VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
                 Vec3 pos;
                 var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
@@ -95,7 +95,7 @@ public class VehicleMgHudOverlay implements LayeredDraw.Layer {
                     float x = (float) p.x;
                     float y = (float) p.y;
 
-                    preciseBlit(guiGraphics, Mod.loc("textures/screens/drone.png"), x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                    preciseBlit(guiGraphics, DRONE, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
                     renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
                     poseStack.pushPose();

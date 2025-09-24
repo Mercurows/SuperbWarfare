@@ -42,9 +42,11 @@ import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 public class SpyglassRangeOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("spyglass_range");
-    public static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
-    private static float scopeScale = 1;
 
+    public static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
+    private static final ResourceLocation SPYGLASS = Mod.loc("textures/screens/spyglass.png");
+
+    private static float scopeScale = 1;
     private static float lerpHoldArtilleryIndicator;
 
     @Override
@@ -86,7 +88,7 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                 float k = ((screenWidth - i) / 2);
                 float l = ((screenHeight - j) / 2);
                 float w = i * 21 / 9;
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/spyglass.png"), k - (2 * w / 7), l, 0, 0.0F, w, j, w, j);
+                preciseBlit(guiGraphics, SPYGLASS, k - (2 * w / 7), l, 0, 0.0F, w, j, w, j);
 
                 // 标记位置
                 Vec3 pos;

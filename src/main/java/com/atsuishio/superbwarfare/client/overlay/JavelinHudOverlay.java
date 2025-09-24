@@ -41,6 +41,13 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
+    private static final ResourceLocation JAVELIN_HUD = Mod.loc("textures/screens/javelin/javelin_hud.png");
+    private static final ResourceLocation TOP = Mod.loc("textures/screens/javelin/top.png");
+    private static final ResourceLocation DIR = Mod.loc("textures/screens/javelin/dir.png");
+    private static final ResourceLocation MISSILE_GREEN = Mod.loc("textures/screens/javelin/missile_green.png");
+    private static final ResourceLocation MISSILE_RED = Mod.loc("textures/screens/javelin/missile_red.png");
+    private static final ResourceLocation SEEK = Mod.loc("textures/screens/javelin/seek.png");
+
     private static float scopeScale = 1;
 
     @Override
@@ -84,12 +91,11 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             float l = ((h - j) / 2) + moveY;
             float i1 = k + i;
             float j1 = l + j;
-
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/javelin/javelin_hud.png"), k, l, 0, 0.0F, i, j, i, j);
-            preciseBlit(guiGraphics, Mod.loc(data.selectedFireModeInfo().name.equals("Top") ? "textures/screens/javelin/top.png" : "textures/screens/javelin/dir.png"), k, l, 0, 0.0F, i, j, i, j);
-            preciseBlit(guiGraphics, Mod.loc(data.hasEnoughAmmoToShoot(player) ? "textures/screens/javelin/missile_green.png" : "textures/screens/javelin/missile_red.png"), k, l, 0, 0.0F, i, j, i, j);
+            preciseBlit(guiGraphics, JAVELIN_HUD, k, l, 0, 0.0F, i, j, i, j);
+            preciseBlit(guiGraphics, data.selectedFireModeInfo().name.equals("Top") ? TOP : DIR, k, l, 0, 0.0F, i, j, i, j);
+            preciseBlit(guiGraphics, data.hasEnoughAmmoToShoot(player) ? MISSILE_GREEN : MISSILE_RED, k, l, 0, 0.0F, i, j, i, j);
             if (tag.getInt("SeekTime") > 1 && tag.getInt("SeekTime") < 20) {
-                preciseBlit(guiGraphics, Mod.loc("textures/screens/javelin/seek.png"), k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(guiGraphics, SEEK, k, l, 0, 0.0F, i, j, i, j);
             }
 
             guiGraphics.fill(RenderType.guiOverlay(), 0, (int) l, (int) k + 3, (int) j1, -90, -16777216);
