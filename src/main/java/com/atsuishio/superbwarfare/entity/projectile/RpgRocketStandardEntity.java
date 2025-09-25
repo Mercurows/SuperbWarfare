@@ -192,15 +192,7 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     public void tick() {
         super.tick();
 
-        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
-            double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
-                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
-                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
-                        1, 0, 0, 0, 0.001, true);
-            }
-        }
+        mediumTrail();
 
         if (this.tickCount == 3) {
             if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
@@ -273,4 +265,6 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     public boolean forceLoadChunk() {
         return true;
     }
+
+
 }

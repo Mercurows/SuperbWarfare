@@ -19,16 +19,16 @@ public class ModParticleTypes {
 
     public static final RegistryObject<SimpleParticleType> FIRE_STAR = REGISTRY.register("fire_star", () -> new SimpleParticleType(false));
     public static final RegistryObject<ParticleType<BulletDecalOption>> BULLET_DECAL = REGISTRY.register("bullet_decal",
-            () -> createOptions(BulletDecalOption.CODEC, BulletDecalOption.DESERIALIZER));
+            () -> createOptions(BulletDecalOption.CODEC, true, BulletDecalOption.DESERIALIZER));
     public static final RegistryObject<ParticleType<CustomSmokeOption>> CUSTOM_SMOKE = REGISTRY.register("custom_smoke",
-            () -> createOptions(CustomSmokeOption.CODEC, CustomSmokeOption.DESERIALIZER));
+            () -> createOptions(CustomSmokeOption.CODEC, true, CustomSmokeOption.DESERIALIZER));
 
     public static final RegistryObject<ParticleType<CustomCloudOption>> CUSTOM_CLOUD = REGISTRY.register("custom_cloud",
-            () -> createOptions(CustomCloudOption.CODEC, CustomCloudOption.DESERIALIZER));
+            () -> createOptions(CustomCloudOption.CODEC, true, CustomCloudOption.DESERIALIZER));
 
     @SuppressWarnings("deprecation")
-    public static <T extends ParticleOptions> ParticleType<T> createOptions(Codec<T> codec, ParticleOptions.Deserializer<T> deserializer) {
-        return new ParticleType<>(false, deserializer) {
+    public static <T extends ParticleOptions> ParticleType<T> createOptions(Codec<T> codec, boolean pOverrideLimiter, ParticleOptions.Deserializer<T> deserializer) {
+        return new ParticleType<>(pOverrideLimiter, deserializer) {
             public @NotNull Codec<T> codec() {
                 return codec;
             }

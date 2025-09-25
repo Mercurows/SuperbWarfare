@@ -583,11 +583,11 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
             if (fireIndex == 0) {
                 worldPosition = transformPosition(transform, 1.7f, 0.62f, 0.8f);
-                worldPosition2 = transformPosition(transform, 1.7875f, 0.632f, 1.8f);
+                worldPosition2 = transformPosition(transform, 1.695f, 0.632f, 1.8f);
                 fireIndex = 1;
             } else {
                 worldPosition = transformPosition(transform, -1.7f, 0.62f, 0.8f);
-                worldPosition2 = transformPosition(transform, -1.6885f, 0.632f, 1.8f);
+                worldPosition2 = transformPosition(transform, -1.695f, 0.632f, 1.8f);
                 fireIndex = 0;
             }
 
