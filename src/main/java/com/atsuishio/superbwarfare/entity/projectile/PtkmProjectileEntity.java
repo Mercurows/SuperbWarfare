@@ -119,14 +119,8 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
     @Override
     public void tick() {
         super.tick();
-        if (this.level() instanceof ServerLevel serverLevel && tickCount > 0) {
-            double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
-                Vec3 pos = position().add(getDeltaMovement().normalize().scale(-i));
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
-                        1, 0, 0, 0, 0.001, true);
-            }
-        }
+
+        largeTrail();
 
         if (target != null) {
             if (tickCount == shootTime) {
@@ -266,5 +260,18 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
     private static void spawnParticle(ServerLevel level, Vec3 pos, SimpleParticleType particle) {
         ParticleTool.sendParticle(level, particle, pos.x, pos.y, pos.z,
                 1, 0.02, 0.02, 0.02, 0.0001, true);
+    }
+
+
+    @Override
+    public void largeTrail() {
+        if (level().isClientSide && tickCount > 0) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
+                level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
+            }
+        }
     }
 }

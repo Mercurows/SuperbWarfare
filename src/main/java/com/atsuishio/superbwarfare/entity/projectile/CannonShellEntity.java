@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -214,15 +213,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             releaseGrapeShot((LivingEntity) getOwner());
         }
         super.tick();
-        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
-            double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
-                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
-                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
-                        1, 0, 0, 0, 0.001, true);
-            }
-        }
+
+        largeTrail();
 
         destroyBlock();
 
@@ -360,4 +352,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public void setGravity(float gravity) {
         this.gravity = gravity;
     }
+
+
 }

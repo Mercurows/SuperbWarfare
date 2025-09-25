@@ -57,6 +57,11 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.PTKM_1R.get(),
                 ModEntities.CLAYMORE.get()
         );
+
+        this.tag(ModTags.EntityTypes.AT_ROCKET).add(
+                ModEntities.RPG_ROCKET_STANDARD.get(),
+                ModEntities.RPG_ROCKET_TBG.get()
+        );
     }
 
     public static TagKey<EntityType<?>> cTag(String name) {

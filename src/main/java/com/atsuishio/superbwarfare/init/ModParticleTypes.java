@@ -21,12 +21,14 @@ public class ModParticleTypes {
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FIRE_STAR = REGISTRY.register("fire_star", () -> new SimpleParticleType(false));
     public static final DeferredHolder<ParticleType<?>, ParticleType<BulletDecalOption>> BULLET_DECAL = REGISTRY.register("bullet_decal",
-            () -> createOptions(BulletDecalOption.CODEC, BulletDecalOption.STREAM_CODEC));
-    public static final DeferredHolder<ParticleType<?>, ParticleType<CustomSmokeOption>> CUSTOM_SMOKE = REGISTRY.register("custom_smoke", () -> createOptions(CustomSmokeOption.CODEC, CustomSmokeOption.STREAM_CODEC));
-    public static final DeferredHolder<ParticleType<?>, ParticleType<CustomCloudOption>> CUSTOM_CLOUD = REGISTRY.register("custom_cloud", () -> createOptions(CustomCloudOption.CODEC, CustomCloudOption.STREAM_CODEC));
+            () -> createOptions(BulletDecalOption.CODEC, true, BulletDecalOption.STREAM_CODEC));
+    public static final DeferredHolder<ParticleType<?>, ParticleType<CustomSmokeOption>> CUSTOM_SMOKE = REGISTRY.register("custom_smoke",
+            () -> createOptions(CustomSmokeOption.CODEC, true, CustomSmokeOption.STREAM_CODEC));
+    public static final DeferredHolder<ParticleType<?>, ParticleType<CustomCloudOption>> CUSTOM_CLOUD = REGISTRY.register("custom_cloud",
+            () -> createOptions(CustomCloudOption.CODEC, true, CustomCloudOption.STREAM_CODEC));
 
-    public static <T extends ParticleOptions> ParticleType<T> createOptions(MapCodec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        return new ParticleType<>(false) {
+    public static <T extends ParticleOptions> ParticleType<T> createOptions(MapCodec<T> codec, boolean overrideLimiter, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+        return new ParticleType<>(overrideLimiter) {
             public @NotNull MapCodec<T> codec() {
                 return codec;
             }

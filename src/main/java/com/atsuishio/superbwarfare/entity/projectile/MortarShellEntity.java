@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -209,15 +208,9 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void tick() {
         super.tick();
-        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
-            double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
-                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
-                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z,
-                        1, 0, 0, 0, 0.001, true);
-            }
-        }
+
+        mediumTrail();
+
         if (this.tickCount > this.life || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
                 causeExplode(position());
@@ -303,4 +296,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     public boolean forceLoadChunk() {
         return true;
     }
+
+
 }

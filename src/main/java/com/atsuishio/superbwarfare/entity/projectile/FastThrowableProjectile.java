@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
+import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.ChunkLoadManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -252,5 +254,28 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
 
     public boolean forceLoadChunk() {
         return false;
+    }
+
+    public void largeTrail() {
+        if (level().isClientSide && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
+                level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
+            }
+        }
+    }
+
+    public void mediumTrail() {
+        if (level().isClientSide && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
+                float random = this.random.nextFloat();
+                level().addParticle(new CustomCloudOption(0.6f, 0.58f, 0.57f, (int) (120 + 40 * random), 1.5f + 0.5f * random, 0, false, false), pos.x + 0.25f * random, pos.y + 0.25f * random, pos.z + 0.25f * random, 0, 0, 0);
+            }
+        }
     }
 }
