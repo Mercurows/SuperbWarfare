@@ -58,11 +58,9 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public static final EntityDataAccessor<Float> PROPELLER_ROT = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(Ah6Entity.class, EntityDataSerializers.INT);
     public boolean engineStart;
@@ -781,5 +779,10 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public VehicleType getVehicleType() {
         return VehicleType.HELICOPTER;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 102;
     }
 }
