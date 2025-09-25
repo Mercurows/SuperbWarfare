@@ -27,7 +27,7 @@
     "@superbwarfare:rgo_grenade * 6",
     "@superbwarfare:hand_grenade * 5",
     "@superbwarfare:mortar_shell * 3",
-    "@#superbwarfare:rpg_rocket * 3",
+    "@#superbwarfare:at_rocket * 3",
     "All * 0.8",
     "All - 2"
   ],

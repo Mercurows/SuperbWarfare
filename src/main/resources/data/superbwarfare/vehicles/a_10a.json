@@ -26,7 +26,7 @@
     "@superbwarfare:mortar_shell * 1.25",
     "@superbwarfare:igla_9k38_missile * 1.3",
     "@superbwarfare:gun_grenade * 1.5",
-    "@#superbwarfare:rpg_rocket * 3",
+    "@#superbwarfare:at_rocket * 3",
     "All * 0.75",
     "All - 7"
   ],
