@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -53,11 +51,10 @@ public class FlareDecoyEntity extends Entity {
         super.tick();
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.02, 0.0));
         this.move(MoverType.SELF, this.getDeltaMovement());
-        if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.END_ROD, this.xo, this.yo, this.zo,
-                    1, 0, 0, 0, 0.02, true);
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, this.xo, this.yo, this.zo,
-                    1, 0, 0, 0, 0.02, true);
+
+        if (level().isClientSide()) {
+            level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, true, this.xo, this.yo, this.zo, 0, 0, 0);
+            level().addAlwaysVisibleParticle(ParticleTypes.CLOUD, true, this.xo, this.yo, this.zo, 0, 0, 0);
         }
         if (this.tickCount > 200 || this.isInWater() || this.onGround()) {
             this.discard();

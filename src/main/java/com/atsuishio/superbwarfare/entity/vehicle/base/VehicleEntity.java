@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
@@ -40,6 +41,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -1374,9 +1376,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.clearArrow();
 
         if (this instanceof OBBEntity obbEntity) {
-            if (this.level() instanceof ServerLevel serverLevel) {
-                this.handlePartDamaged(obbEntity, serverLevel);
-            }
+            this.handlePartDamaged(obbEntity);
 
             // 处理部件血量
             this.handlePartHealth();
@@ -1483,34 +1483,34 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.refreshDimensions();
     }
 
-    public void handlePartDamaged(OBBEntity obbEntity, ServerLevel serverLevel) {
+    public void handlePartDamaged(OBBEntity obbEntity) {
         var obbList = obbEntity.getOBBs();
         for (var obb : obbList) {
             Vec3 pos = new Vec3(obb.center());
             switch (obb.part()) {
                 case TURRET -> {
                     if (entityData.get(TURRET_DAMAGED)) {
-                        this.onTurretDamaged(pos, serverLevel);
+                        this.onTurretDamaged(pos);
                     }
                 }
                 case WHEEL_LEFT -> {
                     if (entityData.get(L_WHEEL_DAMAGED)) {
-                        this.onLeftWheelDamaged(pos, serverLevel);
+                        this.onLeftWheelDamaged(pos);
                     }
                 }
                 case WHEEL_RIGHT -> {
                     if (entityData.get(R_WHEEL_DAMAGED)) {
-                        this.onRightWheelDamaged(pos, serverLevel);
+                        this.onRightWheelDamaged(pos);
                     }
                 }
                 case ENGINE1 -> {
                     if (entityData.get(ENGINE1_DAMAGED)) {
-                        this.onEngine1Damaged(pos, serverLevel);
+                        this.onEngine1Damaged(pos);
                     }
                 }
                 case ENGINE2 -> {
                     if (entityData.get(ENGINE2_DAMAGED)) {
-                        this.onEngine2Damaged(pos, serverLevel);
+                        this.onEngine2Damaged(pos);
                     }
                 }
             }
@@ -1555,29 +1555,40 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(L_ENGINE_HEALTH, Math.min(entityData.get(L_ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
     }
 
-    public void defaultPartDamageEffect(Vec3 pos, ServerLevel serverLevel) {
-        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 5, 0.25, 0.25, 0.25, 0.25, true);
-        sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, pos.x, pos.y, pos.z, 1, 1, 0.5, 1, 0.01, true);
+    public void addRandomParticle(ParticleOptions particleOptions, Vec3 pos, float randomPos, Level level, float speed, int count){
+        float randomX = 2 * (this.random.nextFloat() - 0.5f);
+        float randomY = 2 * (this.random.nextFloat() - 0.5f);
+        float randomZ = 2 * (this.random.nextFloat() - 0.5f);
+        for (double i = 0; i < count; i++) {
+            level.addAlwaysVisibleParticle(particleOptions, true, pos.x + randomPos * randomX, pos.y + randomPos * randomY, pos.z + randomPos * randomZ, randomX * speed, randomY * speed, randomZ * speed);
+        }
     }
 
-    public void onTurretDamaged(Vec3 pos, ServerLevel serverLevel) {
-        this.defaultPartDamageEffect(pos, serverLevel);
+    public void defaultPartDamageEffect(Vec3 pos) {
+        if (level().isClientSide) {
+            addRandomParticle(ModParticleTypes.FIRE_STAR.get(), pos, 0, level(), 0.25f, 5);
+            addRandomParticle(ParticleTypes.LARGE_SMOKE, pos, 0.5f, level(), 0.001f, 1);
+        }
     }
 
-    public void onLeftWheelDamaged(Vec3 pos, ServerLevel serverLevel) {
-        this.defaultPartDamageEffect(pos, serverLevel);
+    public void onTurretDamaged(Vec3 pos) {
+        this.defaultPartDamageEffect(pos);
     }
 
-    public void onRightWheelDamaged(Vec3 pos, ServerLevel serverLevel) {
-        this.defaultPartDamageEffect(pos, serverLevel);
+    public void onLeftWheelDamaged(Vec3 pos) {
+        this.defaultPartDamageEffect(pos);
     }
 
-    public void onEngine1Damaged(Vec3 pos, ServerLevel serverLevel) {
-        this.defaultPartDamageEffect(pos, serverLevel);
+    public void onRightWheelDamaged(Vec3 pos) {
+        this.defaultPartDamageEffect(pos);
     }
 
-    public void onEngine2Damaged(Vec3 pos, ServerLevel serverLevel) {
-        this.defaultPartDamageEffect(pos, serverLevel);
+    public void onEngine1Damaged(Vec3 pos) {
+        this.defaultPartDamageEffect(pos);
+    }
+
+    public void onEngine2Damaged(Vec3 pos) {
+        this.defaultPartDamageEffect(pos);
     }
 
     public void clearArrow() {
@@ -1593,26 +1604,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void lowHealthWarning() {
         if (this.getHealth() <= 0.4 * this.getMaxHealth()) {
-            if (this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 2, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
-            }
+            addRandomParticle(ParticleTypes.LARGE_SMOKE, new Vec3(this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ()), 0.35f * this.getBbWidth(), level(), 0.01f, 1);
         }
 
-        if (this.level() instanceof ServerLevel serverLevel) {
-            if (this.getHealth() <= 0.25 * this.getMaxHealth()) {
-                playLowHealthParticle(serverLevel);
-            }
-            if (this.getHealth() <= 0.15 * this.getMaxHealth()) {
-                playLowHealthParticle(serverLevel);
-            }
+        if (this.getHealth() <= 0.25 * this.getMaxHealth()) {
+            playLowHealthParticle();
+        }
+        if (this.getHealth() <= 0.15 * this.getMaxHealth()) {
+            playLowHealthParticle();
         }
 
         if (this.getHealth() <= 0.1 * this.getMaxHealth()) {
-            if (this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 2, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 2, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.FLAME, this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ(), 4, 0.35 * this.getBbWidth(), 0.12 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.05, true);
-                ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ(), 4, 0.1 * this.getBbWidth(), 0.05 * this.getBbHeight(), 0.1 * this.getBbWidth(), 0.4, true);
+            if (level().isClientSide) {
+                float random = 2 * (this.random.nextFloat() - 0.5f);
+                addRandomParticle(ParticleTypes.LARGE_SMOKE, new Vec3(this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ()), 0.35f * this.getBbWidth(), level(), 0.01f, 2);
+                addRandomParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, new Vec3(this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ()), 0.35f * this.getBbWidth(), level(), 0.01f, 2);
+                addRandomParticle(new CustomCloudOption(1f, 0.1f, 0, (int) (240 + 40 * random), 2.5f + 0.5f * random, -0.07f, true, true), new Vec3(this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ()), 0.35f * this.getBbWidth(), level(), 0.01f, 1);
+                addRandomParticle(new CustomCloudOption(1f, 0.35f, 0, (int) (80 + 40 * random), 1.5f + 0.5f * random, -0.07f, false, true), new Vec3(this.getX(), this.getY() + 0.85f * getBbHeight(), this.getZ()), 0.3f * this.getBbWidth(), level(), 0.01f, 1);
             }
             if (this.tickCount % 15 == 0) {
                 this.level().playSound(null, this.getOnPos(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1, 1);
@@ -1626,9 +1634,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    public void playLowHealthParticle(ServerLevel serverLevel) {
-        ParticleTool.sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 1, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
-        ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ(), 1, 0.35 * this.getBbWidth(), 0.15 * this.getBbHeight(), 0.35 * this.getBbWidth(), 0.01, true);
+    public void playLowHealthParticle() {
+        if (level().isClientSide) {
+            addRandomParticle(ParticleTypes.LARGE_SMOKE, new Vec3(this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ()), 0.35f * this.getBbWidth(), level(), 0.01f, 1);
+            addRandomParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, new Vec3(this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ()), 0.35f * this.getBbWidth(), level(), 0.01f, 1);
+        }
     }
 
     public void turretAngle() {
@@ -2800,8 +2810,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         double s0 = getDeltaMovement().dot(this.getViewVector(1));
 
-        this.setLeftWheelRot((float) ((this.getLeftWheelRot() - wheelRotSpeed * s0) + Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f)));
-        this.setRightWheelRot((float) ((this.getRightWheelRot() - wheelRotSpeed * s0) - Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f)));
+        this.setLeftWheelRot((float) ((this.getLeftWheelRot() - wheelRotSpeed * s0) - Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f) * getDeltaMovement().length()));
+        this.setRightWheelRot((float) ((this.getRightWheelRot() - wheelRotSpeed * s0) + Mth.clamp(wheelDifferential * this.entityData.get(DELTA_ROT), -5f, 5f) * getDeltaMovement().length()));
 
         this.setRudderRot(Mth.clamp(this.getRudderRot() - this.entityData.get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
 

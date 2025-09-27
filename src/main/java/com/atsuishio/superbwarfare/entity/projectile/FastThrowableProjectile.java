@@ -283,4 +283,16 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
             }
         }
     }
+
+    public void smallTrail() {
+        if (level().isClientSide && tickCount > 1) {
+            double l = getDeltaMovement().length();
+            for (double i = 0; i < l; i++) {
+                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
+                float random = this.random.nextFloat();
+                level().addAlwaysVisibleParticle(ParticleTypes.SMOKE, true, pos.x + 0.25f * random, pos.y + 0.25f * random, pos.z + 0.25f * random, 0, 0, 0);
+            }
+        }
+    }
 }
