@@ -6,10 +6,8 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +21,6 @@ import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -154,16 +151,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public void tick() {
         super.tick();
-        if (this.level() instanceof ServerLevel serverLevel && tickCount > 1) {
-            double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
-                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
-                Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(i));
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z,
-                        1, 0, 0, 0, 0.001, true);
-            }
-        }
-
+        smallTrail();
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
