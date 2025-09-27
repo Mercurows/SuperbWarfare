@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.vehicle.WheelChairEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.quatern.QuaternionHelper;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -9,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,6 +24,14 @@ public class LivingEntityRendererMixin<T extends LivingEntity> {
     @Inject(method = "setupRotations", at = @At("TAIL"))
     public void render(T entity, PoseStack matrices, float animationProgress, float bodyYaw, float tickDelta, CallbackInfo ci) {
         if (entity.getRootVehicle() != entity && entity.getRootVehicle() instanceof VehicleEntity vehicle) {
+            if (vehicle instanceof WheelChairEntity wheelChairEntity) {
+                QuaternionHelper rotation = wheelChairEntity.getRenderRotation(tickDelta);
+                // 转换为Minecraft的四元数
+                Quaternionf quaternionf = new Quaternionf(-rotation.getX(), rotation.getY(), -rotation.getZ(), rotation.getW());
+                matrices.mulPose(Axis.YP.rotationDegrees(wheelChairEntity.getYaw(tickDelta)));
+                matrices.mulPose(quaternionf);
+                return;
+            }
             var rotation = vehicle.getPassengerRotation(entity, tickDelta);
             if (rotation != null) {
                 matrices.mulPose(rotation.first());

@@ -2,9 +2,9 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.WheelChairModel;
 import com.atsuishio.superbwarfare.entity.vehicle.WheelChairEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.quatern.QuaternionHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -30,12 +31,32 @@ public class WheelChairRenderer extends GeoEntityRenderer<WheelChairEntity> {
     @Override
     public void render(WheelChairEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
-        poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
-        poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())), (float) root.x, (float) root.y, (float) root.z);
-        poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.getRoll())), (float) root.x, (float) root.y, (float) root.z);
+        // 应用四元数旋转
+        applyVehicleRotation(entityIn, poseStack, partialTicks);
+
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
+    }
+
+    /**
+     * 应用四元数旋转到PoseStack
+     */
+    protected void applyVehicleRotation(WheelChairEntity entity, PoseStack poseStack, float partialTicks) {
+        QuaternionHelper rotation = entity.getRenderRotation(partialTicks);
+
+        // 转换为Minecraft的四元数
+        Quaternionf quaternionf = new Quaternionf(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
+
+        // 应用旋转
+//        poseStack.mulPose(quaternionf);
+        Vec3 root = new Vec3(0, entity.rotateYOffset(), 0);
+        poseStack.rotateAround(quaternionf, (float) root.x, (float) root.y, (float) root.z);
+
+//        // 调试：显示旋转角度
+//        if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
+//            Vector3f euler = entity.getEulerAnglesDeg();
+//            // 可以在这里添加调试信息渲染
+//        }
     }
 
     @Override
