@@ -24,8 +24,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -53,7 +51,6 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation CLAYMORE = Mod.loc("textures/screens/damage_types/claymore.png");
     private static final ResourceLocation GENERIC = Mod.loc("textures/screens/damage_types/generic.png");
     private static final ResourceLocation BEAST = Mod.loc("textures/screens/damage_types/beast.png");
-    private static final ResourceLocation BLEEDING = Mod.loc("textures/screens/damage_types/bleeding.png");
     private static final ResourceLocation SHOCK = Mod.loc("textures/screens/damage_types/shock.png");
     private static final ResourceLocation BLOOD_CRYSTAL = Mod.loc("textures/screens/damage_types/blood_crystal.png");
     private static final ResourceLocation BURN = Mod.loc("textures/screens/damage_types/burn.png");
@@ -350,10 +347,8 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
                     icon = BEAST;
                 } else if (record.damageType == ModDamageTypes.MINE) {
                     icon = CLAYMORE;
-                } else if (record.damageType == ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "bleeding"))) {
-                    icon = BLEEDING;
-                } else if (record.damageType == ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "blood_crystal"))) {
-                    icon = BLOOD_CRYSTAL;
+//                } else if (record.damageType == ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("dreamaticvoyage", "blood_crystal"))) {
+//                    icon = BLOOD_CRYSTAL;
                 } else if (record.damageType == ModDamageTypes.SHOCK) {
                     icon = SHOCK;
                 } else if (record.damageType == ModDamageTypes.BURN || record.damageType == DamageTypes.IN_FIRE || record.damageType == DamageTypes.ON_FIRE || record.damageType == DamageTypes.LAVA) {
