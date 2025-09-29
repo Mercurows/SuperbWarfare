@@ -7,13 +7,10 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 
@@ -28,40 +25,16 @@ public class PowerfulAttraction extends Perk {
     public static void onLivingDrops(LivingDropsEvent event) {
         DamageSource source = event.getSource();
         Entity sourceEntity = source.getEntity();
-        if (!(sourceEntity instanceof LivingEntity living)) return;
-        ItemStack stack = living.getMainHandItem();
+        if (!(sourceEntity instanceof Player player)) return;
+        ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
         int level = GunData.from(stack).perk.getLevel(ModPerks.POWERFUL_ATTRACTION);
         if (level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
             var drops = event.getDrops();
             drops.forEach(itemEntity -> {
                 ItemStack item = itemEntity.getItem();
-                var cap = living.getCapability(Capabilities.ItemHandler.ENTITY);
-                if (cap != null) {
-                    for (int i = 0; i < cap.getSlots(); i++) {
-                        int inserted;
-                        for (inserted = item.getCount(); inserted > 0; inserted--) {
-                            var insertedStack = cap.insertItem(i, item.copyWithCount(inserted), true);
-                            if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameComponents(insertedStack, item)) {
-                                break;
-                            }
-                        }
-
-                        if (inserted > 0) {
-                            cap.insertItem(i, item.copyWithCount(inserted), false);
-                            item.shrink(inserted);
-
-                            if (!item.isEmpty()) {
-                                var entity = new ItemEntity(living.level(), living.getX(), living.getY(), living.getZ(), item);
-                                entity.setPickUpDelay(10);
-                                living.level().addFreshEntity(entity);
-                            }
-                        } else {
-                            var entity = new ItemEntity(living.level(), living.getX(), living.getY(), living.getZ(), item);
-                            entity.setPickUpDelay(10);
-                            living.level().addFreshEntity(entity);
-                        }
-                    }
+                if (!player.addItem(item.copy())) {
+                    player.drop(item, false);
                 }
             });
             event.setCanceled(true);
