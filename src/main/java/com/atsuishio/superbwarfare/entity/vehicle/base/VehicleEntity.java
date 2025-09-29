@@ -1774,7 +1774,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     /**
-     * @param entity 操控载具的实体
+     * @param entity       操控载具的实体
      * @param barrelLength 炮管长度
      * @return 炮口火焰位置
      */
@@ -2299,7 +2299,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getNewEyePos(float pPartialTicks) {
         return getEyePosition();
     }
-    
+
     public Vec3 getBarrelVector(float pPartialTicks) {
         Matrix4f transform = getBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
@@ -2390,6 +2390,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public boolean hasTurret() {
         return false;
     }
+
     public boolean turretHasPassengerWeapon() {
         return false;
     }

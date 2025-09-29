@@ -29,6 +29,7 @@
     "LivingEntityRendererMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
+    "MultiPlayerGameModeMixin",
     "PlayerItemInHandLayerMixin",
     "PlayerModelMixin"
   ],
