@@ -38,6 +38,6 @@ public class TraumaMobEffect extends MobEffect {
 
         int amp = effect.getAmplifier() + 1;
         float amount = event.getAmount();
-        event.setAmount(amount * (1 + amp * 0.05f));
+        event.setAmount(amount * (1 + amp * 0.15f));
     }
 }
