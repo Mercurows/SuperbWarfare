@@ -1741,6 +1741,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .unlockedBy(getHasName(Items.POWDER_SNOW_BUCKET), has(Items.POWDER_SNOW_BUCKET))
                 .save(writer, perkLoc(ModPerks.POWERFUL_COOLER));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.BLADE_BULLET).get())
+                .pattern("dbd")
+                .pattern("cac")
+                .pattern("ebe")
+                .define('a', ModItems.EMPTY_PERK.get())
+                .define('b', ModTags.Items.STORAGE_BLOCK_STEEL)
+                .define('c', ModItems.BARBED_WIRE.get())
+                .define('d', ModItems.KNIFE.get())
+                .define('e', ModItems.CLAYMORE_MINE.get())
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .unlockedBy(getHasName(ModItems.CLAYMORE_MINE.get()), has(ModItems.CLAYMORE_MINE.get()))
+                .save(writer, perkLoc(ModPerks.BLADE_BULLET));
     }
 
     private static void buildMiscRecipes(@NotNull RecipeOutput writer) {
