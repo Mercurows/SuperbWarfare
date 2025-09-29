@@ -48,6 +48,7 @@ public class ModPerks {
     public static final RegistryObject<Perk> CUPID_ARROW = AMMO_PERKS.register("cupid_arrow", CupidArrow::new);
     public static final RegistryObject<Perk> RIOT_BULLET = AMMO_PERKS.register("riot_bullet", RiotBullet::new);
     public static final RegistryObject<Perk> PHASE_PENETRATING_BULLET = AMMO_PERKS.register("phase_penetrating_bullet", PhasePenetratingBullet::new);
+    public static final RegistryObject<Perk> BLADE_BULLET = AMMO_PERKS.register("blade_bullet", BladeBullet::new);
 
     /**
      * Functional Perks
@@ -86,7 +87,6 @@ public class ModPerks {
 
     public static void registerCompatPerks() {
         if (ModList.get().isLoaded(CompatHolder.DMV)) {
-            AMMO_PERKS.register("blade_bullet", BladeBullet::new);
             AMMO_PERKS.register("bread_bullet", BreadBullet::new);
         }
         if (ModList.get().isLoaded(CompatHolder.VRC)) {

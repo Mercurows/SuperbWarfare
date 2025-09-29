@@ -280,6 +280,10 @@ public class ModVillagers {
                     new ItemStack(ModItems.PERK_ITEMS.get(ModPerks.MAGNIFICENT_HOWL).get(), 1), 4, 25, 0.05f));
             trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 64),
                     new ItemStack(ModItems.PERK_ITEMS.get(ModPerks.FAIR_MEANS).get(), 1), 4, 25, 0.05f));
+            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 40),
+                    new ItemStack(ModItems.PERK_ITEMS.get(ModPerks.HIGH_IMPACT_RESERVES).get(), 1), 4, 25, 0.05f));
+            trades.get(5).add(new BasicItemListing(new ItemStack(Items.EMERALD, 48),
+                    new ItemStack(ModItems.PERK_ITEMS.get(ModPerks.ONE_TWO_PUNCH).get(), 1), 4, 25, 0.05f));
         }
     }
 
