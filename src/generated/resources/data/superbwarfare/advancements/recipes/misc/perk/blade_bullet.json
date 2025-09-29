@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_claymore_mine": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:claymore_mine"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_empty_perk": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:empty_perk"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:perk/blade_bullet"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_empty_perk",
+      "has_claymore_mine",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:perk/blade_bullet"
+    ]
+  },
+  "sends_telemetry_event": false
+}
