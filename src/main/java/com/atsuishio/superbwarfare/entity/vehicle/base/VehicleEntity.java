@@ -900,7 +900,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.set(R_WHEEL_DAMAGED, compound.getBoolean("RightDamaged"));
         this.entityData.set(ENGINE1_DAMAGED, compound.getBoolean("Engine1Damaged"));
         this.entityData.set(ENGINE2_DAMAGED, compound.getBoolean("Engine2Damaged"));
-        
+
         this.entityData.set(POWER, compound.getFloat("Power"));
         this.entityData.set(DECOY_COUNT, compound.getInt("DecoyCount"));
         this.entityData.set(GEAR_ROT, compound.getInt("GearRot"));
@@ -1283,7 +1283,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         flap2RRotO = this.getFlap2RRot();
         flap3RotO = this.getFlap3Rot();
         gearRotO = entityData.get(GEAR_ROT);
-        
+
         super.baseTick();
 
         if (repairCoolDown > 0) {
@@ -1555,7 +1555,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(L_ENGINE_HEALTH, Math.min(entityData.get(L_ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
     }
 
-    public void addRandomParticle(ParticleOptions particleOptions, Vec3 pos, float randomPos, Level level, float speed, int count){
+    public void addRandomParticle(ParticleOptions particleOptions, Vec3 pos, float randomPos, Level level, float speed, int count) {
         float randomX = 2 * (this.random.nextFloat() - 0.5f);
         float randomY = 2 * (this.random.nextFloat() - 0.5f);
         float randomZ = 2 * (this.random.nextFloat() - 0.5f);
@@ -1782,7 +1782,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     /**
-     * @param entity 操控载具的实体
+     * @param entity       操控载具的实体
      * @param barrelLength 炮管长度
      * @return 炮口火焰位置
      */
@@ -2307,7 +2307,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getNewEyePos(float pPartialTicks) {
         return getEyePosition();
     }
-    
+
     public Vec3 getBarrelVector(float pPartialTicks) {
         Matrix4f transform = getBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
@@ -2398,6 +2398,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public boolean hasTurret() {
         return false;
     }
+
     public boolean turretHasPassengerWeapon() {
         return false;
     }
