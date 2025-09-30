@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -192,7 +193,9 @@ public class GunEventHandler {
             }
         }
 
-        data.heat.set(Mth.clamp(data.heat.get() - data.get(GunProp.NATURAL_COOLDOWN) * rate, 0, 100));
+        long time = GunItem.time - GunItem.oldTime;
+
+        data.heat.set(Mth.clamp(data.heat.get() - data.get(GunProp.NATURAL_COOLDOWN) * rate * 0.02 * time, 0, 100));
 
         if (data.heat.get() < 80 && data.overHeat.get()) {
             data.overHeat.set(false);

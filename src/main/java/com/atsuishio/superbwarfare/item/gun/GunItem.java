@@ -89,6 +89,8 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier {
 
     protected final RandomSource random = RandomSource.create();
+    public static long oldTime;
+    public static long time;
 
     @Override
     public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
@@ -181,11 +183,15 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+        oldTime = time;
+        super.inventoryTick(stack, level, entity, slot, selected);
         if (!(stack.getItem() instanceof GunItem) || level.isClientSide) return;
 
         if (level instanceof ServerLevel serverLevel) {
             GeoItem.getOrAssignId(stack, serverLevel);
         }
+
+        time = System.currentTimeMillis();
 
         var data = GunData.from(stack);
 
