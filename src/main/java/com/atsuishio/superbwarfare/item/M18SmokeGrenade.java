@@ -124,7 +124,9 @@ public class M18SmokeGrenade extends Item implements DispenserLaunchable {
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new M18SmokeGrenadeEntity(ModEntities.M18_SMOKE_GRENADE.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel);
+                int color = M18SmokeGrenade.this.getColor(pStack);
+                return new M18SmokeGrenadeEntity(ModEntities.M18_SMOKE_GRENADE.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel)
+                        .setColor((color >> 16 & 255) / 255f, ((color >> 8) & 255) / 255f, (color & 255) / 255f);
             }
 
             @Override
