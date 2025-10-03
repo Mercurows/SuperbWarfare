@@ -138,7 +138,9 @@ public class M18SmokeGrenade extends Item implements ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        return new M18SmokeGrenadeEntity(ModEntities.M18_SMOKE_GRENADE.get(), pos.x(), pos.y(), pos.z(), level);
+        int color = M18SmokeGrenade.this.getColor(stack);
+        return new M18SmokeGrenadeEntity(ModEntities.M18_SMOKE_GRENADE.get(), pos.x(), pos.y(), pos.z(), level)
+                .setColor((color >> 16 & 255) / 255f, ((color >> 8) & 255) / 255f, (color & 255) / 255f);
     }
 }
 
