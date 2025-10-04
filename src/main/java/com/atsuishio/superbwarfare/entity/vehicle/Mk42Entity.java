@@ -522,7 +522,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
             this.entityData.set(COOL_DOWN, 30);
 
-            ParticleTool.spawnBigCannonMuzzleParticles(getLookAngle(), new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).add(getLookAngle().scale(6.5)), server, this);
+            ParticleTool.spawnBigCannonMuzzleParticles(getLookAngle(), new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).add(getLookAngle().scale(6.4)), server, this);
+
+            for (int i = 0; i < 40; i += 4) {
+                Mod.queueServerWork(i, () -> ParticleTool.spawnBarrelSmoke(1, server, getLookAngle(), new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).add(getLookAngle().scale(6.4))));
+            }
 
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 45);
 

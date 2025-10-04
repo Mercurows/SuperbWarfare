@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.Bl132Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Bl132Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -25,7 +24,6 @@ public class Bl132Renderer extends GeoEntityRenderer<Bl132Entity> {
     public Bl132Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Bl132Model());
         this.shadowRadius = 2f;
-        this.addRenderLayer(new Bl132Layer(this));
     }
 
     @Override

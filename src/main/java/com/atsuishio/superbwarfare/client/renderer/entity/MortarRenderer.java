@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.MortarLayer;
 import com.atsuishio.superbwarfare.client.model.entity.MortarModel;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -22,7 +21,6 @@ public class MortarRenderer extends GeoEntityRenderer<MortarEntity> {
     public MortarRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new MortarModel());
         this.shadowRadius = 0f;
-        this.addRenderLayer(new MortarLayer(this));
     }
 
     @Override
