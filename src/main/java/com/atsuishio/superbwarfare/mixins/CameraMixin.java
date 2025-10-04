@@ -18,10 +18,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -89,18 +87,34 @@ public abstract class CameraMixin implements ICustomCamera {
         }
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
-            var rotation = vehicle.getCameraRotation(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
-            if (rotation != null) {
-                setRotation(rotation.x, rotation.y);
-            }
-            var position = vehicle.getCameraPosition(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
-            if (position != null) {
-                setPosition(position.x, position.y, position.z);
-            }
+            // TODO 完善四元数相关
+            var quat = vehicle.getCameraQuat(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+            if (quat != null) {
+                this.rotation.set(quat);
 
-            if (rotation != null || position != null) {
+                this.xRot = quat.x;
+                this.yRot = quat.y;
+
+                this.forwards.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
+                this.up.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
+                this.left.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
+
                 info.cancel();
             }
+
+//                var rotation = vehicle.getCameraRotation(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+//                if (rotation != null) {
+//                    setRotation(rotation.x, rotation.y);
+//                }
+//                var position = vehicle.getCameraPosition(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+//                if (position != null) {
+//                    setPosition(position.x, position.y, position.z);
+//                }
+//
+//                if (rotation != null || position != null) {
+//                    info.cancel();
+//                }
+
         }
     }
 
@@ -143,6 +157,24 @@ public abstract class CameraMixin implements ICustomCamera {
 
     @Shadow
     protected abstract float getMaxZoom(float maxZoom);
+
+    @Shadow
+    @Final
+    private Vector3f forwards;
+
+    @Shadow
+    @Final
+    private Vector3f up;
+
+    @Shadow
+    @Final
+    private Vector3f left;
+
+    @Shadow
+    private float xRot;
+
+    @Shadow
+    private float yRot;
 
     @Override
     public Quaternionf superbwarfare$getRotation() {
