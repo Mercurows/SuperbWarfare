@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.client.ICustomCamera;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -18,7 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import org.joml.Math;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector4f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,7 +30,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Camera.class)
-public abstract class CameraMixin {
+public abstract class CameraMixin implements ICustomCamera {
+
+    @Shadow
+    @Final
+    private Quaternionf rotation;
 
     @Shadow(aliases = "Lnet/minecraft/client/Camera;setRotation(FF)V")
     protected abstract void setRotation(float p_90573_, float p_90574_);
@@ -134,4 +141,9 @@ public abstract class CameraMixin {
 
     @Shadow
     protected abstract double getMaxZoom(double desiredCameraDistance);
+
+    @Override
+    public Quaternionf superbwarfare$getRotation() {
+        return this.rotation;
+    }
 }
