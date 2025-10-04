@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.Mle1934Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Mle1934Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -26,7 +25,6 @@ public class Mle1934Renderer extends GeoEntityRenderer<Mle1934Entity> {
     public Mle1934Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Mle1934Model());
         this.shadowRadius = 2f;
-        this.addRenderLayer(new Mle1934Layer(this));
     }
 
     @Override

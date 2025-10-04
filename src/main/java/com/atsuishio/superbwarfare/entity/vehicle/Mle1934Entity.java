@@ -20,7 +20,6 @@ import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -516,12 +515,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
             this.entityData.set(COOL_DOWN, 74);
 
-            serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    this.getX() + 5 * this.getLookAngle().x,
-                    this.getY(),
-                    this.getZ() + 5 * this.getLookAngle().z,
-                    100, 7, 0.02, 7, 0.005);
-
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 45);
 
             if (reset) {
@@ -538,27 +531,10 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             entityToSpawnLeft.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, 15, 0.05f);
             level.addFreshEntity(entityToSpawnLeft);
 
-            level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    this.getX() + 5 * this.getLookAngle().x,
-                    this.getY(),
-                    this.getZ() + 5 * this.getLookAngle().z,
-                    100, 7, 0.02, 7, 0.005);
+            ParticleTool.spawnBigCannonMuzzleParticles(getLookAngle(), new Vec3(pos.x, pos.y, pos.z).add(getLookAngle().scale(6.4)), level, this);
 
-            double x = pos.x + 9 * this.getLookAngle().x;
-            double y = pos.y + 9 * this.getLookAngle().y;
-            double z = pos.z + 9 * this.getLookAngle().z;
-
-            level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-            level.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-
-            int count = 6;
-
-            for (float i = 9.5f; i < 16; i += .5f) {
-                level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                        pos.x + i * this.getLookAngle().x,
-                        pos.y + i * this.getLookAngle().y,
-                        pos.z + i * this.getLookAngle().z,
-                        Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
+            for (int i = 0; i < 40; i += 4) {
+                Mod.queueServerWork(i, () -> ParticleTool.spawnBarrelSmoke(1, level, getLookAngle(), new Vec3(pos.x, pos.y, pos.z).add(getLookAngle().scale(6.4))));
             }
 
             if (living instanceof ServerPlayer serverPlayer) {

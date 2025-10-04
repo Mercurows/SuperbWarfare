@@ -260,7 +260,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i++) {
-                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 startPos = new Vec3(getX(), getY(), getZ());
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
             }
@@ -271,7 +271,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i++) {
-                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 startPos = new Vec3(getX(), getY(), getZ());
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 float random = this.random.nextFloat();
                 level().addParticle(new CustomCloudOption(0.6f, 0.58f, 0.57f, (int) (120 + 40 * random), 1.5f + 0.5f * random, 0, false, false), pos.x + 0.25f * random, pos.y + 0.25f * random, pos.z + 0.25f * random, 0, 0, 0);
@@ -283,7 +283,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i++) {
-                Vec3 startPos = new Vec3(this.xo, this.yo, this.zo);
+                Vec3 startPos = new Vec3(getX(), getY(), getZ());
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 float random = this.random.nextFloat();
                 level().addAlwaysVisibleParticle(ParticleTypes.SMOKE, true, pos.x + 0.25f * random, pos.y + 0.25f * random, pos.z + 0.25f * random, 0, 0, 0);
