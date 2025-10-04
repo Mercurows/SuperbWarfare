@@ -1,9 +1,6 @@
 package com.atsuishio.superbwarfare.init;
 
-import com.atsuishio.superbwarfare.client.particle.BulletDecalParticle;
-import com.atsuishio.superbwarfare.client.particle.CustomCloudParticle;
-import com.atsuishio.superbwarfare.client.particle.CustomSmokeParticle;
-import com.atsuishio.superbwarfare.client.particle.FireStarParticle;
+import com.atsuishio.superbwarfare.client.particle.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,6 +15,7 @@ public class ModParticles {
         event.registerSpecial(ModParticleTypes.BULLET_DECAL.get(), new BulletDecalParticle.Provider());
         event.registerSpriteSet(ModParticleTypes.CUSTOM_CLOUD.get(), CustomCloudParticle.Provider::new);
         event.registerSpriteSet(ModParticleTypes.CUSTOM_SMOKE.get(), CustomSmokeParticle.Provider::new);
+        event.registerSpriteSet(ModParticleTypes.CANNON_MUZZLE_FLARE.get(), CannonMuzzleFlareParticle.Provider::new);
     }
 }
 

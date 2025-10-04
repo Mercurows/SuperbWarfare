@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -268,5 +269,54 @@ public class ParticleTool {
             sendParticle(serverLevel, ParticleTypes.FLASH, x, y, z, 2, 0.2, 0.2, 0.2, 10, true);
             sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 40, 0, 0, 0, 1.5, true);
         }
+    }
+
+    public static void spawnBigCannonMuzzleParticles(Vec3 direct, Vec3 pos, ServerLevel serverLevel, Entity entity) {
+//        spawnDirectionalParticles(24, 0.03, serverLevel , new CannonMuzzleFlareOption(1, 0.8f, 0.5f), direct, pos);
+        spawnDirectionalParticles(12, 0.1, serverLevel , new CannonMuzzleFlareOption(1, 1, 1, 8, 0.7f, 1, 2.2f), direct, pos, 1.5);
+        spawnDirectionalParticles(8, 0.06, serverLevel , new CannonMuzzleFlareOption(1, 1, 1, 8, 0.72f, 1, 1.5f), direct, pos, 1.1);
+        spawnDirectionalParticles(1, 0, serverLevel , new CannonMuzzleFlareOption(0.4f, 0.4f, 0.4f, 45, 0.88f, 2, 0.5f), direct, pos, 0.25);
+        spawnDirectionalParticles(1, 0, serverLevel , new CannonMuzzleFlareOption(0.45f, 0.45f, 0.45f, 47, 0.90f, 2, 0.3f), direct, pos, 0.17);
+        spawnDirectionalParticles(1, 0, serverLevel , new CannonMuzzleFlareOption(0.5f, 0.5f, 0.5f, 48, 0.92f, 2, 0.1f), direct, pos, 0.1);
+
+//        serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+//                pos.x,
+//                entity.getY(),
+//                pos.z,
+//                120, 4, 0.25, 4, 0.01);
+
+    }
+
+    public static void spawnDirectionalParticles(int count, double radius, ServerLevel level, ParticleOptions particle, Vec3 direct, Vec3 pos, double speed) {
+        Vec3 direction = direct.normalize();
+        Vec3 randomPerp = getRandomPerpendicular(direction);
+        Vec3 u = randomPerp.normalize();
+        Vec3 v = direction.cross(u).normalize();
+
+        spawnCircularParticles(level, pos, u, v, count, radius, particle, direct, speed);
+    }
+
+    private static Vec3 getRandomPerpendicular(Vec3 dir) {
+        Vec3 candidate1 = new Vec3(dir.y, -dir.x, 0); // 在XY平面垂直
+        if (candidate1.lengthSqr() > 1e-4) return candidate1;
+        return new Vec3(0, dir.z, -dir.y); // 备用垂直向量
+    }
+
+    private static void spawnCircularParticles(ServerLevel level, Vec3 center, Vec3 u, Vec3 v, int count, double radius, ParticleOptions particle, Vec3 direct, double speed) {
+        for (int i = 0; i < count; i++) {
+            double theta = 2 * Math.PI * i / count;
+            double xOffset = radius * (Math.cos(theta) * u.x + Math.sin(theta) * v.x);
+            double yOffset = radius * (Math.cos(theta) * u.y + Math.sin(theta) * v.y);
+            double zOffset = radius * (Math.cos(theta) * u.z + Math.sin(theta) * v.z);
+
+            Vec3 pos = center.add(xOffset, yOffset, zOffset);
+            spawnParticle(level, pos, particle, direct, center, speed);
+        }
+    }
+
+    private static void spawnParticle(ServerLevel level, Vec3 pos, ParticleOptions particle, Vec3 direct, Vec3 originPos, double speed) {
+        Vec3 v0 = originPos.vectorTo(pos).normalize().add(direct.scale(6));
+        sendParticle(level, particle, pos.x, pos.y, pos.z,
+                0, v0.x, v0.y, v0.z, speed, true);
     }
 }

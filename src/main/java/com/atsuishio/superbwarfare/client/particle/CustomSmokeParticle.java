@@ -31,9 +31,9 @@ public class CustomSmokeParticle extends TextureSheetParticle {
         this.lifetime = this.random.nextInt(200) + 600;
         this.gravity = 0.001f;
         this.hasPhysics = true;
-        this.xd = vx * 0.9;
-        this.yd = vy * 0.9;
-        this.zd = vz * 0.9;
+        this.xd = vx * 0.5;
+        this.yd = vy * 0.5;
+        this.zd = vz * 0.5;
         this.setSpriteFromAge(spriteSet);
         this.rCol = rCol;
         this.gCol = gCol;

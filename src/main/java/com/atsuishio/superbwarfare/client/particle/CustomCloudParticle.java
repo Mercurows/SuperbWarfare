@@ -46,6 +46,11 @@ public class CustomCloudParticle extends TextureSheetParticle {
     }
 
     @Override
+    public int getLightColor(float partialTick) {
+        return 15728880;
+    }
+
+    @Override
     public ParticleRenderType getRenderType() {
         return light ? ParticleRenderType.PARTICLE_SHEET_LIT : ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
