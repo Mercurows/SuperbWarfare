@@ -293,14 +293,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('c', ModItems.CEMENTED_CARBIDE_INGOT.get())
                 .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.RU_CHEST_6B43.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.US_HELMET_PASTG.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.US_HELMET_PASGT.get())
                 .pattern("aca")
                 .pattern("aba")
                 .define('a', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
                 .define('b', Tags.Items.SANDS)
                 .define('c', ModItems.CEMENTED_CARBIDE_INGOT.get())
                 .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModItems.CEMENTED_CARBIDE_INGOT.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.US_HELMET_PASTG.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.US_HELMET_PASGT.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.US_CHEST_IOTV.get())
                 .pattern("aba")
                 .pattern("aca")

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/us_helmet_pastg"
+    "layer0": "superbwarfare:item/us_helmet_pasgt"
   }
 }

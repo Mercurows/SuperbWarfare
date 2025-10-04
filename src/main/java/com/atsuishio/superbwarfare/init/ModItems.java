@@ -186,7 +186,7 @@ public class ModItems {
 
     public static final DeferredHolder<Item, RuHelmet6b47> RU_HELMET_6B47 = ITEMS.register("ru_helmet_6b47", RuHelmet6b47::new);
     public static final DeferredHolder<Item, RuChest6b43> RU_CHEST_6B43 = ITEMS.register("ru_chest_6b43", RuChest6b43::new);
-    public static final DeferredHolder<Item, UsHelmetPastg> US_HELMET_PASTG = ITEMS.register("us_helmet_pastg", UsHelmetPastg::new);
+    public static final DeferredHolder<Item, UsHelmetPasgt> US_HELMET_PASGT = ITEMS.register("us_helmet_pasgt", UsHelmetPasgt::new);
     public static final DeferredHolder<Item, UsChestIotv> US_CHEST_IOTV = ITEMS.register("us_chest_iotv", UsChestIotv::new);
     public static final DeferredHolder<Item, GeHelmetM35> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);
     public static final DeferredHolder<Item, ParachuteItem> PARACHUTE = ITEMS.register("parachute", ParachuteItem::new);

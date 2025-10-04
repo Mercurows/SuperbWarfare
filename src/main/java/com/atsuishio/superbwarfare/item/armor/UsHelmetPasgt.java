@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.armor;
 
-import com.atsuishio.superbwarfare.client.renderer.armor.UsHelmetPastgArmorRenderer;
+import com.atsuishio.superbwarfare.client.renderer.armor.UsHelmetPasgtArmorRenderer;
 import com.atsuishio.superbwarfare.init.ModArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
@@ -9,9 +9,9 @@ import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 import java.util.function.Supplier;
 
-public class UsHelmetPastg extends BulletResistantArmor {
+public class UsHelmetPasgt extends BulletResistantArmor {
 
-    public UsHelmetPastg() {
+    public UsHelmetPasgt() {
         super(ModArmorMaterials.CEMENTED_CARBIDE,
                 Type.HELMET,
                 new Properties().durability(Type.HELMET.getDurability(50)),
@@ -22,6 +22,6 @@ public class UsHelmetPastg extends BulletResistantArmor {
     @OnlyIn(Dist.CLIENT)
     @Override
     public Supplier<GeoArmorRenderer<? extends Item>> getRenderer() {
-        return UsHelmetPastgArmorRenderer::new;
+        return UsHelmetPasgtArmorRenderer::new;
     }
 }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:us_helmet_pastg"
+        "recipe": "superbwarfare:us_helmet_pasgt"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:us_helmet_pastg"
+      "superbwarfare:us_helmet_pasgt"
     ]
   }
 }
