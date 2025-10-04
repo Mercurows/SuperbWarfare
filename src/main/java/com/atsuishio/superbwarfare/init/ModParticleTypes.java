@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
+import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption;
 import com.mojang.serialization.MapCodec;
@@ -23,6 +24,9 @@ public class ModParticleTypes {
             () -> createOptions(BulletDecalOption.CODEC, true, BulletDecalOption.STREAM_CODEC));
     public static final DeferredHolder<ParticleType<?>, ParticleType<CustomSmokeOption>> CUSTOM_SMOKE = REGISTRY.register("custom_smoke",
             () -> createOptions(CustomSmokeOption.CODEC, true, CustomSmokeOption.STREAM_CODEC));
+    public static final DeferredHolder<ParticleType<?>, ParticleType<CannonMuzzleFlareOption>> CANNON_MUZZLE_FLARE = REGISTRY.register("cannon_muzzle_flare",
+            () -> createOptions(CannonMuzzleFlareOption.CODEC, true, CannonMuzzleFlareOption.STREAM_CODEC));
+
     public static final DeferredHolder<ParticleType<?>, ParticleType<CustomCloudOption>> CUSTOM_CLOUD = REGISTRY.register("custom_cloud",
             () -> createOptions(CustomCloudOption.CODEC, true, CustomCloudOption.STREAM_CODEC));
 

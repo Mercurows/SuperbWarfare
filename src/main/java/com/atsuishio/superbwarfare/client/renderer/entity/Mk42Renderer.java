@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.Mk42Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Mk42Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -23,7 +22,6 @@ public class Mk42Renderer extends GeoEntityRenderer<Mk42Entity> {
     public Mk42Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Mk42Model());
         this.shadowRadius = 2f;
-        this.addRenderLayer(new Mk42Layer(this));
     }
 
     @Override
