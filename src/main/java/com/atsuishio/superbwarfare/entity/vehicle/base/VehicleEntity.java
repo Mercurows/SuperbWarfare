@@ -2589,6 +2589,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return null;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @Nullable
+    public Quaternionf getCameraQuat(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        return null;
+    }
+
     /**
      * 是否使用载具固定视角
      */
@@ -3492,7 +3498,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void setRightWheelRot(float pRightWheelRot) {
         this.rightWheelRot = pRightWheelRot;
     }
-
 
     public float getLeftTrack() {
         return this.leftTrack;
