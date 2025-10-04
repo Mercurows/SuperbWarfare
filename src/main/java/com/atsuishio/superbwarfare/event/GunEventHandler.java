@@ -630,6 +630,9 @@ public class GunEventHandler {
                 if (item.equals("rocket_70")) {
                     mapping.remap(ModItems.SMALL_ROCKET.get());
                 }
+                if (item.equals("us_helmet_pastg")) {
+                    mapping.remap(ModItems.US_HELMET_PASGT.get());
+                }
             }
         }
     }

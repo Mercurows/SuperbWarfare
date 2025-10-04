@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.armor;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.armor.UsHelmetPastgArmorRenderer;
+import com.atsuishio.superbwarfare.client.renderer.armor.UsHelmetPasgtArmorRenderer;
 import com.atsuishio.superbwarfare.init.ModAttributes;
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial;
 import com.google.common.collect.HashMultimap;
@@ -23,10 +23,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class UsHelmetPastg extends ArmorItem implements GeoItem {
+public class UsHelmetPasgt extends ArmorItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public UsHelmetPastg() {
+    public UsHelmetPasgt() {
         super(ModArmorMaterial.CEMENTED_CARBIDE, Type.HELMET, new Properties());
     }
 
@@ -38,7 +38,7 @@ public class UsHelmetPastg extends ArmorItem implements GeoItem {
             @Override
             public HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                 if (this.renderer == null)
-                    this.renderer = new UsHelmetPastgArmorRenderer();
+                    this.renderer = new UsHelmetPasgtArmorRenderer();
                 this.renderer.prepForRender(livingEntity, itemStack, equipmentSlot, original);
                 return this.renderer;
             }
