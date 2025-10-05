@@ -259,7 +259,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     public void largeTrail() {
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
+            for (double i = 0; i < l; i += 2) {
                 Vec3 startPos = new Vec3(getX(), getY(), getZ());
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
@@ -270,7 +270,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     public void mediumTrail() {
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
+            for (double i = 0; i < l; i += 2) {
                 Vec3 startPos = new Vec3(getX(), getY(), getZ());
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 float random = this.random.nextFloat();
@@ -282,7 +282,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     public void smallTrail() {
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
-            for (double i = 0; i < l; i++) {
+            for (double i = 0; i < l; i += 2) {
                 Vec3 startPos = new Vec3(getX(), getY(), getZ());
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 float random = this.random.nextFloat();
