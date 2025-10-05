@@ -228,7 +228,9 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
-            fire(player);
+            if (!this.entityData.get(INTELLIGENT)) {
+                fire(player);
+            }
         }
 
         if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
