@@ -84,33 +84,33 @@ public abstract class CameraMixin implements ICustomCamera {
             }
 
             if (player.getVehicle() instanceof VehicleEntity vehicle) {
-                // TODO 完善四元数相关
-                var quat = vehicle.getCameraQuat(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
-                if (quat != null) {
-                    this.rotation.set(quat);
-
-                    this.xRot = quat.x;
-                    this.yRot = quat.y;
-
-                    this.forwards.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
-                    this.up.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
-                    this.left.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
-
-                    info.cancel();
-                }
-
-//                var rotation = vehicle.getCameraRotation(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
-//                if (rotation != null) {
-//                    setRotation(rotation.x, rotation.y);
-//                }
-//                var position = vehicle.getCameraPosition(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
-//                if (position != null) {
-//                    setPosition(position.x, position.y, position.z);
-//                }
+//                // TODO 完善四元数相关
+//                var quat = vehicle.getCameraQuat(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+//                if (quat != null) {
+//                    this.rotation.set(quat);
 //
-//                if (rotation != null || position != null) {
+//                    this.xRot = quat.x;
+//                    this.yRot = quat.y;
+//
+//                    this.forwards.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
+//                    this.up.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
+//                    this.left.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
+//
 //                    info.cancel();
 //                }
+
+                var rotation = vehicle.getCameraRotation(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+                if (rotation != null) {
+                    setRotation(rotation.x, rotation.y);
+                }
+                var position = vehicle.getCameraPosition(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+                if (position != null) {
+                    setPosition(position.x, position.y, position.z);
+                }
+
+                if (rotation != null || position != null) {
+                    info.cancel();
+                }
 
             }
         }
