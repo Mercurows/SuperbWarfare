@@ -828,8 +828,9 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
         } else if (entity == getNthEntity(1)) {
             passengerPitchOnTurret(entity, passengerWeaponMinPitch(), passengerWeaponMaxPitch(), false);
-        } else if (entity == getNthEntity(2)) {
-            passengerPitchOnTurret(entity, -25, 90, false);
+        } else if (entity == getNthEntity(2) && entity instanceof LivingEntity living) {
+            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(living.yBodyRot - this.getYRot()));
+            passengerPitch(entity, -25, 90, diffY);
         }
     }
 
