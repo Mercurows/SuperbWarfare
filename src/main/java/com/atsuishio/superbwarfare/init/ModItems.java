@@ -295,6 +295,9 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> HPJ_11_BLUEPRINT = ITEMS.register("hpj_11_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
 
+    // TODO 测试用，正式发布前删除
+
+    public static final DeferredHolder<Item, Item> INNOCENT_ERASER = ITEMS.register("innocent_eraser", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE).jukeboxPlayable(ModSounds.INNOCENT_ERASER)));
     /**
      * Block
      */

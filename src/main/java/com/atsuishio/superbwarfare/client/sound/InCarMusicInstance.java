@@ -8,10 +8,8 @@ import net.minecraft.sounds.SoundSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HORN_VOLUME;
-
 @OnlyIn(Dist.CLIENT)
-public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
+public abstract class InCarMusicInstance extends AbstractTickableSoundInstance {
 
     private final Minecraft client;
     private final VehicleEntity entity;
@@ -19,8 +17,9 @@ public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
     private int fade = 0;
     private boolean die = false;
 
-    public HornSoundInstance(SoundEvent sound, Minecraft client, VehicleEntity entity) {
-        super(sound, SoundSource.PLAYERS, entity.getCommandSenderWorld().getRandom());
+
+    public InCarMusicInstance(SoundEvent sound, Minecraft client, VehicleEntity entity) {
+        super(sound, SoundSource.RECORDS, entity.getCommandSenderWorld().getRandom());
         this.client = client;
         this.entity = entity;
         this.looping = true;
@@ -63,7 +62,7 @@ public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
 
         if (player.getVehicle() != this.entity) {
             double distance = this.entity.position().subtract(player.position()).length();
-            this.pitch += (float) (0.1 * Math.atan(lastDistance - distance));
+            this.pitch += (float) (0.08 * Math.atan(lastDistance - distance));
 
             this.lastDistance = distance;
         } else {
@@ -72,15 +71,15 @@ public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class VehicleHornSound extends HornSoundInstance {
+    public static class InCarMusicSound extends InCarMusicInstance {
 
-        public VehicleHornSound(VehicleEntity entity) {
-            super(entity.getHornSound(), Minecraft.getInstance(), entity);
+        public InCarMusicSound(VehicleEntity entity) {
+            super(entity.getInCarMusicSound(), Minecraft.getInstance(), entity);
         }
 
         @Override
         protected boolean canPlay(VehicleEntity entity) {
-            return entity.hornWorking();
+            return entity.inCarMusicPlaying();
         }
 
         @Override
@@ -90,7 +89,8 @@ public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
 
         @Override
         protected float getVolume(VehicleEntity entity) {
-            return entity.getEntityData().get(HORN_VOLUME);
+            return 1;
         }
+
     }
 }

@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.JukeboxSong;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -537,5 +540,12 @@ public class ModSounds {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> TRUCK_ENGINE = REGISTRY.register("truck_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_engine")));
     public static final DeferredHolder<SoundEvent, SoundEvent> TRUCK_HORN = REGISTRY.register("truck_horn", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_horn")));
+
+    // TODO 测试用，正式发布前删除
+    public static final ResourceKey<JukeboxSong> INNOCENT_ERASER = createRecord("innocent_eraser");
+
+    private static ResourceKey<JukeboxSong> createRecord(String name) {
+        return ResourceKey.create(Registries.JUKEBOX_SONG, Mod.loc(name));
+    }
 }
 

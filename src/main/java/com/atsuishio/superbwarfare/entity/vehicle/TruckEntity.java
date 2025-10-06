@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -44,6 +45,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+import java.util.Objects;
 
 public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     public static final EntityDataAccessor<Boolean> GREEN = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.BOOLEAN);
@@ -157,6 +159,20 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     @Override
     public @NotNull SoundEvent getHornSound() {
         return ModSounds.TRUCK_HORN.get();
+    }
+
+    // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
+    @Override
+    public @NotNull SoundEvent getInCarMusicSound() {
+        if (getFirstPassenger() instanceof Player player && player.getOffhandItem().get(DataComponents.JUKEBOX_PLAYABLE) != null) {
+            var holder = Objects.requireNonNull(player.getOffhandItem().get(DataComponents.JUKEBOX_PLAYABLE)).song();
+
+            return holder.unwrap(this.level().registryAccess())
+                    .map(h -> h.value().soundEvent().value())
+                    .orElse(super.getInCarMusicSound());
+        } else {
+            return super.getInCarMusicSound();
+        }
     }
 
     @Override

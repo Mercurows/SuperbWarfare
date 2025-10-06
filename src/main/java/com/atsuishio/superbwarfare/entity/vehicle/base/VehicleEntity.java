@@ -41,6 +41,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -151,6 +152,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     };
     public static Consumer<VehicleEntity> hornSound = vehicle -> {
     };
+    public static Consumer<VehicleEntity> inCarMusic = vehicle -> {
+    };
 
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
@@ -220,6 +223,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     private boolean wasEngineRunning = false;
     private boolean wasHornWorking = false;
+    private boolean wasInCarMusicPlaying = false;
 
     public float rudderRot;
     public float rudderRotO;
@@ -1247,8 +1251,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (!this.wasHornWorking && this.hornWorking() && this.level().isClientSide()) {
             hornSound.accept(this);
         }
+        if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying() && this.level().isClientSide()) {
+            inCarMusic.accept(this);
+        }
         this.wasEngineRunning = this.engineRunning();
         this.wasHornWorking = this.hornWorking();
+        this.wasInCarMusicPlaying = this.inCarMusicPlaying();
 
         turretYRotO = this.getTurretYRot();
         turretXRotO = this.getTurretXRot();
@@ -3686,12 +3694,22 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return SoundEvents.EMPTY;
     }
 
+    @NotNull
+    public SoundEvent getInCarMusicSound() {
+        return SoundEvents.EMPTY;
+    }
+
     public void horn() {
         entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) + 0.7f);
     }
 
     public boolean hornWorking() {
         return Math.abs(this.entityData.get(HORN_VOLUME)) > 0.05;
+    }
+
+    // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
+    public boolean inCarMusicPlaying() {
+        return getFirstPassenger() instanceof Player player && player.getOffhandItem().get(DataComponents.JUKEBOX_PLAYABLE) != null;
     }
 
     public boolean amphibiousVehicle() {
