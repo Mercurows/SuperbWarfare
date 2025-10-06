@@ -610,18 +610,9 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (!this.level().isClientSide()) {
             VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
         }
-        if (level() instanceof ServerLevel && canCollideBlockBeastly()) {
-            collideBlockBeastly();
-        }
 
         super.move(movementType, movement);
         if (level() instanceof ServerLevel) {
-            if (this.horizontalCollision) {
-                collideNormalBlock();
-                if (canCollideHardBlock()) {
-                    collideHardBlock();
-                }
-            }
 
             if (lastTickSpeed < 0.3 || collisionCoolDown > 0) return;
             Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));

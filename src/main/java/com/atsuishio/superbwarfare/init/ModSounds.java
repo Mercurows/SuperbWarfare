@@ -542,6 +542,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> TRUCK_HORN = REGISTRY.register("truck_horn", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_horn")));
 
     // TODO 测试用，正式发布前删除
+    // TODO 正确注册
     public static final ResourceKey<JukeboxSong> INNOCENT_ERASER = createRecord("innocent_eraser");
 
     private static ResourceKey<JukeboxSong> createRecord(String name) {
