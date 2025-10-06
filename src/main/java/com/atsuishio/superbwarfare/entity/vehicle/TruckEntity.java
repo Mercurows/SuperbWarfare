@@ -28,7 +28,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
@@ -49,12 +48,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
+
     public static final EntityDataAccessor<Boolean> GREEN = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.BOOLEAN);
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public OBB obb;
     public OBB obb2;
     public OBB obb3;
@@ -62,7 +60,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     public OBB obb5;
     public OBB obb6;
     public OBB obb7;
-
 
     public TruckEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.TRUCK.get(), world);
@@ -77,6 +74,11 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.6875f, 0.6875f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.6875f, 0.6875f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.625f, 1.71875f, 5.5f), new Quaternionf(), OBB.Part.BODY);
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 102;
     }
 
     @Override
@@ -163,16 +165,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     @Override
     public @NotNull SoundEvent getHornSound() {
         return ModSounds.TRUCK_HORN.get();
-    }
-
-    // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
-    @Override
-    public @NotNull SoundEvent getInCarMusicSound() {
-        if (getFirstPassenger() instanceof Player player && player.getOffhandItem().getItem() instanceof RecordItem recordItem) {
-            return recordItem.getSound();
-        } else {
-            return super.getInCarMusicSound();
-        }
     }
 
     @Override

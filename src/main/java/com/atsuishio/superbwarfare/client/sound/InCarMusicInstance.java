@@ -17,7 +17,6 @@ public abstract class InCarMusicInstance extends AbstractTickableSoundInstance {
     private int fade = 0;
     private boolean die = false;
 
-
     public InCarMusicInstance(SoundEvent sound, Minecraft client, VehicleEntity entity) {
         super(sound, SoundSource.RECORDS, entity.getCommandSenderWorld().getRandom());
         this.client = client;
@@ -91,6 +90,5 @@ public abstract class InCarMusicInstance extends AbstractTickableSoundInstance {
         protected float getVolume(VehicleEntity entity) {
             return 1;
         }
-
     }
 }

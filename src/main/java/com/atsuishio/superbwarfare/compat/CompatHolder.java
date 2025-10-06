@@ -18,6 +18,7 @@ public class CompatHolder {
     public static final String CLOTH_CONFIG = "cloth_config";
     public static final String COLD_SWEAT = "cold_sweat";
     public static final String REALCAMERA = "realcamera";
+    public static final String NET_MUSIC = "netmusic";
 
     @ObjectHolder(registryName = "minecraft:mob_effect", value = VRC + ":curse_flame")
     public static final MobEffect VRC_CURSE_FLAME = null;

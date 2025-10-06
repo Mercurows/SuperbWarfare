@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
+import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
@@ -3592,7 +3593,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public boolean isInObb(OBBEntity obbEntity, BlockPos pos, Vec3 velocity) {
         var obbList = obbEntity.getOBBs();
-        AABB aabb1 = new AABB(pos, pos).inflate(0.3, 0.6,0.3);
+        AABB aabb1 = new AABB(pos, pos).inflate(0.3, 0.6, 0.3);
         for (var obb : obbList) {
             obb = obb.move(velocity);
             if (OBB.isColliding(obb, aabb1)) {
@@ -3792,6 +3793,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @NotNull
     public SoundEvent getInCarMusicSound() {
+        var passenger = this.getFirstPassenger();
+        if (passenger instanceof Player player) {
+            var stack = player.getOffhandItem();
+            if (stack.getItem() instanceof RecordItem recordItem) {
+                return recordItem.getSound();
+            }
+        }
         return SoundEvents.EMPTY;
     }
 
@@ -3805,7 +3813,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
     public boolean inCarMusicPlaying() {
-        return getFirstPassenger() instanceof Player player && player.getOffhandItem().getItem() instanceof RecordItem;
+        if (!(this.getFirstPassenger() instanceof Player player)) return false;
+        var stack = player.getOffhandItem();
+        return stack.getItem() instanceof RecordItem || NetMusicCompatHolder.canPlayMusic(stack);
     }
 
     public boolean amphibiousVehicle() {
