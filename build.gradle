@@ -177,6 +177,11 @@ dependencies {
 
     // 真实相机
     compileOnly("curse.maven:real-camera-851574:${real_camera_id}")
+
+
+    // 网络音乐机
+    implementation "curse.maven:net-music-978569:6838604"
+
     // 测试用mod
     implementation "curse.maven:better-combat-by-daedelus-639842:6532547"
     implementation "curse.maven:playeranimator-658587:6024462"

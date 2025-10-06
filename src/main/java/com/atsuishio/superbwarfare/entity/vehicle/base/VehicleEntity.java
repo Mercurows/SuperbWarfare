@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
+import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
@@ -3740,6 +3741,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @NotNull
     public SoundEvent getInCarMusicSound() {
+        var passenger = this.getFirstPassenger();
+        if (passenger instanceof Player player) {
+            var stack = player.getOffhandItem();
+
+            var playableData = stack.get(DataComponents.JUKEBOX_PLAYABLE);
+            if (playableData == null) return SoundEvents.EMPTY;
+
+            return playableData.song().unwrap(this.level().registryAccess())
+                    .map(h -> h.value().soundEvent().value())
+                    .orElse(SoundEvents.EMPTY);
+        }
         return SoundEvents.EMPTY;
     }
 
@@ -3753,7 +3765,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
     public boolean inCarMusicPlaying() {
-        return getFirstPassenger() instanceof Player player && player.getOffhandItem().get(DataComponents.JUKEBOX_PLAYABLE) != null;
+        if (!(this.getFirstPassenger() instanceof Player player)) return false;
+        var stack = player.getOffhandItem();
+        return stack.get(DataComponents.JUKEBOX_PLAYABLE) != null || NetMusicCompatHolder.canPlayMusic(stack);
     }
 
     public boolean amphibiousVehicle() {

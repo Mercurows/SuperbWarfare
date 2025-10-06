@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.sound;
 
+import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.entity.projectile.FastThrowableProjectile;
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
@@ -16,7 +17,13 @@ public class ModSoundInstances {
         VehicleEntity.engineSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(vehicle));
         VehicleEntity.swimSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(vehicle));
         VehicleEntity.hornSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new HornSoundInstance.VehicleHornSound(vehicle));
-        VehicleEntity.inCarMusic = vehicle -> Minecraft.getInstance().getSoundManager().play(new InCarMusicInstance.InCarMusicSound(vehicle));
+        VehicleEntity.inCarMusic = vehicle -> {
+            if (NetMusicCompatHolder.canPlayMusic(vehicle)) {
+                NetMusicCompatHolder.playMusic(vehicle);
+            } else {
+                Minecraft.getInstance().getSoundManager().play(new InCarMusicInstance.InCarMusicSound(vehicle));
+            }
+        };
 
         A10Entity.fireSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.A10FireSound(vehicle));
         Hpj11Entity.fireSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.HPJ11CloseFireSound(vehicle));
