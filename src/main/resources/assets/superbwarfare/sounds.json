@@ -3725,14 +3725,5 @@
         "name": "superbwarfare:truck/truck_horn"
       }
     ]
-  },
-  "innocent_eraser": {
-    "sounds": [
-      {
-        "attenuation_distance": 64,
-        "stream": true,
-        "name": "superbwarfare:truck/innocent_eraser"
-      }
-    ]
   }
 }
