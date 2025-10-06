@@ -636,10 +636,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -85.0F, 6F);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
+        passengerPitch(entity, -6, 85, 0);
     }
 
     @Override

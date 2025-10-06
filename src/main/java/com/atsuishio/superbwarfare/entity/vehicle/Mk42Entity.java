@@ -554,10 +554,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -85.0F, 17F);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
+        passengerPitch(entity, -17, 85, 0);
     }
 
     @Override

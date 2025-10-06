@@ -239,12 +239,7 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     }
 
     protected void clampRotation(Entity entity) {
-        entity.setYBodyRot(this.getYRot());
-        float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-        float f3 = Mth.clamp(f2, -90F, 90.0F);
-        entity.yRotO += f3 - f2;
-        entity.setYRot(entity.getYRot() + f3 - f2);
-        entity.setYBodyRot(this.getYRot());
+        passengerYaw(entity, -90, 90, 0);
     }
 
     @Override

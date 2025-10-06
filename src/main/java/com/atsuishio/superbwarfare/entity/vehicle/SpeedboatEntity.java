@@ -344,43 +344,12 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     public void copyEntityData(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-        float g = Mth.clamp(f, -105.0f, 105.0f);
-        entity.yRotO += g - f;
-        entity.setYRot(entity.getYRot() + g - f);
-        entity.setYHeadRot(entity.getYRot());
         entity.setYBodyRot(getYRot());
     }
 
     protected void clampRotation(Entity entity) {
-        float a = getTurretYaw(1);
-        float r = (Mth.abs(a) - 90f) / 90f;
-
-        float r2;
-
-        if (Mth.abs(a) <= 90f) {
-            r2 = a / 90f;
-        } else {
-            if (a < 0) {
-                r2 = -(180f + a) / 90f;
-            } else {
-                r2 = (180f - a) / 90f;
-            }
-        }
-
-        float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
-        float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
-
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, min, max);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
-
-        float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-        float f3 = Mth.clamp(f2, -105.0F, 105.0F);
-        entity.yRotO += f3 - f2;
-        entity.setYRot(entity.getYRot() + f3 - f2);
-        entity.setYBodyRot(this.getYRot());
+        passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
+        passengerYaw(entity, -105, 105, 0);
     }
 
     @Override

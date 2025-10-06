@@ -391,28 +391,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     protected void clampRotation(Entity entity) {
-        float a = getTurretYaw(1);
-        float r = (Mth.abs(a) - 90f) / 90f;
-
-        float r2;
-
-        if (Mth.abs(a) <= 90f) {
-            r2 = a / 90f;
-        } else {
-            if (a < 0) {
-                r2 = -(180f + a) / 90f;
-            } else {
-                r2 = (180f - a) / 90f;
-            }
-        }
-
-        float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
-        float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
-
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, min, max);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
+        passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
         entity.setYBodyRot(getBarrelYRot(1));
     }
 

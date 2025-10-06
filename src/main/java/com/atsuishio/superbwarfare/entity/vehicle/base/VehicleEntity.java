@@ -1661,7 +1661,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
             float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
 
-            this.setTurretXRot(this.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed));
+            this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed), -89.5f, 89.5f));
             this.setTurretYRot(this.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
             turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
         } else {
@@ -1771,6 +1771,86 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     public float turretMaxPitch() {
         return 30;
+    }
+
+    public void passengerPitch(Entity entity, float minPitch, float maxPitch, float passengerRot) {
+        if (passengerRot != 180) {
+            float a = -passengerRot;
+            float r = (Mth.abs(a) - 90f) / 90f;
+
+            float r2;
+
+            if (Mth.abs(a) <= 90f) {
+                r2 = a / 90f;
+            } else {
+                if (a < 0) {
+                    r2 = -(180f + a) / 90f;
+                } else {
+                    r2 = (180f - a) / 90f;
+                }
+            }
+
+            float min = -maxPitch - r * getXRot() - r2 * getRoll();
+            float max = -minPitch - r * getXRot() - r2 * getRoll();
+
+            float f = Mth.wrapDegrees(entity.getXRot());
+            float f1 = Mth.clamp(f, min, max);
+            entity.xRotO += f1 - f;
+            entity.setXRot(entity.getXRot() + f1 - f);
+        } else {
+            float min = minPitch + getXRot();
+            float max = maxPitch + getXRot();
+
+            float f = Mth.wrapDegrees(entity.getXRot());
+            float f1 = Mth.clamp(f, min, max);
+            entity.xRotO += f1 - f;
+            entity.setXRot(entity.getXRot() + f1 - f);
+        }
+    }
+
+    public void passengerYaw(Entity entity, float minYaw, float maxYaw, float passengerRot) {
+        float f2;
+        if (passengerRot != 180) {
+            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
+            float f3 = Mth.clamp(f2, passengerRot + minYaw, passengerRot + maxYaw);
+            entity.yRotO += f3 - f2;
+            entity.setYRot(entity.getYRot() + f3 - f2);
+        } else {
+            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot() + passengerRot);
+            float f3 = Mth.clamp(f2, minYaw, maxYaw);
+            entity.yRotO += f3 - f2;
+            entity.setYRot(entity.getYRot() + f3 - f2);
+        }
+        entity.setYBodyRot(this.getYRot() + passengerRot);
+    }
+
+    public void passengerPitchOnTurret(Entity entity, float turretMinPitch, float turretMaxPitch, boolean rotateWithTurret) {
+        float a = getTurretYaw(1);
+        float r = (Mth.abs(a) - 90f) / 90f;
+
+        float r2;
+
+        if (Mth.abs(a) <= 90f) {
+            r2 = a / 90f;
+        } else {
+            if (a < 0) {
+                r2 = -(180f + a) / 90f;
+            } else {
+                r2 = (180f - a) / 90f;
+            }
+        }
+
+        float min = -turretMaxPitch - r * getXRot() - r2 * getRoll();
+        float max = -turretMinPitch - r * getXRot() - r2 * getRoll();
+
+        float f = Mth.wrapDegrees(entity.getXRot());
+        float f1 = Mth.clamp(f, min, max);
+        entity.xRotO += f1 - f;
+        entity.setXRot(entity.getXRot() + f1 - f);
+
+        if (rotateWithTurret) {
+            entity.setYBodyRot(getBarrelYRot(1));
+        }
     }
 
     /**

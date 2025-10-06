@@ -248,17 +248,8 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     }
 
     protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot() - this.getXRot());
-        float f1 = Mth.clamp(f, -85.0F, 60F);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
-
-        entity.setYBodyRot(this.getYRot());
-        float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-        float f3 = Mth.clamp(f2, -45.0F, 45.0F);
-        entity.yRotO += f3 - f2;
-        entity.setYRot(entity.getYRot() + f3 - f2);
-        entity.setYBodyRot(this.getYRot());
+        passengerYaw(entity, -45, 45, 0);
+        passengerPitch(entity, -60, 85, 0);
     }
 
     @Override
@@ -298,13 +289,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     }
 
     public void copyEntityData(Entity entity) {
-        float i = getXRot() / 90;
-        float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-        float g = Mth.clamp(f, -105.0f, 105.0f);
-
-        entity.yRotO += g - f;
-        entity.setYRot(entity.getYRot() + g - f + yRotSync * Mth.abs(i));
-        entity.setYHeadRot(entity.getYRot());
         entity.setYBodyRot(getYRot());
     }
 

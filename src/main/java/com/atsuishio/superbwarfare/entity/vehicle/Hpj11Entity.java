@@ -425,11 +425,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     public void copyEntityData(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-        float g = Mth.clamp(f, -90.0f, 90.0f);
-        entity.yRotO += g - f;
-        entity.setYRot(entity.getYRot() + g - f);
-        entity.setYHeadRot(entity.getYRot());
         entity.setYBodyRot(getYRot());
     }
 
@@ -531,10 +526,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -90.0F, 32.5F);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
+        passengerPitch(entity, -32.5f, 90, 0);
     }
 
     @Override
