@@ -381,34 +381,14 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     protected void clampRotation(Entity entity) {
         if (entity == getNthEntity(0)) {
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, -80.0F, 80.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(this.getYRot());
+            passengerYaw(entity, -80, 80, 0);
         } else if (entity == getNthEntity(1)) {
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, -80.0F, 80F);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, -80.0F, 80.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(this.getYRot());
+            passengerYaw(entity, -80, 80, 0);
+            passengerPitch(entity, -80, 80, 0);
         } else if (entity == getNthEntity(2)) {
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, 10.0F, 170.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(getYRot() + 90);
+            passengerYaw(entity, -80, 80, 90);
         } else if (entity == getNthEntity(3)) {
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, -170.0F, -10.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(getYRot() - 90);
+            passengerYaw(entity, -80, 80, -90);
         }
     }
 

@@ -601,25 +601,10 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         if (entity == getNthEntity(0)) {
             entity.setYBodyRot(getBarrelYRot(1));
         } else if (entity == getNthEntity(1) || entity == getNthEntity(3)) {
-            float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-            float g = Mth.clamp(f, -140.0f, -40.0f);
-            entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f);
-            entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() - 90);
         } else if (entity == getNthEntity(2) || entity == getNthEntity(4) || entity == getNthEntity(6)) {
-            float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-            float g = Mth.clamp(f, 40.0f, 140.0f);
-            entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f);
-            entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() + 90);
         } else if (entity == getNthEntity(5)) {
-            float f = Mth.wrapDegrees(entity.getYRot() - getYRot() - 180);
-            float g = Mth.clamp(f, -50.0f, 50.0f);
-            entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f);
-            entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() - 180);
         }
     }
@@ -659,71 +644,16 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
     protected void clampRotation(Entity entity) {
         if (entity == getNthEntity(0)) {
-            float a = getTurretYaw(1);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
-            float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-            entity.setYBodyRot(getBarrelYRot(1));
+            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
         } else if (entity == getNthEntity(1) || entity == getNthEntity(3)) {
-            float min = -40f - getRoll();
-            float max = 40f - getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, -140.0F, -40.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(getYRot() - 90);
+            passengerPitch(entity, -40, 40, -90);
+            passengerYaw(entity, -50, 50, -90);
         } else if (entity == getNthEntity(2) || entity == getNthEntity(4) || entity == getNthEntity(6)) {
-            float min = -40f + getRoll();
-            float max = 40f + getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, 40.0F, 140.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(getYRot() + 90);
+            passengerPitch(entity, -40, 40, 90);
+            passengerYaw(entity, -50, 50, 90);
         } else if (entity == getNthEntity(5)) {
-            float min = -40f + getXRot();
-            float max = 40f + getXRot();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot() - 180);
-            float f3 = Mth.clamp(f2, -50, 50);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(getYRot() - 180);
+            passengerPitch(entity, -40, 40, 180);
+            passengerYaw(entity, -50, 50, 180);
         }
     }
 

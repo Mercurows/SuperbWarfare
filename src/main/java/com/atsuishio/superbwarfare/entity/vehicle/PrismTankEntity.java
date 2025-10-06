@@ -516,43 +516,11 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
 
     protected void clampRotation(Entity entity) {
         if (entity == getNthEntity(0)) {
-            float a = getTurretYaw(1);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
-            float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            entity.setYBodyRot(getBarrelYRot(1));
+            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
         }
-
         if (entity == getNthEntity(1)) {
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, -80.0F, 10F);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, -100.0F, 100.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-            entity.setYBodyRot(this.getYRot());
+            passengerPitch(entity, -10, 80, 0);
+            passengerYaw(entity, -100, 100, 0);
         }
     }
 

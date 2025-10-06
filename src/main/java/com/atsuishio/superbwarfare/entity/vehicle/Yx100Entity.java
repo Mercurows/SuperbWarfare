@@ -811,92 +811,21 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
     protected void clampRotation(Entity entity) {
         Minecraft mc = Minecraft.getInstance();
-        if (entity.level().isClientSide && entity == getFirstPassenger()) {
-            float a = getTurretYaw(1);
-            float r = (Mth.abs(a) - 90f) / 90f;
+        if (entity == getNthEntity(0)) {
+            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
 
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            float min = -turretMaxPitch() - r * getXRot() - r2 * getRoll();
-            float max = -turretMinPitch() - r * getXRot() - r2 * getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            if (mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            if (entity.level().isClientSide && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
                 float f2 = Mth.wrapDegrees(entity.getYRot() - this.getBarrelYRot(1));
                 float f3 = Mth.clamp(f2, -20.0F, 20.0F);
                 entity.yRotO += f3 - f2;
                 entity.setYRot(entity.getYRot() + f3 - f2);
                 entity.setYBodyRot(getBarrelYRot(1));
             }
+
         } else if (entity == getNthEntity(1)) {
-
-            float a = getTurretYaw(1);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            float min = -passengerWeaponMaxPitch() - r * getXRot() - r2 * getRoll();
-            float max = -passengerWeaponMinPitch() - r * getXRot() - r2 * getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-
-            if (mc.options.getCameraType() == CameraType.FIRST_PERSON) {
-                float f2 = Mth.wrapDegrees(entity.getYRot() - this.getGunYRot(1));
-                float f3 = Mth.clamp(f2, -150.0F, 150.0F);
-                entity.yRotO += f3 - f2;
-                entity.setYRot(entity.getYRot() + f3 - f2);
-                entity.setYBodyRot(entity.getYRot());
-            }
+            passengerPitchOnTurret(entity, passengerWeaponMinPitch(), passengerWeaponMaxPitch(), false);
         } else if (entity == getNthEntity(2)) {
-            float a = getTurretYaw(1);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            float min = -90f - r * getXRot() - r2 * getRoll();
-            float max = 22.5f - r * getXRot() - r2 * getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
+            passengerPitchOnTurret(entity, -25, 90, false);
         }
     }
 

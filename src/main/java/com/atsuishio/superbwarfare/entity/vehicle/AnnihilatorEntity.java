@@ -498,10 +498,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -45.0F, 5);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
+        passengerPitch(entity, -5, 45, 0);
     }
 
     @Override
