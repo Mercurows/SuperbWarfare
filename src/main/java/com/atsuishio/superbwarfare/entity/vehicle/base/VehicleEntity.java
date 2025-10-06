@@ -1479,6 +1479,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.move(MoverType.SELF, this.getDeltaMovement());
         collideSoftBlock();
+        if (canCollideHardBlock()) {
+            collideHardBlock();
+        }
+
+        if (canCollideBlockBeastly()) {
+            collideBlockBeastly();
+        }
+
+        collideNormalBlock();
+
         moveOnDragonTeeth();
 
         if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
@@ -3277,7 +3287,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void collideSoftBlock() {
         if (!VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
+
+        if (this instanceof OBBEntity obbEntity) {
+            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
+            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                BlockState blockstate = this.level().getBlockState(pos);
+                if (blockstate.is(ModTags.Blocks.SOFT_COLLISION) && isInObb(obbEntity, pos, getDeltaMovement())) {
+                    this.level().destroyBlock(pos, true);
+                }
+            });
+        }
+        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
@@ -3288,18 +3308,41 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void collideNormalBlock() {
         if (!VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
+        if (this instanceof OBBEntity obbEntity) {
+            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
+            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                BlockState blockstate = this.level().getBlockState(pos);
+                if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION) && isInObb(obbEntity, pos, getDeltaMovement())) {
+                    this.level().destroyBlock(pos, true);
+                }
+            });
+        }
+
+        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) {
                 this.level().destroyBlock(pos, true);
             }
         });
+
     }
 
     public void collideHardBlock() {
         if (!VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.5, 1).move(this.getDeltaMovement().scale(1.2));
+        if (this instanceof OBBEntity obbEntity) {
+            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
+            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                BlockState blockstate = this.level().getBlockState(pos);
+
+                if (blockstate.is(ModTags.Blocks.HARD_COLLISION) && isInObb(obbEntity, pos, getDeltaMovement())) {
+                    this.level().destroyBlock(pos, true);
+                    this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
+                }
+            });
+        }
+
+        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
@@ -3311,7 +3354,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void collideBlockBeastly() {
         if (!VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return;
-        AABB aabb = getBoundingBox().inflate(0.25, 1, 0.25).expandTowards(0, 0.52, 1).move(this.getDeltaMovement().scale(1.2));
+
+        if (this instanceof OBBEntity obbEntity) {
+            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).move(0, 0.5, 0).inflate(5);
+            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                BlockState blockstate = this.level().getBlockState(pos);
+                float hardness = blockstate.getBlock().defaultDestroyTime();
+                if (hardness > 0 && hardness <= 4 && isInObb(obbEntity, pos, getDeltaMovement())) {
+                    this.level().destroyBlock(pos, true);
+                }
+            });
+        }
+
+        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = this.level().getBlockState(pos);
             float hardness = blockstate.getBlock().defaultDestroyTime();
@@ -3334,17 +3389,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (!this.level().isClientSide()) {
             VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
         }
-        if (level() instanceof ServerLevel && canCollideBlockBeastly()) {
-            collideBlockBeastly();
-        }
 
         super.move(movementType, movement);
-        if (this.horizontalCollision) {
-            collideNormalBlock();
-            if (canCollideHardBlock()) {
-                collideHardBlock();
-            }
-        }
 
         if (lastTickSpeed < 0.3 || collisionCoolDown > 0 || this instanceof DroneEntity) return;
         Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
@@ -3438,7 +3484,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             List<Entity> entities;
 
             if (this instanceof OBBEntity obbEntity) {
-                var frontBox = getBoundingBox().move(velocity).inflate(10);
+                var frontBox = getBoundingBox().move(velocity).inflate(6);
                 entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
                                 entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
                         .stream().filter(entity -> {
@@ -3475,10 +3521,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 double thisSize = this.getBoundingBox().getSize();
                 double f;
                 double f1;
-
-                if (getFirstPassenger() instanceof Player player) {
-                    player.displayClientMessage(entity.getDisplayName(), true);
-                }
 
                 // TODO 给非载具实体也设置质量
 
@@ -3543,6 +3585,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 if (OBB.isColliding(obb, entity.getBoundingBox())) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public boolean isInObb(OBBEntity obbEntity, BlockPos pos, Vec3 velocity) {
+        var obbList = obbEntity.getOBBs();
+        AABB aabb1 = new AABB(pos, pos).inflate(0.3, 0.6,0.3);
+        for (var obb : obbList) {
+            obb = obb.move(velocity);
+            if (OBB.isColliding(obb, aabb1)) {
+                return true;
             }
         }
         return false;
