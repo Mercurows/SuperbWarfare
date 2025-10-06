@@ -8,10 +8,10 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.OBB;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -302,16 +302,11 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
         cooldown = 10;
         if (level() instanceof ServerLevel serverLevel) {
-            for (int p = 0; p < 15; p++) {
-                Vec3 pPos = shootPos.add(getShootVector(1).scale(p * -0.5));
-                serverLevel.sendParticles(ParticleTypes.SMOKE, pPos.x, pPos.y, pPos.z, 3, 0.05, 0.05, 0.05, 0.007);
-                serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pPos.x, pPos.y, pPos.z, 3, 0.05, 0.05, 0.05, 0.007);
-                serverLevel.sendParticles(ParticleTypes.FLAME, pPos.x, pPos.y, pPos.z, 2, 0.05, 0.05, 0.05, 0.007);
-
-                Vec3 pPos2 = shootPos.add(getShootVector(1).scale(-p));
-                serverLevel.sendParticles(ParticleTypes.SMOKE, pPos2.x, pPos2.y, pPos2.z, 3, 0.05, 0.05, 0.05, 0.007);
-                serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pPos2.x, pPos2.y, pPos2.z, 3, 0.05, 0.05, 0.05, 0.007);
-                serverLevel.sendParticles(ParticleTypes.FLAME, pPos2.x, pPos2.y, pPos2.z, 2, 0.05, 0.05, 0.05, 0.007);
+            ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1).scale(-1), shootPos.add(getShootVector(1).scale(-0.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1).scale(-1), shootPos.add(getShootVector(1).scale(-1.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1), shootPos.add(getShootVector(1).scale(1.5)), serverLevel, this);
+            for (int j = 0; j < 20; j += 4) {
+                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getShootVector(1), shootPos.add(getShootVector(1).scale(1.3))));
             }
         }
 
