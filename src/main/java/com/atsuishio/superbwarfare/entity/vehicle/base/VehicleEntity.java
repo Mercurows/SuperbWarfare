@@ -141,11 +141,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Boolean> ENGINE1_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> ENGINE2_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
+    public static final EntityDataAccessor<Float> HORN_VOLUME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+
     public static Consumer<VehicleEntity> trackSound = vehicle -> {
     };
     public static Consumer<VehicleEntity> engineSound = vehicle -> {
     };
     public static Consumer<VehicleEntity> swimSound = vehicle -> {
+    };
+    public static Consumer<VehicleEntity> hornSound = vehicle -> {
     };
 
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
@@ -215,6 +219,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int collisionCoolDown;
 
     private boolean wasEngineRunning = false;
+    private boolean wasHornWorking = false;
 
     public float rudderRot;
     public float rudderRotO;
@@ -781,7 +786,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
                 // 怎么还不给玩动态注册了（恼）
                 .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]))
-                .define(ENERGY, 0);
+                .define(ENERGY, 0)
+                .define(HORN_VOLUME, 0f);
     }
 
     // energy start
@@ -1238,7 +1244,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 trackSound.accept(this);
             }
         }
+        if (!this.wasHornWorking && this.hornWorking() && this.level().isClientSide()) {
+            hornSound.accept(this);
+        }
         this.wasEngineRunning = this.engineRunning();
+        this.wasHornWorking = this.hornWorking();
 
         turretYRotO = this.getTurretYRot();
         turretXRotO = this.getTurretXRot();
@@ -1471,6 +1481,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 this.setEnergy(this.getEnergy() + energyToExtract);
             }
         }
+
+        entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) * 0.5f);
 
         this.refreshDimensions();
     }
@@ -3667,6 +3679,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getDecoyCount() {
         return entityData.get(DECOY_COUNT);
+    }
+
+    @NotNull
+    public SoundEvent getHornSound() {
+        return SoundEvents.EMPTY;
+    }
+
+    public void horn() {
+        entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) + 0.7f);
+    }
+
+    public boolean hornWorking() {
+        return Math.abs(this.entityData.get(HORN_VOLUME)) > 0.05;
     }
 
     public boolean amphibiousVehicle() {
