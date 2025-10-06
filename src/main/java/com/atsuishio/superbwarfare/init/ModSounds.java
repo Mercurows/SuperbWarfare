@@ -537,5 +537,8 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> TRUCK_ENGINE = REGISTRY.register("truck_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_engine")));
     public static final RegistryObject<SoundEvent> TRUCK_HORN = REGISTRY.register("truck_horn", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_horn")));
+
+    // TODO 测试用，正式发布前删除
+    public static final RegistryObject<SoundEvent> INNOCENT_ERASER = REGISTRY.register("innocent_eraser", () -> SoundEvent.createVariableRangeEvent(Mod.loc("innocent_eraser")));
 }
 

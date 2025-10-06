@@ -28,6 +28,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
@@ -162,6 +163,16 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     @Override
     public @NotNull SoundEvent getHornSound() {
         return ModSounds.TRUCK_HORN.get();
+    }
+
+    // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
+    @Override
+    public @NotNull SoundEvent getInCarMusicSound() {
+        if (getFirstPassenger() instanceof Player player && player.getOffhandItem().getItem() instanceof RecordItem recordItem) {
+            return recordItem.getSound();
+        } else {
+            return super.getInCarMusicSound();
+        }
     }
 
     @Override

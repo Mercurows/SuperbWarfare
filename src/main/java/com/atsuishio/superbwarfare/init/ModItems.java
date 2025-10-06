@@ -293,6 +293,9 @@ public class ModItems {
     public static final RegistryObject<Item> HPJ_11_BLUEPRINT = ITEMS.register("hpj_11_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
     public static final RegistryObject<Item> ANNIHILATOR_BLUEPRINT = ITEMS.register("annihilator_blueprint", () -> new BlueprintItem(ModRarities.LEGENDARY));
 
+    // TODO 测试用，正式发布前删除
+    public static final RegistryObject<Item> INNOCENT_ERASER = ITEMS.register("innocent_eraser", () -> new RecordItem(11, ModSounds.INNOCENT_ERASER, (new Item.Properties()).stacksTo(1).rarity(Rarity.RARE), 170));
+
     /**
      * Block
      */
