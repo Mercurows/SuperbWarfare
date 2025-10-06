@@ -41,6 +41,10 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
+        float minWH = (float) Math.min(screenWidth, screenHeight);
+        float scaledMinWH = Mth.floor(minWH);
+        float centerW = ((screenWidth - scaledMinWH) / 2);
+        float centerH = ((screenHeight - scaledMinWH) / 2);
 
         if (!shouldRenderCrossHair(player)) return;
 
@@ -57,15 +61,8 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
         if (player.getVehicle() instanceof Yx100Entity yx100 && yx100.banHand(player)) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
                 int color = yx100.getHudColor();
-                float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
 
-                float f = (float) Math.min(screenWidth, screenHeight);
-                float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * fovAdjust;
-                int i = Mth.floor(f * f1);
-                int j = Mth.floor(f * f1);
-                int k = (screenWidth - i) / 2;
-                int l = (screenHeight - j) / 2;
-                RenderHelper.preciseBlit(guiGraphics, LAV_MISSILE_CROSS, k, l, 0, 0.0F, i, j, i, j, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, LAV_MISSILE_CROSS, centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                 Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 384, 6);
 
