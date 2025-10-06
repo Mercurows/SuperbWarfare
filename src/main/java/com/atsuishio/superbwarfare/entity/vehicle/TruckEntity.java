@@ -152,9 +152,17 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         this.terrainCompact(2.7f, 7.5f);
         inertiaRotate(0.5f);
 
+        if (decoyInputDown) {
+            horn();
+        }
+
         this.refreshDimensions();
     }
 
+    @Override
+    public @NotNull SoundEvent getHornSound() {
+        return ModSounds.TRUCK_HORN.get();
+    }
 
     @Override
     public boolean canCollideHardBlock() {

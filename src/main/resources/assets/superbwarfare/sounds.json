@@ -3716,5 +3716,14 @@
         "name": "superbwarfare:truck/truck_engine"
       }
     ]
+  },
+  "truck_horn": {
+    "sounds": [
+      {
+        "attenuation_distance": 128,
+        "stream": true,
+        "name": "superbwarfare:truck/truck_horn"
+      }
+    ]
   }
 }

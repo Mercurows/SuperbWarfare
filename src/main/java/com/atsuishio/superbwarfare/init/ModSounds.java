@@ -536,5 +536,6 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> WAVEFORCE_TOWER_FIRE = REGISTRY.register("waveforce_tower_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("waveforce_tower_fire")));
 
     public static final RegistryObject<SoundEvent> TRUCK_ENGINE = REGISTRY.register("truck_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_engine")));
+    public static final RegistryObject<SoundEvent> TRUCK_HORN = REGISTRY.register("truck_horn", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_horn")));
 }
 
