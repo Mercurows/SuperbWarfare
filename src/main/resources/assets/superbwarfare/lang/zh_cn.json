@@ -585,6 +585,7 @@
   "entity.superbwarfare.ptkm_projectile": "PTKM-1R反坦克地雷",
   "entity.superbwarfare.waveforce_tower": "波能塔",
   "entity.superbwarfare.igla_9k38_missile": "IGLA-9K38对空导弹",
+  "entity.superbwarfare.truck": "泥头车",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -727,6 +728,7 @@
   "info.superbwarfare.wheel_chair": "冲刺♿冲刺♿冲",
   "info.superbwarfare.speedboat": "快艇是一款搭载点50口径重机枪的轻型船只，能乘坐5人，在水面上能达到较高的航速",
   "info.superbwarfare.waveforce_tower": "波能塔是红色警戒3中升阳帝国的先进基地防御建筑，能够以超热能量轰击歼灭地面威胁的固定式炮塔",
+  "info.superbwarfare.truck": "泥头车是一种能运载大量货物的民用运输载具",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

@@ -731,7 +731,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.setHealth(this.getMaxHealth());
 
         if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
-            this.entityData .set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
+            this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
         }
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
@@ -3366,36 +3366,55 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             List<Entity> entities;
 
-            if (this instanceof OBBEntity obbEntity) {
-                var frontBox = getBoundingBox().move(velocity).inflate(4);
-                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                        .stream().filter(entity -> {
-                                    if (entity.isAlive() && isInObb(obbEntity, entity, velocity)) {
-                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-                                    }
-                                    return false;
-                                }
-                        )
-                        .toList();
+            // TODO OBB创生物还有问题
+//            if (this instanceof OBBEntity obbEntity) {
+//                var frontBox = getBoundingBox().move(velocity).inflate(4);
+//                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+//                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+//                        .stream().filter(entity -> {
+//                                    if (entity.isAlive() && isInObb(obbEntity, entity, velocity)) {
+//                                        var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+//                                        if (type == null) return false;
+//                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+//                                    }
+//                                    return false;
+//                                }
+//                        )
+//                        .toList();
+//
+//            } else {
+//                var frontBox = getBoundingBox().move(velocity);
+//                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+//                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+//                        .stream().filter(entity -> {
+//                                    if (entity.isAlive()) {
+//                                        var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+//                                        if (type == null) return false;
+//                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
+//                                                || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+//                                                || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+//                                    }
+//                                    return false;
+//                                }
+//                        )
+//                        .toList();
+//            }
 
-            } else {
-                var frontBox = getBoundingBox().move(velocity);
-                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                        .stream().filter(entity -> {
-                                    if (entity.isAlive()) {
-                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
-                                                || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
-                                                || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-                                    }
-                                    return false;
+            var frontBox = getBoundingBox().move(velocity);
+            entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                            entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                    .stream().filter(entity -> {
+                                if (entity.isAlive()) {
+                                    var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                                    if (type == null) return false;
+                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
+                                            || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+                                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
                                 }
-                        )
-                        .toList();
-            }
+                                return false;
+                            }
+                    )
+                    .toList();
 
             for (var entity : entities) {
                 double entitySize = entity.getBoundingBox().getSize();

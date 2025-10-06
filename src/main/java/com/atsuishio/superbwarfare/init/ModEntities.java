@@ -156,6 +156,9 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<VehicleAssemblingTableVehicleEntity>> VEHICLE_ASSEMBLING_TABLE = register("vehicle_assembling_table",
             EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(2, 1.875f));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<TruckEntity>> TRUCK = register("truck",
+            EntityType.Builder.<TruckEntity>of(TruckEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(3.7f, 4f));
+
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));
     }

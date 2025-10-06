@@ -1,0 +1,14 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "civilian",
+  "inputs": [
+    "8 #superbwarfare:storage_blocks/steel",
+    "4 minecraft:chest",
+    "superbwarfare:medium_battery_pack",
+    "6 superbwarfare:wheel",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:truck"
+  }
+}

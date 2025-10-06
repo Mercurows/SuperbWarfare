@@ -1428,6 +1428,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 .require(ModItems.WHEEL.get(), 3)
                 .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.TRUCK.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(Items.CHEST, 4)
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.WHEEL.get(), 6)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.TRUCK.get())));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
                 .require(PLATES_COPPER, 4)
