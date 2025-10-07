@@ -224,7 +224,11 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
         int range = 60;
         Entity target = null;
 
-        for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
+        var list = new SeekTool.Builder(this)
+                .withinRange(range)
+                .build();
+
+        for (var entity : list) {
             var condition =
                     entity.onGround()
                     && this.getOwner() != entity

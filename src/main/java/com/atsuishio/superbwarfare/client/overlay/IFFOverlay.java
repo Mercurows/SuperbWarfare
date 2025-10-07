@@ -64,7 +64,10 @@ public class IFFOverlay implements IGuiOverlay {
         CuriosApi.getCuriosInventory(player).ifPresent(
                 c -> c.findFirstCurio(ModItems.IFF.get()).ifPresent(
                         s -> {
-                            List<Entity> entities = SeekTool.getTeammate(player, player.level());
+                            List<Entity> entities = new SeekTool.Builder(player)
+                                    .friendly()
+                                    .build();
+
                             for (var e : entities) {
                                 if (e != null && e != player && VectorUtil.canSee(e.position()) && e != player.getVehicle()) {
                                     Entity team = e;

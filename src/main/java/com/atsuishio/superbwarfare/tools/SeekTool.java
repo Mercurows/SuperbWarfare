@@ -9,7 +9,9 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,39 +25,18 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
 
 public class SeekTool {
-
-    public static List<Entity> getVehicleWithinRange(Player player, Level level, double range) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.position().distanceTo(player.getEyePosition()) <= range
-                        && e instanceof VehicleEntity)
-                .toList();
-    }
-
-    public static List<Entity> getEntityWithinRange(Player player, Level level, double range) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.position().distanceTo(player.getEyePosition()) <= range)
-                .toList();
-    }
-
-    public static List<Entity> getEntityWithinRange(Entity entity, Level level, double range) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.position().distanceTo(entity.getEyePosition()) <= range)
-                .toList();
-    }
-
-    public static List<Entity> getTeammate(Player player, Level level) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> friendlyToPlayer(player, e))
-                .toList();
-    }
 
     public static boolean friendlyToPlayer(Entity e, Entity entity) {
         if (teamFilter(e, entity)) return true;
@@ -97,20 +78,33 @@ public class SeekTool {
                 && teamFilter(e, drone.getController());
     }
 
+    @Deprecated(forRemoval = true)
     public static Entity seekEntity(Entity entity, Level level, double seekRange, double seekAngle) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
-                            && e != entity
-                            && baseFilter(e)
-                            && smokeFilter(e)
-                            && e.getVehicle() == null
-                    ) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-                    }
-                    return false;
-                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+//        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+//                .filter(e -> {
+//                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+//                            && e != entity
+//                            && baseFilter(e)
+//                            && smokeFilter(e)
+//                            && e.getVehicle() == null
+//                    ) {
+//                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
+//                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
+//                    }
+//                    return false;
+//                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+        return seekEntity(entity, seekRange, seekAngle);
+    }
+
+    public static Entity seekEntity(Entity entity, double range, double angle) {
+        return new Builder(entity)
+                .withinRange(range)
+                .withinAngle(angle)
+                .baseFilter()
+                .smokeFilter()
+                .noVehicle()
+                .clip()
+                .buildWithClosest();
     }
 
     public static Entity seekCustomSizeEntity(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
@@ -272,9 +266,9 @@ public class SeekTool {
     }
 
     public static boolean smokeFilter(Entity pEntity) {
-        var Box = pEntity.getBoundingBox().inflate(8);
+        var box = pEntity.getBoundingBox().inflate(8);
 
-        var entities = pEntity.level().getEntities(EntityTypeTest.forClass(Entity.class), Box,
+        var entities = pEntity.level().getEntities(EntityTypeTest.forClass(Entity.class), box,
                         entity -> entity instanceof SmokeDecoyEntity)
                 .stream().toList();
 
@@ -294,5 +288,140 @@ public class SeekTool {
         var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
         if (type == null) return false;
         return SeekConfig.SEEK_BLACKLIST.get().contains(type.toString());
+    }
+
+    public static class Builder {
+
+        @NotNull
+        private final Entity entity;
+        private final List<Function<Entity, Boolean>> filters = new ArrayList<>();
+
+        public Builder(@NotNull Entity entity) {
+            this(entity, true);
+        }
+
+        public Builder(@NotNull Entity entity, boolean excludeSelf) {
+            this.entity = entity;
+            if (excludeSelf) {
+                this.filters.add(e -> e != this.entity);
+            }
+        }
+
+        public List<Entity> build() {
+            return StreamSupport.stream(EntityFindUtil.getEntities(entity.level()).getAll().spliterator(), false)
+                    .filter(e -> this.filters.stream().map(f -> f.apply(e)).reduce(true, (a, b) -> a && b))
+                    .toList();
+        }
+
+        @Nullable
+        public Entity buildWithClosest() {
+            return StreamSupport.stream(EntityFindUtil.getEntities(entity.level()).getAll().spliterator(), false)
+                    .filter(e -> this.filters.stream().map(f -> f.apply(e)).reduce(true, (a, b) -> a && b))
+                    .min(Comparator.comparingDouble(e -> calculateAngle(e, entity)))
+                    .orElse(null);
+        }
+
+        public Builder withinRange(double range) {
+            this.filters.add(e -> e.position().distanceTo(this.entity.getEyePosition()) <= range);
+            return this;
+        }
+
+        public Builder overRange(double range) {
+            this.filters.add(e -> e.position().distanceTo(this.entity.getEyePosition()) >= range);
+            return this;
+        }
+
+        public Builder sameTeam() {
+            this.filters.add(e -> teamFilter(entity, e));
+            return this;
+        }
+
+        public Builder differentTeam() {
+            this.filters.add(e -> !teamFilter(entity, e));
+            return this;
+        }
+
+        public Builder friendly() {
+            this.filters.add(e -> friendlyToPlayer(entity, e));
+            return this;
+        }
+
+        public Builder blackList() {
+            this.filters.add(e -> {
+                var type = ForgeRegistries.ENTITY_TYPES.getKey(e.getType());
+                if (type == null) return false;
+                return SeekConfig.SEEK_BLACKLIST.get().contains(type.toString());
+            });
+            return this;
+        }
+
+        public Builder smokeFilter() {
+            this.filters.add(SeekTool::smokeFilter);
+            return this;
+        }
+
+        public Builder onGround(double height) {
+            this.filters.add(e -> SeekTool.isOnGround(e, height));
+            return this;
+        }
+
+        public Builder baseFilter() {
+            this.filters.add(SeekTool::baseFilter);
+            return this;
+        }
+
+        public Builder withinAngle(double angle) {
+            this.filters.add(e -> SeekTool.calculateAngle(entity, e) < angle);
+            return this;
+        }
+
+        public Builder is(Class<? extends Entity> clazz) {
+            this.filters.add(clazz::isInstance);
+            return this;
+        }
+
+        public Builder isNot(Class<? extends Entity> clazz) {
+            this.filters.add(e -> !clazz.isInstance(e));
+            return this;
+        }
+
+        public Builder is(TagKey<EntityType<?>> tagKey) {
+            this.filters.add(e -> e.getType().is(tagKey));
+            return this;
+        }
+
+        public Builder isNot(TagKey<EntityType<?>> tagKey) {
+            this.filters.add(e -> !e.getType().is(tagKey));
+            return this;
+        }
+
+        public Builder clip() {
+            this.filters.add(e ->
+                    this.entity.level()
+                            .clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
+                            .getType() != HitResult.Type.BLOCK
+            );
+            return this;
+        }
+
+        public Builder hasVehicle() {
+            this.filters.add(e -> e.getVehicle() != null);
+            return this;
+        }
+
+        public Builder noVehicle() {
+            this.filters.add(e -> e.getVehicle() == null);
+            return this;
+        }
+
+        public Builder sizeLesserThan(double size) {
+            this.filters.add(e -> e.getBoundingBox().getSize() <= size);
+            return this;
+        }
+
+        public Builder sizeGreaterThan(double size) {
+            this.filters.add(e -> e.getBoundingBox().getSize() >= size);
+            return this;
+        }
     }
 }

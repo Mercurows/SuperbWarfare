@@ -42,7 +42,7 @@ public class IglaSeekMessage {
                     var tag = handItem.getOrCreateTag();
                     GunData data = GunData.from(handItem);
 
-                    Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 20);
+                    Entity seekingEntity = SeekTool.seekEntity(player, 512, 20);
                     Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
 
                     if (seekingEntity != null) {
