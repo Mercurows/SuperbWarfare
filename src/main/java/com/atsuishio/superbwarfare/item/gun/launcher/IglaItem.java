@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.IglaItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.IglaMissileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -33,10 +34,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
@@ -45,7 +44,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class IglaItem extends GunGeoItem {
@@ -205,16 +203,7 @@ public class IglaItem extends GunGeoItem {
     }
 
     @Override
-    public void shoot(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
+    public void shoot(@NotNull ShootParameters parameters) {
     }
 
     @Override

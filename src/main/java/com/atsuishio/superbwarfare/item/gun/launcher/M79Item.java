@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M79ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -12,22 +13,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class M79Item extends GunGeoItem {
@@ -74,17 +70,11 @@ public class M79Item extends GunGeoItem {
     }
 
     @Override
-    public boolean shootBullet(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
-        if (!super.shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return false;
+    public boolean shootBullet(@NotNull ShootParameters parameters) {
+        if (!super.shootBullet(parameters)) return false;
+
+        var shooter = parameters.shooter();
+        var level = parameters.level();
 
         if (shooter != null) {
             ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
