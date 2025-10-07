@@ -512,16 +512,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     /**
      * 服务端在开火前的额外行为
      */
-    public void beforeShoot(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom
-    ) {
-        MinecraftForge.EVENT_BUS.post(new ShootEvent.Pre(shooter, level, data, spread, zoom));
+    public void beforeShoot(@NotNull ShootParameters parameters) {
+        var data = parameters.data();
+        var shooter = parameters.shooter();
+        MinecraftForge.EVENT_BUS.post(new ShootEvent.Pre(parameters));
 
         // 空仓挂机
         if (data.currentAvailableShots(shooter) == 1) {
@@ -534,20 +528,27 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
     }
 
-    /**
-     * 服务端在开火后的额外行为
-     */
-    public void afterShoot(
+    @Deprecated(forRemoval = true)
+    public void beforeShoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
             @NotNull Vec3 shootPosition,
             @NotNull Vec3 shootDirection,
             @NotNull GunData data,
             double spread,
-            boolean zoom,
-            @Nullable UUID uuid
+            boolean zoom
     ) {
-        MinecraftForge.EVENT_BUS.post(new ShootEvent.Post(shooter, level, data, spread, zoom));
+    }
+
+    /**
+     * 服务端在开火后的额外行为
+     */
+    public void afterShoot(@NotNull ShootParameters parameters) {
+        var data = parameters.data();
+        var shooter = parameters.shooter();
+        var level = parameters.level();
+
+        MinecraftForge.EVENT_BUS.post(new ShootEvent.Post(parameters));
 
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
@@ -580,29 +581,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         data.clearTempModifications();
     }
 
-    public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
-        shoot(null, level, shootPosition, shootDirection, data, spread, zoom, uuid);
-    }
-
-    public void shoot(@NotNull GunData data, @NotNull Entity shooter, double spread, boolean zoom, UUID uuid) {
-        if (shooter.level() instanceof ServerLevel server) {
-            shoot(shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid);
-        }
-    }
-
-    /**
-     * 服务端处理单次开火
-     *
-     * @param shooter        射击者
-     * @param level          ServerLevel
-     * @param shootPosition  子弹位置
-     * @param shootDirection 射击方向
-     * @param data           GunData
-     * @param spread         子弹散布
-     * @param zoom           是否开镜
-     * @param uuid           已锁定实体UUID
-     */
-    public void shoot(
+    @Deprecated(forRemoval = true)
+    public void afterShoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
             @NotNull Vec3 shootPosition,
@@ -612,16 +592,37 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             boolean zoom,
             @Nullable UUID uuid
     ) {
+    }
+
+    public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
+        shoot(new ShootParameters(null, level, shootPosition, shootDirection, data, spread, zoom, uuid));
+    }
+
+    public void shoot(@NotNull GunData data, @NotNull Entity shooter, double spread, boolean zoom, UUID uuid) {
+        if (shooter.level() instanceof ServerLevel server) {
+            shoot(new ShootParameters(shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid));
+        }
+    }
+
+    /**
+     * 服务端处理单次开火
+     * @param parameters 开火参数
+     */
+    public void shoot(@NotNull ShootParameters parameters) {
+        var data = parameters.data();
+        var shooter = parameters.shooter();
+        var zoom = parameters.zoom();
+
         if (!data.canShoot(shooter)) return;
 
         // 开火前事件
-        data.item.beforeShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom);
+        data.item.beforeShoot(parameters);
 
         int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
 
         // 生成所有子弹
         for (int index0 = 0; index0 < projectileAmount; index0++) {
-            if (!shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return;
+            if (!shootBullet(parameters)) return;
         }
 
         // n连发模式开火数据设置
@@ -644,7 +645,20 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         playFireSounds(data, shooter, zoom);
 
         // 开火后事件
-        data.item.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
+        data.item.afterShoot(parameters);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void shoot(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
     }
 
     /**
@@ -700,27 +714,17 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     /**
      * 服务端发射单发子弹
-     *
-     * @param shooter        射击者
-     * @param level          ServerLevel
-     * @param shootPosition  子弹位置
-     * @param shootDirection 射击方向
-     * @param data           GunData
-     * @param spread         子弹散布
-     * @param zoom           是否开镜
-     * @param uuid           已锁定实体UUID
-     * @return 是否发射成功
      */
-    public boolean shootBullet(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
+    public boolean shootBullet(@NotNull ShootParameters parameters) {
+        var data = parameters.data();
+        var level = parameters.level();
+        var shootPosition = parameters.shootPosition();
+        var shootDirection = parameters.shootDirection();
+        var shooter = parameters.shooter();
+        var zoom = parameters.zoom();
+        var spread = parameters.spread();
+        var uuid = parameters.targetEntityUUID();
+
         var stack = data.stack;
 
         var projectileInfo = data.get(GunProp.PROJECTILE);
@@ -730,7 +734,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         if (projectileTypeStr.equals("empty")) {
             return true;
         } else if (projectileTypeStr.equals("ray")) {
-            return this.shootRay(shooter, level, data, shootPosition, shootDirection, zoom, uuid);
+            return this.shootRay(parameters);
         }
 
         var headshot = data.get(GunProp.HEADSHOT);
@@ -868,7 +872,27 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return true;
     }
 
-    public boolean shootRay(@Nullable Entity shooter, ServerLevel level, @NotNull GunData data, Vec3 shootPosition, Vec3 shootDirection, boolean zoom, UUID uuid) {
+    @Deprecated(forRemoval = true)
+    public boolean shootBullet(
+            @Nullable Entity shooter,
+            @NotNull ServerLevel level,
+            @NotNull Vec3 shootPosition,
+            @NotNull Vec3 shootDirection,
+            @NotNull GunData data,
+            double spread,
+            boolean zoom,
+            @Nullable UUID uuid
+    ) {
+        return false;
+    }
+
+    public boolean shootRay(@NotNull ShootParameters parameters) {
+        var shooter = parameters.shooter();
+        var level = parameters.level();
+        var data = parameters.data();
+        var shootPosition = parameters.shootPosition();
+        var shootDirection = parameters.shootDirection();
+
         if (shooter == null) {
             return false;
         }

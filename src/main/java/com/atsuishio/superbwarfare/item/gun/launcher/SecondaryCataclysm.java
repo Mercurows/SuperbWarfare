@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -20,7 +21,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -28,7 +28,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +41,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class SecondaryCataclysm extends GunGeoItem {
@@ -153,16 +151,13 @@ public class SecondaryCataclysm extends GunGeoItem {
     }
 
     @Override
-    public boolean shootBullet(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
+    public boolean shootBullet(@NotNull ShootParameters parameters) {
+        var data = parameters.data();
+        var level = parameters.level();
+        var shootPosition = parameters.shootPosition();
+        var shootDirection = parameters.shootDirection();
+        var zoom = parameters.zoom();
+
         var stack = data.stack;
 
         var hasEnoughEnergy = stack.getCapability(ForgeCapabilities.ENERGY)
@@ -176,7 +171,7 @@ public class SecondaryCataclysm extends GunGeoItem {
             data.setTempProperty(GunProp.VELOCITY, (pm, d, v) -> v * 4);
         }
 
-        if (!super.shootBullet(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid)) return false;
+        if (!super.shootBullet(parameters)) return false;
 
         ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shootPosition.x + 1.8 * shootDirection.x,
                 shootPosition.y - 0.35 + 1.8 * shootDirection.y,

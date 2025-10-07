@@ -1,61 +1,58 @@
 package com.atsuishio.superbwarfare.api.event;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.AvailableSince("0.8.8")
 public class ShootEvent extends Event {
 
-    @Nullable
-    private final Entity shooter;
-    private final ServerLevel level;
-    private final GunData data;
-    private final double spread;
-    private final boolean zoom;
+    private final ShootParameters parameters;
 
-    private ShootEvent(@Nullable Entity shooter, ServerLevel level, GunData data, double spread, boolean zoom) {
-        this.shooter = shooter;
-        this.level = level;
-        this.data = data;
-        this.spread = spread;
-        this.zoom = zoom;
+    private ShootEvent(@NotNull ShootParameters parameters) {
+        this.parameters = parameters;
     }
 
     public static class Pre extends ShootEvent {
 
-        public Pre(@Nullable Entity shooter, ServerLevel level, GunData data, double spread, boolean zoom) {
-            super(shooter, level, data, spread, zoom);
+        public Pre(@NotNull ShootParameters parameters) {
+            super(parameters);
         }
     }
 
     public static class Post extends ShootEvent {
 
-        public Post(@Nullable Entity shooter, ServerLevel level, GunData data, double spread, boolean zoom) {
-            super(shooter, level, data, spread, zoom);
+        public Post(@NotNull ShootParameters parameters) {
+            super(parameters);
         }
     }
 
-    public Entity getShooter() {
-        return shooter;
+    public @NotNull ShootParameters getShootParameters() {
+        return this.parameters;
+    }
+
+    public @Nullable Entity getShooter() {
+        return parameters.shooter();
     }
 
     public ServerLevel getLevel() {
-        return level;
+        return parameters.level();
     }
 
     public GunData getData() {
-        return data;
+        return parameters.data();
     }
 
     public double getSpread() {
-        return spread;
+        return parameters.spread();
     }
 
     public boolean isZoom() {
-        return zoom;
+        return parameters.zoom();
     }
 }
