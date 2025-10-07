@@ -126,7 +126,7 @@ public class IglaItem extends GunGeoItem {
                     }
                 }
 
-                Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 20);
+                Entity seekingEntity = SeekTool.seekEntity(player, 512, 20);
 
                 if (seekingEntity != null && seekingEntity.getType().is(ModTags.EntityTypes.DECOY)) {
                     tag.putInt("SeekTime", 0);

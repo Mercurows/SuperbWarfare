@@ -1509,7 +1509,7 @@ public class ClientEventHandler {
         if (player == null) return;
 
         double range;
-        Entity lookingEntity = SeekTool.seekEntity(player, player.level(), 520, 5);
+        Entity lookingEntity = SeekTool.seekEntity(player, 520, 5);
 
         if (lookingEntity != null) {
             range = Math.max(player.distanceTo(lookingEntity), 0.01);

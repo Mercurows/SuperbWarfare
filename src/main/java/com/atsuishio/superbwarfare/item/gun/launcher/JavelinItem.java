@@ -148,7 +148,7 @@ public class JavelinItem extends GunGeoItem {
                     }
                 }
 
-                Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
+                Entity seekingEntity = SeekTool.seekEntity(player, 512, 8);
 
                 if (seekingEntity != null && seekingEntity.getType().is(ModTags.EntityTypes.DECOY)) {
                     tag.putInt("SeekTime", 0);
@@ -249,7 +249,8 @@ public class JavelinItem extends GunGeoItem {
         if (!zoom || !data.hasEnoughAmmoToShoot(player)) return;
 
         var tag = data.tag();
-        Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 8);
+
+        Entity seekingEntity = SeekTool.seekEntity(player, 512, 8);
 
         if (seekingEntity != null && !player.isCrouching()) {
             tag.putInt("GuideType", 0);

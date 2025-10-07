@@ -34,7 +34,7 @@ public record IglaSeekMessage(int msgType) implements CustomPacketPayload {
         var tag = data.tag;
 
         if (message.msgType == 0) {
-            Entity seekingEntity = SeekTool.seekEntity(player, player.level(), 512, 20);
+            Entity seekingEntity = SeekTool.seekEntity(player, 512, 20);
             Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
 
             if (seekingEntity != null) {
