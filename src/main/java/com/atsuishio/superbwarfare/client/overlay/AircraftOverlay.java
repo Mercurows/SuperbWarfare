@@ -321,7 +321,17 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             // A-10的导弹锁定
             if (vehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3) {
                 Entity targetEntity = EntityFindUtil.findEntity(player.level(), a10Entity.getTargetUuid());
-                List<Entity> entities = SeekTool.seekCustomSizeEntities(a10Entity, player.level(), 384, 20, 0.9, true);
+                List<Entity> entities = new SeekTool.Builder(a10Entity)
+                        .withinRange(384)
+                        .withinAngle(20)
+                        .baseFilter()
+                        .onGround(10)
+                        .sizeLesserThan(0.9)
+                        .smokeFilter()
+                        .noVehicle()
+                        .noClip()
+                        .notFriendly()
+                        .build();
 
                 for (var e : entities) {
                     Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));

@@ -37,7 +37,18 @@ import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
 
+// TODO 0.8.9把下面的废弃方法都删了
 public class SeekTool {
+
+    @Deprecated(forRemoval = true)
+    public static boolean baseFilter(Entity entity) {
+        return BASIC_FILTER.test(entity);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static boolean smokeFilter(Entity pEntity) {
+        return NOT_IN_SMOKE.test(pEntity);
+    }
 
     @Deprecated(forRemoval = true)
     public static boolean friendlyToPlayer(Entity e, Entity entity) {
@@ -51,19 +62,6 @@ public class SeekTool {
 
     @Deprecated(forRemoval = true)
     public static Entity seekEntity(Entity entity, Level level, double seekRange, double seekAngle) {
-//        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-//                .filter(e -> {
-//                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
-//                            && e != entity
-//                            && baseFilter(e)
-//                            && smokeFilter(e)
-//                            && e.getVehicle() == null
-//                    ) {
-//                        return level.noClip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-//                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-//                    }
-//                    return false;
-//                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
         return seekEntity(entity, seekRange, seekAngle);
     }
 
@@ -99,20 +97,6 @@ public class SeekTool {
 
     @Deprecated(forRemoval = true)
     public static Entity seekLivingEntity(Entity entity, Level level, double seekRange, double seekAngle) {
-//        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-//                .filter(e -> {
-//                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
-//                            && e != entity
-//                            && baseFilter(e)
-//                            && smokeFilter(e)
-//                            && e.getVehicle() == null
-//                            && !(e instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() != entity)
-//                            && !friendlyToPlayer(entity, e)) {
-//                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-//                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-//                    }
-//                    return false;
-//                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
         return seekLivingEntity(entity, seekRange, seekAngle);
     }
 
@@ -132,19 +116,6 @@ public class SeekTool {
 
     @Deprecated(forRemoval = true)
     public static List<Entity> seekLivingEntities(Entity entity, Level level, double seekRange, double seekAngle) {
-//        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-//                .filter(e -> {
-//                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
-//                            && e != entity
-//                            && baseFilter(e)
-//                            && smokeFilter(e)
-//                            && e.getVehicle() == null
-//                            && !friendlyToPlayer(entity, e)) {
-//                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-//                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-//                    }
-//                    return false;
-//                }).toList();
         return seekLivingEntities(entity, seekRange, seekAngle);
     }
 
@@ -160,6 +131,7 @@ public class SeekTool {
                 .build();
     }
 
+    @Deprecated(forRemoval = true)
     public static List<Entity> seekCustomSizeEntities(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
@@ -178,6 +150,7 @@ public class SeekTool {
                 }).toList();
     }
 
+    @Deprecated(forRemoval = true)
     public static Entity vehicleSeekEntity(VehicleEntity vehicle, Level level, double seekRange, double seekAngle) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
@@ -197,25 +170,43 @@ public class SeekTool {
                 .orElse(null);
     }
 
+    @Deprecated(forRemoval = true)
     public static List<Entity> seekLivingEntitiesThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.distanceTo(entity) <= seekRange
-                        && calculateAngle(e, entity) < seekAngle
-                        && e != entity
-                        && baseFilter(e)
-                        && e.getVehicle() == null
-                        && !friendlyToPlayer(entity, e)).toList();
+        return seekLivingEntitiesThroughWall(entity, seekRange, seekAngle);
     }
 
+    public static List<Entity> seekLivingEntitiesThroughWall(Entity entity, double range, double angle) {
+        return new Builder(entity)
+                .withinRange(range)
+                .withinAngle(angle)
+                .baseFilter()
+                .noVehicle()
+                .notFriendly()
+                .build();
+    }
+
+    @Deprecated(forRemoval = true)
     public static Entity seekEntityThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
-        return seekLivingEntitiesThroughWall(entity, level, seekRange, seekAngle)
-                .stream().min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+        return seekEntityThroughWall(entity, seekRange, seekAngle);
+    }
+
+    @Nullable
+    public static Entity seekEntityThroughWall(Entity entity, double range, double angle) {
+        return new Builder(entity)
+                .withinRange(range)
+                .withinAngle(angle)
+                .baseFilter()
+                .noVehicle()
+                .notFriendly()
+                .buildWithClosest();
     }
 
     public static List<Entity> getEntitiesWithinRange(BlockPos pos, Level level, double range) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> e.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= range * range
-                        && baseFilter(e) && smokeFilter(e) && !e.getType().is(ModTags.EntityTypes.DECOY))
+                        && BASIC_FILTER.test(e)
+                        && NOT_IN_SMOKE.test(e)
+                        && !e.getType().is(ModTags.EntityTypes.DECOY))
                 .toList();
     }
 
@@ -230,11 +221,6 @@ public class SeekTool {
         Vec3 start = new Vec3(entityA.getX() - entityBEyePos.x, entityA.getY() - entityBEyePos.y, entityA.getZ() - entityBEyePos.z);
         Vec3 end = entityB.getBarrelVector(1);
         return VectorTool.calculateAngle(start, end);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static boolean baseFilter(Entity entity) {
-        return BASIC_FILTER.test(entity);
     }
 
     /**
@@ -387,11 +373,6 @@ public class SeekTool {
         }
     };
 
-    @Deprecated(forRemoval = true)
-    public static boolean smokeFilter(Entity pEntity) {
-        return NOT_IN_SMOKE.test(pEntity);
-    }
-
     public static class Builder {
 
         @NotNull
@@ -518,6 +499,19 @@ public class SeekTool {
                     this.entity.level()
                             .clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
                             .getType() != HitResult.Type.BLOCK
+            );
+            return this;
+        }
+
+        public Builder vehicleNoClip() {
+            this.filters.add(e -> {
+                        if (this.entity instanceof VehicleEntity vehicle) {
+                            return this.entity.level()
+                                    .clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle))
+                                    .getType() != HitResult.Type.BLOCK;
+                        }
+                        return false;
+                    }
             );
             return this;
         }
