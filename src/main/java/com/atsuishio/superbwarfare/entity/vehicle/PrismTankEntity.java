@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
-import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -62,16 +61,10 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
-import static com.atsuishio.superbwarfare.tools.SeekTool.baseFilter;
 
 public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
 
     public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_SCALE = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
@@ -97,6 +90,11 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.375f, 0.28125f, 1.375f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(2.0625f, 0.78125f, 0.8125f), new Quaternionf(), OBB.Part.ENGINE1);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.4375f, 0.90625f, 1.21875f), new Quaternionf(), OBB.Part.TURRET);
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 102;
     }
 
     @Override
@@ -396,7 +394,15 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         int aoeDamage = VehicleConfig.PRISM_TANK_AOE_DAMAGE.get();
         int range = VehicleConfig.PRISM_TANK_AOE_RADIUS.get();
         if (level() instanceof ServerLevel serverLevel) {
-            List<Entity> entities = seekNearEntities(vec, level(), range);
+            List<Entity> entities = new SeekTool.Builder(this)
+                    .withinRange(range)
+                    .notItsVehicle()
+                    .baseFilter()
+                    .smokeFilter()
+                    .noVehicle()
+                    .differentTeam()
+                    .build();
+
             for (var e : entities) {
                 double dis = vec.distanceTo(e.getEyePosition());
                 for (float i = 0; i < dis; i += 0.2f) {
@@ -415,17 +421,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
                 }
             }
         }
-    }
-
-    public List<Entity> seekNearEntities(Vec3 vec3, Level level, double seekRange) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e.position().distanceTo(vec3) <= seekRange
-                        && e != this
-                        && e.getVehicle() != this
-                        && baseFilter(e)
-                        && SeekTool.smokeFilter(e)
-                        && e.getVehicle() == null
-                        && (!e.isAlliedTo(this) || e.getTeam() == null || TDMSavedData.enabledTDM(e))).toList();
     }
 
     public HitResult pickNew(Vec3 pos, double pHitDistance) {
