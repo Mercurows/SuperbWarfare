@@ -10,12 +10,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModScreens {
 
+    // TODO 为每一种vehicle menu添加渲染
     @SubscribeEvent
     public static void clientLoad(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             MenuScreens.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ReforgingTableScreen::new);
             MenuScreens.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
-            MenuScreens.register(ModMenuTypes.VEHICLE_MENU.get(), VehicleScreen::new);
+            MenuScreens.register(ModMenuTypes.VEHICLE_MENU_HUGE.get(), VehicleScreen::new);
             MenuScreens.register(ModMenuTypes.SUPERB_ITEM_INTERFACE_MENU.get(), SuperbItemInterfaceScreen::new);
             MenuScreens.register(ModMenuTypes.FUMO_25_MENU.get(), FuMO25Screen::new);
             MenuScreens.register(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), VehicleAssemblingScreen::new);

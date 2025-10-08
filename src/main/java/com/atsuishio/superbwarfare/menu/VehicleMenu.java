@@ -6,6 +6,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -13,27 +14,49 @@ public class VehicleMenu extends AbstractContainerMenu {
 
     private final Container container;
     private final int containerRows;
-
-    public static final int DEFAULT_SIZE = 102;
+    private final int containerCols;
 
     public static final int X_OFFSET = 97;
     public static final int Y_OFFSET = 20;
 
-    public VehicleMenu(int pContainerId, Inventory pPlayerInventory) {
-        this(pContainerId, pPlayerInventory, new SimpleContainer(DEFAULT_SIZE));
+    public VehicleMenu(MenuType<?> pType, int pContainerId, Inventory pPlayerInventory, int row, int col) {
+        this(pType, pContainerId, pPlayerInventory, new SimpleContainer(row * col), row, col);
     }
 
-    public VehicleMenu(int pContainerId, Inventory pPlayerInventory, Container pContainer) {
-        super(ModMenuTypes.VEHICLE_MENU.get(), pContainerId);
+    public static VehicleMenu mini(int pContainerId, Inventory pPlayerInventory) {
+        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_MINI.get(), pContainerId, pPlayerInventory, 1, 9);
+    }
 
-        checkContainerSize(pContainer, DEFAULT_SIZE);
+    public static VehicleMenu small(int pContainerId, Inventory pPlayerInventory) {
+        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_SMALL.get(), pContainerId, pPlayerInventory, 3, 9);
+    }
+
+    public static VehicleMenu medium(int pContainerId, Inventory pPlayerInventory) {
+        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_MEDIUM.get(), pContainerId, pPlayerInventory, 6, 9);
+    }
+
+    public static VehicleMenu large(int pContainerId, Inventory pPlayerInventory) {
+        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_LARGE.get(), pContainerId, pPlayerInventory, 6, 13);
+    }
+
+    public static VehicleMenu huge(int pContainerId, Inventory pPlayerInventory) {
+        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_HUGE.get(), pContainerId, pPlayerInventory, 6, 17);
+    }
+
+    public VehicleMenu(MenuType<?> pType, int pContainerId, Inventory pPlayerInventory, Container pContainer, int row, int col) {
+        super(pType, pContainerId);
+
+        checkContainerSize(pContainer, row * col);
+
         this.container = pContainer;
-        this.containerRows = 6;
+        this.containerRows = row;
+        this.containerCols = col;
+
         pContainer.startOpen(pPlayerInventory.player);
         int i = (this.containerRows - 4) * 18;
 
         for (int j = 0; j < this.containerRows; ++j) {
-            for (int k = 0; k < 17; ++k) {
+            for (int k = 0; k < this.containerCols; ++k) {
                 this.addSlot(new Slot(pContainer, k + j * 17, 8 + k * 18 + 25, 18 + j * 18));
             }
         }
@@ -56,11 +79,11 @@ public class VehicleMenu extends AbstractContainerMenu {
         if (slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (pIndex < this.containerRows * 17 + 3) {
-                if (!this.moveItemStackTo(itemstack1, this.containerRows * 17 + 3, this.slots.size(), true)) {
+            if (pIndex < this.containerRows * this.containerCols) {
+                if (!this.moveItemStackTo(itemstack1, this.containerRows * this.containerCols, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 0, this.containerRows * 17, false)) {
+            } else if (!this.moveItemStackTo(itemstack1, 0, this.containerRows * this.containerCols, false)) {
                 return ItemStack.EMPTY;
             }
 

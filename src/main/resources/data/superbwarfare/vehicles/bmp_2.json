@@ -33,5 +33,6 @@
   ],
   "ExplosionDamage": 160,
   "ExplosionRadius": 8,
-  "ExplosionParticleType": "Huge"
+  "ExplosionParticleType": "Huge",
+  "VehicleContainerType": "Medium"
 }

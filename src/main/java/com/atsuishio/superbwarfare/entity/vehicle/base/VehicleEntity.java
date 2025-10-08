@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
@@ -397,7 +398,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public int getContainerSize() {
-        return 0;
+        return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE).getSize();
     }
 
     @Override
@@ -518,14 +519,25 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public boolean hasMenu() {
-        return true;
+        return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE) != VehicleContainerType.EMPTY;
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, Player pPlayer) {
         if (!pPlayer.isSpectator() && this.hasMenu()) {
-            return new VehicleMenu(pContainerId, pPlayerInventory, this);
+            var type = data().get(VehicleProp.VEHICLE_CONTAINER_TYPE);
+            var menu = switch (type) {
+                default -> null;
+                case MINI -> ModMenuTypes.VEHICLE_MENU_MINI.get();
+                case SMALL -> ModMenuTypes.VEHICLE_MENU_SMALL.get();
+                case MEDIUM -> ModMenuTypes.VEHICLE_MENU_MEDIUM.get();
+                case LARGE -> ModMenuTypes.VEHICLE_MENU_LARGE.get();
+                case HUGE -> ModMenuTypes.VEHICLE_MENU_HUGE.get();
+            };
+            if (menu == null) return null;
+
+            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.row, type.col);
         }
         return null;
     }
