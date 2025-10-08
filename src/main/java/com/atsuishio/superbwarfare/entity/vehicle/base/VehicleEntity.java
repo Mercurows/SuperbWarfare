@@ -2594,7 +2594,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param index 位置
      */
     public boolean isEnclosed(int index) {
-        return hidePassenger(index);
+        var seats = data().get(VehicleProp.SEATS);
+        if (index < 0 || index >= seats.size()) return false;
+
+        var seat = seats.get(index);
+        if (seat.isEnclosed == null) {
+            return seat.hidePassenger;
+        }
+
+        return seat.isEnclosed;
     }
 
     public boolean isEnclosed(Entity passenger) {
@@ -2607,7 +2615,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 是否隐藏
      */
     public boolean hidePassenger(int index) {
-        return false;
+        var seats = data().get(VehicleProp.SEATS);
+        if (index < 0 || index >= seats.size()) return false;
+
+        var seat = seats.get(index);
+        return seat.hidePassenger;
     }
 
     public boolean hidePassenger(Entity passenger) {

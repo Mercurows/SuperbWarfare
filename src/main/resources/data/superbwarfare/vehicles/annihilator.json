@@ -2,6 +2,9 @@
   "ID": "superbwarfare:annihilator",
   "MaxHealth": 1200,
   "MaxEnergy": 20000000,
+  "Seats": {
+    "HidePassenger": true
+  },
   "Mass": 2774,
   "DamageModifiers": [
     "All * 0.1",

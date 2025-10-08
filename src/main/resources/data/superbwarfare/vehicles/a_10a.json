@@ -2,6 +2,9 @@
   "ID": "superbwarfare:a_10a",
   "MaxHealth": 350,
   "MaxEnergy": 10000000,
+  "Seats": {
+    "HidePassenger": true
+  },
   "UpStep": 1.1,
   "Mass": 20,
   "AllowFreeCam": true,

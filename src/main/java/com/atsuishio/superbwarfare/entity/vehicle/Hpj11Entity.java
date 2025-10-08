@@ -550,11 +550,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public boolean hidePassenger(int index) {
-        return true;
-    }
-
-    @Override
     public int zoomFov() {
         return 2;
     }
@@ -577,11 +572,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return zoom ? 0.25 : 0.3;
-    }
-
-    @Override
-    public boolean isEnclosed(int index) {
-        return true;
     }
 
     @OnlyIn(Dist.CLIENT)

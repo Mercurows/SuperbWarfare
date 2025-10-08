@@ -249,11 +249,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         return Mod.loc("textures/vehicle_icon/truck_icon.png");
     }
 
-    @Override
-    public boolean isEnclosed(int index) {
-        return index == 0 || index == 1;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {

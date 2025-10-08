@@ -985,11 +985,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public boolean isEnclosed(int index) {
-        return true;
-    }
-
-    @Override
     public int passengerSeatLocation(Entity entity) {
         return 2;
     }

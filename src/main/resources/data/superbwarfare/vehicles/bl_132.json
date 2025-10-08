@@ -2,6 +2,9 @@
   "ID": "superbwarfare:bl_132",
   "MaxHealth": 400,
   "Mass": 300,
+  "Seats": {
+    "HidePassenger": true
+  },
   "DamageModifiers": [
     "All * 0.2",
     "minecraft:arrow * 1.5",

@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -49,6 +50,9 @@ public class DefaultVehicleData implements IDBasedData {
 
     @SerializedName("MaxEnergy")
     public int maxEnergy = 100000;
+
+    @SerializedName("Seats")
+    public ObjectToList<SeatInfo> seats = new ObjectToList<>();
 
     @SerializedName("UpStep")
     public float upStep = 0;

@@ -359,11 +359,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     }
 
     @Override
-    public boolean isEnclosed(int index) {
-        return true;
-    }
-
-    @Override
     public boolean hasEnergyStorage() {
         return false;
     }
