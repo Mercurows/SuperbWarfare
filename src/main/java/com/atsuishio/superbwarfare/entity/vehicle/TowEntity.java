@@ -66,7 +66,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         super(type, world);
     }
 
-
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
@@ -192,7 +191,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(living);
 
         wgMissileEntity.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
-        wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z,  2, 0f);
+        wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 2, 0f);
         wgMissileEntity.setLauncherVehicle(this.uuid);
         living.level().addFreshEntity(wgMissileEntity);
 
@@ -302,7 +301,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         return new Vec3(passenger.getX(), getY(), passenger.getZ());
     }
 
-
     @Override
     public void destroy() {
         if (this.level() instanceof ServerLevel level) {
@@ -353,11 +351,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
-    }
-
-    @Override
-    public boolean hasMenu() {
-        return false;
     }
 
     @Override

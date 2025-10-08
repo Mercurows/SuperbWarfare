@@ -62,10 +62,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
+
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.FLOAT);
@@ -780,11 +777,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @Override
     public @Nullable ResourceLocation getVehicleItemIcon() {
         return Mod.loc("textures/gui/vehicle/type/defense.png");
-    }
-
-    @Override
-    public int getContainerSize() {
-        return 1;
     }
 
     @Override

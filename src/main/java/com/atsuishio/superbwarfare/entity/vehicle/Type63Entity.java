@@ -45,14 +45,14 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity {
+
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> BODY_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
-
     public static final EntityDataAccessor<Float> SHOOT_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
-
     public static final EntityDataAccessor<IntList> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public OBB[] barrel = new OBB[12];
@@ -416,11 +416,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     }
 
     @Override
-    public int getContainerSize() {
-        return 12;
-    }
-
-    @Override
     public int getMaxStackSize() {
         return 1;
     }
@@ -519,11 +514,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
     @Override
     public boolean hasEnergyStorage() {
-        return false;
-    }
-
-    @Override
-    public boolean hasMenu() {
         return false;
     }
 

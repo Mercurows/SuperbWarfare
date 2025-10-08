@@ -4,5 +4,6 @@
   "Mass": 0.05,
   "DamageModifiers": [
     "All * 0.75"
-  ]
+  ],
+  "VehicleContainerType": "Empty"
 }

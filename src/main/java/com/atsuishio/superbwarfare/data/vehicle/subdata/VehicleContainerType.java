@@ -3,20 +3,34 @@ package com.atsuishio.superbwarfare.data.vehicle.subdata;
 import com.google.gson.annotations.SerializedName;
 
 public enum VehicleContainerType {
-    @SerializedName("Empty") EMPTY(0, 0),
-    @SerializedName("One") ONE(1, 1),
-    @SerializedName("Mini") MINI(1, 9),
-    @SerializedName("Small") SMALL(3, 9),
-    @SerializedName("Medium") MEDIUM(6, 9),
-    @SerializedName("Large") LARGE(6, 13),
-    @SerializedName("Huge") HUGE(6, 17),
-    ;
+    @SerializedName("Empty") EMPTY(0, 0, false),
+    @SerializedName("One") ONE(1, 1, false),
+    @SerializedName("Mini") MINI(1, 9, true),
+    @SerializedName("Small") SMALL(3, 9, true),
+    @SerializedName("Medium") MEDIUM(6, 9, true),
+    @SerializedName("Large") LARGE(6, 13, true),
+    @SerializedName("Huge") HUGE(6, 17, true),
+    @SerializedName("Special") SPECIAL(3, 4, false);
 
-    public final int row, col;
+    private final int row, col;
+    private final boolean hasMenu;
 
-    VehicleContainerType(int row, int col) {
+    VehicleContainerType(int row, int col, boolean hasMenu) {
         this.row = row;
         this.col = col;
+        this.hasMenu = hasMenu;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+    public boolean hasMenu() {
+        return hasMenu;
     }
 
     public int getSize() {
