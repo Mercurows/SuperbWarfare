@@ -497,6 +497,38 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(diffX, -0.8f, 0.8f), -45, 5f));
     }
 
+    public void autoAim() {
+        if (this.getEnergy() <= 0) return;
+
+        Entity target = SeekTool.seekLivingEntity(this, 64, 30);
+
+        if (target == null) return;
+
+        float yRot = this.getYRot();
+        if (yRot < 0) {
+            yRot += 360;
+        }
+        yRot = yRot + 90 % 360;
+
+        var BarrelRoot = new Vector3d(4.95, 2.25, 0);
+        BarrelRoot.rotateY(-yRot * Mth.DEG_TO_RAD);
+
+        Vec3 barrelRootPos = new Vec3(this.getX() + BarrelRoot.x, this.getY() + BarrelRoot.y, this.getZ() + BarrelRoot.z);
+        Vec3 targetVec = new Vec3(target.getX() - barrelRootPos.x, target.getEyeY() - barrelRootPos.y, target.getZ() - barrelRootPos.z).normalize();
+
+        double d0 = targetVec.x;
+        double d1 = targetVec.y;
+        double d2 = targetVec.z;
+        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+        this.setXRot(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
+        float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+
+        float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
+
+        this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -1f, 1f));
+        this.setRot(this.getYRot(), this.getXRot());
+    }
+
     protected void clampRotation(Entity entity) {
         passengerPitch(entity, -5, 45, 0);
     }

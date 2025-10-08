@@ -48,7 +48,7 @@ public class RedTriangleOverlay implements LayeredDraw.Layer {
             if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 return;
 
-            Entity idf = SeekTool.seekLivingEntity(player, player.level(), 128, 6);
+            Entity idf = SeekTool.seekLivingEntity(player, 128, 6);
             if (idf == null) return;
             double distance = idf.position().distanceTo(cameraPos);
             Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.xo, idf.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.zo, idf.getZ()));

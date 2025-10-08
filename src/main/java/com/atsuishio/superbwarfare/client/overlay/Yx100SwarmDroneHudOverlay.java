@@ -64,7 +64,7 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
 
                 RenderHelper.preciseBlitWithColor(guiGraphics, LAV_MISSILE_CROSS, centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
-                Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 384, 6);
+                Entity naerestEntity = SeekTool.seekLivingEntity(player, 384, 6);
 
                 if (naerestEntity != null) {
                     Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), naerestEntity.xo, naerestEntity.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), naerestEntity.yo + naerestEntity.getEyeHeight(), naerestEntity.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), naerestEntity.zo, naerestEntity.getZ()));

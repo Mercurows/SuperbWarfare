@@ -112,7 +112,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
 
             Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
             List<Entity> entities = SeekTool.seekLivingEntities(player, player.level(), 512, 8 * fovAdjust);
-            Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 512, 6);
+            Entity naerestEntity = SeekTool.seekLivingEntity(player, 512, 6);
 
             poseStack.pushPose();
             if (tag.getInt("GuideType") == 0) {
