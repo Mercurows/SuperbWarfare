@@ -221,11 +221,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     }
 
     @Override
-    public int getMaxPassengers() {
-        return 2;
-    }
-
-    @Override
     public float rotateYOffset() {
         return 2.2f;
     }

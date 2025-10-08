@@ -54,8 +54,8 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -608,10 +608,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         } else if (entity == getNthEntity(5)) {
             entity.setYBodyRot(getYRot() - 180);
         }
-    }
-
-    public int getMaxPassengers() {
-        return 7;
     }
 
     @Override

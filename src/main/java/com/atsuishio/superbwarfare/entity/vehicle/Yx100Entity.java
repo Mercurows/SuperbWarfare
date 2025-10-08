@@ -60,8 +60,8 @@ import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -781,12 +781,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 1f, 0.6076875f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-
-
-    public int getMaxPassengers() {
-        return 3;
     }
 
     @Override

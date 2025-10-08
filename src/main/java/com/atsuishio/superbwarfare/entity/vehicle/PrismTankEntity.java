@@ -55,8 +55,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -476,10 +476,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         if (entity == getNthEntity(1)) {
             entity.setYBodyRot(getYRot());
         }
-    }
-
-    public int getMaxPassengers() {
-        return 2;
     }
 
     public Vec3 driverPos(float ticks) {

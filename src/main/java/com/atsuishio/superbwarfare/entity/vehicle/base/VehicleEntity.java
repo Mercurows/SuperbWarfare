@@ -104,8 +104,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -569,12 +569,29 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return list;
     }
 
+    private void resizeOrderedPassengersList() {
+        var targetSize = data().get(VehicleProp.SEATS).size();
+        if (targetSize == orderedPassengers.size()) return;
+
+        while (targetSize != orderedPassengers.size()) {
+            if (targetSize > orderedPassengers.size()) {
+                orderedPassengers.add(null);
+            } else {
+                var last = orderedPassengers.remove(orderedPassengers.size() - 1);
+                if (last != null) {
+                    last.stopRiding();
+                }
+            }
+        }
+    }
+
     /**
      * 获取按顺序排列的成员列表
      *
      * @return 按顺序排列的成员列表
      */
     public List<Entity> getOrderedPassengers() {
+        resizeOrderedPassengersList();
         return orderedPassengers;
     }
 
@@ -586,6 +603,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (pPassenger.getVehicle() != this) {
             throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
         }
+        resizeOrderedPassengersList();
 
         int index;
 
@@ -615,6 +633,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (pPassenger.getVehicle() == this) {
             throw new IllegalStateException("Use x.stopRiding(y), not y.removePassenger(x)");
         }
+        resizeOrderedPassengersList();
 
         var index = getSeatIndex(pPassenger);
         if (index == -1) return;
@@ -637,6 +656,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public @Nullable Entity getFirstPassenger() {
+        resizeOrderedPassengersList();
         if (orderedPassengers.isEmpty()) {
             return null;
         }
@@ -650,6 +670,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 目标座位的乘客
      */
     public @Nullable Entity getNthEntity(int index) {
+        resizeOrderedPassengersList();
         if (index >= orderedPassengers.size() || index < 0) {
             return null;
         }
@@ -665,6 +686,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     public boolean changeSeat(Entity entity, int index) {
         if (index < 0 || index >= getMaxPassengers()) return false;
+        resizeOrderedPassengersList();
         if (orderedPassengers.get(index) != null) return false;
         if (!orderedPassengers.contains(entity)) return false;
 
@@ -688,6 +710,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 座位索引
      */
     public int getSeatIndex(Entity entity) {
+        resizeOrderedPassengersList();
         return orderedPassengers.indexOf(entity);
     }
 
@@ -1232,7 +1255,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public int getMaxPassengers() {
-        return 1;
+        return data().get(VehicleProp.SEATS).size();
     }
 
     public static double getSubmergedHeight(Entity entity) {
