@@ -1,6 +1,9 @@
 {
   "ID": "superbwarfare:mk_42",
   "MaxHealth": 350,
+  "Seats": {
+    "HidePassenger": true
+  },
   "Mass": 61.4,
   "DamageModifiers": [
     "All * 0.2",

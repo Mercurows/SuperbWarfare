@@ -461,11 +461,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     @Override
-    public boolean hidePassenger(int index) {
-        return true;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }
@@ -521,11 +516,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return zoom ? 0.23 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.3 : 0.4;
-    }
-
-    @Override
-    public boolean isEnclosed(int index) {
-        return true;
     }
 
     @OnlyIn(Dist.CLIENT)

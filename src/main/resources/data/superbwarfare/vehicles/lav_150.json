@@ -2,6 +2,23 @@
   "ID": "superbwarfare:lav_150",
   "MaxHealth": 270,
   "MaxEnergy": 5000000,
+  "Seats": [
+    {
+      "HidePassenger": true
+    },
+    {
+      "HidePassenger": true
+    },
+    {
+      "HidePassenger": true
+    },
+    {
+      "HidePassenger": true
+    },
+    {
+      "HidePassenger": true
+    }
+  ],
   "UpStep": 1.5,
   "Mass": 13.6,
   "DamageModifiers": [

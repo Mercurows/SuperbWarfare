@@ -1,6 +1,9 @@
 {
   "ID": "superbwarfare:vehicle_assembling_table",
   "MaxHealth": 100,
+  "Seats": {
+    "IsEnclosed": true
+  },
   "UpStep": 1.1,
   "Mass": 1,
   "DamageModifiers": [

@@ -569,11 +569,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public boolean hidePassenger(int index) {
-        return index == 0;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }
@@ -626,11 +621,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return zoom ? 0.26 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.33 : 0.45;
-    }
-
-    @Override
-    public boolean isEnclosed(int index) {
-        return index == 0;
     }
 
     @OnlyIn(Dist.CLIENT)

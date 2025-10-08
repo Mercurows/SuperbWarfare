@@ -947,11 +947,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public boolean hidePassenger(int index) {
-        return index == 0 || index == 1;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }
@@ -1089,11 +1084,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         } else if (seatIndex == 1) {
             return zoom ? 0.25 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.35 : 0.4;
         } else return original;
-    }
-
-    @Override
-    public boolean isEnclosed(int index) {
-        return index != 2;
     }
 
     @OnlyIn(Dist.CLIENT)

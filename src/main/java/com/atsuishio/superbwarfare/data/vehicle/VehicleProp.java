@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -19,6 +20,10 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
 
     public static final VehicleProp<Integer> MAX_ENERGY = new VehicleProp<Integer>("MaxEnergy")
             .withLimiter(v -> Math.max(0, v));
+
+    public static final VehicleProp<List<SeatInfo>> SEATS = new VehicleProp<List<SeatInfo>>("Seats")
+            .withLimiter(v -> v == null ? List.of() : v);
+
     public static final VehicleProp<Float> UP_STEP = new VehicleProp<>("UpStep");
     public static final VehicleProp<Boolean> ALLOW_FREE_CAM = new VehicleProp<>("AllowFreeCam");
     public static final VehicleProp<Boolean> APPLY_DEFAULT_DAMAGE_MODIFIERS = new VehicleProp<>("ApplyDefaultDamageModifiers");

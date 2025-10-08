@@ -2,6 +2,9 @@
   "ID": "superbwarfare:hpj_11",
   "MaxHealth": 350,
   "MaxEnergy": 5000000,
+  "Seats": {
+    "HidePassenger": true
+  },
   "Mass": 30,
   "DamageModifiers": [
     "All * 0.6",

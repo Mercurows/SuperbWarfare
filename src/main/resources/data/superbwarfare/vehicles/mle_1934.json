@@ -1,6 +1,9 @@
 {
   "ID": "superbwarfare:mle_1934",
   "MaxHealth": 350,
+  "Seats": {
+    "HidePassenger": true
+  },
   "Mass": 100,
   "DamageModifiers": [
     "All * 0.2",

@@ -564,11 +564,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public boolean hidePassenger(int index) {
-        return true;
-    }
-
-    @Override
     public int zoomFov() {
         return 5;
     }
@@ -586,11 +581,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return zoom ? 0.15 : 0.3;
-    }
-
-    @Override
-    public boolean isEnclosed(int index) {
-        return true;
     }
 
     @OnlyIn(Dist.CLIENT)

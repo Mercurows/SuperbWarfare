@@ -2,6 +2,13 @@
   "ID": "superbwarfare:prism_tank",
   "MaxHealth": 400,
   "MaxEnergy": 20000000,
+  "Seats": [
+    {
+      "HidePassenger": true
+    },
+    {
+    }
+  ],
   "UpStep": 2.25,
   "Mass": 25,
   "DamageModifiers": [
