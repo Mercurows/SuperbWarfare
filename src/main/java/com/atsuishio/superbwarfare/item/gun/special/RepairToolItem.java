@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -64,7 +65,6 @@ import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
-import static com.atsuishio.superbwarfare.tools.SeekTool.teamFilter;
 
 public class RepairToolItem extends GunGeoItem {
 
@@ -193,7 +193,7 @@ public class RepairToolItem extends GunGeoItem {
         // 修理实体（多重含义）
         if (target instanceof VehicleEntity vehicle) {
             Entity lastDriver = EntityFindUtil.findEntity(level, vehicle.getEntityData().get(LAST_DRIVER_UUID));
-            if ((lastDriver != null && !teamFilter(shooter, lastDriver) && lastDriver.getTeam() != null) || shooter.isShiftKeyDown()) {
+            if ((lastDriver != null && !SeekTool.IN_SAME_TEAM.test(shooter, lastDriver) && lastDriver.getTeam() != null) || shooter.isShiftKeyDown()) {
                 vehicle.hurt(ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), 0.5f);
                 if (shooter instanceof ServerPlayer player) {
                     player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);

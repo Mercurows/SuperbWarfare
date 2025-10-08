@@ -9,10 +9,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.TraceTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -55,8 +52,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
-import static com.atsuishio.superbwarfare.tools.SeekTool.friendlyToPlayer;
-import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
+import static com.atsuishio.superbwarfare.tools.SeekTool.IS_FRIENDLY;
 
 public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable {
     @Override
@@ -255,7 +251,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
 
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
-        if (target != null && smokeFilter(target)) {
+        if (target != null && SeekTool.NOT_IN_SMOKE.test(target)) {
             if (target instanceof Player player1 && (player1.isSpectator() || player1.isCreative())) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -297,7 +293,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                     this.level().playSound(this, getOnPos(), ModSounds.WAVEFORCE_TOWER_FIRE.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.1f + 1);
                 }
 
-                Predicate<Entity> filter = entity -> entity != this && !friendlyToPlayer(this.getOwner(), entity);
+                Predicate<Entity> filter = entity -> entity != this && !IS_FRIENDLY.test(this.getOwner(), entity);
                 List<TraceTool.RayTraceResultEntity> hitList = TraceTool.getEntitiesAlongVector(level(), getShootPos(1), getBarrelVector(1), getShootPos(1).distanceTo(target.getEyePosition()) + 0.5, filter);
                 for (TraceTool.RayTraceResultEntity hit : hitList) {
                     Entity entity = hit.entity;

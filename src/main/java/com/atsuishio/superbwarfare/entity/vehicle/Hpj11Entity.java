@@ -15,10 +15,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.atsuishio.superbwarfare.tools.RangeTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.mojang.math.Axis;
 import net.minecraft.nbt.CompoundTag;
@@ -58,13 +55,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
-
 public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntity, OwnableEntity, AutoAimable {
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
+
     public static Consumer<VehicleEntity> fireSound = vehicle -> {
     };
 
@@ -89,6 +81,11 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
         super(type, world);
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 102;
     }
 
     @Override
@@ -293,7 +290,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
-        if (target != null && this.getOwner() instanceof Player player && smokeFilter(target)) {
+        if (target != null && this.getOwner() instanceof Player player && SeekTool.NOT_IN_SMOKE.test(target)) {
             if (target instanceof Player player1 && (player1.isSpectator() || player1.isCreative())) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
