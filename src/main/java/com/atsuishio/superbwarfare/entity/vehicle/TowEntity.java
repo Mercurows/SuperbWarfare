@@ -198,8 +198,8 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             float diffY = Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot());
             float diffX = Mth.wrapDegrees(passenger.getXRot() - this.getXRot());
 
-            this.setYRot(this.getYRot() + Mth.clamp(0.8f * diffY, -90f, 90f));
-            this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.8f * diffX, -90f, 90f), -40, 40));
+            this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -90f, 90f));
+            this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -90f, 90f), -40, 40));
         }
     }
 
@@ -292,7 +292,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.25 : 0.35;
+        return zoom ? 0.2 : 0.3;
     }
 
     @OnlyIn(Dist.CLIENT)
