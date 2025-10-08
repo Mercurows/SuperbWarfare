@@ -520,11 +520,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     }
 
     @Override
-    public int getMaxPassengers() {
-        return 0;
-    }
-
-    @Override
     public VehicleType getVehicleType() {
         return VehicleType.ARTILLERY;
     }

@@ -479,10 +479,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         }
     }
 
-    public int getMaxPassengers() {
-        return 2;
-    }
-
     public Vec3 driverPos(float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0.5f, 1.2f, -0.1f);

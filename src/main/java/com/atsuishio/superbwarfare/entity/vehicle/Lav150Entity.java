@@ -360,11 +360,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     @Override
-    public int getMaxPassengers() {
-        return 5;
-    }
-
-    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0.3f, 0.75f, 0.56f);

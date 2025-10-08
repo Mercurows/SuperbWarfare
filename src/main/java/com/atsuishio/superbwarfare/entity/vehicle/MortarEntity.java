@@ -460,11 +460,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     }
 
     @Override
-    public int getMaxPassengers() {
-        return 0;
-    }
-
-    @Override
     public boolean hasEnergyStorage() {
         return false;
     }

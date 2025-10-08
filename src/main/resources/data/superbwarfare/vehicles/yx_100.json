@@ -9,8 +9,7 @@
     {
       "HidePassenger": true
     },
-    {
-    }
+    {}
   ],
   "UpStep": 2.25,
   "Mass": 70,

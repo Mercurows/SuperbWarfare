@@ -400,11 +400,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     @Override
-    public int getMaxPassengers() {
-        return 5;
-    }
-
-    @Override
     public int mainGunRpm(LivingEntity living) {
         return 500;
     }

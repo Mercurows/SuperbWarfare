@@ -608,11 +608,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int getMaxPassengers() {
-        return 4;
-    }
-
-    @Override
     public int passengerSeatLocation(Entity entity) {
         return entity == getNthEntity(0) ? 2 : 0;
     }

@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:tow",
   "MaxHealth": 60,
+  "Seats": {},
   "Mass": 0.05,
   "DamageModifiers": [
     "All * 0.75"

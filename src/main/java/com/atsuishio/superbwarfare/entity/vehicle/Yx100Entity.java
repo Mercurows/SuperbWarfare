@@ -780,11 +780,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
-
-    public int getMaxPassengers() {
-        return 3;
-    }
-
     @Override
     public Vec3 getBarrelPosition() {
         return new Vec3(0f, 0.56345, 0.6477125);

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
@@ -26,13 +25,15 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("MaxHealth")
     public float maxHealth = 50;
 
+    // TODO 这玩意还能不能用配置？
+
     @ServerOnly
     @SerializedName("RepairCooldown")
-    public int repairCooldown = VehicleConfig.REPAIR_COOLDOWN.get();
+    public int repairCooldown = 200;
 
     @ServerOnly
     @SerializedName("RepairAmount")
-    public float repairAmount = VehicleConfig.REPAIR_AMOUNT.get().floatValue();
+    public float repairAmount = 0.05F;
 
     /**
      * 开始自动扣血时的血量比例

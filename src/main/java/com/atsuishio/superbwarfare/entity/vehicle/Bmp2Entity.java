@@ -607,10 +607,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         }
     }
 
-    public int getMaxPassengers() {
-        return 7;
-    }
-
     @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
