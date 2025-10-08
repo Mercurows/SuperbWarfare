@@ -45,7 +45,7 @@ public class RedTriangleOverlay implements IGuiOverlay {
             if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 return;
 
-            Entity idf = SeekTool.seekLivingEntity(player, player.level(), 128, 6);
+            Entity idf = SeekTool.seekLivingEntity(player, 128, 6);
             if (idf == null) return;
             double distance = idf.position().distanceTo(cameraPos);
             Vec3 pos = new Vec3(Mth.lerp(partialTick, idf.xo, idf.getX()), Mth.lerp(partialTick, idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(partialTick, idf.zo, idf.getZ()));

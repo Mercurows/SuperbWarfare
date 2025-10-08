@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.SeekConfig;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
-import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -13,6 +12,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -96,21 +96,37 @@ public class SeekTool {
                 }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
     }
 
+    @Deprecated(forRemoval = true)
     public static Entity seekLivingEntity(Entity entity, Level level, double seekRange, double seekAngle) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
-                            && e != entity
-                            && baseFilter(e)
-                            && smokeFilter(e)
-                            && e.getVehicle() == null
-                            && !(e instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() != entity)
-                            && !friendlyToPlayer(entity, e)) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-                    }
-                    return false;
-                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+//        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+//                .filter(e -> {
+//                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+//                            && e != entity
+//                            && baseFilter(e)
+//                            && smokeFilter(e)
+//                            && e.getVehicle() == null
+//                            && !(e instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() != entity)
+//                            && !friendlyToPlayer(entity, e)) {
+//                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
+//                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
+//                    }
+//                    return false;
+//                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
+        return seekLivingEntity(entity, seekRange, seekAngle);
+    }
+
+    @Nullable
+    public static Entity seekLivingEntity(@NotNull Entity entity, double range, double angle) {
+        return new Builder(entity)
+                .withinRange(range)
+                .withinAngle(angle)
+                .baseFilter()
+                .smokeFilter()
+                .noVehicle()
+                .notFriendly()
+                .isNotOwner()
+                .noClip()
+                .buildWithClosest();
     }
 
     public static List<Entity> seekLivingEntities(Entity entity, Level level, double seekRange, double seekAngle) {
@@ -326,6 +342,32 @@ public class SeekTool {
         return entities.isEmpty();
     };
 
+    /**
+     * 判断某实体是否是自己的
+     */
+    public static final BiPredicate<Entity, Entity> IS_OWNER = (self, target) -> {
+        if (target instanceof TraceableEntity traceableEntity) {
+            return traceableEntity.getOwner() == self;
+        } else if (target instanceof OwnableEntity ownableEntity) {
+            return ownableEntity.getOwner() == self;
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * 判断某实体是否不是自己的
+     */
+    public static final BiPredicate<Entity, Entity> IS_NOT_OWNER = (self, target) -> {
+        if (target instanceof TraceableEntity traceableEntity) {
+            return traceableEntity.getOwner() != self;
+        } else if (target instanceof OwnableEntity ownableEntity) {
+            return ownableEntity.getOwner() != self;
+        } else {
+            return false;
+        }
+    };
+
     @Deprecated(forRemoval = true)
     public static boolean smokeFilter(Entity pEntity) {
         return NOT_IN_SMOKE.test(pEntity);
@@ -392,12 +434,13 @@ public class SeekTool {
             return this;
         }
 
+        public Builder notFriendly() {
+            this.filters.add(e -> !IS_FRIENDLY.test(entity, e));
+            return this;
+        }
+
         public Builder blackList() {
-            this.filters.add(e -> {
-                var type = ForgeRegistries.ENTITY_TYPES.getKey(e.getType());
-                if (type == null) return false;
-                return SeekConfig.SEEK_BLACKLIST.get().contains(type.toString());
-            });
+            this.filters.add(IN_BLACKLIST);
             return this;
         }
 
@@ -441,6 +484,16 @@ public class SeekTool {
             return this;
         }
 
+        public Builder isOwner() {
+            this.filters.add(e -> IS_OWNER.test(entity, e));
+            return this;
+        }
+
+        public Builder isNotOwner() {
+            this.filters.add(e -> IS_NOT_OWNER.test(entity, e));
+            return this;
+        }
+
         public Builder noClip() {
             this.filters.add(e ->
                     this.entity.level()
@@ -467,6 +520,16 @@ public class SeekTool {
 
         public Builder sizeGreaterThan(double size) {
             this.filters.add(e -> e.getBoundingBox().getSize() >= size);
+            return this;
+        }
+
+        public Builder custom(Predicate<Entity> predicate) {
+            this.filters.add(predicate);
+            return this;
+        }
+
+        public Builder custom(BiPredicate<Entity, Entity> predicate) {
+            this.filters.add(e -> predicate.test(entity, e));
             return this;
         }
     }

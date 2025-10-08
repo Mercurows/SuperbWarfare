@@ -1620,7 +1620,7 @@ public class ClientEventHandler {
                             if (GunData.from(stack).perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || GunData.from(stack).perk.has(ModPerks.BEAST_BULLET.get())) {
                                 ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, player.level(), seekRange, 16 / customZoom);
                             } else {
-                                ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), seekRange, 16 / customZoom);
+                                ClientEventHandler.entity = SeekTool.seekLivingEntity(player, seekRange, 16 / customZoom);
                             }
                         }
                         if (entity != null && entity.isAlive()) {

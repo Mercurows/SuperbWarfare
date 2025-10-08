@@ -521,7 +521,7 @@ public class ClickHandler {
                 if (GunData.from(stack).perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || GunData.from(stack).perk.has(ModPerks.BEAST_BULLET.get())) {
                     ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, player.level(), 32 + 8 * (level - 1), 20);
                 } else {
-                    ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 20);
+                    ClientEventHandler.entity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 20);
                 }
             }
         }
@@ -588,7 +588,7 @@ public class ClickHandler {
             if (drone != null) {
                 boolean lookAtEntity = false;
 
-                Entity lookingEntity = SeekTool.seekLivingEntity(drone, drone.level(), 512, 2 / droneFovLerp);
+                Entity lookingEntity = SeekTool.seekLivingEntity(drone, 512, 2 / droneFovLerp);
 
                 BlockHitResult result = player.level().clip(new ClipContext(drone.getEyePosition(), drone.getEyePosition().add(drone.getLookAngle().scale(512)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, drone));

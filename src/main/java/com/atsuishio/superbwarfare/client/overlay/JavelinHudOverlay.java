@@ -104,7 +104,7 @@ public class JavelinHudOverlay implements IGuiOverlay {
 
             Entity targetEntity = EntityFindUtil.findEntity(player.level(), stack.getOrCreateTag().getString("TargetEntity"));
             List<Entity> entities = SeekTool.seekLivingEntities(player, player.level(), 512, 8 * fovAdjust);
-            Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 512, 6);
+            Entity naerestEntity = SeekTool.seekLivingEntity(player, 512, 6);
 
             if (stack.getOrCreateTag().getInt("GuideType") == 0) {
                 for (var e : entities) {

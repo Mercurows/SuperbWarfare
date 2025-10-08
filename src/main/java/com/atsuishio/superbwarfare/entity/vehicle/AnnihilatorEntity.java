@@ -496,7 +496,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     public void autoAim() {
         if (this.getEnergy() <= 0) return;
 
-        Entity target = SeekTool.seekLivingEntity(this, this.level(), 64, 30);
+        Entity target = SeekTool.seekLivingEntity(this,64, 30);
 
         if (target == null) return;
 

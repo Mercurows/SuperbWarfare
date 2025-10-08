@@ -67,7 +67,7 @@ public class HandsomeFrameOverlay implements IGuiOverlay {
             List<Entity> allEntities = SeekTool.seekLivingEntitiesThroughWall(player, player.level(), 32 + 8 * (level - 1), 30);
             List<Entity> visibleEntities = SeekTool.seekLivingEntities(player, player.level(), 32 + 8 * (level - 1), 30);
 
-            Entity naerestEntity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 30);
+            Entity naerestEntity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 30);
             Entity targetEntity = ClientEventHandler.entity;
 
 

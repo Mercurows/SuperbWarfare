@@ -683,7 +683,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             }
 
             Vec3 lookVec = living.getViewVector(1);
-            Entity lookingEntity = SeekTool.seekLivingEntity(living, level(), 384, 6);
+            Entity lookingEntity = SeekTool.seekLivingEntity(living, 384, 6);
 
             var swarmDroneEntity = ((SwarmDroneWeapon) getWeapon(2)).create(living);
 
