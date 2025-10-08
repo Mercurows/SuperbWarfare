@@ -95,7 +95,7 @@ public class JavelinItem extends GunGeoItem {
 
         if (entity instanceof Player player && selected) {
             if (tag.getBoolean("Seeking")) {
-                List<Entity> decoy = SeekTool.seekLivingEntities(player, player.level(), 512, 8);
+                List<Entity> decoy = SeekTool.seekLivingEntities(player, 512, 8);
                 for (var e : decoy) {
                     if (e.getType().is(ModTags.EntityTypes.DECOY)) {
                         tag.putString("TargetEntity", e.getStringUUID());

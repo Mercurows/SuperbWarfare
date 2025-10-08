@@ -78,6 +78,7 @@ public class SeekTool {
                 .buildWithClosest();
     }
 
+    @Deprecated(forRemoval = true)
     public static Entity seekCustomSizeEntity(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
                 .filter(e -> {
@@ -129,21 +130,34 @@ public class SeekTool {
                 .buildWithClosest();
     }
 
+    @Deprecated(forRemoval = true)
     public static List<Entity> seekLivingEntities(Entity entity, Level level, double seekRange, double seekAngle) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange
-                            && calculateAngle(e, entity) < seekAngle
-                            && e != entity
-                            && baseFilter(e)
-                            && smokeFilter(e)
-                            && e.getVehicle() == null
-                            && !friendlyToPlayer(entity, e)) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-                    }
-                    return false;
-                }).toList();
+//        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+//                .filter(e -> {
+//                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
+//                            && e != entity
+//                            && baseFilter(e)
+//                            && smokeFilter(e)
+//                            && e.getVehicle() == null
+//                            && !friendlyToPlayer(entity, e)) {
+//                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
+//                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
+//                    }
+//                    return false;
+//                }).toList();
+        return seekLivingEntities(entity, seekRange, seekAngle);
+    }
+
+    public static List<Entity> seekLivingEntities(Entity entity, double seekRange, double seekAngle) {
+        return new Builder(entity)
+                .withinRange(seekRange)
+                .withinAngle(seekAngle)
+                .baseFilter()
+                .smokeFilter()
+                .noVehicle()
+                .notFriendly()
+                .noClip()
+                .build();
     }
 
     public static List<Entity> seekCustomSizeEntities(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {

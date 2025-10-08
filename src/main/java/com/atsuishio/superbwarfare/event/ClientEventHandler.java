@@ -1782,7 +1782,7 @@ public class ClientEventHandler {
         if (zoom) {
             Entity entity = TraceTool.findLookingEntity(player, 10);
             if (entity instanceof AbstractVillager villager) {
-                List<Entity> entities = SeekTool.seekLivingEntities(villager, villager.level(), 16, 120);
+                List<Entity> entities = SeekTool.seekLivingEntities(villager, 16, 120);
                 for (var e : entities) {
                     if (e == player) {
                         PacketDistributor.sendToServer(new AimVillagerMessage(villager.getId()));

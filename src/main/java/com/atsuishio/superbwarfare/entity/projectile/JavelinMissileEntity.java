@@ -226,7 +226,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         mediumTrail();
 
         Entity entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID));
-        List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 32, 90);
+        List<Entity> decoy = SeekTool.seekLivingEntities(this, 32, 90);
 
         for (var e : decoy) {
             if (e.getType().is(ModTags.EntityTypes.DECOY) && !this.distracted) {

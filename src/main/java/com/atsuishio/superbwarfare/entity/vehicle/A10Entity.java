@@ -118,6 +118,11 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
+    public int getContainerSize() {
+        return 102;
+    }
+
+    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
@@ -411,7 +416,17 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             resetSeek(player);
         }
 
-        Entity entity = SeekTool.seekCustomSizeEntity(this, this.level(), 384, 18, 0.9, true);
+        Entity entity = new SeekTool.Builder(this)
+                .withinRange(384)
+                .withinAngle(18)
+                .baseFilter()
+                .onGround(10)
+                .sizeLesserThan(0.9)
+                .smokeFilter()
+                .noVehicle()
+                .noClip()
+                .buildWithClosest();
+
         if (entity != null) {
             if (lockTime == 0) {
                 setTargetUuid(String.valueOf(entity.getUUID()));
@@ -1098,10 +1113,5 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public VehicleType getVehicleType() {
         return VehicleType.AIRPLANE;
-    }
-
-    @Override
-    public int getContainerSize() {
-        return 102;
     }
 }

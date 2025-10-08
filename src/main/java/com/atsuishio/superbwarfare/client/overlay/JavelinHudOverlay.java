@@ -111,7 +111,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
 
             Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
-            List<Entity> entities = SeekTool.seekLivingEntities(player, player.level(), 512, 8 * fovAdjust);
+            List<Entity> entities = SeekTool.seekLivingEntities(player, 512, 8 * fovAdjust);
             Entity naerestEntity = SeekTool.seekLivingEntity(player, 512, 6);
 
             poseStack.pushPose();
