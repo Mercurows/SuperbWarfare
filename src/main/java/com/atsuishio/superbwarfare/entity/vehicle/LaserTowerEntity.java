@@ -74,11 +74,6 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     }
 
     @Override
-    public boolean hasMenu() {
-        return false;
-    }
-
-    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(TARGET_UUID, "none")

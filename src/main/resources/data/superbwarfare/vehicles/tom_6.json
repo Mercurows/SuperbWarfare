@@ -12,5 +12,6 @@
   "ExplosionDamage": 15,
   "ExplosionRadius": 2,
   "ExplosionParticleType": "Medium",
-  "CrashPassengersOnDestroy": true
+  "CrashPassengersOnDestroy": true,
+  "VehicleContainerType": "Empty"
 }

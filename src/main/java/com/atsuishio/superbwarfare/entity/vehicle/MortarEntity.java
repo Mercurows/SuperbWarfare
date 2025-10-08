@@ -53,10 +53,7 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteControllableTurret {
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
+
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
@@ -437,11 +434,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public int getContainerSize() {
-        return 1;
     }
 
     @Override

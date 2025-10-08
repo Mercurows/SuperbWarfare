@@ -24,5 +24,6 @@
   ],
   "ExplosionDamage": 20,
   "ExplosionRadius": 2,
-  "ExplosionParticleType": "Medium"
+  "ExplosionParticleType": "Medium",
+  "VehicleContainerType": "Special"
 }

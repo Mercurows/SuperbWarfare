@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
@@ -502,7 +501,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public boolean hasMenu() {
-        return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE) != VehicleContainerType.EMPTY;
+        return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE).hasMenu();
     }
 
     @Nullable
@@ -520,7 +519,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             };
             if (menu == null) return null;
 
-            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.row, type.col);
+            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol());
         }
         return null;
     }

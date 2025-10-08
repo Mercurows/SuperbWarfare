@@ -65,10 +65,6 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw
 
 public class DroneEntity extends VehicleEntity implements GeoEntity {
 
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
     public static final EntityDataAccessor<Boolean> LINKED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> CONTROLLER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> IS_KAMIKAZE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);

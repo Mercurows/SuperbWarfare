@@ -43,12 +43,9 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class WheelChairEntity extends VehicleEntity implements GeoEntity {
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public int jumpCoolDown;
     public int handBusyTime;
 

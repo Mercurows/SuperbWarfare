@@ -51,17 +51,16 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 import static com.atsuishio.superbwarfare.tools.SeekTool.IS_FRIENDLY;
 
 public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable {
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
+
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> CHARGED_ENERGY = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final EntityDataAccessor<Float> WAVEFORCE_LENGTH = SynchedEntityData.defineId(WaveforceTowerEntity.class, EntityDataSerializers.FLOAT);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public int changeTargetTimer = 60;
     public int chargeTime = 60;
     public int maxChargeEnergy = 250000;

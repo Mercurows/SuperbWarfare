@@ -53,13 +53,9 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
 public class Tom6Entity extends VehicleEntity implements GeoEntity {
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
+
     public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private float yRotSync;
 
     public float deltaXo;
     public float deltaYo;
@@ -195,7 +191,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
 
             float i = getXRot() / 90;
 
-            yRotSync = addY * (1 - Mth.abs(i)) + addZ * i;
+            float yRotSync = addY * (1 - Mth.abs(i)) + addZ * i;
 
             this.setYRot(this.getYRot() + yRotSync);
             this.setXRot(Mth.clamp(this.getXRot() + addX, onGround() ? -12 : -120, onGround() ? 3 : 120));
