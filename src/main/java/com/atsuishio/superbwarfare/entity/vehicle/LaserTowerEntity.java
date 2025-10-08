@@ -10,10 +10,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -48,13 +45,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
-import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
 
 public class LaserTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable {
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
+
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.BOOLEAN);
@@ -78,6 +71,11 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
 
     public boolean isOwnedBy(LivingEntity pEntity) {
         return pEntity == this.getOwner();
+    }
+
+    @Override
+    public boolean hasMenu() {
+        return false;
     }
 
     @Override
@@ -233,7 +231,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
 
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
-        if (target != null && smokeFilter(target)) {
+        if (target != null && SeekTool.NOT_IN_SMOKE.test(target)) {
             if (target instanceof Player player1 && (player1.isSpectator() || player1.isCreative())) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;

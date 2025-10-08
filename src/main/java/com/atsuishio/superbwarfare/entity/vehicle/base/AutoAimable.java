@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,8 +15,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 
-import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
-
 public interface AutoAimable {
 
     // 防御类载具实体搜寻周围实体
@@ -28,7 +27,7 @@ public interface AutoAimable {
                     && checkNoClip(attacker, target, pos)
                     && !(target instanceof Player player && (player.isSpectator() || player.isCreative()))
                     && ((target instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || isThreateningEntity(attacker, target, size, pos) || basicEnemyFilter(target))
-                    && smokeFilter(target);
+                    && SeekTool.NOT_IN_SMOKE.test(target);
             if (condition) {
                 return target;
             }

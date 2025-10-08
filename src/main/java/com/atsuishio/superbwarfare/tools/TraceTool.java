@@ -18,8 +18,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.atsuishio.superbwarfare.tools.SeekTool.smokeFilter;
-
 public class TraceTool {
 
     public static Entity findLookingEntity(Entity entity, double entityReach) {
@@ -37,7 +35,8 @@ public class TraceTool {
         Vec3 viewVec = entity.getViewVector(1.0F);
         Vec3 toVec = eyePos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = entity.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
-        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(entity, eyePos, toVec, aabb, p -> !p.isSpectator() && entity.getVehicle() != p && p.isAlive() && smokeFilter(p), distance);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(entity, eyePos, toVec, aabb,
+                p -> !p.isSpectator() && entity.getVehicle() != p && p.isAlive() && SeekTool.NOT_IN_SMOKE.test(p), distance);
         if (entityhitresult != null) {
             Vec3 targetPos = entityhitresult.getLocation();
             double distanceToTarget = eyePos.distanceToSqr(targetPos);
@@ -80,7 +79,7 @@ public class TraceTool {
         Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb,
-                p -> !p.isSpectator() && p.isAlive() && SeekTool.baseFilter(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && smokeFilter(p) && p != projectile && !(p instanceof Projectile), distance);
+                p -> !p.isSpectator() && p.isAlive() && SeekTool.baseFilter(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(p) && p != projectile && !(p instanceof Projectile), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
 
@@ -121,7 +120,7 @@ public class TraceTool {
                 && !(p instanceof Projectile)
                 && SeekTool.baseFilter(p)
                 && !p.getType().is(ModTags.EntityTypes.DECOY)
-                && smokeFilter(p)
+                && SeekTool.NOT_IN_SMOKE.test(p)
                 && p != entity
                 && p != entity.getVehicle(), distance);
         if (entityhitresult != null) {
@@ -153,7 +152,7 @@ public class TraceTool {
                 && !(p instanceof Projectile)
                 && SeekTool.baseFilter(p)
                 && !p.getType().is(ModTags.EntityTypes.DECOY)
-                && smokeFilter(p)
+                && SeekTool.NOT_IN_SMOKE.test(p)
                 && p != player
                 && p != player.getVehicle(), distance);
         if (entityhitresult != null) {

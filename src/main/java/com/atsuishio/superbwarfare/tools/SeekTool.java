@@ -41,45 +41,12 @@ public class SeekTool {
 
     @Deprecated(forRemoval = true)
     public static boolean friendlyToPlayer(Entity e, Entity entity) {
-//        if (teamFilter(e, entity)) return true;
-//        if (entity instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() != null && teamFilter(e, ownableEntity.getOwner()))
-//            return true;
-//        if (e instanceof Player player && teammateDrone(entity, player)) return true;
-//
-//        List<Entity> entities = entity.getPassengers();
-//        for (var passenger : entities) {
-//            if (teamFilter(e, passenger)) {
-//                return true;
-//            }
-//        }
-//
-//        if (entity instanceof VehicleEntity vehicle) {
-//            Entity lastDriver = EntityFindUtil.findEntity(vehicle.level(), vehicle.getEntityData().get(LAST_DRIVER_UUID));
-//            return lastDriver != null && teamFilter(e, lastDriver);
-//        }
         return IS_FRIENDLY.test(e, entity);
     }
 
     @Deprecated(forRemoval = true)
     public static boolean teamFilter(Entity e, Entity entity) {
-//        if (e == null) return false;
-//        if (entity == null) return false;
-//        return e == entity || (entity.getTeam() != null && !TDMSavedData.enabledTDM(entity) && entity.getTeam() == e.getTeam());
         return IN_SAME_TEAM.test(e, entity);
-    }
-
-    public static boolean teammateDrone(Entity e, Player player) {
-        ItemStack stack = player.getMainHandItem();
-        DroneEntity drone2 = null;
-        var tag = NBTTool.getTag(stack);
-        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
-            drone2 = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
-        }
-
-        return e instanceof DroneEntity drone
-                && drone != drone2
-                && drone.getController() != null
-                && teamFilter(e, drone.getController());
     }
 
     @Deprecated(forRemoval = true)
@@ -92,7 +59,7 @@ public class SeekTool {
 //                            && smokeFilter(e)
 //                            && e.getVehicle() == null
 //                    ) {
-//                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
+//                        return level.noClip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
 //                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
 //                    }
 //                    return false;
@@ -107,7 +74,7 @@ public class SeekTool {
                 .baseFilter()
                 .smokeFilter()
                 .noVehicle()
-                .clip()
+                .noClip()
                 .buildWithClosest();
     }
 
@@ -238,6 +205,7 @@ public class SeekTool {
         return VectorTool.calculateAngle(start, end);
     }
 
+    @Deprecated(forRemoval = true)
     public static boolean baseFilter(Entity entity) {
         return BASIC_FILTER.test(entity);
     }
@@ -315,14 +283,33 @@ public class SeekTool {
     };
 
     /**
+     * 判断实体是否和无人机是友方
+     */
+    public static final BiPredicate<Entity, Entity> IS_FRIENDLY_DRONE = (self, target) -> {
+        if (!(self instanceof Player player)) return false;
+
+        ItemStack stack = player.getMainHandItem();
+        DroneEntity myDrone = null;
+        var tag = NBTTool.getTag(stack);
+        if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
+            myDrone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
+        }
+
+        return target instanceof DroneEntity drone
+                && drone != myDrone
+                && drone.getController() != null
+                && IN_SAME_TEAM.test(target, drone.getController());
+    };
+
+    /**
      * 判断两个实体是否是友方关系
      */
     public static final BiPredicate<Entity, Entity> IS_FRIENDLY = (self, target) -> {
-        if (teamFilter(self, target)) return true;
+        if (IN_SAME_TEAM.test(self, target)) return true;
         if (target instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() != null && IN_SAME_TEAM.test(self, ownableEntity.getOwner())) {
             return true;
         }
-        if (self instanceof Player player && teammateDrone(target, player)) return true;
+        if (IS_FRIENDLY_DRONE.test(self, target)) return true;
 
         List<Entity> entities = target.getPassengers();
         for (var passenger : entities) {
@@ -339,42 +326,17 @@ public class SeekTool {
     };
 
     /**
-     * 判断实体是否在烟雾周围
+     * 判断实体周围是否没有烟雾
      */
-    public static final Predicate<Entity> IN_SMOKE = e -> {
+    public static final Predicate<Entity> NOT_IN_SMOKE = e -> {
         var box = e.getBoundingBox().inflate(8);
-
         var entities = e.level().getEntities(EntityTypeTest.forClass(Entity.class), box, entity -> entity instanceof SmokeDecoyEntity).stream().toList();
-
-        boolean flag = true;
-
-        for (var entity : entities) {
-            if (entity != null) {
-                flag = false;
-                break;
-            }
-        }
-
-        return flag;
+        return entities.isEmpty();
     };
 
     @Deprecated(forRemoval = true)
     public static boolean smokeFilter(Entity pEntity) {
-//        var box = pEntity.getBoundingBox().inflate(8);
-//
-//        var entities = pEntity.level().getEntities(EntityTypeTest.forClass(Entity.class), box,
-//                        entity -> entity instanceof SmokeDecoyEntity)
-//                .stream().toList();
-//
-//        boolean result = true;
-//
-//        for (var e : entities) {
-//            if (e != null) {
-//                result = false;
-//                break;
-//            }
-//        }
-        return IN_SMOKE.test(pEntity);
+        return NOT_IN_SMOKE.test(pEntity);
     }
 
     public static class Builder {
@@ -447,7 +409,7 @@ public class SeekTool {
         }
 
         public Builder smokeFilter() {
-            this.filters.add(IN_SMOKE);
+            this.filters.add(NOT_IN_SMOKE);
             return this;
         }
 
@@ -486,7 +448,7 @@ public class SeekTool {
             return this;
         }
 
-        public Builder clip() {
+        public Builder noClip() {
             this.filters.add(e ->
                     this.entity.level()
                             .clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))

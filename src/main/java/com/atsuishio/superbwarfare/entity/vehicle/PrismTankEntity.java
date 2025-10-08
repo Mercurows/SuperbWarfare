@@ -348,7 +348,9 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             Vec3 viewVec = getBarrelVector(1);
             Vec3 toVec = pos.add(viewVec.x * 512, viewVec.y * 512, viewVec.z * 512);
             AABB aabb = getBoundingBox().expandTowards(viewVec.scale(512)).inflate(1.0D, 1.0D, 1.0D);
-            EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(this, pos, toVec, aabb, p -> !p.isSpectator() && p.isAlive() && SeekTool.smokeFilter(p), distance);
+            EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(this, pos, toVec, aabb,
+                    p -> !p.isSpectator() && p.isAlive() && SeekTool.NOT_IN_SMOKE.test(p), distance);
+
             if (entityhitresult != null) {
                 Vec3 targetPos = entityhitresult.getLocation();
                 double distanceToTarget = pos.distanceToSqr(targetPos);

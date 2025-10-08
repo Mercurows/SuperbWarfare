@@ -111,7 +111,6 @@ import java.util.stream.StreamSupport;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
-import static com.atsuishio.superbwarfare.tools.SeekTool.teamFilter;
 
 public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
 
@@ -973,7 +972,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
 
         if (player.getVehicle() == this) return InteractionResult.PASS;
-        var data = data();
 
         ItemStack stack = player.getMainHandItem();
 
@@ -1006,7 +1004,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
 
             Entity lastDriver = EntityFindUtil.findEntity(level(), entityData.get(LAST_DRIVER_UUID));
-            if (lastDriver != null && !teamFilter(player, lastDriver) && lastDriver.getTeam() != null) {
+            if (lastDriver != null && !SeekTool.IN_SAME_TEAM.test(player, lastDriver) && lastDriver.getTeam() != null) {
                 return InteractionResult.PASS;
             }
 
@@ -1071,7 +1069,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (source.getEntity() != null
                 && getFirstPassenger() != null
-                && SeekTool.friendlyToPlayer(source.getEntity(), source.getEntity())
+                && SeekTool.IS_FRIENDLY.test(source.getEntity(), source.getEntity())
                 && getFirstPassenger().getTeam() != null
                 && source.getEntity().getTeam() != null
                 && source.getEntity().getTeam() == getFirstPassenger().getTeam()
