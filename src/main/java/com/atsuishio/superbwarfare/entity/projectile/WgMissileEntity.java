@@ -40,6 +40,8 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.UUID;
+
 public class WgMissileEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(WgMissileEntity.class, EntityDataSerializers.FLOAT);
@@ -51,6 +53,8 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     private float explosionDamage = 200f;
     private float explosionRadius = 10f;
     private float gravity = 0f;
+
+    public UUID launcherVehicle;
 
     public WgMissileEntity(EntityType<? extends WgMissileEntity> type, Level level) {
         super(type, level);
@@ -208,16 +212,18 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
 
             Vec3 lookVec = vehicle.getBarrelVector(1).normalize();
             Vec3 vec3 = TraceTool.vehicleFindLookingPos(this, vehicle, vehicle.getNewEyePos(1), 512);
-            Vec3 toVec;
+            Vec3 toVec = getDeltaMovement().normalize();
 
-            if (vec3 != null) {
-                toVec = this.position().vectorTo(vec3).normalize();
-            } else {
-                BlockHitResult result = level().clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1).add(lookVec.scale(512)),
-                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
-                Vec3 hitPos = result.getLocation();
+            if (launcherVehicle == vehicle.getUUID()) {
+                if (vec3 != null) {
+                    toVec = this.position().vectorTo(vec3).normalize();
+                } else {
+                    BlockHitResult result = level().clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1).add(lookVec.scale(512)),
+                            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
+                    Vec3 hitPos = result.getLocation();
 
-                toVec = this.position().vectorTo(hitPos).normalize();
+                    toVec = this.position().vectorTo(hitPos).normalize();
+                }
             }
 
             setDeltaMovement(getDeltaMovement().add(toVec.scale(0.8)));
@@ -291,6 +297,10 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     @Override
     public void setGravity(float gravity) {
         this.gravity = gravity;
+    }
+
+    public void setLauncherVehicle(UUID uuid) {
+        this.launcherVehicle = uuid;
     }
 
     @Override

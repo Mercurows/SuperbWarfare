@@ -479,6 +479,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
                 wgMissileEntity.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
                 wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living), 0f);
+                wgMissileEntity.setLauncherVehicle(this.uuid);
                 living.level().addFreshEntity(wgMissileEntity);
                 playShootSound3p(living, 0, 6, 0, 0, getTurretShootPos(living, 1));
 
