@@ -1,0 +1,13 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "#superbwarfare:storage_blocks/steel",
+    "superbwarfare:artillery_indicator",
+    "superbwarfare:mortar_barrel",
+    "minecraft:dispenser"
+  ],
+  "result": {
+    "item": "superbwarfare:tow_deployer"
+  }
+}

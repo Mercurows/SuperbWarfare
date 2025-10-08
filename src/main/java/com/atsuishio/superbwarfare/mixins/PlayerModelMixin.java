@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -64,6 +65,57 @@ public class PlayerModelMixin<T extends LivingEntity> {
                 model.rightSleeve.yRot = -15f * Mth.DEG_TO_RAD;
                 model.rightArm.zRot = -30f * Mth.DEG_TO_RAD;
                 model.rightSleeve.zRot = -30f * Mth.DEG_TO_RAD;
+            }
+
+            // Tow
+            if (player.getVehicle() instanceof TowEntity) {
+                model.head.xRot = 0;
+                model.hat.xRot = 0;
+                model.head.y = 0;
+                model.hat.y = 0;
+                model.head.z = -4;
+                model.hat.z = -4;
+
+                model.leftArm.yRot = 45 * Mth.DEG_TO_RAD;
+                model.leftArm.xRot = -115 * Mth.DEG_TO_RAD;
+                model.leftSleeve.yRot = 45 * Mth.DEG_TO_RAD;
+                model.leftSleeve.xRot = -115 * Mth.DEG_TO_RAD;
+
+                model.rightArm.yRot = 25 * Mth.DEG_TO_RAD;
+                model.rightArm.xRot = -115 * Mth.DEG_TO_RAD;
+                model.rightSleeve.yRot = 25 * Mth.DEG_TO_RAD;
+                model.rightSleeve.xRot = -115 * Mth.DEG_TO_RAD;
+
+                model.leftLeg.xRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.xRot = 0 * Mth.DEG_TO_RAD;
+                model.leftLeg.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftLeg.zRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.zRot = 0 * Mth.DEG_TO_RAD;
+                model.leftLeg.z = -6f;
+                model.leftPants.z = -6f;
+                model.leftLeg.y = 5.4f;
+                model.leftPants.y = 5.4f;
+
+                model.rightLeg.xRot = 85 * Mth.DEG_TO_RAD;
+                model.rightPants.xRot = 85 * Mth.DEG_TO_RAD;
+                model.rightLeg.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightLeg.zRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.zRot = 0 * Mth.DEG_TO_RAD;
+                model.rightLeg.z = -4f;
+                model.rightPants.z = -4f;
+                model.rightLeg.y = 14;
+                model.rightPants.y = 14;
+
+                model.body.xRot = 20 * Mth.DEG_TO_RAD;
+                model.body.z = -5;
+
+                model.leftArm.z = -5;
+                model.leftSleeve.z = -5;
+
+                model.rightArm.z = -5;
+                model.rightSleeve.z = -5;
             }
 
             // 趴下持枪

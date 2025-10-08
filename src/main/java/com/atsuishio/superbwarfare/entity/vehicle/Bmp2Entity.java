@@ -136,7 +136,8 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                                 .explosionRadius(ExplosionConfig.WIRE_GUIDE_MISSILE_EXPLOSION_RADIUS.get())
                                 .sound(ModSounds.INTO_MISSILE.get())
                                 .sound1p(ModSounds.BMP_MISSILE_FIRE_1P.get())
-                                .sound3p(ModSounds.BMP_MISSILE_FIRE_3P.get()),
+                                .sound3p(ModSounds.BMP_MISSILE_FIRE_3P.get())
+                                .icon(Mod.loc("textures/screens/vehicle_weapon/missile_9m113.png")),
                 },
                 new VehicleWeapon[]{
                         // 成员机枪

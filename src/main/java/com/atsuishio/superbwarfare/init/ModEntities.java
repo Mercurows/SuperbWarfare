@@ -122,6 +122,8 @@ public class ModEntities {
             EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(LaserTowerEntity::new).fireImmune().sized(0.9f, 1.65f));
     public static final RegistryObject<EntityType<WaveforceTowerEntity>> WAVEFORCE_TOWER = register("waveforce_tower",
             EntityType.Builder.<WaveforceTowerEntity>of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(WaveforceTowerEntity::new).fireImmune().sized(1.75f, 3.3f));
+    public static final RegistryObject<EntityType<TowEntity>> TOW = register("tow",
+            EntityType.Builder.<TowEntity>of(TowEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(TowEntity::new).fireImmune().sized(0.5f, 1.35f));
 
     // Boats
     public static final RegistryObject<EntityType<SpeedboatEntity>> SPEEDBOAT = register("speedboat",

@@ -439,7 +439,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
     @Override
     public Vec3 driverZoomPos(float ticks) {
-        Matrix4f transform = getVehicleFlatTransform(1);
+        Matrix4f transform = getVehicleFlatTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0f, 2.16f + 1.4f, 0.5175f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }

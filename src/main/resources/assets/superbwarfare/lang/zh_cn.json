@@ -233,6 +233,8 @@
   "item.superbwarfare.mortar_barrel": "迫击炮管",
   "item.superbwarfare.mortar_deployer": "迫击炮",
   "des.superbwarfare.mortar_deployer": "潜行时，使用遥控器右击迫击炮可将其转化为智能迫击炮",
+  "item.superbwarfare.tow_deployer": "陶式反坦克导弹发射器",
+  "item.superbwarfare.tow_missile": "陶式反坦克导弹",
   "item.superbwarfare.claymore_mine": "阔剑地雷",
   "item.superbwarfare.c4_bomb": "C4炸药",
   "des.superbwarfare.c4_bomb.time": "定时",
@@ -586,6 +588,7 @@
   "entity.superbwarfare.waveforce_tower": "波能塔",
   "entity.superbwarfare.igla_9k38_missile": "IGLA-9K38对空导弹",
   "entity.superbwarfare.truck": "泥头车",
+  "entity.superbwarfare.tow": "陶式反坦克导弹发射器",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
