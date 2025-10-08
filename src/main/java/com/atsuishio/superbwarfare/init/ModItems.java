@@ -145,6 +145,7 @@ public class ModItems {
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 20));
     public static final DeferredHolder<Item, WireGuideMissileItem> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
+    public static final DeferredHolder<Item, Item> TOW_MISSILE = AMMO.register("tow_missile", ()->new Item(new Item.Properties().stacksTo(4)));
     public static final DeferredHolder<Item, AgmItem> AGM = AMMO.register("agm", AgmItem::new);
     public static final DeferredHolder<Item, SwarmDroneItem> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
     public static final DeferredHolder<Item, MediumAerialBombItem> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);
@@ -190,10 +191,12 @@ public class ModItems {
     public static final DeferredHolder<Item, UsChestIotv> US_CHEST_IOTV = ITEMS.register("us_chest_iotv", UsChestIotv::new);
     public static final DeferredHolder<Item, GeHelmetM35> GE_HELMET_M_35 = ITEMS.register("ge_helmet_m_35", GeHelmetM35::new);
     public static final DeferredHolder<Item, ParachuteItem> PARACHUTE = ITEMS.register("parachute", ParachuteItem::new);
+
     public static final DeferredHolder<Item, MortarDeployer> MORTAR_DEPLOYER = ITEMS.register("mortar_deployer", MortarDeployer::new);
     public static final DeferredHolder<Item, Item> MORTAR_BARREL = ITEMS.register("mortar_barrel", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MORTAR_BASE_PLATE = ITEMS.register("mortar_base_plate", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MORTAR_BIPOD = ITEMS.register("mortar_bipod", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, TowDeployer> TOW_DEPLOYER = ITEMS.register("tow_deployer", TowDeployer::new);
     public static final DeferredHolder<Item, Item> SEEKER = ITEMS.register("seeker", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MISSILE_ENGINE = ITEMS.register("missile_engine", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> FUSEE = ITEMS.register("fusee", () -> new Item(new Item.Properties()));

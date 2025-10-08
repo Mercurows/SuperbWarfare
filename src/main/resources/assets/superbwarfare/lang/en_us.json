@@ -233,6 +233,8 @@
   "item.superbwarfare.mortar_barrel": "Mortar Barrel",
   "item.superbwarfare.mortar_deployer": "Mortar",
   "des.superbwarfare.mortar_deployer": "While sneaking, right-click mortar with Monitor to convert it to intelligent mortar",
+  "item.superbwarfare.tow_deployer": "TOW Anti-tank Missile Launcher",
+  "item.superbwarfare.tow_missile": "TOW Anti-tank Missile",
   "item.superbwarfare.claymore_mine": "Claymore",
   "item.superbwarfare.c4_bomb": "C4",
   "des.superbwarfare.c4_bomb.time": "Timed Explosive",
@@ -586,6 +588,7 @@
   "entity.superbwarfare.waveforce_tower": "Wave-Force Tower",
   "entity.superbwarfare.igla_9k38_missile": "IGLA-9K38 SAM",
   "entity.superbwarfare.truck": "Truck",
+  "entity.superbwarfare.tow": "TOW Anti-tank Missile Launcher",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",

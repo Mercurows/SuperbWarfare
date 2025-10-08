@@ -496,14 +496,22 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.IGLA_MISSILE.get())));
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.WIRE_GUIDE_MISSILE.get())
                 .requires(ModItems.JAVELIN_MISSILE.get())
                 .unlockedBy(getHasName(ModItems.JAVELIN_MISSILE.get()), has(ModItems.JAVELIN_MISSILE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.WIRE_GUIDE_MISSILE.get())));
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.JAVELIN_MISSILE.get())
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.TOW_MISSILE.get())
                 .requires(ModItems.WIRE_GUIDE_MISSILE.get())
                 .unlockedBy(getHasName(ModItems.WIRE_GUIDE_MISSILE.get()), has(ModItems.WIRE_GUIDE_MISSILE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.TOW_MISSILE.get())));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.JAVELIN_MISSILE.get())
+                .requires(ModItems.TOW_MISSILE.get())
+                .unlockedBy(getHasName(ModItems.TOW_MISSILE.get()), has(ModItems.TOW_MISSILE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get()) + "_convert"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.LUNGE_MINE.get(), 2)
                 .pattern(" ba")
                 .pattern(" cb")
@@ -1436,6 +1444,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.TRUCK.get())));
+        VehicleAssemblingRecipeBuilder.item(ModItems.TOW_DEPLOYER.get(), 1, VehicleAssemblingRecipe.Category.DEFENSE)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL)
+                .require(ModItems.ARTILLERY_INDICATOR.get())
+                .require(ModItems.MORTAR_BARREL.get())
+                .require(Items.DISPENSER)
+                .unlockedBy(getHasName(Items.DISPENSER), has(Items.DISPENSER))
+                .save(writer, Mod.loc(getItemName(ModItems.TOW_DEPLOYER.get()) + "_assembling"));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
                 .require(PLATES_COPPER, 4)

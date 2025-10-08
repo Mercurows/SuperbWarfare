@@ -3,15 +3,15 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:javelin_missile_convert"
+        "recipe": "superbwarfare:tow_missile"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
-    "has_tow_missile": {
+    "has_wire_guide_missile": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:tow_missile"
+            "items": "superbwarfare:wire_guide_missile"
           }
         ]
       },
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_tow_missile"
+      "has_wire_guide_missile"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:javelin_missile_convert"
+      "superbwarfare:tow_missile"
     ]
   }
 }

@@ -3,11 +3,11 @@
   "category": "equipment",
   "ingredients": [
     {
-      "item": "superbwarfare:tow_missile"
+      "item": "superbwarfare:wire_guide_missile"
     }
   ],
   "result": {
     "count": 1,
-    "id": "superbwarfare:javelin_missile"
+    "id": "superbwarfare:tow_missile"
   }
 }

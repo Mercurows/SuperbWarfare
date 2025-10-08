@@ -1,0 +1,8 @@
+{
+  "ID": "superbwarfare:tow",
+  "MaxHealth": 60,
+  "Mass": 0.05,
+  "DamageModifiers": [
+    "All * 0.75"
+  ]
+}

@@ -80,7 +80,7 @@ public class TraceTool {
         Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb,
-                p -> !p.isSpectator() && p.isAlive() && SeekTool.baseFilter(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && smokeFilter(p) && p != projectile, distance);
+                p -> !p.isSpectator() && p.isAlive() && SeekTool.baseFilter(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && smokeFilter(p) && p != projectile && !(p instanceof Projectile), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
 
