@@ -6,8 +6,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.WgMissileWeapon;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.nbt.CompoundTag;
@@ -28,6 +30,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -184,6 +188,27 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         wgMissileEntity.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
         wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z,  2, 0f);
         living.level().addFreshEntity(wgMissileEntity);
+
+        Vec3 pos = getTurretShootPos(living, 1).add(getBarrelVector(1).scale(-0.5));
+
+        AABB ab = new AABB(pos, pos).inflate(0.75).move(getBarrelVector(1).scale(-2)).expandTowards(getBarrelVector(1).scale(-5));
+
+        for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
+                target -> target != this && target != getFirstPassenger() && target.getVehicle() == null)
+        ) {
+            entity.hurt(ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), living), 30 - 2 * entity.distanceTo(this));
+            double force = 4 - 0.7 * entity.distanceTo(this);
+            entity.push(-force * getBarrelVector(1).x, -force * getBarrelVector(1).y, -force * getBarrelVector(1).z);
+        }
+
+        if (level() instanceof ServerLevel serverLevel) {
+            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), pos, serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1), pos, serverLevel, this);
+            for (int j = 0; j < 20; j += 4) {
+                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getBarrelVector(1), getTurretShootPos(living, 1).add(getBarrelVector(1).scale(1))));
+            }
+        }
+
         playShootSound3p(living, 0, 6, 0, 0, getTurretShootPos(living, 1));
 
         this.entityData.set(STATE, this.getEntityData().get(STATE) + 1);
@@ -198,8 +223,8 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             float diffY = Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot());
             float diffX = Mth.wrapDegrees(passenger.getXRot() - this.getXRot());
 
-            this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -90f, 90f));
-            this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -90f, 90f), -40, 40));
+            this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -90f, 90f));
+            this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.9f * diffX, -90f, 90f), -40, 40));
         }
     }
 
@@ -256,7 +281,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public Vec3 getNewEyePos(float pPartialTicks) {
-        return new Vec3(getX(), getY() + 1.174775f, getZ());
+        return driverZoomPos(pPartialTicks);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -292,14 +317,14 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.2 : 0.3;
+        return zoom ? 0.2 : 0.27;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (isFirstPerson || zoom) {
-            return new Vec2(Mth.lerp(partialTicks, this.yRotO, this.getYRot()), Mth.lerp(partialTicks, this.xRotO, this.getXRot()));
+            return new Vec2(Mth.lerp(partialTicks, yRotO, getYRot()), Mth.lerp(partialTicks, xRotO, getXRot()));
         }
         return super.getCameraRotation(partialTicks, player, false, false);
     }
