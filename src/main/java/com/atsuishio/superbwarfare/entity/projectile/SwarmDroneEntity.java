@@ -210,7 +210,7 @@ public class SwarmDroneEntity extends FastThrowableProjectile implements GeoEnti
     public void tick() {
         super.tick();
         Entity entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID));
-        List<Entity> decoy = SeekTool.seekLivingEntities(this, this.level(), 32, 90);
+        List<Entity> decoy = SeekTool.seekLivingEntities(this, 32, 90);
 
         for (var e : decoy) {
             if (e.getType().is(ModTags.EntityTypes.DECOY) && !this.distracted) {

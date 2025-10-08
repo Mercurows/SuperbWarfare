@@ -157,7 +157,7 @@ public class DroneHudOverlay implements IGuiOverlay {
                         }
                     }
 
-                    List<Entity> entities = SeekTool.seekLivingEntities(entity, entity.level(), 256, 30);
+                    List<Entity> entities = SeekTool.seekLivingEntities(entity, 256, 30);
                     for (var e : entities) {
                         Vec3 pos = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
                         Vec3 point = VectorUtil.worldToScreen(pos);

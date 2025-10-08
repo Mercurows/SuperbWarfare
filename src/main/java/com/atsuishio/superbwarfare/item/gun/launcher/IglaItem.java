@@ -94,7 +94,7 @@ public class IglaItem extends GunGeoItem {
         if (entity instanceof Player player && selected) {
             var tag = stack.getOrCreateTag();
             if (tag.getBoolean("Seeking")) {
-                List<Entity> decoy = SeekTool.seekLivingEntities(player, player.level(), 512, 20);
+                List<Entity> decoy = SeekTool.seekLivingEntities(player, 512, 20);
                 for (var e : decoy) {
                     if (e.getType().is(ModTags.EntityTypes.DECOY)) {
                         tag.putString("TargetEntity", e.getStringUUID());

@@ -66,10 +66,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
     public static Consumer<VehicleEntity> fireSound = vehicle -> {
     };
 
@@ -122,6 +118,11 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE2);
         this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
         this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
+    }
+
+    @Override
+    public int getContainerSize() {
+        return 102;
     }
 
     @Override
@@ -419,7 +420,17 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             resetSeek(player);
         }
 
-        Entity entity = SeekTool.seekCustomSizeEntity(this, this.level(), 384, 18, 0.9, true);
+        Entity entity = new SeekTool.Builder(this)
+                .withinRange(384)
+                .withinAngle(18)
+                .baseFilter()
+                .onGround(10)
+                .sizeLesserThan(0.9)
+                .smokeFilter()
+                .noVehicle()
+                .noClip()
+                .buildWithClosest();
+
         if (entity != null) {
             if (lockTime == 0) {
                 setTargetUuid(String.valueOf(entity.getUUID()));
@@ -719,7 +730,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         entity.setYRot(entity.getYRot() + delta_y);
         entity.setYBodyRot(this.getYRot());
     }
-    
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
@@ -989,7 +1000,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public int getHudColor() {
-       return super.getHudColor();
+        return super.getHudColor();
     }
 
     @OnlyIn(Dist.CLIENT)
