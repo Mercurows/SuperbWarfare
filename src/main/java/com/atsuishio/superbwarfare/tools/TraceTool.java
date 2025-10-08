@@ -79,11 +79,11 @@ public class TraceTool {
         Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb,
-                p -> !p.isSpectator() && p.isAlive() && SeekTool.baseFilter(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(p) && p != projectile && !(p instanceof Projectile), distance);
+                p -> !p.isSpectator() && p.isAlive() && SeekTool.BASIC_FILTER.test(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(p) && p != projectile && !(p instanceof Projectile), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
-
         }
+
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             return hitResult.getLocation();
         }
@@ -118,7 +118,7 @@ public class TraceTool {
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(entity, pos, toVec, aabb, p -> !p.isSpectator()
                 && p.isAlive()
                 && !(p instanceof Projectile)
-                && SeekTool.baseFilter(p)
+                && SeekTool.BASIC_FILTER.test(p)
                 && !p.getType().is(ModTags.EntityTypes.DECOY)
                 && SeekTool.NOT_IN_SMOKE.test(p)
                 && p != entity
@@ -150,7 +150,7 @@ public class TraceTool {
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(player, pos, toVec, aabb, p -> !p.isSpectator()
                 && p.isAlive()
                 && !(p instanceof Projectile)
-                && SeekTool.baseFilter(p)
+                && SeekTool.BASIC_FILTER.test(p)
                 && !p.getType().is(ModTags.EntityTypes.DECOY)
                 && SeekTool.NOT_IN_SMOKE.test(p)
                 && p != player

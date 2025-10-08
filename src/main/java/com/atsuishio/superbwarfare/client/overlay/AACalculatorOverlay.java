@@ -58,7 +58,16 @@ public class AACalculatorOverlay implements IGuiOverlay {
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                Entity naerestEntity = SeekTool.vehicleSeekEntity(vehicle, player.level(), 512, 20);
+                Entity naerestEntity = new SeekTool.Builder(vehicle)
+                        .withinRange(512)
+                        .withinAngle(20)
+                        .baseFilter()
+                        .smokeFilter()
+                        .noVehicle()
+                        .notFriendly()
+                        .vehicleNoClip()
+                        .buildWithClosest();
+
                 Entity target;
 
                 if (options.keySprint.isDown()) {

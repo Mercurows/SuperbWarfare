@@ -64,7 +64,7 @@ public class HandsomeFrameOverlay implements IGuiOverlay {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            List<Entity> allEntities = SeekTool.seekLivingEntitiesThroughWall(player, player.level(), 32 + 8 * (level - 1), 30);
+            List<Entity> allEntities = SeekTool.seekLivingEntitiesThroughWall(player, 32 + 8 * (level - 1), 30);
             List<Entity> visibleEntities = SeekTool.seekLivingEntities(player, 32 + 8 * (level - 1), 30);
 
             Entity naerestEntity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 30);
