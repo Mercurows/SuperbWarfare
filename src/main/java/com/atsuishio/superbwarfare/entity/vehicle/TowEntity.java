@@ -193,6 +193,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         wgMissileEntity.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
         wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z,  2, 0f);
+        wgMissileEntity.setLauncherVehicle(this.uuid);
         living.level().addFreshEntity(wgMissileEntity);
 
         Vec3 pos = getTurretShootPos(living, 1).add(getBarrelVector(1).scale(-0.5));
