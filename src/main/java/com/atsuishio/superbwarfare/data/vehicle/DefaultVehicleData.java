@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.gson.annotations.SerializedName;
@@ -45,7 +46,6 @@ public class DefaultVehicleData implements IDBasedData {
     @ServerOnly
     @SerializedName("SelfHurtAmount")
     public float selfHurtAmount = 0.1F;
-
 
     @SerializedName("MaxEnergy")
     public int maxEnergy = 100000;
@@ -90,4 +90,7 @@ public class DefaultVehicleData implements IDBasedData {
     @ServerOnly
     @SerializedName("ExplosionParticleType")
     public ParticleTool.ParticleType explosionParticleType = ParticleTool.ParticleType.MINI;
+
+    @SerializedName("VehicleContainerType")
+    public VehicleContainerType vehicleContainerType = VehicleContainerType.MEDIUM;
 }

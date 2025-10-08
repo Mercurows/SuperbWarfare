@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 
@@ -34,6 +35,7 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
     public static final VehicleProp<Float> EXPLOSION_RADIUS = new VehicleProp<>("ExplosionRadius");
 
     public static final VehicleProp<ParticleTool.ParticleType> EXPLOSION_PARTICLE_TYPE = new VehicleProp<>("ExplosionParticleType");
+    public static final VehicleProp<VehicleContainerType> VEHICLE_CONTAINER_TYPE = new VehicleProp<>("VehicleContainerType");
 
     private VehicleProp(String name) {
         super(DefaultVehicleData.class, name);

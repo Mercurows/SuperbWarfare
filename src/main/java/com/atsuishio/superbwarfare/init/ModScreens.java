@@ -10,11 +10,12 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModScreens {
 
+    // TODO 为每一种vehicle menu添加渲染
     @SubscribeEvent
     public static void clientLoad(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ReforgingTableScreen::new);
         event.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
-        event.register(ModMenuTypes.VEHICLE_MENU.get(), VehicleScreen::new);
+        event.register(ModMenuTypes.VEHICLE_MENU_HUGE.get(), VehicleScreen::new);
         event.register(ModMenuTypes.SUPERB_ITEM_INTERFACE_MENU.get(), SuperbItemInterfaceScreen::new);
         event.register(ModMenuTypes.FUMO_25_MENU.get(), FuMO25Screen::new);
         event.register(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), VehicleAssemblingScreen::new);

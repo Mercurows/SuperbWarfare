@@ -71,11 +71,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     }
 
     @Override
-    public int getContainerSize() {
-        return 102;
-    }
-
-    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(GREEN, false);
