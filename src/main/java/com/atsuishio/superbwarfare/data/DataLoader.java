@@ -61,7 +61,7 @@ public class DataLoader {
             var map = value.data;
             map.clear();
 
-            for (var entry : manager.listResources(name, file -> file.getPath().endsWith(".json")).entrySet()) {
+            for (var entry : manager.listResources(name, location -> location.getNamespace().equals(Mod.MODID) && location.getPath().endsWith(".json")).entrySet()) {
                 var attribute = entry.getValue();
                 try {
                     var data = (IDBasedData) GSON.fromJson(new InputStreamReader(attribute.open()), value.type);
