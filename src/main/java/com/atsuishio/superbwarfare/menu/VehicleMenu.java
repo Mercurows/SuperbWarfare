@@ -62,26 +62,28 @@ public class VehicleMenu extends AbstractContainerMenu {
         pContainer.startOpen(pPlayerInventory.player);
         int i = (this.containerRows - 4) * 18;
 
+        int colOffset = (this.containerCols - 9) / 2 * 18;
+
         for (int j = 0; j < this.containerRows; ++j) {
             for (int k = 0; k < this.containerCols; ++k) {
-                this.addSlot(new Slot(pContainer, k + j * this.containerCols, 8 + k * 18 + 25, 18 + j * 18));
+                this.addSlot(new Slot(pContainer, k + j * this.containerCols, 16 + k * 18, 18 + j * 18));
             }
         }
 
         if (this.hasUpgradeSlots) {
             for (int m = 0; m < 3; ++m) {
-                this.addSlot(new Slot(pContainer, m, X_OFFSET - 4, 84 + m * 18 + Y_OFFSET + i));
+                this.addSlot(new Slot(pContainer, m, colOffset - 4, 84 + m * 18 + Y_OFFSET + i));
             }
         }
 
         for (int l = 0; l < 3; ++l) {
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(pPlayerInventory, j + l * 9 + 9, 8 + j * 18 + X_OFFSET, 84 + l * 18 + Y_OFFSET + i));
+                this.addSlot(new Slot(pPlayerInventory, j + l * 9 + 9, 16 + j * 18 + colOffset, 84 + l * 18 + Y_OFFSET + i));
             }
         }
 
         for (int k = 0; k < 9; ++k) {
-            this.addSlot(new Slot(pPlayerInventory, k, 8 + k * 18 + X_OFFSET, 142 + Y_OFFSET + i));
+            this.addSlot(new Slot(pPlayerInventory, k, 16 + k * 18 + colOffset, 142 + Y_OFFSET + i));
         }
     }
 
@@ -125,7 +127,7 @@ public class VehicleMenu extends AbstractContainerMenu {
         return containerCols;
     }
 
-    public boolean isHasUpgradeSlots() {
+    public boolean hasUpgradeSlots() {
         return hasUpgradeSlots;
     }
 }
