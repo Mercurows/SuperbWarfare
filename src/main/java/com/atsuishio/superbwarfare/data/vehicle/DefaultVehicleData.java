@@ -98,4 +98,7 @@ public class DefaultVehicleData implements IDBasedData {
 
     @SerializedName("VehicleContainerType")
     public VehicleContainerType vehicleContainerType = VehicleContainerType.MEDIUM;
+
+    @SerializedName("HasUpgradeSlots")
+    public boolean hasUpgradeSlots = false;
 }
