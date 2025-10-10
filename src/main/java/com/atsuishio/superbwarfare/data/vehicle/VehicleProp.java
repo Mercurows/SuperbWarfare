@@ -41,6 +41,7 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
 
     public static final VehicleProp<ParticleTool.ParticleType> EXPLOSION_PARTICLE_TYPE = new VehicleProp<>("ExplosionParticleType");
     public static final VehicleProp<VehicleContainerType> VEHICLE_CONTAINER_TYPE = new VehicleProp<>("VehicleContainerType");
+    public static final VehicleProp<Boolean> HAS_UPGRADE_SLOTS = new VehicleProp<>("HasUpgradeSlots");
 
     private VehicleProp(String name) {
         super(DefaultVehicleData.class, name);

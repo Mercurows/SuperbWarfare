@@ -16,35 +16,41 @@ public class VehicleMenu extends AbstractContainerMenu {
     private final Container container;
     private final int containerRows;
     private final int containerCols;
+    private final boolean hasUpgradeSlots;
 
     public static final int X_OFFSET = 97;
     public static final int Y_OFFSET = 20;
 
-    public VehicleMenu(MenuType<?> pType, int pContainerId, Inventory pPlayerInventory, int row, int col) {
-        this(pType, pContainerId, pPlayerInventory, new SimpleContainer(row * col), row, col);
+    public VehicleMenu(MenuType<?> pType, int pContainerId, Inventory pPlayerInventory, int row, int col, boolean hasUpgradeSlots) {
+        this(pType, pContainerId, pPlayerInventory, new SimpleContainer(row * col), row, col, hasUpgradeSlots);
     }
 
-    public static VehicleMenu mini(int pContainerId, Inventory pPlayerInventory) {
-        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_MINI.get(), pContainerId, pPlayerInventory, 1, 9);
+    public static VehicleMenu mini(int pContainerId, Inventory pPlayerInventory, boolean hasUpgradeSlots) {
+        return new VehicleMenu(hasUpgradeSlots ? ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MINI.get(),
+                pContainerId, pPlayerInventory, 1, 9, hasUpgradeSlots);
     }
 
-    public static VehicleMenu small(int pContainerId, Inventory pPlayerInventory) {
-        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_SMALL.get(), pContainerId, pPlayerInventory, 3, 9);
+    public static VehicleMenu small(int pContainerId, Inventory pPlayerInventory, boolean hasUpgradeSlots) {
+        return new VehicleMenu(hasUpgradeSlots ? ModMenuTypes.VEHICLE_MENU_SMALL_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_SMALL.get(),
+                pContainerId, pPlayerInventory, 3, 9, hasUpgradeSlots);
     }
 
-    public static VehicleMenu medium(int pContainerId, Inventory pPlayerInventory) {
-        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_MEDIUM.get(), pContainerId, pPlayerInventory, 6, 9);
+    public static VehicleMenu medium(int pContainerId, Inventory pPlayerInventory, boolean hasUpgradeSlots) {
+        return new VehicleMenu(hasUpgradeSlots ? ModMenuTypes.VEHICLE_MENU_MEDIUM_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MEDIUM.get(),
+                pContainerId, pPlayerInventory, 6, 9, hasUpgradeSlots);
     }
 
-    public static VehicleMenu large(int pContainerId, Inventory pPlayerInventory) {
-        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_LARGE.get(), pContainerId, pPlayerInventory, 6, 13);
+    public static VehicleMenu large(int pContainerId, Inventory pPlayerInventory, boolean hasUpgradeSlots) {
+        return new VehicleMenu(hasUpgradeSlots ? ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_LARGE.get(),
+                pContainerId, pPlayerInventory, 6, 13, hasUpgradeSlots);
     }
 
-    public static VehicleMenu huge(int pContainerId, Inventory pPlayerInventory) {
-        return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_HUGE.get(), pContainerId, pPlayerInventory, 6, 17);
+    public static VehicleMenu huge(int pContainerId, Inventory pPlayerInventory, boolean hasUpgradeSlots) {
+        return new VehicleMenu(hasUpgradeSlots ? ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_HUGE.get(),
+                pContainerId, pPlayerInventory, 6, 17, hasUpgradeSlots);
     }
 
-    public VehicleMenu(MenuType<?> pType, int pContainerId, Inventory pPlayerInventory, Container pContainer, int row, int col) {
+    public VehicleMenu(MenuType<?> pType, int pContainerId, Inventory pPlayerInventory, Container pContainer, int row, int col, boolean hasUpgradeSlots) {
         super(pType, pContainerId);
 
         checkContainerSize(pContainer, row * col);
@@ -52,13 +58,20 @@ public class VehicleMenu extends AbstractContainerMenu {
         this.container = pContainer;
         this.containerRows = row;
         this.containerCols = col;
+        this.hasUpgradeSlots = hasUpgradeSlots;
 
         pContainer.startOpen(pPlayerInventory.player);
         int i = (this.containerRows - 4) * 18;
 
         for (int j = 0; j < this.containerRows; ++j) {
             for (int k = 0; k < this.containerCols; ++k) {
-                this.addSlot(new Slot(pContainer, k + j * 17, 8 + k * 18 + 25, 18 + j * 18));
+                this.addSlot(new Slot(pContainer, k + j * this.containerCols, 8 + k * 18 + 25, 18 + j * 18));
+            }
+        }
+
+        if (this.hasUpgradeSlots) {
+            for (int m = 0; m < 3; ++m) {
+                this.addSlot(new Slot(pContainer, m, X_OFFSET - 4, 84 + m * 18 + Y_OFFSET + i));
             }
         }
 
@@ -80,6 +93,8 @@ public class VehicleMenu extends AbstractContainerMenu {
         if (slot.hasItem()) {
             ItemStack stack = slot.getItem();
             itemstack = stack.copy();
+
+            // TODO 在有upgrade slots的情况下，完成对于载具perk的移动判断
             if (pIndex < this.containerRows * this.containerCols) {
                 if (!this.moveItemStackTo(stack, this.containerRows * this.containerCols, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
@@ -101,5 +116,17 @@ public class VehicleMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(@NotNull Player pPlayer) {
         return this.container.stillValid(pPlayer);
+    }
+
+    public int getContainerRows() {
+        return containerRows;
+    }
+
+    public int getContainerCols() {
+        return containerCols;
+    }
+
+    public boolean isHasUpgradeSlots() {
+        return hasUpgradeSlots;
     }
 }

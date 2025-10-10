@@ -509,17 +509,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, Player pPlayer) {
         if (!pPlayer.isSpectator() && this.hasMenu()) {
             var type = data().get(VehicleProp.VEHICLE_CONTAINER_TYPE);
+            var upgrade = data().get(VehicleProp.HAS_UPGRADE_SLOTS);
             var menu = switch (type) {
-                case MINI -> ModMenuTypes.VEHICLE_MENU_MINI.get();
-                case SMALL -> ModMenuTypes.VEHICLE_MENU_SMALL.get();
-                case MEDIUM -> ModMenuTypes.VEHICLE_MENU_MEDIUM.get();
-                case LARGE -> ModMenuTypes.VEHICLE_MENU_LARGE.get();
-                case HUGE -> ModMenuTypes.VEHICLE_MENU_HUGE.get();
+                case MINI ->
+                        upgrade ? ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MINI.get();
+                case SMALL ->
+                        upgrade ? ModMenuTypes.VEHICLE_MENU_SMALL_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_SMALL.get();
+                case MEDIUM ->
+                        upgrade ? ModMenuTypes.VEHICLE_MENU_MEDIUM_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MEDIUM.get();
+                case LARGE ->
+                        upgrade ? ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_LARGE.get();
+                case HUGE ->
+                        upgrade ? ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_HUGE.get();
                 default -> null;
             };
             if (menu == null) return null;
 
-            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol());
+            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol(), upgrade);
         }
         return null;
     }
