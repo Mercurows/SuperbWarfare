@@ -369,7 +369,7 @@ public class SeekTool {
         } else if (target instanceof OwnableEntity ownableEntity) {
             return ownableEntity.getOwner() != self;
         } else {
-            return false;
+            return true;
         }
     };
 
@@ -460,7 +460,7 @@ public class SeekTool {
         }
 
         public Builder withinAngle(double angle) {
-            this.filters.add(e -> SeekTool.calculateAngle(entity, e) < angle);
+            this.filters.add(e -> SeekTool.calculateAngle(e, entity) < angle);
             return this;
         }
 
