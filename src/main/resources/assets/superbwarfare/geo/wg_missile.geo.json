@@ -13,12 +13,14 @@
 			"bones": [
 				{
 					"name": "bone",
-					"pivot": [0, 0, -0.11791]
+					"pivot": [0, 0, 0],
+					"rotation": [-90, 0, 0]
 				},
 				{
 					"name": "flare",
 					"parent": "bone",
 					"pivot": [0, -0.67, 0],
+					"rotation": [0, -90, 0],
 					"cubes": [
 						{
 							"origin": [-23.45, -0.63, -1.05],

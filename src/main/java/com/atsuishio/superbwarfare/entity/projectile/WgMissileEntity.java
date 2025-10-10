@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -25,6 +24,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -209,27 +209,21 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
     }
 
     @Override
+    protected void updateRotation() {
+    }
+
+    @Override
     public void tick() {
         super.tick();
-
         largeTrail();
 
-        if (this.tickCount == 1) {
-            if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, this.xo, this.yo, this.zo, 15, 0.8, 0.8, 0.8, 0.01, true);
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 10, 0.8, 0.8, 0.8, 0.01, true);
-            }
-        }
-        if (this.tickCount > 2) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.03, 1.03, 1.03));
-        }
-
-        if (tickCount > 5 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {
+        if (tickCount > 2 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {
+            this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
             Entity shooter = this.getOwner();
 
             Vec3 lookVec = vehicle.getBarrelVector(1).normalize();
             Vec3 vec3 = TraceTool.vehicleFindLookingPos(this, vehicle, vehicle.getNewEyePos(1), 512);
-            Vec3 toVec = getDeltaMovement().normalize();
+            Vec3 toVec = getLookAngle();
 
             if (launcherVehicle == vehicle.getUUID()) {
                 if (vec3 != null) {
@@ -243,12 +237,11 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
                 }
             }
 
-            setDeltaMovement(getDeltaMovement().add(toVec.scale(0.8)));
-
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
+            turn(toVec, 2);
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.77, 0.77, 0.77));
         }
 
-        if (this.tickCount > 300 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
+        if (this.tickCount > 400 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
                 causeExplode(position());
             }
@@ -325,5 +318,14 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
         return true;
     }
 
-
+    @Override
+    public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy)).scale((double)pVelocity);
+        this.setDeltaMovement(vec3);
+        double d0 = vec3.horizontalDistance();
+        this.setYRot((float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI)));
+        this.setXRot((float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI)));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
+    }
 }

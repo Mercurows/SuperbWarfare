@@ -199,6 +199,18 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         lastChunkPos = currentPos;
     }
 
+    public void turn(Vec3 vec3, float turnSpeed) {
+        double d0 = vec3.horizontalDistance();
+        float targetAngleY = (float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI));
+        float targetAngleX = (float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI));
+
+        float diffY = Mth.wrapDegrees(targetAngleY - this.getYRot());
+        float diffX = Mth.wrapDegrees(targetAngleX - this.getXRot());
+
+        this.setYRot(this.getYRot() + Mth.clamp(0.95f * diffY, -turnSpeed, turnSpeed));
+        this.setXRot(this.getXRot() + Mth.clamp(0.95f * diffX, -turnSpeed, turnSpeed));
+    }
+
     @Override
     public void remove(Entity.RemovalReason reason) {
         if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
@@ -265,7 +277,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i += 2) {
-                Vec3 startPos = new Vec3(getX(), getY(), getZ());
+                Vec3 startPos = new Vec3(xo, yo, zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
             }
@@ -276,7 +288,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i += 2) {
-                Vec3 startPos = new Vec3(getX(), getY(), getZ());
+                Vec3 startPos = new Vec3(xo, yo, zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 float random = this.random.nextFloat();
                 level().addParticle(new CustomCloudOption(0.6f, 0.58f, 0.57f, (int) (120 + 40 * random), 1.5f + 0.5f * random, 0, false, false), pos.x + 0.25f * random, pos.y + 0.25f * random, pos.z + 0.25f * random, 0, 0, 0);
@@ -288,7 +300,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (level().isClientSide && tickCount > 1) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i += 2) {
-                Vec3 startPos = new Vec3(getX(), getY(), getZ());
+                Vec3 startPos = new Vec3(xo, yo, zo);
                 Vec3 pos = startPos.add(getDeltaMovement().normalize().scale(-i));
                 float random = this.random.nextFloat();
                 level().addAlwaysVisibleParticle(ParticleTypes.SMOKE, true, pos.x + 0.25f * random, pos.y + 0.25f * random, pos.z + 0.25f * random, 0, 0, 0);
