@@ -75,6 +75,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(commonItemTag("raw_materials/tungsten")).add(ModItems.SCHEELITE.get());
         this.tag(commonItemTag("raw_materials/silver")).add(ModItems.RAW_SILVER.get());
 
+        // 这个tag仅用于其他mod配方兼容，自己家配方不用这个
+        this.tag(commonItemTag("ingots/scheelite")).add(ModItems.TUNGSTEN_INGOT.get());
+        this.tag(commonItemTag("ores/scheelite")).add(ModItems.SCHEELITE_ORE.get(), ModItems.DEEPSLATE_SCHEELITE_ORE.get());
+        this.tag(commonItemTag("raw_materials/scheelite")).add(ModItems.SCHEELITE.get());
+
         this.tag(Tags.Items.ORE_RATES_SINGULAR).add(ModItems.GALENA_ORE.get(), ModItems.DEEPSLATE_GALENA_ORE.get(),
                 ModItems.SCHEELITE_ORE.get(), ModItems.DEEPSLATE_SCHEELITE_ORE.get(),
                 ModItems.SILVER_ORE.get(), ModItems.DEEPSLATE_SILVER_ORE.get());
