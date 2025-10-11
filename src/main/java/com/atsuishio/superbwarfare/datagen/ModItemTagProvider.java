@@ -79,6 +79,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(commonItemTag("ingots/scheelite")).add(ModItems.TUNGSTEN_INGOT.get());
         this.tag(commonItemTag("ores/scheelite")).add(ModItems.SCHEELITE_ORE.get(), ModItems.DEEPSLATE_SCHEELITE_ORE.get());
         this.tag(commonItemTag("raw_materials/scheelite")).add(ModItems.SCHEELITE.get());
+        this.tag(commonItemTag("dusts/scheelite")).add(ModItems.TUNGSTEN_POWDER.get());
+        this.tag(commonItemTag("storage_blocks/scheelite")).add(ModItems.TUNGSTEN_BLOCK.get());
 
         this.tag(Tags.Items.ORE_RATES_SINGULAR).add(ModItems.GALENA_ORE.get(), ModItems.DEEPSLATE_GALENA_ORE.get(),
                 ModItems.SCHEELITE_ORE.get(), ModItems.DEEPSLATE_SCHEELITE_ORE.get(),
