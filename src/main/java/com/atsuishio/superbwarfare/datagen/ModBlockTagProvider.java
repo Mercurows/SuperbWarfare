@@ -70,6 +70,9 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         this.tag(forgeTag("ores/tungsten")).add(ModBlocks.SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get());
         this.tag(forgeTag("ores/silver")).add(ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get());
 
+        // 这个tag仅用于其他mod配方兼容，自己家配方不用这个
+        this.tag(forgeTag("ores/scheelite")).add(ModBlocks.SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get());
+
         this.tag(Tags.Blocks.ORES_IN_GROUND_STONE).add(ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(), ModBlocks.SILVER_ORE.get());
         this.tag(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE).add(ModBlocks.DEEPSLATE_GALENA_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get());
     }
