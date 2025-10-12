@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.tools;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.network.message.receive.SoundClientMessage;
 import net.minecraft.core.Holder;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.UUID;
@@ -53,18 +53,13 @@ public class SoundTool {
     }
 
     public static void playDistantSound(ServerLevel serverLevel, SoundEvent soundEvent, Vec3 pos, float radius, float pitch, Entity sender) {
-        double x = pos.x;
-        double y = pos.y;
-        double z = pos.z;
-
         List<ServerPlayer> players = serverLevel.getPlayers(p -> p.distanceToSqr(pos) < radius * radius * 256);
 
+        var location = ForgeRegistries.SOUND_EVENTS.getKey(soundEvent);
+
         for (var serverPlayer : players) {
-            serverPlayer.displayClientMessage(Component.literal(String.valueOf(1)), false);
-
-            //TODO 这个包好像在某种情况下会发不出去
-
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SoundClientMessage(soundEvent.getLocation(), x, y, z, radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
+            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                    new SoundClientMessage(location, pos.x, pos.y, pos.z, radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
         }
     }
 }

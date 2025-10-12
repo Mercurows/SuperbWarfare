@@ -36,7 +36,6 @@ public abstract class VehicleWeapon {
     // 第一人称射击音效
     public SoundEvent sound3pVeryFar;
 
-
     public VehicleWeapon icon(ResourceLocation icon) {
         this.icon = icon;
         return this;
