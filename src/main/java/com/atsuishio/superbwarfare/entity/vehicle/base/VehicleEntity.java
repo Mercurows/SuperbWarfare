@@ -104,8 +104,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -834,10 +834,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.define(GEAR_UP, false);
         this.entityData.define(LANDING_INPUT_DOWN, false);
         this.entityData.define(PLANE_BREAK, 0f);
-
-        if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
-            this.entityData.define(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
-        }
+        this.entityData.define(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(this)));
         this.entityData.define(ENERGY, 0);
 
         this.entityData.define(HORN_VOLUME, 0f);
@@ -913,18 +910,22 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     /**
      * 初始化武器数组
      *
-     * @param weaponVehicle 待初始化的载具
+     * @param vehicle 待初始化的载具
      * @return 武器数组
      */
-    private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {
-        weaponVehicle.getAllWeapons();
+    private int[] initSelectedWeaponArray(VehicleEntity vehicle) {
+        if (vehicle instanceof WeaponVehicleEntity weaponVehicle) {
+            weaponVehicle.getAllWeapons();
 
-        var selected = new int[this.getMaxPassengers()];
-        for (int i = 0; i < this.getMaxPassengers(); i++) {
-            selected[i] = weaponVehicle.hasWeapon(i) ? 0 : -1;
+            var selected = new int[this.getMaxPassengers()];
+            for (int i = 0; i < this.getMaxPassengers(); i++) {
+                selected[i] = weaponVehicle.hasWeapon(i) ? 0 : -1;
+            }
+
+            return selected;
         }
 
-        return selected;
+        return new int[this.getMaxPassengers()];
     }
 
     @Override
@@ -962,7 +963,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             if (selected.length != this.getMaxPassengers()) {
                 // 数量不符时（可能是更新或遇到损坏数据），重新初始化已选择武器
-                this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
+                this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(this)));
             } else {
                 this.entityData.set(SELECTED_WEAPON, IntList.of(selected));
             }
