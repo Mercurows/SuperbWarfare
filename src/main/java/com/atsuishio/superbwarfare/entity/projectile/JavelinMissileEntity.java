@@ -257,7 +257,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             if (entity != null) {
                 boolean dir = position().vectorTo(entity.position()).horizontalDistanceSqr() < 900;
                 Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
-                Vec3 toVec = position().vectorTo(targetPos.add(entity.getDeltaMovement().scale(0.5))).normalize();
+                Vec3 toVec = position().vectorTo(targetPos).normalize();
                 if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
                     entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                 }
@@ -265,14 +265,14 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                     this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
                     if (entityData.get(TOP)) {
                         if (!dir) {
-                            Vec3 targetTopPos = new Vec3(targetPos.x, targetPos.y + Mth.clamp(5 * this.tickCount, 0, 90),targetPos.z);
+                            Vec3 targetTopPos = new Vec3(targetPos.x, targetPos.y + Mth.clamp(6 * this.tickCount, 0, 90),targetPos.z);
                             Vec3 toTopVec = position().vectorTo(targetTopPos).normalize();
                             turn(toTopVec, 6);
                         } else {
                             boolean lostTarget = this.getY() < entity.getY();
                             if (!lostTarget) {
                                 turn(toVec, 45);
-                                this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle().scale(2)));
+                                this.setDeltaMovement(this.getDeltaMovement().scale(0.1).add(getLookAngle().scale(8)));
                             }
                         }
                     } else {
