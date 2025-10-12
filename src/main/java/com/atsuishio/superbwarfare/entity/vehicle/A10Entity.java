@@ -1095,9 +1095,4 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.obb11.center().set(new Vector3f(worldPosition11.x, worldPosition11.y, worldPosition11.z));
         this.obb11.setRotation(VectorTool.combineRotations(1, this));
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.AIRPLANE;
-    }
 }

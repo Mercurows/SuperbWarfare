@@ -280,9 +280,4 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
         this.obb7.setRotation(VectorTool.combineRotations(1, this));
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.CAR;
-    }
 }

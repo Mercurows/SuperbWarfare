@@ -735,11 +735,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.HELICOPTER;
-    }
-
-    @Override
     public int getContainerSize() {
         return 102;
     }

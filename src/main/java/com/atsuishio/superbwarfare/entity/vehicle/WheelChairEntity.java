@@ -285,9 +285,4 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
         return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.CAR;
-    }
 }

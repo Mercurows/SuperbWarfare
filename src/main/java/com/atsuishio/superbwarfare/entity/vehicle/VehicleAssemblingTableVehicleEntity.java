@@ -358,9 +358,4 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
         return new VehicleAssemblingMenu(i, inventory, true);
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.CAR;
-    }
 }

@@ -583,9 +583,4 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public boolean hasTurret() {
         return true;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.APC;
-    }
 }

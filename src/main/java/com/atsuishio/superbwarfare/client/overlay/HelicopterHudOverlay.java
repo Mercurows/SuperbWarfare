@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -77,7 +78,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
         if (player.getVehicle() instanceof ArmedVehicleEntity armedVehicle
                 && player.getVehicle() instanceof VehicleEntity vehicle
                 && armedVehicle.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
-                && vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER) {
+                && vehicle.getVehicleType() == VehicleType.HELICOPTER) {
             // TODO 载具类型判断没生效？
             poseStack.pushPose();
 

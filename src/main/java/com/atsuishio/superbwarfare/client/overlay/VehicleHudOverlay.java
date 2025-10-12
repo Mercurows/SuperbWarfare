@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -143,7 +144,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             renderWeaponInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
             renderPassengerInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
 
-            if (pVehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE) {
+            if (pVehicle.getVehicleType() == VehicleType.AIRPLANE) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
                 RenderSystem.enableBlend();

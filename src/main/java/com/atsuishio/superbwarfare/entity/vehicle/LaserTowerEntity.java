@@ -353,9 +353,4 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.DEFENSE;
-    }
 }

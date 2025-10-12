@@ -771,9 +771,4 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public boolean hasEnergyStorage() {
         return false;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.ARTILLERY;
-    }
 }

@@ -788,9 +788,4 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     public boolean hasEnergyStorage() {
         return false;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.DRONE;
-    }
 }

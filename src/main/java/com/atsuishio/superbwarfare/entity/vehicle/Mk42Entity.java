@@ -665,9 +665,4 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public boolean hasEnergyStorage() {
         return false;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.ARTILLERY;
-    }
 }
