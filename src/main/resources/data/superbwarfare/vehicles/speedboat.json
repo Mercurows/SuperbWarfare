@@ -37,5 +37,9 @@
   ],
   "ExplosionDamage": 80,
   "ExplosionRadius": 5,
-  "ExplosionParticleType": "Medium"
+  "ExplosionParticleType": "Medium",
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png"
+  }
 }

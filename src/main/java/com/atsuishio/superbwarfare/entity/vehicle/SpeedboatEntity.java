@@ -21,7 +21,6 @@ import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -50,11 +49,9 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVehicleEntity, WeaponVehicleEntity, OBBEntity {
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public OBB obb;
     public OBB obb2;
 
@@ -141,21 +138,25 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     public float turretYSpeed() {
         return 25;
     }
+
     // 炮塔最大俯仰旋转速度
     @Override
     public float turretXSpeed() {
         return 25F;
     }
+
     // 炮塔最小俯角
     @Override
     public float turretMinPitch() {
         return -25f;
     }
+
     // 炮塔最大仰角
     @Override
     public float turretMaxPitch() {
         return 50f;
     }
+
     // 炮弹发射位置
     @Override
     public Vec3 getTurretShootPos(int seatIndex, float ticks) {
@@ -163,11 +164,13 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         Vector4f worldPosition = transformPosition(transform, 0, 0.20106875f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
+
     // 炮弹发射速度
     @Override
     public float projectileVelocity(Entity entity) {
         return 20;
     }
+
     // 炮弹重力
     @Override
     public float projectileGravity(Entity entity) {
@@ -426,11 +429,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/speedboat_icon.png");
-    }
-
-    @Override
     public Vec3 getGunVec(float ticks) {
         return getBarrelVector(ticks);
     }
@@ -462,11 +460,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @Nullable
     public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
         return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/water.png");
     }
 
     @Override

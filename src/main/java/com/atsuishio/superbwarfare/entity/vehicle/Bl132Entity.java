@@ -26,7 +26,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -59,10 +58,8 @@ import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.FLOAT);
-
     public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
@@ -70,6 +67,8 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public static final EntityDataAccessor<Integer> BARREL_ANIM_3 = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> BARREL_ANIM_4 = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> AMMO_COUNT = SynchedEntityData.defineId(Bl132Entity.class, EntityDataSerializers.INT);
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Bl132Entity(EntityType<Bl132Entity> type, Level world) {
         super(type, world);
@@ -722,11 +721,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/bl_132_icon.png");
-    }
-
-    @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return zoom ? 0.15 : 0.3;
     }
@@ -756,11 +750,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return true;
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/defense.png");
     }
 
     @Override

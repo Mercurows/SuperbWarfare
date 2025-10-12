@@ -70,11 +70,6 @@ import java.util.List;
 
 public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
-
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> LOADED_SHELL = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> SELECTED_AMMO_TYPE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
@@ -719,6 +714,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                 }
             }
 
+
             living.level().addFreshEntity(swarmDroneEntity);
 
             this.level().playSound(null, BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)), ModSounds.DECOY_FIRE.get(), SoundSource.PLAYERS, 1, random.nextFloat() * 0.05f + 1);
@@ -1003,11 +999,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return getGunnerVector(ticks);
     }
 
-    @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/yx_100_icon.png");
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
@@ -1104,11 +1095,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/land.png");
     }
 
     @Override

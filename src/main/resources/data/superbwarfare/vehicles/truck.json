@@ -39,5 +39,9 @@
   "ExplosionDamage": 120,
   "ExplosionRadius": 7,
   "ExplosionParticleType": "Huge",
-  "VehicleContainerType": "Huge"
+  "VehicleContainerType": "Huge",
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png"
+  }
 }

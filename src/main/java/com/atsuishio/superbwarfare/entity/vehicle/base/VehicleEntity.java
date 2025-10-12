@@ -2440,7 +2440,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/gun_icon/default_icon.png");
+        return ResourceLocation.tryParse(data().get(VehicleProp.ICON).vehicleIcon());
     }
 
     public boolean allowFreeCam() {
@@ -2620,7 +2620,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @Nullable
     public ResourceLocation getVehicleItemIcon() {
-        return null;
+        String location = data().get(VehicleProp.ICON).containerIcon();
+        if (location == null) return null;
+        return ResourceLocation.tryParse(location);
     }
 
     /**

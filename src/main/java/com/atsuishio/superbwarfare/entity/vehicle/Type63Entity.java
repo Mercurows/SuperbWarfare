@@ -17,7 +17,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -34,7 +33,6 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -67,6 +65,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     public OBB body2;
 
     public double interactionTick;
+    public int cooldown;
 
     public Type63Entity(EntityType<Type63Entity> type, Level world) {
         super(type, world);
@@ -403,18 +402,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    public int cooldown;
-
-    @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/lav150_icon.png");
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/defense.png");
     }
 
     @Override
