@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.tools;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.network.message.receive.SoundClientMessage;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -59,6 +60,10 @@ public class SoundTool {
         List<ServerPlayer> players = serverLevel.getPlayers(p -> p.distanceToSqr(pos) < radius * radius * 256);
 
         for (var serverPlayer : players) {
+            serverPlayer.displayClientMessage(Component.literal(String.valueOf(1)), false);
+
+            //TODO 这个包好像在某种情况下会发不出去
+
             Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SoundClientMessage(soundEvent.getLocation(), x, y, z, radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
         }
     }

@@ -580,9 +580,9 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                 }
             }
 
-            SoundTool.playDistantSound(level, ModSounds.BL_132_FIRE_3P.get(),position(), 24, 1, living);
-            SoundTool.playDistantSound(level, ModSounds.MK_42_FAR.get(),position(), 48, 1, living);
-            SoundTool.playDistantSound(level, ModSounds.MK_42_VERYFAR.get(),position(), 96, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.BL_132_FIRE_3P.get(), position(), 24, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.MK_42_FAR.get(), position(), 48, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.MK_42_VERYFAR.get(), position(), 96, 1, living);
 
             consumeAmmo(living);
         }

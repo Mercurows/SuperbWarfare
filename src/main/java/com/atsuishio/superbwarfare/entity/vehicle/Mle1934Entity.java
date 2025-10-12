@@ -543,9 +543,9 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 }
             }
 
-            SoundTool.playDistantSound(level, ModSounds.MK_42_FIRE_3P.get(),position(), 24, 1, living);
-            SoundTool.playDistantSound(level, ModSounds.MK_42_FAR.get(),position(), 48, 1, living);
-            SoundTool.playDistantSound(level, ModSounds.MK_42_VERYFAR.get(),position(), 96, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.MK_42_FIRE_3P.get(), position(), 24, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.MK_42_FAR.get(), position(), 48, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.MK_42_VERYFAR.get(), position(), 96, 1, living);
 
             consumeAmmo(living);
         }

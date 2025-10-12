@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.network.message.receive.*;
 import com.atsuishio.superbwarfare.tools.LivingKillRecord;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -130,6 +131,8 @@ public class ClientPacketHandler {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             Player player = Minecraft.getInstance().player;
             if (player == null) return;
+
+            player.displayClientMessage(Component.literal(String.valueOf(2)), false);
 
             SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(message.location());
             if (sound == null) return;

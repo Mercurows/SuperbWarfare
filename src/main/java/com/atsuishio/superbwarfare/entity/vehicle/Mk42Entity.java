@@ -503,9 +503,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 15, 0.05f);
             level().addFreshEntity(entityToSpawn);
 
-            SoundTool.playDistantSound(server, ModSounds.MK_42_FIRE_3P.get(),position(), 24, 1, living);
-            SoundTool.playDistantSound(server, ModSounds.MK_42_FAR.get(),position(), 48, 1, living);
-            SoundTool.playDistantSound(server, ModSounds.MK_42_VERYFAR.get(),position(), 96, 1, living);
+            SoundTool.playDistantSound(server, ModSounds.MK_42_FIRE_3P.get(), position(), 24, 1, living);
+            SoundTool.playDistantSound(server, ModSounds.MK_42_FAR.get(), position(), 48, 1, living);
+            SoundTool.playDistantSound(server, ModSounds.MK_42_VERYFAR.get(), position(), 96, 1, living);
 
             this.entityData.set(COOL_DOWN, 30);
 
