@@ -25,5 +25,9 @@
   "ExplosionDamage": 20,
   "ExplosionRadius": 2,
   "ExplosionParticleType": "Medium",
-  "VehicleContainerType": "Special"
+  "VehicleContainerType": "Special",
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/type_63_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"
+  }
 }

@@ -60,8 +60,8 @@ import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -74,11 +74,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
-
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
 
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> LOADED_SHELL = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.STRING);
@@ -340,7 +335,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
         if (getNthEntity(2) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
             int rpm = 20 / (mainGunRpm(mob) / 60);
-            if (tickCount %rpm == 0) {
+            if (tickCount % rpm == 0) {
                 vehicleShoot(mob, 2);
             }
         }
@@ -358,21 +353,25 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     public float turretYSpeed() {
         return 5;
     }
+
     // 炮塔最大俯仰旋转速度
     @Override
     public float turretXSpeed() {
         return 5F;
     }
+
     // 炮塔最小俯角
     @Override
     public float turretMinPitch() {
         return -10f;
     }
+
     // 炮塔最大仰角
     @Override
     public float turretMaxPitch() {
         return 30f;
     }
+
     // 炮弹发射位置
     @Override
     public Vec3 getTurretShootPos(int seatIndex, float ticks) {
@@ -391,6 +390,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
+
     // 炮弹发射速度
     @Override
     public float projectileVelocity(Entity entity) {
@@ -405,6 +405,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             return 20f;
         }
     }
+
     // 炮弹重力
     @Override
     public float projectileGravity(Entity entity) {
@@ -421,21 +422,25 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     public float passengerWeaponYSpeed() {
         return 15;
     }
+
     // 乘客武器站最大俯仰旋转速度
     @Override
     public float passengerWeaponXSpeed() {
         return 15;
     }
+
     // 乘客武器站最小俯角
     @Override
     public float passengerWeaponMinPitch() {
         return -10;
     }
+
     // 乘客武器站最大仰角
     @Override
     public float passengerWeaponMaxPitch() {
         return 60;
     }
+
     // 乘客武器站弹药发射位置
     @Override
     public Vec3 passengerWeaponShootPos(Entity entity, float ticks) {
@@ -718,8 +723,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                     swarmDroneEntity.setTargetVec(hitPos);
                 }
             }
-
-
 
 
             living.level().addFreshEntity(swarmDroneEntity);
@@ -1009,11 +1012,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return getGunnerVector(ticks);
     }
 
-    @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/yx_100_icon.png");
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
@@ -1032,7 +1030,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         // 准心
         if (this.getWeapon(0).mainGun) {
             RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-        } else  {
+        } else {
             RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
         }
 
@@ -1110,11 +1108,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/land.png");
     }
 
     @Override

@@ -14,5 +14,9 @@
   "ExplosionRadius": 2,
   "ExplosionParticleType": "Medium",
   "CrashPassengersOnDestroy": true,
-  "VehicleContainerType": "Empty"
+  "VehicleContainerType": "Empty",
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/tom_6_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png"
+  }
 }

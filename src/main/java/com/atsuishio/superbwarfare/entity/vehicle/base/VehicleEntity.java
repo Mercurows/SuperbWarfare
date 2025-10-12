@@ -104,8 +104,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -2450,7 +2450,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/gun_icon/default_icon.png");
+        return ResourceLocation.tryParse(data().get(VehicleProp.ICON).vehicleIcon());
     }
 
     public boolean allowFreeCam() {
@@ -2635,7 +2635,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @Nullable
     public ResourceLocation getVehicleItemIcon() {
-        return null;
+        String location = data().get(VehicleProp.ICON).containerIcon();
+        if (location == null) return null;
+        return ResourceLocation.tryParse(location);
     }
 
     /**

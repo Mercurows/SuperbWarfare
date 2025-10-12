@@ -3,7 +3,7 @@
   "MaxHealth": 350,
   "MaxEnergy": 10000000,
   "Seats": {
-    "HidePassenger": true
+    "IsEnclosed": true
   },
   "UpStep": 1.1,
   "Mass": 20,
@@ -36,5 +36,9 @@
   "ExplosionDamage": 800,
   "ExplosionRadius": 16,
   "ExplosionParticleType": "Giant",
-  "CrashPassengersOnDestroy": true
+  "CrashPassengersOnDestroy": true,
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/a10_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png"
+  }
 }

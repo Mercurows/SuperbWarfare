@@ -43,5 +43,9 @@
   ],
   "ExplosionDamage": 200,
   "ExplosionRadius": 16,
-  "ExplosionParticleType": "Giant"
+  "ExplosionParticleType": "Giant",
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/yx_100_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png"
+  }
 }

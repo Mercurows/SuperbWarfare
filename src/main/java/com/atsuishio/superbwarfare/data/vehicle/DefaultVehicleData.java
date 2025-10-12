@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleIconInfo;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.gson.annotations.SerializedName;
@@ -101,4 +103,7 @@ public class DefaultVehicleData implements IDBasedData {
 
     @SerializedName("HasUpgradeSlots")
     public boolean hasUpgradeSlots = false;
+
+    @SerializedName("Icon")
+    public VehicleIconInfo icon = new VehicleIconInfo(Mod.loc("textures/gun_icon/default_icon.png").toString(), null);
 }

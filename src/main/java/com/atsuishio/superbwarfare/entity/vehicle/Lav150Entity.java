@@ -30,7 +30,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -67,11 +66,9 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public OBB obb;
     public OBB obb2;
     public OBB obb3;
@@ -169,21 +166,25 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public float turretYSpeed() {
         return 10;
     }
+
     // 炮塔最大俯仰旋转速度
     @Override
     public float turretXSpeed() {
         return 12.5F;
     }
+
     // 炮塔最小俯角
     @Override
     public float turretMinPitch() {
         return -15f;
     }
+
     // 炮塔最大仰角
     @Override
     public float turretMaxPitch() {
         return 32.5f;
     }
+
     // 炮弹发射位置
     @Override
     public Vec3 getTurretShootPos(int seatIndex, float ticks) {
@@ -193,11 +194,12 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             worldPosition = transformPosition(transform, 0.0609375f, 0.0517f, 0);
         } else if (getWeaponIndex(0) == 1) {
             worldPosition = transformPosition(transform, 0.3f, 0.08f, 0);
-        } else  {
+        } else {
             worldPosition = transformPosition(transform, 0, 1, 0);
         }
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
+
     // 炮弹发射速度
     @Override
     public float projectileVelocity(Entity entity) {
@@ -207,6 +209,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             return 25;
         }
     }
+
     // 炮弹重力
     @Override
     public float projectileGravity(Entity entity) {
@@ -214,7 +217,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             return 0.03f;
         } else if (getWeaponIndex(0) == 1) {
             return 0.05f;
-        } else  {
+        } else {
             return 0;
         }
     }
@@ -284,7 +287,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             if (hasCreativeAmmo) return;
 
             this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-
         } else if (getWeaponIndex(0) == 1) {
             if (this.cannotFireCoax) return;
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
@@ -470,11 +472,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return 0;
     }
 
-    @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/lav150_icon.png");
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
@@ -543,11 +540,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/land.png");
     }
 
     @Override

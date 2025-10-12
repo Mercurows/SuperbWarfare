@@ -29,5 +29,9 @@
   "ExplosionDamage": 160,
   "ExplosionRadius": 8,
   "ExplosionParticleType": "Huge",
-  "VehicleContainerType": "One"
+  "VehicleContainerType": "One",
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/sherman_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"
+  }
 }

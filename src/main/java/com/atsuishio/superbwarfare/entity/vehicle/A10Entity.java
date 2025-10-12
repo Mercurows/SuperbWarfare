@@ -73,7 +73,9 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public static final EntityDataAccessor<Integer> LOADED_BOMB = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_MISSILE = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public int fireIndex;
     public int reloadCoolDownBomb;
     public int reloadCoolDownMissile;
@@ -741,11 +743,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/a10_icon.png");
-    }
-
-    @Override
     public Vec3 shootPos(float tickDelta) {
         Matrix4f transform = getVehicleTransform(tickDelta);
         Vector4f worldPosition;
@@ -1048,11 +1045,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/aircraft.png");
     }
 
     @Override

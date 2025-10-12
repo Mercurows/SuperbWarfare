@@ -6,5 +6,9 @@
   "DamageModifiers": [
     "All * 0.75"
   ],
-  "VehicleContainerType": "Empty"
+  "VehicleContainerType": "Empty",
+  "Icon": {
+    "VehicleIcon": "superbwarfare:textures/vehicle_icon/tow_icon.png",
+    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"
+  }
 }
