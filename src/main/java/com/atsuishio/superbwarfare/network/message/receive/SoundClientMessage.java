@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network.message.receive;
 import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -21,57 +22,59 @@ import java.util.function.Supplier;
 
 public class SoundClientMessage {
 
-    public String soundName;
+    public ResourceLocation soundName;
     public double x;
     public double y;
     public double z;
     public float radius;
+    public float pitch;
 
-    public SoundClientMessage(String soundName, double x, double y, double z, float radius) {
+    public SoundClientMessage(ResourceLocation soundName, double x, double y, double z, float radius, float pitch) {
         this.soundName = soundName;
         this.x = x;
         this.y = y;
         this.z = z;
         this.radius = radius;
+        this.pitch = pitch;
     }
 
     public static void encode(SoundClientMessage message, FriendlyByteBuf buffer) {
-        // TODO 不知有没有方法直接传一个SoundEvent进去
-        buffer.writeUtf(message.soundName);
+        buffer.writeResourceLocation(message.soundName);
         buffer.writeDouble(message.x);
         buffer.writeDouble(message.y);
         buffer.writeDouble(message.z);
         buffer.writeFloat(message.radius);
+        buffer.writeFloat(message.pitch);
     }
 
     public static SoundClientMessage decode(FriendlyByteBuf buffer) {
-        return new SoundClientMessage(buffer.readUtf(), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readFloat());
+        return new SoundClientMessage(buffer.readResourceLocation(), buffer.readDouble(), buffer.readDouble(), buffer.readDouble(), buffer.readFloat(), buffer.readFloat());
     }
 
     public static void handler(SoundClientMessage message, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                () -> () -> handleSoundClient(message.soundName, message.x, message.y, message.z, message.radius, context)));
+                () -> () -> handleSoundClient(message.soundName, message.x, message.y, message.z, message.radius, message.pitch, context)));
         context.get().setPacketHandled(true);
     }
 
-    public static void handleSoundClient(String soundName, double x, double y, double z, float radius, Supplier<NetworkEvent.Context> ctx) {
+    public static void handleSoundClient(ResourceLocation soundName, double x, double y, double z, float radius, float pitch, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             Player player = Minecraft.getInstance().player;
             if (player == null) return;
 
-            SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(soundName));
+            SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(soundName);
 
             if (sound != null && player.level().isClientSide) {
 
                 double distance = player.position().distanceTo(new Vec3(x, y, z));
                 Mod.queueClientWork((int) (distance / 17), () -> {
-                    player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, 1);
+                    player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, pitch);
                 });
             }
         }
     }
 
-    public static void playDistantSound(ServerLevel serverLevel, String soundName, Vec3 pos, float radius) {
+    public static void playDistantSound(ServerLevel serverLevel, SoundEvent soundEvent, Vec3 pos, float radius, float pitch) {
         double x = pos.x;
         double y = pos.y;
         double z = pos.z;
@@ -79,7 +82,7 @@ public class SoundClientMessage {
         List<ServerPlayer> players = serverLevel.getPlayers(p -> p.distanceToSqr(pos) < radius * radius * 256);
 
         for (var serverPlayer : players) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SoundClientMessage(soundName, x, y, z, radius));
+            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SoundClientMessage(soundEvent.getLocation(), x, y, z, radius, pitch));
         }
     }
 }

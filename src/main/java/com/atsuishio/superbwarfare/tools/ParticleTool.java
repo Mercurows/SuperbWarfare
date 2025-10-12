@@ -80,9 +80,9 @@ public class ParticleTool {
         double z = pos.z;
 
         if (level instanceof ServerLevel serverLevel) {
-            SoundClientMessage.playDistantSound(serverLevel, "explosion_close", pos, 2);
-            SoundClientMessage.playDistantSound(serverLevel, "explosion_far", pos, 8);
-            SoundClientMessage.playDistantSound(serverLevel, "explosion_very_far", pos, 32);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.EXPLOSION_CLOSE.get(), pos, 2, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.EXPLOSION_FAR.get(), pos, 8, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.EXPLOSION_VERY_FAR.get(), pos, 32, 1);
 
             sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y, z, 2, 0.05, 0.05, 0.05, 1, true);
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 3, 0.1, 0.1, 0.1, 0.02, true);
@@ -105,9 +105,9 @@ public class ParticleTool {
                 sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 60, 3, 0.5, 3, 0.1, true);
             }
 
-            SoundClientMessage.playDistantSound(serverLevel, "explosion_close", pos, 4);
-            SoundClientMessage.playDistantSound(serverLevel, "explosion_far", pos, 16);
-            SoundClientMessage.playDistantSound(serverLevel, "explosion_very_far", pos, 32);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.EXPLOSION_CLOSE.get(), pos, 4, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.EXPLOSION_FAR.get(), pos, 16, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.EXPLOSION_VERY_FAR.get(), pos, 32, 1);
 
             sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 1, z, 30, 1, 1, 1, 1, true);
             sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 1, z, 30, 1, 1, 1, 1, true);
@@ -128,9 +128,9 @@ public class ParticleTool {
         double z = pos.z;
 
         if (level instanceof ServerLevel serverLevel) {
-            SoundClientMessage.playDistantSound(serverLevel, "huge_explosion_close", pos, 8);
-            SoundClientMessage.playDistantSound(serverLevel, "huge_explosion_far", pos, 24);
-            SoundClientMessage.playDistantSound(serverLevel, "huge_explosion_very_far", pos, 128);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_CLOSE.get(), pos, 8, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_FAR.get(), pos, 24, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), pos, 128, 1);
 
             if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
                 sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 3, z, 100, 2, 6, 2, 0.01, true);
@@ -170,9 +170,9 @@ public class ParticleTool {
 
         if (level instanceof ServerLevel serverLevel) {
 
-            SoundClientMessage.playDistantSound(serverLevel, "huge_explosion_close", pos, 12);
-            SoundClientMessage.playDistantSound(serverLevel, "huge_explosion_far", pos, 32);
-            SoundClientMessage.playDistantSound(serverLevel, "huge_explosion_very_far", pos, 192);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_CLOSE.get(), pos, 12, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_FAR.get(), pos, 32, 1);
+            SoundClientMessage.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), pos, 192, 1);
 
             if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
                 sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 3, z, 100, 2, 6, 2, 0.01, true);
