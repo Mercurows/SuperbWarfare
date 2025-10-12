@@ -3,8 +3,9 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
+import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -17,7 +18,7 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.item.gun.vehicle.Lav15020MMCannon;
+import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
@@ -62,10 +63,16 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
+
+    @Override
+    public int getContainerSize() {
+        return 102;
+    }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -186,18 +193,10 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     // 炮弹发射位置
+    // TODO 修改为正确的计算方式
     @Override
     public Vec3 getTurretShootPos(int seatIndex, float ticks) {
-        Matrix4f transform = getBarrelTransform(1);
-        Vector4f worldPosition;
-        if (getWeaponIndex(0) == 0) {
-            worldPosition = transformPosition(transform, 0.0609375f, 0.0517f, 0);
-        } else if (getWeaponIndex(0) == 1) {
-            worldPosition = transformPosition(transform, 0.3f, 0.08f, 0);
-        } else {
-            worldPosition = transformPosition(transform, 0, 1, 0);
-        }
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        return CANNON_POS.apply(this).shootPosition();
     }
 
     // 炮弹发射速度
@@ -244,6 +243,26 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         }
     }
 
+    public Function<VehicleEntity, ShootRay> CANNON_POS = createShootAnchorPoint("Main", v -> {
+        Matrix4f transform = getBarrelTransform(1);
+        Vector4f worldPosition;
+
+        // TODO 这里不应该看weaponIndex，应当分离成3个发射位置
+        if (getWeaponIndex(0) == 0) {
+            worldPosition = transformPosition(transform, 0.0609375f, 0.0517f, 0);
+        } else if (getWeaponIndex(0) == 1) {
+            worldPosition = transformPosition(transform, 0.3f, 0.08f, 0);
+        } else {
+            worldPosition = transformPosition(transform, 0, 1, 0);
+        }
+        var shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+
+        return new ShootRay(
+                shootPos,
+                new Vec3(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z)
+        );
+    });
+
     @Override
     public void vehicleShoot(LivingEntity living, int type) {
         boolean hasCreativeAmmo = false;
@@ -256,22 +275,11 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (getWeaponIndex(0) == 0) {
             if (this.cannotFire) return;
 
-//            var smallCannonShell = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
-//
-//            smallCannonShell.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
-//            smallCannonShell.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 35,
-//                    0.25f);
-//            this.level().addFreshEntity(smallCannonShell);
+            var data = VehicleGun.fromVehicle(this, 0);
+            if (data == null) return;
 
-            ItemStack lav150_cannon = new ItemStack(ModItems.LAV_150_20MM_CANNON.get());
-            var data = GunData.from(lav150_cannon);
-
-            Lav15020MMCannon.summonBullet(living,
-                    (ServerLevel) this.level(),
-                    new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z),
-                    new Vec3(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z),
-                    data,
-                    false);
+            var ray = CANNON_POS.apply(this);
+            data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null));
 
             sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
             playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
@@ -428,8 +436,9 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public int mainGunRpm(LivingEntity living) {
         if (getWeaponIndex(0) == 0) {
-            ItemStack lav150_cannon = new ItemStack(ModItems.LAV_150_20MM_CANNON.get());
-            var data = GunData.from(lav150_cannon);
+            var data = VehicleGun.fromVehicle(this, 0);
+            if (data == null) return 0;
+
             return data.get(GunProp.RPM);
         } else if (getWeaponIndex(0) == 1) {
             return 600;

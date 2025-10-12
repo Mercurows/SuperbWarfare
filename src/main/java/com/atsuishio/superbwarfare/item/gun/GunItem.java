@@ -514,16 +514,16 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
      */
     public void beforeShoot(@NotNull ShootParameters parameters) {
         var data = parameters.data();
-        var shooter = parameters.shooter();
+        var ammoSupplier = parameters.ammoSupplier();
         MinecraftForge.EVENT_BUS.post(new ShootEvent.Pre(parameters));
 
         // 空仓挂机
-        if (data.currentAvailableShots(shooter) == 1) {
+        if (data.currentAvailableShots(ammoSupplier) == 1) {
             data.holdOpen.set(true);
         }
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(shooter)) {
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(ammoSupplier)) {
             data.bolt.needed.set(true);
         }
     }
@@ -546,6 +546,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public void afterShoot(@NotNull ShootParameters parameters) {
         var data = parameters.data();
         var shooter = parameters.shooter();
+        var ammoSupplier = parameters.ammoSupplier();
         var level = parameters.level();
 
         MinecraftForge.EVENT_BUS.post(new ShootEvent.Post(parameters));
@@ -555,10 +556,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             data.isEmpty.set(true);
             data.closeStrike.set(true);
         } else {
-            data.consumeBackupAmmo(shooter, data.get(GunProp.AMMO_COST_PER_SHOOT));
+            data.consumeBackupAmmo(ammoSupplier, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }
 
-        if (!data.hasEnoughAmmoToShoot(shooter)) {
+        if (!data.hasEnoughAmmoToShoot(ammoSupplier)) {
             data.burstAmount.reset();
         }
 
@@ -595,12 +596,12 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
-        shoot(new ShootParameters(null, level, shootPosition, shootDirection, data, spread, zoom, uuid));
+        shoot(new ShootParameters(null, null, level, shootPosition, shootDirection, data, spread, zoom, uuid));
     }
 
     public void shoot(@NotNull GunData data, @NotNull Entity shooter, double spread, boolean zoom, UUID uuid) {
         if (shooter.level() instanceof ServerLevel server) {
-            shoot(new ShootParameters(shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid));
+            shoot(new ShootParameters(shooter, shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid));
         }
     }
 
@@ -611,9 +612,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public void shoot(@NotNull ShootParameters parameters) {
         var data = parameters.data();
         var shooter = parameters.shooter();
+        var ammoSupplier = parameters.ammoSupplier();
         var zoom = parameters.zoom();
 
-        if (!data.canShoot(shooter)) return;
+        if (!data.canShoot(ammoSupplier)) return;
 
         // 开火前事件
         data.item.beforeShoot(parameters);
@@ -1028,7 +1030,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public boolean canEditAttachments(GunData data) {
-        return data.ammoConsumers.size() > 1;
+        return data.get(GunProp.AMMO_CONSUMER).size() > 1;
     }
 
     /**
@@ -1047,5 +1049,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             return new WeaponEditScreen(stack);
         }
         return null;
+    }
+
+    public DefaultGunData getDefaultData(GunData data) {
+        return GunData.getDefault(data.id);
     }
 }

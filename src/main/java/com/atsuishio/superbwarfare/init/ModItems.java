@@ -29,7 +29,7 @@ import com.atsuishio.superbwarfare.item.gun.sniper.*;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
-import com.atsuishio.superbwarfare.item.gun.vehicle.Lav15020MMCannon;
+import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
 import net.minecraft.world.item.*;
@@ -98,7 +98,7 @@ public class ModItems {
     public static final RegistryObject<Item> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptre::new);
     public static final RegistryObject<Item> BOCEK = GUNS.register("bocek", BocekItem::new);
 
-    public static final RegistryObject<Item> LAV_150_20MM_CANNON = GUNS.register("lav_150_20mm_cannon", Lav15020MMCannon::new);
+    public static final RegistryObject<Item> VEHICLE_GUN = GUNS.register("vehicle_gun", VehicleGun::new);
 
     /**
      * Ammo

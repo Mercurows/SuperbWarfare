@@ -186,7 +186,7 @@ public class AmmoBarOverlay implements IGuiOverlay {
             }
 
             // 如果弹药种类大于1，渲染弹种信息
-            int size = data.ammoConsumers.size();
+            int size = data.get(GunProp.AMMO_CONSUMER).size();
             if (DisplayConfig.ADVANCED_AMMO_HUD.get()
                     && (size > 1 || size == 1 && data.selectedAmmoConsumer().type != AmmoConsumer.AmmoConsumeType.PLAYER_AMMO)
             ) {
