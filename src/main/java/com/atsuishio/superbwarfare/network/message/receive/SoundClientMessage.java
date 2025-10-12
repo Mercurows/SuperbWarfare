@@ -7,6 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -18,13 +19,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record SoundClientMessage(String soundName, double x, double y, double z,
-                                 float radius) implements CustomPacketPayload {
+public record SoundClientMessage(
+        ResourceLocation soundName,
+        double x,
+        double y,
+        double z,
+        float radius,
+        float pitch
+) implements CustomPacketPayload {
 
     public static final Type<SoundClientMessage> TYPE = new Type<>(Mod.loc("sound_client"));
 
     public static final StreamCodec<ByteBuf, SoundClientMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8,
+            ResourceLocation.STREAM_CODEC,
             SoundClientMessage::soundName,
             ByteBufCodecs.DOUBLE,
             SoundClientMessage::x,
@@ -34,27 +41,29 @@ public record SoundClientMessage(String soundName, double x, double y, double z,
             SoundClientMessage::z,
             ByteBufCodecs.FLOAT,
             SoundClientMessage::radius,
+            ByteBufCodecs.FLOAT,
+            SoundClientMessage::pitch,
             SoundClientMessage::new
     );
 
     public static void handler(SoundClientMessage message) {
-        handleSoundClient(message.soundName, message.x, message.y, message.z, message.radius);
+        handleSoundClient(message.soundName, message.x, message.y, message.z, message.radius, message.pitch);
     }
 
-    public static void handleSoundClient(String soundName, double x, double y, double z, float radius) {
+    public static void handleSoundClient(ResourceLocation soundName, double x, double y, double z, float radius, float pitch) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(soundName));
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(soundName);
 
         if (sound != null && player.level().isClientSide) {
 
             double distance = player.position().distanceTo(new Vec3(x, y, z));
-            Mod.queueClientWork((int) (distance / 17), () -> player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, 1));
+            Mod.queueClientWork((int) (distance / 17), () -> player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, pitch));
         }
     }
 
-    public static void playDistantSound(ServerLevel serverLevel, String soundName, Vec3 pos, float radius) {
+    public static void playDistantSound(ServerLevel serverLevel, SoundEvent soundEvent, Vec3 pos, float radius, float pitch) {
         double x = pos.x;
         double y = pos.y;
         double z = pos.z;
@@ -62,7 +71,7 @@ public record SoundClientMessage(String soundName, double x, double y, double z,
         List<ServerPlayer> players = serverLevel.getPlayers(p -> p.distanceToSqr(pos) < radius * radius * 256);
 
         for (var serverPlayer : players) {
-            PacketDistributor.sendToPlayer(serverPlayer, new SoundClientMessage(soundName, x, y, z, radius));
+            PacketDistributor.sendToPlayer(serverPlayer, new SoundClientMessage(soundEvent.getLocation(), x, y, z, radius, pitch));
         }
     }
 
