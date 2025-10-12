@@ -292,7 +292,7 @@
   "des.superbwarfare.artillery_indicator.full": "火炮阵列已满，无法继续添加火炮",
   "item.superbwarfare.iff": "敌我识别装置",
   "curios.identifier.iff": "敌我识别装置",
-  "des.superbwarfare.iff_1": "当玩家加入原版队伍，且队伍ID不是“TDM”时，会在屏幕上标记队友位置",
+  "des.superbwarfare.iff_1": "当玩家加入原版队伍，且不在TDM模式下时，会在屏幕上标记队友位置",
   "item.superbwarfare.medical_kit": "医疗包",
   "des.superbwarfare.medical_kit": "潜行使用以丢出，在生命值未满的情况下长按使用以治疗",
   "item.superbwarfare.vehicle_damage_analyzer": "载具损伤分析仪",
