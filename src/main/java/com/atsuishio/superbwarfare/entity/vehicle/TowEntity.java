@@ -281,7 +281,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 getTurretShootPos(Entity entity, float ticks) {
+    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
         return new Vec3(getX(), getY() + 1.174775f, getZ());
     }
 

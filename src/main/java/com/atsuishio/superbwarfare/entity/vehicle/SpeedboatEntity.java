@@ -162,7 +162,7 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(Entity entity, float ticks) {
+    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 0.20106875f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
