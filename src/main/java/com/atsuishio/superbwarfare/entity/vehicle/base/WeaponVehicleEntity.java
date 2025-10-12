@@ -154,14 +154,6 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
         var weapon = weapons.get(getWeaponIndex(seat));
         float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
-//        if (living instanceof Player player) {
-//            if (!player.level().isClientSide) {
-//                playShootSound3p(this, player, seat, radius, radius2, radius3);
-//            }
-//        }
-
-        // TODO 修复第三人称下没有音效的问题
-
         if (living.level() instanceof ServerLevel serverLevel) {
             if (weapon.sound3p != null) {
                 SoundTool.playDistantSound(serverLevel, weapon.sound3p, pos, radius, pitch, null);

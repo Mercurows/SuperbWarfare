@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.network.message.receive.SoundClientMessage;
 import net.minecraft.core.Holder;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -51,9 +51,13 @@ public class SoundTool {
     }
 
     public static void playDistantSound(ServerLevel serverLevel, SoundEvent soundEvent, Vec3 pos, float radius, float pitch, Entity sender) {
-        for (var serverPlayer : serverLevel.getPlayers(p -> p.distanceToSqr(pos) < radius * radius * 256)) {
-            serverPlayer.displayClientMessage(Component.literal(String.valueOf(1)), false);
-            PacketDistributor.sendToPlayer(serverPlayer, new SoundClientMessage(soundEvent.getLocation(), pos.toVector3f(), radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
+        var players = serverLevel.getPlayers(p -> p.distanceToSqr(pos) < radius * radius * 256);
+
+        var location = BuiltInRegistries.SOUND_EVENT.getKey(soundEvent);
+
+        for (var serverPlayer : players) {
+            PacketDistributor.sendToPlayer(serverPlayer,
+                    new SoundClientMessage(location, pos.toVector3f(), radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
         }
     }
 }
