@@ -471,7 +471,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public Vec3 getTurretShootPos(Entity entity, float ticks) {
+    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 0.35f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);

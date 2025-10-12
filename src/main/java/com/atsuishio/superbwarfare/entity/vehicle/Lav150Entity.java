@@ -180,7 +180,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(Entity entity, float ticks) {
+    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition;
         if (getWeaponIndex(0) == 0) {

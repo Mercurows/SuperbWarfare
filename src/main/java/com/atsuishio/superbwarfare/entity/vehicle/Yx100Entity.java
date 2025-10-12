@@ -74,6 +74,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     public int getContainerSize() {
         return 102;
     }
+
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> LOADED_SHELL = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> SELECTED_AMMO_TYPE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
@@ -369,9 +370,9 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(Entity entity, float ticks) {
+    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
         Vector4f worldPosition;
-        if (entity == getNthEntity(0)) {
+        if (seatIndex == 0) {
             Matrix4f transform = getBarrelTransform(ticks);
             if (getWeapon(0).mainGun) {
                 worldPosition = transformPosition(transform, 0, 0, 0);
@@ -794,6 +795,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     public Vec3 getGunnerPosition() {
         return new Vec3(-0.75805625f, 1.1446375, -0.57275625);
     }
+
     @Override
     public Vec3 getGunnerBarrelPosition() {
         return new Vec3(0f, 0.35984375f, 0.0551625f);

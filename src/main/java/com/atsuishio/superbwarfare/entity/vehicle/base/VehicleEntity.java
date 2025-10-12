@@ -1915,11 +1915,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     /**
+     * @return 炮弹发射位置
+     */
+    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
+        return this.getEyePosition();
+    }
+
+    /**
      * @param entity 操控载具的实体
      * @return 炮弹发射位置
      */
     public Vec3 getTurretShootPos(Entity entity, float ticks) {
-        return this.getEyePosition();
+        return getTurretShootPos(getSeatIndex(entity), ticks);
     }
 
     /**
