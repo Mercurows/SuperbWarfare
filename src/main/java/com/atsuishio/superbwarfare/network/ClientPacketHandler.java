@@ -134,7 +134,7 @@ public class ClientPacketHandler {
             SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(message.location());
             if (sound == null) return;
 
-            if (player.getUUID() == message.sender()) return;
+            if (player.getUUID().equals(message.sender())) return;
 
             double distance = player.position().distanceTo(new Vec3(message.x(), message.y(), message.z()));
 
