@@ -22,7 +22,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -104,6 +103,10 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{
                         new LaserWeapon()
+                                .sound1p(ModSounds.ANNIHILATOR_FIRE_1P.get())
+                                .sound3p(ModSounds.ANNIHILATOR_FIRE_3P.get())
+                                .sound3pFar(ModSounds.ANNIHILATOR_FAR.get())
+                                .sound3pVeryFar(ModSounds.ANNIHILATOR_VERYFAR.get())
                 }
         };
     }
@@ -427,20 +430,14 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             return;
         }
 
-        if (level() instanceof ServerLevel serverLevel) {
-            if (living instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.ANNIHILATOR_FIRE_1P.get(), 1, 1);
-            }
-
-            serverLevel.playSound(null, getOnPos(), ModSounds.ANNIHILATOR_FIRE_3P.get(), SoundSource.PLAYERS, 6, 1);
-            serverLevel.playSound(null, getOnPos(), ModSounds.ANNIHILATOR_FAR.get(), SoundSource.PLAYERS, 16, 1);
-            serverLevel.playSound(null, getOnPos(), ModSounds.ANNIHILATOR_VERYFAR.get(), SoundSource.PLAYERS, 32, 1);
-
+        if (level() instanceof ServerLevel) {
             this.entityData.set(COOL_DOWN, 100);
             this.consumeEnergy(VehicleConfig.ANNIHILATOR_SHOOT_COST.get());
 
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 25);
         }
+
+        playShootSound3p(living, 0, 12, 32, 64, position());
     }
 
     @Override

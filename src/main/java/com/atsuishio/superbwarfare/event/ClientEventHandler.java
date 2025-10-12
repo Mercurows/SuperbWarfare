@@ -753,7 +753,10 @@ public class ClientEventHandler {
             if (player == null || player.isSpectator()) return;
 
             double distance = player.position().distanceTo(new Vec3(x, y, z));
-            Mod.queueClientWork((int) (distance / 17), () -> {
+
+            int time2 = (int) (distance / 17);
+
+            if (time2 == 0) {
                 float shakeStrength = (float) DisplayConfig.EXPLOSION_SCREEN_SHAKE.get() / 100.0f;
                 if (shakeStrength <= 0.0f) return;
 
@@ -764,8 +767,19 @@ public class ClientEventHandler {
                 shakePos[1] = y * shakeStrength;
                 shakePos[2] = z * shakeStrength;
                 shakeType = 2 * (Math.random() - 0.5);
-            });
-
+            } else {
+                Mod.queueClientWork((int) (distance / 17), () -> {
+                    float shakeStrength = (float) DisplayConfig.EXPLOSION_SCREEN_SHAKE.get() / 100.0f;
+                    if (shakeStrength <= 0.0f) return;
+                    shakeTime = time;
+                    shakeRadius = radius;
+                    shakeAmplitude = amplitude * Mth.DEG_TO_RAD * shakeStrength;
+                    shakePos[0] = x * shakeStrength;
+                    shakePos[1] = y * shakeStrength;
+                    shakePos[2] = z * shakeStrength;
+                    shakeType = 2 * (Math.random() - 0.5);
+                });
+            }
         }
     }
 

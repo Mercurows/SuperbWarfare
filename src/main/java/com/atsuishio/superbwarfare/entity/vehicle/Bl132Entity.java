@@ -115,6 +115,10 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                                 .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
                                 .durability(60)
                                 .gravity(projectileGravity())
+                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
+                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
+                                .sound3pFar(ModSounds.MK_42_FAR.get())
+                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
                         new CannonShellWeapon()
@@ -125,6 +129,10 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                                 .fireProbability(0.18F)
                                 .fireTime(2)
                                 .gravity(projectileGravity())
+                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
+                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
+                                .sound3pFar(ModSounds.MK_42_FAR.get())
+                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
                         new CannonShellWeapon()
@@ -137,6 +145,10 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                                 .spreadAmount(30)
                                 .spreadTime(7)
                                 .spreadAngle(15)
+                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
+                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
+                                .sound3pFar(ModSounds.MK_42_FAR.get())
+                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
                                 .sound(ModSounds.CANNON_RELOAD.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
                         // GRAPESHOT
@@ -148,6 +160,10 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                                 .type(CannonShellEntity.Type.GRAPE)
                                 .spreadAmount(30)
                                 .spreadAngle(3)
+                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
+                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
+                                .sound3pFar(ModSounds.MK_42_FAR.get())
+                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
                                 .sound(ModSounds.INTO_CANNON.get())
                                 .ammo(ModItems.GS_5_INCHES.get())
                                 .icon(Mod.loc("textures/screens/vehicle_weapon/grape_shell.png"))
@@ -573,15 +589,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                 Mod.queueServerWork(i, () -> ParticleTool.spawnBarrelSmoke(1, level, getLookAngle(), new Vec3(pos.x, pos.y, pos.z).add(getLookAngle().scale(7))));
             }
 
-            if (living instanceof ServerPlayer serverPlayer) {
-                if (serverPlayer == getFirstPassenger()) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.BL_132_FIRE_1P.get(), 2, 1);
-                }
-            }
-
-            SoundTool.playDistantSound(level, ModSounds.BL_132_FIRE_3P.get(), position(), 24, 1, living);
-            SoundTool.playDistantSound(level, ModSounds.MK_42_FAR.get(), position(), 48, 1, living);
-            SoundTool.playDistantSound(level, ModSounds.MK_42_VERYFAR.get(), position(), 96, 1, living);
+            playShootSound3p(living, 0, 16, 48, 96, position());
 
             consumeAmmo(living);
         }

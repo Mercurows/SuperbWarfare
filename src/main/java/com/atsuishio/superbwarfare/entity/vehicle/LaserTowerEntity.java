@@ -283,7 +283,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
                 this.entityData.set(COOL_DOWN, VehicleConfig.LASER_TOWER_COOLDOWN.get());
 
                 if (level() instanceof ServerLevel serverLevel) {
-                    this.level().playSound(this, getOnPos(), ModSounds.LASER_TOWER_SHOOT.get(), SoundSource.PLAYERS, 2, random.nextFloat() * 0.1f + 1);
+                    SoundTool.playDistantSound(serverLevel, ModSounds.LASER_TOWER_SHOOT.get(), position(), 2, random.nextFloat() * 0.1f + 1, null);
                     sendParticle(serverLevel, ParticleTypes.END_ROD, target.getX(), target.getEyeY(), target.getZ(), 12, 0, 0, 0, 0.05, true);
                     sendParticle(serverLevel, ParticleTypes.LAVA, target.getX(), target.getEyeY(), target.getZ(), 4, 0, 0, 0, 0.15, true);
                 }
