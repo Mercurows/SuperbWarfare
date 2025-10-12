@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -86,7 +87,7 @@ public class AircraftOverlay implements IGuiOverlay {
                 && armedVehicle instanceof VehicleEntity vehicle
                 && armedVehicle.isDriver(player)
                 && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
-                && vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE) {
+                && vehicle.getVehicleType() == VehicleType.AIRPLANE) {
             // TODO 载具类型判断没生效？
             poseStack.pushPose();
 

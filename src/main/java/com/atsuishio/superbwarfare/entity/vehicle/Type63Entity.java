@@ -503,9 +503,4 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     public boolean hasEnergyStorage() {
         return false;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.ARTILLERY;
-    }
 }

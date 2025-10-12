@@ -1179,9 +1179,4 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     public boolean hasTurret() {
         return true;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.TANK;
-    }
 }

@@ -465,9 +465,4 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     public boolean hasEnergyStorage() {
         return false;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.ARTILLERY;
-    }
 }

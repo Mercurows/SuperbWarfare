@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -51,7 +52,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
 
             // 飞行器
             if (player.getVehicle() instanceof ArmedVehicleEntity armedVehicle && armedVehicle.banHand(player) && player.getVehicle() instanceof VehicleEntity vehicle
-                    && (vehicle.getVehicleType() == VehicleEntity.VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleEntity.VehicleType.HELICOPTER)) {
+                    && (vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER)) {
                 model.head.xRot = 0;
                 model.head.yRot = 0;
                 model.head.zRot = 0;

@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
@@ -174,7 +175,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Boolean> LANDING_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
-    public VehicleType vehicleType = VehicleType.EMPTY;
     public VehicleWeapon[][] availableWeapons;
 
     protected int interpolationSteps;
@@ -3456,8 +3456,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (lastTickSpeed < 0.3 || collisionCoolDown > 0 || this instanceof DroneEntity) return;
         Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
 
-        if ((verticalCollision)) {
-            if (this.vehicleType == VehicleType.HELICOPTER) {
+        if (verticalCollision) {
+            if (this.getVehicleType() == VehicleType.HELICOPTER) {
                 this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (60 * ((lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
                 this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
             } else if (Mth.abs((float) lastTickVerticalSpeed) > 0.4) {
@@ -3886,21 +3886,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 || getVehicleType() == VehicleType.BOAT;
     }
 
-    public enum VehicleType {
-        EMPTY,
-        TANK,
-        APC,
-        AA,
-        AIRPLANE,
-        HELICOPTER,
-        CAR,
-        ARTILLERY,
-        DEFENSE,
-        BOAT,
-        DRONE
-    }
-
     public VehicleType getVehicleType() {
-        return vehicleType;
+        return data().get(VehicleProp.TYPE);
     }
 }

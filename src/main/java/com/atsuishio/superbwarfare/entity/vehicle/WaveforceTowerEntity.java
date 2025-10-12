@@ -407,9 +407,4 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.DEFENSE;
-    }
 }

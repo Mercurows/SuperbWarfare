@@ -628,9 +628,4 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
         this.obb5.setRotation(VectorTool.combineRotationsYaw(1, this));
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.ARTILLERY;
-    }
 }

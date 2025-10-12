@@ -40,5 +40,6 @@
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/a10_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png"
-  }
+  },
+  "Type": "Airplane"
 }

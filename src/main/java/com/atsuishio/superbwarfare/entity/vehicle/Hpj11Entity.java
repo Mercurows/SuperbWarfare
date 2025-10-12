@@ -600,9 +600,4 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public boolean useFixedCameraPos(Entity entity) {
         return true;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.DEFENSE;
-    }
 }

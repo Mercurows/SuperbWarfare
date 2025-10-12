@@ -927,9 +927,4 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     public boolean hasTurret() {
         return true;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.APC;
-    }
 }

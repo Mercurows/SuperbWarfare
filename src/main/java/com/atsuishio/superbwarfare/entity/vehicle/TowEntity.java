@@ -346,9 +346,4 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public boolean hasEnergyStorage() {
         return false;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.DEFENSE;
-    }
 }

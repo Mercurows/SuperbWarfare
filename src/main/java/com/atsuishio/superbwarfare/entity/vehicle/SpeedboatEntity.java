@@ -488,9 +488,4 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     public boolean hasTurret() {
         return true;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.BOAT;
-    }
 }

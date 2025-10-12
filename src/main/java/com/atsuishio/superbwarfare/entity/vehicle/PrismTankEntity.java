@@ -703,9 +703,4 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     public boolean hasTurret() {
         return true;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.TANK;
-    }
 }

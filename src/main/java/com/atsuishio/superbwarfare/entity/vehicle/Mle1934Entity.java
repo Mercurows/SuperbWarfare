@@ -734,9 +734,4 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public boolean hasEnergyStorage() {
         return false;
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.ARTILLERY;
-    }
 }

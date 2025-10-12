@@ -339,9 +339,4 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.AIRPLANE;
-    }
 }
