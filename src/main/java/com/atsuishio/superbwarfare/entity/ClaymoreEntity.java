@@ -189,12 +189,8 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
                         && !target.isShiftKeyDown();
                 if (!condition) continue;
 
-                if (!level.isClientSide()) {
-                    if (!this.level().isClientSide()) {
-                        ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
-                    }
-                    this.discard();
-                }
+                ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+                this.discard();
 
                 Mod.queueServerWork(1, () -> {
                     if (!level.isClientSide()) {
