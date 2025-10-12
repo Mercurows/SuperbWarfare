@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -47,10 +48,12 @@ public record SoundClientMessage(
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
+        player.displayClientMessage(Component.literal(String.valueOf(2)), false);
+
         SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(message.location());
         if (sound == null) return;
 
-        if (player.getUUID().equals(context.player().getUUID())) return;
+        if (player.getUUID().equals(message.uuid)) return;
 
         double distance = player.position().distanceTo(new Vec3(message.pos.x(), message.pos.y(), message.pos.z()));
 
