@@ -10,11 +10,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
+import java.util.UUID;
 
 public class SoundTool {
 
@@ -49,7 +51,7 @@ public class SoundTool {
         player.connection.send(new ClientboundStopSoundPacket(sound, source));
     }
 
-    public static void playDistantSound(ServerLevel serverLevel, SoundEvent soundEvent, Vec3 pos, float radius, float pitch) {
+    public static void playDistantSound(ServerLevel serverLevel, SoundEvent soundEvent, Vec3 pos, float radius, float pitch, Entity sender) {
         double x = pos.x;
         double y = pos.y;
         double z = pos.z;
@@ -57,7 +59,7 @@ public class SoundTool {
         List<ServerPlayer> players = serverLevel.getPlayers(p -> p.distanceToSqr(pos) < radius * radius * 256);
 
         for (var serverPlayer : players) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SoundClientMessage(soundEvent.getLocation(), x, y, z, radius, pitch));
+            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new SoundClientMessage(soundEvent.getLocation(), x, y, z, radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
         }
     }
 }

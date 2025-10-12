@@ -134,9 +134,18 @@ public class ClientPacketHandler {
             SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(message.location());
             if (sound == null) return;
 
+            if (player.getUUID() == message.sender()) return;
+
             double distance = player.position().distanceTo(new Vec3(message.x(), message.y(), message.z()));
-            Mod.queueClientWork((int) (distance / 17),
-                    () -> player.level().playSound(player, message.x(), message.y(), message.z(), sound, SoundSource.BLOCKS, message.radius(), message.pitch()));
+
+            int time = (int) (distance / 17);
+
+            if (time == 0) {
+                player.level().playSound(player, message.x(), message.y(), message.z(), sound, SoundSource.BLOCKS, message.radius(), message.pitch());
+            } else {
+                Mod.queueClientWork(time,
+                        () -> player.level().playSound(player, message.x(), message.y(), message.z(), sound, SoundSource.BLOCKS, message.radius(), message.pitch()));
+            }
         }
     }
 }
