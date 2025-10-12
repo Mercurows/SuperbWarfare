@@ -13,7 +13,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -43,7 +42,7 @@ public record SoundClientMessage(
             SoundClientMessage::new
     );
 
-    public static void handler(SoundClientMessage message, final IPayloadContext context) {
+    public static void handler(SoundClientMessage message) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         if (player.getUUID().equals(message.uuid())) return;
