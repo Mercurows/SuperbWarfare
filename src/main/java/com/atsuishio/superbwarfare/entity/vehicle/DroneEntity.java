@@ -585,7 +585,6 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
 
     @Override
     public float getEngineSoundVolume() {
-
         if (Math.abs(this.entityData.get(POWER)) <= 0.05) {
             return 0;
         }

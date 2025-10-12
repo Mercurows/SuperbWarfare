@@ -10,11 +10,13 @@
     "superbwarfare:vehicle_strike * 2",
     "superbwarfare:grapeshot_hit * 0.5"
   ],
-  "ExplosionDamage": 15,
-  "ExplosionRadius": 2,
-  "ExplosionParticleType": "Medium",
-  "CrashPassengersOnDestroy": true,
   "VehicleContainerType": "Empty",
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 15,
+    "ExplosionRadius": 2,
+    "CrashPassengers": true
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/tom_6_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png"

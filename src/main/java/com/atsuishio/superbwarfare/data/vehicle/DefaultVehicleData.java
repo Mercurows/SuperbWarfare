@@ -5,12 +5,8 @@ import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleIconInfo;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.gson.annotations.SerializedName;
 
 @SuppressWarnings("unused")
@@ -76,28 +72,8 @@ public class DefaultVehicleData implements IDBasedData {
     public float mass = 1;
 
     @ServerOnly
-    @SerializedName("CrashPassengersOnDestroy")
-    public boolean crashPassengersOnDestroy = false;
-
-    @ServerOnly
-    @SerializedName("ExplodePassengersOnDestroy")
-    public boolean explodePassengersOnDestroy = true;
-
-    @ServerOnly
-    @SerializedName("ExplosionDamage")
-    public float explosionDamage = 0;
-
-    @ServerOnly
-    @SerializedName("ExplosionRadius")
-    public float explosionRadius = 0;
-
-    @ServerOnly
-    @SerializedName("ExplosionDestroyBlockOnDestroy")
-    public boolean explosionDestroyBlockOnDestroy = true;
-
-    @ServerOnly
-    @SerializedName("ExplosionParticleType")
-    public ParticleTool.ParticleType explosionParticleType = ParticleTool.ParticleType.MINI;
+    @SerializedName("DestroyInfo")
+    public DestroyInfo destroyInfo = new DestroyInfo();
 
     @SerializedName("VehicleContainerType")
     public VehicleContainerType vehicleContainerType = VehicleContainerType.MEDIUM;

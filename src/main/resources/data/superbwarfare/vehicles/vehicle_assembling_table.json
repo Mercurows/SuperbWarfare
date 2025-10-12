@@ -10,10 +10,13 @@
     "superbwarfare:vehicle_strike * 0.5",
     "superbwarfare:grapeshot_hit * 0.5"
   ],
-  "ExplosionDamage": 20,
-  "ExplosionRadius": 3,
-  "ExplosionParticleType": "Small",
-  "ExplodePassengersOnDestroy": false,
+  "DestroyInfo": {
+    "ParticleType": "Small",
+    "ExplosionDamage": 20,
+    "ExplosionRadius": 3,
+    "ExplodePassengers": false,
+    "ExplodeBlocks": false
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/vehicle_assembling_table_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png"

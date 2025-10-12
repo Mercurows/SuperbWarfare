@@ -36,9 +36,11 @@
     "@superbwarfare:igla_9k38_missile * 0.5",
     "All - 9"
   ],
-  "ExplosionDamage": 160,
-  "ExplosionRadius": 8,
-  "ExplosionParticleType": "Huge",
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 160,
+    "ExplosionRadius": 8
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/prism_tank_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png"

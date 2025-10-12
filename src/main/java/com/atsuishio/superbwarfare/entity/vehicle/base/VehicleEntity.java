@@ -2080,25 +2080,27 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void destroy() {
         var data = data();
 
-        if (data.get(VehicleProp.EXPLODE_PASSENGERS_ON_DESTROY)) {
-            if (this.crash && data.get(VehicleProp.CRASH_PASSENGERS_ON_DESTROY)) {
+        var destroyInfo = data.get(VehicleProp.DESTROY_INFO);
+
+        if (destroyInfo.explodePassengers) {
+            if (this.crash && destroyInfo.crashPassengers) {
                 crashPassengers();
             } else {
                 explodePassengers();
             }
         }
 
-        var radius = data.get(VehicleProp.EXPLOSION_RADIUS);
+        var radius = destroyInfo.explosionRadius;
         if (radius > 0) {
-            var damage = data.get(VehicleProp.EXPLOSION_DAMAGE);
-            var particleType = data.get(VehicleProp.EXPLOSION_PARTICLE_TYPE);
+            var damage = destroyInfo.explosionDamage;
+            var particleType = destroyInfo.particleType;
 
             var explosion = createCustomExplosion()
                     .radius(radius)
                     .damage(damage)
                     .withParticleType(particleType);
 
-            if (!data.get(VehicleProp.EXPLOSION_DESTROY_BLOCK_ON_DESTROY)) {
+            if (!destroyInfo.explodeBlocks) {
                 explosion.keepBlock();
             }
 

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.DestroyInfo;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -64,9 +65,20 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
         super(type, world);
 
-        appendModification(VehicleProp.EXPLOSION_DAMAGE, (data, v) -> data.vehicle.getEntityData().get(MELON) ? VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get() : v);
-        appendModification(VehicleProp.EXPLOSION_RADIUS, (data, v) -> data.vehicle.getEntityData().get(MELON) ? VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue() : v);
-        appendModification(VehicleProp.EXPLOSION_PARTICLE_TYPE, (data, v) -> data.vehicle.getEntityData().get(MELON) ? ParticleTool.ParticleType.HUGE : v);
+        appendModification(VehicleProp.DESTROY_INFO, (data, v) -> {
+            if (data.vehicle.getEntityData().get(MELON)) {
+                return new DestroyInfo(
+                        v.crashPassengers,
+                        v.explodePassengers,
+                        v.explodeBlocks,
+                        VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(),
+                        VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(),
+                        ParticleTool.ParticleType.HUGE
+                );
+            } else {
+                return v;
+            }
+        });
     }
 
     @Override
