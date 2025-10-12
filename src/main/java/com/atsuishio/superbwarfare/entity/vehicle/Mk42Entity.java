@@ -379,7 +379,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         lowHealthWarning();
     }
 
-    public void countAmmo () {
+    public void countAmmo() {
         if (level() instanceof ServerLevel) {
             int ammoCount = switch (getWeaponIndex(0)) {
                 case 1 -> countItem(ModItems.HE_5_INCHES.get());
@@ -476,8 +476,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                 if (entityData.get(AMMO_COUNT) > 0) {
                     this.items.get(0).shrink(1);
                 } else {
-                    Item ammo = switch (getWeaponIndex(0))
-                    {
+                    Item ammo = switch (getWeaponIndex(0)) {
                         case 1 -> ModItems.HE_5_INCHES.get();
                         case 2 -> ModItems.CM_5_INCHES.get();
                         case 3 -> ModItems.GS_5_INCHES.get();
@@ -580,8 +579,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public int getAmmoCount(LivingEntity living) {
         int playerAmmo = 0;
         if (living == getFirstPassenger()) {
-            Item ammo = switch (getWeaponIndex(0))
-            {
+            Item ammo = switch (getWeaponIndex(0)) {
                 case 1 -> ModItems.HE_5_INCHES.get();
                 case 2 -> ModItems.CM_5_INCHES.get();
                 case 3 -> ModItems.GS_5_INCHES.get();

@@ -52,7 +52,12 @@ public class VehicleMenu extends AbstractContainerMenu {
     public VehicleMenu(MenuType<?> pType, int pContainerId, Inventory pPlayerInventory, Container pContainer, int row, int col, boolean hasUpgradeSlots) {
         super(pType, pContainerId);
 
-        checkContainerSize(pContainer, row * col);
+        int size = row * col;
+        if (hasUpgradeSlots) {
+            size += 3;
+        }
+
+        checkContainerSize(pContainer, size);
 
         this.container = pContainer;
         this.containerRows = row;
