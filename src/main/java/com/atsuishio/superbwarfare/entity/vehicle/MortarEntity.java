@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -149,8 +150,11 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
 
         if (!this.level().isClientSide()) {
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_LOAD.get(), SoundSource.PLAYERS, 1f, 1f);
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_FIRE.get(), SoundSource.PLAYERS, 8f, 1f);
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_DISTANT.get(), SoundSource.PLAYERS, 32f, 1f);
+        }
+
+        if (level() instanceof ServerLevel serverLevel) {
+            SoundTool.playDistantSound(serverLevel, ModSounds.MORTAR_FIRE.get(), position(), 8, random.nextFloat() * 0.1f + 1, null);
+            SoundTool.playDistantSound(serverLevel, ModSounds.MORTAR_DISTANT.get(), position(), 32, random.nextFloat() * 0.1f + 1, null);
         }
     }
 

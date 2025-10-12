@@ -280,8 +280,8 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
             }
 
             if (canShoot && VectorTool.calculateAngle(getBarrelVector(1), targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
-                if (level() instanceof ServerLevel) {
-                    this.level().playSound(this, getOnPos(), ModSounds.WAVEFORCE_TOWER_FIRE.get(), SoundSource.PLAYERS, 6, random.nextFloat() * 0.1f + 1);
+                if (level() instanceof ServerLevel serverLevel) {
+                    SoundTool.playDistantSound(serverLevel, ModSounds.WAVEFORCE_TOWER_FIRE.get(), position(), 6, random.nextFloat() * 0.1f + 1, null);
                 }
 
                 Predicate<Entity> filter = entity -> entity != this && !IS_FRIENDLY.test(this.getOwner(), entity);
