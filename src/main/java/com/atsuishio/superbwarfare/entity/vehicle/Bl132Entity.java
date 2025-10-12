@@ -29,7 +29,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -580,11 +579,9 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                 }
             }
 
-            if (!this.level().isClientSide()) {
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.BL_132_FIRE_3P.get(), SoundSource.PLAYERS, 24f, 1f);
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_FAR.get(), SoundSource.PLAYERS, 48f, 1f);
-                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MK_42_VERYFAR.get(), SoundSource.PLAYERS, 96f, 1f);
-            }
+            SoundTool.playDistantSound(level, ModSounds.BL_132_FIRE_3P.get(), position(), 24, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.MK_42_FAR.get(), position(), 48, 1, living);
+            SoundTool.playDistantSound(level, ModSounds.MK_42_VERYFAR.get(), position(), 96, 1, living);
 
             consumeAmmo(living);
         }
