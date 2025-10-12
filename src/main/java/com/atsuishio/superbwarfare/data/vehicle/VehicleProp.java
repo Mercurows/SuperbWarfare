@@ -1,12 +1,8 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.data.Prop;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleIconInfo;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 
 import java.util.List;
 
@@ -34,14 +30,8 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
 
     public static final VehicleProp<Float> MASS = new VehicleProp<>("Mass");
 
-    public static final VehicleProp<Boolean> CRASH_PASSENGERS_ON_DESTROY = new VehicleProp<>("CrashPassengersOnDestroy");
-    public static final VehicleProp<Boolean> EXPLODE_PASSENGERS_ON_DESTROY = new VehicleProp<>("ExplodePassengersOnDestroy");
-    public static final VehicleProp<Boolean> EXPLOSION_DESTROY_BLOCK_ON_DESTROY = new VehicleProp<>("ExplosionDestroyBlockOnDestroy");
+    public static final VehicleProp<DestroyInfo> DESTROY_INFO = new VehicleProp<>("DestroyInfo");
 
-    public static final VehicleProp<Float> EXPLOSION_DAMAGE = new VehicleProp<>("ExplosionDamage");
-    public static final VehicleProp<Float> EXPLOSION_RADIUS = new VehicleProp<>("ExplosionRadius");
-
-    public static final VehicleProp<ParticleTool.ParticleType> EXPLOSION_PARTICLE_TYPE = new VehicleProp<>("ExplosionParticleType");
     public static final VehicleProp<VehicleContainerType> VEHICLE_CONTAINER_TYPE = new VehicleProp<>("VehicleContainerType");
     public static final VehicleProp<Boolean> HAS_UPGRADE_SLOTS = new VehicleProp<>("HasUpgradeSlots");
 

@@ -23,11 +23,13 @@
     "superbwarfare:vehicle_strike * 5",
     "All - 1"
   ],
-  "ExplosionDamage": 10,
-  "ExplosionRadius": 3,
-  "ExplosionParticleType": "Medium",
-  "ExplosionDestroyBlockOnDestroy": false,
   "VehicleContainerType": "Empty",
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 10,
+    "ExplosionRadius": 3,
+    "ExplodeBlocks": false
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/laser_tower_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"

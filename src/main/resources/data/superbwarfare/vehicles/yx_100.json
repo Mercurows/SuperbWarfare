@@ -41,9 +41,11 @@
     "@superbwarfare:tm_62 * 2.5",
     "All - 9"
   ],
-  "ExplosionDamage": 200,
-  "ExplosionRadius": 16,
-  "ExplosionParticleType": "Giant",
+  "DestroyInfo": {
+    "ParticleType": "Giant",
+    "ExplosionDamage": 200,
+    "ExplosionRadius": 16
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/yx_100_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png"

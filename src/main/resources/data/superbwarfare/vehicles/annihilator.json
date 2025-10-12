@@ -30,10 +30,12 @@
     "@superbwarfare:cannon_shell * 3",
     "All - 12"
   ],
-  "ExplosionDamage": 600,
-  "ExplosionRadius": 15,
-  "ExplosionParticleType": "Giant",
   "VehicleContainerType": "Empty",
+  "DestroyInfo": {
+    "ParticleType": "Giant",
+    "ExplosionDamage": 600,
+    "ExplosionRadius": 15
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/annihilator_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"

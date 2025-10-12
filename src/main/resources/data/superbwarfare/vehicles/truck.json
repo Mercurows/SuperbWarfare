@@ -36,10 +36,12 @@
     "@superbwarfare:mortar_shell * 2",
     "All - 4"
   ],
-  "ExplosionDamage": 120,
-  "ExplosionRadius": 7,
-  "ExplosionParticleType": "Huge",
   "VehicleContainerType": "Huge",
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 120,
+    "ExplosionRadius": 7
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png"

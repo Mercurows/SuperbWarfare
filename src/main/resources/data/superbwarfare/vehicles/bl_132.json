@@ -26,10 +26,12 @@
     "@superbwarfare:gun_grenade * 1.5",
     "All - 8"
   ],
-  "ExplosionDamage": 160,
-  "ExplosionRadius": 8,
-  "ExplosionParticleType": "Huge",
   "VehicleContainerType": "One",
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 160,
+    "ExplosionRadius": 8
+  },
   "Icon": {
     "VehicleIcon": "superbwarfare:textures/vehicle_icon/bl_132_icon.png",
     "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"
