@@ -124,9 +124,9 @@ public class M2HBItem extends GunGeoItem {
         super.beforeShoot(parameters);
 
         var data = parameters.data();
-        var shooter = parameters.shooter();
+        var ammoSupplier = parameters.ammoSupplier();
 
-        if (data.currentAvailableShots(shooter) <= 5) {
+        if (data.currentAvailableShots(ammoSupplier) <= 5) {
             data.hideBulletChain.set(true);
         }
     }

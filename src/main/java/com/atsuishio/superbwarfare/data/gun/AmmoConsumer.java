@@ -85,11 +85,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 消耗指定弹药数量（原始数量，不包括虚拟弹药，不考虑count）
      */
     public int consume(@NotNull GunData data, @NotNull Entity shooter, int count) {
+        if (!initialized) init();
         if (count <= 0
                 || this.type == AmmoConsumeType.INFINITE
                 || shooter instanceof Player player && player.isCreative()
         ) return 0;
-        if (!initialized) init();
 
         if (type == AmmoConsumeType.INVALID) {
             Mod.LOGGER.warn("consume ammo failed: invalid AmmoConsumeType");
@@ -133,12 +133,12 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 消耗指定弹药数量（原始数量，不包括虚拟弹药，不考虑count）
      */
     public int consume(@NotNull GunData data, @NotNull IItemHandler handler, int count) {
+        if (!initialized) init();
         if (type == AmmoConsumeType.INVALID
                 || type == AmmoConsumeType.INFINITE
                 || type == AmmoConsumeType.EMPTY
                 || count <= 0
         ) return 0;
-        if (!initialized) init();
 
         if (type == AmmoConsumeType.PLAYER_AMMO) {
             var consumed = InventoryTool.consumeAmmoItem(handler, this.playerAmmoType, count);
@@ -160,9 +160,9 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
     public int count(@NotNull GunData data, @Nullable Entity entity) {
+        if (!initialized) init();
         if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
         if (entity == null || type == AmmoConsumeType.EMPTY) return 0;
-        if (!initialized) init();
 
         int playerAmmoCount = 0;
         if (type == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
@@ -176,9 +176,9 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
     public int count(@NotNull GunData data, @Nullable IItemHandler handler) {
+        if (!initialized) init();
         if (this.type == AmmoConsumeType.INFINITE) return Integer.MAX_VALUE;
         if (handler == null || type == AmmoConsumeType.EMPTY) return 0;
-        if (!initialized) init();
 
         if (type == AmmoConsumeType.ITEM) {
             return InventoryTool.countItem(handler, stack -> ItemStack.isSameItemSameComponents(stack, this.stack));
@@ -200,6 +200,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * @return 成功返还的弹药数量
      */
     public int withdraw(@NotNull Entity shooter, int count) {
+        if (!initialized) init();
         if (type == AmmoConsumeType.INVALID
                 || type == AmmoConsumeType.INFINITE
                 || type == AmmoConsumeType.EMPTY
@@ -208,7 +209,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         ) {
             return 0;
         }
-        if (!initialized) init();
 
         if (type == AmmoConsumeType.PLAYER_AMMO) {
             if (shooter instanceof Player player) {
@@ -238,6 +238,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     public int withdraw(@NotNull IItemHandler handler, int count) {
+        if (!initialized) init();
         if (type == AmmoConsumeType.INVALID
                 || type == AmmoConsumeType.INFINITE
                 || type == AmmoConsumeType.EMPTY
@@ -246,7 +247,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         ) {
             return 0;
         }
-        if (!initialized) init();
 
         var copiedStack = this.stack.copyWithCount(count);
         var result = ItemHandlerHelper.insertItemStacked(handler, copiedStack, false);

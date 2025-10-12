@@ -4,7 +4,16 @@
   "MaxEnergy": 5000000,
   "Seats": [
     {
-      "HidePassenger": true
+      "HidePassenger": true,
+      "WeaponData": {
+        "DefaultFireMode": "Auto",
+        "AvailableFireModes": "Auto",
+        "AmmoType": "Infinity",
+        "RPM": 1200,
+        "Velocity": 10,
+        "Damage": 100,
+        "BypassesArmor": 0.5
+      }
     },
     {
       "HidePassenger": true

@@ -30,7 +30,7 @@ import com.atsuishio.superbwarfare.item.gun.sniper.*;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
-import com.atsuishio.superbwarfare.item.gun.vehicle.Lav15020MMCannon;
+import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -100,7 +100,7 @@ public class ModItems {
     public static final DeferredHolder<Item, AureliaSceptre> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptre::new);
     public static final DeferredHolder<Item, BocekItem> BOCEK = GUNS.register("bocek", BocekItem::new);
 
-    public static final DeferredHolder<Item, Lav15020MMCannon> LAV_150_20MM_CANNON = GUNS.register("lav_150_20mm_cannon", Lav15020MMCannon::new);
+    public static final DeferredHolder<Item, VehicleGun> VEHICLE_GUN = GUNS.register("vehicle_gun", VehicleGun::new);
 
     /**
      * Ammo
@@ -145,7 +145,7 @@ public class ModItems {
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 20));
     public static final DeferredHolder<Item, WireGuideMissileItem> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
-    public static final DeferredHolder<Item, Item> TOW_MISSILE = AMMO.register("tow_missile", ()->new Item(new Item.Properties().stacksTo(4)));
+    public static final DeferredHolder<Item, Item> TOW_MISSILE = AMMO.register("tow_missile", () -> new Item(new Item.Properties().stacksTo(4)));
     public static final DeferredHolder<Item, AgmItem> AGM = AMMO.register("agm", AgmItem::new);
     public static final DeferredHolder<Item, SwarmDroneItem> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
     public static final DeferredHolder<Item, MediumAerialBombItem> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);

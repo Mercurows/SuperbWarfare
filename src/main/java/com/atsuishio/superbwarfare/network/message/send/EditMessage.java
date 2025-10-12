@@ -73,10 +73,10 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
 
                 if (!player.isCreative()
                         && selectedAmmoType >= 0
-                        && selectedAmmoType <= data.ammoConsumers.size() - 1
+                        && selectedAmmoType <= data.get(GunProp.AMMO_CONSUMER).size() - 1
                 ) {
                     var currentConsumer = data.selectedAmmoConsumer();
-                    var targetConsumer = data.ammoConsumers.get(selectedAmmoType);
+                    var targetConsumer = data.get(GunProp.AMMO_CONSUMER).get(selectedAmmoType);
                     if (currentConsumer == targetConsumer) return;
 
                     var currentSlot = currentConsumer.ammoSlot;

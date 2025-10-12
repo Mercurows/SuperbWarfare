@@ -11,6 +11,7 @@ import java.util.UUID;
 /**
  * 开火参数
  *
+ * @param ammoSupplier   弹药提供者
  * @param shooter        射击者
  * @param level          ServerLevel
  * @param shootPosition  子弹位置
@@ -21,6 +22,7 @@ import java.util.UUID;
  * @param targetEntityUUID           已锁定实体UUID
  */
 public record ShootParameters(
+        @Nullable Entity ammoSupplier,
         @Nullable Entity shooter,
         @NotNull ServerLevel level,
         @NotNull Vec3 shootPosition,

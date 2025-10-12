@@ -301,7 +301,7 @@ public class ClickHandler {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return;
                     PacketDistributor.sendToServer(UnloadMessage.INSTANCE);
                 }
-                if (data.ammoConsumers.size() > 1) {
+                if (data.get(GunProp.AMMO_CONSUMER).size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
                         PacketDistributor.sendToServer(new EditMessage(5, false));
                     } else if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {

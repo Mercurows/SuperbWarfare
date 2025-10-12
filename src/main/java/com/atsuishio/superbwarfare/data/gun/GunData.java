@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
@@ -43,7 +44,9 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final CompoundTag attachmentTag;
     public final StringValue propertyOverrideString;
     public final String id;
-    public final List<AmmoConsumer> ammoConsumers;
+
+    @NotNull
+    public Supplier<DefaultGunData> defaultDataSupplier;
 
     public static final LoadingCache<ItemStack, GunData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
@@ -61,6 +64,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         this.item = gunItem;
         this.stack = stack;
         this.id = getRegistryId(stack.getItem());
+
+        this.defaultDataSupplier = () -> gunItem.getDefaultData(this);
 
         var customData = stack.get(DataComponents.CUSTOM_DATA);
         this.tag = customData != null ? customData.copyTag() : new CompoundTag();
@@ -101,7 +106,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         heat = new DoubleValue(data, "Heat");
         overHeat = new BooleanValue(data, "OverHeat");
 
-        ammoConsumers = get(GunProp.AMMO_CONSUMER);
         var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
         if (defaultFireMode == null) {
             defaultFireMode = FireMode.SEMI.name;
@@ -178,7 +182,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public DefaultGunData getDefault() {
-        return getDefault(this.id);
+        return defaultDataSupplier.get();
     }
 
     public static DefaultGunData getDefault(ItemStack stack) {
@@ -305,11 +309,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public AmmoConsumer selectedAmmoConsumer() {
-        return selectedAmmoConsumer(this.ammoConsumers);
+        return selectedAmmoConsumer(get(GunProp.AMMO_CONSUMER));
     }
 
     public void changeAmmoConsumer(int index) {
-        this.selectedAmmoType.set(Mth.clamp(index, 0, this.ammoConsumers.size() - 1));
+        this.selectedAmmoType.set(Mth.clamp(index, 0, this.get(GunProp.AMMO_CONSUMER).size() - 1));
     }
 
     public FireModeInfo selectedFireModeInfo(List<FireModeInfo> fireModes) {
@@ -547,6 +551,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      */
     public void shoot(@NotNull Entity entity, double spread, boolean zoom, @Nullable UUID uuid) {
         this.item.shoot(this, entity, spread, zoom, uuid);
+    }
+
+    public void shoot(@NotNull ShootParameters parameters) {
+        this.item.shoot(parameters);
     }
 
     /**

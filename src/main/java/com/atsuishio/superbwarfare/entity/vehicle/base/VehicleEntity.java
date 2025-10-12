@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
@@ -308,6 +309,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.15 * f * pPlayer.getDeltaMovement().length())));
             pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
         }
+    }
+
+    protected final HashMap<String, Function<VehicleEntity, ShootRay>> shootAnchorPoints = new HashMap<>();
+
+    public final Function<VehicleEntity, ShootRay> DEFAULT_POS = createShootAnchorPoint("Default", v -> new ShootRay(v.position(), v.getLookAngle()));
+
+    protected Function<VehicleEntity, ShootRay> createShootAnchorPoint(String name, Function<VehicleEntity, ShootRay> func) {
+        shootAnchorPoints.put(name, func);
+        return func;
     }
 
     protected final Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, DefaultVehicleData, ?>> propertyModifiers = new HashMap<>();
@@ -3006,7 +3016,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         landingBlocks.sort(Comparator.comparingDouble(pos ->
                 this.position().distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5)));
 
-        return landingBlocks.get(0).getCenter();
+        return landingBlocks.getFirst().getCenter();
     }
 
     public void updateAutoLanding(Vec3 landingTarget) {
