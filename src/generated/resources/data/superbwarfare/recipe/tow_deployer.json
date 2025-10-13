@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:dispenser"
+    },
+    "b": {
+      "item": "superbwarfare:mortar_barrel"
+    },
+    "c": {
+      "item": "superbwarfare:artillery_indicator"
+    },
+    "d": {
+      "tag": "superbwarfare:storage_blocks/steel"
+    }
+  },
+  "pattern": [
+    "c ",
+    "ab",
+    "d "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:tow_deployer"
+  }
+}
