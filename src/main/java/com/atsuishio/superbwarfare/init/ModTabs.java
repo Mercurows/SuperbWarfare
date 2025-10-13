@@ -38,6 +38,8 @@ public class ModTabs {
                     .title(Component.translatable("item_group.superbwarfare.guns"))
                     .icon(() -> new ItemStack(ModItems.TASER.get()))
                     .displayItems((param, output) -> ModItems.GUNS.getEntries().forEach(registryObject -> {
+                        if (registryObject == ModItems.VEHICLE_GUN) return;
+
                         // 普通枪械
                         var stack = new ItemStack(registryObject.get());
                         output.accept(stack);
