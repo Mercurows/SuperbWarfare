@@ -56,6 +56,7 @@
     "@superbwarfare:igla_9k38_missile * 0.75",
     "All - 7"
   ],
+  "VehicleContainerType": "Medium",
   "DestroyInfo": {
     "ParticleType": "Huge",
     "ExplosionDamage": 120,

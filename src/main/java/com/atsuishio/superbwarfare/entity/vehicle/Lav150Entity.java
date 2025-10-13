@@ -69,11 +69,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public OBB obb;

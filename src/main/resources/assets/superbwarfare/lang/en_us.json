@@ -63,6 +63,9 @@
   "item.superbwarfare.igla_9k38": "IGLA-9K38 MANPADS",
   "item.superbwarfare.repair_tool": "Repair Tool",
 
+  "item.superbwarfare.vehicle_gun": "Vehicle Gun",
+  "des.superbwarfare.vehicle_gun": "You should not have got this",
+
   "des.superbwarfare.guns.damage": "Damage: ",
   "des.superbwarfare.guns.level": "Level: ",
   "des.superbwarfare.guns.bypass": "Armor Piercing: ",
