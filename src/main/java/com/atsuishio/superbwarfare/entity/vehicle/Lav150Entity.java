@@ -181,7 +181,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     // TODO 修改为正确的计算方式
     @Override
     public Vec3 getTurretShootPos(int seatIndex, float ticks) {
-        return CANNON_POS.apply(this).shootPosition();
+        return MACHINE_GUN_POS.apply(this).shootPosition();
     }
 
     // 炮弹发射速度
@@ -228,23 +228,22 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         }
     }
 
-    public Function<VehicleEntity, ShootRay> CANNON_POS = createShootAnchorPoint("Main", v -> {
-        Matrix4f transform = getBarrelTransform(1);
-        Vector4f worldPosition;
-
-        // TODO 这里不应该看weaponIndex，应当分离成3个发射位置
-        if (getWeaponIndex(0) == 0) {
-            worldPosition = transformPosition(transform, 0.0609375f, 0.0517f, 0);
-        } else if (getWeaponIndex(0) == 1) {
-            worldPosition = transformPosition(transform, 0.3f, 0.08f, 0);
-        } else {
-            worldPosition = transformPosition(transform, 0, 1, 0);
-        }
-        var shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    // TODO 正确计算位置
+    public Function<VehicleEntity, ShootRay> MACHINE_GUN_POS = createShootAnchorPoint("MachineGun", v -> {
+        var worldPosition = transformPosition(getBarrelTransform(1), 0.3f, 0.08f, 0);
 
         return new ShootRay(
-                shootPos,
-                new Vec3(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z)
+                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
+                getBarrelVector(1)
+        );
+    });
+
+    public Function<VehicleEntity, ShootRay> CANNON_POS = createShootAnchorPoint("Cannon", v -> {
+        var worldPosition = transformPosition(getBarrelTransform(1), 0.0609375f, 0.0517f, 0);
+
+        return new ShootRay(
+                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
+                getBarrelVector(1)
         );
     });
 
@@ -258,12 +257,10 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         }
 
         if (getWeaponIndex(0) == 0) {
-            if (this.cannotFire) return;
-
             var data = VehicleGun.fromVehicle(this, 0);
-            if (data == null) return;
+            if (data == null || !data.canShoot(this)) return;
 
-            var ray = CANNON_POS.apply(this);
+            var ray = MACHINE_GUN_POS.apply(this);
             data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null));
 
             sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
@@ -276,10 +273,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
             this.entityData.set(HEAT, this.entityData.get(HEAT) + data.get(GunProp.HEAT_PER_SHOOT).intValue());
             this.entityData.set(FIRE_ANIM, 3);
-
-            if (hasCreativeAmmo) return;
-
-            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
         } else if (getWeaponIndex(0) == 1) {
             if (this.cannotFireCoax) return;
             if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
