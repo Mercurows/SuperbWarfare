@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:tow_deployer_assembling"
+        "recipe": "superbwarfare:tow_deployer"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:tow_deployer_assembling"
+      "superbwarfare:tow_deployer"
     ]
   },
   "sends_telemetry_event": false

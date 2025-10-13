@@ -253,6 +253,16 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', Items.ARMOR_STAND)
                 .unlockedBy(getHasName(Items.TARGET), has(Items.TARGET))
                 .save(writer, Mod.loc(getItemName(ModItems.TARGET_DEPLOYER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TOW_DEPLOYER.get())
+                .pattern("c ")
+                .pattern("ab")
+                .pattern("d ")
+                .define('a', Items.DISPENSER)
+                .define('b', ModItems.MORTAR_BARREL.get())
+                .define('c', ModItems.ARTILLERY_INDICATOR.get())
+                .define('d', ModTags.Items.STORAGE_BLOCK_STEEL)
+                .unlockedBy(getHasName(Items.DISPENSER), has(Items.DISPENSER))
+                .save(writer, Mod.loc(getItemName(ModItems.TOW_DEPLOYER.get())));
     }
 
     private static void buildArmorRecipes(Consumer<FinishedRecipe> writer) {
@@ -1418,13 +1428,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.TRUCK.get())));
-        VehicleAssemblingRecipeBuilder.item(ModItems.TOW_DEPLOYER.get(), 1, VehicleAssemblingRecipe.Category.DEFENSE)
-                .require(ModTags.Items.STORAGE_BLOCK_STEEL)
-                .require(ModItems.ARTILLERY_INDICATOR.get())
-                .require(ModItems.MORTAR_BARREL.get())
-                .require(Items.DISPENSER)
-                .unlockedBy(getHasName(Items.DISPENSER), has(Items.DISPENSER))
-                .save(writer, Mod.loc(getItemName(ModItems.TOW_DEPLOYER.get()) + "_assembling"));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
                 .require(PLATES_COPPER, 4)
