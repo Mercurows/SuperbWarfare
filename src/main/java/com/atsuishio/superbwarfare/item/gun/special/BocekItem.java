@@ -114,6 +114,11 @@ public class BocekItem extends GunGeoItem {
     }
 
     @Override
+    public boolean useSpecialFireProcedure(GunData data) {
+        return true;
+    }
+
+    @Override
     public ResourceLocation getGunIcon(GunData data) {
         return Mod.loc("textures/gun_icon/bocek_icon.png");
     }
