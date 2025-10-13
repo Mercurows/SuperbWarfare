@@ -166,6 +166,11 @@ public class JavelinItem extends GunGeoItem {
         return Mod.loc("textures/gun_icon/javelin_icon.png");
     }
 
+    @Override
+    public boolean useSpecialFireProcedure(GunData data) {
+        return true;
+    }
+
     private void fire(Player player) {
         Level level = player.level();
         ItemStack stack = player.getMainHandItem();

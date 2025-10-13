@@ -604,7 +604,7 @@ public class ClientEventHandler {
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !holdFireVehicle
                 && gunItem.canShoot(data, player)
-                && stack.is(ModTags.Items.NORMAL_GUN)
+                && !gunItem.useSpecialFireProcedure(data)
                 && fireCooldown == 0
                 && sprintBasicRotX * sprintBasicRotY * sprintBasicRotZ < 0.0001
                 && drawTime < 0.01
@@ -662,52 +662,50 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
-        if (!gunItem.canShoot(data, player)) return;
+        if (!gunItem.canShoot(data, player) || gunItem.useSpecialFireProcedure(data)) return;
 
-        if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            var mode = data.selectedFireModeInfo().mode;
-            if (mode != FireMode.AUTO) {
-                holdFire = false;
-            }
-
-            if (mode == FireMode.BURST && burstFireAmount == 1) {
-                fireCooldown = data.get(GunProp.BURST_COOLDOWN);
-            }
-
-            if (burstFireAmount > 0) {
-                burstFireAmount--;
-            }
-
-            for (Perk.Type type : Perk.Type.values()) {
-                var instance = data.perk.getInstance(type);
-                if (instance != null) {
-                    customRpm = instance.perk().getModifiedCustomRPM(customRpm, data, instance);
-                }
-            }
-
-            if (stack.is(ModItems.DEVOTION.get())) {
-                customRpm = Math.min(customRpm + 15, 500);
-            }
-
-            if (stack.getItem() == ModItems.SENTINEL.get()) {
-                chamberRot = 1;
-            }
-
-            if (stack.getItem() == ModItems.NTW_20.get()) {
-                actionMove = 1;
-            }
-
-            // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-            if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
-                data.bolt.needed.set(true);
-            }
-
-            revolverPreTime = 0;
-            revolverWheelPreTime = 0;
-
-            playGunClientSounds(player);
-            handleClientShoot();
+        var mode = data.selectedFireModeInfo().mode;
+        if (mode != FireMode.AUTO) {
+            holdFire = false;
         }
+
+        if (mode == FireMode.BURST && burstFireAmount == 1) {
+            fireCooldown = data.get(GunProp.BURST_COOLDOWN);
+        }
+
+        if (burstFireAmount > 0) {
+            burstFireAmount--;
+        }
+
+        for (Perk.Type type : Perk.Type.values()) {
+            var instance = data.perk.getInstance(type);
+            if (instance != null) {
+                customRpm = instance.perk().getModifiedCustomRPM(customRpm, data, instance);
+            }
+        }
+
+        if (stack.is(ModItems.DEVOTION.get())) {
+            customRpm = Math.min(customRpm + 15, 500);
+        }
+
+        if (stack.getItem() == ModItems.SENTINEL.get()) {
+            chamberRot = 1;
+        }
+
+        if (stack.getItem() == ModItems.NTW_20.get()) {
+            actionMove = 1;
+        }
+
+        // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
+            data.bolt.needed.set(true);
+        }
+
+        revolverPreTime = 0;
+        revolverWheelPreTime = 0;
+
+        playGunClientSounds(player);
+        handleClientShoot();
     }
 
     public static void gunPartMove(float times) {

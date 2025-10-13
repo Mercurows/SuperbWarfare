@@ -224,7 +224,7 @@ public class LivingEventHandler {
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
-            if (stack.is(ModTags.Items.LAUNCHER) || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
+            if (data.get(GunProp.EXPLOSION_DAMAGE) > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.set(data.exp.get() + amount);
             }
         }
@@ -249,7 +249,7 @@ public class LivingEventHandler {
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
-            if (stack.is(ModTags.Items.LAUNCHER) || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
+            if (data.get(GunProp.EXPLOSION_DAMAGE) > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.set(data.exp.get() + amount);
             }
         }

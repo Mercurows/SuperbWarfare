@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.data.gun.ReloadType;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -39,20 +38,18 @@ public class GunEventHandler {
      * 拉大栓
      */
     private static void handleGunBolt(@NotNull GunData data) {
-        var stack = data.stack();
+        if (data.item.useSpecialFireProcedure(data)) return;
 
-        if (stack.is(ModTags.Items.NORMAL_GUN)) {
-            data.bolt.actionTimer.reduce();
+        data.bolt.actionTimer.reduce();
 
-            // 执行拉栓期间额外行为
-            var behavior = data.item.boltTimeBehaviors.get(data.bolt.actionTimer.get());
-            if (behavior != null) {
-                behavior.accept(data);
-            }
+        // 执行拉栓期间额外行为
+        var behavior = data.item.boltTimeBehaviors.get(data.bolt.actionTimer.get());
+        if (behavior != null) {
+            behavior.accept(data);
+        }
 
-            if (data.bolt.actionTimer.get() == 1) {
-                data.bolt.needed.set(false);
-            }
+        if (data.bolt.actionTimer.get() == 1) {
+            data.bolt.needed.set(false);
         }
     }
 

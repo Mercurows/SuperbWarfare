@@ -116,7 +116,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         setProperty(GunProp.WEIGHT, (data, v) -> v + getCustomWeight(data));
         setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data));
         setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data));
-        setProperty(GunProp.BOLT_ACTION_TIME, (data, v) -> v + getCustomBoltActionTime(data));
     }
 
     @Override
@@ -457,10 +456,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return data.attachment.get(AttachmentType.BARREL) == 2 ? 0.6 : 1;
     }
 
-    public int getCustomBoltActionTime(GunData data) {
-        return 0;
-    }
-
     /**
      * 是否允许缩放
      */
@@ -502,6 +497,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 && data.hasEnoughAmmoToShoot(shooter);
     }
 
+    public boolean useSpecialFireProcedure(GunData data) {
+        return false;
+    }
+
     /**
      * 判断武器能否瞄准
      */
@@ -529,6 +528,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("unused")
     public void beforeShoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
@@ -583,6 +583,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("unused")
     public void afterShoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
@@ -651,6 +652,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("unused")
     public void shoot(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
@@ -875,6 +877,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("unused")
     public boolean shootBullet(
             @Nullable Entity shooter,
             @NotNull ServerLevel level,
