@@ -64,10 +64,12 @@ public class VehicleScreen extends AbstractContainerScreen<VehicleMenu> {
         int size = this.type == VehicleContainerType.HUGE ? 328 : 256;
         pGuiGraphics.blit(texture, i + X_OFFSET, j, 0, 0, this.imageWidth, this.imageHeight, size, size);
 
+        int x = i + X_OFFSET + (this.menu.getContainerCols() - 9) / 2 * 18;
+
         if (this.hasUpgradeSlots) {
-            pGuiGraphics.blit(INVENTORY_UPGRADE, i - 24 + X_OFFSET, j + this.imageHeight - 90, 0, 0, 198, 90, INVENTORY_TEXTURE_SIZE, INVENTORY_TEXTURE_SIZE);
+            pGuiGraphics.blit(INVENTORY_UPGRADE, x - 24, j + this.imageHeight - 90, 0, 0, 198, 90, INVENTORY_TEXTURE_SIZE, INVENTORY_TEXTURE_SIZE);
         } else {
-            pGuiGraphics.blit(INVENTORY, i + X_OFFSET, j + this.imageHeight - 90, 0, 0, 175, 90, INVENTORY_TEXTURE_SIZE, INVENTORY_TEXTURE_SIZE);
+            pGuiGraphics.blit(INVENTORY, x, j + this.imageHeight - 90, 0, 0, 175, 90, INVENTORY_TEXTURE_SIZE, INVENTORY_TEXTURE_SIZE);
         }
     }
 
@@ -86,7 +88,7 @@ public class VehicleScreen extends AbstractContainerScreen<VehicleMenu> {
     @Override
     protected void init() {
         super.init();
-        this.titleLabelX = 33;
+        this.titleLabelX = 15;
         this.titleLabelY = 5;
         this.inventoryLabelX = (this.menu.getContainerCols() - 9) / 2 * 18 + this.titleLabelX;
         this.inventoryLabelY = 128;
