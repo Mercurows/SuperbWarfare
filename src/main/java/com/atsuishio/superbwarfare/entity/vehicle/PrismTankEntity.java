@@ -430,11 +430,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public void travel() {
-        trackEngine(0, VehicleConfig.PRISM_TANK_ENERGY_COST.get(), 1.25, 0.5, 1.9, 0.8, 0.26f, -0.2f, 0.0032f, 0.0024f, 0.12f);
-    }
-
-    @Override
     public SoundEvent getEngineSound() {
         return ModSounds.PRISM_ENGINE.get();
     }

@@ -9,10 +9,9 @@ public class EngineInfo {
     // 浮力，大于零时认为载具是两栖的
     @SerializedName("Buoyancy")
     public double buoyancy = 0;
-    // TODO 允许这里添加 @power 之类的变量，便于动态计算能耗
-    // 能量消耗
-    @SerializedName("EnergyCost")
-    public int energyCost = 0;
+    // 能量消耗比例
+    @SerializedName("EnergyCostRate")
+    public double energyCostRate = 1;
     // 车轮控制相关
     @SerializedName("Wheel")
     public WheelInfo wheel;
@@ -50,10 +49,10 @@ public class EngineInfo {
         @SerializedName("MaxPower")
         public float maxPower = 0.2f;
         @SerializedName("MinPower")
-        public float minPower = 0;
+        public float minPower = -0.1f;
         @SerializedName("Increment")
-        public float increment;
+        public float increment = 0.001f;
         @SerializedName("Decrement")
-        public float decrement;
+        public float decrement = 0.001f;
     }
 }

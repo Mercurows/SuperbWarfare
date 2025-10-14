@@ -317,11 +317,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     @Override
-    public void travel() {
-        wheelEngine(0.052, VehicleConfig.LAV_150_ENERGY_COST.get(), 1.25, 0.5, 0.18f, -0.13f, 0.0024f, 0.0024f, 0.1f);
-    }
-
-    @Override
     public SoundEvent getEngineSound() {
         return ModSounds.LAV_ENGINE.get();
     }

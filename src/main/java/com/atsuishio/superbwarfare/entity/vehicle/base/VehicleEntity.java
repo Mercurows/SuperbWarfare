@@ -2855,7 +2855,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void trackEngine(EngineInfo engineInfo) {
         this.trackEngine(
                 engineInfo.buoyancy,
-                engineInfo.energyCost,
+                (int) (engineInfo.energyCostRate * this.entityData.get(POWER)),
                 engineInfo.wheel.rotSpeed,
                 engineInfo.wheel.differential,
                 engineInfo.track.rotSpeed,
@@ -2967,7 +2967,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void wheelEngine(EngineInfo engineInfo) {
         this.wheelEngine(
                 engineInfo.buoyancy,
-                engineInfo.energyCost,
+                (int) (engineInfo.energyCostRate * this.entityData.get(POWER)),
                 engineInfo.wheel.rotSpeed,
                 engineInfo.wheel.differential,
                 engineInfo.power.maxPower,

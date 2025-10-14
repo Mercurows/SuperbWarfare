@@ -736,11 +736,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public void travel() {
-        trackEngine(0, VehicleConfig.YX_100_ENERGY_COST.get(), 1.25, 0.75, 1.3, 0.6, 0.25f, -0.2f, 0.0026f, 0.002f, 0.1f);
-    }
-
-    @Override
     public SoundEvent getEngineSound() {
         return ModSounds.YX_100_ENGINE.get();
     }
