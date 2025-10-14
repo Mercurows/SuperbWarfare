@@ -742,7 +742,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
     @Override
     public float getEngineSoundVolume() {
-        return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(0.1f * this.entityData.get(DELTA_ROT))) * 2.5f;
+        return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
     }
 
     @Override

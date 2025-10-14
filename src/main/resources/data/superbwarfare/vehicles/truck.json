@@ -19,10 +19,10 @@
       "Differential": 0.5
     },
     "Power": {
-      "MaxPower": 0.18,
-      "MinPower": -0.13,
-      "Increment": 0.0024,
-      "Decrement": 0.0024
+      "MaxForwardSpeedRate": 0.98,
+      "MaxBackwardSpeedRate": 0.4,
+      "Increment": 0.012,
+      "Decrement": 0.007
     },
     "SteeringSpeed": 0.05
   },

@@ -220,7 +220,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (this.onGround()) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
         } else {
-            setZRot(getRoll() * (backInputDown ? 0.9f : 0.99f));
+            setZRot(getRoll() * (backInputDown() ? 0.9f : 0.99f));
             float f = (float) Mth.clamp(0.95f - 0.015 * getDeltaMovement().length() + 0.02f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((this.getXRot() < 0 ? -0.035 : (this.getXRot() > 0 ? 0.035 : 0)) * this.getDeltaMovement().length())));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.95, f));
@@ -240,12 +240,12 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         if (getHealth() > 0.1f * getMaxHealth()) {
             if (passenger == null) {
-                this.leftInputDown = false;
-                this.rightInputDown = false;
-                this.forwardInputDown = false;
-                this.backInputDown = false;
-                this.upInputDown = false;
-                this.downInputDown = false;
+                setLeftInputDown(false);
+                setRightInputDown(false);
+                setForwardInputDown(false);
+                setBackInputDown(false);
+                setUpInputDown(false);
+                setDownInputDown(false);
                 this.setZRot(this.roll * 0.98f);
                 this.setXRot(this.getXRot() * 0.98f);
                 if (passenger2 == null && passenger3 == null && passenger4 == null) {
@@ -254,11 +254,11 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             } else if (passenger instanceof Player player) {
                 delta_x = ((this.onGround()) ? 0 : 1.5f) * entityData.get(MOUSE_SPEED_Y) * this.entityData.get(PROPELLER_ROT);
                 delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(ENGINE2_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
-                if (!entityData.get(LANDING_INPUT_DOWN) || findNearestLandingPos(30) == null) {
-                    if (rightInputDown) {
+                if (!landingInputDown() || findNearestLandingPos(30) == null) {
+                    if (rightInputDown()) {
                         holdTick++;
                         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 2f * Math.min(holdTick, 7) * this.entityData.get(POWER));
-                    } else if (this.leftInputDown) {
+                    } else if (this.leftInputDown()) {
                         holdTick++;
                         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 2f * Math.min(holdTick, 7) * this.entityData.get(POWER));
                     } else {
@@ -269,7 +269,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 }
 
                 this.setYRot(this.getYRot() + delta_y);
-                if (findNearestLandingPos(30) != null && !onGround() && entityData.get(LANDING_INPUT_DOWN)) {
+                if (findNearestLandingPos(30) != null && !onGround() && landingInputDown()) {
                     this.updateAutoLanding(findNearestLandingPos(30));
                 }
 
@@ -278,52 +278,51 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 }
             }
 
-            if (this.level() instanceof ServerLevel) {
-                if (this.getEnergy() > 0) {
-                    boolean up = upInputDown || forwardInputDown;
-                    boolean down = this.downInputDown;
+            if (this.getEnergy() > 0) {
+                boolean up = upInputDown() || forwardInputDown();
+                boolean down = this.downInputDown();
 
-                    if (!engineStart && up) {
-                        engineStart = true;
-                        this.level().playSound(null, this, ModSounds.HELICOPTER_ENGINE_START.get(), this.getSoundSource(), 3, 1);
-                    }
-
-                    if (up && engineStartOver) {
-                        holdPowerTick++;
-                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0007f * Math.min(holdPowerTick, 10), 0.12f));
-                    }
-
-                    if (engineStartOver) {
-                        if (down) {
-                            holdPowerTick++;
-                            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.025f));
-                        } else if (backInputDown) {
-                            holdPowerTick++;
-                            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.059f));
-                        }
-
-                    }
-
-                    if (engineStart && !engineStartOver) {
-                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0012f, 0.045f));
-                    }
-
-                    if (!(up || down || backInputDown) && engineStartOver) {
-                        if (this.getDeltaMovement().y() < 0) {
-                            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0002f, 0.12f));
-                        } else {
-                            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.onGround() ? 0.00005f : 0.0002f), 0));
-                        }
-                        holdPowerTick = 0;
-                    }
-                } else {
-                    this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0001f, 0));
-                    this.forwardInputDown = false;
-                    this.backInputDown = false;
-                    engineStart = false;
-                    engineStartOver = false;
+                if (!engineStart && up) {
+                    engineStart = true;
+                    this.level().playSound(null, this, ModSounds.HELICOPTER_ENGINE_START.get(), this.getSoundSource(), 3, 1);
                 }
+
+                if (up && engineStartOver) {
+                    holdPowerTick++;
+                    this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0007f * Math.min(holdPowerTick, 10), 0.12f));
+                }
+
+                if (engineStartOver) {
+                    if (down) {
+                        holdPowerTick++;
+                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.025f));
+                    } else if (backInputDown()) {
+                        holdPowerTick++;
+                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.059f));
+                    }
+
+                }
+
+                if (engineStart && !engineStartOver) {
+                    this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0012f, 0.045f));
+                }
+
+                if (!(up || down || backInputDown()) && engineStartOver) {
+                    if (this.getDeltaMovement().y() < 0) {
+                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.0002f, 0.12f));
+                    } else {
+                        this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.onGround() ? 0.00005f : 0.0002f), 0));
+                    }
+                    holdPowerTick = 0;
+                }
+            } else {
+                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0001f, 0));
+                setForwardInputDown(false);
+                setBackInputDown(false);
+                engineStart = false;
+                engineStartOver = false;
             }
+
         } else if (!onGround() && engineStartOver) {
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.01f));
             destroyRot += 0.08f;

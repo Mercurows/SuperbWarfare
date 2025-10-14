@@ -131,7 +131,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     @ParametersAreNonnullByDefault
     protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.15f + 1.05f);
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.1), random.nextFloat() * 0.15f + 1.05f);
     }
 
     @Override
@@ -323,7 +323,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public float getEngineSoundVolume() {
-        return Mth.abs(entityData.get(POWER)) * 2f;
+        return Mth.abs(entityData.get(POWER)) * 0.4f;
     }
 
     @Override

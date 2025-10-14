@@ -154,10 +154,10 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         float diffY = 0;
 
         if (passenger == null) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
+            setLeftInputDown(false);
+            setRightInputDown(false);
+            setForwardInputDown(false);
+            setBackInputDown(false);
         } else if (passenger instanceof Player) {
             diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
             this.setYRot(this.getYRot() + Mth.clamp(0.4f * diffY, -5f, 5f));
@@ -166,21 +166,21 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
             this.setZRot((float) (this.getRoll() + direct * diffY * 0.2 * this.getDeltaMovement().length()));
         }
 
-        if (this.forwardInputDown) {
-            this.entityData.set(POWER, this.entityData.get(POWER) + (sprintInputDown ? 0.02f : 0.01f));
+        if (this.forwardInputDown()) {
+            this.entityData.set(POWER, this.entityData.get(POWER) + (sprintInputDown() ? 0.02f : 0.01f));
             if (this.getEnergy() <= 0 && passenger instanceof Player player) {
                 moveWithOutPower(player, true);
             }
         }
 
-        if (this.backInputDown) {
+        if (this.backInputDown()) {
             this.entityData.set(POWER, this.entityData.get(POWER) - 0.01f);
             if (this.getEnergy() <= 0 && passenger instanceof Player player) {
                 moveWithOutPower(player, false);
             }
         }
 
-        if (this.upInputDown && this.onGround() && this.getEnergy() > 400 && jumpCoolDown == 0) {
+        if (this.upInputDown() && this.onGround() && this.getEnergy() > 400 && jumpCoolDown == 0) {
             if (passenger instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 1, 1);
             }
@@ -189,9 +189,7 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
             jumpCoolDown = 3;
         }
 
-        if (this.forwardInputDown || this.backInputDown) {
-            this.consumeEnergy(VehicleConfig.WHEELCHAIR_MOVE_ENERGY_COST.get());
-        }
+        this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER))));
 
         if (passenger instanceof Player player && player.level().isClientSide && this.handBusyTime > 0) {
             var localPlayer = Minecraft.getInstance().player;
@@ -219,8 +217,8 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         player.causeFoodExhaustion(0.03F);
 
         this.handBusyTime = 4;
-        this.forwardInputDown = false;
-        this.backInputDown = false;
+        setForwardInputDown(false);
+        setBackInputDown(false);
     }
 
     @Override

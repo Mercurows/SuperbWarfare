@@ -19,6 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -164,10 +165,12 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         Entity passenger = this.getFirstPassenger();
 
         if (passenger == null || isInWater()) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
+            setLeftInputDown(false);
+            setRightInputDown(false);
+            setForwardInputDown(false);
+            setBackInputDown(false);
+            setUpInputDown(false);
+            setDownInputDown(false);
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
             if (onGround()) {
                 this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 1, 0.96));
@@ -175,19 +178,22 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
                 this.setXRot(Mth.clamp(this.getXRot() + 0.1f, -89, 89));
             }
         } else if (passenger instanceof Player player) {
-            if (forwardInputDown && getEnergy() > 0) {
-                this.consumeEnergy(VehicleConfig.TOM_6_ENERGY_COST.get());
+            if (forwardInputDown() && getEnergy() > 0) {
                 this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
             }
 
-            if (backInputDown || downInputDown) {
+            if (this.level() instanceof ServerLevel) {
+                this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * VehicleConfig.TOM_6_ENERGY_COST.get()));
+            }
+
+            if (backInputDown() || downInputDown()) {
                 this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
             }
 
             if (!onGround()) {
-                if (rightInputDown) {
+                if (rightInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
-                } else if (this.leftInputDown) {
+                } else if (this.leftInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
                 }
             }
@@ -210,7 +216,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
             this.setZRot(this.getRoll() - addZ * (1 - Mth.abs(i)));
 
             // 空格投掷西瓜炸弹
-            if (upInputDown && !onGround() && entityData.get(MELON)) {
+            if (upInputDown() && !onGround() && entityData.get(MELON)) {
                 entityData.set(MELON, false);
 
                 Matrix4f transform = getVehicleTransform(1);
@@ -225,7 +231,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
                 passenger.level().addFreshEntity(melonBomb);
 
                 this.level().playSound(null, getOnPos(), SoundEvents.IRON_DOOR_OPEN, SoundSource.PLAYERS, 1, 1);
-                upInputDown = false;
+                setUpInputDown(false);
             }
         }
 

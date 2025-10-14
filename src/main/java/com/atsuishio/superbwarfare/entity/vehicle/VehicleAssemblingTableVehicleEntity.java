@@ -137,11 +137,11 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
         }
 
         deltaX = entityData.get(MOUSE_SPEED_Y);
-        if (this.leftInputDown && this.rightInputDown) {
+        if (this.leftInputDown() && this.rightInputDown()) {
             deltaX = 0;
-        } else if (this.leftInputDown) {
+        } else if (this.leftInputDown()) {
             deltaX = -1;
-        } else if (this.rightInputDown) {
+        } else if (this.rightInputDown()) {
             deltaX = 1;
         }
 
@@ -165,41 +165,41 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
 
         this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
         if (passenger == null || isInWater()) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
+            setLeftInputDown(false);
+            setRightInputDown(false);
+            setForwardInputDown(false);
+            setBackInputDown(false);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 1, 0.96));
         } else if (passenger instanceof Player) {
 
-            if (forwardInputDown) {
+            if (forwardInputDown()) {
                 this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
             }
 
             this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
 
-            if (backInputDown) {
+            if (backInputDown()) {
                 this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
-                if (rightInputDown) {
+                if (rightInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
-                } else if (leftInputDown) {
+                } else if (leftInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
                 }
             } else {
-                if (rightInputDown) {
+                if (rightInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
-                } else if (this.leftInputDown) {
+                } else if (this.leftInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
                 }
             }
 
             // Shift刹车
-            if (downInputDown) {
+            if (downInputDown()) {
                 this.entityData.set(POWER, 0f);
             }
 
             // 跳
-            if (upInputDown && onGround() && jumpCooldown == 0) {
+            if (upInputDown() && onGround() && jumpCooldown == 0) {
                 jumpCooldown = 40;
                 if (this.level() instanceof ServerLevel server) {
                     server.playSound(null, this.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 2, 1);

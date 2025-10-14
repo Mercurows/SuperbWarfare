@@ -263,7 +263,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     @Override
     @ParametersAreNonnullByDefault
     protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.15), random.nextFloat() * 0.15f + 1.05f);
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.05), random.nextFloat() * 0.15f + 1.05f);
     }
 
     @Override
@@ -553,7 +553,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
     @Override
     public float getEngineSoundVolume() {
-        return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(0.1f * this.entityData.get(DELTA_ROT))) * 2.5f;
+        return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
     }
 
     @Override
