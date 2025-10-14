@@ -10,6 +10,22 @@
       "IsEnclosed": true
     }
   ],
+  "Engine": {
+    "Type": "Wheel",
+    "Buoyancy": 0,
+    "EnergyCostRate": 64,
+    "Wheel": {
+      "RotSpeed": 1.25,
+      "Differential": 0.5
+    },
+    "Power": {
+      "MaxPower": 0.18,
+      "MinPower": -0.13,
+      "Increment": 0.0024,
+      "Decrement": 0.0024
+    },
+    "SteeringSpeed": 0.05
+  },
   "UpStep": 1.5,
   "Mass": 20,
   "DamageModifiers": [

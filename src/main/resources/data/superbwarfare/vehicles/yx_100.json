@@ -11,6 +11,26 @@
     },
     {}
   ],
+  "Engine": {
+    "Type": "Track",
+    "Buoyancy": 0,
+    "EnergyCostRate": 128,
+    "Wheel": {
+      "RotSpeed": 1.25,
+      "Differential": 0.75
+    },
+    "Track": {
+      "RotSpeed": 1.3,
+      "Differential": 0.6
+    },
+    "Power": {
+      "MaxPower": 0.25,
+      "MinPower": -0.2,
+      "Increment": 0.0026,
+      "Decrement": 0.002
+    },
+    "SteeringSpeed": 0.1
+  },
   "UpStep": 2.25,
   "Mass": 70,
   "DamageModifiers": [

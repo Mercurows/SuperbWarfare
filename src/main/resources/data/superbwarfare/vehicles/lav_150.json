@@ -28,6 +28,22 @@
       "HidePassenger": true
     }
   ],
+  "Engine": {
+    "Type": "Wheel",
+    "Buoyancy": 0.052,
+    "EnergyCostRate": 64,
+    "Wheel": {
+      "RotSpeed": 1.25,
+      "Differential": 0.3
+    },
+    "Power": {
+      "MaxPower": 0.22,
+      "MinPower": -0.16,
+      "Increment": 0.0023,
+      "Decrement": 0.0016
+    },
+    "SteeringSpeed": 0.05
+  },
   "UpStep": 1.5,
   "Mass": 13.6,
   "DamageModifiers": [
