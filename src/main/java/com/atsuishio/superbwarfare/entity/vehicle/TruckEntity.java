@@ -118,7 +118,7 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     @Override
     @ParametersAreNonnullByDefault
     protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.3), random.nextFloat() * 0.15f + 1.05f);
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.1), random.nextFloat() * 0.15f + 1.05f);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         this.terrainCompact(2.7f, 7.5f);
         inertiaRotate(0.5f);
 
-        if (decoyInputDown) {
+        if (decoyInputDown()) {
             horn();
         }
 
@@ -171,7 +171,7 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
 
     @Override
     public float getEngineSoundVolume() {
-        return Mth.abs(entityData.get(POWER)) * 2.5f;
+        return Mth.abs(entityData.get(POWER)) * 0.5f;
     }
 
     @Override

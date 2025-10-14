@@ -264,7 +264,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             handleAmmo();
         }
 
-        if (this.getFirstPassenger() instanceof Player player && fireInputDown) {
+        if (this.getFirstPassenger() instanceof Player player && fireInputDown()) {
             if (this.getWeaponIndex(0) == 0) {
                 if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
                     vehicleShoot(player, 0);
@@ -477,10 +477,10 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         if (getHealth() > 0.1f * getMaxHealth()) {
             if (passenger == null || isInWater()) {
-                this.leftInputDown = false;
-                this.rightInputDown = false;
-                this.forwardInputDown = false;
-                this.backInputDown = false;
+                setLeftInputDown(false);
+                setRightInputDown(false);
+                setForwardInputDown(false);
+                setBackInputDown(false);
                 this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
                 if (onGround()) {
                     this.setDeltaMovement(this.getDeltaMovement().multiply(0.94, 1, 0.94));
@@ -489,25 +489,25 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 }
             } else if (passenger instanceof Player) {
                 if (getEnergy() > 0) {
-                    if (forwardInputDown) {
-                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.004f, sprintInputDown ? 1f : 0.0575f));
+                    if (forwardInputDown()) {
+                        this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.004f, sprintInputDown() ? 1f : 0.0575f));
                     }
 
-                    if (backInputDown) {
+                    if (backInputDown()) {
                         this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.002f, onGround() ? -0.05f : 0.01f));
                     }
                 }
 
                 if (!onGround()) {
-                    if (rightInputDown) {
+                    if (rightInputDown()) {
                         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 1.2f);
-                    } else if (this.leftInputDown) {
+                    } else if (this.leftInputDown()) {
                         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 1.2f);
                     }
                 }
 
                 // 刹车
-                if (downInputDown) {
+                if (downInputDown()) {
                     if (onGround()) {
                         this.entityData.set(POWER, this.entityData.get(POWER) * 0.8f);
                         this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 1, 0.97));
@@ -519,7 +519,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 }
             }
 
-            if (getEnergy() > 0 && !this.level().isClientSide) {
+            if (getEnergy() > 0) {
                 this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * 5 * VehicleConfig.A_10_MAX_ENERGY_COST.get()));
             }
 
@@ -553,8 +553,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             this.setPropellerRot(this.getPropellerRot() + 30 * this.entityData.get(POWER));
 
             // 起落架
-            if (upInputDown) {
-                upInputDown = false;
+            if (upInputDown()) {
+                setUpInputDown(false);
                 if (entityData.get(GEAR_ROT) == 0 && !onGround()) {
                     entityData.set(GEAR_UP, true);
                 } else if (entityData.get(GEAR_ROT) == 85) {
@@ -671,7 +671,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public float getEngineSoundVolume() {
-        return entityData.get(POWER) * (sprintInputDown ? 5.5f : 3f);
+        return entityData.get(POWER) * (sprintInputDown() ? 5.5f : 3f);
     }
 
     @Override

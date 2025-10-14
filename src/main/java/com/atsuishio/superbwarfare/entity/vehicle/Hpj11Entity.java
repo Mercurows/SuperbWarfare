@@ -231,7 +231,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
         }
 
-        if (this.getFirstPassenger() instanceof Player player && fireInputDown) {
+        if (this.getFirstPassenger() instanceof Player player && fireInputDown()) {
             if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
                 vehicleShoot(player, 0);
             }

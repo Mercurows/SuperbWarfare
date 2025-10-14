@@ -215,12 +215,12 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
                 ItemStack stack = controller.getMainHandItem();
                 var tag = NBTTool.getTag(stack);
                 if (!stack.is(ModItems.MONITOR.get()) || !tag.getBoolean("Using")) {
-                    upInputDown = false;
-                    downInputDown = false;
-                    forwardInputDown = false;
-                    backInputDown = false;
-                    leftInputDown = false;
-                    rightInputDown = false;
+                    setLeftInputDown(false);
+                    setRightInputDown(false);
+                    setForwardInputDown(false);
+                    setBackInputDown(false);
+                    setUpInputDown(false);
+                    setDownInputDown(false);
                 }
 
                 if (tickCount % 5 == 0) {
@@ -452,10 +452,10 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     public void travel() {
         if (!this.onGround()) {
             // left and right
-            if (rightInputDown) {
+            if (rightInputDown()) {
                 holdTickX++;
                 this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.3f * Math.min(holdTickX, 5));
-            } else if (this.leftInputDown) {
+            } else if (this.leftInputDown()) {
                 holdTickX++;
                 this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.3f * Math.min(holdTickX, 5));
             } else {
@@ -463,10 +463,10 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
             }
 
             // forward and backward
-            if (forwardInputDown) {
+            if (forwardInputDown()) {
                 holdTickZ++;
                 this.entityData.set(DELTA_X_ROT, this.entityData.get(DELTA_X_ROT) - 0.3f * Math.min(holdTickZ, 5));
-            } else if (backInputDown) {
+            } else if (backInputDown()) {
                 holdTickZ++;
                 this.entityData.set(DELTA_X_ROT, this.entityData.get(DELTA_X_ROT) + 0.3f * Math.min(holdTickZ, 5));
             } else {
@@ -486,8 +486,8 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
             this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), 26 + (float) (60 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
         }
 
-        boolean up = this.upInputDown;
-        boolean down = this.downInputDown;
+        boolean up = this.upInputDown();
+        boolean down = this.downInputDown();
 
         if (up) {
             holdTickY++;

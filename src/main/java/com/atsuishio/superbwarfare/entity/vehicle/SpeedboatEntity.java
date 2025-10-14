@@ -248,34 +248,32 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
 
         if (this.getEnergy() > 0) {
             if (passenger0 == null) {
-                this.leftInputDown = false;
-                this.rightInputDown = false;
-                this.forwardInputDown = false;
-                this.backInputDown = false;
+                setLeftInputDown(false);
+                setRightInputDown(false);
+                setForwardInputDown(false);
+                setBackInputDown(false);
             }
 
-            if (forwardInputDown) {
+            if (forwardInputDown()) {
                 this.entityData.set(POWER, this.entityData.get(POWER) + 0.005f);
             }
 
-            if (backInputDown) {
+            if (backInputDown()) {
                 this.entityData.set(POWER, this.entityData.get(POWER) - 0.005f);
-                if (rightInputDown) {
+                if (rightInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
-                } else if (leftInputDown) {
+                } else if (leftInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.1f);
                 }
             } else {
-                if (rightInputDown) {
+                if (rightInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.1f);
-                } else if (this.leftInputDown) {
+                } else if (this.leftInputDown()) {
                     this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.1f);
                 }
             }
 
-            if (this.forwardInputDown || this.backInputDown) {
-                this.consumeEnergy(VehicleConfig.SPEEDBOAT_ENERGY_COST.get());
-            }
+            this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * VehicleConfig.SPEEDBOAT_ENERGY_COST.get()));
 
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
             this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);

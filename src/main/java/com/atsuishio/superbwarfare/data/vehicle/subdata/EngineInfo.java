@@ -46,12 +46,16 @@ public class EngineInfo {
     }
 
     public static class PowerInfo {
-        @SerializedName("MaxPower")
-        public float maxPower = 0.2f;
-        @SerializedName("MinPower")
-        public float minPower = -0.1f;
+        // 最大前进速度系数
+        @SerializedName("MaxForwardSpeedRate")
+        public float maxForwardSpeedRate = 0.2f;
+        // 最大后退速度系数
+        @SerializedName("MaxBackwardSpeedRate")
+        public float maxBackwardSpeedRate = -0.1f;
+        // 前进加速度
         @SerializedName("Increment")
         public float increment = 0.001f;
+        // 后退加速度
         @SerializedName("Decrement")
         public float decrement = 0.001f;
     }
