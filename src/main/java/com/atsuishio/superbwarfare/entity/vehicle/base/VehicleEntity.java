@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
@@ -102,8 +103,8 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -2154,6 +2155,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void travel() {
+        var engine = data().get(VehicleProp.ENGINE);
+        if (engine.type == EngineInfo.Type.WHEEL) {
+            this.wheelEngine(engine);
+        } else if (engine.type == EngineInfo.Type.TRACK) {
+            this.trackEngine(engine);
+        }
     }
 
     // From Immersive_Aircraft
@@ -2793,8 +2800,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
 
-    public void trackEngine(boolean amphibious, double buoyancy, int EnergyConsume, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
-        if (amphibious) {
+    public void trackEngine(EngineInfo engineInfo) {
+        this.trackEngine(
+                engineInfo.buoyancy,
+                engineInfo.energyCost,
+                engineInfo.wheel.rotSpeed,
+                engineInfo.wheel.differential,
+                engineInfo.track.rotSpeed,
+                engineInfo.track.differential,
+                engineInfo.power.maxPower,
+                engineInfo.power.minPower,
+                engineInfo.power.increment,
+                engineInfo.power.decrement,
+                engineInfo.steeringSpeed
+        );
+    }
+
+    public void trackEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
+        if (buoyancy > 0) {
             double fluidFloat = buoyancy * getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
@@ -2850,7 +2873,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (this.forwardInputDown || this.backInputDown) {
-            this.consumeEnergy(EnergyConsume);
+            this.consumeEnergy(energyCost);
         }
 
         this.entityData.set(POWER, this.entityData.get(POWER) * (upInputDown ? 0.5f : (rightInputDown || leftInputDown) ? 0.947f : 0.96f));
@@ -2889,9 +2912,22 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    public void wheelEngine(boolean amphibious, double buoyancy, int EnergyConsume, double wheelRotSpeed, double wheelDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
+    public void wheelEngine(EngineInfo engineInfo) {
+        this.wheelEngine(
+                engineInfo.buoyancy,
+                engineInfo.energyCost,
+                engineInfo.wheel.rotSpeed,
+                engineInfo.wheel.differential,
+                engineInfo.power.maxPower,
+                engineInfo.power.minPower,
+                engineInfo.power.increment,
+                engineInfo.power.decrement,
+                engineInfo.steeringSpeed
+        );
+    }
 
-        if (amphibious) {
+    public void wheelEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, float maxPower, float minPower, float powerAdd, float powerReduce, float steeringSpeed) {
+        if (buoyancy > 0) {
             double fluidFloat = buoyancy * getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
@@ -2900,7 +2936,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
-
         } else if (this.isInWater()) {
             float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
@@ -2941,7 +2976,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (this.forwardInputDown || this.backInputDown) {
-            this.consumeEnergy(EnergyConsume);
+            this.consumeEnergy(energyCost);
         }
 
         this.entityData.set(POWER, this.entityData.get(POWER) * (upInputDown ? 0.5f : (rightInputDown || leftInputDown) ? 0.977f : 0.99f));
