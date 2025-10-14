@@ -547,11 +547,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public void travel() {
-        trackEngine(true, 0.052, VehicleConfig.BMP_2_ENERGY_COST.get(), 1.25, 0.5, 1.9, 0.8, 0.21f, -0.16f, 0.0024f, 0.0024f, 0.1f);
-    }
-
-    @Override
     public SoundEvent getEngineSound() {
         return ModSounds.BMP_ENGINE.get();
     }

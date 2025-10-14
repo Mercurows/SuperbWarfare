@@ -25,6 +25,26 @@
       "HidePassenger": true
     }
   ],
+  "Engine": {
+    "Type": "Track",
+    "Buoyancy": 0.052,
+    "EnergyCost": 64,
+    "Wheel": {
+      "RotSpeed": 1.25,
+      "Differential": 0.5
+    },
+    "Track": {
+      "RotSpeed": 1.9,
+      "Differential": 0.8
+    },
+    "Power": {
+      "MaxPower": 0.21,
+      "MinPower": -0.16,
+      "Increment": 0.0024,
+      "Decrement": 0.0024
+    },
+    "SteeringSpeed": 0.1
+  },
   "UpStep": 2.25,
   "Mass": 14.6,
   "DamageModifiers": [

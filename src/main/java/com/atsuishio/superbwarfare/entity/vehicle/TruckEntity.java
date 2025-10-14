@@ -172,7 +172,7 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
 
     @Override
     public void travel() {
-        wheelEngine(false, 0, (int) (Mth.abs(entityData.get(POWER)) * 64), 1.25, 0.3, 0.22f, -0.16f, 0.0023f, 0.0016f, 0.05f);
+        wheelEngine(0, (int) (Mth.abs(entityData.get(POWER)) * 64), 1.25, 0.3, 0.22f, -0.16f, 0.0023f, 0.0016f, 0.05f);
     }
 
     @Override

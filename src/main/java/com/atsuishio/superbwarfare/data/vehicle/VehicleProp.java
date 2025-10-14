@@ -37,6 +37,7 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
 
     public static final VehicleProp<VehicleIconInfo> ICON = new VehicleProp<>("Icon");
     public static final VehicleProp<VehicleType> TYPE = new VehicleProp<>("Type");
+    public static final VehicleProp<EngineInfo> ENGINE = new VehicleProp<>("Engine");
 
     private VehicleProp(String name) {
         super(DefaultVehicleData.class, name);

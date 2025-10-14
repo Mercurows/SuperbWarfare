@@ -86,4 +86,7 @@ public class DefaultVehicleData implements IDBasedData {
 
     @SerializedName("Type")
     public VehicleType type = VehicleType.EMPTY;
+
+    @SerializedName("Engine")
+    public EngineInfo engine = new EngineInfo();
 }
