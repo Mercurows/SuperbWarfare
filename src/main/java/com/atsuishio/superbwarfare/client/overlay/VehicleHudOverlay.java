@@ -237,7 +237,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 poseStack.popPose();
 
                 // 时速
-                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/screenHeight")),
+                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
                         screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
 
                 // 低电量警告
