@@ -2960,7 +2960,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void trackEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
-        if (buoyancy > 0) {
+        if (buoyancy != 0) {
             double fluidFloat = buoyancy * getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
@@ -3075,7 +3075,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void wheelEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
-        if (buoyancy > 0) {
+        if (buoyancy != 0) {
             double fluidFloat = buoyancy * getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
