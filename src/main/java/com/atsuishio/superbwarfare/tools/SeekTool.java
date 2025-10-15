@@ -392,14 +392,24 @@ public class SeekTool {
 
         public List<Entity> build() {
             return StreamSupport.stream(EntityFindUtil.getEntities(entity.level()).getAll().spliterator(), false)
-                    .filter(e -> this.filters.stream().map(f -> f.test(e)).reduce(true, (a, b) -> a && b))
+                    .filter(e -> {
+                        for (var f : this.filters) {
+                            if (!f.test(e)) return false;
+                        }
+                        return true;
+                    })
                     .toList();
         }
 
         @Nullable
         public Entity buildWithClosest() {
             return StreamSupport.stream(EntityFindUtil.getEntities(entity.level()).getAll().spliterator(), false)
-                    .filter(e -> this.filters.stream().map(f -> f.test(e)).reduce(true, (a, b) -> a && b))
+                    .filter(e -> {
+                        for (var f : this.filters) {
+                            if (!f.test(e)) return false;
+                        }
+                        return true;
+                    })
                     .min(Comparator.comparingDouble(e -> calculateAngle(e, entity)))
                     .orElse(null);
         }
