@@ -111,7 +111,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         var newMap = new HashMap<Integer, GunData>();
 
         for (var kv : gunDataMap.entrySet()) {
-            if (kv.getKey() <= targetSize) {
+            if (kv.getKey() < targetSize) {
                 newMap.put(kv.getKey(), kv.getValue());
             }
         }
