@@ -2,10 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.Ammo;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.data.gun.ShootParameters;
-import com.atsuishio.superbwarfare.data.gun.ShootRay;
+import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -17,6 +14,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
@@ -30,8 +28,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -62,7 +64,9 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -70,6 +74,9 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    // Map SeatIndex -> GunData
+    public static final EntityDataAccessor<Map<Integer, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(Lav150Entity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
 
     public OBB obb;
     public OBB obb2;
@@ -96,6 +103,57 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(1.3125f, 0.625f, 0.53125f), new Quaternionf(), OBB.Part.BODY);
         this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.71875f, 0.46875f, 0.875f), new Quaternionf(), OBB.Part.ENGINE1);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(0.875f, 0.3625f, 1.25f), new Quaternionf(), OBB.Part.TURRET);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+
+        this.entityData.define(GUN_DATA_MAP, new HashMap<>());
+    }
+
+    // 移除多余GunData
+    @Override
+    protected void initSeatData(int targetSize) {
+        super.initSeatData(targetSize);
+
+        var gunDataMap = entityData.get(GUN_DATA_MAP);
+        var newMap = new HashMap<Integer, GunData>();
+
+        for (var kv : gunDataMap.entrySet()) {
+            if (kv.getKey() <= targetSize) {
+                newMap.put(kv.getKey(), kv.getValue());
+            }
+        }
+
+        entityData.set(GUN_DATA_MAP, newMap);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+
+        var state = compound.getCompound("WeaponState");
+        var gunDataMap = new HashMap<Integer, GunData>();
+        for (var key : state.getAllKeys()) {
+            var tag = state.getCompound(key);
+
+            gunDataMap.put(Integer.valueOf(key), GunData.from(ItemStack.of(tag)));
+        }
+        entityData.set(GUN_DATA_MAP, gunDataMap);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+
+        var gunDataMap = entityData.get(GUN_DATA_MAP);
+
+        var tag = new CompoundTag();
+        for (var kv : gunDataMap.entrySet()) {
+            tag.put(String.valueOf(kv.getKey()), kv.getValue().stack.save(new CompoundTag()));
+        }
+        compound.put("WeaponState", tag);
     }
 
     @Override
@@ -258,6 +316,21 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     });
 
     @Override
+    public void tick() {
+        super.tick();
+
+        var newMap = new HashMap<Integer, GunData>();
+
+        for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
+            var newData = kv.getValue().copy();
+            newData.tick(this, true);
+            newMap.put(kv.getKey(), newData);
+        }
+
+        entityData.set(GUN_DATA_MAP, newMap);
+    }
+
+    @Override
     public void vehicleShoot(LivingEntity living, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
@@ -266,12 +339,24 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             }
         }
 
+        // TODO 移除WeaponIndex
         if (getWeaponIndex(0) == 0) {
-            var data = VehicleGun.fromVehicle(this, 0);
+            // TODO 正确实现seatIndex和WeaponIndex判断
+            var seatIndex = 0;
+            var data = VehicleGun.fromVehicle(this, seatIndex);
             if (data == null || !data.canShoot(this)) return;
 
             var ray = MACHINE_GUN_POS.apply(this);
             data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null));
+
+            // TODO 测试用提示
+            if (living instanceof ServerPlayer player) {
+                player.displayClientMessage(Component.literal(data.heat.get() + ""), true);
+            }
+
+            var currentMap = entityData.get(GUN_DATA_MAP);
+            currentMap.put(seatIndex, data);
+            entityData.set(GUN_DATA_MAP, currentMap);
 
             sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
             playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));

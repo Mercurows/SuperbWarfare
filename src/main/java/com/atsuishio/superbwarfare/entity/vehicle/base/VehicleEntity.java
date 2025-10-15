@@ -107,8 +107,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -308,7 +308,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public boolean backInputDown() {
         return entityData.get(BACK_INPUT_DOWN);
     }
-    
+
     public boolean leftInputDown() {
         return entityData.get(LEFT_INPUT_DOWN);
     }
@@ -380,7 +380,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void setSprintInputDown(boolean set) {
         entityData.set(SPRINT_INPUT_DOWN, set);
     }
-    
+
     @Override
     public void playerTouch(Player pPlayer) {
         if (pPlayer.isCrouching()
@@ -609,7 +609,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             var type = data().get(VehicleProp.VEHICLE_CONTAINER_TYPE);
             var upgrade = data().get(VehicleProp.HAS_UPGRADE_SLOTS);
             var menu = switch (type) {
-                default -> null;
                 case MINI ->
                         upgrade ? ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MINI.get();
                 case SMALL ->
@@ -620,6 +619,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                         upgrade ? ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_LARGE.get();
                 case HUGE ->
                         upgrade ? ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_HUGE.get();
+                default -> null;
             };
             if (menu == null) return null;
 
@@ -656,20 +656,28 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return list;
     }
 
-    private void resizeOrderedPassengersList() {
-        var targetSize = data().get(VehicleProp.SEATS).size();
-        if (targetSize == orderedPassengers.size()) return;
+    protected void initSeatData(int targetSize) {
+        padList(orderedPassengers, targetSize, null, Entity::stopRiding);
+    }
 
-        while (targetSize != orderedPassengers.size()) {
-            if (targetSize > orderedPassengers.size()) {
-                orderedPassengers.add(null);
+    protected <T> void padList(@NotNull List<T> list, int targetSize, T defaultValue, @Nullable Consumer<T> onRemove) {
+        while (targetSize != list.size()) {
+            if (targetSize > list.size()) {
+                list.add(defaultValue);
             } else {
-                var last = orderedPassengers.remove(orderedPassengers.size() - 1);
-                if (last != null) {
-                    last.stopRiding();
+                var last = list.remove(list.size() - 1);
+                if (last != null && onRemove != null) {
+                    onRemove.accept(last);
                 }
             }
         }
+    }
+
+    protected void checkSeatsSize() {
+        int targetSize = data().get(VehicleProp.SEATS).size();
+        if (targetSize == orderedPassengers.size()) return;
+
+        initSeatData(targetSize);
     }
 
     /**
@@ -678,7 +686,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 按顺序排列的成员列表
      */
     public List<Entity> getOrderedPassengers() {
-        resizeOrderedPassengersList();
+        checkSeatsSize();
         return orderedPassengers;
     }
 
@@ -690,7 +698,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (pPassenger.getVehicle() != this) {
             throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
         }
-        resizeOrderedPassengersList();
+        checkSeatsSize();
 
         int index;
 
@@ -720,7 +728,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (pPassenger.getVehicle() == this) {
             throw new IllegalStateException("Use x.stopRiding(y), not y.removePassenger(x)");
         }
-        resizeOrderedPassengersList();
+        checkSeatsSize();
 
         var index = getSeatIndex(pPassenger);
         if (index == -1) return;
@@ -743,7 +751,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public @Nullable Entity getFirstPassenger() {
-        resizeOrderedPassengersList();
+        checkSeatsSize();
         if (orderedPassengers.isEmpty()) {
             return null;
         }
@@ -757,7 +765,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 目标座位的乘客
      */
     public @Nullable Entity getNthEntity(int index) {
-        resizeOrderedPassengersList();
+        checkSeatsSize();
         if (index >= orderedPassengers.size() || index < 0) {
             return null;
         }
@@ -773,7 +781,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     public boolean changeSeat(Entity entity, int index) {
         if (index < 0 || index >= getMaxPassengers()) return false;
-        resizeOrderedPassengersList();
+        checkSeatsSize();
         if (orderedPassengers.get(index) != null) return false;
         if (!orderedPassengers.contains(entity)) return false;
 
@@ -797,7 +805,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 座位索引
      */
     public int getSeatIndex(Entity entity) {
-        resizeOrderedPassengersList();
+        checkSeatsSize();
         return orderedPassengers.indexOf(entity);
     }
 
@@ -1070,6 +1078,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
+        checkSeatsSize();
+
         compound.putFloat("Health", this.entityData.get(HEALTH));
         compound.putString("Override", this.entityData.get(OVERRIDE));
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));

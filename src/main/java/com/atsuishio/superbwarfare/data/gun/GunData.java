@@ -740,4 +740,15 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final Bolt bolt;
     public final Attachment attachment;
     public final Perks perk;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof GunData otherData)) return false;
+
+        return ItemStack.isSameItemSameTags(otherData.stack, this.stack);
+    }
+
+    public GunData copy() {
+        return GunData.from(this.stack.copy());
+    }
 }

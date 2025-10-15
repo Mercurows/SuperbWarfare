@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
+import com.atsuishio.superbwarfare.entity.vehicle.Lav150Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -10,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -30,14 +32,21 @@ public class VehicleGun extends GunItem {
         if (seat.weaponData == null) return null;
 
         // TODO 正确读取和存储VehicleGun ItemStack
-        var data = GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get()));
+        if (vehicle instanceof Lav150Entity lav) {
+            var data = lav.getEntityData().get(Lav150Entity.GUN_DATA_MAP).computeIfAbsent(seatIndex, k -> GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get()))).copy();
+            data.defaultDataSupplier = () -> seat.weaponData;
+
+            return data;
+        }
+
+        var data = GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get())).copy();
         data.defaultDataSupplier = () -> seat.weaponData;
 
         return data;
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
         pTooltipComponents.add(Component.translatable("des.superbwarfare.vehicle_gun").withStyle(ChatFormatting.RED));
     }
 }

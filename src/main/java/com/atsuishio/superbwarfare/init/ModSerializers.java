@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -9,7 +10,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModSerializers {
 
@@ -30,5 +33,23 @@ public class ModSerializers {
                     list.add(buf.readFloat());
                 }
                 return list;
+            }));
+
+
+    public static final RegistryObject<EntityDataSerializer<Map<Integer, GunData>>> GUN_DATA_MAP_SERIALIZER = REGISTRY.register("gun_data_map_serializer",
+            () -> EntityDataSerializer.simple((buf, map) -> {
+                buf.writeVarInt(map.size());
+                for (var kv : map.entrySet()) {
+                    buf.writeVarInt(kv.getKey());
+                    buf.writeItem(kv.getValue().stack);
+                }
+            }, buf -> {
+                var length = buf.readVarInt();
+                var map = new HashMap<Integer, GunData>();
+                for (int i = 0; i < length; i++) {
+                    map.put(buf.readVarInt(), GunData.from(buf.readItem()));
+                }
+
+                return map;
             }));
 }
