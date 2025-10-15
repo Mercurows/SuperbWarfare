@@ -2,12 +2,14 @@ package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
+import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.annotations.SerializedName;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 @SuppressWarnings("unused")
 public class DefaultVehicleData implements IDBasedData {
@@ -24,15 +26,21 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("MaxHealth")
     public float maxHealth = 50;
 
-    // TODO 这玩意还能不能用配置？
-
     @ServerOnly
     @SerializedName("RepairCooldown")
-    public int repairCooldown = 200;
+    public int repairCooldown = getConfigOrDefault(VehicleConfig.REPAIR_COOLDOWN);
 
     @ServerOnly
     @SerializedName("RepairAmount")
-    public float repairAmount = 0.05F;
+    public float repairAmount = getConfigOrDefault(VehicleConfig.REPAIR_AMOUNT).floatValue();
+
+    private static <T> T getConfigOrDefault(ForgeConfigSpec.ConfigValue<T> config) {
+        try {
+            return config.get();
+        } catch (Exception exception) {
+            return config.getDefault();
+        }
+    }
 
     /**
      * 开始自动扣血时的血量比例
