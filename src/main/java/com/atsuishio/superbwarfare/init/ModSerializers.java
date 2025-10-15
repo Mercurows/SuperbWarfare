@@ -1,13 +1,19 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModSerializers {
 
@@ -19,4 +25,18 @@ public class ModSerializers {
     public static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<List<Float>>> FLOAT_LIST_SERIALIZER = REGISTRY.register("float_list_serializer",
             () -> EntityDataSerializer.forValueType(ByteBufCodecs.FLOAT.apply(ByteBufCodecs.list()))
     );
+
+    public static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<Map<Integer, GunData>>> GUN_DATA_MAP_SERIALIZER = REGISTRY.register("gun_data_map_serializer",
+            () -> new EntityDataSerializer<>() {
+                @Override
+                public @NotNull StreamCodec<? super RegistryFriendlyByteBuf, Map<Integer, GunData>> codec() {
+                    return ByteBufCodecs.map(HashMap::new, ByteBufCodecs.VAR_INT, GunData.STREAM_CODEC);
+                }
+
+                public @NotNull Map<Integer, GunData> copy(@NotNull Map<Integer, GunData> map) {
+                    var newMap = new HashMap<Integer, GunData>();
+                    map.forEach((key, value) -> newMap.put(key, GunData.from(value.stack.copy())));
+                    return newMap;
+                }
+            });
 }

@@ -18,6 +18,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -754,5 +756,27 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public void save() {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, GunData> STREAM_CODEC = new StreamCodec<>() {
+
+        public @NotNull GunData decode(@NotNull RegistryFriendlyByteBuf buf) {
+            return GunData.from(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
+        }
+
+        public void encode(@NotNull RegistryFriendlyByteBuf buf, GunData data) {
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, data.stack);
+        }
+    };
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof GunData otherData)) return false;
+
+        return ItemStack.isSameItemSameComponents(otherData.stack, this.stack);
+    }
+
+    public GunData copy() {
+        return GunData.from(this.stack.copy());
     }
 }
