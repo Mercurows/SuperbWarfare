@@ -8,6 +8,20 @@
     {},
     {}
   ],
+  "Engine": {
+    "Type": "Helicopter",
+    "EnergyCostRate": 256,
+    "Power": {
+      "Increment": 1,
+      "Decrement": 1
+    },
+    "HeliControl": {
+      "PitchSpeed": 1,
+      "YawSpeed": 1,
+      "RollSpeed": 1,
+      "LiftSpeed": 1
+    }
+  },
   "UpStep": 1.1,
   "Mass": 1.2,
   "AllowFreeCam": true,

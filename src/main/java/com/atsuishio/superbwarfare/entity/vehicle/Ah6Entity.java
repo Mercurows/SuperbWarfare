@@ -181,8 +181,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         lowHealthWarning();
         this.terrainCompact(2.7f, 2.7f);
 
-        helicopterEngine(256, 1, 1, 1, 1, 1, 1);
-
         this.refreshDimensions();
     }
 
