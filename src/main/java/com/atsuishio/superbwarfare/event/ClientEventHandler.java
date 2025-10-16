@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
-import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -907,7 +906,7 @@ public class ClientEventHandler {
 
         float pitch = iVehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - iVehicle.getWeaponHeat(player)));
 
-        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || (zoomVehicle && !(iVehicle instanceof Ah6Entity))) {
+        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle) {
             if (weapon.sound1p != null) {
                 player.playSound(weapon.sound1p, 1f, pitch);
             }
