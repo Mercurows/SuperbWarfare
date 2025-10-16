@@ -531,8 +531,8 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
         if (controller != null) {
             ItemStack stack = controller.getMainHandItem();
             if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")) {
-                this.setYRot(this.getYRot() + 0.5f * entityData.get(MOUSE_SPEED_X));
-                this.setXRot(Mth.clamp(this.getXRot() + 0.5f * entityData.get(MOUSE_SPEED_Y), -10, 90));
+                this.setYRot(this.getYRot() + 0.5f * getMouseMoveSpeedX());
+                this.setXRot(Mth.clamp(this.getXRot() + 0.5f * getMouseMoveSpeedY(), -10, 90));
             }
         }
 

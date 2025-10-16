@@ -130,12 +130,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
 
     @Override
     public void baseTick() {
-        turretYRotO = this.getTurretYRot();
-        turretXRotO = this.getTurretXRot();
-        rudderRotO = this.getRudderRot();
-        leftWheelRotO = this.getLeftWheelRot();
-        rightWheelRotO = this.getRightWheelRot();
-
         super.baseTick();
         updateOBB();
 

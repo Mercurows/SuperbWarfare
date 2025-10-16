@@ -133,7 +133,7 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
             jumpCooldown--;
         }
 
-        deltaX = entityData.get(MOUSE_SPEED_Y);
+        deltaX = getMouseMoveSpeedY();
         if (this.leftInputDown() && this.rightInputDown()) {
             deltaX = 0;
         } else if (this.leftInputDown()) {
