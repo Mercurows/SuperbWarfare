@@ -11,8 +11,6 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -41,7 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -152,18 +149,10 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             return;
         }
 
-        Matrix4f transform = getVehicleFlatTransform(1);
-
-        float x = 0.3f;
-        float y = -0.4f;
-        float z = -0.6f;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        copyEntityData(passenger);
+        passengerPos(passenger, callback, 0.3f, -0.4f, -0.6f, getVehicleFlatTransform(1));
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         entity.setYBodyRot(getYRot());
     }
@@ -287,12 +276,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public Vec3 getNewEyePos(float pPartialTicks) {
         return driverZoomPos(pPartialTicks);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return Pair.of(Axis.XP.rotationDegrees(0), Axis.ZP.rotationDegrees(0));
     }
 
     @Override

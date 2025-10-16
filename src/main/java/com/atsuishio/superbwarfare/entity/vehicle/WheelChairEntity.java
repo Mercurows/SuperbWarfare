@@ -8,8 +8,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,15 +23,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -247,23 +239,7 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
             return;
         }
 
-        Matrix4f transform = getVehicleTransform(1);
-
-        float x = 0f;
-        float y = 0.35f;
-        float z = 0f;
-
-        int i = this.getSeatIndex(passenger);
-
-        if (i == 0) {
-            Vector4f worldPosition = transformPosition(transform, x, y, z);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        }
-
-        if (passenger != this.getFirstPassenger()) {
-            passenger.setXRot(passenger.getXRot() + (getXRot() - xRotO));
-        }
+        passengerPos(passenger, callback, 0, 0.35f, 0, getVehicleTransform(1));
     }
 
     @Override
@@ -278,11 +254,5 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 }

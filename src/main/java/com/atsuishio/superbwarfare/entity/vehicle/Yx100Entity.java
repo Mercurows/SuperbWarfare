@@ -752,23 +752,18 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             return;
         }
 
-        Matrix4f transform = getTurretTransform(1);
-
         int i = this.getOrderedPassengers().indexOf(passenger);
 
-        var worldPosition = switch (i) {
-            case 0 -> transformPosition(transform, 0.6669625f, 0.07f, 0.4776875f);
-            case 1 -> transformPosition(transform, -0.75805625f, 0.3f, -0.57275625f);
-            case 2 -> transformPosition(transform, 0.86219375f, 0.07f, -0.5696875f);
-            default -> throw new IllegalStateException("Unexpected value: " + i);
-        };
-
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-
-        copyEntityData(passenger);
+        if (i == 0) {
+            passengerPos(passenger, callback, 0.6669625f, 0.07f, 0.4776875f, getTurretTransform(1));
+        } else if (i == 1) {
+            passengerPos(passenger, callback, -0.75805625f, 0.3f, -0.57275625f, getTurretTransform(1));
+        } else {
+            passengerPos(passenger, callback, 0.86219375f, 0.07f, -0.5696875f, getTurretTransform(1));
+        }
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         if (entity == getNthEntity(0)) {
             entity.setYBodyRot(getBarrelYRot(1));

@@ -377,15 +377,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
             return;
         }
 
-        Matrix4f transform = getVehicleFlatTransform(1);
-
-        float x = 0f;
-        float y = 2.0f;
-        float z = 0.5f;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        passengerPos(passenger, callback, 0, 2, 0.5f, getVehicleFlatTransform(1));
     }
 
     @Override
@@ -736,6 +728,11 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
+    }
+
+    @Override
+    public int passengerSeatLocation(Entity entity) {
+        return 1;
     }
 
     @Override

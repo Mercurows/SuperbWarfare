@@ -17,8 +17,6 @@ import com.atsuishio.superbwarfare.tools.CameraTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -70,8 +68,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public int holdTick;
     public int holdPowerTick;
     public float destroyRot;
-    public float delta_x;
-    public float delta_y;
 
     public OBB obb;
     public OBB obb2;
@@ -252,8 +248,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                     this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
                 }
             } else if (passenger instanceof Player player) {
-                delta_x = ((this.onGround()) ? 0 : 1.5f) * entityData.get(MOUSE_SPEED_Y) * this.entityData.get(PROPELLER_ROT);
-                delta_y = Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(ENGINE2_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f);
                 if (!landingInputDown() || findNearestLandingPos(30) == null) {
                     if (rightInputDown()) {
                         holdTick++;
@@ -264,11 +258,11 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                     } else {
                         holdTick = 0;
                     }
-                    this.setXRot(this.getXRot() + delta_x);
+                    this.setXRot(this.getXRot() +  ((this.onGround()) ? 0 : 1.5f) * entityData.get(MOUSE_SPEED_Y) * this.entityData.get(PROPELLER_ROT));
                     this.setZRot(this.getRoll() - this.entityData.get(DELTA_ROT) + (this.onGround() ? 0 : 0.25f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT));
                 }
 
-                this.setYRot(this.getYRot() + delta_y);
+                this.setYRot(this.getYRot() + Mth.clamp((this.onGround() ? 0.1f : 2f) * entityData.get(MOUSE_SPEED_X) * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(ENGINE2_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f));
                 if (findNearestLandingPos(30) != null && !onGround() && landingInputDown()) {
                     this.updateAutoLanding(findNearestLandingPos(30));
                 }
@@ -403,66 +397,33 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             return;
         }
 
-        Matrix4f transform = getVehicleTransform(1);
-
-        float x = 0.45f;
-        float y = 0.85f;
-        float z = 1f;
-
         int i = this.getOrderedPassengers().indexOf(passenger);
 
         if (i == 0) {
-            Vector4f worldPosition = transformPosition(transform, x, y, z);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+            passengerPos(passenger, callback, 0.45f, 0.85f, 1, getVehicleTransform(1));
         } else if (i == 1) {
-            Vector4f worldPosition = transformPosition(transform, -x, y, z);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+            passengerPos(passenger, callback, -0.45f, 0.85f, 1, getVehicleTransform(1));
         } else if (i == 2) {
-            Vector4f worldPosition = transformPosition(transform, -1.4f, 0.4f, 0);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+            passengerPos(passenger, callback, -1.4f, 0.4f, 0, getVehicleTransform(1));
         } else if (i == 3) {
-            Vector4f worldPosition = transformPosition(transform, 1.4f, 0.4f, 0);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+            passengerPos(passenger, callback, 1.4f, 0.4f, 0, getVehicleTransform(1));
         }
-
-        if (passenger != this.getFirstPassenger()) {
-            passenger.setXRot(passenger.getXRot() + (getXRot() - xRotO));
-        }
-
-        copyEntityData(passenger);
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
+        entity.setYRot(entity.getYRot() + destroyRot);
         if (entity == getNthEntity(0)) {
-            entity.setYHeadRot(entity.getYHeadRot() + delta_y);
-            entity.setYRot(entity.getYRot() + delta_y);
-            entity.setYBodyRot(this.getYRot());
+            entity.setYRot(getYRot());
+            entity.setYBodyRot(getYRot());
         } else if (entity == getNthEntity(1)) {
-            float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-            float g = Mth.clamp(f, -105.0f, 105.0f);
-            entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f + 0.9f * destroyRot);
-            entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot());
         } else if (entity == getNthEntity(2)) {
-            float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-            float g = Mth.clamp(f, 10.0f, 170.0f);
-            entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f + 0.9f * destroyRot);
-            entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() + 90);
         } else if (entity == getNthEntity(3)) {
-            float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-            float g = Mth.clamp(f, -170.0f, -10.0f);
-            entity.yRotO += g - f;
-            entity.setYRot(entity.getYRot() + g - f + 0.9f * destroyRot);
-            entity.setYHeadRot(entity.getYRot());
             entity.setYBodyRot(getYRot() - 90);
         }
+        entity.setYHeadRot(entity.getYRot());
     }
 
     @Override
@@ -655,17 +616,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         }
 
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        if (this.getSeatIndex(entity) == 2) {
-            return Pair.of(Axis.XP.rotationDegrees(-this.getRoll(tickDelta)), Axis.ZP.rotationDegrees(this.getViewXRot(tickDelta)));
-        } else if (this.getSeatIndex(entity) == 3) {
-            return Pair.of(Axis.XP.rotationDegrees(this.getRoll(tickDelta)), Axis.ZP.rotationDegrees(-this.getViewXRot(tickDelta)));
-        }
-        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 
     @OnlyIn(Dist.CLIENT)

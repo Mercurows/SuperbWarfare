@@ -445,24 +445,15 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         if (!this.hasPassenger(passenger)) {
             return;
         }
-
-        Matrix4f transform = getTurretTransform(1);
-        Matrix4f transformV = getVehicleTransform(1);
-
         int i = this.getSeatIndex(passenger);
-
-        Vector4f worldPosition;
         if (i == 0) {
-            worldPosition = transformPosition(transform, 0, -0.6f, 0);
+            passengerPos(passenger, callback, 0, -0.6f, 0, getTurretTransform(1));
         } else {
-            worldPosition = transformPosition(transformV, -0.59375f, 1f, 3.0625f);
+            passengerPos(passenger, callback, -0.59375f, 1f, 3.0625f, getVehicleTransform(1));
         }
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-
-        copyEntityData(passenger);
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         if (entity == getNthEntity(0)) {
             entity.setYBodyRot(getBarrelYRot(1));

@@ -18,8 +18,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -318,32 +316,24 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         if (!this.hasPassenger(passenger)) {
             return;
         }
-        Matrix4f transform = getVehicleTransform(1);
         int i = this.getOrderedPassengers().indexOf(passenger);
 
-        float y = 0.35f;
 
-        Vector4f worldPosition = switch (i) {
-            case 0 -> transformPosition(transform, 0, y + 0.25f, -0.2f);
-            case 1 -> transformPosition(transform, -0.8f, y, -1.2f);
-            case 2 -> transformPosition(transform, 0.8f, y, -1.2f);
-            case 3 -> transformPosition(transform, -0.8f, y, -2.2f);
-            case 4 -> transformPosition(transform, 0.8f, y, -2.2f);
-            default -> null;
-        };
-
-        if (worldPosition != null) {
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        if (i == 0) {
+            passengerPos(passenger, callback, 0, 0.6f, -0.2f, getVehicleTransform(1));
+        } else if (i == 1) {
+            passengerPos(passenger, callback, -0.8f, 0.35f, -1.2f, getVehicleTransform(1));
+        } else if (i == 2) {
+            passengerPos(passenger, callback, 0.8f, 0.35f, -1.2f, getVehicleTransform(1));
+        } else if (i == 3) {
+            passengerPos(passenger, callback, -0.8f, 0.35f, -2.2f, getVehicleTransform(1));
+        } else if (i == 4) {
+            passengerPos(passenger, callback, 0.8f, 0.35f, -2.2f, getVehicleTransform(1));
         }
 
-        if (passenger != this.getFirstPassenger()) {
-            passenger.setXRot(passenger.getXRot() + (getXRot() - xRotO));
-        }
-
-        copyEntityData(passenger);
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         entity.setYBodyRot(getYRot());
     }
@@ -456,12 +446,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return this.getSeatIndex(entity) == 0;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 
     @Override

@@ -13,8 +13,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -85,8 +83,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public int lockTime;
     public boolean locked;
     private boolean wasFiring = false;
-    public float delta_x;
-    public float delta_y;
     public Vec3 bombLandingPosO;
     public Vec3 bombLandingPos;
     public Vec3 deltaMovementO;
@@ -534,12 +530,9 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.24, 0.15), 0.4f) * entityData.get(MOUSE_SPEED_Y), -3.5f, 3.5f);
             float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.004f) * entityData.get(MOUSE_SPEED_X) * (float) getDeltaMovement().dot(getViewVector(1));
 
-            delta_x = addX;
-            delta_y = addY;
-
-            this.setYRot(this.getYRot() + delta_y);
+            this.setYRot(this.getYRot() + addY);
             if (!onGround()) {
-                this.setXRot(this.getXRot() + delta_x);
+                this.setXRot(this.getXRot() + addX);
                 this.setZRot(this.getRoll() - addZ);
             }
 
@@ -686,17 +679,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             return;
         }
 
-        Matrix4f transform = getVehicleTransform(1);
-
-        float x = 0f;
-        float y = 2.125f;
-        float z = 3.7f;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-
-        copyEntityData(passenger);
+        passengerPos(passenger, callback, 0, 2.125f, 3.7f, getVehicleTransform(1));
     }
 
     @Override
@@ -727,9 +710,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
-        entity.setYHeadRot(entity.getYHeadRot() + delta_y);
-        entity.setYRot(entity.getYRot() + delta_y);
         entity.setYBodyRot(this.getYRot());
     }
 
@@ -993,12 +975,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public int getHudColor() {
         return super.getHudColor();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 
     @OnlyIn(Dist.CLIENT)

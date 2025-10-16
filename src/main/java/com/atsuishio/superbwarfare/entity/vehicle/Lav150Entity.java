@@ -200,12 +200,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public void baseTick() {
-        turretYRotO = this.getTurretYRot();
-        turretXRotO = this.getTurretXRot();
-        rudderRotO = this.getRudderRot();
-        leftWheelRotO = this.getLeftWheelRot();
-        rightWheelRotO = this.getRightWheelRot();
-
         super.baseTick();
         updateOBB();
 
@@ -418,23 +412,16 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             return;
         }
 
-        Matrix4f transform = getTurretTransform(1);
-        Matrix4f transformV = getVehicleTransform(1);
-
         int i = this.getSeatIndex(passenger);
-
-        Vector4f worldPosition;
         if (i == 0) {
-            worldPosition = transformPosition(transform, 0.36f, -0.65f, 0.56f);
+            passengerPos(passenger, callback, 0.36f, -0.65f, 0.56f, getTurretTransform(1));
         } else {
-            worldPosition = transformPosition(transformV, 0, 1, 0);
+            passengerPos(passenger, callback, 0, 1, 0, getVehicleTransform(1));
         }
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
 
-        copyEntityData(passenger);
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         if (entity == getNthEntity(0)) {
             entity.setYBodyRot(getBarrelYRot(1));

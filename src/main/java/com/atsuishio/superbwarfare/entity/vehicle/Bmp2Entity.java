@@ -563,35 +563,28 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             return;
         }
 
-        Matrix4f transform = getTurretTransform(1);
-        Matrix4f transformV = getVehicleTransform(1);
-
         int i = this.getSeatIndex(passenger);
 
-        Vector4f worldPosition;
         if (i == 0) {
-            worldPosition = transformPosition(transform, 0.36f, -0.25f, 0.56f);
+            passengerPos(passenger, callback, 0.36f, -0.25f, 0.56f, getTurretTransform(1));
         } else if (i == 1) {
-            worldPosition = transformPosition(transformV, 0.5f, 0f, -0.8125f);
+            passengerPos(passenger, callback, 0.5f, 0f, -0.8125f, getVehicleTransform(1));
         } else if (i == 2) {
-            worldPosition = transformPosition(transformV, -0.5f, 0f, -0.8125f);
+            passengerPos(passenger, callback, -0.5f, 0f, -0.8125f, getVehicleTransform(1));
         } else if (i == 3) {
-            worldPosition = transformPosition(transformV, 0.5f, 0f, -2.1875f);
+            passengerPos(passenger, callback, 0.5f, 0f, -2.1875f, getVehicleTransform(1));
         } else if (i == 4) {
-            worldPosition = transformPosition(transformV, -0.5f, 0f, -2.1875f);
+            passengerPos(passenger, callback, -0.5f, 0f, -2.1875f, getVehicleTransform(1));
         } else if (i == 5) {
-            worldPosition = transformPosition(transformV, 0.5f, 0f, -3.0625f);
+            passengerPos(passenger, callback, 0.5f, 0f, -3.0625f, getVehicleTransform(1));
         } else if (i == 6) {
-            worldPosition = transformPosition(transformV, -0.5f, 0f, -3.0625f);
+            passengerPos(passenger, callback, -0.5f, 0f, -3.0625f, getVehicleTransform(1));
         }else {
-            worldPosition = transformPosition(transformV, 0, 1, 0);
+            passengerPos(passenger, callback, 1, 1, 0, getVehicleTransform(1));
         }
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-
-        copyEntityData(passenger);
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         if (entity == getNthEntity(0)) {
             entity.setYBodyRot(getBarrelYRot(1));

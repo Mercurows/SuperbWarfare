@@ -12,8 +12,6 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CameraTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -41,7 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -275,27 +272,10 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
             return;
         }
 
-        Matrix4f transform = getVehicleTransform(1);
-
-        float x = 0f;
-        float y = 0.6f;
-        float z = -0.4f;
-
-        int i = this.getSeatIndex(passenger);
-
-        if (i == 0) {
-            Vector4f worldPosition = transformPosition(transform, x, y, z);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        }
-
-        if (passenger != this.getFirstPassenger()) {
-            passenger.setXRot(passenger.getXRot() + (getXRot() - xRotO));
-        }
-
-        copyEntityData(passenger);
+        passengerPos(passenger, callback, 0, 0.6f, -0.4f, getVehicleTransform(1));
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         entity.setYBodyRot(getYRot());
     }
@@ -317,12 +297,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return 0.3;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 
     @Override
