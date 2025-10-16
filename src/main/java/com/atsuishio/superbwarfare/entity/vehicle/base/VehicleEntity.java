@@ -2266,10 +2266,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void travel() {
         var engine = data().get(VehicleProp.ENGINE);
-        if (engine.type == EngineInfo.Type.WHEEL) {
-            this.wheelEngine(engine);
-        } else if (engine.type == EngineInfo.Type.TRACK) {
-            this.trackEngine(engine);
+        switch (engine.type) {
+            case WHEEL -> this.wheelEngine(engine);
+            case TRACK -> this.trackEngine(engine);
+            case HELICOPTER -> this.helicopterEngine(engine);
         }
     }
 
@@ -3147,6 +3147,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    public void helicopterEngine(EngineInfo engineInfo) {
+        this.helicopterEngine(
+                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
+                engineInfo.power.increment,
+                engineInfo.power.decrement,
+                engineInfo.heliControl.pitchSpeed,
+                engineInfo.heliControl.yawSpeed,
+                engineInfo.heliControl.rollSpeed,
+                engineInfo.heliControl.liftSpeed
+        );
+    }
+
     public void helicopterEngine(int energyCost, float powerAdd, float powerReduce, float pitchSpeed, float yawSpeed, float rollSpeed, float lift) {
         if (this.onGround()) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
@@ -3235,7 +3247,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                         holdPowerTick++;
                         this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.001f * powerReduce * Math.min(holdPowerTick, 5), this.onGround() ? 0 : 0.059f / lift));
                     }
-
                 }
 
                 if (engineStart && !engineStartOver) {
@@ -3257,7 +3268,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 engineStart = false;
                 engineStartOver = false;
             }
-
         } else if (!onGround() && engineStartOver) {
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.0003f, 0.01f));
             destroyRot += 0.08f;

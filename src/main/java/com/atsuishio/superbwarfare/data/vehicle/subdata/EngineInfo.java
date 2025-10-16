@@ -14,21 +14,26 @@ public class EngineInfo {
     public double energyCostRate = 1;
     // 车轮控制相关
     @SerializedName("Wheel")
-    public WheelInfo wheel;
+    public WheelInfo wheel = new WheelInfo();
     // 履带控制相关
     @SerializedName("Track")
-    public TrackInfo track;
+    public TrackInfo track = new TrackInfo();
     // 功率
     @SerializedName("Power")
-    public PowerInfo power;
+    public PowerInfo power = new PowerInfo();
     // 转向速度
     @SerializedName("SteeringSpeed")
-    public float steeringSpeed;
+    public float steeringSpeed = 0.1f;
+
+    // ================== 直升机相关参数 ==================
+    @SerializedName("HeliControl")
+    public HeliControlInfo heliControl = new HeliControlInfo();
 
     public enum Type {
         @SerializedName("Empty") EMPTY,
         @SerializedName("Wheel") WHEEL,
         @SerializedName("Track") TRACK,
+        @SerializedName("Helicopter") HELICOPTER
     }
 
     public static class WheelInfo {
@@ -58,5 +63,16 @@ public class EngineInfo {
         // 后退加速度
         @SerializedName("Decrement")
         public float decrement = 0.001f;
+    }
+
+    public static class HeliControlInfo {
+        @SerializedName("PitchSpeed")
+        public float pitchSpeed = 0;
+        @SerializedName("YawSpeed")
+        public float yawSpeed = 0;
+        @SerializedName("RollSpeed")
+        public float rollSpeed = 0;
+        @SerializedName("LiftSpeed")
+        public float liftSpeed = 0;
     }
 }
