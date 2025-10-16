@@ -1401,19 +1401,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public void baseTick() {
-        if (!this.wasEngineRunning && this.engineRunning() && this.level().isClientSide()) {
-            engineSound.accept(this);
-            swimSound.accept(this);
-            if (this.hasTracks()) {
-                trackSound.accept(this);
+        if (this.level().isClientSide) {
+            if (!this.wasEngineRunning && this.engineRunning()) {
+                engineSound.accept(this);
+                swimSound.accept(this);
+                if (this.hasTracks()) {
+                    trackSound.accept(this);
+                }
+            }
+
+            if (!this.wasHornWorking && this.hornWorking()) {
+                hornSound.accept(this);
+            }
+
+            if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
+                inCarMusic.accept(this);
             }
         }
-        if (!this.wasHornWorking && this.hornWorking() && this.level().isClientSide()) {
-            hornSound.accept(this);
-        }
-        if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying() && this.level().isClientSide()) {
-            inCarMusic.accept(this);
-        }
+
         this.wasEngineRunning = this.engineRunning();
         this.wasHornWorking = this.hornWorking();
         this.wasInCarMusicPlaying = this.inCarMusicPlaying();
@@ -4199,6 +4204,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
     public boolean inCarMusicPlaying() {
+        if (!this.level().isClientSide) return false;
         if (!(this.getFirstPassenger() instanceof Player player)) return false;
         var stack = player.getOffhandItem();
         return stack.get(DataComponents.JUKEBOX_PLAYABLE) != null || NetMusicCompatHolder.canPlayMusic(stack);
