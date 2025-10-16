@@ -408,11 +408,11 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         if (!this.hasPassenger(passenger)) {
             return;
         }
-        passenger.setPos(getX(), getY(), getZ());
-        callback.accept(passenger, getX(), getY(), getZ());
-        copyEntityData(passenger);
+
+        passengerPos(passenger, callback, 0, 0, 0, getVehicleFlatTransform(1));
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         entity.setYBodyRot(getYRot());
     }

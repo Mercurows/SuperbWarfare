@@ -438,16 +438,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         if (!this.hasPassenger(passenger)) {
             return;
         }
-
-        Matrix4f transform = getVehicleFlatTransform(1);
-
-        float x = 0f;
-        float y = 2.3f;
-        float z = 0f;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        passengerPos(passenger, callback, 0, 2.3f, 0, getVehicleFlatTransform(1));
     }
 
     @Override
@@ -676,6 +667,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
+    }
+
+    @Override
+    public int passengerSeatLocation(Entity entity) {
+        return 1;
     }
 
     @Override

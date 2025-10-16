@@ -8,8 +8,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -27,10 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -181,23 +176,16 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
             return;
         }
 
-        Matrix4f transform = getVehicleTransform(1);
-
         int i = this.getSeatIndex(passenger);
 
-        Vector4f worldPosition;
         if (i == 0) {
-            worldPosition = transformPosition(transform, 0.834375f, 1.65f, 3.63f);
+            passengerPos(passenger, callback, 0.834375f, 1.65f, 3.63f, getVehicleTransform(1));
         } else {
-            worldPosition = transformPosition(transform, -0.834375f, 1.65f, 3.63f);
+            passengerPos(passenger, callback, -0.834375f, 1.65f, 3.63f, getVehicleTransform(1));
         }
-
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-
-        copyEntityData(passenger);
     }
 
+    @Override
     public void copyEntityData(Entity entity) {
         entity.setYBodyRot(getYRot());
     }
@@ -230,12 +218,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
     }
 
     @Override

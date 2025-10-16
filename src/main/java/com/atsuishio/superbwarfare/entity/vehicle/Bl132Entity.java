@@ -473,15 +473,8 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
             return;
         }
 
-        Matrix4f transform = getVehicleFlatTransform(1);
+        passengerPos(passenger, callback, 0, 4, -2, getVehicleFlatTransform(1));
 
-        float x = 0f;
-        float y = 4f;
-        float z = -2;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
@@ -773,6 +766,11 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
+    }
+
+    @Override
+    public int passengerSeatLocation(Entity entity) {
+        return 1;
     }
 
     @Override

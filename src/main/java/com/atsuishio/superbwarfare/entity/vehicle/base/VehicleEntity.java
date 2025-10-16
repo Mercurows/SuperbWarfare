@@ -35,7 +35,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -2257,6 +2256,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    public void passengerPos(Entity passenger, @NotNull MoveFunction callback, float x, float y, float z, Matrix4f transform) {
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        copyEntityData(passenger);
+    }
+
+    public void copyEntityData(Entity entity) {
+    }
+
     // From Immersive_Aircraft
     public Matrix4f getVehicleYOffsetTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
@@ -2859,29 +2868,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return null;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Quaternionf getCameraQuat(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        return null;
-    }
-
     /**
      * 是否使用载具固定视角
      */
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return false;
-    }
-
-    /**
-     * 获取载具上玩家的旋转
-     *
-     * @return X轴旋转，Z轴旋转
-     */
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return null;
     }
 
     public boolean hasTracks() {
@@ -2897,7 +2889,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void trackEngine(EngineInfo engineInfo) {
         this.trackEngine(
                 engineInfo.buoyancy,
-                (int) (engineInfo.energyCostRate * this.entityData.get(POWER)),
+                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
                 engineInfo.wheel.rotSpeed,
                 engineInfo.wheel.differential,
                 engineInfo.track.rotSpeed,
@@ -2942,12 +2934,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (forwardInputDown()) {
             this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? powerAdd * 2f : powerAdd), 1));
-            targetSpeed = maxForwardSpeedRate * (1 + getXRot() / 55);
         }
 
         if (backInputDown()) {
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? powerReduce * 2f : powerReduce), -1));
-            targetSpeed = maxBackwardSpeedRate * (1 - getXRot() / 55);
             if (rightInputDown()) {
                 this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + steeringSpeed);
             } else if (this.leftInputDown()) {
@@ -2961,6 +2951,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
 
+        if (this.entityData.get(POWER) > 0) {
+            targetSpeed = maxForwardSpeedRate * (1 + getXRot() / 55);
+        } else {
+            targetSpeed = maxBackwardSpeedRate * (1 - getXRot() / 55);
+        }
+
         if (!forwardInputDown() && !backInputDown()) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
         }
@@ -2969,10 +2965,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.6f);
         }
 
-        targetSpeed *= (rightInputDown() || leftInputDown()) ? 0.95f : 1;
+        if (rightInputDown() || leftInputDown()) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
+        }
 
         if (this.level() instanceof ServerLevel) {
-            this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * energyCost));
+            this.consumeEnergy(energyCost);
         }
 
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * (float) Math.max(0.76f - 0.1f * this.getDeltaMovement().horizontalDistance(), 0.3));
@@ -3001,7 +2999,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (entityData.get(ENGINE1_DAMAGED)) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.85f);
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
         }
 
         this.setYRot((float) (this.getYRot() - (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT) - i * s0));
@@ -3014,7 +3012,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void wheelEngine(EngineInfo engineInfo) {
         this.wheelEngine(
                 engineInfo.buoyancy,
-                (int) (engineInfo.energyCostRate * this.entityData.get(POWER)),
+                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
                 engineInfo.wheel.rotSpeed,
                 engineInfo.wheel.differential,
                 engineInfo.power.maxForwardSpeedRate,
@@ -3062,26 +3060,32 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (forwardInputDown()) {
             this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? powerAdd * 2f : powerAdd), 1));
-            targetSpeed = maxForwardSpeedRate * (1 + getXRot() / 55);
         }
 
         if (backInputDown()) {
             this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? powerReduce * 2f : powerReduce), -1));
+        }
+
+        if (this.entityData.get(POWER) > 0) {
+            targetSpeed = maxForwardSpeedRate * (1 + getXRot() / 55);
+        } else {
             targetSpeed = maxBackwardSpeedRate * (1 - getXRot() / 55);
         }
 
         if (!forwardInputDown() && !backInputDown()) {
-            this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.97f);
         }
 
         if (upInputDown()) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.6f);
         }
 
-        targetSpeed *= (rightInputDown() || leftInputDown()) ? 0.95f : 1;
+        if (rightInputDown() || leftInputDown()) {
+            this.entityData.set(POWER, this.entityData.get(POWER) * 0.97f);
+        }
 
         if (this.level() instanceof ServerLevel) {
-            this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * energyCost));
+            this.consumeEnergy(energyCost);
         }
 
         int i;

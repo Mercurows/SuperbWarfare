@@ -200,15 +200,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             return;
         }
 
-        Matrix4f transform = getVehicleFlatTransform(1);
-
-        float x = 0f;
-        float y = 3.3f;
-        float z = 1.5f;
-
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        passengerPos(passenger, callback, 0, 3.3f, 1.5f, getVehicleFlatTransform(1));
     }
 
     @Override
@@ -599,6 +591,11 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return true;
+    }
+
+    @Override
+    public int passengerSeatLocation(Entity entity) {
+        return 1;
     }
 
     @Override
