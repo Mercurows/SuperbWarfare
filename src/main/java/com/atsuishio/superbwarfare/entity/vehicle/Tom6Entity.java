@@ -130,8 +130,8 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         deltaYo = deltaY;
         super.baseTick();
 
-        deltaX = entityData.get(MOUSE_SPEED_Y);
-        deltaY = entityData.get(MOUSE_SPEED_X);
+        deltaX = getMouseMoveSpeedY();
+        deltaY = getMouseMoveSpeedX();
 
         float f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 

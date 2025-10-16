@@ -521,9 +521,9 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
             float rotSpeed = 1.5f + 2 * Mth.abs(VectorTool.calculateY(getRoll()));
 
-            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * entityData.get(MOUSE_SPEED_X), -rotSpeed, rotSpeed);
-            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.24, 0.15), 0.4f) * entityData.get(MOUSE_SPEED_Y), -3.5f, 3.5f);
-            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.004f) * entityData.get(MOUSE_SPEED_X) * (float) getDeltaMovement().dot(getViewVector(1));
+            float addY = Mth.clamp(Math.max((this.onGround() ? 0.1f : 0.2f) * (float) getDeltaMovement().length(), 0f) * getMouseMoveSpeedX(), -rotSpeed, rotSpeed);
+            float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().dot(getViewVector(1)) - 0.24, 0.15), 0.4f) * getMouseMoveSpeedY(), -3.5f, 3.5f);
+            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.004f) * getMouseMoveSpeedX() * (float) getDeltaMovement().dot(getViewVector(1));
 
             this.setYRot(this.getYRot() + addY);
             if (!onGround()) {
@@ -565,7 +565,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 entityData.set(GEAR_ROT, Math.max(entityData.get(GEAR_ROT) - 5, 0));
             }
 
-            float flapX = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(entityData.get(MOUSE_SPEED_Y), -22.5f, 22.5f) - VectorTool.calculateY(getRoll()) * Mth.clamp(entityData.get(MOUSE_SPEED_X), -22.5f, 22.5f);
+            float flapX = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(getMouseMoveSpeedY(), -22.5f, 22.5f) - VectorTool.calculateY(getRoll()) * Mth.clamp(getMouseMoveSpeedX(), -22.5f, 22.5f);
 
             setFlap1LRot(Mth.clamp(-flapX - 4 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
             setFlap1RRot(Mth.clamp(-flapX + 4 * addZ - this.entityData.get(PLANE_BREAK), -22.5f, 22.5f));
@@ -575,7 +575,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             setFlap2LRot(Mth.clamp(flapX - 4 * addZ, -22.5f, 22.5f));
             setFlap2RRot(Mth.clamp(flapX + 4 * addZ, -22.5f, 22.5f));
 
-            float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(entityData.get(MOUSE_SPEED_X), -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(entityData.get(MOUSE_SPEED_Y), -22.5f, 22.5f);
+            float flapY = (1 - (Mth.abs(getRoll())) / 90) * Mth.clamp(getMouseMoveSpeedX(), -22.5f, 22.5f) + VectorTool.calculateY(getRoll()) * Mth.clamp(getMouseMoveSpeedY(), -22.5f, 22.5f);
 
             setFlap3Rot(flapY * 5);
         } else if (!onGround()) {
