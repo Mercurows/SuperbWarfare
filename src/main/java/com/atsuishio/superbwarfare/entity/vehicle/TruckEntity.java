@@ -179,9 +179,9 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         int i = this.getSeatIndex(passenger);
 
         if (i == 0) {
-            passengerPos(passenger, callback, 0.834375f, 1.65f, 3.63f, getVehicleTransform(1));
+            passengerPos(passenger, callback, 0.834375f, 1.65f, 4.63f, getVehicleTransform(1));
         } else {
-            passengerPos(passenger, callback, -0.834375f, 1.65f, 3.63f, getVehicleTransform(1));
+            passengerPos(passenger, callback, -0.834375f, 1.65f, 4.63f, getVehicleTransform(1));
         }
     }
 
@@ -229,31 +229,31 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     public void updateOBB() {
         Matrix4f transform = getVehicleTransform(1);
 
-        Vector4f worldPosition = transformPosition(transform, -1.28125f, 0.6875f, 3f);
+        Vector4f worldPosition = transformPosition(transform, -1.28125f, 0.6875f, 4f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
         this.obb.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition2 = transformPosition(transform, 1.28125f, 0.6875f, 3f);
+        Vector4f worldPosition2 = transformPosition(transform, 1.28125f, 0.6875f, 4f);
         this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.obb2.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition3 = transformPosition(transform, -1.28125f, 0.6875f, -2.328125f);
+        Vector4f worldPosition3 = transformPosition(transform, -1.28125f, 0.6875f, -1.328125f);
         this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
         this.obb3.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition4 = transformPosition(transform, 1.28125f, 0.6875f, -2.328125f);
+        Vector4f worldPosition4 = transformPosition(transform, 1.28125f, 0.6875f, -1.328125f);
         this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
         this.obb4.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition5 = transformPosition(transform, -1.28125f, 0.6875f, -3.828125f);
+        Vector4f worldPosition5 = transformPosition(transform, -1.28125f, 0.6875f, -2.828125f);
         this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
         this.obb5.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition6 = transformPosition(transform, 1.28125f, 0.6875f, -3.828125f);
+        Vector4f worldPosition6 = transformPosition(transform, 1.28125f, 0.6875f, -2.828125f);
         this.obb6.center().set(new Vector3f(worldPosition6.x, worldPosition6.y, worldPosition6.z));
         this.obb6.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition7 = transformPosition(transform, 0, 2.34375f, -0.125f);
+        Vector4f worldPosition7 = transformPosition(transform, 0, 2.34375f, 0.875f);
         this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
         this.obb7.setRotation(VectorTool.combineRotations(1, this));
     }

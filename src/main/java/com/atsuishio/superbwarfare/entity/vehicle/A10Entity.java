@@ -778,7 +778,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 30, 0.5f);
+                entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 40, 0.5f);
                 level().addFreshEntity(entityToSpawn);
 
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0.2, 0.2, 0.2, 0.001, true);
@@ -820,7 +820,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
 
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 8, 0.5f);
+            heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 17, 0.5f);
             living.level().addFreshEntity(heliRocketEntity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));

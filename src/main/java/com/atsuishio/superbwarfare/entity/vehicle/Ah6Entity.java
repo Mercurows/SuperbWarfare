@@ -20,6 +20,8 @@ import com.atsuishio.superbwarfare.tools.CameraTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -326,7 +328,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
                 entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 20, 0.15f);
+                entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 30, 0.15f);
                 level().addFreshEntity(entityToSpawn);
 
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
@@ -373,7 +375,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
 
             heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 7, 0.25f);
+            heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 16, 0.25f);
             living.level().addFreshEntity(heliRocketEntity);
 
             playShootSound3p(living, 0, 6, 6, 6, new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
@@ -405,7 +407,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public int zoomFov() {
-        return 3;
+        return 2;
     }
 
     @Override
@@ -441,6 +443,18 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public float rotateYOffset() {
         return 1.45f;
+    }
+
+    @Override
+    public boolean useFixedCameraPos(Entity entity) {
+        return !level().isClientSide || Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON;
+    }
+
+    @Override
+    public Vec3 driverZoomPos(float ticks) {
+        Matrix4f transform = getVehicleTransform(ticks);
+        Vector4f worldPosition = transformPosition(transform, -1.75f, 2.2f, -4.5f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
@@ -482,7 +496,11 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             if (isFirstPerson) {
                 return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
             } else {
-                return finalPos;
+                if (zoom) {
+                    return driverZoomPos(partialTicks);
+                } else {
+                    return finalPos;
+                }
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
