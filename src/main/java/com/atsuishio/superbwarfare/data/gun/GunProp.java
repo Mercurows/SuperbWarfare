@@ -64,10 +64,11 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
 
     public static final GunProp<Set<ReloadType>> RELOAD_TYPES = new GunProp<Set<ReloadType>>("ReloadTypes")
-            .withLimiter(v -> v == null ? Set.of() : v);
+            .whenNull(Set.of());
 
-    public static final GunProp<Set<SeekType>> SEEK_TYPES = new GunProp<Set<SeekType>>("SeekTypes")
-            .withLimiter(v -> v == null ? Set.of() : v);
+    public static final GunProp<SeekType> SEEK_TYPES = new GunProp<SeekType>("SeekType")
+            .whenNull(SeekType.NONE);
+
     public static final GunProp<Boolean> AUTO_RELOAD = new GunProp<>("AutoReload");
 
     public static final GunProp<Boolean> ZOOM_RELOAD = new GunProp<>("ZoomReload");

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
     public static final List<Prop<?, ?, ?>> props = new ArrayList<>();
@@ -60,6 +61,14 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         return (T) this;
     }
 
+    protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T whenNull(FIELD value) {
+        return whenNull(() -> value);
+    }
+
+    protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T whenNull(Supplier<FIELD> supplier) {
+        return withLimiter((prop, data, value) -> value == null ? supplier.get() : value);
+    }
+
     protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(Function<FIELD, FIELD> limiter) {
         return withLimiter((prop, data, value) -> limiter.apply(value));
     }
@@ -94,7 +103,7 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
 
     @FunctionalInterface
     public interface PropModifyContext<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
-        FIELD apply(@NotNull PropModifier<DATA, DEFAULT_DATA, FIELD> modifier, @NotNull DATA data, @NotNull FIELD value);
+        FIELD apply(@NotNull PropModifier<DATA, DEFAULT_DATA, FIELD> modifier, @NotNull DATA data, @Nullable FIELD value);
     }
 
 }
