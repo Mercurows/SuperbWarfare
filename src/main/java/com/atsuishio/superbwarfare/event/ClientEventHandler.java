@@ -361,13 +361,11 @@ public class ClientEventHandler {
             float seekAngle = data.get(GunProp.SEEK_ANGLE).floatValue() * fovAdjust;
             double range = data.get(GunProp.SEEK_RANGE);
 
-            if (!zoom || !data.hasEnoughAmmoToShoot(player)) return;
-
             if (zoomTime > 0.7) {
                 naerestEntity = SeekTool.seekLivingEntity(player, range, seekAngle);
                 if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_FIRE)) {
-                    // 锁定方块
                     if (naerestEntity == null || player.isShiftKeyDown()) {
+                        // 锁定方块
                         BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
                                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
                         seekingPos = result.getLocation();
@@ -406,6 +404,7 @@ public class ClientEventHandler {
                         }
 
                     } else {
+                        // 锁定实体
                         if (seekingTime > lockTime + 2 && !lockOn) {
                             lockingEntity = seekingEntity;
                             lockOn = true;
@@ -445,6 +444,8 @@ public class ClientEventHandler {
                         }
                     }
                 } else if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_ZOOM)) {
+
+                    // 瞄准锁定只能锁实体
                     if (seekingTime > lockTime + 2 && !lockOn) {
                         lockingEntity = seekingEntity;
                         lockOn = true;
@@ -464,7 +465,7 @@ public class ClientEventHandler {
                         if (seekingEntity == null) {
                             seekingEntity = naerestEntity;
                         }
-                        if (naerestEntity != null) {
+                        if (naerestEntity != null && data.hasEnoughAmmoToShoot(player)) {
                             seekingTime++;
                             if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOn) {
                                 Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntity.getUUID()));
@@ -476,14 +477,8 @@ public class ClientEventHandler {
                         seekingEntity = null;
                     }
 
-                    if (lockOn && holdFire) {
-                        if (lockingEntity != null) {
-                            Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
-                        }
-                        lockOn = false;
-                        seekingTime = 0;
-                        lockingEntity = null;
-                        seekingEntity = null;
+                    if (lockOn && holdFire && lockingEntity != null) {
+                        Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
                         holdFire = false;
                     }
                 }
@@ -495,13 +490,19 @@ public class ClientEventHandler {
                 lockingPos = null;
             }
 
+            if (lockingEntity != null && !lockingEntity.isAlive()) {
+                seekingTime = 0;
+                lockOn = false;
+                lockingEntity = null;
+                seekingEntity = null;
+                lockingPos = null;
+            }
 
-
-            if (seekingTime == 1) {
+            if (seekingTime == 2) {
                 playLockSound(stack, player);
             }
 
-            if (lockOn) {
+            if (seekingTime > lockTime) {
                 playLockOnSound(stack, player);
                 if (guideType == 0 && lockingEntity != null && (!lockingEntity.getPassengers().isEmpty() || lockingEntity instanceof VehicleEntity) && player.tickCount % 2 == 0) {
                     Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage( true, lockingEntity.getUUID()));
@@ -1436,7 +1437,8 @@ public class ClientEventHandler {
                 && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
                 && !notInGame()
                 && drawTime < 0.01
-                && !isEditing) {
+                && !isEditing
+                && !(data.reloading() && !data.get(GunProp.ZOOM_RELOAD))) {
             if (Minecraft.getInstance().player != null) {
                 cantSprint = 5;
             }

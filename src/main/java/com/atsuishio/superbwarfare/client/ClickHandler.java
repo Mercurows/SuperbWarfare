@@ -278,8 +278,13 @@ public class ClickHandler {
                 handleConfigScreen(player);
             }
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
-                ClientEventHandler.burstFireAmount = 0;
+                burstFireAmount = 0;
                 isEditing = false;
+                seekingTime = 0;
+                lockOn = false;
+                lockingEntity = null;
+                seekingEntity = null;
+                lockingPos = null;
                 Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue() || key == ModKeyMappings.CHANGE_FIRE_MODE_BACKWARD.getKey().getValue()) {
@@ -458,7 +463,12 @@ public class ClickHandler {
             if (!data.useBackpackAmmo() && !data.meleeOnly() && !data.hasEnoughAmmoToShoot(player) && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
-                    ClientEventHandler.burstFireAmount = 0;
+                    burstFireAmount = 0;
+                    seekingTime = 0;
+                    lockOn = false;
+                    lockingEntity = null;
+                    seekingEntity = null;
+                    lockingPos = null;
                 }
             } else {
                 Mod.PACKET_HANDLER.sendToServer(new FireKeyMessage(0, bowPower, zoom));

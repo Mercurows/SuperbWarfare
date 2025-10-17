@@ -70,6 +70,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
             .withLimiter(v -> v == null ? Set.of() : v);
     public static final GunProp<Boolean> AUTO_RELOAD = new GunProp<>("AutoReload");
 
+    public static final GunProp<Boolean> ZOOM_RELOAD = new GunProp<>("ZoomReload");
+
     public static final GunProp<Double> DEFAULT_ZOOM = new GunProp<>("DefaultZoom");
 
     public static final GunProp<Integer> BURST_AMOUNT = new GunProp<Integer>("BurstAmount")
