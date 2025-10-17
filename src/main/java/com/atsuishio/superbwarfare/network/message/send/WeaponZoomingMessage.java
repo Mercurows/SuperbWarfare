@@ -12,7 +12,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record WeaponZoomingMessage(boolean zooming) implements CustomPacketPayload {
-    public static final Type<WeaponZoomingMessage> TYPE = new Type<>(Mod.loc("seeking_weapon_warning"));
+    public static final Type<WeaponZoomingMessage> TYPE = new Type<>(Mod.loc("weapon_zooming"));
 
     public static final StreamCodec<ByteBuf, WeaponZoomingMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,
