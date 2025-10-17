@@ -153,7 +153,7 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
             RenderHelper.renderCircularRing(
                     guiGraphics,
                     screenWidth / 2f, screenHeight / 2f,
-                    0.08f, 0.06f,
+                    0.07f, 0.052f,
                     new float[]{0f, 0f, 0f, 0.4f * alpha},
                     new float[]{1f, 1f, 1f, 0.8f * alpha},
                     lerpHoldArtilleryIndicator,
