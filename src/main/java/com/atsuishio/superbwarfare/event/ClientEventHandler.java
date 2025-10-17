@@ -657,7 +657,7 @@ public class ClientEventHandler {
             clientTimer.stop();
         }
 
-        if (stack.getItem() == ModItems.DEVOTION.get() && (data.reload.normal() || data.reload.empty())) {
+        if (GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) {
             customRpm = 0;
         }
 
