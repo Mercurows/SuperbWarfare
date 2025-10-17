@@ -403,7 +403,7 @@ public class ClientEventHandler {
                         } else {
                             if (lockOn) {
                                 if (lockingPos != null) {
-                                    PacketDistributor.sendToServer(new SeekingWeaponShootMessage(gunSpread, zoom, null, lockingPos.toVector3f()));
+                                    PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, null, lockingPos.toVector3f()));
                                 }
                                 lockOn = false;
                             }
@@ -441,7 +441,7 @@ public class ClientEventHandler {
                         } else {
                             if (lockOn) {
                                 if (lockingEntity != null) {
-                                    PacketDistributor.sendToServer(new SeekingWeaponShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
+                                    PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
                                 }
                                 lockOn = false;
                             }
@@ -484,7 +484,7 @@ public class ClientEventHandler {
 
                     if (lockOn && holdFire) {
                         if (lockingEntity != null) {
-                            PacketDistributor.sendToServer(new SeekingWeaponShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
+                            PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
                         }
                         lockOn = false;
                         seekingTime = 0;

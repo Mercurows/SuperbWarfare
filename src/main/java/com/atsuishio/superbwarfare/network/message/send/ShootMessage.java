@@ -8,14 +8,20 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public record ShootMessage(double spread, boolean zoom, Optional<UUID> uuid) implements CustomPacketPayload {
+public record ShootMessage(
+        double spread,
+        boolean zoom,
+        Optional<UUID> uuid,
+        Optional<Vector3f> targetPos
+) implements CustomPacketPayload {
 
     public static final Type<ShootMessage> TYPE = new Type<>(Mod.loc("shoot"));
 
@@ -26,18 +32,21 @@ public record ShootMessage(double spread, boolean zoom, Optional<UUID> uuid) imp
             ShootMessage::zoom,
             ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC),
             ShootMessage::uuid,
+            ByteBufCodecs.optional(ByteBufCodecs.VECTOR3F),
+            ShootMessage::targetPos,
             ShootMessage::new
     );
 
     public static void handler(final ShootMessage message, final IPayloadContext context) {
-        pressAction(context.player(), message);
-    }
-
-    public static void pressAction(Player player, ShootMessage message) {
+        var player = context.player();
         var stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
 
-        GunData.from(stack).shoot(player, message.spread, message.zoom, message.uuid.orElse(null));
+        if (message.targetPos.isEmpty()) {
+            GunData.from(stack).shoot(player, message.spread, message.zoom, message.uuid.orElse(null));
+        } else {
+            GunData.from(stack).shoot(player, message.spread, message.zoom, message.uuid.orElse(null), new Vec3(message.targetPos.get()));
+        }
     }
 
     @Override

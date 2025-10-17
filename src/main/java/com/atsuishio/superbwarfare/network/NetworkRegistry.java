@@ -70,7 +70,6 @@ public class NetworkRegistry {
         playToServer(UnloadMessage.TYPE, UnloadMessage.STREAM_CODEC, (msg, ctx) -> UnloadMessage.handler(ctx));
         playToServer(AssembleVehicleMessage.TYPE, AssembleVehicleMessage.STREAM_CODEC, AssembleVehicleMessage::handler);
         playToServer(SeekingWeaponWarningMessage.TYPE, SeekingWeaponWarningMessage.STREAM_CODEC, SeekingWeaponWarningMessage::handler);
-        playToServer(SeekingWeaponShootMessage.TYPE, SeekingWeaponShootMessage.STREAM_CODEC, SeekingWeaponShootMessage::handler);
         playToServer(WeaponZoomingMessage.TYPE, WeaponZoomingMessage.STREAM_CODEC, WeaponZoomingMessage::handler);
     }
 
