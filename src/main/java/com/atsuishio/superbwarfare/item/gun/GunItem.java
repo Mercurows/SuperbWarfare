@@ -506,6 +506,13 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return true;
     }
 
+    public int hideBulletChainBelowShots() {
+        return -1;
+    }
+
+    public void whenNoAmmo(GunData data) {
+    }
+
     /**
      * 服务端在开火前的额外行为
      */
@@ -514,14 +521,13 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         var ammoSupplier = parameters.ammoSupplier();
         NeoForge.EVENT_BUS.post(new ShootEvent.Pre(parameters));
 
-        // 空仓挂机
-        if (data.currentAvailableShots(ammoSupplier) == 1) {
-            data.holdOpen.set(true);
-        }
-
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(ammoSupplier)) {
             data.bolt.needed.set(true);
+        }
+
+        if (data.currentAvailableShots(ammoSupplier) <= hideBulletChainBelowShots()) {
+            data.hideBulletChain.set(true);
         }
     }
 
@@ -551,8 +557,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
-            data.isEmpty.set(true);
-            data.closeStrike.set(true);
+            data.item.whenNoAmmo(data);
         } else {
             data.consumeBackupAmmo(ammoSupplier, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }

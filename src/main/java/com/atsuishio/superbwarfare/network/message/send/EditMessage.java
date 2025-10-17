@@ -104,8 +104,8 @@ public record EditMessage(int msgType, boolean add) implements CustomPacketPaylo
                     data.ammo.set(data.get(GunProp.MAGAZINE));
                 }
 
-                data.isEmpty.set(true);
-                data.holdOpen.set(true);
+                data.item.whenNoAmmo(data);
+
                 data.closeHammer.set(false);
             }
         }

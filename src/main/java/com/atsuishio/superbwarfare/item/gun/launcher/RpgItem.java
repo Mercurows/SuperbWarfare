@@ -92,7 +92,6 @@ public class RpgItem extends GunGeoItem {
     public boolean shootBullet(@NotNull ShootParameters parameters) {
         if (!super.shootBullet(parameters)) return false;
 
-        var data = parameters.data();
         var shooter = parameters.shooter();
         var level = parameters.level();
 
@@ -103,10 +102,13 @@ public class RpgItem extends GunGeoItem {
                     30, 0.4, 0.4, 0.4, 0.005, true);
         }
 
+        return true;
+    }
+
+    @Override
+    public void whenNoAmmo(GunData data) {
         data.isEmpty.set(true);
         data.closeHammer.set(true);
-
-        return true;
     }
 
     @Override

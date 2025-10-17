@@ -122,6 +122,11 @@ public class AwmItem extends GunGeoItem {
     }
 
     @Override
+    public void whenNoAmmo(GunData data) {
+        data.closeStrike.set(true);
+    }
+
+    @Override
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
         behaviors.put(18, data -> data.closeStrike.set(false));

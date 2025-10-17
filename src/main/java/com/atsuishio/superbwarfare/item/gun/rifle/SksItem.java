@@ -85,6 +85,11 @@ public class SksItem extends GunGeoItem {
     }
 
     @Override
+    public void whenNoAmmo(GunData data) {
+        data.holdOpen.set(true);
+    }
+
+    @Override
     public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addReloadTimeBehavior(behaviors);
 
