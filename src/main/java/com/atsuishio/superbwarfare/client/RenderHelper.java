@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -181,5 +182,68 @@ public class RenderHelper {
         } else {
             pGuiGraphics.drawString(pFont, pText, pMinX, pMinY, pColor);
         }
+    }
+
+    public static void renderCircularRing(GuiGraphics guiGraphics, float centerX, float centerY, int outerRadius, int innerRadius, float[] backgroundColor, float[] progressColor, float progress) {
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-90), centerX, centerY, 0);
+
+        // 绘制背景圆环
+        drawCircularRing(poseStack, centerX, centerY, outerRadius, innerRadius, backgroundColor, 1.0f);
+
+        // 绘制进度圆环
+        drawCircularRing(poseStack, centerX, centerY, outerRadius, innerRadius, progressColor, progress);
+
+        poseStack.popPose();
+
+        RenderSystem.disableBlend();
+
+    }
+
+    public static void drawCircularRing(PoseStack poseStack, float centerX, float centerY, int outerRadius, int innerRadius,
+                                 float[] color, float progressAngle) {
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder buffer = tessellator.getBuilder();
+
+        Matrix4f matrix = poseStack.last().pose();
+        float angleStep = (float) (2 * Math.PI / 180);
+        float maxAngle = (float) (2 * Math.PI * progressAngle);
+
+        RenderSystem.setShaderColor(color[0], color[1], color[2], color[3]);
+
+        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION);
+
+        for (int i = 0; i <= 180 * progressAngle; i++) {
+            float angle = i * angleStep;
+            if (angle > maxAngle) {
+                angle = maxAngle;
+            }
+
+            float cos = (float) Math.cos(angle);
+            float sin = (float) Math.sin(angle);
+
+            // 外圆点
+            float outerX = centerX + outerRadius * cos;
+            float outerY = centerY + outerRadius * sin;
+            buffer.vertex(matrix, outerX, outerY, 0).endVertex();
+
+            // 内圆点
+            float innerX = centerX + innerRadius * cos;
+            float innerY = centerY + innerRadius * sin;
+            buffer.vertex(matrix, innerX, innerY, 0).endVertex();
+
+            if (angle >= maxAngle) break;
+        }
+
+        tessellator.end();
+
+        // 重置颜色
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
