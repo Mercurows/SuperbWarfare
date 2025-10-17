@@ -289,6 +289,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
 
             if (this.tickCount > 3) {
+                this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
                 if (entityData.get(TOP)) {
                     if (!dir) {
                         Vec3 targetTopPos = new Vec3(targetPos.x, targetPos.y + Mth.clamp(5 * this.tickCount, 0, 90), targetPos.z);
@@ -298,7 +299,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                         boolean lostTarget = this.getY() < targetPos.y;
                         if (!lostTarget) {
                             turn(toVec, 45);
-                            this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle().scale(2)));
+                            this.setDeltaMovement(this.getDeltaMovement().scale(0.1).add(getLookAngle().scale(8)));
                         }
                     }
                 } else {
