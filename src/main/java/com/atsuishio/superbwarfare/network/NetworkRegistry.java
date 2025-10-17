@@ -41,6 +41,8 @@ public class NetworkRegistry {
 
         playToServer(LaserShootMessage.class, LaserShootMessage::encode, LaserShootMessage::decode, LaserShootMessage::handler);
         playToServer(ShootMessage.class, ShootMessage::encode, ShootMessage::decode, ShootMessage::handler);
+        playToServer(SeekingWeaponShootMessage.class, SeekingWeaponShootMessage::encode, SeekingWeaponShootMessage::decode, SeekingWeaponShootMessage::handler);
+        playToServer(SeekingWeaponWarningMessage.class, SeekingWeaponWarningMessage::encode, SeekingWeaponWarningMessage::decode, SeekingWeaponWarningMessage::handler);
         playToServer(DoubleJumpMessage.INSTANCE, DoubleJumpMessage::handler);
         playToServer(ParachuteMessage.INSTANCE, ParachuteMessage::handler);
         playToServer(VehicleMovementMessage.class, VehicleMovementMessage::encode, VehicleMovementMessage::decode, VehicleMovementMessage::handler);

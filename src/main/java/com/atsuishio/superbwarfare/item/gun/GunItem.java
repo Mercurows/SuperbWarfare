@@ -34,6 +34,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -597,12 +598,18 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public void shoot(@NotNull ServerLevel level, @NotNull Vec3 shootPosition, @NotNull Vec3 shootDirection, @NotNull GunData data, double spread, boolean zoom, @Nullable UUID uuid) {
-        shoot(new ShootParameters(null, null, level, shootPosition, shootDirection, data, spread, zoom, uuid));
+        shoot(new ShootParameters(null, null, level, shootPosition, shootDirection, data, spread, zoom, uuid, null));
     }
 
     public void shoot(@NotNull GunData data, @NotNull Entity shooter, double spread, boolean zoom, UUID uuid) {
         if (shooter.level() instanceof ServerLevel server) {
-            shoot(new ShootParameters(shooter, shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid));
+            shoot(new ShootParameters(shooter, shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid, null));
+        }
+    }
+
+    public void shoot(@NotNull GunData data, @NotNull Entity shooter, double spread, boolean zoom, UUID uuid, Vec3 pos) {
+        if (shooter.level() instanceof ServerLevel server) {
+            shoot(new ShootParameters(shooter, shooter, server, new Vec3(shooter.getX(), shooter.getEyeY(), shooter.getZ()), shooter.getLookAngle(), data, spread, zoom, uuid, pos));
         }
     }
 
@@ -714,6 +721,13 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
      * 服务端处理松开开火按键时的额外行为
      */
     public void onFireKeyRelease(final GunData data, Player player, double power, boolean zoom) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            ItemStack stack = data.stack;
+            String origin = stack.getItem().getDescriptionId();
+            String name = origin.substring(origin.lastIndexOf(".") + 1);
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc(name + "_lock"), SoundSource.PLAYERS);
+            serverPlayer.connection.send(clientboundstopsoundpacket);
+        }
     }
 
     /**

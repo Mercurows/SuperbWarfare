@@ -90,6 +90,9 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("ReloadTypes")
     public Set<ReloadType> reloadTypes = Set.of(ReloadType.MAGAZINE);
 
+    @SerializedName("SeekTypes")
+    public Set<SeekType> seekTypes = Set.of(SeekType.NONE);
+
     @SerializedName("AutoReload")
     public boolean autoReload = false;
 
@@ -230,4 +233,11 @@ public class DefaultGunData implements IDBasedData {
     // 瞄准时的扩散比例
     @SerializedName("ZoomSpreadRate")
     public double zoomSpreadRate = 0.1;
+
+    @SerializedName("SeekTime")
+    public int seekTime = 20;
+    @SerializedName("SeekAngle")
+    public double seekAngle = 10;
+    @SerializedName("SeekRange")
+    public double seekRange = 384;
 }
