@@ -14,7 +14,6 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModScreens {
 
-    // TODO 为每一种vehicle menu添加渲染
     @SubscribeEvent
     public static void clientLoad(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ReforgingTableScreen::new);

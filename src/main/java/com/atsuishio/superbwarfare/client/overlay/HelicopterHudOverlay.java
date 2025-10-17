@@ -79,7 +79,6 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
                 && player.getVehicle() instanceof VehicleEntity vehicle
                 && armedVehicle.isDriver(player) && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
                 && vehicle.getVehicleType() == VehicleType.HELICOPTER) {
-            // TODO 载具类型判断没生效？
             poseStack.pushPose();
 
             int color = vehicle.getHudColor() | 0xFF000000;

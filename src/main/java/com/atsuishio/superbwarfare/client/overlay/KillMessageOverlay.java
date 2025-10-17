@@ -58,8 +58,6 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation LASER = Mod.loc("textures/screens/damage_types/laser.png");
     private static final ResourceLocation VEHICLE = Mod.loc("textures/screens/damage_types/vehicle_strike.png");
 
-    private static final ResourceLocation WORLD_PEACE_STAFF = Mod.loc("textures/gun_icon/compat/world_peace_staff.png");
-
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
@@ -416,11 +414,6 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
             // 如果是枪械击杀，则渲染枪械图标
             if (record.stack.getItem() instanceof GunItem gunItem) {
                 return gunItem.getGunIcon(record.stack);
-            }
-
-            // TODO 如果是特殊武器击杀，则渲染对应图标
-            if (record.stack.getItem().getDescriptionId().equals("item.dreamaticvoyage.world_peace_staff")) {
-                return WORLD_PEACE_STAFF;
             }
         }
         return null;

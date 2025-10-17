@@ -155,7 +155,6 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ModTags.Items.ANIMATED_MINIGUN).add(
                 ModItems.MINIGUN.get());
 
-        // TODO 清理枪械Tag
         ModItems.GUNS.getEntries().forEach(registryObject -> this.tag(ModTags.Items.GUN).add(registryObject.get()));
 
         this.tag(ModTags.Items.SMG).add(ModItems.VECTOR.get());
