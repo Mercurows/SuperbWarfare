@@ -1,18 +1,21 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -25,6 +28,8 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -122,6 +127,26 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
             }
         }
 
+        if (stack.is(ModItems.REPAIR_TOOL.get())) {
+            int range = data.get(GunProp.RANGE);
+
+            Entity lookingEntity = TraceTool.findLookingEntity(player, range);
+
+            float health = 0;
+
+            if (lookingEntity instanceof LivingEntity living) {
+                health = living.getHealth() / living.getMaxHealth();
+            } else if (lookingEntity instanceof VehicleEntity vehicle) {
+                health = vehicle.getHealth() / vehicle.getMaxHealth();
+            }
+
+            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+
+            if (health > 0) {
+                RenderHelper.renderCircularRing(guiGraphics, screenWidth / 2f + moveX, screenHeight / 2f + moveY, 7, 5, new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f}, health);
+            }
+        }
+
         if (stack.is(ModItems.BOCEK.get())) {
             if (ClientEventHandler.zoomPos < 0.7) {
                 preciseBlit(guiGraphics, POINT, w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
@@ -174,7 +199,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         if (!player.getMainHandItem().is(ModTags.Items.GUN) || ClientEventHandler.zoomTime > 0.8)
             return false;
 
-        return !(player.getMainHandItem().getItem() == ModItems.M_79.get() || player.getMainHandItem().getItem() == ModItems.BOCEK.get() || player.getMainHandItem().getItem() == ModItems.SECONDARY_CATACLYSM.get())
+        return !(player.getMainHandItem().getItem() == ModItems.M_79.get() || player.getMainHandItem().getItem() == ModItems.BOCEK.get() || player.getMainHandItem().getItem() == ModItems.SECONDARY_CATACLYSM.get() || player.getMainHandItem().getItem() == ModItems.REPAIR_TOOL.get())
                 && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
     }
 
