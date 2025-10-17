@@ -91,7 +91,6 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                 }
 
                 // 火炮位置
-
                 ListTag tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND);
                 for (int m = 0; m < tags.size(); m++) {
                     var tag = tags.getCompound(m);
@@ -108,6 +107,21 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                 }
 
                 poseStack.popPose();
+
+                lerpHoldArtilleryIndicator = Mth.lerp(partialTick, lerpHoldArtilleryIndicator, 0.05f * ClientEventHandler.holdArtilleryIndicator);
+
+                if (lerpHoldArtilleryIndicator > 0) {
+                    float alpha = Mth.clamp(lerpHoldArtilleryIndicator * 20, 0, 5) * 0.2f;
+                    RenderHelper.renderCircularRing(
+                            guiGraphics,
+                            screenWidth / 2f, screenHeight / 2f,
+                            0.07f, 0.052f,
+                            new float[]{0f, 0f, 0f, 0.4f * alpha},
+                            new float[]{1f, 1f, 1f, 0.8f * alpha},
+                            lerpHoldArtilleryIndicator,
+                            true
+                    );
+                }
             }
 
             boolean lookAtEntity = false;
@@ -144,21 +158,6 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
             }
         } else {
             scopeScale = 1;
-        }
-
-        lerpHoldArtilleryIndicator = Mth.lerp(partialTick, lerpHoldArtilleryIndicator, 0.05f * ClientEventHandler.holdArtilleryIndicator);
-
-        if (lerpHoldArtilleryIndicator > 0) {
-            float alpha = Mth.clamp(lerpHoldArtilleryIndicator * 20, 0, 5) * 0.2f;
-            RenderHelper.renderCircularRing(
-                    guiGraphics,
-                    screenWidth / 2f, screenHeight / 2f,
-                    0.07f, 0.052f,
-                    new float[]{0f, 0f, 0f, 0.4f * alpha},
-                    new float[]{1f, 1f, 1f, 0.8f * alpha},
-                    lerpHoldArtilleryIndicator,
-                    true
-            );
         }
     }
 }
