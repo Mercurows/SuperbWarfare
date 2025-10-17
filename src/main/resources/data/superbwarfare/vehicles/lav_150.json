@@ -54,7 +54,7 @@
       "Increment": 0.03,
       "Decrement": 0.02
     },
-    "SteeringSpeed": 0.05
+    "SteeringSpeed": 0.07
   },
   "UpStep": 1.5,
   "Mass": 13.6,

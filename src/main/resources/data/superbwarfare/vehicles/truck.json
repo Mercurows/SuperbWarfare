@@ -20,9 +20,9 @@
     },
     "Power": {
       "MaxForwardSpeedRate": 0.98,
-      "MaxBackwardSpeedRate": 0.4,
+      "MaxBackwardSpeedRate": 0.7,
       "Increment": 0.012,
-      "Decrement": 0.007
+      "Decrement": 0.009
     },
     "SteeringSpeed": 0.05
   },
