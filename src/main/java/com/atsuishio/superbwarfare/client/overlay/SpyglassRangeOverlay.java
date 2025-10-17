@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -60,13 +59,6 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
         var screenHeight = guiGraphics.guiHeight();
 
         if (player == null) return;
-
-        lerpHoldArtilleryIndicator = Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), lerpHoldArtilleryIndicator, ClientEventHandler.holdArtilleryIndicator);
-
-        if (ClientEventHandler.holdArtilleryIndicator > 0) {
-            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 40, (float) (screenHeight / 2 + 64), (float) screenWidth / 2 + 40, (float) screenHeight / 2 + 68, -90, -16777216);
-            RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), (float) screenWidth / 2 - 40, (float) (screenHeight / 2 + 64), (float) screenWidth / 2 - 40 + 8 * lerpHoldArtilleryIndicator, (float) screenHeight / 2 + 68, -90, -1);
-        }
 
         if (((player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) || player.isScoping()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
             if (player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
@@ -160,6 +152,15 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
             }
         } else {
             scopeScale = 1;
+        }
+
+        // TODO 根据屏幕大小动态调节环形大小
+
+        lerpHoldArtilleryIndicator = Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), lerpHoldArtilleryIndicator, 0.05f * ClientEventHandler.holdArtilleryIndicator);
+
+        if (lerpHoldArtilleryIndicator > 0) {
+            float alpha = Mth.clamp(lerpHoldArtilleryIndicator * 20, 0, 5) * 0.2f;
+            RenderHelper.renderCircularRing(guiGraphics, screenWidth / 2f, screenHeight / 2f, 21, 18, new float[]{0f, 0f, 0f, 0.4f * alpha}, new float[]{1f, 1f, 1f, 0.8f * alpha}, lerpHoldArtilleryIndicator);
         }
     }
 }

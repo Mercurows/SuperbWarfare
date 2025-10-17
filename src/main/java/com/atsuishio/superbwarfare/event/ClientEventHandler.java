@@ -329,8 +329,8 @@ public class ClientEventHandler {
         }
 
         if ((stack.is(ModItems.ARTILLERY_INDICATOR.get()) || (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get()))) && holdFire) {
-            holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 10);
-            if (holdArtilleryIndicator >= 9) {
+            holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 20);
+            if (holdArtilleryIndicator >= 19) {
                 PacketDistributor.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
             }
         } else {
