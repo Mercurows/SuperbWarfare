@@ -256,12 +256,11 @@ public class GunEventHandler {
         }
 
         if (inMainHand && !data.reloading()) {
-            if (data.currentAvailableShots(shooter) <= 5) {
+            if (data.currentAvailableShots(shooter) <= data.item.hideBulletChainBelowShots()) {
                 data.hideBulletChain.set(true);
             }
             if (!data.hasEnoughAmmoToShoot(shooter)) {
-                data.holdOpen.set(true);
-                data.isEmpty.set(true);
+                data.item.whenNoAmmo(data);
             }
         }
     }

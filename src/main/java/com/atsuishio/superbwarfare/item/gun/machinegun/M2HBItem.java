@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M2HBItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
@@ -26,7 +25,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -119,15 +117,8 @@ public class M2HBItem extends GunGeoItem {
     }
 
     @Override
-    public void beforeShoot(@NotNull ShootParameters parameters) {
-        super.beforeShoot(parameters);
-
-        var data = parameters.data();
-        var ammoSupplier = parameters.ammoSupplier();
-
-        if (data.currentAvailableShots(ammoSupplier) <= 5) {
-            data.hideBulletChain.set(true);
-        }
+    public int hideBulletChainBelowShots() {
+        return 5;
     }
 
     @Override

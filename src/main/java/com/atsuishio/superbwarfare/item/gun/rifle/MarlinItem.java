@@ -87,6 +87,11 @@ public class MarlinItem extends GunGeoItem {
     }
 
     @Override
+    public void whenNoAmmo(GunData data) {
+        data.closeStrike.set(true);
+    }
+
+    @Override
     public void addBoltTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
         super.addBoltTimeBehavior(behaviors);
         behaviors.put(9, data -> data.closeStrike.set(false));

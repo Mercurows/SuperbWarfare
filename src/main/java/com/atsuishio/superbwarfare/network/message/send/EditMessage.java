@@ -106,8 +106,8 @@ public class EditMessage {
                         data.ammo.set(data.get(GunProp.MAGAZINE));
                     }
 
-                    data.isEmpty.set(true);
-                    data.holdOpen.set(true);
+                    data.item.whenNoAmmo(data);
+
                     data.closeHammer.set(false);
                 }
             }
