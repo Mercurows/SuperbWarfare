@@ -3,10 +3,10 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
@@ -99,9 +99,9 @@ public class IglaHudOverlay implements IGuiOverlay {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            Entity targetEntity = EntityFindUtil.findEntity(player.level(), stack.getOrCreateTag().getString("TargetEntity"));
-            int seekingTime = stack.getOrCreateTag().getInt("SeekTime");
-            lerpSeeking = Mth.lerp(partialTick, lerpSeeking, Mth.clamp(30 - stack.getOrCreateTag().getInt("SeekTime"), 0, 30) * 0.6f);
+            Entity targetEntity = ClientEventHandler.lockOn ? ClientEventHandler.lockingEntity : ClientEventHandler.seekingEntity;
+            int seekingTime = ClientEventHandler.seekingTime;
+            lerpSeeking = Mth.lerp(partialTick, lerpSeeking, Mth.clamp(data.get(GunProp.SEEK_TIME) - seekingTime, 0, data.get(GunProp.SEEK_TIME)) * 0.6f);
 
             if (targetEntity != null) {
                 Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick);
@@ -121,7 +121,7 @@ public class IglaHudOverlay implements IGuiOverlay {
                 RenderHelper.blit(poseStack, PART_4, -12 + lerpSeeking, -12 + lerpSeeking, 0, 0, 24, 24, 24, 24, 1f);
 
                 //状态
-                if (seekingTime >= 30 && data.ammo.get() > 0) {
+                if (seekingTime >= data.get(GunProp.SEEK_TIME) && data.ammo.get() > 0) {
                     RenderHelper.blit(poseStack, SHOOT, -12, -26, 0, 0, 24, 24, 24, 24, 1f);
                 } else {
                     RenderHelper.blit(poseStack, HOLD, -12, -26, 0, 0, 24, 24, 24, 24, 1f);

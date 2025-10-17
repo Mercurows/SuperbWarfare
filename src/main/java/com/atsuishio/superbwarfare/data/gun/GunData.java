@@ -102,6 +102,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         sensitivity = new IntValue(data, "Sensitivity");
         heat = new DoubleValue(data, "Heat");
         overHeat = new BooleanValue(data, "OverHeat");
+        zooming = new BooleanValue(data, "Zooming");
 
         var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
         if (defaultFireMode == null) {
@@ -739,6 +740,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final BooleanValue holdOpen;
     public final BooleanValue hideBulletChain;
     public final IntValue sensitivity;
+
+    public final BooleanValue zooming;
 
     // 其他子级属性
     public final Bolt bolt;

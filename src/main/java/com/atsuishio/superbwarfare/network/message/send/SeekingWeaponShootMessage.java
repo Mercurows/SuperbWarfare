@@ -38,6 +38,7 @@ public class SeekingWeaponShootMessage {
         buffer.writeVector3f(message.targetPos);
     }
 
+    //TODO 看看能不能把这个合并进ShootMessage里，我不敢乱动
     public static void handler(SeekingWeaponShootMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {

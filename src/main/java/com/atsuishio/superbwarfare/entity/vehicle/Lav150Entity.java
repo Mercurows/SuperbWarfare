@@ -408,7 +408,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (data == null || !data.canShoot(this)) return;
 
         var ray = MACHINE_GUN_POS.apply(this);
-        data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null));
+        data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null, null));
 
         // TODO 测试用提示
         if (living instanceof ServerPlayer player) {

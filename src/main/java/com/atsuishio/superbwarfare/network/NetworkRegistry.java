@@ -64,7 +64,6 @@ public class NetworkRegistry {
         playToServer(FireModeMessage.class, FireModeMessage::encode, FireModeMessage::decode, FireModeMessage::handler);
         playToServer(PlayerStopRidingMessage.class, PlayerStopRidingMessage::encode, PlayerStopRidingMessage::decode, PlayerStopRidingMessage::handler);
         playToServer(ZoomMessage.class, ZoomMessage::encode, ZoomMessage::decode, ZoomMessage::handler);
-        playToServer(IglaSeekMessage.class, IglaSeekMessage::encode, IglaSeekMessage::decode, IglaSeekMessage::handler);
         playToServer(DroneFireMessage.class, DroneFireMessage::encode, DroneFireMessage::decode, DroneFireMessage::handler);
         playToServer(SetFiringParametersMessage.INSTANCE, SetFiringParametersMessage::handler);
         playToServer(ArtilleryIndicatorFireMessage.INSTANCE, ArtilleryIndicatorFireMessage::handler);
@@ -80,6 +79,7 @@ public class NetworkRegistry {
         playToServer(FiringParametersEditMessage.class, FiringParametersEditMessage::encode, FiringParametersEditMessage::decode, FiringParametersEditMessage::handler);
         playToServer(UnloadMessage.INSTANCE, UnloadMessage::handler);
         playToServer(AssembleVehicleMessage.class, AssembleVehicleMessage::encode, AssembleVehicleMessage::decode, AssembleVehicleMessage::handler);
+        playToServer(WeaponZoomingMessage.class, WeaponZoomingMessage::encode, WeaponZoomingMessage::decode, WeaponZoomingMessage::handler);
 
         var registerContainerEvent = new RegisterContainersEvent();
         FMLJavaModLoadingContext.get().getModEventBus().post(registerContainerEvent);
