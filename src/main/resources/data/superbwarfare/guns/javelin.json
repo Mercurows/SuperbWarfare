@@ -9,6 +9,12 @@
   "ExplosionDamage": 120,
   "ExplosionRadius": 9,
   "Headshot": 0,
+  "SeekTime": 20,
+  "SeekAngle": 10,
+  "SeekRange": 384,
+  "SeekTypes": [
+    "HoldFire"
+  ],
   "AvailableFireModes": [
     "Dir",
     "Top"

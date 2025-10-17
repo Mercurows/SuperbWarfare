@@ -1,10 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
@@ -14,6 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,20 +52,11 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get(), 2, 1);
             }
 
-            if (player.getMainHandItem().getItem() == ModItems.JAVELIN.get()) {
-                var handItem = player.getMainHandItem();
-                var data = GunData.from(handItem);
-                var tag = data.tag();
-
-                tag.putBoolean("Seeking", false);
-                tag.putInt("SeekTime", 0);
-                tag.putString("TargetEntity", "none");
-
-                data.save();
-
-                var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("javelin_lock"), SoundSource.PLAYERS);
-                player.connection.send(clientboundstopsoundpacket);
-            }
+            ItemStack stack = player.getMainHandItem();
+            String origin = stack.getItem().getDescriptionId();
+            String name = origin.substring(origin.lastIndexOf(".") + 1);
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc(name + "_lock"), SoundSource.PLAYERS);
+            player.connection.send(clientboundstopsoundpacket);
         }
     }
 

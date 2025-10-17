@@ -5,10 +5,7 @@ import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
-import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
-import com.atsuishio.superbwarfare.data.gun.FireMode;
-import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -46,6 +43,7 @@ import net.minecraft.world.level.block.CrossCollisionBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -190,6 +188,16 @@ public class ClientEventHandler {
     public static int holdArtilleryIndicator;
     public static int holdToEjection;
     public static boolean isEditing = false;
+
+    // 锁定类武器用
+    public static Entity naerestEntity;
+    public static Entity seekingEntity;
+    public static Entity lockingEntity;
+    public static Vec3 seekingPos;
+    public static Vec3 lockingPos;
+    public static int seekingTime;
+    public static int guideType;
+    public static boolean lockOn;
 
     public static TDMSavedData tdmSavedData = new TDMSavedData();
 
@@ -346,6 +354,154 @@ public class ClientEventHandler {
         handleLungeAttack(player, stack);
         handleGunMelee(player, stack);
         iglaSeeking(stack);
+        lockWeaponSeeking(player, stack);
+    }
+
+    public static void lockWeaponSeeking(Player player, ItemStack stack) {
+        if (stack.getItem() instanceof GunItem gunItem) {
+            var data = GunData.from(stack);
+            //锁定所需时间
+            int lockTime = data.get(GunProp.SEEK_TIME);
+            //搜寻角度
+            float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
+            float seekAngle = data.get(GunProp.SEEK_ANGLE).floatValue() * fovAdjust;
+            double range = data.get(GunProp.SEEK_RANGE);
+
+            if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_FIRE)) {
+                if (zoomTime > 0.7) {
+                    naerestEntity = SeekTool.seekLivingEntity(player, range, seekAngle);
+                    // 锁定方块
+                    if (naerestEntity == null || player.isShiftKeyDown()) {
+                        BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
+                                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+                        seekingPos = result.getLocation();
+
+                        if (seekingTime > lockTime && !lockOn) {
+                            lockOn = true;
+                        }
+
+                        //锁定失败
+                        if (lockingPos != null && (VectorTool.calculateAngle(player.getLookAngle(), player.getEyePosition().vectorTo(lockingPos)) > seekAngle || !noClip(player, lockingPos))) {
+                            seekingTime = 0;
+                            lockOn = false;
+                            lockingPos = null;
+                        }
+
+                        if (holdFire) {
+                            if (seekingPos.distanceToSqr(player.getEyePosition()) < range * range) {
+                                seekingTime++;
+                                if (seekingTime == 1) {
+                                    lockingPos = seekingPos;
+                                }
+                            } else {
+                                seekingTime = 0;
+                                lockingPos = null;
+                            }
+                            guideType = 1;
+                        } else {
+                            if (lockOn) {
+                                if (lockingPos != null) {
+                                    PacketDistributor.sendToServer(new SeekingWeaponShootMessage(gunSpread, zoom, null, lockingPos.toVector3f()));
+                                }
+                                lockOn = false;
+                            }
+                            seekingTime = 0;
+                            lockingPos = null;
+                        }
+
+                    } else {
+                        if (seekingTime > lockTime && !lockOn) {
+                            lockingEntity = seekingEntity;
+                            lockOn = true;
+                        }
+
+                        //锁定失败
+                        if (seekingEntity != null && (VectorTool.calculateAngle(player.getLookAngle(), player.getEyePosition().vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(seekingEntity, 1))) > seekAngle
+                                || !SeekTool.NOT_IN_SMOKE.test(seekingEntity)
+                                || !noClip(player, seekingEntity))) {
+                            seekingTime = 0;
+                            lockingEntity = null;
+                            seekingEntity = null;
+                            lockOn = false;
+                        }
+
+                        if (holdFire) {
+                            if (seekingEntity == null) {
+                                seekingEntity = naerestEntity;
+                            }
+                            if (naerestEntity != null && lockingPos == null) {
+                                seekingTime++;
+                                if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOn) {
+                                    PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntity.getUUID()));
+                                }
+                                guideType = 0;
+                            }
+                        } else {
+                            if (lockOn) {
+                                if (lockingEntity != null) {
+                                    PacketDistributor.sendToServer(new SeekingWeaponShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
+                                }
+                                lockOn = false;
+                            }
+                            seekingTime = 0;
+                            lockingEntity = null;
+                            seekingEntity = null;
+                        }
+                    }
+                } else {
+                    seekingTime = 0;
+                    lockOn = false;
+                    lockingEntity = null;
+                    seekingEntity = null;
+                    lockingPos = null;
+                }
+            } else if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_ZOOM)) {
+
+            }
+
+            if (seekingTime == 1 && holdFire) {
+                playLockSound(stack, player);
+            }
+
+            if (lockOn && holdFire) {
+                playLockOnSound(stack, player);
+                if (guideType == 0 && lockingEntity != null && (!lockingEntity.getPassengers().isEmpty() || lockingEntity instanceof VehicleEntity) && player.tickCount % 2 == 0) {
+                    PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntity.getUUID()));
+                }
+            }
+        }
+    }
+
+    public static void playLockSound(ItemStack stack, Player player) {
+        String origin = stack.getItem().getDescriptionId();
+        String name = origin.substring(origin.lastIndexOf(".") + 1);
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_lock"));
+
+        if (sound != null) {
+            player.playSound(sound, 4f, 1);
+        }
+    }
+
+    public static void playLockOnSound(ItemStack stack, Player player) {
+        String origin = stack.getItem().getDescriptionId();
+        String name = origin.substring(origin.lastIndexOf(".") + 1);
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + "_lockon"));
+
+        if (sound != null) {
+            player.playSound(sound, 4f, 1);
+        }
+    }
+
+    public static boolean noClip(Entity entity, Entity e) {
+        return entity.level()
+                .clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
+                .getType() != HitResult.Type.BLOCK;
+    }
+
+    public static boolean noClip(Entity entity, Vec3 pos) {
+        return entity.level()
+                .clip(new ClipContext(entity.getEyePosition(), pos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
+                .getType() != HitResult.Type.BLOCK;
     }
 
     public static void iglaSeeking(ItemStack stack) {
@@ -1768,7 +1924,13 @@ public class ClientEventHandler {
         bowPullTimer = 0;
         bowPower = 0;
         cantSprint = 10;
+        seekingTime = 0;
+        lockOn = false;
+        lockingEntity = null;
+        seekingEntity = null;
+        lockingPos = null;
         isEditing = false;
+        zoomTime = 0;
     }
 
     private static void handleWeaponDraw(LivingEntity entity) {

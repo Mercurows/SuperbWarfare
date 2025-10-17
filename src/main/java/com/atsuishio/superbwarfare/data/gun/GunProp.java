@@ -65,6 +65,9 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Set<ReloadType>> RELOAD_TYPES = new GunProp<Set<ReloadType>>("ReloadTypes")
             .withLimiter(v -> v == null ? Set.of() : v);
+
+    public static final GunProp<Set<SeekType>> SEEK_TYPES = new GunProp<Set<SeekType>>("SeekTypes")
+            .withLimiter(v -> v == null ? Set.of() : v);
     public static final GunProp<Boolean> AUTO_RELOAD = new GunProp<>("AutoReload");
 
     public static final GunProp<Double> DEFAULT_ZOOM = new GunProp<>("DefaultZoom");
@@ -107,6 +110,10 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> IN_LAVA_COOLDOWN_RATE = new GunProp<>("InLavaCooldownRate");
 
     public static final GunProp<List<String>> AVAILABLE_PERKS = new GunProp<>("AvailablePerks");
+
+    public static final GunProp<Integer> SEEK_TIME = new GunProp<>("SeekTime");
+    public static final GunProp<Double> SEEK_ANGLE = new GunProp<>("SeekAngle");
+    public static final GunProp<Double> SEEK_RANGE = new GunProp<>("SeekRange");
 
     private GunProp(String name) {
         super(DefaultGunData.class, name);

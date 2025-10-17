@@ -20,6 +20,7 @@ import java.util.UUID;
  * @param spread         子弹散布
  * @param zoom           是否开镜
  * @param targetEntityUUID           已锁定实体UUID
+ * @param targetPos           已锁定位置
  */
 public record ShootParameters(
         @Nullable Entity ammoSupplier,
@@ -30,6 +31,7 @@ public record ShootParameters(
         @NotNull GunData data,
         double spread,
         boolean zoom,
-        @Nullable UUID targetEntityUUID
+        @Nullable UUID targetEntityUUID,
+        @Nullable Vec3 targetPos
 ) {
 }

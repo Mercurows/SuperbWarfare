@@ -555,6 +555,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         this.item.shoot(this, entity, spread, zoom, uuid);
     }
 
+    public void shoot(@NotNull Entity entity, double spread, boolean zoom, @Nullable UUID uuid, @Nullable Vec3 targetPos) {
+        this.item.shoot(this, entity, spread, zoom, uuid, targetPos);
+    }
+
     public void shoot(@NotNull ShootParameters parameters) {
         this.item.shoot(parameters);
     }

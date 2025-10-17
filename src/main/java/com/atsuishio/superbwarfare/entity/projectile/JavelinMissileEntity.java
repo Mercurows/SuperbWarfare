@@ -31,6 +31,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -64,7 +65,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         this.noCulling = true;
     }
 
-    public JavelinMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, int guideType, Vec3 targetPos) {
+    public JavelinMissileEntity(Entity entity, Level level, float damage, float explosionDamage, float explosionRadius, int guideType, @Nullable Vec3 targetPos) {
         super(ModEntities.JAVELIN_MISSILE.get(), entity, level);
         this.noCulling = true;
 
@@ -72,9 +73,12 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.guideType = guideType;
-        this.targetX = (float) targetPos.x;
-        this.targetY = (float) targetPos.y;
-        this.targetZ = (float) targetPos.z;
+        if (targetPos != null) {
+            this.targetX = (float) targetPos.x;
+            this.targetY = (float) targetPos.y;
+            this.targetZ = (float) targetPos.z;
+        }
+
         this.durability = 50;
     }
 

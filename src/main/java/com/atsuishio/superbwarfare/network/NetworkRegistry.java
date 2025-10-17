@@ -70,6 +70,8 @@ public class NetworkRegistry {
         playToServer(FiringParametersEditMessage.TYPE, FiringParametersEditMessage.STREAM_CODEC, FiringParametersEditMessage::handler);
         playToServer(UnloadMessage.TYPE, UnloadMessage.STREAM_CODEC, (msg, ctx) -> UnloadMessage.handler(ctx));
         playToServer(AssembleVehicleMessage.TYPE, AssembleVehicleMessage.STREAM_CODEC, AssembleVehicleMessage::handler);
+        playToServer(SeekingWeaponWarningMessage.TYPE, SeekingWeaponWarningMessage.STREAM_CODEC, SeekingWeaponWarningMessage::handler);
+        playToServer(SeekingWeaponShootMessage.TYPE, SeekingWeaponShootMessage.STREAM_CODEC, SeekingWeaponShootMessage::handler);
     }
 
     private static PayloadRegistrar registrar;

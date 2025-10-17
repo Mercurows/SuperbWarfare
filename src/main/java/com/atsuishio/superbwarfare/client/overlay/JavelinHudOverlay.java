@@ -3,10 +3,10 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
@@ -110,26 +110,26 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
 
             float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
 
-            Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
-            List<Entity> entities = SeekTool.seekLivingEntities(player, 512, 8 * fovAdjust);
-            Entity naerestEntity = SeekTool.seekLivingEntity(player, 512, 6);
+            Entity targetEntity = ClientEventHandler.lockingEntity;
+            List<Entity> entities = SeekTool.seekLivingEntities(player, data.get(GunProp.SEEK_RANGE), data.get(GunProp.SEEK_ANGLE) * fovAdjust);
+            Entity naerestEntity = ClientEventHandler.naerestEntity;
 
-            poseStack.pushPose();
-            if (tag.getInt("GuideType") == 0) {
+            if (ClientEventHandler.guideType == 0) {
                 for (var e : entities) {
                     Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(e, deltaTracker.getGameTimeDeltaPartialTick(true));
                     Vec3 point = VectorUtil.worldToScreen(pos);
-                    boolean lockOn = tag.getInt("SeekTime") > 20 && e == targetEntity;
+                    boolean lockOn = ClientEventHandler.lockOn && e == targetEntity;
                     boolean nearest = e == naerestEntity;
 
+                    poseStack.pushPose();
                     float x = (float) point.x;
                     float y = (float) point.y;
 
                     RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                 }
             } else {
-                Vec3 pos = new Vec3(tag.getDouble("TargetPosX"), tag.getDouble("TargetPosY"), tag.getDouble("TargetPosZ"));
-                boolean lockOn = tag.getInt("SeekTime") > 20;
+                Vec3 pos = ClientEventHandler.lockingPos;
+                boolean lockOn = ClientEventHandler.lockOn;
 
                 Vec3 point = VectorUtil.worldToScreen(pos);
                 if (VectorUtil.canSee(pos)) {
