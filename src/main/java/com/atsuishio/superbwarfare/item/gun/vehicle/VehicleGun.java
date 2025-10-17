@@ -1,10 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.vehicle;
 
-import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
-import com.atsuishio.superbwarfare.entity.vehicle.Lav150Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -21,28 +16,6 @@ public class VehicleGun extends GunItem {
 
     public VehicleGun() {
         super(new Properties());
-    }
-
-    @Nullable
-    public static GunData fromVehicle(VehicleEntity vehicle, int seatIndex) {
-        var seats = vehicle.data().get(VehicleProp.SEATS);
-        if (seatIndex < 0 || seatIndex >= seats.size()) return null;
-
-        var seat = seats.get(seatIndex);
-        if (seat.weaponData == null) return null;
-
-        // TODO 正确读取和存储VehicleGun ItemStack
-        if (vehicle instanceof Lav150Entity lav) {
-            var data = lav.getEntityData().get(Lav150Entity.GUN_DATA_MAP).computeIfAbsent(seatIndex, k -> GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get()))).copy();
-            data.defaultDataSupplier = () -> seat.weaponData;
-
-            return data;
-        }
-
-        var data = GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get())).copy();
-        data.defaultDataSupplier = () -> seat.weaponData;
-
-        return data;
     }
 
     @Override

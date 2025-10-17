@@ -106,8 +106,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -673,7 +673,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     protected void initSeatData(int targetSize) {
-        padList(orderedPassengers, targetSize, null, Entity::stopRiding);
+        padList(orderedPassengers, targetSize, null, null);
     }
 
     protected <T> void padList(@NotNull List<T> list, int targetSize, T defaultValue, @Nullable Consumer<T> onRemove) {

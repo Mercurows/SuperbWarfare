@@ -749,6 +749,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public GunData copy() {
-        return GunData.from(this.stack.copy());
+        var data = GunData.from(this.stack.copy());
+        data.defaultDataSupplier = this.defaultDataSupplier;
+        return data;
     }
 }

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.*;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -16,7 +17,6 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
@@ -35,6 +35,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -67,6 +68,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -76,7 +78,44 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     // Map SeatIndex -> GunData
-    public static final EntityDataAccessor<Map<Integer, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(Lav150Entity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
+    protected static final EntityDataAccessor<Map<Integer, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(Lav150Entity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
+
+    public Map<Integer, GunData> getGunDataMap() {
+        var rawMap = entityData.get(GUN_DATA_MAP);
+        var newMap = new HashMap<Integer, GunData>();
+        var seats = data().get(VehicleProp.SEATS);
+
+        for (int index = 0; index < seats.size(); index++) {
+            var seat = seats.get(index);
+            var data = rawMap.get(index);
+
+            if (data == null) {
+                if (seat.weaponData == null) continue;
+                data = GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get()));
+            }
+
+            data.defaultDataSupplier = () -> seat.weaponData;
+            newMap.put(index, data);
+        }
+
+        return newMap;
+    }
+
+    public @Nullable GunData getGunData(int index) {
+        return getGunDataMap().get(index);
+    }
+
+    public void modifyGunData(int index, @NotNull Consumer<GunData> consumer) {
+        var map = getGunDataMap();
+        var data = getGunData(index);
+        if (data == null) return;
+
+        data = data.copy();
+        consumer.accept(data);
+        map.put(index, data);
+
+        entityData.set(GUN_DATA_MAP, map);
+    }
 
     public OBB obb;
     public OBB obb2;
@@ -127,6 +166,27 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         }
 
         entityData.set(GUN_DATA_MAP, newMap);
+    }
+
+    @Override
+    public void changeWeapon(int index, int value, boolean isScroll) {
+        var gunData = getGunData(index);
+        if (gunData == null) return;
+
+        var ammoList = gunData.get(GunProp.AMMO_CONSUMER);
+        var targetIndex = isScroll ? (value + ammoList.size()) % ammoList.size() : value;
+        setWeaponIndex(index, targetIndex);
+
+        // TODO 正确播放武器切换音效
+        this.level().playSound(null, this, SoundEvents.ARROW_HIT_PLAYER, this.getSoundSource(), 1, 1);
+    }
+
+    @Override
+    public void setWeaponIndex(int index, int type) {
+        modifyGunData(index, gunData -> {
+            if (type < 0 || type >= gunData.get(GunProp.AMMO_CONSUMER).size()) return;
+            gunData.selectedAmmoType.set(type);
+        });
     }
 
     @Override
@@ -325,6 +385,14 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     @Override
+    public int getWeaponIndex(int index) {
+        var gunData = getGunData(index);
+        if (gunData == null) return 0;
+
+        return gunData.selectedAmmoType.get();
+    }
+
+    @Override
     public void vehicleShoot(LivingEntity living, int type) {
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
@@ -334,65 +402,64 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         }
 
         // TODO 移除WeaponIndex
-        if (getWeaponIndex(0) == 0) {
-            // TODO 正确实现seatIndex和WeaponIndex判断
-            var seatIndex = 0;
-            var data = VehicleGun.fromVehicle(this, seatIndex);
-            if (data == null || !data.canShoot(this)) return;
+//        if (getWeaponIndex(0) == 0) {
+        var seatIndex = getSeatIndex(living);
+        var data = getGunData(seatIndex);
+        if (data == null || !data.canShoot(this)) return;
 
-            var ray = MACHINE_GUN_POS.apply(this);
-            data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null));
+        var ray = MACHINE_GUN_POS.apply(this);
+        data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null));
 
-            // TODO 测试用提示
-            if (living instanceof ServerPlayer player) {
-                player.displayClientMessage(Component.literal(data.heat.get() + ""), true);
-            }
-
-            var currentMap = entityData.get(GUN_DATA_MAP);
-            currentMap.put(seatIndex, data);
-            entityData.set(GUN_DATA_MAP, currentMap);
-
-            sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
-            playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
-
-            ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
-
-            this.entityData.set(CANNON_RECOIL_TIME, 40);
-            this.entityData.set(YAW, getTurretYRot());
-
-            this.entityData.set(HEAT, this.entityData.get(HEAT) + data.get(GunProp.HEAT_PER_SHOOT).intValue());
-            this.entityData.set(FIRE_ANIM, 3);
-        } else if (getWeaponIndex(0) == 1) {
-            if (this.cannotFireCoax) return;
-            if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
-                var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
-
-                projectile.bypassArmorRate(0.2f);
-                projectile.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
-                projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
-                        0.25f);
-                this.level().addFreshEntity(projectile);
-
-                if (!hasCreativeAmmo) {
-                    ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                        if (stack.is(ModItems.AMMO_BOX.get())) {
-                            return Ammo.RIFLE.get(stack) > 0;
-                        }
-                        return false;
-                    }).findFirst().orElse(ItemStack.EMPTY);
-
-                    if (!ammoBox.isEmpty()) {
-                        Ammo.RIFLE.add(ammoBox, -1);
-                    } else {
-                        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                    }
-                }
-            }
-
-            this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
-            this.entityData.set(FIRE_ANIM, 2);
-            playShootSound3p(living, 0, 3, 6, 12, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
+        // TODO 测试用提示
+        if (living instanceof ServerPlayer player) {
+            player.displayClientMessage(Component.literal(data.heat.get() + ""), true);
         }
+
+        var currentMap = entityData.get(GUN_DATA_MAP);
+        currentMap.put(seatIndex, data);
+        entityData.set(GUN_DATA_MAP, currentMap);
+
+        sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
+        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
+
+        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
+
+        this.entityData.set(CANNON_RECOIL_TIME, 40);
+        this.entityData.set(YAW, getTurretYRot());
+
+        this.entityData.set(HEAT, this.entityData.get(HEAT) + data.get(GunProp.HEAT_PER_SHOOT).intValue());
+        this.entityData.set(FIRE_ANIM, 3);
+//        } else if (getWeaponIndex(0) == 1) {
+//            if (this.cannotFireCoax) return;
+//            if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
+//                var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
+//
+//                projectile.bypassArmorRate(0.2f);
+//                projectile.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+//                projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
+//                        0.25f);
+//                this.level().addFreshEntity(projectile);
+//
+//                if (!hasCreativeAmmo) {
+//                    ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+//                        if (stack.is(ModItems.AMMO_BOX.get())) {
+//                            return Ammo.RIFLE.get(stack) > 0;
+//                        }
+//                        return false;
+//                    }).findFirst().orElse(ItemStack.EMPTY);
+//
+//                    if (!ammoBox.isEmpty()) {
+//                        Ammo.RIFLE.add(ammoBox, -1);
+//                    } else {
+//                        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                    }
+//                }
+//            }
+//
+//            this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
+//            this.entityData.set(FIRE_ANIM, 2);
+//            playShootSound3p(living, 0, 3, 6, 12, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
+//        }
     }
 
     @Override
@@ -490,15 +557,10 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public int mainGunRpm(LivingEntity living) {
-        if (getWeaponIndex(0) == 0) {
-            var data = VehicleGun.fromVehicle(this, 0);
-            if (data == null) return 0;
+        var data = getGunData(getSeatIndex(living));
+        if (data == null) return 0;
 
-            return data.get(GunProp.RPM);
-        } else if (getWeaponIndex(0) == 1) {
-            return 600;
-        }
-        return 300;
+        return data.get(GunProp.RPM);
     }
 
     @Override
