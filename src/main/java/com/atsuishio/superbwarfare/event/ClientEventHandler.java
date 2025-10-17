@@ -378,7 +378,7 @@ public class ClientEventHandler {
                                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
                         seekingPos = result.getLocation();
 
-                        if (seekingTime > lockTime && !lockOn) {
+                        if (seekingTime > lockTime + 2 && !lockOn) {
                             lockOn = true;
                         }
 
@@ -412,7 +412,7 @@ public class ClientEventHandler {
                         }
 
                     } else {
-                        if (seekingTime > lockTime && !lockOn) {
+                        if (seekingTime > lockTime + 2 && !lockOn) {
                             lockingEntity = seekingEntity;
                             lockOn = true;
                         }
@@ -451,7 +451,7 @@ public class ClientEventHandler {
                         }
                     }
                 } else if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_ZOOM)) {
-                    if (seekingTime > lockTime && !lockOn) {
+                    if (seekingTime > lockTime + 2 && !lockOn) {
                         lockingEntity = seekingEntity;
                         lockOn = true;
                     }
