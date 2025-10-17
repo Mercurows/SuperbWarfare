@@ -56,8 +56,6 @@ public class KillMessageOverlay implements IGuiOverlay {
     private static final ResourceLocation LASER = Mod.loc("textures/screens/damage_types/laser.png");
     private static final ResourceLocation VEHICLE = Mod.loc("textures/screens/damage_types/vehicle_strike.png");
 
-    private static final ResourceLocation WORLD_PEACE_STAFF = Mod.loc("textures/gun_icon/compat/world_peace_staff.png");
-
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         if (!KillMessageConfig.SHOW_KILL_MESSAGE.get()) {
@@ -435,11 +433,6 @@ public class KillMessageOverlay implements IGuiOverlay {
                 return gunItem.getGunIcon(record.stack);
             } else if (TACZGunEventHandler.compatCondition()) {
                 return TACZGunEventHandler.getTaczCompatIcon(record.stack);
-            }
-
-            // TODO 如果是特殊武器击杀，则渲染对应图标
-            if (record.stack.getItem().getDescriptionId().equals("item.dreamaticvoyage.world_peace_staff")) {
-                return WORLD_PEACE_STAFF;
             }
         }
         return null;

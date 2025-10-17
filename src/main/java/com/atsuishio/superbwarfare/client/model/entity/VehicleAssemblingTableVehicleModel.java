@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleE
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 
-// TODO 发光贴图？
 public class VehicleAssemblingTableVehicleModel extends GeoModel<VehicleAssemblingTableVehicleEntity> {
 
     @Override
