@@ -13,9 +13,7 @@
   "SeekTime": 20,
   "SeekAngle": 10,
   "SeekRange": 384,
-  "SeekTypes": [
-    "HoldFire"
-  ],
+  "SeekType": "HoldFire",
   "AvailableFireModes": [
     "Dir",
     "Top"

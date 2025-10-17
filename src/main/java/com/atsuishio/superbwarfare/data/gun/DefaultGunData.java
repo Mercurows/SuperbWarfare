@@ -90,8 +90,8 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("ReloadTypes")
     public Set<ReloadType> reloadTypes = Set.of(ReloadType.MAGAZINE);
 
-    @SerializedName("SeekTypes")
-    public Set<SeekType> seekTypes = Set.of(SeekType.NONE);
+    @SerializedName("SeekType")
+    public SeekType seekType = SeekType.NONE;
 
     @SerializedName("AutoReload")
     public boolean autoReload = false;

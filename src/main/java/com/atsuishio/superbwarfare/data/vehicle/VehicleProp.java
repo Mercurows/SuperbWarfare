@@ -20,7 +20,7 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
             .withLimiter(v -> Math.max(0, v));
 
     public static final VehicleProp<List<SeatInfo>> SEATS = new VehicleProp<List<SeatInfo>>("Seats")
-            .withLimiter(v -> v == null ? List.of() : v);
+            .whenNull(List.of());
 
     public static final VehicleProp<Float> UP_STEP = new VehicleProp<>("UpStep");
     public static final VehicleProp<Boolean> ALLOW_FREE_CAM = new VehicleProp<>("AllowFreeCam");

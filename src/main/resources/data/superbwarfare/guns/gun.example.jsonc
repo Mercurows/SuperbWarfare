@@ -70,9 +70,7 @@
   "ReloadTypes": [
     "Magazine"
   ],
-  "SeekTypes": [
-    "None"
-  ],
+  "SeekType": "None",
   // Should guns start reloading automatically when needed
   "AutoReload": false,
   // Shoots per click when fire mode is "Burst"
