@@ -106,8 +106,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -438,7 +438,40 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     // container start
 
     private LazyOptional<?> itemHandler = LazyOptional.of(() -> new InvWrapper(this));
-    protected final NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+    protected NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+
+    protected void resizeItems() {
+        int newSize = this.getContainerSize();
+        int currentSize = this.items.size();
+
+        if (newSize == currentSize) {
+            return;
+        }
+
+        if (newSize > currentSize) {
+            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
+            for (int i = 0; i < currentSize; i++) {
+                newItems.set(i, this.items.get(i));
+            }
+            this.items = newItems;
+        } else {
+            // TODO 解决超出容量的物品没有正确保存/掉落的问题
+            for (int i = newSize; i < currentSize; i++) {
+                ItemStack excessStack = this.items.get(i);
+                if (!excessStack.isEmpty()) {
+                    this.spawnAtLocation(excessStack.copy());
+                }
+            }
+
+            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
+            for (int i = 0; i < newSize; i++) {
+                newItems.set(i, this.items.get(i));
+            }
+            this.items = newItems;
+        }
+
+        this.setChanged();
+    }
 
     /**
      * 计算当前载具内指定物品的数量
@@ -1091,6 +1124,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             energyStorage.deserializeNBT(energyNBT);
         }
 
+        this.resizeItems();
         ContainerHelper.loadAllItems(compound, this.getItemStacks());
     }
 
@@ -1129,6 +1163,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             compound.put("Energy", energyStorage.serializeNBT());
         }
 
+        this.resizeItems();
         ContainerHelper.saveAllItems(compound, this.getItemStacks());
     }
 
