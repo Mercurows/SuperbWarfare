@@ -146,13 +146,19 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
             scopeScale = 1;
         }
 
-        // TODO 根据屏幕大小动态调节环形大小
-
         lerpHoldArtilleryIndicator = Mth.lerp(partialTick, lerpHoldArtilleryIndicator, 0.05f * ClientEventHandler.holdArtilleryIndicator);
 
         if (lerpHoldArtilleryIndicator > 0) {
             float alpha = Mth.clamp(lerpHoldArtilleryIndicator * 20, 0, 5) * 0.2f;
-            RenderHelper.renderCircularRing(guiGraphics, screenWidth / 2f, screenHeight / 2f, 21, 18, new float[]{0f, 0f, 0f, 0.4f * alpha}, new float[]{1f, 1f, 1f, 0.8f * alpha}, lerpHoldArtilleryIndicator);
+            RenderHelper.renderCircularRing(
+                    guiGraphics,
+                    screenWidth / 2f, screenHeight / 2f,
+                    0.08f, 0.06f,
+                    new float[]{0f, 0f, 0f, 0.4f * alpha},
+                    new float[]{1f, 1f, 1f, 0.8f * alpha},
+                    lerpHoldArtilleryIndicator,
+                    true
+            );
         }
     }
 }
