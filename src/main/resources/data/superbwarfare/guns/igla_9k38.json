@@ -9,6 +9,12 @@
   "ExplosionDamage": 100,
   "ExplosionRadius": 6,
   "Headshot": 0,
+  "SeekTime": 30,
+  "SeekAngle": 20,
+  "SeekRange": 384,
+  "SeekTypes": [
+    "HoldZoom"
+  ],
   "AmmoType": "superbwarfare:igla_9k38_missile",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",

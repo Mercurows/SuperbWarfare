@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -55,7 +56,7 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
         this.noCulling = true;
     }
 
-    public IglaMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+    public IglaMissileEntity(Entity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.IGLA_MISSILE.get(), entity, level);
         this.noCulling = true;
         this.damage = damage;
@@ -209,8 +210,8 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
 
                     if (getOwner() instanceof Player player && player.getMainHandItem().is(ModItems.IGLA_9K38.get()) && !lost) {
                         var handItem = player.getMainHandItem();
-                        var tag = NBTTool.getTag(handItem);
-                        lost = !tag.getBoolean("Seeking");
+                        var data = GunData.from(handItem);
+                        lost = !data.zooming.get();
                     }
 
                     if (!lostTarget && !lost) {

@@ -6,29 +6,23 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.IglaMissileEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -41,8 +35,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -84,68 +76,6 @@ public class IglaItem extends GunGeoItem {
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-        var data = GunData.from(stack);
-        var tag = data.tag;
-
-        if (entity instanceof Player player && selected) {
-            if (tag.getBoolean("Seeking")) {
-                List<Entity> decoy = SeekTool.seekLivingEntities(player, 512, 20);
-                for (var e : decoy) {
-                    if (e.getType().is(ModTags.EntityTypes.DECOY)) {
-                        tag.putString("TargetEntity", e.getStringUUID());
-                        tag.putDouble("TargetPosX", e.position().x);
-                        tag.putDouble("TargetPosY", e.position().y);
-                        tag.putDouble("TargetPosZ", e.position().z);
-                    }
-                }
-
-                Entity targetEntity = EntityFindUtil.findEntity(player.level(), tag.getString("TargetEntity"));
-
-                if (targetEntity != null && VectorTool.calculateAngle(player.getViewVector(1), player.getEyePosition().vectorTo(targetEntity.getBoundingBox().getCenter())) < 20) {
-                    tag.putInt("SeekTime", tag.getInt("SeekTime") + 1);
-                    if (tag.getInt("SeekTime") > 0 && (!targetEntity.getPassengers().isEmpty() || targetEntity instanceof VehicleEntity) && targetEntity.tickCount % 3 == 0) {
-                        targetEntity.level().playSound(null, targetEntity.getOnPos(), targetEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKING_WARNING.get(), SoundSource.PLAYERS, 1, 1f);
-                    }
-                } else {
-                    tag.putInt("SeekTime", 0);
-                }
-
-                if (tag.getInt("SeekTime") == 1 && player instanceof ServerPlayer serverPlayer) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.IGLA_LOCK.get(), 1, 1);
-                }
-
-                if (targetEntity != null && tag.getInt("SeekTime") > 30) {
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.IGLA_LOCKON.get(), 1, 1);
-                    }
-                    if ((!targetEntity.getPassengers().isEmpty() || targetEntity instanceof VehicleEntity) && targetEntity.tickCount % 2 == 0) {
-                        targetEntity.level().playSound(null, targetEntity.getOnPos(), targetEntity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.LOCKED_WARNING.get(), SoundSource.PLAYERS, 1, 0.95f);
-                    }
-                }
-
-                Entity seekingEntity = SeekTool.seekEntity(player, 512, 20);
-
-                if (seekingEntity != null && seekingEntity.getType().is(ModTags.EntityTypes.DECOY)) {
-                    tag.putInt("SeekTime", 0);
-                }
-            }
-
-            if (data.reloading()) {
-                tag.putBoolean("Seeking", false);
-                tag.putInt("SeekTime", 0);
-                tag.putString("TargetEntity", "none");
-            }
-        } else {
-            tag.putInt("SeekTime", 0);
-        }
-
-        data.save();
-    }
-
-    @Override
     public boolean useSpecialFireProcedure(GunData data) {
         return true;
     }
@@ -155,82 +85,65 @@ public class IglaItem extends GunGeoItem {
         return Mod.loc("textures/gun_icon/igla_9k38_icon.png");
     }
 
-    private void fire(Player player) {
-        Level level = player.level();
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
-        var data = GunData.from(stack);
-        CompoundTag tag = data.tag();
+    @Override
+    public void shoot(@NotNull ShootParameters parameters) {
+        var data = parameters.data();
+        var shooter = parameters.shooter();
+        var targetUUID = parameters.targetEntityUUID();
+        var targetPos = parameters.targetPos();
+        var zoom = parameters.zoom();
 
-        if (tag.getInt("SeekTime") < 30) return;
+        if (shooter == null) return;
+        if (!zoom || !data.hasEnoughAmmoToShoot(shooter)) return;
 
-        float yRot = player.getYRot() + 360;
+        Level level = shooter.level();
+
+        float yRot = shooter.getYRot() + 360;
         yRot = (yRot + 90) % 360;
 
         var firePos = new Vector3d(0, -0.2, 0.15);
-        firePos.rotateZ(-player.getXRot() * Mth.DEG_TO_RAD);
+        firePos.rotateZ(-shooter.getXRot() * Mth.DEG_TO_RAD);
         firePos.rotateY(-yRot * Mth.DEG_TO_RAD);
 
-        if (player.level() instanceof ServerLevel serverLevel) {
-            IglaMissileEntity missileEntity = new IglaMissileEntity(player, level,
+        if (shooter.level() instanceof ServerLevel serverLevel) {
+            Entity targetEntity = EntityFindUtil.findEntity(serverLevel, String.valueOf(targetUUID));
+
+            IglaMissileEntity iglaMissileEntity = new IglaMissileEntity(shooter, level,
                     data.get(GunProp.DAMAGE).floatValue(),
                     data.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
-                    data.get(GunProp.EXPLOSION_RADIUS).floatValue()
-            );
+                    data.get(GunProp.EXPLOSION_RADIUS).floatValue());
 
             for (Perk.Type type : Perk.Type.values()) {
                 var instance = data.perk.getInstance(type);
                 if (instance != null) {
-                    instance.perk().modifyProjectile(data, instance, missileEntity);
+                    instance.perk().modifyProjectile(data, instance, iglaMissileEntity);
                 }
             }
 
-            missileEntity.setPos(player.getX() + firePos.x, player.getEyeY() + firePos.y, player.getZ() + firePos.z);
-            missileEntity.shoot(player.getLookAngle().x, player.getLookAngle().y + 0.12, player.getLookAngle().z, 3f, 1);
-            missileEntity.setTargetUuid(tag.getString("TargetEntity"));
+            iglaMissileEntity.setPos(shooter.getX() + firePos.x, shooter.getEyeY() + firePos.y, shooter.getZ() + firePos.z);
+            iglaMissileEntity.shoot(shooter.getLookAngle().x, shooter.getLookAngle().y + 0.3, shooter.getLookAngle().z, 3f, 1);
+            if (targetEntity != null) {
+                iglaMissileEntity.setTargetUuid(targetEntity.getStringUUID());
+            }
 
-            level.addFreshEntity(missileEntity);
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, player.getX() + 1.8 * player.getLookAngle().x,
-                    player.getY() + player.getBbHeight() - 0.1 + 1.8 * player.getLookAngle().y,
-                    player.getZ() + 1.8 * player.getLookAngle().z,
+            level.addFreshEntity(iglaMissileEntity);
+
+            ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,
+                    shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,
+                    shooter.getZ() + 1.8 * shooter.getLookAngle().z,
                     30, 0.4, 0.4, 0.4, 0.005, true);
 
-            var serverPlayer = (ServerPlayer) player;
 
-            SoundTool.playLocalSound(serverPlayer, ModSounds.IGLA_FIRE_1P.get(), 2, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.IGLA_FIRE_3P.get(), SoundSource.PLAYERS, 4, 1);
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.IGLA_FAR.get(), SoundSource.PLAYERS, 10, 1);
+            if (shooter instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_FIRE_1P.get(), 2, 1);
+                PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
+            }
 
-            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
+            SoundTool.playDistantSound(serverLevel, ModSounds.JAVELIN_FIRE_3P.get(), shooter.position(), 4, 1, shooter);
+            SoundTool.playDistantSound(serverLevel, ModSounds.JAVELIN_FAR.get(), shooter.position(), 10, 1, shooter);
+
         }
 
         data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
-    }
-
-    @Override
-    public void shoot(@NotNull ShootParameters parameters) {
-    }
-
-    @Override
-    public void onFireKeyPress(GunData data, Player player, boolean zoom) {
-        super.onFireKeyPress(data, player, zoom);
-        if (!zoom || !data.hasEnoughAmmoToShoot(player)) return;
-        fire(player);
-    }
-
-    @Override
-    public void onChangeSlot(ItemStack stack, Player player) {
-        super.onChangeSlot(stack, player);
-        GunData data = GunData.from(stack);
-        var tag = data.tag();
-        tag.remove("Seeking");
-        tag.remove("SeekTime");
-        tag.putString("TargetEntity", "none");
-        data.save();
-
-        if (player instanceof ServerPlayer serverPlayer) {
-            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("igla_9k38_lock"), SoundSource.PLAYERS);
-            serverPlayer.connection.send(clientboundstopsoundpacket);
-        }
     }
 }

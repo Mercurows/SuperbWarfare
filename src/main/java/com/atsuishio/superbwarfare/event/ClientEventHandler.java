@@ -353,7 +353,7 @@ public class ClientEventHandler {
         handlePlayerSprint();
         handleLungeAttack(player, stack);
         handleGunMelee(player, stack);
-        iglaSeeking(stack);
+        weaponZooming(stack);
         lockWeaponSeeking(player, stack);
     }
 
@@ -367,9 +367,11 @@ public class ClientEventHandler {
             float seekAngle = data.get(GunProp.SEEK_ANGLE).floatValue() * fovAdjust;
             double range = data.get(GunProp.SEEK_RANGE);
 
-            if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_FIRE)) {
-                if (zoomTime > 0.7) {
-                    naerestEntity = SeekTool.seekLivingEntity(player, range, seekAngle);
+            if (!zoom || !data.hasEnoughAmmoToShoot(player)) return;
+
+            if (zoomTime > 0.7) {
+                naerestEntity = SeekTool.seekLivingEntity(player, range, seekAngle);
+                if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_FIRE)) {
                     // 锁定方块
                     if (naerestEntity == null || player.isShiftKeyDown()) {
                         BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
@@ -448,22 +450,63 @@ public class ClientEventHandler {
                             seekingEntity = null;
                         }
                     }
-                } else {
-                    seekingTime = 0;
-                    lockOn = false;
-                    lockingEntity = null;
-                    seekingEntity = null;
-                    lockingPos = null;
-                }
-            } else if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_ZOOM)) {
+                } else if (data.get(GunProp.SEEK_TYPES).contains(SeekType.HOLD_ZOOM)) {
+                    if (seekingTime > lockTime && !lockOn) {
+                        lockingEntity = seekingEntity;
+                        lockOn = true;
+                    }
 
+                    //锁定失败
+                    if (seekingEntity != null && (VectorTool.calculateAngle(player.getLookAngle(), player.getEyePosition().vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(seekingEntity, 1))) > seekAngle
+                            || !SeekTool.NOT_IN_SMOKE.test(seekingEntity)
+                            || !noClip(player, seekingEntity))) {
+                        seekingTime = 0;
+                        lockingEntity = null;
+                        seekingEntity = null;
+                        lockOn = false;
+                    }
+
+                    if (zoomTime > 0.7) {
+                        if (seekingEntity == null) {
+                            seekingEntity = naerestEntity;
+                        }
+                        if (naerestEntity != null) {
+                            seekingTime++;
+                            if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOn) {
+                                PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntity.getUUID()));
+                            }
+                        }
+                    } else {
+                        seekingTime = 0;
+                        lockingEntity = null;
+                        seekingEntity = null;
+                    }
+
+                    if (lockOn && holdFire) {
+                        if (lockingEntity != null) {
+                            PacketDistributor.sendToServer(new SeekingWeaponShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
+                        }
+                        lockOn = false;
+                        seekingTime = 0;
+                        lockingEntity = null;
+                        seekingEntity = null;
+                        holdFire = false;
+                    }
+                }
+            } else {
+                seekingTime = 0;
+                lockOn = false;
+                lockingEntity = null;
+                seekingEntity = null;
+                lockingPos = null;
             }
 
-            if (seekingTime == 1 && holdFire) {
+
+            if (seekingTime == 1) {
                 playLockSound(stack, player);
             }
 
-            if (lockOn && holdFire) {
+            if (lockOn) {
                 playLockOnSound(stack, player);
                 if (guideType == 0 && lockingEntity != null && (!lockingEntity.getPassengers().isEmpty() || lockingEntity instanceof VehicleEntity) && player.tickCount % 2 == 0) {
                     PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntity.getUUID()));
@@ -504,9 +547,9 @@ public class ClientEventHandler {
                 .getType() != HitResult.Type.BLOCK;
     }
 
-    public static void iglaSeeking(ItemStack stack) {
-        if (stack.getItem() == ModItems.IGLA_9K38.get()) {
-            PacketDistributor.sendToServer(new IglaSeekMessage(zoomTime >= 1 ? 0 : 1));
+    public static void weaponZooming(ItemStack stack) {
+        if (stack.getItem() instanceof GunItem) {
+            PacketDistributor.sendToServer(new WeaponZoomingMessage(zoomTime >= 0.7));
         }
     }
 
