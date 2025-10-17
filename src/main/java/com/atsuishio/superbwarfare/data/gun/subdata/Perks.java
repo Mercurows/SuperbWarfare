@@ -41,7 +41,12 @@ public final class Perks {
     }
 
     public CompoundTag getTag(Perk.Type type) {
+        return perks.getCompound(type.getName());
+    }
+
+    public CompoundTag getOrCreateTag(Perk perk) {
         CompoundTag typeTag;
+        var type = perk.type;
         if (!perks.contains(type.getName())) {
             typeTag = new CompoundTag();
             perks.put(type.getName(), typeTag);
@@ -50,8 +55,8 @@ public final class Perks {
     }
 
     public void set(Perk perk, short level) {
-        getTag(perk).putString("Name", perk.name);
-        getTag(perk).putShort("Level", level);
+        getOrCreateTag(perk).putString("Name", perk.name);
+        getOrCreateTag(perk).putShort("Level", level);
     }
 
     public short getLevel(PerkItem<?> item) {
