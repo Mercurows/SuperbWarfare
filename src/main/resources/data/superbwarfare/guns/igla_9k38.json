@@ -9,6 +9,7 @@
   "ExplosionDamage": 100,
   "ExplosionRadius": 6,
   "Headshot": 0,
+  "ZoomReload": false,
   "SeekTime": 30,
   "SeekAngle": 20,
   "SeekRange": 384,

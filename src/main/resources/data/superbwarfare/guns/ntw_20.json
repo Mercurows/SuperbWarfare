@@ -7,6 +7,7 @@
   "RecoilY": 0.038,
   "Damage": 140,
   "Headshot": 3,
+  "ZoomReload": false,
   "Velocity": 36,
   "Magazine": 3,
   "ZoomSpreadRate": 0.005,
