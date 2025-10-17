@@ -72,6 +72,7 @@ public class ClientRenderHandler {
         event.registerBelowAll(AircraftOverlay.ID, new AircraftOverlay());
         event.registerBelowAll(MortarInfoOverlay.ID, new MortarInfoOverlay());
         event.registerBelowAll(Type63InfoOverlay.ID, new Type63InfoOverlay());
+        event.registerBelowAll(CircularProgressHUD.ID, new CircularProgressHUD());
     }
 
     @SubscribeEvent
