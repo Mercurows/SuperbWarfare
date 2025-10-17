@@ -1244,6 +1244,9 @@ public class ClientEventHandler {
             if (rightHandItem.getItem() instanceof GunItem) {
                 event.setCanceled(true);
             }
+            if (rightHandItem.is(ModItems.LUNGE_MINE.get())) {
+                event.setCanceled(true);
+            }
             if (player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                 event.setCanceled(true);
             }
