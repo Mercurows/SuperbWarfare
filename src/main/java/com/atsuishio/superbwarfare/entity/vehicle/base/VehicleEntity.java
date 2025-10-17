@@ -433,7 +433,40 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // container start
 
-    protected final NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+    protected NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+
+    protected void resizeItems() {
+        int newSize = this.getContainerSize();
+        int currentSize = this.items.size();
+
+        if (newSize == currentSize) {
+            return;
+        }
+
+        if (newSize > currentSize) {
+            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
+            for (int i = 0; i < currentSize; i++) {
+                newItems.set(i, this.items.get(i));
+            }
+            this.items = newItems;
+        } else {
+            // TODO 解决超出容量的物品没有正确保存/掉落的问题
+            for (int i = newSize; i < currentSize; i++) {
+                ItemStack excessStack = this.items.get(i);
+                if (!excessStack.isEmpty()) {
+                    this.spawnAtLocation(excessStack.copy());
+                }
+            }
+
+            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
+            for (int i = 0; i < newSize; i++) {
+                newItems.set(i, this.items.get(i));
+            }
+            this.items = newItems;
+        }
+
+        this.setChanged();
+    }
 
     /**
      * 计算当前载具内指定物品的数量
@@ -1081,6 +1114,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             ((SyncedEntityEnergyStorage) energyStorage).deserializeNBT(level().registryAccess(), energyNBT);
         }
 
+        this.resizeItems();
         ContainerHelper.loadAllItems(compound, this.getItemStacks(), this.level().registryAccess());
     }
 
@@ -1119,6 +1153,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             compound.put("Energy", ((SyncedEntityEnergyStorage) energyStorage).serializeNBT(level().registryAccess()));
         }
 
+        this.resizeItems();
         ContainerHelper.saveAllItems(compound, this.getItemStacks(), this.level().registryAccess());
     }
 
