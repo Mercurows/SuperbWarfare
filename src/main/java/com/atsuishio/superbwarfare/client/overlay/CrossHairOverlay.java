@@ -140,7 +140,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
                 health = vehicle.getHealth() / vehicle.getMaxHealth();
             }
 
-            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
 
             if (health > 0) {
                 RenderHelper.renderCircularRing(guiGraphics, screenWidth / 2f + moveX, screenHeight / 2f + moveY, 7, 5, new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f}, health);
