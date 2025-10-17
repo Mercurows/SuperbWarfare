@@ -127,7 +127,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
             }
         }
 
-        if (stack.is(ModItems.REPAIR_TOOL.get())) {
+        if (stack.is(ModItems.REPAIR_TOOL.get()) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
             int range = data.get(GunProp.RANGE);
 
             Entity lookingEntity = TraceTool.findLookingEntity(player, range);
