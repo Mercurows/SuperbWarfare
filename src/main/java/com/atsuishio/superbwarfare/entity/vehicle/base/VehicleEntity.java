@@ -667,7 +667,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     protected void initSeatData(int targetSize) {
-        padList(orderedPassengers, targetSize, null, Entity::stopRiding);
+        padList(orderedPassengers, targetSize, null, null);
     }
 
     protected <T> void padList(@NotNull List<T> list, int targetSize, T defaultValue, @Nullable Consumer<T> onRemove) {

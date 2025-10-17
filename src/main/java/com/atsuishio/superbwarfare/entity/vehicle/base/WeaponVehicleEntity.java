@@ -87,7 +87,7 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
         if (!(this instanceof VehicleEntity vehicle)) return List.of();
         if (index < 0 || index >= vehicle.getMaxPassengers()) return List.of();
 
-        if (vehicle.availableWeapons[index] != null) {
+        if (vehicle.availableWeapons != null && vehicle.availableWeapons[index] != null) {
             return List.of(vehicle.availableWeapons[index]);
         }
         return List.of();

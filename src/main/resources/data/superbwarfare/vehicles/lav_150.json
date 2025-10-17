@@ -8,11 +8,23 @@
       "WeaponData": {
         "DefaultFireMode": "Auto",
         "AvailableFireModes": "Auto",
-        "AmmoType": "Infinity",
+        "AmmoType": [
+          "Infinity",
+          {
+            "Ammo": "Infinity",
+            "Projectile": "superbwarfare:rpg_rocket_tbg",
+            "Override": {
+              "RPM": 450
+            }
+          }
+        ],
         "RPM": 1200,
         "Velocity": 10,
         "Damage": 100,
-        "BypassesArmor": 0.5
+        "ExplosionDamage": 100,
+        "ExplosionRadius": 5,
+        "BypassesArmor": 0.5,
+        "HeatPerShoot": 0.5
       }
     },
     {
