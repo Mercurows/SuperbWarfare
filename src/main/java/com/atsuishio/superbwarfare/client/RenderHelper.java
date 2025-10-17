@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -341,7 +342,20 @@ public class RenderHelper {
         }
     }
 
-    public static void renderCircularRing(GuiGraphics guiGraphics, float centerX, float centerY, int outerRadius, int innerRadius, float[] backgroundColor, float[] progressColor, float progress) {
+    /**
+     * 渲染一个圆环
+     *
+     * @param guiGraphics     gui
+     * @param centerX         渲染中心X坐标
+     * @param centerY         渲染中心Y坐标
+     * @param outerRadius     外环半径
+     * @param innerRadius     内环半径
+     * @param backgroundColor 背景颜色
+     * @param progressColor   进度颜色
+     * @param progress        进度
+     * @param useRate         是否使用占据屏幕百分比形式的半径
+     */
+    public static void renderCircularRing(GuiGraphics guiGraphics, float centerX, float centerY, float outerRadius, float innerRadius, float[] backgroundColor, float[] progressColor, float progress, boolean useRate) {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
 
@@ -351,21 +365,25 @@ public class RenderHelper {
 
         poseStack.rotateAround(Axis.ZP.rotationDegrees(-90), centerX, centerY, 0);
 
+        var window = Minecraft.getInstance().getWindow();
+        float scale = useRate ? Math.min(window.getGuiScaledWidth(), window.getGuiScaledHeight()) : 1;
+
         // 绘制背景圆环
-        drawCircularRing(poseStack, centerX, centerY, outerRadius, innerRadius, backgroundColor, 1.0f);
+        drawCircularRing(poseStack, centerX, centerY, outerRadius * scale, innerRadius * scale, backgroundColor, 1.0f);
 
         // 绘制进度圆环
-        drawCircularRing(poseStack, centerX, centerY, outerRadius, innerRadius, progressColor, progress);
+        drawCircularRing(poseStack, centerX, centerY, outerRadius * scale, innerRadius * scale, progressColor, progress);
 
         poseStack.popPose();
 
         RenderSystem.disableBlend();
-
     }
 
-    public static void drawCircularRing(PoseStack poseStack, float centerX, float centerY, int outerRadius, int innerRadius,
+    public static void drawCircularRing(PoseStack poseStack, float centerX, float centerY, float outerRadius, float innerRadius,
                                         float[] color, float progressAngle) {
-        Tesselator tessellator = Tesselator.getInstance();
+        poseStack.pushPose();
+
+        Tesselator tesselator = Tesselator.getInstance();
 
         Matrix4f matrix = poseStack.last().pose();
         float angleStep = (float) (2 * Math.PI / 180);
@@ -373,7 +391,7 @@ public class RenderHelper {
 
         RenderSystem.setShaderColor(color[0], color[1], color[2], color[3]);
 
-        BufferBuilder buffer = tessellator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION);
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION);
 
         for (int i = 0; i <= 180 * progressAngle; i++) {
             float angle = i * angleStep;
@@ -397,9 +415,11 @@ public class RenderHelper {
             if (angle >= maxAngle) break;
         }
 
-        tessellator.clear();
+        tesselator.clear();
 
         // 重置颜色
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        poseStack.popPose();
     }
 }

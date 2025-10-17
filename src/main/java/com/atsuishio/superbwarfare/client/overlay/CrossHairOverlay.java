@@ -70,8 +70,8 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
 
         Player player = Minecraft.getInstance().player;
         if (player == null) {
@@ -110,19 +110,19 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         scopeScale = (float) Mth.lerp(0.5F * deltaFrame, scopeScale, 1 + 1.5f * spread);
-        float minLength = (float) Math.min(w, h);
-        float scaledMinLength = Math.min((float) w / minLength, (float) h / minLength) * 0.012f * scopeScale;
+        float minLength = (float) Math.min(screenWidth, screenHeight);
+        float scaledMinLength = Math.min((float) screenWidth / minLength, (float) screenHeight / minLength) * 0.012f * scopeScale;
         float finLength = Mth.floor(minLength * scaledMinLength);
-        float finPosX = ((w - finLength) / 2) + moveX;
-        float finPosY = ((h - finLength) / 2) + moveY;
+        float finPosX = ((screenWidth - finLength) / 2) + moveX;
+        float finPosY = ((screenHeight - finLength) / 2) + moveY;
 
         if (shouldRenderCrossHair(player) || (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && (stack.is(ModItems.MINIGUN.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()) || stack.is(ModItems.M_2_HB.get()))) || (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0))) {
-            preciseBlit(guiGraphics, POINT, w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
             if (!player.isSprinting() || ClientEventHandler.cantSprint > 0) {
                 if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
                     shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
                 } else {
-                    normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
+                    normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
                 }
             }
         }
@@ -143,22 +143,23 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
             preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
 
             if (health > 0) {
-                RenderHelper.renderCircularRing(guiGraphics, screenWidth / 2f + moveX, screenHeight / 2f + moveY, 7, 5, new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f}, health);
+                RenderHelper.renderCircularRing(guiGraphics,
+                        screenWidth / 2f + moveX, screenHeight / 2f + moveY, 7, 5, new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f}, health, false);
             }
         }
 
         if (stack.is(ModItems.BOCEK.get())) {
             if (ClientEventHandler.zoomPos < 0.7) {
-                preciseBlit(guiGraphics, POINT, w / 2f - 7.5f + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+                preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
                 if (!player.isSprinting() || ClientEventHandler.cantSprint > 0 || ClientEventHandler.bowPullPos > 0) {
                     if (ClientEventHandler.zoomTime < 0.1) {
                         if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-                            normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
+                            normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
                         } else {
                             shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
                         }
                     } else {
-                        normalCrossHair(guiGraphics, w, h, spread, moveX, moveY);
+                        normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
                     }
                 }
             }
@@ -166,7 +167,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
 
         // 在开启伤害指示器时才进行渲染
         if (DisplayConfig.KILL_INDICATION.get() && !(player.getVehicle() instanceof Ah6Entity ah6Entity && ah6Entity.getFirstPassenger() == player)) {
-            renderKillIndicator(guiGraphics, w, h, moveX, moveY);
+            renderKillIndicator(guiGraphics, screenWidth, screenHeight, moveX, moveY);
         }
 
         RenderSystem.depthMask(true);
