@@ -34,26 +34,32 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
-    public float damage = 1f;
-    public float explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
-    public float explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
-    private int fuse = 100;
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public HandGrenadeEntity(EntityType<? extends HandGrenadeEntity> type, Level world) {
-        super(type, world);
+    private int fuse = 100;
+
+    public HandGrenadeEntity(EntityType<? extends HandGrenadeEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
+        this.damage = 1;
+        this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
     }
 
-    public HandGrenadeEntity(EntityType<? extends HandGrenadeEntity> type, double x, double y, double z, Level world) {
-        super(type, x, y, z, world);
+    public HandGrenadeEntity(EntityType<? extends HandGrenadeEntity> type, double x, double y, double z, Level level) {
+        super(type, x, y, z, level);
         this.noCulling = true;
+        this.damage = 1;
+        this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
     }
 
     public HandGrenadeEntity(LivingEntity entity, Level level, int fuse) {
         super(ModEntities.HAND_GRENADE.get(), entity, level);
         this.noCulling = true;
+        this.damage = 1;
+        this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
         this.fuse = fuse;
     }
 

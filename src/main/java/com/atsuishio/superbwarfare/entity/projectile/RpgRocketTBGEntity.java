@@ -42,15 +42,14 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public float damage = 250f;
-    public float explosionDamage = 200f;
-    public float explosionRadius = 10;
-    public float gravity = 0.03f;
-
-    public RpgRocketTBGEntity(EntityType<? extends RpgRocketTBGEntity> type, Level world) {
-        super(type, world);
+    public RpgRocketTBGEntity(EntityType<? extends RpgRocketTBGEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
         this.durability = 20;
+        this.damage = 250f;
+        this.explosionDamage = 200f;
+        this.explosionRadius = 10;
+        this.gravity = 0.03f;
     }
 
     public RpgRocketTBGEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float explosionDamage, float explosionRadius, float gravity) {
@@ -69,7 +68,7 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.RPG_ROCKET_TBG_TBG.get();
+        return ModItems.RPG_ROCKET_TBG.get();
     }
 
     @Override
@@ -199,6 +198,4 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     public boolean forceLoadChunk() {
         return true;
     }
-
-
 }

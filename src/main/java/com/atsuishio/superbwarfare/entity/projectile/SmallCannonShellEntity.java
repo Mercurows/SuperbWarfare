@@ -41,16 +41,18 @@ import java.util.Comparator;
 import java.util.Optional;
 
 public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
-    public float damage = 40.0f;
-    public float explosionDamage = 80f;
-    public float explosionRadius = 5f;
-    private boolean aa;
-    public float gravity = 0.03f;
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public SmallCannonShellEntity(EntityType<? extends SmallCannonShellEntity> type, Level world) {
-        super(type, world);
+    private boolean aa;
+
+    public SmallCannonShellEntity(EntityType<? extends SmallCannonShellEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
+        this.damage = 40f;
+        this.explosionDamage = 80f;
+        this.explosionRadius = 5f;
+        this.gravity = 0.03f;
     }
 
     public SmallCannonShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, boolean aa) {
@@ -59,6 +61,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
+        this.gravity = 0.03f;
         this.aa = aa;
         if (aa) {
             crushProjectile(getDeltaMovement());

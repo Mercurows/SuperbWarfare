@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.tools.RangeTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -29,31 +28,37 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class PtkmProjectileEntity extends FastThrowableProjectile implements ExplosiveProjectile, GeoEntity, MineEntity {
-    public float damage = 500;
-    public float explosionDamage = 80;
-    public float explosionRadius = 7;
-    private int shootTime = 3;
-    private Entity target = null;
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public PtkmProjectileEntity(EntityType<? extends PtkmProjectileEntity> type, Level world) {
-        super(type, world);
+    private int shootTime = 3;
+    @Nullable
+    private Entity target = null;
+
+    public PtkmProjectileEntity(EntityType<? extends PtkmProjectileEntity> type, Level level) {
+        super(type, level);
+        this.damage = 500;
+        this.explosionDamage = 80;
+        this.explosionRadius = 7;
     }
 
     public PtkmProjectileEntity(LivingEntity entity, Level level) {
         super(ModEntities.PTKM_PROJECTILE.get(), entity, level);
+        this.damage = 500;
+        this.explosionDamage = 80;
+        this.explosionRadius = 7;
     }
 
     public PtkmProjectileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.PTKM_PROJECTILE.get(), level);
     }
-
 
     @Override
     protected @NotNull Item getDefaultItem() {
@@ -68,17 +73,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
     }
 
     @Override
@@ -203,8 +197,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
         return this.cache;
     }
 
-
-
     public static void spawnDirectionalParticles(Entity projectile, int count, double radius, ServerLevel level, SimpleParticleType particle) {
         Vec3 deltaMovement = projectile.getDeltaMovement();
 
@@ -241,7 +233,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
         ParticleTool.sendParticle(level, particle, pos.x, pos.y, pos.z,
                 1, 0.02, 0.02, 0.02, 0.0001, true);
     }
-
 
     @Override
     public void largeTrail() {

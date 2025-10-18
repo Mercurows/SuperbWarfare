@@ -17,18 +17,19 @@ import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class MelonBombEntity extends DestroyableProjectile implements ExplosiveProjectile {
-    public float explosionDamage = 500;
-    public float explosionRadius = 10;
 
-    public MelonBombEntity(EntityType<? extends MelonBombEntity> type, Level world) {
-        super(type, world);
+    public MelonBombEntity(EntityType<? extends MelonBombEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
-
+        this.explosionRadius = 10;
+        this.explosionDamage = 500;
     }
 
     public MelonBombEntity(LivingEntity entity, Level level) {
         super(ModEntities.MELON_BOMB.get(), entity, level);
         this.noCulling = true;
+        this.explosionRadius = 10;
+        this.explosionDamage = 500;
     }
 
     public MelonBombEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -50,7 +51,6 @@ public class MelonBombEntity extends DestroyableProjectile implements ExplosiveP
                 if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1 && new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(blockHitResult.getLocation()) < 3) {
                     this.level().destroyBlock(pos, true);
                 }
-
             });
             ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
             this.discard();

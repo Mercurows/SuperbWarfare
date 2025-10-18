@@ -38,11 +38,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public float explosionDamage = 80f;
-    public float explosionRadius = 5f;
-    public float gravity = 0.1f;
     public float targetX;
     public float targetY;
     public float targetZ;
@@ -52,6 +50,9 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
     public SwarmDroneEntity(EntityType<? extends SwarmDroneEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
+        this.explosionDamage = 80f;
+        this.explosionRadius = 5f;
+        this.gravity = 0.1f;
     }
 
     public SwarmDroneEntity(LivingEntity entity, Level level, float explosionDamage, float explosionRadius) {
@@ -59,7 +60,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
         this.noCulling = true;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
-
+        this.gravity = 0.1f;
     }
 
     public SwarmDroneEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -70,7 +71,6 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
     protected @NotNull Item getDefaultItem() {
         return ModItems.SWARM_DRONE.get();
     }
-
 
     public void setGuideType(int guideType) {
         this.guideType = guideType;
@@ -178,7 +178,6 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
         }
     }
 
-
     public void causeMissileExplode(@Nullable DamageSource source, float damage, float radius) {
         new CustomExplosion.Builder(this)
                 .damageSource(source)
@@ -213,10 +212,6 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
     @Override
     public float getVolume() {
         return 0.6f;
-    }
-
-    @Override
-    public void setDamage(float damage) {
     }
 
     @Override

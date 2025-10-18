@@ -22,6 +22,7 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
     public boolean distracted = false;
     public boolean lost = false;
     public boolean lostTarget = false;
+
     public MissileProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -32,6 +33,7 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
         if (pShooter != null) {
             this.setPos(pShooter.getX(), pShooter.getEyeY() - (double) 0.1F, pShooter.getZ());
         }
+        this.gravity = 0;
     }
 
     public void setTargetUuid(String uuid) {
@@ -68,8 +70,8 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
         vec3 = vec3.add(v0.scale(-0.4));
 
         double d0 = vec3.horizontalDistance();
-        float targetAngleY = (float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI));
-        float targetAngleX = (float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI));
+        float targetAngleY = (float) (-Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI));
+        float targetAngleX = (float) (-Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI));
 
         float diffY = Mth.wrapDegrees(targetAngleY - this.getYRot());
         float diffX = Mth.wrapDegrees(targetAngleX - this.getXRot());
@@ -80,11 +82,11 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
 
     @Override
     public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy)).scale((double)pVelocity);
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy)).scale((double) pVelocity);
         this.setDeltaMovement(vec3);
         double d0 = vec3.horizontalDistance();
-        this.setYRot((float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float) java.lang.Math.PI)));
-        this.setXRot((float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float) java.lang.Math.PI)));
+        this.setYRot((float) (-Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) java.lang.Math.PI)));
+        this.setXRot((float) (-Mth.atan2(vec3.y, d0) * (double) (180F / (float) java.lang.Math.PI)));
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
     }
@@ -102,10 +104,5 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
     @Override
     public boolean isNoGravity() {
         return true;
-    }
-
-    @Override
-    public float getGravity() {
-        return 0;
     }
 }

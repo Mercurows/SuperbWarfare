@@ -42,16 +42,18 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class JavelinMissileEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+
     public static final EntityDataAccessor<Boolean> TOP = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.BOOLEAN);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     private int guideType = 0;
     public float targetX;
     public float targetY;
     public float targetZ;
-    public int durability = 50;
 
-    public JavelinMissileEntity(EntityType<? extends JavelinMissileEntity> type, Level world) {
-        super(type, world);
+    public JavelinMissileEntity(EntityType<? extends JavelinMissileEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
     }
 
@@ -62,6 +64,7 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.guideType = guideType;
+        this.durability = 50;
         if (targetPos != null) {
             this.targetX = (float) targetPos.x;
             this.targetY = (float) targetPos.y;
@@ -81,7 +84,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
     public void setAttackMode(boolean mode) {
         this.entityData.set(TOP, mode);
     }
-
 
     @Override
     protected void defineSynchedData() {
@@ -183,7 +185,7 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
                 if (this.tickCount > 3) {
                     if (entityData.get(TOP)) {
                         if (!dir) {
-                            Vec3 targetTopPos = new Vec3(targetPos.x, targetPos.y + Mth.clamp(6 * this.tickCount, 0, 90),targetPos.z);
+                            Vec3 targetTopPos = new Vec3(targetPos.x, targetPos.y + Mth.clamp(6 * this.tickCount, 0, 90), targetPos.z);
                             Vec3 toTopVec = position().vectorTo(targetTopPos).normalize();
                             turn(toTopVec, 6);
                         } else {

@@ -10,9 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -30,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
@@ -40,17 +36,17 @@ import static com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity.ray
 
 public class GrapeshotEntity extends FastThrowableProjectile {
 
-    private float damage = 40.0f;
-
-    public GrapeshotEntity(EntityType<? extends GrapeshotEntity> type, Level world) {
-        super(type, world);
+    public GrapeshotEntity(EntityType<? extends GrapeshotEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
+        this.gravity = 0.06f;
     }
 
     public GrapeshotEntity(@Nullable Entity entity, Level level, float damage) {
         super(ModEntities.GRAPESHOT.get(), entity, level);
         this.noCulling = true;
         this.damage = damage;
+        this.gravity = 0.06f;
     }
 
     public GrapeshotEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -58,27 +54,8 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putFloat("Damage", this.damage);
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("Damage")) {
-            this.damage = pCompound.getFloat("Damage");
-        }
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.GRENADE_40MM.get();
+        return ModItems.GS_5_INCHES.get();
     }
 
     @Override
@@ -217,10 +194,5 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
     public Vec3 randomVec(Vec3 vec3, double spread) {
         return vec3.normalize().add(this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread));
-    }
-
-    @Override
-    public float getGravity() {
-        return 0.06f;
     }
 }

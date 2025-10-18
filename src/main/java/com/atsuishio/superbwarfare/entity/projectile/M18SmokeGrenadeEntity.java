@@ -39,6 +39,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements GeoEntity {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private int count = 8;
@@ -47,8 +48,8 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
     private float gColor = 1.0f;
     private float bColor = 1.0f;
 
-    public M18SmokeGrenadeEntity(EntityType<? extends M18SmokeGrenadeEntity> type, Level world) {
-        super(type, world);
+    public M18SmokeGrenadeEntity(EntityType<? extends M18SmokeGrenadeEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
     }
 

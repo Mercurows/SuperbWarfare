@@ -39,12 +39,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class Agm65Entity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
-    public float gravity = 0.15f;
-    public float durability = 25;
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public Agm65Entity(EntityType<? extends Agm65Entity> type, Level world) {
-        super(type, world);
+    public Agm65Entity(EntityType<? extends Agm65Entity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
         this.damage = ExplosionConfig.AGM_65_DAMAGE.get();
         this.explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
@@ -207,7 +206,7 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
 
     @Override
     public float getGravity() {
-        return tickCount > 8 ? 0 : 0.15f;
+        return tickCount > 8 ? 0 : this.gravity;
     }
 
     @Override

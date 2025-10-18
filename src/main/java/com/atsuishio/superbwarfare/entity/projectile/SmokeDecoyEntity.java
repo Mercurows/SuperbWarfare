@@ -23,14 +23,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class SmokeDecoyEntity extends Entity {
 
+    public int life = 400;
+    public int igniteTime = 4;
     public boolean releaseSmoke = true;
 
-    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world) {
-        super(type, world);
+    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level level) {
+        super(type, level);
     }
 
-    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world, boolean release) {
-        super(type, world);
+    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level level, boolean release) {
+        super(type, level);
         releaseSmoke = release;
     }
 
@@ -46,9 +48,6 @@ public class SmokeDecoyEntity extends Entity {
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
-
-    public int life = 400;
-    public int igniteTime = 4;
 
     @Override
     protected void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {

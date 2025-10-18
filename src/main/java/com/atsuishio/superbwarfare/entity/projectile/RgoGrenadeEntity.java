@@ -35,31 +35,34 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
-    public float explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
-    public float explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
-    private int fuse = 80;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, Level world) {
-        super(type, world);
+    private int fuse = 80;
+
+    public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
+        this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
     }
 
-    public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, double x, double y, double z, Level world) {
-        super(type, x, y, z, world);
+    public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, double x, double y, double z, Level level) {
+        super(type, x, y, z, level);
         this.noCulling = true;
+        this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
     }
 
     public RgoGrenadeEntity(LivingEntity entity, Level level, int fuse) {
         super(ModEntities.RGO_GRENADE.get(), entity, level);
         this.noCulling = true;
-
+        this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
         this.fuse = fuse;
     }
 
     public RgoGrenadeEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.RGO_GRENADE.get(), level);
-        this.noCulling = true;
     }
 
     @Override

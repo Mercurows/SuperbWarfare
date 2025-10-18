@@ -339,7 +339,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('d', ModItems.GRAIN.get())
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SMALL_ROCKET.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_TBG_TBG.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_TBG.get(), 2)
                 .pattern(" a ")
                 .pattern("bcb")
                 .pattern(" d ")
@@ -348,7 +348,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
                 .define('d', ModItems.GRAIN.get())
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_TBG_TBG.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_TBG.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_STANDARD.get(), 2)
                 .pattern(" a ")
                 .pattern("bcb")
