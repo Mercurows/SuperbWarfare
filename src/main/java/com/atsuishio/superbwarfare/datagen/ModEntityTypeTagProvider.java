@@ -55,7 +55,8 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.BLU_43.get(),
                 ModEntities.TM_62.get(),
                 ModEntities.PTKM_1R.get(),
-                ModEntities.CLAYMORE.get()
+                ModEntities.CLAYMORE.get(),
+                ModEntities.PTKM_PROJECTILE.get()
         );
 
         this.tag(ModTags.EntityTypes.AT_ROCKET).add(

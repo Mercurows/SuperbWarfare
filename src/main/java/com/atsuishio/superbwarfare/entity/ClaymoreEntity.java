@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.*;
@@ -39,7 +38,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
-public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, MineEntity {
+public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
 
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(ClaymoreEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(ClaymoreEntity.class, EntityDataSerializers.STRING);

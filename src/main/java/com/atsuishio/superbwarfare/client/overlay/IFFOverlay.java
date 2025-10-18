@@ -2,9 +2,9 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
-import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
@@ -122,7 +122,7 @@ public class IFFOverlay implements LayeredDraw.Layer {
                 case DEFENSE -> FRIENDLY_DEFENSE;
                 default -> FRIENDLY_INDICATOR;
             };
-        } else if (entity instanceof MineEntity) {
+        } else if (entity.getType().is(ModTags.EntityTypes.MINE)) {
             icon = FRIENDLY_MINE;
         }
         return icon;
