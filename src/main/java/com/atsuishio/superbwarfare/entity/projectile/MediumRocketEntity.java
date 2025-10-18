@@ -48,13 +48,9 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     }
 
     private Type type = Type.AP;
-    private float damage = 0;
-    private float radius = 0;
-    private float explosionDamage = 0;
     private float fireProbability = 0;
     private int fireTime = 0;
     private int sparedAmount = 50;
-    private float gravity = 0.05f;
 
     public MediumRocketEntity(EntityType<? extends MediumRocketEntity> type, Level world) {
         super(type, world);
@@ -65,7 +61,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.damage = damage;
-        this.radius = radius;
+        this.explosionRadius = radius;
         this.explosionDamage = explosionDamage;
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
@@ -77,7 +73,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         super(ModEntities.MEDIUM_ROCKET.get(), entity, world);
         this.noCulling = true;
         this.damage = damage;
-        this.radius = radius;
+        this.explosionRadius = radius;
         this.explosionDamage = explosionDamage;
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
@@ -99,31 +95,13 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-
-        pCompound.putFloat("Damage", this.damage);
-        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
-        pCompound.putFloat("Radius", this.radius);
         pCompound.putFloat("FireProbability", this.fireProbability);
         pCompound.putInt("FireTime", this.fireTime);
-        pCompound.putInt("Durability", this.durability);
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-
-        if (pCompound.contains("Damage")) {
-            this.damage = pCompound.getFloat("Damage");
-        }
-
-        if (pCompound.contains("ExplosionDamage")) {
-            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
-        }
-
-        if (pCompound.contains("Radius")) {
-            this.radius = pCompound.getFloat("Radius");
-        }
-
         if (pCompound.contains("FireProbability")) {
             this.fireProbability = pCompound.getFloat("FireProbability");
         }
@@ -131,20 +109,11 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         if (pCompound.contains("FireTime")) {
             this.fireTime = pCompound.getInt("FireTime");
         }
-
-        if (pCompound.contains("Durability")) {
-            this.durability = pCompound.getInt("Durability");
-        }
     }
 
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.SMALL_ROCKET.get();
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
     }
 
     @Override
@@ -252,9 +221,9 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         new CustomExplosion.Builder(this)
                 .attacker(this.getOwner())
                 .damage(explosionDamage)
-                .radius(radius)
+                .radius(explosionRadius)
                 .position(vec3)
-                .withParticleType(radius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
+                .withParticleType(explosionRadius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
                 .explode();
 
         discard();
@@ -267,7 +236,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
                 GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
                         6 * damage / sparedAmount,
                         5 * explosionDamage / sparedAmount,
-                        radius / 2
+                        explosionRadius / 2
                 );
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
@@ -309,34 +278,12 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     }
 
     @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float damage) {
-        this.explosionDamage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.radius = radius;
+    public double getDefaultGravity() {
+        return 0.05f;
     }
 
     @Override
     public boolean forceLoadChunk() {
         return true;
     }
-
-    @Override
-    public double getDefaultGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
-    }
-
-
 }

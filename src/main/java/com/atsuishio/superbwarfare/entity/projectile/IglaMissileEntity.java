@@ -8,10 +8,6 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -38,19 +34,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class IglaMissileEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
-    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(IglaMissileEntity.class, EntityDataSerializers.STRING);
-
+public class IglaMissileEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public int durability = 0;
-    private float gravity = 0f;
-    private float damage = 250.0f;
-    private float explosionDamage = 140f;
-    private float explosionRadius = 6f;
-    private boolean distracted = false;
-    private boolean lost = false;
-    private boolean lostTarget = false;
 
     public IglaMissileEntity(EntityType<? extends IglaMissileEntity> type, Level world) {
         super(type, world);
@@ -68,57 +55,6 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.JAVELIN_MISSILE.get();
-    }
-
-    public void setTargetUuid(String uuid) {
-        this.entityData.set(TARGET_UUID, uuid);
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(TARGET_UUID, "none");
-    }
-
-    @Override
-    public boolean isPickable() {
-        return !this.isRemoved();
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Damage")) {
-            this.damage = compound.getFloat("Damage");
-        }
-        if (compound.contains("ExplosionDamage")) {
-            this.explosionDamage = compound.getFloat("ExplosionDamage");
-        }
-        if (compound.contains("Radius")) {
-            this.explosionRadius = compound.getFloat("Radius");
-        }
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putFloat("Damage", this.damage);
-        compound.putFloat("ExplosionDamage", this.explosionDamage);
-        compound.putFloat("Radius", this.explosionRadius);
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
-    }
-
-    @Override
-    public boolean isNoGravity() {
-        return true;
-    }
-
-    @Override
-    protected void updateRotation() {
     }
 
     @Override
@@ -270,11 +206,6 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public boolean shouldSyncMotion() {
-        return true;
-    }
-
-    @Override
     public @NotNull SoundEvent getCloseSound() {
         return ModSounds.ROCKET_ENGINE.get();
     }
@@ -287,46 +218,5 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public float getVolume() {
         return 0.4f;
-    }
-
-    @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float damage) {
-        this.explosionDamage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.explosionRadius = radius;
-    }
-
-    @Override
-    protected double getDefaultGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
-    }
-
-    @Override
-    public boolean forceLoadChunk() {
-        return true;
-    }
-
-    @Override
-    public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy)).scale((double)pVelocity);
-        this.setDeltaMovement(vec3);
-        double d0 = vec3.horizontalDistance();
-        this.setYRot((float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI)));
-        this.setXRot((float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI)));
-        this.yRotO = this.getYRot();
-        this.xRotO = this.getXRot();
     }
 }

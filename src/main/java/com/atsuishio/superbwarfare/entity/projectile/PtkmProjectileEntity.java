@@ -33,10 +33,9 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class PtkmProjectileEntity extends FastThrowableProjectile implements ExplosiveProjectile, GeoEntity, MineEntity {
-    private float damage = 500;
-    private float explosionDamage = 80;
-    private float explosionRadius = 7;
-    private float gravity = 0.05f;
+    public float damage = 500;
+    public float explosionDamage = 80;
+    public float explosionRadius = 7;
     private int shootTime = 3;
     private Entity target = null;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -49,16 +48,11 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
         super(ModEntities.PTKM_PROJECTILE.get(), entity, level);
     }
 
+
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.PTKM_1R.get();
     }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
-    }
-
 
     @Override
     public boolean isPickable() {
@@ -181,37 +175,12 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
                 .explode();
     }
 
-    @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float damage) {
-        this.explosionDamage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.explosionRadius = radius;
-    }
-
     public void setShootTime(int time) {
         this.shootTime = time;
     }
 
     public void setTarget(Entity entity) {
         this.target = entity;
-    }
-
-    @Override
-    public double getDefaultGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
     }
 
     @Override

@@ -44,11 +44,10 @@ import java.util.Set;
 
 public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
-    private float damage = 50;
-    private float explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
+    public float damage = 50;
+    public float explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
     private int life = 600;
-    private float radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
-    private float gravity = 0.13f;
+    public float radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private Potion potion = Potions.WATER.value();
@@ -69,21 +68,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         this.noCulling = true;
     }
 
-    public MortarShellEntity(LivingEntity entity, Level world, float explosionDamage) {
-        super(ModEntities.MORTAR_SHELL.get(), entity, world);
-        this.noCulling = true;
-
-        this.explosionDamage = explosionDamage;
-    }
-
-    public MortarShellEntity(LivingEntity entity, Level world, float explosionDamage, float radius) {
-        super(ModEntities.MORTAR_SHELL.get(), entity, world);
-        this.noCulling = true;
-
-        this.explosionDamage = explosionDamage;
-        this.radius = radius;
-    }
-
     public void setEffectsFromItem(ItemStack stack) {
         if (stack.is(ModItems.POTION_MORTAR_SHELL.get())) {
             var potionContents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
@@ -101,9 +85,8 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.putFloat("Damage", this.explosionDamage);
         pCompound.putInt("Life", this.life);
-        pCompound.putFloat("Radius", this.radius);
+
 
         if (this.potion != Potions.WATER.value()) {
             pCompound.putString("Potion", Objects.requireNonNullElse(BuiltInRegistries.POTION.getKey(this.potion), "empty").toString());
@@ -121,22 +104,11 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("Damage")) {
-            this.explosionDamage = pCompound.getFloat("Damage");
-        } else {
-            this.explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
-        }
 
         if (pCompound.contains("Life")) {
             this.life = pCompound.getInt("Life");
         } else {
             this.life = 600;
-        }
-
-        if (pCompound.contains("Radius")) {
-            this.radius = pCompound.getFloat("Radius");
-        } else {
-            this.radius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
         }
 
         if (pCompound.contains("Potion", 8)) {
@@ -157,11 +129,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.MORTAR_SHELL.get();
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
     }
 
     @Override
@@ -268,28 +235,8 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float explosionDamage) {
-        this.explosionDamage = explosionDamage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.radius = radius;
-    }
-
-    @Override
     public double getDefaultGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
+        return 0.13;
     }
 
     @Override

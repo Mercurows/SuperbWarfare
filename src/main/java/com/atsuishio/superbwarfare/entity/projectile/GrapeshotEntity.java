@@ -68,11 +68,6 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     }
 
     @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
-    }
-
-    @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
@@ -212,7 +207,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     }
 
     @Override
-    protected double getDefaultGravity() {
+    public double getDefaultGravity() {
         return 0.06f;
     }
 }

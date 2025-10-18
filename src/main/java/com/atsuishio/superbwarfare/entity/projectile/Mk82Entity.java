@@ -1,18 +1,12 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
@@ -25,18 +19,11 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
-
-    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(Mk82Entity.class, EntityDataSerializers.FLOAT);
+public class Mk82Entity extends DestroyableProjectile implements GeoEntity, ExplosiveProjectile {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier()
-            .immuneTo(ModEntities.MK_82.get());
-
-    private float explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
-    private float explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
-    private float gravity = 0.06f;
-    public int durability = 1;
+    public float explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
+    public float explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
 
     public Mk82Entity(EntityType<? extends Mk82Entity> type, Level world) {
         super(type, world);
@@ -59,58 +46,12 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float amount) {
-        var newAmount = DAMAGE_MODIFIER.compute(source, amount);
-        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - newAmount);
-
-        return super.hurt(source, amount);
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(HEALTH, 50f);
-    }
-
-    @Override
-    public boolean isPickable() {
-        return !this.isRemoved();
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains("Health")) {
-            this.entityData.set(HEALTH, compound.getFloat("Health"));
-        }
-        if (compound.contains("ExplosionDamage")) {
-            this.explosionDamage = compound.getFloat("ExplosionDamage");
-        }
-        if (compound.contains("Radius")) {
-            this.explosionRadius = compound.getFloat("Radius");
-        }
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putFloat("Health", this.entityData.get(HEALTH));
-        compound.putFloat("ExplosionDamage", this.explosionDamage);
-        compound.putFloat("Radius", this.explosionRadius);
-    }
-
-    @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
             ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
         }
         this.discard();
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
     }
 
     @Override
@@ -150,31 +91,12 @@ public class Mk82Entity extends FastThrowableProjectile implements GeoEntity, Ex
     }
 
     @Override
+    public double getDefaultGravity() {
+        return 0.06;
+    }
+
+    @Override
     public boolean shouldSyncMotion() {
         return true;
-    }
-
-    @Override
-    public void setDamage(float damage) {
-    }
-
-    @Override
-    public void setExplosionDamage(float damage) {
-        this.explosionDamage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.explosionRadius = radius;
-    }
-
-    @Override
-    public double getDefaultGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
     }
 }

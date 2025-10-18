@@ -48,7 +48,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private float explosionDamage = 0;
     private float fireProbability = 0;
     private int fireTime = 0;
-    private float gravity = 0.1f;
 
     public enum Type {
         AP, HE, CM, GRAPE
@@ -134,11 +133,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.HE_5_INCHES.get();
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
     }
 
     @Override
@@ -304,11 +298,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return this.gravity;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
@@ -329,29 +318,12 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float damage) {
-        this.explosionDamage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.radius = radius;
+    public double getDefaultGravity() {
+        return 0.1f;
     }
 
     @Override
     public boolean forceLoadChunk() {
         return true;
     }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
-    }
-
-
 }

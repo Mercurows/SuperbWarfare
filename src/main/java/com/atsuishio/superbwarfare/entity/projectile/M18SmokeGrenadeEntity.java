@@ -34,7 +34,6 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements GeoEntity {
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private int count = 8;
@@ -96,7 +95,7 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
 
     @Override
     public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
+        return super.shouldRenderAtSqrDistance(pDistance);
     }
 
     @Override
@@ -208,7 +207,7 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
     }
 
     @Override
-    protected double getDefaultGravity() {
+    public double getDefaultGravity() {
         return 0.07F;
     }
 
