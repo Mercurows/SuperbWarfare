@@ -560,32 +560,20 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return true;
     }
 
-//    @Override
-//    public @NotNull ItemStack getItem(int slot) {
-//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
-//        return this.items.get(slot);
-//    }
-//
-//    @Override
-//    public @NotNull ItemStack removeItem(int slot, int pAmount) {
-//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
-//
-//        return ContainerHelper.removeItem(this.items, slot, pAmount);
-//    }
-//
-//    @Override
-//    public @NotNull ItemStack removeItemNoUpdate(int slot) {
-//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
-//
-//        ItemStack itemstack = this.items.get(slot);
-//        if (itemstack.isEmpty()) {
-//            return ItemStack.EMPTY;
-//        } else {
-//            this.items.set(slot, ItemStack.EMPTY);
-//            return itemstack;
-//        }
-//    }
-//
+    public @NotNull ItemStack getItem(int slot) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+        return this.inventory.getStackInSlot(slot);
+    }
+
+    public @NotNull ItemStack removeItem(int slot, int amount) {
+        return this.removeItem(slot, amount, false);
+    }
+
+    public @NotNull ItemStack removeItem(int slot, int amount, boolean simulate) {
+        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+        return this.inventory.extractItem(slot, amount, simulate);
+    }
+
 //    @Override
 //    public void setItem(int slot, @NotNull ItemStack pStack) {
 //        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return;
