@@ -53,6 +53,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
         this.explosionDamage = 80f;
         this.explosionRadius = 5f;
         this.gravity = 0.1f;
+        randomFloat = random.nextFloat();
     }
 
     public SwarmDroneEntity(LivingEntity entity, Level level, float explosionDamage, float explosionRadius) {
@@ -145,30 +146,34 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
                 targetPos = new Vec3(targetX, targetY, targetZ);
             }
 
-            if (tickCount % 5 == 0) {
-                randomFloat = random.nextFloat();
+            if (tickCount %5 == 0) {
+                randomFloat = 2 * (random.nextFloat() - 0.5f);
             }
 
-            double dis = position().distanceTo(targetPos);
-            double disShooter = shooter.position().distanceTo(targetPos);
-            double randomPos = Mth.sin(0.25f * (tickCount + randomFloat)) * randomFloat * Mth.clamp(Mth.sin((float) (Mth.PI * (dis / disShooter))), 0, 0.8);
+            double dis = position().vectorTo(shooter.position()).horizontalDistance();
+            double dis2 = position().distanceToSqr(targetPos);
+            double disShooter = shooter.position().vectorTo(targetPos).horizontalDistance();
+            double randomPos = Mth.cos((float) Mth.clamp(dis / disShooter, 0, 1) * 1.5f * Mth.PI) * dis * 10 * randomFloat;
 
-            Vec3 toVec = this.position().vectorTo(targetPos).normalize().add(new Vec3(randomPos, 0.1 * randomPos, randomPos));
-            turn(toVec, 20);
+            Vec3 toVec = this.position().vectorTo(targetPos).add(new Vec3(-randomPos, Mth.abs((float) randomPos) * 0.02, randomPos).scale(1 - Mth.clamp(0.02 * (tickCount - 20), 0, 1))).normalize();
+            turn(toVec, 90);
+            this.setDeltaMovement(this.getDeltaMovement().add(position().vectorTo(targetPos).normalize().scale(0.1)));
 
-            if (dis < 0.5) {
+            if (dis2 < 1) {
                 if (this.level() instanceof ServerLevel) {
                     causeMissileExplode(ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
                 }
                 this.discard();
             }
+
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.55, 0.55, 0.55));
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.97, 0.97, 0.97));
         }
 
-        if (this.tickCount > 8) {
+        if (this.tickCount > 13) {
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
         }
-
-        this.setDeltaMovement(this.getDeltaMovement().multiply(0.7, 0.7, 0.7));
 
         if (this.tickCount > 300 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
@@ -217,5 +222,20 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
     @Override
     public float getMaxHealth() {
         return 4;
+    }
+
+    public void setRotate(Vec3 vec3) {
+        double d0 = vec3.horizontalDistance();
+        this.setYRot((float) (-Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) java.lang.Math.PI)));
+        this.setXRot((float) (-Mth.atan2(vec3.y, d0) * (double) (180F / (float) java.lang.Math.PI)));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
+    }
+
+
+    @Override
+    public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy)).scale((double) pVelocity);
+        this.setDeltaMovement(vec3);
     }
 }

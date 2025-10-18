@@ -180,7 +180,18 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                     .min(Comparator.comparingDouble(e -> e.position().distanceTo(position())));
             if (target.isPresent()) {
                 causeExplode(target.get().position(), false);
-                target.get().discard();
+                if (target.get() instanceof DestroyableProjectile destroyableProjectile) {
+                    if (this.getOwner() instanceof LivingEntity living) {
+                        if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
+                            living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+                            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+                        }
+                    }
+                    DamageHandler.doDamage(destroyableProjectile, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
+                } else {
+                    target.get().discard();
+                }
+
                 this.discard();
             }
         }
