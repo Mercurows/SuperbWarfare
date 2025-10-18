@@ -261,12 +261,12 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             if (entity != null) {
                 boolean dir = position().vectorTo(entity.position()).horizontalDistanceSqr() < 900;
                 Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
-                Vec3 toVec = position().vectorTo(targetPos).normalize();
+                Vec3 targetVec = new Vec3(entity.getDeltaMovement().x, 0, entity.getDeltaMovement().z);
+                Vec3 toVec = position().vectorTo(targetPos.add(targetVec)).normalize();
                 if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
                     entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                 }
                 if (this.tickCount > 3) {
-                    this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
                     if (entityData.get(TOP)) {
                         if (!dir) {
                             Vec3 targetTopPos = new Vec3(targetPos.x, targetPos.y + Mth.clamp(6 * this.tickCount, 0, 90),targetPos.z);
@@ -293,7 +293,6 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
 
             if (this.tickCount > 3) {
-                this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
                 if (entityData.get(TOP)) {
                     if (!dir) {
                         Vec3 targetTopPos = new Vec3(targetPos.x, targetPos.y + Mth.clamp(5 * this.tickCount, 0, 90), targetPos.z);
@@ -313,7 +312,10 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
                     }
                 }
             }
+        }
 
+        if (this.tickCount > 3) {
+            this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
         }
 
         if (this.tickCount > 200 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
@@ -325,7 +327,7 @@ public class JavelinMissileEntity extends FastThrowableProjectile implements Geo
             this.discard();
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().multiply(0.76, 0.76, 0.76));
+        this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
         destroyBlock();
     }
 

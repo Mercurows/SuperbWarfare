@@ -6,14 +6,15 @@
 				"identifier": "geometry.unknown",
 				"texture_width": 128,
 				"texture_height": 128,
-				"visible_bounds_width": 8,
+				"visible_bounds_width": 13,
 				"visible_bounds_height": 9,
 				"visible_bounds_offset": [0, 2.5, 0]
 			},
 			"bones": [
 				{
 					"name": "agm65",
-					"pivot": [0, 0, 0]
+					"pivot": [0, 0, 0],
+					"rotation": [-90, 0, 90]
 				},
 				{
 					"name": "flare",

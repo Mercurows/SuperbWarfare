@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -20,10 +19,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -133,6 +134,10 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
+    protected void updateRotation() {
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
@@ -220,7 +225,10 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
                     entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                 }
 
-                Vec3 toVec = position().vectorTo(entity.getEyePosition()).normalize();
+                Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
+                Vec3 targetVec = new Vec3(entity.getDeltaMovement().x, entity.getDeltaMovement().y * 0.2, entity.getDeltaMovement().z);
+                Vec3 toVec = position().vectorTo(targetPos.add(targetVec)).normalize();
+
                 if (this.tickCount > 3) {
 
                     lostTarget = VectorTool.calculateAngle(getDeltaMovement(), toVec) > 120 && !lostTarget;
@@ -232,7 +240,8 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
                     }
 
                     if (!lostTarget && !lost) {
-                        setDeltaMovement(getDeltaMovement().scale(0.5).add(toVec.scale(3.8)));
+                        turn(toVec, Mth.clamp(0.6f * tickCount, 0, 40));
+                        this.setDeltaMovement(this.getDeltaMovement().scale(0.1).add(getLookAngle().scale(8)));
                     }
 
                     if (lostTarget) {
@@ -247,13 +256,11 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
             }
         }
 
-
-        if (this.tickCount == 4) {
-            if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CLOUD, this.xo, this.yo, this.zo, 15, 0.8, 0.8, 0.8, 0.01, true);
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 10, 0.8, 0.8, 0.8, 0.01, true);
-            }
+        if (this.tickCount > 3) {
+            this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
         }
+
+        this.setDeltaMovement(this.getDeltaMovement().multiply(0.9, 0.9, 0.9));
 
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
@@ -329,5 +336,14 @@ public class IglaMissileEntity extends FastThrowableProjectile implements GeoEnt
         return true;
     }
 
-
+    @Override
+    public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy)).scale((double)pVelocity);
+        this.setDeltaMovement(vec3);
+        double d0 = vec3.horizontalDistance();
+        this.setYRot((float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI)));
+        this.setXRot((float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI)));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
+    }
 }

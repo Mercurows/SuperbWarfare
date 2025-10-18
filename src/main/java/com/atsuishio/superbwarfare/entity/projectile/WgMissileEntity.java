@@ -237,7 +237,7 @@ public class WgMissileEntity extends FastThrowableProjectile implements GeoEntit
                 }
             }
 
-            turn(toVec, 2);
+            turn(toVec, 3);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.77, 0.77, 0.77));
         }
 

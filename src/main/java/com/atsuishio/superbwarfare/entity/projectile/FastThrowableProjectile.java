@@ -200,6 +200,10 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     public void turn(Vec3 vec3, float turnSpeed) {
+        Vec3 v0 = getDeltaMovement().normalize();
+
+        vec3 = vec3.add(v0.scale(-0.4));
+
         double d0 = vec3.horizontalDistance();
         float targetAngleY = (float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI));
         float targetAngleX = (float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI));
