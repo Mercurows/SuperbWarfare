@@ -724,7 +724,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
      * 服务端处理松开开火按键时的额外行为
      */
     public void onFireKeyRelease(final GunData data, Player player, double power, boolean zoom) {
-        if (player instanceof ServerPlayer serverPlayer && data.get(GunProp.SEEK_TYPES) == SeekType.HOLD_FIRE) {
+        if (player instanceof ServerPlayer serverPlayer && data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_FIRE) {
             ItemStack stack = data.stack;
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);

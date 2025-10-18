@@ -369,7 +369,7 @@ public class ClientEventHandler {
 
             if (zoomTime > 0.7) {
                 naerestEntity = SeekTool.seekLivingEntity(player, range, seekAngle);
-                if (data.get(GunProp.SEEK_TYPES) == SeekType.HOLD_FIRE) {
+                if (data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_FIRE) {
                     if (naerestEntity == null || player.isShiftKeyDown()) {
                         // 锁定方块
                         BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
@@ -449,7 +449,7 @@ public class ClientEventHandler {
                             seekingEntity = null;
                         }
                     }
-                } else if (data.get(GunProp.SEEK_TYPES) == SeekType.HOLD_ZOOM) {
+                } else if (data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_ZOOM) {
 
                     // 瞄准锁定只能锁实体
                     if (seekingTime > lockTime + 2 && !lockOn) {
