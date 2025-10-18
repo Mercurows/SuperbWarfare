@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -29,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -258,16 +256,13 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void causeExplode(Vec3 vec3) {
-        new CustomExplosion.Builder(this)
-                .attacker(this.getOwner())
-                .damage(explosionDamage)
-                .radius(explosionRadius)
-                .position(vec3)
-                .withParticleType(explosionRadius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
-                .explode();
+    public ParticleTool.ParticleType explosionParticleType() {
+        return explosionRadius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM;
+    }
 
-        discard();
+    @Override
+    public boolean discardAfterExplode() {
+        return true;
     }
 
     private PlayState movementPredicate(AnimationState<CannonShellEntity> event) {

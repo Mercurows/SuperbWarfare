@@ -137,14 +137,8 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
     }
 
     @Override
-    public void causeExplode(Vec3 vec3) {
-        new CustomExplosion.Builder(this)
-                .attacker(this.getOwner())
-                .damage(explosionDamage)
-                .radius(explosionRadius)
-                .position(vec3)
-                .withParticleType(ParticleTool.ParticleType.HUGE)
-                .explode();
+    public ParticleTool.ParticleType explosionParticleType() {
+        return ParticleTool.ParticleType.HUGE;
     }
 
     @Override

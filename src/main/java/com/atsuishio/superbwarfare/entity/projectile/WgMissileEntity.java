@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -116,14 +115,8 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
     }
 
     @Override
-    public void causeExplode(Vec3 vec3) {
-        new CustomExplosion.Builder(this)
-                .attacker(this.getOwner())
-                .damage(explosionDamage)
-                .radius(explosionRadius)
-                .position(vec3)
-                .withParticleType(ParticleTool.ParticleType.HUGE)
-                .explode();
+    public ParticleTool.ParticleType explosionParticleType() {
+        return ParticleTool.ParticleType.HUGE;
     }
 
     @Override

@@ -25,7 +25,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -125,17 +124,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 this.discard();
             }
         }
-    }
-
-    @Override
-    public void causeExplode(Vec3 vec3) {
-        new CustomExplosion.Builder(this)
-                .attacker(this.getOwner())
-                .damage(explosionDamage)
-                .radius(explosionRadius)
-                .position(vec3)
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
     }
 
     @Override

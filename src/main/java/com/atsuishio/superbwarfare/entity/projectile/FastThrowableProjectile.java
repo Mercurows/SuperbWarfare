@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.ChunkLoadManager;
+import com.atsuishio.superbwarfare.tools.CustomExplosion;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -197,7 +199,29 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         }
     }
 
+    public CustomExplosion.Builder buildExplosion(Vec3 vec3) {
+        return new CustomExplosion.Builder(this)
+                .attacker(this.getOwner())
+                .damage(explosionDamage)
+                .radius(explosionRadius)
+                .position(vec3)
+                .withParticleType(explosionParticleType());
+    }
+
     public void causeExplode(Vec3 vec3) {
+        buildExplosion(vec3).explode();
+
+        if (discardAfterExplode()) {
+            this.discard();
+        }
+    }
+
+    public ParticleTool.ParticleType explosionParticleType() {
+        return ParticleTool.ParticleType.MEDIUM;
+    }
+
+    public boolean discardAfterExplode() {
+        return false;
     }
 
     private void updateChunkLoading(ServerLevel serverLevel) {

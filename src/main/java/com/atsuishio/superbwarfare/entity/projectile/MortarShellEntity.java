@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -196,16 +195,8 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public void causeExplode(Vec3 vec3) {
-        new CustomExplosion.Builder(this)
-                .attacker(this.getOwner())
-                .damage(explosionDamage)
-                .radius(explosionRadius)
-                .position(vec3)
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .damageMultiplier(1.25F)
-                .explode();
-
+    public CustomExplosion.Builder buildExplosion(Vec3 vec3) {
+        return super.buildExplosion(vec3).damageMultiplier(1.25F);
     }
 
     @Override

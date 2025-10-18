@@ -111,17 +111,6 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
     }
 
     @Override
-    public void causeExplode(Vec3 vec3) {
-        new CustomExplosion.Builder(this)
-                .attacker(this.getOwner())
-                .damage(explosionDamage)
-                .radius(explosionRadius)
-                .position(vec3)
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
-    }
-
-    @Override
     public void tick() {
         super.tick();
 
