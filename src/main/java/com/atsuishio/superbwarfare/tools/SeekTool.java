@@ -536,8 +536,8 @@ public class SeekTool {
             return this;
         }
 
-        public Builder sizeLesserThan(double size) {
-            this.filters.add(e -> e.getBoundingBox().getSize() <= size);
+        public Builder sizeBiggerThan(double size) {
+            this.filters.add(e -> e.getBoundingBox().getSize() >= size);
             return this;
         }
 

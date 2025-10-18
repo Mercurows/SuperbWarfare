@@ -326,7 +326,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                         .withinAngle(20)
                         .baseFilter()
                         .onGround(10)
-                        .sizeLesserThan(0.9)
+                        .sizeBiggerThan(0.9)
                         .smokeFilter()
                         .noVehicle()
                         .noClip()

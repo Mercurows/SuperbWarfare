@@ -418,7 +418,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 .withinAngle(18)
                 .baseFilter()
                 .onGround(10)
-                .sizeLesserThan(0.9)
+                .sizeBiggerThan(0.9)
                 .smokeFilter()
                 .noVehicle()
                 .noClip()

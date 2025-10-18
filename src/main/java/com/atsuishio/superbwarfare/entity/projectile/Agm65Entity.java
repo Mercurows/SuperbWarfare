@@ -91,6 +91,10 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
     }
 
     @Override
+    protected void updateRotation() {
+    }
+
+    @Override
     public boolean isPickable() {
         return !this.isRemoved();
     }
@@ -218,13 +222,14 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
                         entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                     }
 
-                    Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + (entity instanceof EnderDragon ? -2 : 0) + 0.1 * distanceTo(entity), entity.getZ());
+                    Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + (entity instanceof EnderDragon ? -2 : 0), entity.getZ());
 
-                    Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
+                    Vec3 toVec = position().vectorTo(targetPos).normalize();
                     if (this.tickCount > 8) {
-                        boolean lostTarget = (VectorTool.calculateAngle(getDeltaMovement(), toVec) > 80);
+                        this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
+                        boolean lostTarget = (VectorTool.calculateAngle(getLookAngle(), toVec) > 80);
                         if (!lostTarget) {
-                            setDeltaMovement(getDeltaMovement().add(toVec.scale(4)).scale(0.65).add(entity.getDeltaMovement().scale(0.2)));
+                            turn(toVec, 6);
                         }
                     }
                 }
@@ -239,10 +244,6 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
             }
         }
 
-        if (this.tickCount > 8) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.06, 1.06, 1.06));
-        }
-
         if (this.tickCount > 600 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
             if (this.level() instanceof ServerLevel) {
                 ProjectileTool.causeCustomExplode(this,
@@ -252,9 +253,8 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
             this.discard();
         }
 
-        float f = (float) Mth.clamp(1 - 0.005 * getDeltaMovement().length(), 0.001, 1);
+        this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
 
-        this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
         destroyBlock();
     }
 
@@ -327,5 +327,14 @@ public class Agm65Entity extends FastThrowableProjectile implements GeoEntity, E
         this.gravity = gravity;
     }
 
-
+    @Override
+    public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double)pInaccuracy)).scale((double)pVelocity);
+        this.setDeltaMovement(vec3);
+        double d0 = vec3.horizontalDistance();
+        this.setYRot((float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float) java.lang.Math.PI)));
+        this.setXRot((float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float) java.lang.Math.PI)));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
+    }
 }
