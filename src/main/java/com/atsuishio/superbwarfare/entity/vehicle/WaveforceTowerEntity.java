@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectile;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -298,6 +299,12 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                     if (Math.random() < 0.5 && target instanceof LivingEntity living) {
                         living.setRemainingFireTicks(5 * 20);
                     }
+
+                    if (target instanceof Projectile && !(target instanceof DestroyableProjectile)) {
+                        causeAirExplode(target.position());
+                        target.discard();
+                    }
+
                 }
 
                 entityData.set(WAVEFORCE_LENGTH, (float) getLaserPos(1).distanceTo(target.getEyePosition()));
@@ -317,6 +324,17 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
             entityData.set(TARGET_UUID, "none");
             changeTargetTimer = 0;
         }
+    }
+
+    private void causeAirExplode(Vec3 vec3) {
+        createCustomExplosion()
+                .damage(5)
+                .radius(1)
+                .keepBlock()
+                .attacker(getOwner())
+                .position(vec3)
+                .withParticleType(ParticleTool.ParticleType.MEDIUM)
+                .explode();
     }
 
     @Override

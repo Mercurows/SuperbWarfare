@@ -689,6 +689,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
             swarmDroneEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
             swarmDroneEntity.shoot(direct.x, direct.y, direct.z, 1.2f, 10);
+            swarmDroneEntity.setRotate(getBarrelVector(1));
 
             if (living instanceof Mob mob && mob.getTarget() != null) {
                 Entity target = mob.getTarget();
