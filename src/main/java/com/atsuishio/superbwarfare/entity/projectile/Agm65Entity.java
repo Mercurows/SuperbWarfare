@@ -127,14 +127,8 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
     }
 
     @Override
-    public void causeExplode(Vec3 vec3) {
-        new CustomExplosion.Builder(this)
-                .attacker(this.getOwner())
-                .damage(explosionDamage)
-                .radius(explosionRadius)
-                .position(vec3)
-                .withParticleType(ParticleTool.ParticleType.HUGE)
-                .explode();
+    public ParticleTool.ParticleType explosionParticleType() {
+        return super.explosionParticleType();
     }
 
     @Override
