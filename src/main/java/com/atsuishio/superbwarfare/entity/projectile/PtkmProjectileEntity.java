@@ -14,8 +14,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -28,7 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
@@ -38,10 +35,9 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class PtkmProjectileEntity extends FastThrowableProjectile implements ExplosiveProjectile, GeoEntity, MineEntity {
-    private float damage = 500;
-    private float explosionDamage = 80;
-    private float explosionRadius = 7;
-    private float gravity = 0.05f;
+    public float damage = 500;
+    public float explosionDamage = 80;
+    public float explosionRadius = 7;
     private int shootTime = 3;
     private Entity target = null;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -58,22 +54,11 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
         this(ModEntities.PTKM_PROJECTILE.get(), level);
     }
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.PTKM_1R.get();
     }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
-    }
-
-
 
     @Override
     public boolean isPickable() {
@@ -201,37 +186,12 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
                 .explode();
     }
 
-    @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float damage) {
-        this.explosionDamage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.explosionRadius = radius;
-    }
-
     public void setShootTime(int time) {
         this.shootTime = time;
     }
 
     public void setTarget(Entity entity) {
         this.target = entity;
-    }
-
-    @Override
-    public float getGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
     }
 
     @Override

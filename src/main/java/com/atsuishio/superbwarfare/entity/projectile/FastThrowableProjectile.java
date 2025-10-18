@@ -8,7 +8,10 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessa
 import com.atsuishio.superbwarfare.tools.ChunkLoadManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -25,6 +28,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,12 +46,15 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     };
     public static Consumer<FastThrowableProjectile> nearFlySound = projectile -> {
     };
-
+    public float damage = 250.0f;
+    public float explosionDamage = 140f;
+    public float explosionRadius = 6f;
     private static final int CHUNK_RADIUS = 1; // 3x3区块
 
     public int durability = 50;
     public boolean firstHit = true;
     private boolean isFastMoving = false;
+    public float gravity = 0.05f;
 
     private final Set<ChunkPos> currentChunks = new HashSet<>();
     private ChunkPos lastChunkPos;
@@ -66,6 +73,32 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (pShooter != null) {
             this.setPos(pShooter.getX(), pShooter.getEyeY() - (double) 0.1F, pShooter.getZ());
         }
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("Damage")) {
+            this.damage = compound.getFloat("Damage");
+        }
+        if (compound.contains("ExplosionDamage")) {
+            this.explosionDamage = compound.getFloat("ExplosionDamage");
+        }
+        if (compound.contains("Radius")) {
+            this.explosionRadius = compound.getFloat("Radius");
+        }
+        if (compound.contains("Durability")) {
+            this.durability = compound.getInt("Durability");
+        }
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putFloat("Damage", this.damage);
+        compound.putFloat("ExplosionDamage", this.explosionDamage);
+        compound.putFloat("Radius", this.explosionRadius);
+        compound.putInt("Durability", this.durability);
     }
 
     @Override
@@ -199,22 +232,6 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         lastChunkPos = currentPos;
     }
 
-    public void turn(Vec3 vec3, float turnSpeed) {
-        Vec3 v0 = getDeltaMovement().normalize();
-
-        vec3 = vec3.add(v0.scale(-0.4));
-
-        double d0 = vec3.horizontalDistance();
-        float targetAngleY = (float)(-Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI));
-        float targetAngleX = (float)(-Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI));
-
-        float diffY = Mth.wrapDegrees(targetAngleY - this.getYRot());
-        float diffX = Mth.wrapDegrees(targetAngleX - this.getXRot());
-
-        this.setYRot(this.getYRot() + Mth.clamp(0.95f * diffY, -turnSpeed, turnSpeed));
-        this.setXRot(this.getXRot() + Mth.clamp(0.95f * diffX, -turnSpeed, turnSpeed));
-    }
-
     @Override
     public void remove(Entity.RemovalReason reason) {
         if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
@@ -275,6 +292,36 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
 
     public boolean forceLoadChunk() {
         return false;
+    }
+
+    @Override
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double pDistance) {
+        return true;
+    }
+
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    public void setExplosionDamage(float explosionDamage) {
+        this.explosionDamage = explosionDamage;
+    }
+
+    public void setExplosionRadius(float radius) {
+        this.explosionRadius = radius;
+    }
+
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 
     public void largeTrail() {

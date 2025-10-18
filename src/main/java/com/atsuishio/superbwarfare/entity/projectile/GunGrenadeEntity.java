@@ -10,8 +10,6 @@ import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -24,7 +22,6 @@ import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +36,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     private float damage = 40.0f;
     private float explosionDamage = 80f;
     private float explosionRadius = 5f;
-    private float gravity = 0.03f;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -83,34 +79,8 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     }
 
     @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float explosionDamage) {
-        this.explosionDamage = explosionDamage;
-    }
-
-    @Override
-    public void setExplosionRadius(float explosionRadius) {
-        this.explosionRadius = explosionRadius;
-    }
-
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.GRENADE_40MM.get();
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
     }
 
     @Override
@@ -183,15 +153,5 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public float getGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
     }
 }

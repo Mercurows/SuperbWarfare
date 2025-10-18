@@ -13,9 +13,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -29,7 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
@@ -46,10 +42,10 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private float damage = 250f;
-    private float explosionDamage = 200f;
-    private float explosionRadius = 10;
-    private float gravity = 0.03f;
+    public float damage = 250f;
+    public float explosionDamage = 200f;
+    public float explosionRadius = 10;
+    public float gravity = 0.03f;
 
     public RpgRocketTBGEntity(EntityType<? extends RpgRocketTBGEntity> type, Level world) {
         super(type, world);
@@ -72,55 +68,8 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     }
 
     @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float explosionRadius) {
-        this.explosionRadius = explosionRadius;
-    }
-
-    @Override
-    public void setExplosionDamage(float explosionDamage) {
-        this.explosionDamage = explosionDamage;
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putFloat("Damage", this.damage);
-        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
-        pCompound.putFloat("Radius", this.explosionRadius);
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("Damage")) {
-            this.damage = pCompound.getFloat("Damage");
-        }
-        if (pCompound.contains("ExplosionDamage")) {
-            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
-        }
-        if (pCompound.contains("Radius")) {
-            this.explosionRadius = pCompound.getFloat("Radius");
-        }
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.RPG_ROCKET_TBG_TBG.get();
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
     }
 
     @Override
@@ -244,21 +193,6 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
-    }
-
-    @Override
-    public float getVolume() {
-        return 0.2f;
-    }
-
-    @Override
-    public float getGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
     }
 
     @Override

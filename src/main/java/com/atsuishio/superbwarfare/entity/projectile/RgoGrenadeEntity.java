@@ -12,8 +12,6 @@ import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -27,7 +25,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
@@ -38,10 +35,9 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
-    private float explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
-    private float explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
+    public float explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
+    public float explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
     private int fuse = 80;
-    private float gravity = 0.07f;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, Level world) {
@@ -69,38 +65,20 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
-        pCompound.putFloat("Radius", this.explosionRadius);
         pCompound.putFloat("Fuse", this.fuse);
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("ExplosionDamage")) {
-            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
-        }
-        if (pCompound.contains("Radius")) {
-            this.explosionRadius = pCompound.getFloat("Radius");
-        }
         if (pCompound.contains("Fuse")) {
             this.fuse = pCompound.getInt("Fuse");
         }
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.RGO_GRENADE.get();
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
     }
 
     @Override
@@ -164,29 +142,5 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public void setDamage(float damage) {
-    }
-
-    @Override
-    public void setExplosionDamage(float explosionDamage) {
-        this.explosionDamage = explosionDamage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.explosionRadius = radius;
-    }
-
-    @Override
-    public float getGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
     }
 }
