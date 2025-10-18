@@ -25,6 +25,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler;
+import com.atsuishio.superbwarfare.inventory.handler.VehicleUpgradeHandler;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
@@ -442,7 +443,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     // container start
 
     private final ItemStackHandler inventory = new VehicleContainerHandler(6 * 17, this);
-    private final ItemStackHandler upgrades = new VehicleContainerHandler(3, this);
+    private final ItemStackHandler upgrades = new VehicleUpgradeHandler(3, this);
 
     public ItemStackHandler getInventory() {
         return this.inventory;
@@ -550,6 +551,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     //    @Override
     public int getContainerSize() {
         return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE).getSize();
+    }
+
+    public boolean isItemValid(int slot, ItemStack stack) {
+        return true;
+    }
+
+    public boolean isUpgradeValid(int slot, ItemStack stack) {
+        return true;
     }
 
 //    @Override
