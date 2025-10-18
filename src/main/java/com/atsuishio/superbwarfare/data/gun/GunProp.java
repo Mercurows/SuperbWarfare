@@ -62,11 +62,10 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Integer> MAGAZINE = new GunProp<Integer>("Magazine")
             .withLimiter((m, d, v) -> (m.get(PROJECTILE_AMOUNT) <= 0 && m.get(MELEE_DAMAGE) > 0) ? 0 : Math.max(0, v));
 
-
     public static final GunProp<Set<ReloadType>> RELOAD_TYPES = new GunProp<Set<ReloadType>>("ReloadTypes")
             .whenNull(Set.of());
 
-    public static final GunProp<SeekType> SEEK_TYPES = new GunProp<SeekType>("SeekType")
+    public static final GunProp<SeekType> SEEK_TYPE = new GunProp<SeekType>("SeekType")
             .whenNull(SeekType.NONE);
 
     public static final GunProp<Boolean> AUTO_RELOAD = new GunProp<>("AutoReload");
