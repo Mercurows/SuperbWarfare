@@ -43,9 +43,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private float damage = 0;
-    private float radius = 0;
-    private float explosionDamage = 0;
     private float fireProbability = 0;
     private int fireTime = 0;
 
@@ -58,8 +55,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private int sparedAngle = 15;
     private int sparedTime = 7;
 
-    public CannonShellEntity(EntityType<? extends CannonShellEntity> type, Level world) {
-        super(type, world);
+    public CannonShellEntity(EntityType<? extends CannonShellEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
     }
 
@@ -67,7 +64,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         super(ModEntities.CANNON_SHELL.get(), entity, world);
         this.noCulling = true;
         this.damage = damage;
-        this.radius = radius;
+        this.explosionRadius = radius;
         this.explosionDamage = explosionDamage;
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
@@ -93,29 +90,13 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
 
-        pCompound.putFloat("Damage", this.damage);
-        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
-        pCompound.putFloat("Radius", this.radius);
         pCompound.putFloat("FireProbability", this.fireProbability);
         pCompound.putInt("FireTime", this.fireTime);
-        pCompound.putInt("Durability", this.durability);
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-
-        if (pCompound.contains("Damage")) {
-            this.damage = pCompound.getFloat("Damage");
-        }
-
-        if (pCompound.contains("ExplosionDamage")) {
-            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
-        }
-
-        if (pCompound.contains("Radius")) {
-            this.radius = pCompound.getFloat("Radius");
-        }
 
         if (pCompound.contains("FireProbability")) {
             this.fireProbability = pCompound.getFloat("FireProbability");
@@ -123,10 +104,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
         if (pCompound.contains("FireTime")) {
             this.fireTime = pCompound.getInt("FireTime");
-        }
-
-        if (pCompound.contains("Durability")) {
-            this.durability = pCompound.getInt("Durability");
         }
     }
 
@@ -248,7 +225,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
                         6 * damage / sparedAmount,
                         5 * explosionDamage / sparedAmount,
-                        radius / 2
+                        explosionRadius / 2
                 );
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
@@ -285,9 +262,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         new CustomExplosion.Builder(this)
                 .attacker(this.getOwner())
                 .damage(explosionDamage)
-                .radius(radius)
+                .radius(explosionRadius)
                 .position(vec3)
-                .withParticleType(radius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
+                .withParticleType(explosionRadius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM)
                 .explode();
 
         discard();
@@ -315,11 +292,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public float getVolume() {
         return 0.07f;
-    }
-
-    @Override
-    public double getDefaultGravity() {
-        return 0.1f;
     }
 
     @Override

@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 public abstract class DestroyableProjectile extends FastThrowableProjectile implements CustomSyncMotionEntity {
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(DestroyableProjectile.class, EntityDataSerializers.FLOAT);
+
     private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
 
     public DestroyableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
@@ -53,7 +54,6 @@ public abstract class DestroyableProjectile extends FastThrowableProjectile impl
         super.defineSynchedData(builder);
         builder.define(HEALTH, getMaxHealth());
     }
-
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {

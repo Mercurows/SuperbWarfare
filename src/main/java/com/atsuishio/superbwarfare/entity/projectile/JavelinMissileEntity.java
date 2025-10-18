@@ -37,16 +37,18 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class JavelinMissileEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+
     public static final EntityDataAccessor<Boolean> TOP = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.BOOLEAN);
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     private int guideType = 0;
     public float targetX;
     public float targetY;
     public float targetZ;
-    public int durability = 50;
 
-    public JavelinMissileEntity(EntityType<? extends JavelinMissileEntity> type, Level world) {
-        super(type, world);
+    public JavelinMissileEntity(EntityType<? extends JavelinMissileEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
     }
 
@@ -57,6 +59,7 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.guideType = guideType;
+        this.durability = 50;
         if (targetPos != null) {
             this.targetX = (float) targetPos.x;
             this.targetY = (float) targetPos.y;
@@ -72,7 +75,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
     public void setAttackMode(boolean mode) {
         this.entityData.set(TOP, mode);
     }
-
 
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {

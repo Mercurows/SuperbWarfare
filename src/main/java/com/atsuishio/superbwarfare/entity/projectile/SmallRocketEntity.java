@@ -38,19 +38,25 @@ import javax.annotation.Nullable;
 public class SmallRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public float damage = 140f;
-    public float explosionDamage = 60f;
-    public float explosionRadius = 5f;
 
-    public SmallRocketEntity(EntityType<? extends SmallRocketEntity> type, Level world) {
-        super(type, world);
+    public SmallRocketEntity(EntityType<? extends SmallRocketEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
+        this.damage = 140f;
+        this.explosionDamage = 60f;
+        this.explosionRadius = 5f;
+        this.durability = 20;
+        this.gravity = 0;
     }
 
     public SmallRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
+        this.damage = 140f;
+        this.explosionDamage = 60f;
+        this.explosionRadius = 5f;
         this.durability = 20;
+        this.gravity = 0;
     }
 
     public SmallRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
@@ -59,6 +65,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.durability = 20;
+        this.gravity = 0;
     }
 
     @Override
@@ -131,7 +138,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 .explode();
     }
 
-
     @Override
     public void tick() {
         super.tick();
@@ -195,11 +201,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public float getVolume() {
         return 0.1f;
-    }
-
-    @Override
-    public double getDefaultGravity() {
-        return 0;
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -31,10 +30,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
-    private float damage = 40.0f;
-    private float explosionDamage = 80f;
-    private float explosionRadius = 5f;
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public GunGrenadeEntity(EntityType<? extends GunGrenadeEntity> type, Level world) {
@@ -48,28 +43,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putFloat("Damage", this.damage);
-        pCompound.putFloat("ExplosionDamage", this.explosionDamage);
-        pCompound.putFloat("Radius", this.explosionRadius);
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("Damage")) {
-            this.damage = pCompound.getFloat("Damage");
-        }
-        if (pCompound.contains("ExplosionDamage")) {
-            this.explosionDamage = pCompound.getFloat("ExplosionDamage");
-        }
-        if (pCompound.contains("Radius")) {
-            this.explosionRadius = pCompound.getFloat("Radius");
-        }
     }
 
     @Override

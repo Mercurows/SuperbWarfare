@@ -67,7 +67,7 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
             public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
                 return PoseTool.pose(entityLiving, hand, stack);
             }
-        }, ModItems.RPG_ROCKET_TBG_TBG.get());
+        }, ModItems.RPG_ROCKET_TBG.get());
     }
 
     @Override
@@ -125,7 +125,7 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
 
     public static class RocketDispenseBehavior extends ProjectileDispenseBehavior {
         public RocketDispenseBehavior() {
-            super(ModItems.RPG_ROCKET_TBG_TBG.get());
+            super(ModItems.RPG_ROCKET_TBG.get());
         }
 
         @Override

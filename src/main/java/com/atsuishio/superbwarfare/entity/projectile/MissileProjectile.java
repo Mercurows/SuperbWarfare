@@ -32,6 +32,7 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
         if (pShooter != null) {
             this.setPos(pShooter.getX(), pShooter.getEyeY() - (double) 0.1F, pShooter.getZ());
         }
+        this.gravity = 0;
     }
 
     public void setTargetUuid(String uuid) {
@@ -102,10 +103,5 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
     @Override
     public boolean isNoGravity() {
         return true;
-    }
-
-    @Override
-    public double getDefaultGravity() {
-        return 0;
     }
 }

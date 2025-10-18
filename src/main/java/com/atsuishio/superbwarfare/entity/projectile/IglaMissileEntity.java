@@ -35,12 +35,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class IglaMissileEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public int durability = 0;
-
-    public IglaMissileEntity(EntityType<? extends IglaMissileEntity> type, Level world) {
-        super(type, world);
+    public IglaMissileEntity(EntityType<? extends IglaMissileEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
     }
 
@@ -50,11 +49,12 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
+        this.durability = 0;
     }
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.JAVELIN_MISSILE.get();
+        return ModItems.IGLA_MISSILE.get();
     }
 
     @Override

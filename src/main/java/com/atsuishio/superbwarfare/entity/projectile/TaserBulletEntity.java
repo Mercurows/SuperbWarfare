@@ -20,7 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,30 +38,26 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 @OnlyIn(value = Dist.CLIENT, _interface = ItemSupplier.class)
 public class TaserBulletEntity extends AbstractArrow implements GeoEntity, CustomDamageProjectile {
 
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    private Vec3 initialPos;
     private float damage = 1f;
     private int volt = 0;
     private int wireLength = 0;
     private boolean stopped = false;
-    public static final ItemStack PROJECTILE_ITEM = new ItemStack(Items.AIR);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public TaserBulletEntity(LivingEntity entity, Level level, float damage, int volt, int wireLength) {
         super(ModEntities.TASER_BULLET.get(), level);
         this.damage = damage;
         this.volt = volt;
         this.wireLength = wireLength;
+        this.pickup = AbstractArrow.Pickup.DISALLOWED;
     }
 
-    public TaserBulletEntity(Level level, float damage) {
-        super(ModEntities.TASER_BULLET.get(), level);
+    public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
-
-        this.damage = damage;
-    }
-
-    public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level world) {
-        super(type, world);
-        this.noCulling = true;
+        this.pickup = AbstractArrow.Pickup.DISALLOWED;
     }
 
     public float getDamage() {
@@ -95,12 +90,12 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity, Custo
 
     @Override
     protected @NotNull ItemStack getPickupItem() {
-        return PROJECTILE_ITEM;
+        return ItemStack.EMPTY;
     }
 
     @Override
     protected @NotNull ItemStack getDefaultPickupItem() {
-        return PROJECTILE_ITEM;
+        return ItemStack.EMPTY;
     }
 
     @Override
@@ -141,8 +136,6 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity, Custo
             bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
         }
     }
-
-    private Vec3 initialPos;
 
     @Override
     public void tick() {

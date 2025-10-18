@@ -42,16 +42,17 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     };
     public static Consumer<FastThrowableProjectile> nearFlySound = projectile -> {
     };
-    public float damage = 250.0f;
-    public float explosionDamage = 140f;
-    public float explosionRadius = 6f;
+
     private static final int CHUNK_RADIUS = 1; // 3x3区块
 
+    public float damage = 0;
+    public float explosionDamage = 0;
+    public float explosionRadius = 0;
     public int durability = 50;
     public boolean firstHit = true;
-    private boolean isFastMoving = false;
     public float gravity = 0.05f;
 
+    private boolean isFastMoving = false;
     private final Set<ChunkPos> currentChunks = new HashSet<>();
     private ChunkPos lastChunkPos;
 
@@ -91,10 +92,19 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putFloat("Damage", this.damage);
-        compound.putFloat("ExplosionDamage", this.explosionDamage);
-        compound.putFloat("Radius", this.explosionRadius);
-        compound.putInt("Durability", this.durability);
+
+        if (this.damage > 0) {
+            compound.putFloat("Damage", this.damage);
+        }
+        if (this.explosionDamage > 0) {
+            compound.putFloat("ExplosionDamage", this.explosionDamage);
+        }
+        if (this.explosionRadius > 0) {
+            compound.putFloat("Radius", this.explosionRadius);
+        }
+        if (this.durability > 0) {
+            compound.putInt("Durability", this.durability);
+        }
     }
 
     @Override

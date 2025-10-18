@@ -67,10 +67,11 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.fireTime = fireTime;
         this.type = type;
         this.sparedAmount = sparedAmount;
+        this.gravity = 0.05f;
     }
 
-    public MediumRocketEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount) {
-        super(ModEntities.MEDIUM_ROCKET.get(), entity, world);
+    public MediumRocketEntity(LivingEntity entity, Level level, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount) {
+        super(ModEntities.MEDIUM_ROCKET.get(), entity, level);
         this.noCulling = true;
         this.damage = damage;
         this.explosionRadius = radius;
@@ -79,6 +80,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.fireTime = fireTime;
         this.type = type;
         this.sparedAmount = sparedAmount;
+        this.gravity = 0.05f;
     }
 
     public MediumRocketEntity durability(int durability) {
@@ -275,11 +277,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public float getVolume() {
         return 0.7f;
-    }
-
-    @Override
-    public double getDefaultGravity() {
-        return 0.05f;
     }
 
     @Override

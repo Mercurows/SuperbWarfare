@@ -36,15 +36,14 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public float damage = 340f;
-    public float explosionDamage = 80f;
-    public float explosionRadius = 5;
-    public float gravity = 0.015f;
-
-    public RpgRocketStandardEntity(EntityType<? extends RpgRocketStandardEntity> type, Level world) {
-        super(type, world);
+    public RpgRocketStandardEntity(EntityType<? extends RpgRocketStandardEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
         this.durability = 50;
+        this.damage = 340f;
+        this.explosionDamage = 80f;
+        this.explosionRadius = 5;
+        this.gravity = 0.015f;
     }
 
     public RpgRocketStandardEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float explosionDamage, float explosionRadius, float gravity) {
@@ -194,6 +193,4 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     public boolean forceLoadChunk() {
         return true;
     }
-
-
 }
