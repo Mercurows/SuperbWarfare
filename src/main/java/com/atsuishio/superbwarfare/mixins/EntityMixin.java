@@ -140,25 +140,13 @@ public abstract class EntityMixin implements OBBHitter {
 //    @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
 //    public void push(Entity entity, CallbackInfo ci) {
 //        //noinspection ConstantValue
-//        if (!(((Entity) (Object) this) instanceof VehicleEntity) && entity instanceof VehicleEntity vehicle && vehicle instanceof OBBEntity obbEntity) {
+//        if (!(((Entity) (Object) this) instanceof VehicleEntity) && entity instanceof VehicleEntity vehicle) {
 //            if (this.isPassengerOfSameVehicle(entity)) {
 //                ci.cancel();
 //                return;
 //            }
-//            var feetPos = this.position().add(new Vec3(0, 0.001f, 0));
-//            for (OBB obb : obbEntity.getOBBs()) {
-//                if (obb.contains(feetPos)) {
-//                    if (!entity.noPhysics && !this.noPhysics) {
-//                        this.setDeltaMovement(
-//                                new Vec3(
-//                                        this.getDeltaMovement().x + entity.getDeltaMovement().x,
-//                                        Math.max(0, this.getDeltaMovement().y + entity.getDeltaMovement().y),
-//                                        this.getDeltaMovement().z + entity.getDeltaMovement().z
-//                                )
-//                        );
-//                    }
-//                }
-//            }
+//            vehicle.support((Entity) (Object) this);
+//            ci.cancel();
 //        }
 //    }
 }

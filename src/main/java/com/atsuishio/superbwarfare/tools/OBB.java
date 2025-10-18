@@ -34,6 +34,76 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     }
 
     /**
+     * 计算与向量相交的某个面
+     *
+     * @author YWZJ Ranpoes
+     */
+    public int getEmbeddingFace(Vec3 vec3) {
+        Vector3f rel = vec3.toVector3f().sub(center);
+
+        Vector3f[] axes = new Vector3f[3];
+        axes[0] = rotation.transform(new Vector3f(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3f(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3f(0, 0, 1));
+
+        float projX = Math.abs(rel.dot(axes[0]));
+        float projY = Math.abs(rel.dot(axes[1]));
+        float projZ = Math.abs(rel.dot(axes[2]));
+
+        float min = Float.MAX_VALUE;
+        int index = 0;
+
+        float dx = extents.x - projX;
+        float dy = extents.y - projY;
+        float dz = extents.z - projZ;
+
+        if (dx < min) {
+            min = dx;
+            index = 1;
+        }
+        if (dy < min) {
+            min = dy;
+            index = 2;
+        }
+        if (dz < min) {
+            index = 3;
+        }
+
+        return index * (rel.dot(axes[index - 1]) < 0 ? -1 : 1);
+    }
+
+    public double getEmbeddingDepth(Vec3 vec3) {
+        Vector3f rel = vec3.toVector3f().sub(center);
+
+        Vector3f[] axes = new Vector3f[3];
+        axes[0] = rotation.transform(new Vector3f(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3f(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3f(0, 0, 1));
+
+        float projX = Math.abs(rel.dot(axes[0]));
+        float projY = Math.abs(rel.dot(axes[1]));
+        float projZ = Math.abs(rel.dot(axes[2]));
+
+        float dx = extents.x - projX;
+        float dy = extents.y - projY;
+        float dz = extents.z - projZ;
+
+        float minDepth = Float.MAX_VALUE;
+
+        if (Math.abs(dx) < Math.abs(minDepth)) {
+            minDepth = dx;
+        }
+        if (Math.abs(dy) < Math.abs(minDepth)) {
+            minDepth = dy;
+        }
+        if (Math.abs(dz) < Math.abs(minDepth)) {
+            minDepth = dz;
+        }
+
+        return minDepth;
+    }
+
+    /**
      * 获取OBB的8个顶点坐标
      *
      * @return 顶点坐标
@@ -193,7 +263,6 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         Vector3f localHit = new Vector3f(dir).mul((float) tEnter).add(localFrom);
         // 转换回世界坐标系
         return Optional.of(localToWorld(localHit, axes));
-
     }
 
     // 世界坐标转局部坐标

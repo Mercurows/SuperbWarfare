@@ -4256,4 +4256,106 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public VehicleType getVehicleType() {
         return data().get(VehicleProp.TYPE);
     }
+
+    // TODO 实现正确的OBB碰撞检测
+//    /**
+//     * @author YWZJ Ranpoes
+//     */
+//    public void support(Entity entity) {
+//        if (!(this instanceof OBBEntity obbEntity)) return;
+//
+//        Vec3 feetPos = entity.position().subtract(new Vec3(0, 0.1f, 0));
+//        for (var obb : obbEntity.getOBBs()) {
+//            if (obb.contains(feetPos)) {
+//                if (!entity.noPhysics && !this.noPhysics) {
+//                    double gravity = Math.max(entity.getDeltaMovement().y, 0);
+//                    if (gravity == 0) {
+//                        entity.setOnGround(true);
+//                    }
+//                    double depth = obb.getEmbeddingDepth(feetPos);
+//                    entity.setDeltaMovement(this.getDeltaMovement().add(0, gravity + depth < 0.1f ? 0 : depth, 0));
+//
+//                    continue;
+//                }
+//            }
+//            if (!entity.noPhysics && !this.noPhysics) {
+//                var aabb = entity.getBoundingBox();
+//                if (OBB.isColliding(obb, aabb)) {
+//                    int face = obb.getEmbeddingFace(feetPos);
+//                    var axes = obb.getAxes();
+//                    var support = axes[Math.abs(face) - 1];
+//                    if (face < 0) {
+//                        support.negate();
+//                    }
+//                    if (entity.isPushable()) {
+//                        float force = 0.1f;
+//                        if (this.getDeltaMovement().length() > 0.01 && face != -2) {
+//                            force = 0.2f;
+//                        }
+//                        entity.setPos(entity.position().add(new Vec3(support).scale(force)));
+//                        this.hasImpulse = true;
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    // TODO 实现正确的AABB包围箱
+//    @Override
+//    public EntityDimensions getDimensions(Pose pPose) {
+//        var aabb = this.calculateCombinedAABBOptimized();
+//        var max = Math.max(aabb.getXsize(), aabb.getZsize());
+//        return EntityDimensions.scalable((float) max, (float) aabb.getYsize());
+//    }
+//
+//    public AABB calculateCombinedAABBOptimized() {
+//        if (!(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
+//            return this.getBoundingBox();
+//        }
+//
+//        var obbList = obbEntity.getOBBs();
+//
+//        Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+//        Vector3f max = new Vector3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+//
+//        for (OBB obb : obbList) {
+//            Vector3f[] vertices = getOBBVertices(obb);
+//
+//            for (Vector3f vertex : vertices) {
+//                min.x = Math.min(min.x, vertex.x);
+//                min.y = Math.min(min.y, vertex.y);
+//                min.z = Math.min(min.z, vertex.z);
+//
+//                max.x = Math.max(max.x, vertex.x);
+//                max.y = Math.max(max.y, vertex.y);
+//                max.z = Math.max(max.z, vertex.z);
+//            }
+//        }
+//
+//        return new AABB(new Vec3(min), new Vec3(max));
+//    }
+//
+//    private Vector3f[] getOBBVertices(OBB obb) {
+//        Vector3f[] vertices = new Vector3f[8];
+//
+//        Vector3f[] axes = new Vector3f[3];
+//        axes[0] = obb.rotation().transform(new Vector3f(1, 0, 0));
+//        axes[1] = obb.rotation().transform(new Vector3f(0, 1, 0));
+//        axes[2] = obb.rotation().transform(new Vector3f(0, 0, 1));
+//
+//        for (int i = 0; i < 8; i++) {
+//            float signX = ((i & 1) == 0) ? 1.0f : -1.0f;
+//            float signY = ((i & 2) == 0) ? 1.0f : -1.0f;
+//            float signZ = ((i & 4) == 0) ? 1.0f : -1.0f;
+//
+//            Vector3f vertex = new Vector3f(obb.center());
+//            vertex.add(new Vector3f(axes[0]).mul(obb.extents().x * signX));
+//            vertex.add(new Vector3f(axes[1]).mul(obb.extents().y * signY));
+//            vertex.add(new Vector3f(axes[2]).mul(obb.extents().z * signZ));
+//
+//            vertices[i] = vertex;
+//        }
+//
+//        return vertices;
+//    }
 }
