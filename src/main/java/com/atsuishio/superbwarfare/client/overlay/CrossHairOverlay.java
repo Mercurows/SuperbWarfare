@@ -144,7 +144,10 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
 
             if (health > 0) {
                 RenderHelper.renderCircularRing(guiGraphics,
-                        screenWidth / 2f + moveX, screenHeight / 2f + moveY, 7, 5, new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f}, health, false);
+                        screenWidth / 2f + moveX, screenHeight / 2f + moveY,
+                        0.035f, 0.028f,
+                        new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f},
+                        health, true);
             }
         }
 
