@@ -24,8 +24,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.menu.VehicleMenu;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
@@ -48,6 +48,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -63,7 +64,10 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.*;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
@@ -73,7 +77,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -100,7 +103,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -118,7 +122,7 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
+public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, ControllableVehicle, HasCustomInventoryScreen, MenuProvider {
 
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
@@ -437,41 +441,55 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // container start
 
-    private LazyOptional<?> itemHandler = LazyOptional.of(() -> new InvWrapper(this));
+    private final ItemStackHandler inventory = new VehicleContainerHandler(6 * 17, this);
+    private final ItemStackHandler upgrades = new VehicleContainerHandler(3, this);
+
+    public ItemStackHandler getInventory() {
+        return this.inventory;
+    }
+
+    public ItemStackHandler getUpgradesInventory() {
+        return this.upgrades;
+    }
+
+    public CombinedInvWrapper getAllInventory() {
+        return new CombinedInvWrapper(this.inventory, this.upgrades);
+    }
+
     protected NonNullList<ItemStack> items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
 
-    protected void resizeItems() {
-        int newSize = this.getContainerSize();
-        int currentSize = this.items.size();
-
-        if (newSize == currentSize) {
-            return;
-        }
-
-        if (newSize > currentSize) {
-            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
-            for (int i = 0; i < currentSize; i++) {
-                newItems.set(i, this.items.get(i));
-            }
-            this.items = newItems;
-        } else {
-            // TODO 解决超出容量的物品没有正确保存/掉落的问题
-            for (int i = newSize; i < currentSize; i++) {
-                ItemStack excessStack = this.items.get(i);
-                if (!excessStack.isEmpty()) {
-                    this.spawnAtLocation(excessStack.copy());
-                }
-            }
-
-            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
-            for (int i = 0; i < newSize; i++) {
-                newItems.set(i, this.items.get(i));
-            }
-            this.items = newItems;
-        }
-
-        this.setChanged();
-    }
+//    protected void resizeItems() {
+//        int newSize = this.getContainerSize();
+//        int currentSize = this.items.size();
+//
+//        if (newSize == currentSize) {
+//            return;
+//        }
+//
+//        if (newSize > currentSize) {
+//            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
+//            for (int i = 0; i < currentSize; i++) {
+//                newItems.set(i, this.items.get(i));
+//            }
+//            this.items = newItems;
+//        } else {
+//            // TODO 解决超出容量的物品没有正确保存/掉落的问题
+//            for (int i = newSize; i < currentSize; i++) {
+//                ItemStack excessStack = this.items.get(i);
+//                if (!excessStack.isEmpty()) {
+//                    this.spawnAtLocation(excessStack.copy());
+//                }
+//            }
+//
+//            NonNullList<ItemStack> newItems = NonNullList.withSize(newSize, ItemStack.EMPTY);
+//            for (int i = 0; i < newSize; i++) {
+//                newItems.set(i, this.items.get(i));
+//            }
+//            this.items = newItems;
+//        }
+//
+//        this.setChanged();
+//    }
 
     /**
      * 计算当前载具内指定物品的数量
@@ -525,97 +543,100 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    @Override
+    public int getMaxStackSize() {
+        return 64;
+    }
+
+    //    @Override
     public int getContainerSize() {
         return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE).getSize();
     }
 
-    @Override
-    public @NotNull ItemStack getItem(int slot) {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
-        return this.items.get(slot);
-    }
-
-    @Override
-    public @NotNull ItemStack removeItem(int slot, int pAmount) {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
-
-        return ContainerHelper.removeItem(this.items, slot, pAmount);
-    }
-
-    @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
-
-        ItemStack itemstack = this.items.get(slot);
-        if (itemstack.isEmpty()) {
-            return ItemStack.EMPTY;
-        } else {
-            this.items.set(slot, ItemStack.EMPTY);
-            return itemstack;
-        }
-    }
-
-    @Override
-    public void setItem(int slot, @NotNull ItemStack pStack) {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return;
-
-        var limit = Math.min(this.getMaxStackSize(), pStack.getMaxStackSize());
-        if (!pStack.isEmpty() && pStack.getCount() > limit) {
-            Mod.LOGGER.warn("try inserting ItemStack {} exceeding the maximum stack size: {}, clamped to {}", pStack.getItem(), limit, limit);
-            pStack.setCount(limit);
-        }
-        this.items.set(slot, pStack);
-    }
-
-    @Override
-    public void setChanged() {
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player pPlayer) {
-        return this.hasContainer() && !this.isRemoved() && this.position().closerThan(pPlayer.position(), 8.0D);
-    }
-
-    @Override
-    public void clearContent() {
-        this.items.clear();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return this.items.stream().allMatch(ItemStack::isEmpty);
-    }
+//    @Override
+//    public @NotNull ItemStack getItem(int slot) {
+//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+//        return this.items.get(slot);
+//    }
+//
+//    @Override
+//    public @NotNull ItemStack removeItem(int slot, int pAmount) {
+//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+//
+//        return ContainerHelper.removeItem(this.items, slot, pAmount);
+//    }
+//
+//    @Override
+//    public @NotNull ItemStack removeItemNoUpdate(int slot) {
+//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY;
+//
+//        ItemStack itemstack = this.items.get(slot);
+//        if (itemstack.isEmpty()) {
+//            return ItemStack.EMPTY;
+//        } else {
+//            this.items.set(slot, ItemStack.EMPTY);
+//            return itemstack;
+//        }
+//    }
+//
+//    @Override
+//    public void setItem(int slot, @NotNull ItemStack pStack) {
+//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return;
+//
+//        var limit = Math.min(this.getMaxStackSize(), pStack.getMaxStackSize());
+//        if (!pStack.isEmpty() && pStack.getCount() > limit) {
+//            Mod.LOGGER.warn("try inserting ItemStack {} exceeding the maximum stack size: {}, clamped to {}", pStack.getItem(), limit, limit);
+//            pStack.setCount(limit);
+//        }
+//        this.items.set(slot, pStack);
+//    }
+//
+//    @Override
+//    public void setChanged() {
+//    }
+//
+//    @Override
+//    public void clearContent() {
+//        this.items.clear();
+//    }
+//
+//    @Override
+//    public boolean isEmpty() {
+//        return this.items.stream().allMatch(ItemStack::isEmpty);
+//    }
 
     public boolean hasContainer() {
         return this.getContainerSize() > 0;
     }
 
-    @Override
-    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
-
-        var currentStack = this.items.get(slot);
-        if (!currentStack.isEmpty() && currentStack.getItem() != stack.getItem()) return false;
-
-        var currentCount = currentStack.getCount();
-        var stackCount = stack.getCount();
-        int combinedCount = currentCount + stackCount;
-        if (combinedCount > this.getMaxStackSize() || combinedCount > stack.getMaxStackSize()) return false;
-
-        return ContainerEntity.super.canPlaceItem(slot, stack);
-    }
-
-    @Override
-    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
-        return ContainerEntity.super.canTakeItem(target, slot, stack);
-    }
+//    @Override
+//    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
+//
+//        var currentStack = this.items.get(slot);
+//        if (!currentStack.isEmpty() && currentStack.getItem() != stack.getItem()) return false;
+//
+//        var currentCount = currentStack.getCount();
+//        var stackCount = stack.getCount();
+//        int combinedCount = currentCount + stackCount;
+//        if (combinedCount > this.getMaxStackSize() || combinedCount > stack.getMaxStackSize()) return false;
+//
+//        return ContainerEntity.super.canPlaceItem(slot, stack);
+//    }
+//
+//    @Override
+//    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+//        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false;
+//        return ContainerEntity.super.canTakeItem(target, slot, stack);
+//    }
 
     @Override
     public void remove(@NotNull RemovalReason pReason) {
         if (!this.level().isClientSide && pReason != RemovalReason.DISCARDED) {
-            Containers.dropContents(this.level(), this, this);
+            var inv = new CombinedInvWrapper(this.inventory, this.upgrades);
+            for (int i = 0; i < inv.getSlots(); i++) {
+                int size = inv.getSlotLimit(i);
+                Containers.dropItemStack(this.level(), this.getX(), this.getY(), this.getZ(), inv.extractItem(i, size, false));
+            }
         }
         super.remove(pReason);
     }
@@ -626,25 +647,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (!pPlayer.level().isClientSide) {
             this.gameEvent(GameEvent.CONTAINER_OPEN, pPlayer);
         }
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getLootTable() {
-        return null;
-    }
-
-    @Override
-    public void setLootTable(@Nullable ResourceLocation pLootTable) {
-    }
-
-    @Override
-    public long getLootTableSeed() {
-        return 0;
-    }
-
-    @Override
-    public void setLootTableSeed(long pLootTableSeed) {
     }
 
     public boolean hasMenu() {
@@ -670,27 +672,27 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                         upgrade ? ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_HUGE.get();
                 default -> null;
             };
-            if (menu == null) return null;
-
-            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol(), upgrade);
+//            if (menu == null) return null;
+//
+//            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol(), upgrade);
         }
         return null;
     }
 
-    @Override
-    public void stopOpen(@NotNull Player pPlayer) {
-        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer));
-    }
-
-    @Override
-    public @NotNull NonNullList<ItemStack> getItemStacks() {
-        return this.items;
-    }
-
-    @Override
-    public void clearItemStacks() {
-        this.items.clear();
-    }
+//    @Override
+//    public void stopOpen(@NotNull Player pPlayer) {
+//        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer));
+//    }
+//
+//    @Override
+//    public @NotNull NonNullList<ItemStack> getItemStacks() {
+//        return this.items;
+//    }
+//
+//    @Override
+//    public void clearItemStacks() {
+//        this.items.clear();
+//    }
 
     // container end
 
@@ -1124,8 +1126,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             energyStorage.deserializeNBT(energyNBT);
         }
 
-        this.resizeItems();
-        ContainerHelper.loadAllItems(compound, this.getItemStacks());
+//        this.resizeItems();
+//        ContainerHelper.loadAllItems(compound, this.getItemStacks());
+        if (compound.contains("VehicleItems", Tag.TAG_COMPOUND)) {
+            this.inventory.deserializeNBT(compound.getCompound("VehicleItems"));
+        }
+        if (compound.contains("VehicleUpgrades", Tag.TAG_COMPOUND)) {
+            this.upgrades.deserializeNBT(compound.getCompound("VehicleUpgrades"));
+        }
     }
 
     @Override
@@ -1163,8 +1171,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             compound.put("Energy", energyStorage.serializeNBT());
         }
 
-        this.resizeItems();
-        ContainerHelper.saveAllItems(compound, this.getItemStacks());
+//        this.resizeItems();
+//        ContainerHelper.saveAllItems(compound, this.getItemStacks());
+        compound.put("VehicleItems", this.inventory.serializeNBT());
+        compound.put("VehicleUpgrades", this.upgrades.serializeNBT());
     }
 
     @Override
@@ -1692,23 +1702,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         moveOnDragonTeeth();
 
-        if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
-            for (var stack : this.getItemStacks()) {
-                int neededEnergy = this.getMaxEnergy() - this.getEnergy();
-                if (neededEnergy <= 0) break;
-
-                var energyCap = stack.getCapability(ForgeCapabilities.ENERGY).resolve();
-                if (energyCap.isEmpty()) continue;
-
-                var energyStorage = energyCap.get();
-                var stored = energyStorage.getEnergyStored();
-                if (stored <= 0) continue;
-
-                int energyToExtract = Math.min(stored, neededEnergy);
-                energyStorage.extractEnergy(energyToExtract, false);
-                this.setEnergy(this.getEnergy() + energyToExtract);
-            }
-        }
+//        if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
+//            for (var stack : this.getItemStacks()) {
+//                int neededEnergy = this.getMaxEnergy() - this.getEnergy();
+//                if (neededEnergy <= 0) break;
+//
+//                var energyCap = stack.getCapability(ForgeCapabilities.ENERGY).resolve();
+//                if (energyCap.isEmpty()) continue;
+//
+//                var energyStorage = energyCap.get();
+//                var stored = energyStorage.getEnergyStored();
+//                if (stored <= 0) continue;
+//
+//                int energyToExtract = Math.min(stored, neededEnergy);
+//                energyStorage.extractEnergy(energyToExtract, false);
+//                this.setEnergy(this.getEnergy() + energyToExtract);
+//            }
+//        }
 
         entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) * 0.5f);
 
@@ -2951,9 +2961,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ENERGY && this.hasEnergyStorage()) {
-            return energy.cast();
+            return this.energy.cast();
         } else if (cap == ForgeCapabilities.ITEM_HANDLER && this.hasContainer()) {
-            return itemHandler.cast();
+            return LazyOptional.of(() -> new CombinedInvWrapper(this.inventory, this.upgrades)).cast();
         }
         return super.getCapability(cap, side);
     }
@@ -2963,27 +2973,27 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return this.getCapability(cap, null);
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        if (this.hasContainer()) {
-            itemHandler.invalidate();
-        }
-        if (this.hasEnergyStorage()) {
-            energy.invalidate();
-        }
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        if (this.hasContainer()) {
-            itemHandler = LazyOptional.of(() -> new InvWrapper(this));
-        }
-        if (this.hasEnergyStorage()) {
-            energy = LazyOptional.of(() -> new VehicleEnergyStorage(this));
-        }
-    }
+//    @Override
+//    public void invalidateCaps() {
+//        super.invalidateCaps();
+//        if (this.hasContainer()) {
+//            itemHandler.invalidate();
+//        }
+//        if (this.hasEnergyStorage()) {
+//            energy.invalidate();
+//        }
+//    }
+//
+//    @Override
+//    public void reviveCaps() {
+//        super.reviveCaps();
+//        if (this.hasContainer()) {
+//            itemHandler = LazyOptional.of(() -> new InvWrapper(this));
+//        }
+//        if (this.hasEnergyStorage()) {
+//            energy = LazyOptional.of(() -> new VehicleEnergyStorage(this));
+//        }
+//    }
 
     public boolean hasTracks() {
         return false;
