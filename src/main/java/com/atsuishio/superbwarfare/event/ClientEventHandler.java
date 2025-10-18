@@ -1531,7 +1531,7 @@ public class ClientEventHandler {
         var data = GunData.from(stack);
         int barrelType = data.attachment.get(AttachmentType.BARREL);
         int gripType = data.attachment.get(AttachmentType.GRIP);
-        int scopeType = data.attachment.get(AttachmentType.GRIP);
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
 
         float recoil = switch (barrelType) {
             case 1 -> 0.75f;
@@ -1552,7 +1552,7 @@ public class ClientEventHandler {
         };
 
         float zoomRecoil = switch (scopeType) {
-            case 2 -> 0.55f;
+            case 2 -> 0.45f;
             case 3 -> 0.25f;
             default -> 1.25f;
         };
