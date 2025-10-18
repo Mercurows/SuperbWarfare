@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
+import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;

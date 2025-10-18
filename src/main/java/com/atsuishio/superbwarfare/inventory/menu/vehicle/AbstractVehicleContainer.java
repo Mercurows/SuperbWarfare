@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.inventory;
+package com.atsuishio.superbwarfare.inventory.menu.vehicle;
 
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -14,14 +14,13 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Code based on TartaricAcid's <a href="https://github.com/TartaricAcid/TouhouLittleMaid">TouhouLittleMaid</a>
  */
-public abstract class AbstractVehicleContainerMenu extends AbstractContainerMenu {
+public abstract class AbstractVehicleContainer extends AbstractContainerMenu {
 
     public static final int PLAYER_INVENTORY_SIZE = 36;
 
-    @Nullable
     protected final VehicleEntity vehicle;
 
-    protected AbstractVehicleContainerMenu(@Nullable MenuType<?> pMenuType, int pContainerId, Inventory inventory, int entityId) {
+    protected AbstractVehicleContainer(@Nullable MenuType<?> pMenuType, int pContainerId, Inventory inventory, int entityId) {
         super(pMenuType, pContainerId);
         this.vehicle = (VehicleEntity) inventory.player.level().getEntity(entityId);
         if (vehicle != null) {
@@ -50,7 +49,6 @@ public abstract class AbstractVehicleContainerMenu extends AbstractContainerMenu
     }
 
     private void addUpgradeInventory() {
-        if (this.vehicle == null) return;
         var hasSlots = this.vehicle.data().get(VehicleProp.HAS_UPGRADE_SLOTS);
         if (!hasSlots) return;
 

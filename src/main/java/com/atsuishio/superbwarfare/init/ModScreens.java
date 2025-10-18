@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.client.screens.*;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType;
-import com.atsuishio.superbwarfare.menu.VehicleMenu;
+import com.atsuishio.superbwarfare.inventory.menu.VehicleMenu;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;

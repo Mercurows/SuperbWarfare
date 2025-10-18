@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
+import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;

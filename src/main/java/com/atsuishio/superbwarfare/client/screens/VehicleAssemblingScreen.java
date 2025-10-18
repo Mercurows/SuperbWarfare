@@ -13,7 +13,7 @@ import com.atsuishio.superbwarfare.compat.jei.JeiCompatHolder;
 import com.atsuishio.superbwarfare.compat.jei.SbwJEIPlugin;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModRecipes;
-import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
+import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu;
 import com.atsuishio.superbwarfare.network.message.send.AssembleVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import com.google.common.collect.Lists;

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
-import com.atsuishio.superbwarfare.menu.FuMO25Menu;
+import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;

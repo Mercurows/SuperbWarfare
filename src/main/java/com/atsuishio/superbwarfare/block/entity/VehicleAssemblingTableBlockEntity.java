@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.block.entity;
 
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
-import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
+import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.menu.ChargingStationMenu;
+import com.atsuishio.superbwarfare.inventory.menu.ChargingStationMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 

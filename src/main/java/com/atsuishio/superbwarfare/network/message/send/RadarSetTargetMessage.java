@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.menu.FuMO25Menu;
+import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

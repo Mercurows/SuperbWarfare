@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
-import com.atsuishio.superbwarfare.menu.EnergyMenu;
+import com.atsuishio.superbwarfare.inventory.menu.EnergyMenu;
 import com.atsuishio.superbwarfare.network.message.receive.*;
 import com.atsuishio.superbwarfare.tools.LivingKillRecord;
 import net.minecraft.client.CameraType;

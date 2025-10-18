@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.menu;
+package com.atsuishio.superbwarfare.inventory.menu;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
