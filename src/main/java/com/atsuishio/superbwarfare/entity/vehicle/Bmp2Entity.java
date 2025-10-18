@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -42,7 +41,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
@@ -381,22 +379,22 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             }
         }
 
-        int mgAmmoCount = this.getItemStacks().stream().filter(stack -> {
-            if (stack.is(ModItems.AMMO_BOX.get())) {
-                return Ammo.RIFLE.get(stack) > 0;
-            }
-            return false;
-        }).mapToInt(Ammo.RIFLE::get).sum() + countItem(ModItems.RIFLE_AMMO.get());
-
-        if ((hasItem(ModItems.WIRE_GUIDE_MISSILE.get()) || hasCreativeAmmo)
-                && this.reloadCoolDown <= 0 && this.getEntityData().get(LOADED_MISSILE) < 1) {
-            this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) + 1);
-            this.reloadCoolDown = 160;
-            if (!hasCreativeAmmo) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.WIRE_GUIDE_MISSILE.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-            }
-            this.level().playSound(null, this, ModSounds.BMP_MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
-        }
+//        int mgAmmoCount = this.getItemStacks().stream().filter(stack -> {
+//            if (stack.is(ModItems.AMMO_BOX.get())) {
+//                return Ammo.RIFLE.get(stack) > 0;
+//            }
+//            return false;
+//        }).mapToInt(Ammo.RIFLE::get).sum() + countItem(ModItems.RIFLE_AMMO.get());
+//
+//        if ((hasItem(ModItems.WIRE_GUIDE_MISSILE.get()) || hasCreativeAmmo)
+//                && this.reloadCoolDown <= 0 && this.getEntityData().get(LOADED_MISSILE) < 1) {
+//            this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) + 1);
+//            this.reloadCoolDown = 160;
+//            if (!hasCreativeAmmo) {
+//                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.WIRE_GUIDE_MISSILE.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//            }
+//            this.level().playSound(null, this, ModSounds.BMP_MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
+//        }
 
         if (getWeaponIndex(0) == 0) {
             this.entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
@@ -404,7 +402,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             this.entityData.set(AMMO, this.getEntityData().get(LOADED_MISSILE));
         }
 
-        this.entityData.set(MG_AMMO, mgAmmoCount);
+//        this.entityData.set(MG_AMMO, mgAmmoCount);
         this.entityData.set(MISSILE_COUNT, countItem(ModItems.WIRE_GUIDE_MISSILE.get()));
     }
 
@@ -439,7 +437,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
                 if (hasCreativeAmmo) return;
 
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
             } else if (getWeaponIndex(0) == 1) {
                 if (this.cannotFireCoax) return;
 
@@ -453,18 +451,18 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                     this.level().addFreshEntity(projectileRight);
 
                     if (!hasCreativeAmmo) {
-                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                            if (stack.is(ModItems.AMMO_BOX.get())) {
-                                return Ammo.RIFLE.get(stack) > 0;
-                            }
-                            return false;
-                        }).findFirst().orElse(ItemStack.EMPTY);
-
-                        if (!ammoBox.isEmpty()) {
-                            Ammo.RIFLE.add(ammoBox, -1);
-                        } else {
-                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                        }
+//                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+//                            if (stack.is(ModItems.AMMO_BOX.get())) {
+//                                return Ammo.RIFLE.get(stack) > 0;
+//                            }
+//                            return false;
+//                        }).findFirst().orElse(ItemStack.EMPTY);
+//
+//                        if (!ammoBox.isEmpty()) {
+//                            Ammo.RIFLE.add(ammoBox, -1);
+//                        } else {
+//                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                        }
                     }
                 }
 
@@ -528,18 +526,18 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                     playShootSound3p(living, i, 3, 6, 12, shootPosition);
 
                     if (!hasCreativeAmmo) {
-                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                            if (stack.is(ModItems.AMMO_BOX.get())) {
-                                return Ammo.RIFLE.get(stack) > 0;
-                            }
-                            return false;
-                        }).findFirst().orElse(ItemStack.EMPTY);
-
-                        if (!ammoBox.isEmpty()) {
-                            Ammo.RIFLE.add(ammoBox, -1);
-                        } else {
-                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                        }
+//                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+//                            if (stack.is(ModItems.AMMO_BOX.get())) {
+//                                return Ammo.RIFLE.get(stack) > 0;
+//                            }
+//                            return false;
+//                        }).findFirst().orElse(ItemStack.EMPTY);
+//
+//                        if (!ammoBox.isEmpty()) {
+//                            Ammo.RIFLE.add(ammoBox, -1);
+//                        } else {
+//                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                        }
                     }
                 }
             }

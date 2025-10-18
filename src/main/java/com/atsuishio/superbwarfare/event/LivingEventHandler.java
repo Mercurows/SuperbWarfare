@@ -23,7 +23,10 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage;
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.DamageTypeTool;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.GunsTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceKey;
@@ -41,7 +44,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -576,7 +578,7 @@ public class LivingEventHandler {
         if (event.getEntity().getVehicle() instanceof VehicleEntity vehicleEntity) {
             var pickUp = event.getItem();
             if (!vehicleEntity.level().isClientSide) {
-                HopperBlockEntity.addItem(vehicleEntity, pickUp);
+//                HopperBlockEntity.addItem(vehicleEntity, pickUp);
             }
             event.setCanceled(true);
         }
@@ -625,7 +627,7 @@ public class LivingEventHandler {
             drops.forEach(itemEntity -> {
                 ItemStack stack = itemEntity.getItem();
 
-                InventoryTool.insertItem(containerVehicleEntity.getItemStacks(), stack);
+//                InventoryTool.insertItem(containerVehicleEntity.getItemStacks(), stack);
 
                 if (stack.getCount() <= 0) {
                     player.drop(stack, false);

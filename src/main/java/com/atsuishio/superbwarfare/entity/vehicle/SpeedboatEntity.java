@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -12,7 +11,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
@@ -26,7 +24,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -187,14 +184,14 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     private void handleAmmo() {
         if (!(this.getFirstPassenger() instanceof Player)) return;
 
-        int ammoCount = this.getItemStacks().stream().filter(stack -> {
-            if (stack.is(ModItems.AMMO_BOX.get())) {
-                return Ammo.HEAVY.get(stack) > 0;
-            }
-            return false;
-        }).mapToInt(Ammo.HEAVY::get).sum() + countItem(ModItems.HEAVY_AMMO.get());
-
-        this.entityData.set(AMMO, ammoCount);
+//        int ammoCount = this.getItemStacks().stream().filter(stack -> {
+//            if (stack.is(ModItems.AMMO_BOX.get())) {
+//                return Ammo.HEAVY.get(stack) > 0;
+//            }
+//            return false;
+//        }).mapToInt(Ammo.HEAVY::get).sum() + countItem(ModItems.HEAVY_AMMO.get());
+//
+//        this.entityData.set(AMMO, ammoCount);
     }
 
     /**
@@ -229,18 +226,18 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         }
 
         if (!hasCreativeAmmo) {
-            ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                if (stack.is(ModItems.AMMO_BOX.get())) {
-                    return Ammo.HEAVY.get(stack) > 0;
-                }
-                return false;
-            }).findFirst().orElse(ItemStack.EMPTY);
-
-            if (!ammoBox.isEmpty()) {
-                Ammo.HEAVY.add(ammoBox, -1);
-            } else {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-            }
+//            ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+//                if (stack.is(ModItems.AMMO_BOX.get())) {
+//                    return Ammo.HEAVY.get(stack) > 0;
+//                }
+//                return false;
+//            }).findFirst().orElse(ItemStack.EMPTY);
+//
+//            if (!ammoBox.isEmpty()) {
+//                Ammo.HEAVY.add(ammoBox, -1);
+//            } else {
+//                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//            }
         }
     }
 

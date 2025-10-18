@@ -83,11 +83,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public int getContainerSize() {
-        return 102;
-    }
-
-    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(ANIM_TIME, 0);
@@ -460,7 +455,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         if (hasCreativeAmmo) return;
 
-        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
     }
 
     public float shootingVolume() {

@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
@@ -325,7 +324,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                 this.entityData.set(LOADED_DRONE, this.getEntityData().get(LOADED_DRONE) + 1);
                 droneReloadCoolDown = 20;
                 if (!hasCreativeAmmo) {
-                    this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SWARM_DRONE.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                    this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SWARM_DRONE.get())).findFirst().ifPresent(stack -> stack.shrink(1));
                 }
                 this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
             }
@@ -589,18 +588,18 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                     playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
 
                     if (!hasCreativeAmmo) {
-                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                            if (stack.is(ModItems.AMMO_BOX.get())) {
-                                return Ammo.HEAVY.get(stack) > 0;
-                            }
-                            return false;
-                        }).findFirst().orElse(ItemStack.EMPTY);
-
-                        if (!ammoBox.isEmpty()) {
-                            Ammo.HEAVY.add(ammoBox, -1);
-                        } else {
-                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                        }
+//                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+//                            if (stack.is(ModItems.AMMO_BOX.get())) {
+//                                return Ammo.HEAVY.get(stack) > 0;
+//                            }
+//                            return false;
+//                        }).findFirst().orElse(ItemStack.EMPTY);
+//
+//                        if (!ammoBox.isEmpty()) {
+//                            Ammo.HEAVY.add(ammoBox, -1);
+//                        } else {
+//                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                        }
                     }
                 }
             }
@@ -625,18 +624,18 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
             if (hasCreativeAmmo) return;
 
-            ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                if (stack.is(ModItems.AMMO_BOX.get())) {
-                    return Ammo.HEAVY.get(stack) > 0;
-                }
-                return false;
-            }).findFirst().orElse(ItemStack.EMPTY);
-
-            if (!ammoBox.isEmpty()) {
-                Ammo.HEAVY.add(ammoBox, -1);
-            } else {
-                consumeItem(getWeapon(1).ammo, 1);
-            }
+//            ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+//                if (stack.is(ModItems.AMMO_BOX.get())) {
+//                    return Ammo.HEAVY.get(stack) > 0;
+//                }
+//                return false;
+//            }).findFirst().orElse(ItemStack.EMPTY);
+//
+//            if (!ammoBox.isEmpty()) {
+//                Ammo.HEAVY.add(ammoBox, -1);
+//            } else {
+//                consumeItem(getWeapon(1).ammo, 1);
+//            }
         }
 
         if (type == 2) {

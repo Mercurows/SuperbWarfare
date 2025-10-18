@@ -168,7 +168,8 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
 
     @Override
     public boolean canRemoteFire() {
-        return this.getItem(0).getItem() instanceof MortarShell && this.getEntityData().get(FIRE_TIME) == 0;
+//        return this.getItem(0).getItem() instanceof MortarShell && this.getEntityData().get(FIRE_TIME) == 0;
+        return false;
     }
 
     @Override
@@ -356,7 +357,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
 
                 ParticleTool.spawnMediumCannonMuzzleParticles(getLookAngle(), new Vec3(this.getX(), this.getEyeY(), this.getZ()).add(getLookAngle().scale(1.5)), server, this);
 
-                this.clearContent();
+//                this.clearContent();
 
                 if (this.entityData.get(INTELLIGENT)) {
                     this.resetTarget();
@@ -447,12 +448,12 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
         return 1;
     }
 
-    @Override
-    public void setChanged() {
-        if (!entityData.get(INTELLIGENT)) {
-            fire(null);
-        }
-    }
+//    @Override
+//    public void setChanged() {
+//        if (!entityData.get(INTELLIGENT)) {
+//            fire(null);
+//        }
+//    }
 
     @Override
     @Nullable
@@ -460,10 +461,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
         return new ItemStack(ModItems.MORTAR_DEPLOYER.get());
     }
 
-    @Override
-    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
-    }
+//    @Override
+//    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+//        return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
+//    }
 
     @Override
     public boolean hasEnergyStorage() {

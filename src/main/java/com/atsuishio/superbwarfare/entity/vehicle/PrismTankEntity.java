@@ -100,11 +100,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public int getContainerSize() {
-        return 102;
-    }
-
-    @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
                 new VehicleWeapon[]{

@@ -548,7 +548,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return 64;
     }
 
-    //    @Override
     public int getContainerSize() {
         return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE).getSize();
     }

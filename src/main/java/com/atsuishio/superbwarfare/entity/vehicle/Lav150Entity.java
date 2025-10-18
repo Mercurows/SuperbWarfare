@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.*;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
+import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -336,18 +339,18 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     private void handleAmmo() {
         if (!(this.getFirstPassenger() instanceof Player)) return;
 
-        int ammoCount = this.getItemStacks().stream().filter(stack -> {
-            if (stack.is(ModItems.AMMO_BOX.get())) {
-                return Ammo.RIFLE.get(stack) > 0;
-            }
-            return false;
-        }).mapToInt(Ammo.RIFLE::get).sum() + countItem(ModItems.RIFLE_AMMO.get());
-
-        if (getWeaponIndex(0) == 0) {
-            this.entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
-        } else if (getWeaponIndex(0) == 1) {
-            this.entityData.set(AMMO, ammoCount);
-        }
+//        int ammoCount = this.getItemStacks().stream().filter(stack -> {
+//            if (stack.is(ModItems.AMMO_BOX.get())) {
+//                return Ammo.RIFLE.get(stack) > 0;
+//            }
+//            return false;
+//        }).mapToInt(Ammo.RIFLE::get).sum() + countItem(ModItems.RIFLE_AMMO.get());
+//
+//        if (getWeaponIndex(0) == 0) {
+//            this.entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
+//        } else if (getWeaponIndex(0) == 1) {
+//            this.entityData.set(AMMO, ammoCount);
+//        }
     }
 
     // TODO 正确计算位置

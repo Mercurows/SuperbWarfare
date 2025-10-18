@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -195,7 +194,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) + 1);
             reloadCoolDown = 25;
             if (!InventoryTool.hasCreativeAmmoBox(player)) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_ROCKET.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_ROCKET.get())).findFirst().ifPresent(stack -> stack.shrink(1));
             }
             this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
         }
@@ -334,18 +333,18 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0, 0, 0, 0, false);
 
                 if (!hasCreativeAmmo) {
-                    ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                        if (stack.is(ModItems.AMMO_BOX.get())) {
-                            return Ammo.HEAVY.get(stack) > 0;
-                        }
-                        return false;
-                    }).findFirst().orElse(ItemStack.EMPTY);
-
-                    if (!ammoBox.isEmpty()) {
-                        Ammo.HEAVY.add(ammoBox, -1);
-                    } else {
-                        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                    }
+//                    ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+//                        if (stack.is(ModItems.AMMO_BOX.get())) {
+//                            return Ammo.HEAVY.get(stack) > 0;
+//                        }
+//                        return false;
+//                    }).findFirst().orElse(ItemStack.EMPTY);
+//
+//                    if (!ammoBox.isEmpty()) {
+//                        Ammo.HEAVY.add(ammoBox, -1);
+//                    } else {
+//                        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
+//                    }
                 }
 
             }
@@ -547,10 +546,5 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Vector4f worldPosition7 = transformPosition(transform, 0.1875f, 2.09375f, -6.15625f);
         this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
         this.obb7.setRotation(VectorTool.combineRotations(1, this));
-    }
-
-    @Override
-    public int getContainerSize() {
-        return 102;
     }
 }

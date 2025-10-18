@@ -218,17 +218,17 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
             if (this.items.get(0).getItem() instanceof CannonShellItem) {
-                ItemStack item = this.getItem(0);
-
-                int type = 0;
-                if (item.is(ModItems.HE_5_INCHES.get())) {
-                    type = 1;
-                } else if (item.is(ModItems.CM_5_INCHES.get())) {
-                    type = 2;
-                } else if (item.is(ModItems.GS_5_INCHES.get())) {
-                    type = 3;
-                }
-                setWeaponIndex(0, type);
+//                ItemStack item = this.getItem(0);
+//
+//                int type = 0;
+//                if (item.is(ModItems.HE_5_INCHES.get())) {
+//                    type = 1;
+//                } else if (item.is(ModItems.CM_5_INCHES.get())) {
+//                    type = 2;
+//                } else if (item.is(ModItems.GS_5_INCHES.get())) {
+//                    type = 3;
+//                }
+//                setWeaponIndex(0, type);
                 vehicleShoot(player, 0);
             }
             return InteractionResult.SUCCESS;
@@ -243,7 +243,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                     return InteractionResult.PASS;
                 }
 
-                this.setItem(0, stack.copyWithCount(count + 1));
+//                this.setItem(0, stack.copyWithCount(count + 1));
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }
@@ -487,23 +487,24 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public boolean canRemoteFire() {
-        return this.getItem(0).getItem() instanceof CannonShellItem && this.entityData.get(COOL_DOWN) == 0;
+//        return this.getItem(0).getItem() instanceof CannonShellItem && this.entityData.get(COOL_DOWN) == 0;
+        return false;
     }
 
     @Override
     public void remoteFire(@Nullable Player player) {
-        ItemStack stack = this.getItem(0);
-
-        int type = 0;
-        if (stack.is(ModItems.HE_5_INCHES.get())) {
-            type = 1;
-        } else if (stack.is(ModItems.CM_5_INCHES.get())) {
-            type = 2;
-        } else if (stack.is(ModItems.GS_5_INCHES.get())) {
-            type = 3;
-        }
-
-        this.setWeaponIndex(0, type);
+//        ItemStack stack = this.getItem(0);
+//
+//        int type = 0;
+//        if (stack.is(ModItems.HE_5_INCHES.get())) {
+//            type = 1;
+//        } else if (stack.is(ModItems.CM_5_INCHES.get())) {
+//            type = 2;
+//        } else if (stack.is(ModItems.GS_5_INCHES.get())) {
+//            type = 3;
+//        }
+//
+//        this.setWeaponIndex(0, type);
         this.shoot(player, true);
     }
 
@@ -759,22 +760,22 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
         return 4;
     }
 
-    @Override
-    public void setChanged() {
-//        if (!entityData.get(INTELLIGENT)) {
-//            fire(null);
-//        }
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
-    }
+//    @Override
+//    public void setChanged() {
+////        if (!entityData.get(INTELLIGENT)) {
+////            fire(null);
+////        }
+//    }
+//
+//    @Override
+//    public boolean stillValid(@NotNull Player player) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+//        return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
+//    }
 
     @Override
     public int passengerSeatLocation(Entity entity) {

@@ -19,7 +19,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -140,7 +139,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         super.readAdditionalSaveData(compound);
         this.entityData.set(PITCH, compound.getFloat("Pitch"));
         this.entityData.set(YAW, compound.getFloat("Yaw"));
-        setChanged();
+//        setChanged();
     }
 
     @Override
@@ -199,7 +198,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
                         serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
                         cooldown = 5;
                         items.set(i, ItemStack.EMPTY);
-                        setChanged();
+//                        setChanged();
                     }
                     player.swing(InteractionHand.MAIN_HAND);
                 }
@@ -210,14 +209,14 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         if (stack.getItem() instanceof MediumRocketItem) {
             for (int i = 0; i < this.barrel.length; i++) {
                 if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
-                    this.setItem(i, stack.copyWithCount(1));
+//                    this.setItem(i, stack.copyWithCount(1));
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
                     Vec3 vec3 = new Vec3(this.barrel[i].center());
                     serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
                     cooldown = 5;
-                    setChanged();
+//                    setChanged();
                 }
                 player.swing(InteractionHand.MAIN_HAND);
             }
@@ -231,7 +230,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
                     if (OBB.getLookingObb(player, player.getEntityReach()) == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
                         shoot(player, i);
                         items.set(i, ItemStack.EMPTY);
-                        setChanged();
+//                        setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
                     }
                     player.swing(InteractionHand.MAIN_HAND);
@@ -242,7 +241,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
                     if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
                         shoot(player, i);
                         items.set(i, ItemStack.EMPTY);
-                        setChanged();
+//                        setChanged();
                         player.swing(InteractionHand.MAIN_HAND);
                         return InteractionResult.SUCCESS;
                     }
@@ -407,15 +406,15 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         return 1;
     }
 
-    @Override
-    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return false;
-    }
-
-    @Override
-    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
-        return false;
-    }
+//    @Override
+//    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+//        return false;
+//    }
 
     @Override
     public List<OBB> getOBBs() {
@@ -486,18 +485,18 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         this.barrel[index].setRotation(VectorTool.combineRotationsBarrel(1, this));
     }
 
-    @Override
-    public void setChanged() {
-        var list = new IntArrayList();
-        for (var item : this.items) {
-            if (item.getItem() instanceof MediumRocketItem mediumRocketItem) {
-                list.add(mediumRocketItem.type.ordinal());
-            } else {
-                list.add(-1);
-            }
-        }
-        this.entityData.set(LOADED_AMMO, list);
-    }
+//    @Override
+//    public void setChanged() {
+//        var list = new IntArrayList();
+//        for (var item : this.items) {
+//            if (item.getItem() instanceof MediumRocketItem mediumRocketItem) {
+//                list.add(mediumRocketItem.type.ordinal());
+//            } else {
+//                list.add(-1);
+//            }
+//        }
+//        this.entityData.set(LOADED_AMMO, list);
+//    }
 
     @Override
     public boolean hasEnergyStorage() {
