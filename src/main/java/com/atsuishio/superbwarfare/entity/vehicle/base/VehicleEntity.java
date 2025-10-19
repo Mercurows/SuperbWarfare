@@ -983,7 +983,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.define(SPRINT_INPUT_DOWN, false);
         this.entityData.define(LANDING_INPUT_DOWN, false);
         this.entityData.define(PLANE_BREAK, 0f);
-        this.entityData.define(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(this)));
+        this.entityData.define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
         this.entityData.define(ENERGY, 0);
         this.entityData.define(PROPELLER_ROT, 0f);
 
