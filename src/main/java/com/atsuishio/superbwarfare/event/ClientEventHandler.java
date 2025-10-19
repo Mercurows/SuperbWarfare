@@ -202,8 +202,9 @@ public class ClientEventHandler {
     public static int guideType;
     public static boolean lockOn;
 
-    public static TDMSavedData tdmSavedData = new TDMSavedData();
+    protected static short keysCache = 0;
 
+    public static TDMSavedData tdmSavedData = new TDMSavedData();
 
     @SubscribeEvent
     public static void handleWeaponTurn(RenderHandEvent event) {
@@ -242,8 +243,6 @@ public class ClientEventHandler {
                 || (player != null && player.isSprinting());
     }
 
-    static short keysCache = 0;
-
     @SubscribeEvent
     public static void handleClientTick(TickEvent.ClientTickEvent event) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -257,7 +256,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
 
         // 射击延迟
-        if (stack.is(ModTags.Items.GUN)) {
+        if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
 
             if (holdFire || (zoom && stack.is(ModItems.MINIGUN.get()))) {
@@ -268,7 +267,6 @@ public class ClientEventHandler {
                     float rpm = (float) data.get(GunProp.RPM) / 3600;
                     player.playSound(ModSounds.MINIGUN_ROT.get(), 1, 0.7f + rpm);
                 }
-
             }
         }
 
@@ -505,7 +503,7 @@ public class ClientEventHandler {
             if (seekingTime > lockTime) {
                 playLockOnSound(stack, player);
                 if (guideType == 0 && lockingEntity != null && (!lockingEntity.getPassengers().isEmpty() || lockingEntity instanceof VehicleEntity) && player.tickCount % 2 == 0) {
-                    Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage( true, lockingEntity.getUUID()));
+                    Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntity.getUUID()));
                 }
             }
         }
@@ -1296,12 +1294,12 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponMove(LivingEntity entity) {
-        if (entity.getMainHandItem().is(ModTags.Items.GUN) && entity instanceof Player player) {
+        ItemStack stack = entity.getMainHandItem();
+        if (stack.getItem() instanceof GunItem && entity instanceof Player player) {
             float times = 3.7f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
             double moveSpeed = entity.getDeltaMovement().horizontalDistance();
             double animSpeed;
 
-            ItemStack stack = player.getMainHandItem();
             var data = GunData.from(stack);
 
             if (entity.onGround()) {

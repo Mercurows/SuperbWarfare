@@ -23,10 +23,9 @@ public class ModTags {
         public static final TagKey<Item> RIFLE = modItemTag("rifle");
         public static final TagKey<Item> SNIPER_RIFLE = modItemTag("sniper_rifle");
         public static final TagKey<Item> SHOTGUN = modItemTag("shotgun");
-        public static final TagKey<Item> HEAVY_WEAPON = modItemTag("heavy_weapon");
+        public static final TagKey<Item> MACHINE_GUN = modItemTag("machine_gun");
 
         public static final TagKey<Item> LAUNCHER = modItemTag("launcher");
-        public static final TagKey<Item> LAUNCHER_GRENADE = modItemTag("launcher/grenade");
 
         public static final TagKey<Item> MILITARY_ARMOR = modItemTag("military_armor");
         public static final TagKey<Item> MILITARY_ARMOR_HEAVY = modItemTag("military_armor_heavy");

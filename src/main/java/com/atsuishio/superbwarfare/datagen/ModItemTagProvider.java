@@ -151,16 +151,15 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ModTags.Items.RIFLE).add(ModItems.M_4.get(), ModItems.HK_416.get(), ModItems.SKS.get(),
                 ModItems.MK_14.get(), ModItems.MARLIN.get(), ModItems.AK_47.get(), ModItems.AK_12.get(), ModItems.QBZ_95.get(), ModItems.QBZ_191.get());
 
-        this.tag(ModTags.Items.SNIPER_RIFLE).add(ModItems.HUNTING_RIFLE.get(), ModItems.SENTINEL.get(),
+        this.tag(ModTags.Items.SNIPER_RIFLE).add(ModItems.HUNTING_RIFLE.get(), ModItems.SENTINEL.get(), ModItems.NTW_20.get(),
                 ModItems.SVD.get(), ModItems.M_98B.get(), ModItems.K_98.get(), ModItems.MOSIN_NAGANT.get(), ModItems.AWM.get());
-
-        this.tag(ModTags.Items.HEAVY_WEAPON).add(ModItems.NTW_20.get(), ModItems.M_2_HB.get());
 
         this.tag(ModTags.Items.SHOTGUN).add(ModItems.HOMEMADE_SHOTGUN.get(), ModItems.M_870.get(), ModItems.AA_12.get());
 
-        this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.IGLA_9K38.get())
-                .addTag(ModTags.Items.LAUNCHER_GRENADE);
-        this.tag(ModTags.Items.LAUNCHER_GRENADE).add(ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());
+        this.tag(ModTags.Items.MACHINE_GUN).add(ModItems.MINIGUN.get(), ModItems.M_2_HB.get());
+
+        this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.IGLA_9K38.get(),
+                ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());
 
         this.tag(ModTags.Items.MILITARY_ARMOR).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
 

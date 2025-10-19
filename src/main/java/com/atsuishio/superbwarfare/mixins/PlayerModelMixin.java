@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -120,7 +120,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
             }
 
             // 趴下持枪
-            if (player.getMainHandItem().is(ModTags.Items.GUN) && player.getPose() == Pose.SWIMMING && !player.isSwimming()) {
+            if (player.getMainHandItem().getItem() instanceof GunItem && player.getPose() == Pose.SWIMMING && !player.isSwimming()) {
                 model.hat.xRot = (player.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
                 model.head.xRot = (player.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
                 model.hat.yRot = 0;

@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.item.curio.DogTagItem;
 import com.atsuishio.superbwarfare.item.curio.IffItem;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.handgun.*;
-import com.atsuishio.superbwarfare.item.gun.heavy.Ntw20Item;
 import com.atsuishio.superbwarfare.item.gun.launcher.*;
 import com.atsuishio.superbwarfare.item.gun.machinegun.*;
 import com.atsuishio.superbwarfare.item.gun.rifle.*;

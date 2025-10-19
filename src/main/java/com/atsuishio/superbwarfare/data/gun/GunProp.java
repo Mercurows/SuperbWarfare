@@ -68,6 +68,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<SeekType> SEEK_TYPE = new GunProp<SeekType>("SeekType")
             .whenNull(SeekType.NONE);
 
+    public static final GunProp<GunType> GUN_TYPE = new GunProp<>("GunType");
+
     public static final GunProp<Boolean> AUTO_RELOAD = new GunProp<>("AutoReload");
 
     public static final GunProp<Boolean> ZOOM_RELOAD = new GunProp<>("ZoomReload");

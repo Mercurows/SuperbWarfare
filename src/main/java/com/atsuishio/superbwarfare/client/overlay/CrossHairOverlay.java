@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -188,9 +187,8 @@ public class CrossHairOverlay implements IGuiOverlay {
 
     private static boolean shouldRenderCrossHair(Player player) {
         if (player == null) return false;
-
         if (player.isSpectator()) return false;
-        if (!player.getMainHandItem().is(ModTags.Items.GUN) || ClientEventHandler.zoomTime > 0.8)
+        if (!(player.getMainHandItem().getItem() instanceof GunItem) || ClientEventHandler.zoomTime > 0.8)
             return false;
 
         return !(player.getMainHandItem().getItem() == ModItems.M_79.get() || player.getMainHandItem().getItem() == ModItems.BOCEK.get() || player.getMainHandItem().getItem() == ModItems.SECONDARY_CATACLYSM.get() || player.getMainHandItem().getItem() == ModItems.REPAIR_TOOL.get())

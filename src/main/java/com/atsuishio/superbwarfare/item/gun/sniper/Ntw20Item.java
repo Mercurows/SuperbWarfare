@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.gun.heavy;
+package com.atsuishio.superbwarfare.item.gun.sniper;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.Ntw20Renderer;
