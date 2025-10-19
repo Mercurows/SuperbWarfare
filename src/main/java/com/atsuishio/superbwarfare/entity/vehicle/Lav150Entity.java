@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -32,7 +31,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -165,7 +163,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (gunData == null) return;
 
         var ammoList = gunData.get(GunProp.AMMO_CONSUMER);
-        var targetIndex = isScroll ? (value + ammoList.size()) % ammoList.size() : value;
+        var targetIndex = isScroll ? (value + gunData.selectedAmmoType.get()) % ammoList.size() : value;
         setWeaponIndex(index, targetIndex);
 
         // TODO 正确播放武器切换音效
@@ -209,6 +207,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         compound.put("WeaponState", tag);
     }
 
+    // TODO 移除这个
     @Override
     public VehicleWeapon[][] initWeapons() {
         return new VehicleWeapon[][]{
@@ -232,6 +231,33 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
                                 .sound3pVeryFar(ModSounds.RPK_VERYFAR.get()),
                 }
         };
+    }
+
+    // TODO 正确实现武器信息
+    @Override
+    public List<VehicleWeapon> getAvailableWeapons(int index) {
+        var weapons = getAllWeapons();
+        if (index < 0 || index >= weapons.length) return List.of();
+
+        return List.of(weapons[index]);
+    }
+
+    @Override
+    public VehicleWeapon[][] getAllWeapons() {
+        return getGunDataMap().values().stream().map(data -> {
+            if (data == null) return List.of();
+
+            var ammoTypes = data.get(GunProp.AMMO_CONSUMER);
+
+            return ammoTypes.stream().map(a -> new ProjectileWeapon()
+                    .zoom(false)
+                    .sound(ModSounds.INTO_CANNON.get())
+                    .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
+                    .sound1p(ModSounds.COAX_FIRE_1P.get())
+                    .sound3p(ModSounds.RPK_FIRE_3P.get())
+                    .sound3pFar(ModSounds.RPK_FAR.get())
+                    .sound3pVeryFar(ModSounds.RPK_VERYFAR.get())).toArray(VehicleWeapon[]::new);
+        }).toArray(VehicleWeapon[][]::new);
     }
 
     @Override
@@ -302,23 +328,19 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     // 炮弹发射速度
     @Override
     public float projectileVelocity(Entity entity) {
-        if (getWeaponIndex(0) == 0) {
-            return 20;
-        } else {
-            return 25;
-        }
+        var gunData = getGunData(getSeatIndex(entity));
+        if (gunData == null) return 25;
+
+        return gunData.get(GunProp.VELOCITY).floatValue();
     }
 
     // 炮弹重力
     @Override
     public float projectileGravity(Entity entity) {
-        if (getWeaponIndex(0) == 0) {
-            return 0.03f;
-        } else if (getWeaponIndex(0) == 1) {
-            return 0.05f;
-        } else {
-            return 0;
-        }
+        var gunData = getGunData(getSeatIndex(entity));
+        if (gunData == null) return 0;
+
+        return gunData.get(GunProp.GRAVITY).floatValue();
     }
 
     @Override
@@ -326,6 +348,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return getDeltaMovement().horizontalDistance() > 0.09 || Mth.abs(this.entityData.get(POWER)) > 0.15;
     }
 
+    // TODO 移除这个
     private void handleAmmo() {
         if (!(this.getFirstPassenger() instanceof Player)) return;
 
@@ -401,12 +424,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (data == null || !data.canShoot(this)) return;
 
         var ray = MACHINE_GUN_POS.apply(this);
-        data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, 0, true, null, null));
-
-        // TODO 测试用提示
-        if (living instanceof ServerPlayer player) {
-            player.displayClientMessage(Component.literal(data.heat.get() + ""), true);
-        }
+        data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, data.get(GunProp.SPREAD), true, null, null));
 
         var currentMap = entityData.get(GUN_DATA_MAP);
         currentMap.put(seatIndex, data);
@@ -415,7 +433,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
         playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
 
-        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
+//        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
         this.entityData.set(CANNON_RECOIL_TIME, 40);
         this.entityData.set(YAW, getTurretYRot());
@@ -526,6 +544,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.clampRotation(entity);
     }
 
+    // TODO 正确播放动画
     private PlayState firePredicate(AnimationState<Lav150Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav.fire"));
@@ -558,14 +577,12 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public boolean canShoot(LivingEntity living) {
-        if (getWeaponIndex(0) == 0) {
-            return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living)) && !cannotFire;
-        } else if (getWeaponIndex(0) == 1) {
-            return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living)) && !cannotFireCoax;
-        }
-        return false;
+        var gunData = getGunData(getSeatIndex(living));
+
+        return gunData != null && gunData.canShoot(this);
     }
 
+    // TODO 正确计算AmmoCount
     @Override
     public int getAmmoCount(LivingEntity living) {
         return this.entityData.get(AMMO);
@@ -583,12 +600,10 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public int getWeaponHeat(LivingEntity living) {
-        if (getWeaponIndex(0) == 0) {
-            return entityData.get(HEAT);
-        } else if (getWeaponIndex(0) == 1) {
-            return entityData.get(COAX_HEAT);
-        }
-        return 0;
+        var gunData = getGunData(getSeatIndex(living));
+        if (gunData == null) return 0;
+
+        return Math.toIntExact(Math.round(gunData.heat.get()));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -596,11 +611,12 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
         super.renderFirstPersonOverlay(guiGraphics, poseStack, font, player, screenWidth, screenHeight, scale, color);
 
+        int heat = getWeaponHeat(player);
+
+        // TODO 正确显示文本和备弹数量
         if (this.getWeaponIndex(0) == 0) {
-            int heat = this.getEntityData().get(HEAT);
             guiGraphics.drawString(font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         } else {
-            int heat = this.getEntityData().get(COAX_HEAT);
             guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         }
     }
@@ -610,12 +626,13 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         super.renderThirdPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
 
+        float heat = getWeaponHeat(player) / 100F;
+
+        // TODO 正确显示文本和备弹数量
         if (this.getWeaponIndex(0) == 0) {
-            double heat = this.getEntityData().get(HEAT) / 100.0F;
-            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
         } else {
-            double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
-            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
+            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
         }
     }
 
