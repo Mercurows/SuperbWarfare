@@ -12,6 +12,7 @@
   "SoundRadius": 14,
   "RPM": 1200,
   "DefaultFireMode": "Auto",
+  "GunType": "MachineGun",
   "AvailableFireModes": [
     "Auto"
   ],

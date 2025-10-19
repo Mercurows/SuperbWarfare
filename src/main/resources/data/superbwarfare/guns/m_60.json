@@ -14,6 +14,7 @@
   "BypassesArmor": 0.25,
   "SoundRadius": 15,
   "RPM": 600,
+  "GunType": "MachineGun",
   "AvailableFireModes": [
     "Auto"
   ],

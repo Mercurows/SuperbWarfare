@@ -24,6 +24,7 @@
   "SoundRadius": 8,
   "RPM": 300,
   "Projectile": "superbwarfare:gun_grenade",
+  "GunType": "CurvedLauncher",
   "AmmoType": [
     "superbwarfare:grenade_40mm",
     {

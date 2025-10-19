@@ -16,6 +16,7 @@
   "EmptyReloadTime": 80,
   "BypassesArmor": 0.6,
   "SoundRadius": 18,
+  "GunType": "Sniper",
   "DamageReduce": {
     "Type": "Sniper"
   },

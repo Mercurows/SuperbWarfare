@@ -14,6 +14,7 @@
   "SeekAngle": 20,
   "SeekRange": 384,
   "SeekType": "HoldZoom",
+  "GunType": "DirectLauncher",
   "AmmoType": "superbwarfare:igla_9k38_missile",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",

@@ -14,6 +14,7 @@
   "BypassesArmor": 0.15,
   "SoundRadius": 8,
   "RPM": 1300,
+  "GunType": "Handgun",
   "AvailableFireModes": [
     "Semi",
     "Auto"
