@@ -238,6 +238,8 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         int i = this.getOrderedPassengers().indexOf(passenger);
 
+        //TODO 测试一下自定义乘客位置
+
         if (i == 0) {
             passengerPos(passenger, callback, 0.45f, 0.85f, 1, getVehicleTransform(1));
         } else if (i == 1) {

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
@@ -22,13 +21,16 @@ public class SeatInfo {
     public Vec3 position = Vec3.ZERO;
 
     @SerializedName("Orientation")
-    public StringOrVec3 orientation = new StringOrVec3("Default");
+    public float orientation = 0;
+
+    @SerializedName("canRotateBody")
+    public Boolean canRotateBody = false;
 
     @SerializedName("MinPitch")
-    public float minPitch = -20;
+    public float minPitch = -90;
 
     @SerializedName("MaxPitch")
-    public float maxPitch = 20;
+    public float maxPitch = 90;
 
     @SerializedName("MinYaw")
     public float minYaw = -90;
