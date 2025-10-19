@@ -104,6 +104,9 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("SeekType")
     public SeekType seekType = SeekType.NONE;
 
+    @SerializedName("GunType")
+    public GunType gunType = GunType.SPECIAL;
+
     @SerializedName("AutoReload")
     public boolean autoReload = false;
 

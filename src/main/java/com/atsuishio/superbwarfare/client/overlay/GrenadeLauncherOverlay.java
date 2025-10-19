@@ -4,10 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.GunType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -57,6 +57,7 @@ public class GrenadeLauncherOverlay implements LayeredDraw.Layer {
         if (!(stack.getItem() instanceof GunItem)) return;
 
         var data = GunData.from(stack);
+        if (data.get(GunProp.GUN_TYPE) != GunType.CURVED_LAUNCHER) return;
 
         guiGraphics.pose().pushPose();
 
@@ -103,7 +104,6 @@ public class GrenadeLauncherOverlay implements LayeredDraw.Layer {
     private static boolean shouldRenderCrossHair(Player player) {
         if (player == null) return false;
         return !player.isSpectator()
-                && (player.getMainHandItem().getItem() == ModItems.M_79.get() || player.getMainHandItem().getItem() == ModItems.SECONDARY_CATACLYSM.get())
                 && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || (player.isPassenger() && player.getVehicle() instanceof CannonEntity))
                 && !ClientEventHandler.zoom;
     }

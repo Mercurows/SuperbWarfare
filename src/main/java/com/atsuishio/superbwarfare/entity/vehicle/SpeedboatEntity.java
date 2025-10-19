@@ -308,7 +308,7 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
 
     @Override
     @ParametersAreNonnullByDefault
-    protected void positionRider(Entity passenger, MoveFunction callback) {
+    public void positionRider(Entity passenger, MoveFunction callback) {
         if (!this.hasPassenger(passenger)) {
             return;
         }

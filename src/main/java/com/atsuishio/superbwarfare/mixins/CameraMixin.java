@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.math.Axis;
@@ -137,7 +137,7 @@ public abstract class CameraMixin implements ICustomCamera {
     public void superbWarfare$setup(BlockGetter area, Entity entity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK
                 && entity instanceof Player player
-                && player.getMainHandItem().is(ModTags.Items.GUN)
+                && player.getMainHandItem().getItem() instanceof GunItem
                 && Math.max(ClientEventHandler.bowPullPos, ClientEventHandler.zoomPos) > 0
         ) {
             move(-getMaxZoom((float) (-2.9 * Math.max(ClientEventHandler.bowPullPos, ClientEventHandler.zoomPos))), 0F, (float) (-ClientEventHandler.cameraLocation * Math.max(ClientEventHandler.bowPullPos, ClientEventHandler.zoomPos)));
