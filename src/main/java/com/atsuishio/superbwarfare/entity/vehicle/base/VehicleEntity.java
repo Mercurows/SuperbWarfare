@@ -2090,6 +2090,73 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     protected void clampRotation(Entity entity) {
+        int index = getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+
+        if (seat.transform.equals("Vehicle")
+                || seat.transform.equals("VehicleFlat")
+                || (seat.transform.equals("Turret") && seat.canRotateBody)
+        ) {
+            if (!seat.canRotateBody) {
+                passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation);
+            }
+            passengerPitch(entity, seat.minPitch, seat.maxPitch, seat.orientation);
+        }
+    }
+
+    @Override
+    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
+        if (!this.hasPassenger(passenger)) {
+            return;
+        }
+
+        int index = getSeatIndex(passenger);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        passengerPos(passenger, callback, seat.position, seat.transform);
+    }
+
+    public void passengerPos(Entity passenger, @NotNull MoveFunction callback, float x, float y, float z, Matrix4f transform) {
+        Vector4f worldPosition = transformPosition(transform, x, y, z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        copyEntityData(passenger);
+    }
+
+    public void passengerPos(Entity passenger, @NotNull MoveFunction callback, Vec3 vec3, String string) {
+        Vector4f worldPosition = transformPosition(getTransformFromString(string, 1), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        copyEntityData(passenger);
+    }
+
+
+    public void copyEntityData(Entity entity) {
+        entity.setYRot(entity.getYRot() + destroyRot);
+
+        int index = getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+
+        if (seat.transform.equals("Vehicle") || seat.transform.equals("VehicleFlat")) {
+            if (!seat.canRotateBody) {
+                entity.setYBodyRot(getYRot() + seat.orientation);
+            }
+            if (!seat.canRotateHead) {
+                entity.setYRot(getYRot() + seat.orientation);
+            }
+        }
+
+        entity.setYHeadRot(entity.getYRot());
+    }
+
+    public Matrix4f getTransformFromString(String string, float ticks) {
+        return switch (string) {
+            default -> getVehicleTransform(ticks);
+            case "VehicleFlat" -> getVehicleFlatTransform(ticks);
+            case "Turret" -> getTurretTransform(ticks);
+            case "Barrel" -> getBarrelTransform(ticks);
+            case "WeaponStation" -> getGunTransform(ticks);
+            case "WeaponStationBarrel" -> getGunnerBarrelTransform(ticks);
+        };
     }
 
     /**
@@ -2328,16 +2395,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             case TRACK -> this.trackEngine(engine);
             case HELICOPTER -> this.helicopterEngine(engine);
         }
-    }
-
-    public void passengerPos(Entity passenger, @NotNull MoveFunction callback, float x, float y, float z, Matrix4f transform) {
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        copyEntityData(passenger);
-    }
-
-    public void copyEntityData(Entity entity) {
     }
 
     // From Immersive_Aircraft

@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
-import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -210,68 +209,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public float getEngineSoundVolume() {
         return entityData.get(PROPELLER_ROT) * 2f;
-    }
-
-    protected void clampRotation(Entity entity) {
-        int index = getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
-
-        if (getTransformFromString(seat.transform, 1) == getVehicleTransform(1)
-                || getTransformFromString(seat.transform, 1) == getVehicleFlatTransform(1)
-                || (getTransformFromString(seat.transform, 1) == getTurretTransform(1) && seat.canRotateBody)
-        ) {
-            // TODO 为啥上面条件始终为false
-            passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation);
-            passengerPitch(entity, seat.minPitch, seat.maxPitch, seat.orientation);
-        }
-    }
-
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        int index = getSeatIndex(passenger);
-        var seat = data().get(VehicleProp.SEATS).get(index);
-        passengerPos(passenger, callback, seat.position, seat.transform);
-    }
-
-    public void passengerPos(Entity passenger, @NotNull MoveFunction callback, Vec3 vec3, String string) {
-        Vector4f worldPosition = transformPosition(getTransformFromString(string, 1), (float) vec3.x, (float) vec3.y, (float) vec3.z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        copyEntityData(passenger);
-    }
-
-    public Matrix4f getTransformFromString(String string, float ticks) {
-        return switch (string) {
-            default -> getVehicleTransform(ticks);
-            case "VehicleFlat" -> getVehicleFlatTransform(ticks);
-            case "Turret" -> getTurretTransform(ticks);
-            case "Barrel" -> getBarrelTransform(ticks);
-            case "WeaponStation" -> getGunTransform(ticks);
-            case "WeaponStationBarrel" -> getGunnerBarrelTransform(ticks);
-        };
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYRot(entity.getYRot() + destroyRot);
-
-        int index = getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
-
-        if (getTransformFromString(seat.transform, 1) == getVehicleTransform(1) || getTransformFromString(seat.transform, 1) == getVehicleFlatTransform(1)) {
-            if (!seat.canRotateBody) {
-                entity.setYBodyRot(getYRot() + seat.orientation);
-            }
-            if (!seat.canRotateHead) {
-                entity.setYRot(getYRot() + seat.orientation);
-            }
-        }
-
-        entity.setYHeadRot(entity.getYRot());
     }
 
     @Override
