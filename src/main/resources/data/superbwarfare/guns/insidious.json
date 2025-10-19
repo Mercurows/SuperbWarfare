@@ -15,6 +15,7 @@
   "SoundRadius": 12,
   "RPM": 900,
   "BurstCooldown": 25,
+  "GunType": "Rifle",
   "AvailableFireModes": [
     "Burst"
   ],

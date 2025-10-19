@@ -22,6 +22,7 @@
   "BypassesArmor": 0.05,
   "SoundRadius": 16,
   "BoltActionTime": 11,
+  "GunType": "Shotgun",
   "DamageReduce": {
     "Type": "Shotgun"
   },

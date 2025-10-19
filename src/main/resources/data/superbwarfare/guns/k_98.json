@@ -11,6 +11,7 @@
   "Weight": 5,
   "ZoomSpreadRate": 0.005,
   "DefaultFireMode": "Auto",
+  "GunType": "Sniper",
   "ReloadTypes": [
     "Clip",
     "Iterative"

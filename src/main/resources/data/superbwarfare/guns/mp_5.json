@@ -15,7 +15,12 @@
   "BypassesArmor": 0.12,
   "SoundRadius": 11,
   "RPM": 900,
-  "AvailableFireModes": ["Semi", "Burst", "Auto"],
+  "AvailableFireModes": [
+    "Semi",
+    "Burst",
+    "Auto"
+  ],
+  "GunType": "Smg",
   "DamageReduce": {
     "Type": "Smg"
   },

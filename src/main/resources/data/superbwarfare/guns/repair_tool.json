@@ -15,6 +15,7 @@
   "ShootDelay": 4,
   "Projectile": "ray",
   "DefaultFireMode": "Auto",
+  "GunType": "Special",
   "AvailableFireModes": [
     "Auto"
   ],

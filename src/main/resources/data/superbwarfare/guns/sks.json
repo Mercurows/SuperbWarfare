@@ -16,6 +16,7 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
+  "GunType": "Rifle",
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",

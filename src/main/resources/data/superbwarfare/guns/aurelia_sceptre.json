@@ -16,6 +16,7 @@
   "RPM": 1100,
   "ShootDelay": 5,
   "HeatPerShoot": 1,
+  "GunType": "Handgun",
   "AvailableFireModes": [
     "Auto"
   ],

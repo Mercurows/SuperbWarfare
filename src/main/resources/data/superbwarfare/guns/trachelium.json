@@ -12,6 +12,7 @@
   "BypassesArmor": 0.4,
   "SoundRadius": 10,
   "RPM": 240,
+  "GunType": "Handgun",
   "AmmoType": "@RifleAmmo",
   "DamageReduce": {
     "Type": "Rifle"

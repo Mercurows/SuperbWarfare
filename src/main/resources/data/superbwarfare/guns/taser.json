@@ -11,6 +11,7 @@
   "Headshot": 0,
   "EmptyReloadTime": 58,
   "RPM": 240,
+  "GunType": "Special",
   "Projectile": "superbwarfare:taser_bullet",
   "AmmoType": "superbwarfare:taser_electrode",
   "AvailablePerks": [

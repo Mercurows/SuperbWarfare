@@ -13,6 +13,7 @@
   "Weight": 4,
   "EmptyReloadTime": 64,
   "RPM": 180,
+  "GunType": "CurvedLauncher",
   "AmmoType": "superbwarfare:grenade_40mm",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",

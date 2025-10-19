@@ -17,6 +17,7 @@
   "SoundRadius": 15,
   "RPM": 360,
   "HeatPerShoot": 2,
+  "GunType": "MachineGun",
   "AvailableFireModes": [
     "Semi",
     "Auto"

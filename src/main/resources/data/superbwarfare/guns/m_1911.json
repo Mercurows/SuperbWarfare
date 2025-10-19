@@ -13,6 +13,7 @@
   "BypassesArmor": 0.2,
   "SoundRadius": 10,
   "RPM": 400,
+  "GunType": "Handgun",
   "DamageReduce": {
     "Type": "Handgun"
   },

@@ -16,6 +16,7 @@
   "BypassesArmor": 0.45,
   "SoundRadius": 17,
   "RPM": 300,
+  "GunType": "Sniper",
   "DamageReduce": {
     "Type": "Sniper"
   },

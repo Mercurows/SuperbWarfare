@@ -15,6 +15,7 @@
   "EmptyReloadTime": 100,
   "RPM": 120,
   "Gravity": 0.03,
+  "GunType": "DirectLauncher",
   "AmmoType": [
     "superbwarfare:rpg_rocket_tbg",
     {
