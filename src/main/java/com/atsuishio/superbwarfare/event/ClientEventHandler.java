@@ -777,7 +777,7 @@ public class ClientEventHandler {
 
         double zoomSpread = 1 - (1 - data.get(GunProp.ZOOM_SPREAD_RATE)) * zoomTime;
 
-        double spread = stack.is(ModTags.Items.SHOTGUN) || stack.is(ModItems.MINIGUN.get()) ? 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread) : zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread);
+        double spread = data.isShotgun() || stack.is(ModItems.MINIGUN.get()) ? 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread) : zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread);
 
         gunSpread = Mth.lerp(0.14 * times, gunSpread, spread);
 
