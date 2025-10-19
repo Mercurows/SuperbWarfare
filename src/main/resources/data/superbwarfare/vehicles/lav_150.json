@@ -12,9 +12,25 @@
           "Infinity",
           {
             "Ammo": "Infinity",
+            "Override": {
+              "RPM": 50,
+              "Damage": 300,
+              "Velocity": 100
+            }
+          },
+          {
+            "Ammo": "Infinity",
             "Projectile": "superbwarfare:rpg_rocket_tbg",
             "Override": {
               "RPM": 450
+            }
+          },
+          {
+            "Ammo": "Infinity",
+            "Override": {
+              "ProjectileAmount": 5,
+              "Spread": 2.5,
+              "RPM": 600
             }
           }
         ],

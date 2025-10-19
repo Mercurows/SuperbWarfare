@@ -1076,7 +1076,7 @@ public class ClientEventHandler {
             double rps = (double) rpm / 60;
             int cooldown = (int) Math.round(1000 / rps);
 
-            if ((holdFireVehicle)) {
+            if (holdFireVehicle) {
                 if (!clientTimerVehicle.started()) {
                     clientTimerVehicle.start();
                     // 首发瞬间发射
