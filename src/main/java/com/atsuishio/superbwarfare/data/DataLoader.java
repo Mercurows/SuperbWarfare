@@ -5,6 +5,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -51,6 +52,8 @@ public class DataLoader {
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
                 .setLenient()
                 .serializeSpecialFloatingPointValues()
+                .registerTypeAdapter(Vec3.class, new Vec3Adapter())
+                .registerTypeAdapter(StringOrVec3.class, new StringOrVec3.StringOrVec3Adapter())
                 .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())
                 .registerTypeAdapterFactory(new StringToObject.AdapterFactory());
     }
