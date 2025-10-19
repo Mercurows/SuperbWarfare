@@ -2094,6 +2094,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    @Override
+    public void onPassengerTurned(@NotNull Entity entity) {
+        this.clampRotation(entity);
+    }
+
+    protected void clampRotation(Entity entity) {
+    }
+
     /**
      * @return 炮弹发射位置
      */
