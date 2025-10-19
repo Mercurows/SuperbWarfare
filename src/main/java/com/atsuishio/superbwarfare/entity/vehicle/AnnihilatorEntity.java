@@ -605,7 +605,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
 
     @Override
     public void updateOBB() {
-        Matrix4f transform = getVehicleHorizontalTransform(1);
+        Matrix4f transform = getVehicleFlatTransform(1);
 
         Vector4f worldPosition = transformPosition(transform, 0, 2.28125f, 0.875f);
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
