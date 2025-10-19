@@ -25,7 +25,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -804,18 +803,9 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     protected void clampRotation(Entity entity) {
-        Minecraft mc = Minecraft.getInstance();
+
         if (entity == getNthEntity(0)) {
             passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
-
-            if (entity.level().isClientSide && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
-                float f2 = Mth.wrapDegrees(entity.getYRot() - this.getBarrelYRot(1));
-                float f3 = Mth.clamp(f2, -20.0F, 20.0F);
-                entity.yRotO += f3 - f2;
-                entity.setYRot(entity.getYRot() + f3 - f2);
-                entity.setYBodyRot(getBarrelYRot(1));
-            }
-
         } else if (entity == getNthEntity(1)) {
             passengerPitchOnTurret(entity, passengerWeaponMinPitch(), passengerWeaponMaxPitch(), false);
         } else if (entity == getNthEntity(2) && entity instanceof LivingEntity living) {

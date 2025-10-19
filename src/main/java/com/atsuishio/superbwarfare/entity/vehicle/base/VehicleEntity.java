@@ -36,6 +36,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -2082,6 +2084,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (rotateWithTurret) {
             entity.setYBodyRot(getBarrelYRot(1));
+            if (entity.level().isClientSide && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+                float f2 = Mth.wrapDegrees(entity.getYRot() - this.getBarrelYRot(1));
+                float f3 = Mth.clamp(f2, -20.0F, 20.0F);
+                entity.yRotO += f3 - f2;
+                entity.setYRot(entity.getYRot() + f3 - f2);
+                entity.setYBodyRot(getBarrelYRot(1));
+            }
         }
     }
 
@@ -2356,14 +2365,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Matrix4f getVehicleFlatTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
-    }
-
-    public Matrix4f getVehicleHorizontalTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
         transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
