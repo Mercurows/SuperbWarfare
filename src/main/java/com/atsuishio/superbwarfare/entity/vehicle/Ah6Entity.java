@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -212,58 +213,64 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     protected void clampRotation(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            passengerYaw(entity, -80, 80, 0);
-        } else if (entity == getNthEntity(1)) {
-            passengerYaw(entity, -80, 80, 0);
-            passengerPitch(entity, -80, 80, 0);
-        } else if (entity == getNthEntity(2)) {
-            passengerYaw(entity, -80, 80, 90);
-        } else if (entity == getNthEntity(3)) {
-            passengerYaw(entity, -80, 80, -90);
-        }
-    }
+        int index = getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
 
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
+        if (getTransformFromString(seat.transform, 1) == getVehicleTransform(1)
+                || getTransformFromString(seat.transform, 1) == getVehicleFlatTransform(1)
+                || (getTransformFromString(seat.transform, 1) == getTurretTransform(1) && seat.canRotateBody)
+        ) {
+            // TODO 为啥上面条件始终为false
+            passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation);
+            passengerPitch(entity, seat.minPitch, seat.maxPitch, seat.orientation);
+        }
     }
 
     @Override
     public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
         if (!this.hasPassenger(passenger)) {
             return;
         }
 
-        int i = this.getOrderedPassengers().indexOf(passenger);
+        int index = getSeatIndex(passenger);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        passengerPos(passenger, callback, seat.position, seat.transform);
+    }
 
-        //TODO 测试一下自定义乘客位置
+    public void passengerPos(Entity passenger, @NotNull MoveFunction callback, Vec3 vec3, String string) {
+        Vector4f worldPosition = transformPosition(getTransformFromString(string, 1), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
+        copyEntityData(passenger);
+    }
 
-        if (i == 0) {
-            passengerPos(passenger, callback, 0.45f, 0.85f, 1, getVehicleTransform(1));
-        } else if (i == 1) {
-            passengerPos(passenger, callback, -0.45f, 0.85f, 1, getVehicleTransform(1));
-        } else if (i == 2) {
-            passengerPos(passenger, callback, -1.4f, 0.4f, 0, getVehicleTransform(1));
-        } else if (i == 3) {
-            passengerPos(passenger, callback, 1.4f, 0.4f, 0, getVehicleTransform(1));
-        }
+    public Matrix4f getTransformFromString(String string, float ticks) {
+        return switch (string) {
+            default -> getVehicleTransform(ticks);
+            case "VehicleFlat" -> getVehicleFlatTransform(ticks);
+            case "Turret" -> getTurretTransform(ticks);
+            case "Barrel" -> getBarrelTransform(ticks);
+            case "WeaponStation" -> getGunTransform(ticks);
+            case "WeaponStationBarrel" -> getGunnerBarrelTransform(ticks);
+        };
     }
 
     @Override
     public void copyEntityData(Entity entity) {
         entity.setYRot(entity.getYRot() + destroyRot);
-        if (entity == getNthEntity(0)) {
-            entity.setYRot(getYRot());
-            entity.setYBodyRot(getYRot());
-        } else if (entity == getNthEntity(1)) {
-            entity.setYBodyRot(getYRot());
-        } else if (entity == getNthEntity(2)) {
-            entity.setYBodyRot(getYRot() + 90);
-        } else if (entity == getNthEntity(3)) {
-            entity.setYBodyRot(getYRot() - 90);
+
+        int index = getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+
+        if (getTransformFromString(seat.transform, 1) == getVehicleTransform(1) || getTransformFromString(seat.transform, 1) == getVehicleFlatTransform(1)) {
+            if (!seat.canRotateBody) {
+                entity.setYBodyRot(getYRot() + seat.orientation);
+            }
+            if (!seat.canRotateHead) {
+                entity.setYRot(getYRot() + seat.orientation);
+            }
         }
+
         entity.setYHeadRot(entity.getYRot());
     }
 

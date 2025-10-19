@@ -6,6 +6,7 @@
     {
       "Transform" : "Vehicle",
       "Position": [0.45, 0.85, 1],
+      "CanRotateHead": false,
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,

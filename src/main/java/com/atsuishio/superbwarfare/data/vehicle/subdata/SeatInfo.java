@@ -23,20 +23,23 @@ public class SeatInfo {
     @SerializedName("Orientation")
     public float orientation = 0;
 
-    @SerializedName("canRotateBody")
+    @SerializedName("CanRotateBody")
     public Boolean canRotateBody = false;
 
+    @SerializedName("CanRotateHead")
+    public Boolean canRotateHead = true;
+
     @SerializedName("MinPitch")
-    public float minPitch = -90;
+    public float minPitch = -30;
 
     @SerializedName("MaxPitch")
-    public float maxPitch = 90;
+    public float maxPitch = 30;
 
     @SerializedName("MinYaw")
-    public float minYaw = -90;
+    public float minYaw = -514;
 
     @SerializedName("MaxYaw")
-    public float maxYaw = 90;
+    public float maxYaw = 514;
 
     @SerializedName("WeaponData")
     public DefaultGunData weaponData = null;
