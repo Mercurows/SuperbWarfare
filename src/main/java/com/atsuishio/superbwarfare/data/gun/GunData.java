@@ -690,6 +690,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return get(GunProp.PROJECTILE_AMOUNT) <= 0 && get(GunProp.MELEE_DAMAGE) > 0;
     }
 
+    public boolean isShotgun() {
+        return get(GunProp.PROJECTILE_AMOUNT) > 1;
+    }
+
     // 可持久化属性开始
 
     public final IntValue selectedAmmoType;
