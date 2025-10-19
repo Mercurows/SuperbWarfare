@@ -77,15 +77,12 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
 
-    @ServerOnly
     @SerializedName("Transform")
     public String transform = "Default";
 
-    @ServerOnly
     @SerializedName("Position")
     public Vec3 position = Vec3.ZERO;
 
-    @ServerOnly
     @SerializedName("Direction")
     public StringOrVec3 direction = new StringOrVec3("Default");
 

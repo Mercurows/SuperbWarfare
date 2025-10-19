@@ -3,10 +3,36 @@
   "MaxHealth": 250,
   "MaxEnergy": 5000000,
   "Seats": [
-    {},
-    {},
-    {},
-    {}
+    {
+      "Transform" : "Vehicle",
+      "Position": [0.45, 0.85, 1],
+      "MinPitch": -80,
+      "MaxPitch": 80,
+      "MinYaw": -80,
+      "MaxYaw": 80
+    },
+    {
+      "Transform" : "Vehicle",
+      "Position": [-0.45, 0.85, 1],
+      "MinPitch": -80,
+      "MaxPitch": 80,
+      "MinYaw": -80,
+      "MaxYaw": 80
+    },
+    {
+      "Transform" : "Vehicle",
+      "Position": [-1.4, 0.4, 0],
+      "Orientation": 90,
+      "MinYaw": -80,
+      "MaxYaw": 80
+    },
+    {
+      "Transform" : "Vehicle",
+      "Position": [1.4, 0.4, 0],
+      "Orientation": -90,
+      "MinYaw": -80,
+      "MaxYaw": 80
+    }
   ],
   "Engine": {
     "Type": "Helicopter",
