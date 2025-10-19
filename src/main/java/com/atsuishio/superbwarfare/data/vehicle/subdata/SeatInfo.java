@@ -30,10 +30,10 @@ public class SeatInfo {
     public Boolean canRotateHead = true;
 
     @SerializedName("MinPitch")
-    public float minPitch = -30;
+    public float minPitch = -90;
 
     @SerializedName("MaxPitch")
-    public float maxPitch = 30;
+    public float maxPitch = 90;
 
     @SerializedName("MinYaw")
     public float minYaw = -514;
