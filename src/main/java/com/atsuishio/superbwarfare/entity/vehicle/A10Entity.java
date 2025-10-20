@@ -673,16 +673,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0, 2.125f, 3.7f, getVehicleTransform(1));
-    }
-
-    @Override
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         Matrix4f transform = getVehicleTransform(1);
         if ((!onGround() || getDeltaMovement().length() >= 0.1)) {
@@ -708,11 +698,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Matrix4f transform = getVehicleTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 3.725f, 4.15f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(this.getYRot());
     }
 
     @Override

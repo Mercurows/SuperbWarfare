@@ -2,7 +2,10 @@
   "ID": "superbwarfare:tom_6",
   "MaxHealth": 40,
   "MaxEnergy": 100000,
-  "Seats": {},
+  "Seats": {
+    "Transform" : "Vehicle",
+    "Position": [0, 0.6, -0.4]
+  },
   "UpStep": 1.1,
   "Mass": 0.02,
   "AllowFreeCam": true,

@@ -3,7 +3,10 @@
   "MaxHealth": 350,
   "MaxEnergy": 10000000,
   "Seats": {
-    "IsEnclosed": true
+    "IsEnclosed": true,
+    "Transform" : "Vehicle",
+    "Position": [0, 2.125, 3.7],
+    "CanRotateHead": false
   },
   "UpStep": 1.1,
   "Mass": 20,
