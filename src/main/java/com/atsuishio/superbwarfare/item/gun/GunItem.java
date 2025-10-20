@@ -239,7 +239,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/default_icon.png");
+        return ResourceLocation.tryParse(data.get(GunProp.ICON).gunIcon);
+//        return Mod.loc("textures/gun_icon/default_icon.png");
     }
 
     @Override

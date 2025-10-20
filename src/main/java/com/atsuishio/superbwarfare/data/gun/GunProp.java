@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.gun.subdata.GunIconInfo;
 import net.minecraft.util.Mth;
 
 import java.util.List;
@@ -118,6 +119,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Integer> SEEK_TIME = new GunProp<>("SeekTime");
     public static final GunProp<Double> SEEK_ANGLE = new GunProp<>("SeekAngle");
     public static final GunProp<Double> SEEK_RANGE = new GunProp<>("SeekRange");
+
+    public static final GunProp<GunIconInfo> ICON = new GunProp<>("Icon");
 
     private GunProp(String name) {
         super(DefaultGunData.class, name);
