@@ -264,26 +264,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0, 0.6f, -0.4f, getVehicleTransform(1));
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(getYRot());
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
