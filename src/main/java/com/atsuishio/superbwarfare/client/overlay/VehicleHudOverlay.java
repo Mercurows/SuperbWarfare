@@ -105,9 +105,12 @@ public class VehicleHudOverlay implements IGuiOverlay {
             return;
         }
 
-        Entity vehicle = player.getVehicle();
+        Entity entity = player.getVehicle();
+        if (!(entity instanceof VehicleEntity vehicle)) return;
+
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
+
         // 渲染地面武装HUD
         renderLandArmorHud(gui, guiGraphics, partialTick, screenWidth, screenHeight);
 
@@ -120,37 +123,37 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         int compatHeight = getArmorPlateCompatHeight(player);
 
-        if (vehicle instanceof VehicleEntity vehicleEntity && vehicleEntity.hasEnergyStorage()) {
-            float energy = vehicleEntity.getEnergy();
-            float maxEnergy = vehicleEntity.getMaxEnergy();
+        if (vehicle.hasEnergyStorage()) {
+            float energy = vehicle.getEnergy();
+            float maxEnergy = vehicle.getMaxEnergy();
+
             preciseBlit(guiGraphics, ENERGY, 10, screenHeight - 22 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
             preciseBlit(guiGraphics, HEALTH_FRAME, 20, screenHeight - 21 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
             preciseBlit(guiGraphics, HEALTH, 20, screenHeight - 21 - compatHeight, 100, 0, 0, (int) (60 * energy / maxEnergy), 6, 60, 6);
         }
 
-        if (vehicle instanceof VehicleEntity pVehicle) {
-            float health = pVehicle.getHealth();
-            float maxHealth = pVehicle.getMaxHealth();
-            preciseBlit(guiGraphics, ARMOR, 10, screenHeight - 13 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
-            preciseBlit(guiGraphics, HEALTH_FRAME, 20, screenHeight - 12 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
-            preciseBlit(guiGraphics, HEALTH, 20, screenHeight - 12 - compatHeight, 100, 0, 0, (int) (60 * health / maxHealth), 6, 60, 6);
+        float health = vehicle.getHealth();
+        float maxHealth = vehicle.getMaxHealth();
 
-            renderWeaponInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
-            renderPassengerInfo(guiGraphics, pVehicle, screenWidth, screenHeight);
+        preciseBlit(guiGraphics, ARMOR, 10, screenHeight - 13 - compatHeight, 100, 0, 0, 8, 8, 8, 8);
+        preciseBlit(guiGraphics, HEALTH_FRAME, 20, screenHeight - 12 - compatHeight, 100, 0, 0, 60, 6, 60, 6);
+        preciseBlit(guiGraphics, HEALTH, 20, screenHeight - 12 - compatHeight, 100, 0, 0, (int) (60 * health / maxHealth), 6, 60, 6);
 
-            if (pVehicle.getVehicleType() == VehicleType.AIRPLANE) {
-                RenderSystem.disableDepthTest();
-                RenderSystem.depthMask(false);
-                RenderSystem.enableBlend();
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                RenderSystem.setShaderColor(1, 1, 1, 1);
-                float angle = pVehicle.gearRot(partialTick);
-                poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
-                preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
-                poseStack.popPose();
-            }
+        renderWeaponInfo(guiGraphics, vehicle, screenWidth, screenHeight);
+        renderPassengerInfo(guiGraphics, vehicle, screenWidth, screenHeight);
+
+        if (vehicle.getVehicleType() == VehicleType.AIRPLANE) {
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            float angle = vehicle.gearRot(partialTick);
+            poseStack.pushPose();
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
+            preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
+            poseStack.popPose();
         }
 
         poseStack.popPose();
@@ -158,7 +161,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
     private static boolean shouldRenderHud(Player player) {
         if (player == null) return false;
-        return !player.isSpectator() && (player.getVehicle() != null && player.getVehicle() instanceof VehicleEntity);
+        return !player.isSpectator() && player.getVehicle() instanceof VehicleEntity;
     }
 
     private static int getArmorPlateCompatHeight(Player player) {
@@ -227,7 +230,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 RenderHelper.blit(poseStack, ENGINE, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
                 poseStack.popPose();
 
-
                 // 时速
                 guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
                         screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
@@ -280,7 +282,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 int heal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 - heal)), screenWidth / 2 - 165, screenHeight / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
 
-                //诱饵
+                // 诱饵
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getEntityData().get(DECOY_COUNT)), screenWidth / 2 - 165, screenHeight / 2 - 36, color, false);
 
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);

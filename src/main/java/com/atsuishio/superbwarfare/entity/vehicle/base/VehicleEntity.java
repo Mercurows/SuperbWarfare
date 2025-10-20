@@ -2962,6 +2962,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * 渲染载具的第一人称UI
      * 务必标记 @OnlyIn(Dist.CLIENT)
      */
+    // TODO 实现数据包控制准星渲染
     @OnlyIn(Dist.CLIENT)
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
         if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
