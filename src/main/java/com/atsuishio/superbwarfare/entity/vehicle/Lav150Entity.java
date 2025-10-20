@@ -173,10 +173,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public void setWeaponIndex(int index, int type) {
-        modifyGunData(index, gunData -> {
-            if (type < 0 || type >= gunData.get(GunProp.AMMO_CONSUMER).size()) return;
-            gunData.selectedAmmoType.set(type);
-        });
+        modifyGunData(index, gunData -> gunData.changeAmmoConsumer(type));
     }
 
     @Override
@@ -406,7 +403,8 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         var gunData = getGunData(index);
         if (gunData == null) return 0;
 
-        return gunData.selectedAmmoType.get();
+        var consumersSize = gunData.get(GunProp.AMMO_CONSUMER).size();
+        return Mth.clamp(gunData.selectedAmmoType.get(), 0, consumersSize - 1);
     }
 
     @Override
