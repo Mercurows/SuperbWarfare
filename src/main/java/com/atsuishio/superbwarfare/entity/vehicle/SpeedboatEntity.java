@@ -18,7 +18,6 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -32,7 +31,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.Math;
@@ -41,7 +39,6 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -79,21 +76,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(3 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-    }
-
-    @Override
-    public @NotNull Vec3 getPassengerRidingPosition(@NotNull Entity entity) {
-        return super.getPassengerRidingPosition(entity).add(0, -0.8, 0);
     }
 
     @Override
@@ -304,44 +286,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @Override
     public float getEngineSoundVolume() {
         return (Mth.abs(entityData.get(POWER)) - 0.01f) * 2f;
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void positionRider(Entity passenger, MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-        int i = this.getOrderedPassengers().indexOf(passenger);
-
-
-        if (i == 0) {
-            passengerPos(passenger, callback, 0, 0.6f, -0.2f, getVehicleTransform(1));
-        } else if (i == 1) {
-            passengerPos(passenger, callback, -0.8f, 0.35f, -1.2f, getVehicleTransform(1));
-        } else if (i == 2) {
-            passengerPos(passenger, callback, 0.8f, 0.35f, -1.2f, getVehicleTransform(1));
-        } else if (i == 3) {
-            passengerPos(passenger, callback, -0.8f, 0.35f, -2.2f, getVehicleTransform(1));
-        } else if (i == 4) {
-            passengerPos(passenger, callback, 0.8f, 0.35f, -2.2f, getVehicleTransform(1));
-        }
-
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(getYRot());
-    }
-
-    protected void clampRotation(Entity entity) {
-        passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
-        passengerYaw(entity, -105, 105, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
     }
 
     @Override

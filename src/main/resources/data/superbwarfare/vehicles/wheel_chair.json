@@ -2,7 +2,16 @@
   "ID": "superbwarfare:wheel_chair",
   "MaxHealth": 30,
   "MaxEnergy": 24000,
-  "Seats": {},
+  "Seats": {
+    "Transform": "Vehicle",
+    "Position": [
+      0,
+      0.35,
+      0
+    ],
+    "MinYaw": -90,
+    "MaxYaw": 90
+  },
   "UpStep": 1.1,
   "Mass": 0.03,
   "DamageModifiers": [
