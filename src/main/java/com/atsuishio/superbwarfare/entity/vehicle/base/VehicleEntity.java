@@ -2929,15 +2929,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return hidePassenger(getSeatIndex(passenger));
     }
 
-    /**
-     * 乘客位置在载具上的部位,用于控制乘客摄像机随车身的旋转
-     *
-     * @return 0:固定在车身，视角可随意转动 1:炮塔 2:固定在车身，视角不可随意转动（用于飞行器驾驶位）
-     */
-    public int passengerSeatLocation(Entity entity) {
-        return 0;
-    }
-
     @Override
     @Nullable
     public ItemStack getPickResult() {

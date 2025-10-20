@@ -362,11 +362,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int passengerSeatLocation(Entity entity) {
-        return entity == getNthEntity(0) ? 2 : 0;
-    }
-
-    @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return seatIndex == 0 ? 0 : original;
     }

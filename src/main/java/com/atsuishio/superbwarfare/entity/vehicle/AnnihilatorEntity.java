@@ -194,16 +194,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         entityData.set(PITCH, Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
     }
 
-
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0, 3.3f, 1.5f, getVehicleFlatTransform(1));
-    }
-
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
@@ -509,15 +499,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         this.setRot(this.getYRot(), this.getXRot());
     }
 
-    protected void clampRotation(Entity entity) {
-        passengerPitch(entity, -5, 45, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
     private PlayState movementPredicate(AnimationState<AnnihilatorEntity> event) {
         if (this.entityData.get(COOL_DOWN) > 85) {
             return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.annihilator.fire"));
@@ -586,11 +567,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         return true;
-    }
-
-    @Override
-    public int passengerSeatLocation(Entity entity) {
-        return 1;
     }
 
     @Override

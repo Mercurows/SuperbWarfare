@@ -372,15 +372,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0, 2, 0.5f, getVehicleFlatTransform(1));
-    }
-
-    @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
                 .custom((source, damage) -> getSourceAngle(source, 1f) * damage);
@@ -591,18 +582,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -2f, 2f), -30, 5f));
     }
 
-    protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, -30.0F, 7.0F);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
     private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
         if (this.entityData.get(COOL_DOWN) > 54) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire_left"));
@@ -728,11 +707,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
-    }
-
-    @Override
-    public int passengerSeatLocation(Entity entity) {
-        return 1;
     }
 
     @Override

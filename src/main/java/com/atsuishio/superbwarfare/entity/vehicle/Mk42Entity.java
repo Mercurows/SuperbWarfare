@@ -435,17 +435,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-        passengerPos(passenger, callback, 0, 2.3f, 0, getVehicleFlatTransform(1));
-    }
-
-    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getVehicleFlatTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0f, 2.16f + 1.4f, 0.5175f);
+        Vector4f worldPosition = transformPosition(transform, 0f, 3.56f, 0.5175f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
@@ -546,14 +538,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -3f, 3f), -85, 15f));
     }
 
-    protected void clampRotation(Entity entity) {
-        passengerPitch(entity, -17, 85, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
 
     private PlayState movementPredicate(AnimationState<Mk42Entity> event) {
         if (this.entityData.get(COOL_DOWN) > 0) {
@@ -668,11 +652,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
-    }
-
-    @Override
-    public int passengerSeatLocation(Entity entity) {
-        return 1;
     }
 
     @Override
