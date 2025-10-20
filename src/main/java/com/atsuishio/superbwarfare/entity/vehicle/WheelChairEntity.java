@@ -223,25 +223,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         return getEnergy() > 0 ? entityData.get(POWER) : 0;
     }
 
-    protected void clampRotation(Entity entity) {
-        passengerYaw(entity, -90, 90, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0, 0.35f, 0, getVehicleTransform(1));
-    }
-
     @Override
     public float rotateYOffset() {
         return 0.4f;

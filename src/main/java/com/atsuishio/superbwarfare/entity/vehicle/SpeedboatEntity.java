@@ -33,7 +33,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.*;
@@ -46,7 +45,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -93,11 +91,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-    }
-
-    @Override
-    public double getPassengersRidingOffset() {
-        return super.getPassengersRidingOffset() - 0.8;
     }
 
     @Override
@@ -308,44 +301,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @Override
     public float getEngineSoundVolume() {
         return (Mth.abs(entityData.get(POWER)) - 0.01f) * 2f;
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void positionRider(Entity passenger, MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-        int i = this.getOrderedPassengers().indexOf(passenger);
-
-
-        if (i == 0) {
-            passengerPos(passenger, callback, 0, 0.6f, -0.2f, getVehicleTransform(1));
-        } else if (i == 1) {
-            passengerPos(passenger, callback, -0.8f, 0.35f, -1.2f, getVehicleTransform(1));
-        } else if (i == 2) {
-            passengerPos(passenger, callback, 0.8f, 0.35f, -1.2f, getVehicleTransform(1));
-        } else if (i == 3) {
-            passengerPos(passenger, callback, -0.8f, 0.35f, -2.2f, getVehicleTransform(1));
-        } else if (i == 4) {
-            passengerPos(passenger, callback, 0.8f, 0.35f, -2.2f, getVehicleTransform(1));
-        }
-
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(getYRot());
-    }
-
-    protected void clampRotation(Entity entity) {
-        passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
-        passengerYaw(entity, -105, 105, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
     }
 
     @Override

@@ -2110,7 +2110,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             if (!seat.canRotateBody) {
                 passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation);
             }
-            passengerPitch(entity, seat.minPitch, seat.maxPitch, seat.orientation);
+
+            if (hasTurret() && index == mainWeaponControllerIndex()) {
+                passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch, false);
+            } else {
+                passengerPitch(entity, seat.minPitch, seat.maxPitch, seat.orientation);
+            }
         }
     }
 
