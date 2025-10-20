@@ -13,6 +13,7 @@
     "LivingEntityMixin",
     "PlayerMixin",
     "ProjectileUtilMixin",
+    "ReloadableServerResourcesMixin",
     "SteelPipeFallMixin",
     "VillagerMixin"
   ],
