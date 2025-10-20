@@ -119,7 +119,9 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> SEEK_ANGLE = new GunProp<>("SeekAngle");
     public static final GunProp<Double> SEEK_RANGE = new GunProp<>("SeekRange");
 
+    // TODO 这俩换到 gun assets里面
     public static final GunProp<String> GUN_ICON = new GunProp<>("GunIcon");
+    public static final GunProp<String> CROSSHAIR = new GunProp<>("Crosshair");
 
     private GunProp(String name) {
         super(DefaultGunData.class, name);
