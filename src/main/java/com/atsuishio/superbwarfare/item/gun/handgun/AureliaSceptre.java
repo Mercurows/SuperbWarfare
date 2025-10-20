@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.AureliaSceptreModel;
@@ -15,7 +14,6 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -30,8 +28,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AureliaSceptre extends GunGeoItem {
@@ -124,15 +120,5 @@ public class AureliaSceptre extends GunGeoItem {
         data.add(fireController);
         var meleeController = new AnimationController<>(this, "meleeController", 0, this::meleePredicate);
         data.add(meleeController);
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/aurelia_sceptre_icon.png");
-    }
-
-    @Override
-    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-        super.addReloadTimeBehavior(behaviors);
     }
 }

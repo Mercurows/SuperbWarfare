@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.shotgun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M870ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -9,7 +8,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -70,7 +68,6 @@ public class M870Item extends GunGeoItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
     }
 
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var fireAnimController = new AnimationController<>(this, "fireAnimController", 1, this::fireAnimPredicate);
@@ -83,10 +80,4 @@ public class M870Item extends GunGeoItem {
                 ModSounds.M_870_LOOP.get(),
                 ModSounds.M_870_BOLT.get());
     }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/m_870_icon.png");
-    }
-
 }

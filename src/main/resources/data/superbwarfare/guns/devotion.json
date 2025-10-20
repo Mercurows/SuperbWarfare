@@ -23,6 +23,7 @@
     "Type": "Rifle"
   },
   "AmmoType": "@RifleAmmo",
+  "GunIcon": "superbwarfare:textures/gun_icon/devotion_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:fourth_times_charm",

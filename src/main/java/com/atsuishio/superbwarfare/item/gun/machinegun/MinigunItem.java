@@ -34,6 +34,10 @@ public class MinigunItem extends GunGeoItem {
         return MinigunItemRenderer::new;
     }
 
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack stack) {
@@ -43,10 +47,6 @@ public class MinigunItem extends GunGeoItem {
             }
         }
         return HumanoidModel.ArmPose.EMPTY;
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
     @Override

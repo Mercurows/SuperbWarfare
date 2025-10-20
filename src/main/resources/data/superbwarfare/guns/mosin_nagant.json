@@ -25,6 +25,7 @@
     "Type": "Sniper"
   },
   "AmmoType": "@SniperAmmo",
+  "GunIcon": "superbwarfare:textures/gun_icon/mosin_nagant_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

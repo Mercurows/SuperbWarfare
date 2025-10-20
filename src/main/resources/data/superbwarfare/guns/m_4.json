@@ -25,6 +25,7 @@
     "Type": "Rifle"
   },
   "AmmoType": "@RifleAmmo",
+  "GunIcon": "superbwarfare:textures/gun_icon/m_4_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

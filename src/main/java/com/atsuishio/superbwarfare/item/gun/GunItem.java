@@ -80,6 +80,8 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public abstract class GunItem extends Item implements ItemScreenProvider, GunPropertyModifier, EnergyStorageItem {
 
+    protected static final ResourceLocation DEFAULT_ICON = Mod.loc("textures/gun_icon/default_icon.png");
+
     protected final RandomSource random = RandomSource.create();
 
     @Override
@@ -234,8 +236,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public ResourceLocation getGunIcon(GunData data) {
-        return ResourceLocation.tryParse(data.get(GunProp.ICON).gunIcon);
-//        return Mod.loc("textures/gun_icon/default_icon.png");
+        var icon = ResourceLocation.tryParse(data.get(GunProp.GUN_ICON));
+        return icon == null ? DEFAULT_ICON : icon;
     }
 
     @Override

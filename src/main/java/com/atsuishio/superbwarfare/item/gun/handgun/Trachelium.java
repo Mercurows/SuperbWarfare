@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.renderer.gun.TracheliumItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -15,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.*;
 import software.bernie.geckolib.animation.*;
@@ -224,11 +222,6 @@ public class Trachelium extends GunGeoItem {
             return 0.1;
         }
         return super.getCustomBypassArmor(data);
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/trachelium_icon.png");
     }
 
     @Override

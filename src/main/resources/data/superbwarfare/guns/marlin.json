@@ -23,6 +23,7 @@
     "Type": "Rifle"
   },
   "AmmoType": "@RifleAmmo",
+  "GunIcon": "superbwarfare:textures/gun_icon/marlin_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",
