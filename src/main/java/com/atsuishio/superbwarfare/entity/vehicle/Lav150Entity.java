@@ -484,28 +484,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return Mth.abs(entityData.get(POWER)) * 0.4f;
     }
 
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        int i = this.getSeatIndex(passenger);
-        if (i == 0) {
-            passengerPos(passenger, callback, 0.36f, -0.65f, 0.56f, getTurretTransform(1));
-        } else {
-            passengerPos(passenger, callback, 0, 1, 0, getVehicleTransform(1));
-        }
-
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            entity.setYBodyRot(getBarrelYRot(1));
-        }
-    }
 
     @Override
     public Vec3 driverZoomPos(float ticks) {
@@ -529,15 +507,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return 2.2f;
     }
 
-    protected void clampRotation(Entity entity) {
-        passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
-        entity.setYBodyRot(getBarrelYRot(1));
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
 
     // TODO 正确播放动画
     private PlayState firePredicate(AnimationState<Lav150Entity> event) {

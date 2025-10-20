@@ -47,19 +47,52 @@
         "ExplosionRadius": 5,
         "BypassesArmor": 0.5,
         "HeatPerShoot": 0.5
-      }
+      },
+      "Transform": "Turret",
+      "Position": [
+        0.36,
+        -0.65,
+        0.56
+      ],
+      "CanRotateHead": false,
+      "MinPitch": -15,
+      "MaxPitch": 32.5
     },
     {
-      "HidePassenger": true
+      "HidePassenger": true,
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     },
     {
-      "HidePassenger": true
+      "HidePassenger": true,
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     },
     {
-      "HidePassenger": true
+      "HidePassenger": true,
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     },
     {
-      "HidePassenger": true
+      "HidePassenger": true,
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     }
   ],
   "Engine": {

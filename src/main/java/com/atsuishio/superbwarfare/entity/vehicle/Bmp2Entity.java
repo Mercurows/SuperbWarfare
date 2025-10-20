@@ -49,7 +49,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.Math;
@@ -554,47 +553,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        int i = this.getSeatIndex(passenger);
-
-        if (i == 0) {
-            passengerPos(passenger, callback, 0.36f, -0.25f, 0.56f, getTurretTransform(1));
-        } else if (i == 1) {
-            passengerPos(passenger, callback, 0.5f, 0f, -0.8125f, getVehicleTransform(1));
-        } else if (i == 2) {
-            passengerPos(passenger, callback, -0.5f, 0f, -0.8125f, getVehicleTransform(1));
-        } else if (i == 3) {
-            passengerPos(passenger, callback, 0.5f, 0f, -2.1875f, getVehicleTransform(1));
-        } else if (i == 4) {
-            passengerPos(passenger, callback, -0.5f, 0f, -2.1875f, getVehicleTransform(1));
-        } else if (i == 5) {
-            passengerPos(passenger, callback, 0.5f, 0f, -3.0625f, getVehicleTransform(1));
-        } else if (i == 6) {
-            passengerPos(passenger, callback, -0.5f, 0f, -3.0625f, getVehicleTransform(1));
-        } else {
-            passengerPos(passenger, callback, 1, 1, 0, getVehicleTransform(1));
-        }
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            entity.setYBodyRot(getBarrelYRot(1));
-        } else if (entity == getNthEntity(1) || entity == getNthEntity(3)) {
-            entity.setYBodyRot(getYRot() - 90);
-        } else if (entity == getNthEntity(2) || entity == getNthEntity(4) || entity == getNthEntity(6)) {
-            entity.setYBodyRot(getYRot() + 90);
-        } else if (entity == getNthEntity(5)) {
-            entity.setYBodyRot(getYRot() - 180);
-        }
-    }
-
-    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 0, 0.75f);
@@ -623,25 +581,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         return 2.7f;
     }
 
-    protected void clampRotation(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
-        } else if (entity == getNthEntity(1) || entity == getNthEntity(3)) {
-            passengerPitch(entity, -40, 40, -90);
-            passengerYaw(entity, -50, 50, -90);
-        } else if (entity == getNthEntity(2) || entity == getNthEntity(4) || entity == getNthEntity(6)) {
-            passengerPitch(entity, -40, 40, 90);
-            passengerYaw(entity, -50, 50, 90);
-        } else if (entity == getNthEntity(5)) {
-            passengerPitch(entity, -40, 40, 180);
-            passengerYaw(entity, -50, 50, 180);
-        }
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
 
     public Vec3 passengerCameraPos(float ticks, Entity entity) {
         int i = this.getSeatIndex(entity);
@@ -827,7 +766,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.22 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.27 : 0.36;
+        return seatIndex == 0 ? (zoom ? 0.22 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.27 : 0.36) : original;
     }
 
     @OnlyIn(Dist.CLIENT)

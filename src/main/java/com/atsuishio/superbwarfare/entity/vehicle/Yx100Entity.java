@@ -795,9 +795,9 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     protected void clampRotation(Entity entity) {
 
         if (entity == getNthEntity(0)) {
-            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
+            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch());
         } else if (entity == getNthEntity(1)) {
-            passengerPitchOnTurret(entity, passengerWeaponMinPitch(), passengerWeaponMaxPitch(), false);
+            passengerPitchOnTurret(entity, passengerWeaponMinPitch(), passengerWeaponMaxPitch());
         } else if (entity == getNthEntity(2) && entity instanceof LivingEntity living) {
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(living.yBodyRot - this.getYRot()));
             passengerPitch(entity, -25, 90, diffY);
