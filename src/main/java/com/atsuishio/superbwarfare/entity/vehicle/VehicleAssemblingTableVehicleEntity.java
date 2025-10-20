@@ -234,31 +234,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
         return (float) getDeltaMovement().length();
     }
 
-    protected void clampRotation(Entity entity) {
-        passengerYaw(entity, -45, 45, 0);
-        passengerPitch(entity, -60, 85, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, -0.4f, -0.95f, 0.2f, getVehicleTransform(1));
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(getYRot());
-    }
-
     @Override
     public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transform = new Matrix4f();

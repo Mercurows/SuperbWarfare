@@ -2095,7 +2095,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void clampZoomYaw(Entity entity) {
-        if (entity.level().isClientSide && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+        if (entity.level().isClientSide && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && mainWeaponControllerIndex() == getSeatIndex(entity)) {
             float f2 = Mth.wrapDegrees(entity.getYRot() - this.getBarrelYRot(1));
             float f3 = Mth.clamp(f2, -20.0F, 20.0F);
             entity.yRotO += f3 - f2;
@@ -2163,13 +2163,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         int index = getSeatIndex(passenger);
         var seat = data().get(VehicleProp.SEATS).get(index);
         passengerPos(passenger, callback, seat.position, seat.transform);
-    }
-
-    public void passengerPos(Entity passenger, @NotNull MoveFunction callback, float x, float y, float z, Matrix4f transform) {
-        Vector4f worldPosition = transformPosition(transform, x, y, z);
-        passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-        callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        copyEntityData(passenger);
     }
 
     public void passengerPos(Entity passenger, @NotNull MoveFunction callback, Vec3 vec3, String string) {

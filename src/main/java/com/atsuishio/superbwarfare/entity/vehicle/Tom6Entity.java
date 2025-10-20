@@ -258,11 +258,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         return (float) getDeltaMovement().length();
     }
 
-    protected void clampRotation(Entity entity) {
-        passengerYaw(entity, -45, 45, 0);
-        passengerPitch(entity, -60, 85, 0);
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }

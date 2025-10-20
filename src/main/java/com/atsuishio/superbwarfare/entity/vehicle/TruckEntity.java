@@ -18,7 +18,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -164,39 +163,8 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        int i = this.getSeatIndex(passenger);
-
-        if (i == 0) {
-            passengerPos(passenger, callback, 0.834375f, 1.65f, 4.63f, getVehicleTransform(1));
-        } else {
-            passengerPos(passenger, callback, -0.834375f, 1.65f, 4.63f, getVehicleTransform(1));
-        }
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(getYRot());
-    }
-
-    protected void clampRotation(Entity entity) {
-        passengerPitch(entity, -60, 60, 0);
-        passengerYaw(entity, -95, 95, 0);
-    }
-
-    @Override
     public float rotateYOffset() {
         return 2.2f;
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
     }
 
     @Override
