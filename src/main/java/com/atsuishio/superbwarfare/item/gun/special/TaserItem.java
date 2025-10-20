@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
@@ -11,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -108,11 +106,6 @@ public class TaserItem extends GunGeoItem {
                 }
             }
         }
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/taser_icon.png");
     }
 
     @Override

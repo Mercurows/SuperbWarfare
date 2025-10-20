@@ -20,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -127,11 +126,6 @@ public class BocekItem extends GunGeoItem {
     @Override
     public boolean useSpecialFireProcedure(GunData data) {
         return true;
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/bocek_icon.png");
     }
 
     @Override

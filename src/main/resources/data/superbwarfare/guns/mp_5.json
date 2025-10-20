@@ -25,6 +25,7 @@
     "Type": "Smg"
   },
   "AmmoType": "@HandgunAmmo",
+  "GunIcon": "superbwarfare:textures/gun_icon/mp_5_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

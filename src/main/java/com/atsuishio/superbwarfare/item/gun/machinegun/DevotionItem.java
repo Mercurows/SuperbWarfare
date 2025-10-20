@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.machinegun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.DevotionItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -64,11 +62,6 @@ public class DevotionItem extends GunGeoItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.DEVOTION_RELOAD_EMPTY.get(), ModSounds.DEVOTION_RELOAD_NORMAL.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/devotion_icon.png");
     }
 
     @Override

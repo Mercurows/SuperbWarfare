@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M79ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -12,7 +11,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -66,11 +64,6 @@ public class M79Item extends GunGeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var idleController = new AnimationController<>(this, "idleController", 0, this::idlePredicate);
         data.add(idleController);
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/m_79_icon.png");
     }
 
     @Override

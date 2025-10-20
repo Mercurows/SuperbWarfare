@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.item.gun.machinegun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.MinigunItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -40,11 +38,6 @@ public class MinigunItem extends GunGeoItem {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/minigun_icon.png");
     }
 
     @OnlyIn(Dist.CLIENT)

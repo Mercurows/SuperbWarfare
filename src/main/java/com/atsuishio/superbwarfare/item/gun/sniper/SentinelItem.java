@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.sniper;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -11,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -110,11 +108,6 @@ public class SentinelItem extends GunGeoItem {
                 ModSounds.SENTINEL_CHARGE.get(),
                 ModSounds.SENTINEL_BOLT.get()
         );
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/sentinel_icon.png");
     }
 
     @Override

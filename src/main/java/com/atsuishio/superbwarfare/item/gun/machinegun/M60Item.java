@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.machinegun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M60ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -10,7 +9,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -85,11 +83,6 @@ public class M60Item extends GunGeoItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.M_60_RELOAD_EMPTY.get(), ModSounds.M_60_RELOAD_NORMAL.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/m_60_icon.png");
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.sniper;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.SvdItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -11,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -113,11 +111,6 @@ public class SvdItem extends GunGeoItem {
     @Override
     public boolean canAdjustZoom(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 3;
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/svd_icon.png");
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.rifle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.Mk14ItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -11,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -142,11 +140,6 @@ public class Mk14Item extends GunGeoItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.MK_14_RELOAD_EMPTY.get(), ModSounds.MK_14_RELOAD_NORMAL.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/mk_14_icon.png");
     }
 
     @Override

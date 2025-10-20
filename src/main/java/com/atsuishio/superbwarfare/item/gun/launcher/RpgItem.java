@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.RpgItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
@@ -12,7 +11,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -80,15 +78,6 @@ public class RpgItem extends GunGeoItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.RPG_RELOAD_EMPTY.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        int i = data.selectedAmmoType.get();
-        if (i == 0) {
-            return Mod.loc("textures/gun_icon/rpg_tbg_icon.png");
-        }
-        return Mod.loc("textures/gun_icon/rpg_standard_icon.png");
     }
 
     @Override

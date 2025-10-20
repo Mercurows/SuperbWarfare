@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.Glock17ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -9,7 +8,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -67,11 +65,6 @@ public class Glock17Item extends GunGeoItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.GLOCK_17_RELOAD_EMPTY.get(), ModSounds.GLOCK_17_RELOAD_NORMAL.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/glock_17_icon.png");
     }
 
     @Override

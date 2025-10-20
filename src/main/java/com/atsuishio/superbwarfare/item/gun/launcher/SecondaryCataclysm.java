@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.launcher;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
@@ -20,7 +19,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -143,11 +141,6 @@ public class SecondaryCataclysm extends GunGeoItem {
                 }
             }
         }
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/secondary_cataclysm_icon.png");
     }
 
     @Override

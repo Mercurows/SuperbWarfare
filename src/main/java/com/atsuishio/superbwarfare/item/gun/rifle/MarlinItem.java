@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.rifle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.MarlinItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -9,7 +8,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -96,10 +94,4 @@ public class MarlinItem extends GunGeoItem {
         super.addBoltTimeBehavior(behaviors);
         behaviors.put(9, data -> data.closeStrike.set(false));
     }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/marlin_icon.png");
-    }
-
 }

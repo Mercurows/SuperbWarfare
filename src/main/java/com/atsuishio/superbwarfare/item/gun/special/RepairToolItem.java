@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -223,11 +222,6 @@ public class RepairToolItem extends GunGeoItem {
             }
             this.summonRayHitParticle(level, null, pos, shootDirection.scale(-1).normalize());
         }
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/repair_tool_icon.png");
     }
 
     @Override

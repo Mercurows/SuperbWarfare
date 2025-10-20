@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -85,16 +84,10 @@ public class IglaItem extends GunGeoItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/igla_9k38_icon.png");
-    }
-
-    @Override
     public void shoot(@NotNull ShootParameters parameters) {
         var data = parameters.data();
         var shooter = parameters.shooter();
         var targetUUID = parameters.targetEntityUUID();
-        var targetPos = parameters.targetPos();
         var zoom = parameters.zoom();
 
         if (shooter == null) return;

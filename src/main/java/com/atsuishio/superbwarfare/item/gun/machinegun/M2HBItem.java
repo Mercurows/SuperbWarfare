@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.machinegun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M2HBItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -12,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -94,11 +92,6 @@ public class M2HBItem extends GunGeoItem {
     @Override
     public Set<SoundEvent> getReloadSound() {
         return Set.of(ModSounds.M_2_HB_RELOAD_EMPTY.get(), ModSounds.M_2_HB_RELOAD_NORMAL.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/m_2_hb_icon.png");
     }
 
     @Override

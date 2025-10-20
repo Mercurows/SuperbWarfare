@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.StringToObject;
-import com.atsuishio.superbwarfare.data.gun.subdata.GunIconInfo;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
 
@@ -259,6 +258,6 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("SeekRange")
     public double seekRange = 384;
 
-    @SerializedName("Icon")
-    public GunIconInfo icon = new GunIconInfo();
+    @SerializedName("GunIcon")
+    public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();
 }
