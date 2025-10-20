@@ -12,10 +12,12 @@
     "ExplosionMixin",
     "FishingHookMixin",
     "GeoModelAccessor",
+    "HolderMixin",
     "LevelMixin",
     "LivingEntityMixin",
     "PlayerMixin",
     "ProjectileUtilMixin",
+    "ReloadableServerResourcesMixin",
     "SteelPipeFallMixin",
     "VillagerMixin",
     "tacz.EntityUtilMixin"
