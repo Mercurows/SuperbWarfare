@@ -439,30 +439,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
     }
 
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-        int i = this.getSeatIndex(passenger);
-        if (i == 0) {
-            passengerPos(passenger, callback, 0, -0.6f, 0, getTurretTransform(1));
-        } else {
-            passengerPos(passenger, callback, -0.59375f, 1f, 3.0625f, getVehicleTransform(1));
-        }
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            entity.setYBodyRot(getBarrelYRot(1));
-        }
-        if (entity == getNthEntity(1)) {
-            entity.setYBodyRot(getYRot());
-        }
-    }
-
     public Vec3 driverPos(float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0.5f, 1.2f, -0.1f);
@@ -489,21 +465,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public float rotateYOffset() {
         return 3.5f;
-    }
-
-    protected void clampRotation(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch(), true);
-        }
-        if (entity == getNthEntity(1)) {
-            passengerPitch(entity, -10, 80, 0);
-            passengerYaw(entity, -100, 100, 0);
-        }
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
     }
 
     @Override

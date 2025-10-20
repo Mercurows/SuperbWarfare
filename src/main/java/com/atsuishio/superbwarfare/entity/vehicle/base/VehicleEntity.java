@@ -2058,7 +2058,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entity.setYBodyRot(this.getYRot() + passengerRot);
     }
 
-    public void passengerPitchOnTurret(Entity entity, float turretMinPitch, float turretMaxPitch, boolean rotateWithTurret) {
+    public void passengerPitchOnTurret(Entity entity, float turretMinPitch, float turretMaxPitch) {
         float a = getTurretYaw(1);
         float r = (Mth.abs(a) - 90f) / 90f;
 
@@ -2081,16 +2081,35 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         float f1 = Mth.clamp(f, min, max);
         entity.xRotO += f1 - f;
         entity.setXRot(entity.getXRot() + f1 - f);
+    }
+
+    public void passengerYawOnTurret(Entity entity, float minYaw, float maxYaw, float passengerRot, boolean rotateWithTurret) {
+        float f2;
+        if (passengerRot != 180) {
+            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
+            float f3 = Mth.clamp(f2, passengerRot + minYaw, passengerRot + maxYaw);
+            entity.yRotO += f3 - f2;
+            entity.setYRot(entity.getYRot() + f3 - f2);
+        } else {
+            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot() + 180);
+            float f3 = Mth.clamp(f2, minYaw, maxYaw);
+            entity.yRotO += f3 - f2;
+            entity.setYRot(entity.getYRot() + f3 - f2);
+        }
 
         if (rotateWithTurret) {
-            entity.setYBodyRot(getBarrelYRot(1));
-            if (entity.level().isClientSide && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                float f2 = Mth.wrapDegrees(entity.getYRot() - this.getBarrelYRot(1));
-                float f3 = Mth.clamp(f2, -20.0F, 20.0F);
-                entity.yRotO += f3 - f2;
-                entity.setYRot(entity.getYRot() + f3 - f2);
-                entity.setYBodyRot(getBarrelYRot(1));
-            }
+            entity.setYBodyRot(getBarrelYRot(1) + passengerRot);
+        }
+
+        clampZoomYaw(entity);
+    }
+
+    public void clampZoomYaw(Entity entity) {
+        if (entity.level().isClientSide && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getBarrelYRot(1));
+            float f3 = Mth.clamp(f2, -20.0F, 20.0F);
+            entity.yRotO += f3 - f2;
+            entity.setYRot(entity.getYRot() + f3 - f2);
         }
     }
 
@@ -2112,10 +2131,36 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
 
             if (hasTurret() && index == mainWeaponControllerIndex()) {
-                passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch, false);
+                passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch);
+                passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, true);
             } else {
                 passengerPitch(entity, seat.minPitch, seat.maxPitch, seat.orientation);
             }
+        }
+
+        if (seat.transform.equals("Turret") && !seat.canRotateBody) {
+            passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch);
+            passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, false);
+        }
+    }
+
+    public void copyEntityData(Entity entity) {
+        entity.setYRot(entity.getYRot() + destroyRot);
+
+        int index = getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+
+        if (seat.transform.equals("Vehicle") || seat.transform.equals("VehicleFlat")) {
+            if (!seat.canRotateBody) {
+                entity.setYBodyRot(getYRot() + seat.orientation);
+            }
+            if (!seat.canRotateHead) {
+                entity.setYRot(getYRot() + seat.orientation);
+            }
+        }
+
+        if (seat.transform.equals("Turret") && !seat.canRotateBody) {
+            entity.setYBodyRot(getBarrelYRot(1) + seat.orientation);
         }
     }
 
@@ -2142,25 +2187,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         copyEntityData(passenger);
-    }
-
-
-    public void copyEntityData(Entity entity) {
-        entity.setYRot(entity.getYRot() + destroyRot);
-
-        int index = getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
-
-        if (seat.transform.equals("Vehicle") || seat.transform.equals("VehicleFlat")) {
-            if (!seat.canRotateBody) {
-                entity.setYBodyRot(getYRot() + seat.orientation);
-            }
-            if (!seat.canRotateHead) {
-                entity.setYRot(getYRot() + seat.orientation);
-            }
-        }
-
-        entity.setYHeadRot(entity.getYRot());
     }
 
     public Matrix4f getTransformFromString(String string, float ticks) {
