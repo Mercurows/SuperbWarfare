@@ -2134,7 +2134,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch);
                 passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, true);
             } else {
-                passengerPitch(entity, seat.minPitch, seat.maxPitch, seat.orientation);
+                float diffY = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
+                passengerPitch(entity, seat.minPitch, seat.maxPitch, diffY);
             }
         }
 
