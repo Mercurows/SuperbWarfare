@@ -45,6 +45,10 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     @SerializedName("Override")
     public JsonObject override = null;
 
+    // TODO 这玩意有点抽象，看看能不能优化掉
+    @SerializedName("Icon")
+    public String icon = Mod.loc("textures/screens/vehicle_weapon/empty.png").toString();
+
     public transient AmmoConsumeType type = AmmoConsumeType.EMPTY;
     public transient int loadAmount = 1;
 

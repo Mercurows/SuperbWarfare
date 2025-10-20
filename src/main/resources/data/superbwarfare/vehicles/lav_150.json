@@ -9,21 +9,26 @@
         "DefaultFireMode": "Auto",
         "AvailableFireModes": "Auto",
         "AmmoType": [
-          "Infinity",
+          {
+            "Ammo": "Infinity",
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png"
+          },
           {
             "Ammo": "Infinity",
             "Override": {
               "RPM": 50,
               "Damage": 300,
               "Velocity": 100
-            }
+            },
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
           },
           {
             "Ammo": "Infinity",
             "Projectile": "superbwarfare:rpg_rocket_tbg",
             "Override": {
               "RPM": 450
-            }
+            },
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
           },
           {
             "Ammo": "Infinity",
@@ -31,7 +36,8 @@
               "ProjectileAmount": 5,
               "Spread": 2.5,
               "RPM": 600
-            }
+            },
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cm_shell.png"
           }
         ],
         "RPM": 1200,
