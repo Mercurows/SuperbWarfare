@@ -53,8 +53,8 @@ import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 public class VehicleHudOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("vehicle_hud");
+    public static final int ANIMATION_TIME = 300;
 
-    private static float scopeScale = 1;
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/land/tv_frame.png");
     private static final ResourceLocation ARMOR = Mod.loc("textures/screens/armor.png");
     private static final ResourceLocation ENERGY = Mod.loc("textures/screens/energy.png");
@@ -89,12 +89,13 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation COMPASS = Mod.loc("textures/screens/compass.png");
     private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
 
-    public static final int ANIMATION_TIME = 300;
-    private static final AnimationTimer[] weaponSlotsTimer = AnimationTimer.createTimers(9, ANIMATION_TIME, AnimationCurves.EASE_OUT_CIRC);
+    private static final AnimationTimer[] WEAPON_SLOTS_TIMER = AnimationTimer.createTimers(9, ANIMATION_TIME, AnimationCurves.EASE_OUT_CIRC);
+    private static final AnimationTimer WEAPON_INDEX_UPDATE_TIMER = new AnimationTimer(ANIMATION_TIME).animation(AnimationCurves.EASE_OUT_CIRC);
+
     private static boolean wasRenderingWeapons = false;
     private static int oldWeaponIndex = 0;
     private static int oldRenderWeaponIndex = 0;
-    private static final AnimationTimer weaponIndexUpdateTimer = new AnimationTimer(ANIMATION_TIME).animation(AnimationCurves.EASE_OUT_CIRC);
+    private static float scopeScale = 1;
 
 
     @Override
@@ -442,27 +443,27 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
         // 若上一帧未在渲染武器信息，则初始化动画相关变量
         if (!wasRenderingWeapons) {
-            weaponSlotsTimer[weaponIndex].beginForward(currentTime);
+            WEAPON_SLOTS_TIMER[weaponIndex].beginForward(currentTime);
 
             if (oldWeaponIndex != weaponIndex) {
-                weaponSlotsTimer[oldWeaponIndex].endBackward(currentTime);
+                WEAPON_SLOTS_TIMER[oldWeaponIndex].endBackward(currentTime);
 
                 oldWeaponIndex = weaponIndex;
                 oldRenderWeaponIndex = weaponIndex;
             }
 
-            weaponIndexUpdateTimer.beginForward(currentTime);
+            WEAPON_INDEX_UPDATE_TIMER.beginForward(currentTime);
         }
 
         // 切换武器时，更新上一个武器槽位和当前武器槽位的动画信息
         if (weaponIndex != oldWeaponIndex) {
-            weaponSlotsTimer[weaponIndex].forward(currentTime);
-            weaponSlotsTimer[oldWeaponIndex].backward(currentTime);
+            WEAPON_SLOTS_TIMER[weaponIndex].forward(currentTime);
+            WEAPON_SLOTS_TIMER[oldWeaponIndex].backward(currentTime);
 
             oldRenderWeaponIndex = oldWeaponIndex;
             oldWeaponIndex = weaponIndex;
 
-            weaponIndexUpdateTimer.beginForward(currentTime);
+            WEAPON_INDEX_UPDATE_TIMER.beginForward(currentTime);
         }
 
         var pose = guiGraphics.pose();
@@ -489,7 +490,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             // 向右偏移的最长长度
             var maxXOffset = 35;
 
-            var currentSlotTimer = weaponSlotsTimer[i];
+            var currentSlotTimer = WEAPON_SLOTS_TIMER[i];
             var progress = currentSlotTimer.getProgress(currentTime);
 
             RenderSystem.setShaderColor(1, 1, 1, Mth.lerp(progress, 0.2f, 1));
@@ -523,7 +524,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         pose.popPose();
 
         // 切换武器光标动画播放结束后，更新上次选择槽位
-        if (oldWeaponIndex != oldRenderWeaponIndex && weaponIndexUpdateTimer.finished(currentTime)) {
+        if (oldWeaponIndex != oldRenderWeaponIndex && WEAPON_INDEX_UPDATE_TIMER.finished(currentTime)) {
             oldRenderWeaponIndex = oldWeaponIndex;
         }
         wasRenderingWeapons = true;
