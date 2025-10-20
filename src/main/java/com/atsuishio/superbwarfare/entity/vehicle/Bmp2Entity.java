@@ -681,12 +681,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         return root.vectorTo(v0).normalize();
     }
 
-    @Override
-    public int passengerSeatLocation(Entity entity) {
-        int i = this.getSeatIndex(entity);
-        return i == 0 ? 1 : 0;
-    }
-
     private PlayState firePredicate(AnimationState<Bmp2Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav.fire"));

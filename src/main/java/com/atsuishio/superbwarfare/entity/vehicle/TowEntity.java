@@ -138,36 +138,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0.3f, -0.4f, -0.6f, getVehicleFlatTransform(1));
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(getYRot());
-    }
-
-    @Override
-    public int passengerSeatLocation(Entity entity) {
-        return 1;
-    }
-
-    protected void clampRotation(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            passengerPitch(entity, -40, 40, 0);
-        }
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
-    @Override
     public void vehicleShoot(LivingEntity living, int type) {
         if (entityData.get(STATE) != 1) return;
         var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(living);

@@ -1,7 +1,12 @@
 {
   "ID": "superbwarfare:tow",
   "MaxHealth": 60,
-  "Seats": {},
+  "Seats": {
+    "Transform" : "VehicleFlat",
+    "Position": [0.3, -0.4, -0.6],
+    "MinPitch": -40,
+    "MaxPitch": 40
+  },
   "Mass": 0.05,
   "DamageModifiers": [
     "All * 0.75"

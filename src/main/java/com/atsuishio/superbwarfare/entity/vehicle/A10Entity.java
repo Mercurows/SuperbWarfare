@@ -963,11 +963,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int passengerSeatLocation(Entity entity) {
-        return 2;
-    }
-
-    @Override
     public int getHudColor() {
         return super.getHudColor();
     }

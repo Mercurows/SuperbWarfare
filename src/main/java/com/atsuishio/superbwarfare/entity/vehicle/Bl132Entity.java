@@ -468,16 +468,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0, 4, -2, getVehicleFlatTransform(1));
-
-    }
-
-    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 0.6f, 0);
@@ -627,15 +617,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -2f, 2f), -85, 5f));
     }
 
-    protected void clampRotation(Entity entity) {
-        passengerPitch(entity, -6, 85, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
     private PlayState fire1Predicate(AnimationState<Bl132Entity> event) {
         if (this.entityData.get(COOL_DOWN) > 70) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.bl_132.fire_1"));
@@ -766,11 +747,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
-    }
-
-    @Override
-    public int passengerSeatLocation(Entity entity) {
-        return 1;
     }
 
     @Override

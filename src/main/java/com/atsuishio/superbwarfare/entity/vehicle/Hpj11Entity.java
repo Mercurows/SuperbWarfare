@@ -403,20 +403,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         this.interpolationSteps = 10;
     }
 
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passengerPos(passenger, callback, 0, 0, 0, getVehicleFlatTransform(1));
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        entity.setYBodyRot(getYRot());
-    }
-
     public Vec3 driverPos(float ticks) {
         Matrix4f transform = getVehicleFlatTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, -1.0625f, 3f, -1.0625f);
@@ -513,15 +499,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
             this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
             this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.9f * diffX, -15f, 15f), -90, 32.5f));
         }
-    }
-
-    protected void clampRotation(Entity entity) {
-        passengerPitch(entity, -32.5f, 90, 0);
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
     }
 
     @Override

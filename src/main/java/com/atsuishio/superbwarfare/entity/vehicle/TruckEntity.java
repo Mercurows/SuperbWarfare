@@ -195,12 +195,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     }
 
     @Override
-    public int passengerSeatLocation(Entity entity) {
-        int i = this.getSeatIndex(entity);
-        return i == 0 ? 1 : 0;
-    }
-
-    @Override
     public void onPassengerTurned(@NotNull Entity entity) {
         this.clampRotation(entity);
     }

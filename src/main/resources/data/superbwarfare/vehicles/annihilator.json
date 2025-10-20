@@ -3,7 +3,11 @@
   "MaxHealth": 1200,
   "MaxEnergy": 20000000,
   "Seats": {
-    "HidePassenger": true
+    "HidePassenger": true,
+    "Transform" : "VehicleFlat",
+    "Position": [0, 3.3, 1.5],
+    "MinPitch": -5,
+    "MaxPitch": 45
   },
   "Mass": 2774,
   "DamageModifiers": [

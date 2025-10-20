@@ -2,7 +2,11 @@
   "ID": "superbwarfare:mk_42",
   "MaxHealth": 350,
   "Seats": {
-    "HidePassenger": true
+    "HidePassenger": true,
+    "Transform" : "VehicleFlat",
+    "Position": [0, 2.3, 0],
+    "MinPitch": -15,
+    "MaxPitch": 85
   },
   "Mass": 61.4,
   "DamageModifiers": [

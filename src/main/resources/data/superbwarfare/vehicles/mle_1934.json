@@ -2,7 +2,11 @@
   "ID": "superbwarfare:mle_1934",
   "MaxHealth": 350,
   "Seats": {
-    "HidePassenger": true
+    "HidePassenger": true,
+    "Transform" : "VehicleFlat",
+    "Position": [0, 2, 0.5],
+    "MinPitch": -2.7,
+    "MaxPitch": 30
   },
   "Mass": 100,
   "DamageModifiers": [

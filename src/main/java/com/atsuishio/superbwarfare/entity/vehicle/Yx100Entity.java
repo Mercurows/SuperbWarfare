@@ -809,11 +809,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         this.clampRotation(entity);
     }
 
-    @Override
-    public int passengerSeatLocation(Entity entity) {
-        return entity == getNthEntity(0) ? 1 : 0;
-    }
-
     private PlayState cannonShootPredicate(AnimationState<Yx100Entity> event) {
         if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire"));
