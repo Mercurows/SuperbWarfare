@@ -4,7 +4,11 @@
   "MaxEnergy": 100000,
   "Seats": {
     "Transform" : "Vehicle",
-    "Position": [0, 0.6, -0.4]
+    "Position": [0, 0.6, -0.4],
+    "MinPitch": -60,
+    "MaxPitch": 85,
+    "MinYaw": -45,
+    "MaxYaw": 45
   },
   "UpStep": 1.1,
   "Mass": 0.02,

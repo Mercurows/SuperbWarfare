@@ -746,31 +746,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        int i = this.getOrderedPassengers().indexOf(passenger);
-
-        if (i == 0) {
-            passengerPos(passenger, callback, 0.6669625f, 0.07f, 0.4776875f, getTurretTransform(1));
-        } else if (i == 1) {
-            passengerPos(passenger, callback, -0.75805625f, 0.3f, -0.57275625f, getTurretTransform(1));
-        } else {
-            passengerPos(passenger, callback, 0.86219375f, 0.07f, -0.5696875f, getTurretTransform(1));
-        }
-    }
-
-    @Override
-    public void copyEntityData(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            entity.setYBodyRot(getBarrelYRot(1));
-        }
-    }
-
-    @Override
     public Vec3 driverZoomPos(float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 1f, 0.6076875f);
@@ -802,22 +777,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return 3.5f;
     }
 
-    protected void clampRotation(Entity entity) {
-
-        if (entity == getNthEntity(0)) {
-            passengerPitchOnTurret(entity, turretMinPitch(), turretMaxPitch());
-        } else if (entity == getNthEntity(1)) {
-            passengerPitchOnTurret(entity, passengerWeaponMinPitch(), passengerWeaponMaxPitch());
-        } else if (entity == getNthEntity(2) && entity instanceof LivingEntity living) {
-            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(living.yBodyRot - this.getYRot()));
-            passengerPitch(entity, -25, 90, diffY);
-        }
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
 
     private PlayState cannonShootPredicate(AnimationState<Yx100Entity> event) {
         if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {

@@ -4,10 +4,22 @@
   "MaxEnergy": 5000000,
   "Seats": [
     {
-      "IsEnclosed": true
+      "IsEnclosed": true,
+      "Transform" : "Vehicle",
+      "Position": [0.834375, 1.65, 4.63],
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95
     },
     {
-      "IsEnclosed": true
+      "IsEnclosed": true,
+      "Transform" : "Vehicle",
+      "Position": [-0.834375, 1.65, 4.63],
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95
     }
   ],
   "Engine": {
