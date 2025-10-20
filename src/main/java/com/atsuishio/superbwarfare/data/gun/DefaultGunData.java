@@ -260,4 +260,14 @@ public class DefaultGunData implements IDBasedData {
 
     @SerializedName("GunIcon")
     public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();
+
+    /*
+     * 准星类型
+     * 预制的字段有：
+     * Custom - 自定义
+     * Gun$Default - 默认枪械准星
+     * Vehicle$Default - 默认载具准星
+     */
+    @SerializedName("Crosshair")
+    public String crosshair = "Gun$Default";
 }

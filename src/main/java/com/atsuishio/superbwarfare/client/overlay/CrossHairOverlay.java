@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -46,6 +45,10 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class CrossHairOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("cross_hair");
+    public static final String CROSSHAIR_CUSTOM = "Custom";
+    public static final String CROSSHAIR_GUN_DEFAULT = "Gun$Default";
+    public static final String CROSSHAIR_GUN_REPAIR_TOOL = "Gun$RepairTool";
+    public static final String CROSSHAIR_GUN_BOCEK = "Gun$Bocek";
 
     private static final ResourceLocation REX_HORIZONTAL = Mod.loc("textures/screens/rex_horizontal.png");
     private static final ResourceLocation REX_VERTICAL = Mod.loc("textures/screens/rex_vertical.png");
@@ -73,24 +76,25 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         int screenHeight = guiGraphics.guiHeight();
 
         Player player = Minecraft.getInstance().player;
-        if (player == null) {
-            return;
-        }
+        if (player == null || player.isSpectator()) return;
 
-        if (ClientEventHandler.isEditing)
-            return;
-        if (!(player.getMainHandItem().getItem() instanceof GunItem) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
-            return;
+        if (ClientEventHandler.isEditing) return;
 
         ItemStack stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
+            return;
+
+        var data = GunData.from(stack);
+
+        var crosshair = data.get(GunProp.CROSSHAIR);
+        if (crosshair.equals(CROSSHAIR_CUSTOM)) return;
+
         double spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos;
         float deltaFrame = deltaTracker.getGameTimeDeltaPartialTick(true);
         float moveX = 0;
         float moveY = 0;
 
-        var data = GunData.from(stack);
-        var perk = data.perk.get(Perk.Type.AMMO);
-
+        // 平滑准星
         if (DisplayConfig.FLOAT_CROSS_HAIR.get() && player.getVehicle() == null) {
             moveX = (float) (-6 * ClientEventHandler.turnRot[1] - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosX);
             moveY = (float) (-6 * ClientEventHandler.turnRot[0] + 6 * (float) ClientEventHandler.velocityY - (player.isSprinting() ? 10 : 6) * ClientEventHandler.movePosY - 0.25 * ClientEventHandler.firePos);
@@ -109,62 +113,28 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         scopeScale = (float) Mth.lerp(0.5F * deltaFrame, scopeScale, 1 + 1.5f * spread);
+
         float minLength = (float) Math.min(screenWidth, screenHeight);
         float scaledMinLength = Math.min((float) screenWidth / minLength, (float) screenHeight / minLength) * 0.012f * scopeScale;
         float finLength = Mth.floor(minLength * scaledMinLength);
-        float finPosX = ((screenWidth - finLength) / 2) + moveX;
-        float finPosY = ((screenHeight - finLength) / 2) + moveY;
+        float finPosX = (screenWidth - finLength) / 2 + moveX;
+        float finPosY = (screenHeight - finLength) / 2 + moveY;
 
-        if (shouldRenderCrossHair(player) || (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && (stack.is(ModItems.MINIGUN.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()) || stack.is(ModItems.M_2_HB.get()))) || (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0))) {
-            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
-            if (!player.isSprinting() || ClientEventHandler.cantSprint > 0) {
-                if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
-                    shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
-                } else {
-                    normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
-                }
+        // 第一人称下的准星
+        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+            switch (crosshair) {
+                case CROSSHAIR_GUN_DEFAULT ->
+                        renderGunDefaultCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
+                case CROSSHAIR_GUN_REPAIR_TOOL ->
+                        renderRepairToolCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY);
+                case CROSSHAIR_GUN_BOCEK ->
+                        renderBocekCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
             }
         }
 
-        if (stack.is(ModItems.REPAIR_TOOL.get()) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-            int range = data.get(GunProp.RANGE);
-
-            Entity lookingEntity = TraceTool.findLookingEntity(player, range);
-
-            float health = 0;
-
-            if (lookingEntity instanceof LivingEntity living) {
-                health = living.getHealth() / living.getMaxHealth();
-            } else if (lookingEntity instanceof VehicleEntity vehicle) {
-                health = vehicle.getHealth() / vehicle.getMaxHealth();
-            }
-
-            preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
-
-            if (health > 0) {
-                RenderHelper.renderCircularRing(guiGraphics,
-                        screenWidth / 2f + moveX, screenHeight / 2f + moveY,
-                        0.035f, 0.028f,
-                        new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f},
-                        health, true);
-            }
-        }
-
-        if (stack.is(ModItems.BOCEK.get())) {
-            if (ClientEventHandler.zoomPos < 0.7) {
-                preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
-                if (!player.isSprinting() || ClientEventHandler.cantSprint > 0 || ClientEventHandler.bowPullPos > 0) {
-                    if (ClientEventHandler.zoomTime < 0.1) {
-                        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-                            normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
-                        } else {
-                            shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
-                        }
-                    } else {
-                        normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
-                    }
-                }
-            }
+        // 第三人称下的准星
+        if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0)) {
+            renderGunDefaultCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
         }
 
         // 在开启伤害指示器时才进行渲染
@@ -179,30 +149,86 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
-    private static void normalCrossHair(GuiGraphics guiGraphics, int w, int h, double spread, float moveX, float moveY) {
+    /**
+     * 渲染标准十字准星
+     */
+    public static void normalCrossHair(GuiGraphics guiGraphics, int w, int h, double spread, float moveX, float moveY) {
         PoseStack poseStack = guiGraphics.pose();
 
         poseStack.pushPose();
         poseStack.rotateAround(Axis.ZP.rotationDegrees(-gunRot * Mth.RAD_TO_DEG), w / 2f + moveX, h / 2f + moveY, 0);
+
         preciseBlit(guiGraphics, REX_HORIZONTAL, (float) (w / 2f - 13.5f - 2.8f * spread) + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
         preciseBlit(guiGraphics, REX_HORIZONTAL, (float) (w / 2f - 2.5f + 2.8f * spread) + moveX, h / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
         preciseBlit(guiGraphics, REX_VERTICAL, w / 2f - 7.5f + moveX, (float) (h / 2f - 2.5f + 2.8f * spread) + moveY, 0, 0, 16, 16, 16, 16);
         preciseBlit(guiGraphics, REX_VERTICAL, w / 2f - 7.5f + moveX, (float) (h / 2f - 13.5f - 2.8f * spread) + moveY, 0, 0, 16, 16, 16, 16);
+
         poseStack.popPose();
     }
 
-    private static void shotgunCrossHair(GuiGraphics guiGraphics, float finPosX, float finPosY, float finLength) {
+    /**
+     * 渲染圆形准星
+     */
+    public static void shotgunCrossHair(GuiGraphics guiGraphics, float finPosX, float finPosY, float finLength) {
         preciseBlit(guiGraphics, SHOTGUN_HUD, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
     }
 
-    private static boolean shouldRenderCrossHair(Player player) {
-        if (player == null) return false;
-        if (player.isSpectator()) return false;
-        if (!(player.getMainHandItem().getItem() instanceof GunItem) || ClientEventHandler.zoomTime > 0.8)
-            return false;
+    public static void renderGunDefaultCrosshair(GuiGraphics guiGraphics, GunData data, Player player, int screenWidth, int screenHeight,
+                                                 float moveX, float moveY, float finPosX, float finPosY, float finLength, double spread) {
+        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+            if (ClientEventHandler.zoomTime > 0.8) return;
+        }
 
-        return !(player.getMainHandItem().getItem() == ModItems.M_79.get() || player.getMainHandItem().getItem() == ModItems.BOCEK.get() || player.getMainHandItem().getItem() == ModItems.SECONDARY_CATACLYSM.get() || player.getMainHandItem().getItem() == ModItems.REPAIR_TOOL.get())
-                && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
+        preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+        if (!player.isSprinting() || ClientEventHandler.cantSprint > 0) {
+            if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
+                shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
+            } else {
+                normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
+            }
+        }
+    }
+
+    public static void renderRepairToolCrosshair(GuiGraphics guiGraphics, GunData data, Player player, int screenWidth, int screenHeight, float moveX, float moveY) {
+        int range = data.get(GunProp.RANGE);
+        Entity lookingEntity = TraceTool.findLookingEntity(player, range);
+
+        float health = 0;
+        if (lookingEntity instanceof LivingEntity living) {
+            health = living.getHealth() / living.getMaxHealth();
+        } else if (lookingEntity instanceof VehicleEntity vehicle) {
+            health = vehicle.getHealth() / vehicle.getMaxHealth();
+        }
+
+        preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+
+        if (health > 0) {
+            RenderHelper.renderCircularRing(guiGraphics,
+                    screenWidth / 2f + moveX, screenHeight / 2f + moveY,
+                    0.035f, 0.028f,
+                    new float[]{0f, 0f, 0f, 0.4f}, new float[]{1f, 1f, 1f, 1f},
+                    health, true);
+        }
+    }
+
+    public static void renderBocekCrosshair(GuiGraphics guiGraphics, GunData data, Player player, int screenWidth, int screenHeight,
+                                            float moveX, float moveY, float finPosX, float finPosY, float finLength, double spread) {
+        if (ClientEventHandler.zoomPos >= 0.7) return;
+
+        var perk = data.perk.get(Perk.Type.AMMO);
+
+        preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
+        if (!player.isSprinting() || ClientEventHandler.cantSprint > 0 || ClientEventHandler.bowPullPos > 0) {
+            if (ClientEventHandler.zoomTime < 0.1) {
+                if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+                    normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
+                } else {
+                    shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
+                }
+            } else {
+                normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
+            }
+        }
     }
 
     private static void renderKillIndicator(GuiGraphics guiGraphics, int w, int h, float moveX, float moveY) {
