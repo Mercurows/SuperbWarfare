@@ -139,7 +139,7 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
 
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
+    public Vec3 getShootPos(int seatIndex, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 0.20106875f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -184,12 +184,12 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 
         projectile.bypassArmorRate(0.4f);
-        projectile.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+        projectile.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
         projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living),
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
 
-        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
+        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z));
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 5);
 
@@ -358,11 +358,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @Override
     public int getWeaponHeat(LivingEntity living) {
         return entityData.get(HEAT);
-    }
-
-    @Override
-    public Vec3 getGunVec(float ticks) {
-        return getBarrelVector(ticks);
     }
 
     @OnlyIn(Dist.CLIENT)

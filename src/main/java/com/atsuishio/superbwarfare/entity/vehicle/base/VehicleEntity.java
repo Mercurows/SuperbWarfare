@@ -8,6 +8,9 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.StringOrVec3;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
@@ -187,6 +190,46 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Boolean> SPRINT_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> LANDING_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+
+    // Map SeatIndex -> GunData
+    protected static final EntityDataAccessor<Map<Integer, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
+
+    public Map<Integer, GunData> getGunDataMap() {
+        var rawMap = entityData.get(GUN_DATA_MAP);
+        var newMap = new HashMap<Integer, GunData>();
+        var seats = data().get(VehicleProp.SEATS);
+
+        for (int index = 0; index < seats.size(); index++) {
+            var seat = seats.get(index);
+            var data = rawMap.get(index);
+
+            if (data == null) {
+                if (seat.weaponData == null) continue;
+                data = GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get()));
+            }
+
+            data.defaultDataSupplier = () -> seat.weaponData;
+            newMap.put(index, data);
+        }
+
+        return newMap;
+    }
+
+    public @Nullable GunData getGunData(int index) {
+        return getGunDataMap().get(index);
+    }
+
+    public void modifyGunData(int index, @NotNull Consumer<GunData> consumer) {
+        var map = getGunDataMap();
+        var data = getGunData(index);
+        if (data == null) return;
+
+        data = data.copy();
+        consumer.accept(data);
+        map.put(index, data);
+
+        entityData.set(GUN_DATA_MAP, map);
+    }
 
     public VehicleWeapon[][] availableWeapons;
 
@@ -1960,7 +2003,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 targetVel = targetVel.multiply(2, 1, 2);
             }
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(getTurretShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
+            Vec3 targetVec = RangeTool.calculateFiringSolution(getShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             turretAutoAimFormVector(targetVec);
 
             if (this instanceof WeaponVehicleEntity weaponVehicle) {
@@ -2189,28 +2232,56 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         };
     }
 
+    public Vec3 getVectorFromString(String string, float ticks) {
+        return switch (string) {
+            case "Turret" -> getTurretVector(ticks);
+            case "Barrel" -> getBarrelVector(ticks);
+            case "WeaponStationBarrel" -> getGunnerVector(ticks);
+            default -> getViewVector(ticks);
+        };
+    }
+
     /**
      * @return 炮弹发射位置
      */
-    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
-        return this.getEyePosition();
+    public Vec3 getShootPos(int seatIndex, float ticks) {
+        return getShootPos(getNthEntity(seatIndex), ticks);
     }
 
     /**
      * @param entity 操控载具的实体
      * @return 炮弹发射位置
      */
-    public Vec3 getTurretShootPos(Entity entity, float ticks) {
-        return getTurretShootPos(getSeatIndex(entity), ticks);
+
+    public Vec3 getShootPos(Entity entity, float ticks) {
+        var data = getGunData(getSeatIndex(entity));
+        if (data != null) {
+            // TODO 发射位置读取失败？
+            Vec3 vec3 = data.get(GunProp.POSITION);
+            Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.TRANSFORM), ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        }
+        return getEyePosition();
     }
 
-    /**
-     * @param entity       操控载具的实体
-     * @param barrelLength 炮管长度
-     * @return 炮口火焰位置
-     */
-    public Vec3 getTurretShootMuzzleFlashPos(Entity entity, float ticks, float barrelLength) {
-        return getTurretShootPos(entity, ticks).add(getBarrelVector(ticks).normalize().scale(barrelLength));
+    public Vec3 getShootVec(int seatIndex, float ticks) {
+        return getShootVec(getNthEntity(seatIndex), ticks);
+    }
+
+    public Vec3 getShootVec(Entity entity, float ticks) {
+        var data = getGunData(getSeatIndex(entity));
+        if (data != null) {
+            // TODO 发射方向读取失败？
+            StringOrVec3 stringOrVec3 = data.get(GunProp.DIRECTION);
+            if (stringOrVec3.isString()) {
+                return getVectorFromString(stringOrVec3.string, ticks);
+            } else {
+                Vec3 startPos = getShootPos(entity, ticks);
+                Vec3 endPos = stringOrVec3.vec3;
+                return startPos.vectorTo(endPos).normalize();
+            }
+        }
+        return this.getLookAngle();
     }
 
     /**
@@ -2746,20 +2817,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return -Mth.lerp(pPartialTick, turretYRotO - this.yRotO, getTurretYRot() - this.getYRot());
     }
 
-    public Vec3 getGunVector(float pPartialTicks) {
-        return this.calculateViewVector(this.getGunXRot(pPartialTicks), this.getGunYRot(pPartialTicks));
-    }
-
     public float getGunXRot(float pPartialTicks) {
         return Mth.lerp(pPartialTicks, gunXRotO - this.xRotO, getGunXRot() - this.getXRot());
     }
 
     public float getGunYRot(float pPartialTick) {
         return -Mth.lerp(pPartialTick, gunYRotO - this.yRotO, getGunYRot() - this.getYRot());
-    }
-
-    public Vec3 getGunVec(float ticks) {
-        return getGunVector(ticks);
     }
 
     public float getTurretYRot() {
@@ -2828,14 +2891,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public float gearRot(float tickDelta) {
         return Mth.lerp(tickDelta, gearRotO, entityData.get(GEAR_ROT));
-    }
-
-    public Vec3 shootPos(float tickDelta) {
-        return getEyePosition();
-    }
-
-    public Vec3 shootVec(float tickDelta) {
-        return getViewVector(tickDelta);
     }
 
     public float getMass() {

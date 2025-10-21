@@ -83,9 +83,9 @@ public class VehicleMgHudOverlay implements LayeredDraw.Layer {
                 Vec3 pos;
                 var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
                 if (player.getVehicle() instanceof SpeedboatEntity) {
-                    pos = vehicle.getTurretShootPos(player, partialTick).add(vehicle.getGunVec(partialTick).scale(192));
+                    pos = vehicle.getShootPos(player, partialTick).add(vehicle.getBarrelVector(partialTick).scale(192));
                 } else {
-                    pos = vehicle.passengerWeaponShootPos(player, partialTick).add(vehicle.getGunVec(partialTick).scale(192));
+                    pos = vehicle.passengerWeaponShootPos(player, partialTick).add(vehicle.getGunnerVector(partialTick).scale(192));
                 }
 
                 Vec3 p = VectorUtil.worldToScreen(pos);

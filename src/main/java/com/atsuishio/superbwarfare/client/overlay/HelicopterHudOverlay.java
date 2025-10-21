@@ -168,7 +168,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
                 }
             }
 
-            Vec3 pos = vehicle.shootPos(partialTick).add(vehicle.shootVec(partialTick).scale(192));
+            Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getShootVec(player, partialTick).scale(192));
             Vec3 p = VectorUtil.worldToScreen(pos);
 
             poseStack.pushPose();

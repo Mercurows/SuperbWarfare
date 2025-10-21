@@ -325,7 +325,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
     // 炮弹发射位置
     @Override
-    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
+    public Vec3 getShootPos(Entity entity, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition;
         if (getWeaponIndex(0) == 0) {
@@ -413,18 +413,19 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             }
         }
 
+
         if (type == 0) {
             if (getWeaponIndex(0) == 0) {
                 if (this.cannotFire) return;
                 var smallCannonShell = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
-                smallCannonShell.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+                smallCannonShell.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
                 smallCannonShell.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living),
                         0.25f);
                 this.level().addFreshEntity(smallCannonShell);
 
-                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
-                playShootSound3p(living, 0, 4, 12, 24, getTurretShootPos(living, 1));
+                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
+                playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
                 ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
@@ -443,7 +444,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                     var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 
                     projectileRight.bypassArmorRate(0.2f);
-                    projectileRight.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+                    projectileRight.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
                     projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living),
                             0.25f);
                     this.level().addFreshEntity(projectileRight);
@@ -466,16 +467,16 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
                 this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
                 this.entityData.set(FIRE_ANIM, 2);
-                playShootSound3p(living, 0, 3, 6, 12, getTurretShootPos(living, 1));
+                playShootSound3p(living, 0, 3, 6, 12, getShootPos(living, 1));
 
             } else if (getWeaponIndex(0) == 2 && this.getEntityData().get(LOADED_MISSILE) > 0) {
                 var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(living);
 
-                wgMissileEntity.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+                wgMissileEntity.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
                 wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, projectileVelocity(living), 0f);
                 wgMissileEntity.setLauncherVehicle(this.uuid);
                 living.level().addFreshEntity(wgMissileEntity);
-                playShootSound3p(living, 0, 6, 0, 0, getTurretShootPos(living, 1));
+                playShootSound3p(living, 0, 6, 0, 0, getShootPos(living, 1));
 
                 this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) - 1);
                 reloadCoolDown = 160;
@@ -489,7 +490,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                 if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
                     var projectile = ((ProjectileWeapon) getWeapon(i)).create(living).setGunItemId(this.getType().getDescriptionId());
 
-                    Vec3 shootVec = new Vec3(living.getLookAngle().x, living.getLookAngle().y, living.getLookAngle().z);
+                    Vec3 shootVec = living.getLookAngle();
                     float spread = 0.25f;
 
                     if (living instanceof Mob mob && mob.getTarget() != null) {
@@ -512,8 +513,8 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                         shootVec = RangeTool.calculateFiringSolution(shootPosition, target.getBoundingBox().getCenter(), targetVel, 18, 0.05);
                         spread = 1.2f;
 
-                        double angle = VectorTool.calculateAngle(shootVec, getPassengerVec(living, i));
-                        if (angle > 50) return;
+                        double angle = VectorTool.calculateAngle(shootVec, mob.getLookAngle());
+                        if (angle > 2) return;
                     }
 
                     projectile.bypassArmorRate(0.2f);
@@ -604,20 +605,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             worldPosition = transformPosition(transformV, 0, 1, 0);
         }
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    public Vec3 getPassengerVec(Entity entity, int i) {
-        Matrix4f transformV = getVehicleTransform(1);
-        Vector4f worldPosition = transformPosition(transformV, 0, 0, 0);
-        Vec3 root = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-        Vector4f vector4f = switch (i) {
-            case 1, 3 -> transformPosition(transformV, 1, 0, 0);
-            case 2, 4, 6 -> transformPosition(transformV, -1, 0, 0);
-            case 5 -> transformPosition(transformV, 0, 0, -1);
-            default -> transformPosition(transformV, 0, 0, 0);
-        };
-        Vec3 v0 = new Vec3(vector4f.x, vector4f.y, vector4f.z);
-        return root.vectorTo(v0).normalize();
     }
 
     private PlayState firePredicate(AnimationState<Bmp2Entity> event) {

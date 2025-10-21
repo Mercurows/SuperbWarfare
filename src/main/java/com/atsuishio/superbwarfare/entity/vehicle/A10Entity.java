@@ -289,7 +289,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         //  计算航弹落点
         if (level().isClientSide) {
-            bombLandingPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), shootPos(1), shootVec(1), -0.06);
+            bombLandingPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(0, 1), getShootVec(0, 1), -0.06);
         }
 
         this.refreshDimensions();
@@ -705,7 +705,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 shootPos(float tickDelta) {
+    public Vec3 getShootPos(Entity entity, float tickDelta) {
         Matrix4f transform = getVehicleTransform(tickDelta);
         Vector4f worldPosition;
         if (getWeaponIndex(0) == 0) {
@@ -721,7 +721,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 shootVec(float tickDelta) {
+    public Vec3 getShootVec(Entity entity, float tickDelta) {
         Matrix4f transform = getVehicleTransform(tickDelta);
         Vector4f worldPosition;
         Vector4f worldPosition2;
@@ -856,7 +856,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 Agm65Entity.setTargetUuid(getTargetUuid());
             }
             Agm65Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            Agm65Entity.shoot(shootVec(1).x, shootVec(1).y, shootVec(1).z, (float) getDeltaMovement().length() + 1, 1);
+            Agm65Entity.shoot(getShootVec(living, 1).x, getShootVec(living, 1).y, getShootVec(living, 1).z, (float) getDeltaMovement().length() + 1, 1);
             living.level().addFreshEntity(Agm65Entity);
 
             BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
@@ -982,7 +982,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (this.getSeatIndex(player) == 0) {
 
             if (getWeaponIndex(0) == 2 && zoomVehicle) {
-                return shootPos(partialTicks);
+                return getShootPos(player, partialTicks);
             }
 
             Matrix4f transform = getClientVehicleTransform(partialTicks);

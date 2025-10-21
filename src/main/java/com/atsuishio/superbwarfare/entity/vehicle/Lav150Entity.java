@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.gun.ShootRay;
-import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -16,8 +15,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
@@ -31,7 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -49,7 +45,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -63,8 +58,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -72,47 +65,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    // Map SeatIndex -> GunData
-    protected static final EntityDataAccessor<Map<Integer, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(Lav150Entity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
-
-    public Map<Integer, GunData> getGunDataMap() {
-        var rawMap = entityData.get(GUN_DATA_MAP);
-        var newMap = new HashMap<Integer, GunData>();
-        var seats = data().get(VehicleProp.SEATS);
-
-        for (int index = 0; index < seats.size(); index++) {
-            var seat = seats.get(index);
-            var data = rawMap.get(index);
-
-            if (data == null) {
-                if (seat.weaponData == null) continue;
-                data = GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get()));
-            }
-
-            data.defaultDataSupplier = () -> seat.weaponData;
-            newMap.put(index, data);
-        }
-
-        return newMap;
-    }
-
-    public @Nullable GunData getGunData(int index) {
-        return getGunDataMap().get(index);
-    }
-
-    public void modifyGunData(int index, @NotNull Consumer<GunData> consumer) {
-        var map = getGunDataMap();
-        var data = getGunData(index);
-        if (data == null) return;
-
-        data = data.copy();
-        consumer.accept(data);
-        data.save();
-        map.put(index, data);
-
-        entityData.set(GUN_DATA_MAP, map);
-    }
 
     public OBB obb;
     public OBB obb2;
@@ -343,13 +295,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return 32.5f;
     }
 
-    // 炮弹发射位置
-    // TODO 修改为正确的计算方式
-    @Override
-    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
-        return MACHINE_GUN_POS.apply(this).shootPosition();
-    }
-
     // 炮弹发射速度
     @Override
     public float projectileVelocity(Entity entity) {
@@ -433,14 +378,14 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (data == null || !data.canShoot(this)) return;
 
         var ray = MACHINE_GUN_POS.apply(this);
-        data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, data.get(GunProp.SPREAD), true, null, null));
+        data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
 
         var currentMap = entityData.get(GUN_DATA_MAP);
         currentMap.put(seatIndex, data);
         entityData.set(GUN_DATA_MAP, currentMap);
 
-        sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getTurretShootMuzzleFlashPos(living, 1, 3.2f).x, getTurretShootMuzzleFlashPos(living, 1, 3.2f).y, getTurretShootMuzzleFlashPos(living, 1, 3.2f).z, 1, 0.02, 0.02, 0.02, 0, false);
-        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
+        sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
+        playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
 
 //        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
@@ -455,7 +400,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 //                var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 //
 //                projectile.bypassArmorRate(0.2f);
-//                projectile.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+//                projectile.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
 //                projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
 //                        0.25f);
 //                this.level().addFreshEntity(projectile);
@@ -478,7 +423,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 //
 //            this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
 //            this.entityData.set(FIRE_ANIM, 2);
-//            playShootSound3p(living, 0, 3, 6, 12, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
+//            playShootSound3p(living, 0, 3, 6, 12, new Vec3(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z));
 //        }
     }
 
