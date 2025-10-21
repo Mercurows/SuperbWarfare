@@ -960,9 +960,9 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
         // 准心
         if (this.getWeapon(0).mainGun) {
-            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/us_tank.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
         } else {
-            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/common_gun.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
         }
 
         // 武器名称

@@ -288,7 +288,8 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 }
 
                 // 载具自定义第一人称渲染
-                vehicle.renderFirstPersonOverlay(guiGraphics, poseStack, mc.font, player, screenWidth, screenHeight, scale, color);
+                // TODO 替换到其他地方
+//                vehicle.renderFirstPersonOverlay(guiGraphics, poseStack, mc.font, player, screenWidth, screenHeight, scale, color);
 
                 // 血量
                 int heal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));

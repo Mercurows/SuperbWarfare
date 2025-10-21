@@ -13,6 +13,7 @@
         "Velocity": 20,
         "Damage": 45,
         "HeatPerShoot": 0.5,
+        "Crosshair": "@VehicleUsApc",
         "AmmoType": [
           {
             "Ammo": "Infinity",
@@ -35,7 +36,8 @@
               "Velocity": 30,
               "Transform" : "Barrel",
               "Position": [0.3, 0.0517, 0.5],
-              "Direction" : "Barrel"
+              "Direction" : "Barrel",
+              "Crosshair": "@VehicleCommonGun"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
           },
@@ -49,7 +51,8 @@
               "Position": [0.0609375, 0.0517, 3.2],
               "Direction" : "Barrel",
               "ExplosionDamage": 150,
-              "ExplosionRadius": 12
+              "ExplosionRadius": 12,
+              "Crosshair": "@VehicleCommonMissile"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
           },
