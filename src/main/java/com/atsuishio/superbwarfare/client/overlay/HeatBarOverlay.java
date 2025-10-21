@@ -26,9 +26,9 @@ public class HeatBarOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_heat_bar";
 
-    private static final ResourceLocation TEXTURE = Mod.loc("textures/screens/heat_bar.png");
+    private static final ResourceLocation TEXTURE = Mod.loc("textures/overlay/heat_bar/heat_bar.png");
 
-    private static final AnimationTimer timer = new AnimationTimer(200)
+    private static final AnimationTimer ANIMATION_TIMER = new AnimationTimer(200)
             .animation(AnimationCurves.EASE_IN_QUART);
 
     @Override
@@ -50,11 +50,12 @@ public class HeatBarOverlay implements IGuiOverlay {
 
         long currentTime = System.currentTimeMillis();
         if (heat <= 0) {
-            timer.forward(currentTime);
+            ANIMATION_TIMER.forward(currentTime);
         } else {
-            timer.beginForward(currentTime);
+            ANIMATION_TIMER.beginForward(currentTime);
         }
-        if (timer.finished(currentTime)) {
+
+        if (ANIMATION_TIMER.finished(currentTime)) {
             return;
         }
 
@@ -73,10 +74,10 @@ public class HeatBarOverlay implements IGuiOverlay {
         int i = (screenWidth - width) / 2;
         int j = (screenHeight - height) / 2;
 
-        float posX = i + 64 + DisplayConfig.HEAT_BAR_HUD_X_OFFSET.get() + timer.lerp(0, 5, currentTime);
+        float posX = i + 64 + DisplayConfig.HEAT_BAR_HUD_X_OFFSET.get() + ANIMATION_TIMER.lerp(0, 5, currentTime);
         float posY = j + 6 + DisplayConfig.HEAT_BAR_HUD_Y_OFFSET.get();
 
-        float alpha = timer.lerp(1, 0, currentTime);
+        float alpha = ANIMATION_TIMER.lerp(1, 0, currentTime);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
 
         RenderHelper.preciseBlit(guiGraphics, TEXTURE, posX, posY, 0, 0, 37 / 4f, 233 / 4f, width, height);

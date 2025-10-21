@@ -49,7 +49,7 @@ public class CrossHairOverlay implements IGuiOverlay {
     private static final ResourceLocation REX_HORIZONTAL = Mod.loc("textures/overlay/crosshair/rex_horizontal.png");
     private static final ResourceLocation REX_VERTICAL = Mod.loc("textures/overlay/crosshair/rex_vertical.png");
     private static final ResourceLocation POINT = Mod.loc("textures/overlay/crosshair/point.png");
-    private static final ResourceLocation SHOTGUN = Mod.loc("textures/overlay/crosshair/shotgun.png");
+    private static final ResourceLocation SHOTGUN = Mod.loc("textures/overlay/crosshair/rex_circle.png");
     private static final ResourceLocation HIT_MARKER = Mod.loc("textures/overlay/crosshair/hit_marker.png");
     private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/overlay/crosshair/hit_marker_vehicle.png");
     private static final ResourceLocation HEADSHOT_MARKER = Mod.loc("textures/overlay/crosshair/headshot_marker.png");

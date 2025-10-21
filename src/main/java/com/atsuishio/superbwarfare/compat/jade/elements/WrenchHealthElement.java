@@ -18,6 +18,9 @@ import snownee.jade.overlay.OverlayRenderer;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
 public class WrenchHealthElement extends Element {
+
+    private static final ResourceLocation WRENCH_ICON = Mod.loc("textures/screens/vehicle_health.png");
+
     private final String text;
 
     public WrenchHealthElement(float maxHealth, float health) {
@@ -34,9 +37,6 @@ public class WrenchHealthElement extends Element {
         Font font = Minecraft.getInstance().font;
         return new Vec2(8F + font.width(this.text), 10.0F);
     }
-
-    private static final ResourceLocation WRENCH_ICON = Mod.loc("textures/screens/vehicle_health.png");
-
 
     @Override
     public void render(GuiGraphics guiGraphics, float x, float y, float maxX, float maxY) {
