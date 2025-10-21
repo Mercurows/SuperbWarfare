@@ -14,6 +14,8 @@
         "Damage": 45,
         "HeatPerShoot": 0.5,
         "Crosshair": "@VehicleUsApc",
+        "CrosshairColor": "0x66FF00",
+        "Name": "superbwarfare.lav_150.cannon",
         "AmmoType": [
           {
             "Ammo": "Infinity",
@@ -45,7 +47,8 @@
                 0.5
               ],
               "Direction": "Barrel",
-              "Crosshair": "@VehicleCommonGun"
+              "Crosshair": "@VehicleCommonGun",
+              "Name": "superbwarfare.lav_150.gun"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
           },

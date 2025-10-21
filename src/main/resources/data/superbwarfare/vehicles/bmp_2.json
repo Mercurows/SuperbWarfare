@@ -9,7 +9,10 @@
       "Position": [0.36, -0.25, 0.56],
       "CanRotateHead": false,
       "MinPitch": -7.5,
-      "MaxPitch": 74
+      "MaxPitch": 74,
+      "WeaponData": {
+        "CrosshairColor": "0xFFC700"
+      }
     },
     {
       "HidePassenger": true,

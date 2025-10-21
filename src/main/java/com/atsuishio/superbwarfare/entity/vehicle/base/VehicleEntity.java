@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
-import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
@@ -37,8 +36,6 @@ import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -46,8 +43,6 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -3075,35 +3070,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * 渲染载具的第一人称UI
      * 务必标记 @OnlyIn(Dist.CLIENT)
      */
-    // TODO 实现数据包控制准星渲染
     @OnlyIn(Dist.CLIENT)
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
-        if (!(this instanceof WeaponVehicleEntity weaponVehicle)) return;
-        if (!(player instanceof LocalPlayer)) return;
-
-        float minWH = (float) Math.min(screenWidth, screenHeight);
-        float scaledMinWH = Mth.floor(minWH * scale);
-        float centerW = ((screenWidth - scaledMinWH) / 2);
-        float centerH = ((screenHeight - scaledMinWH) / 2);
-
-        // 默认武器准心渲染
-        // TODO 正确渲染准心
-        var texture = Mod.loc(switch (weaponVehicle.getWeaponIndex(0)) {
-            case 0 -> "textures/screens/land/lav_cannon_cross.png";
-            case 1 -> "textures/screens/land/common_gun.png";
-            case 2 -> "textures/screens/land/common_missile.png";
-            default -> "";
-        });
-        if (texture.getPath().isEmpty()) return;
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-
-        RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
     }
 
     /**
