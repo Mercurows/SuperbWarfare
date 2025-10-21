@@ -114,8 +114,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -2850,10 +2850,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void push(double pX, double pY, double pZ) {
     }
 
-    public Vec3 getNewEyePos(float pPartialTicks) {
-        return getEyePosition();
-    }
-
     public Vec3 getBarrelVector(float pPartialTicks) {
         Matrix4f transform = getBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
@@ -2917,8 +2913,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.gunXRot = pGunXRot;
     }
 
-    public Vec3 driverZoomPos(float ticks) {
-        return getEyePosition();
+    public Vec3 driverZoomPos(Entity entity, float ticks) {
+        return getShootPos(entity, ticks);
     }
 
     public double getMouseSensitivity() {

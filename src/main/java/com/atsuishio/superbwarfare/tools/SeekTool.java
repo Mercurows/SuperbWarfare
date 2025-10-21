@@ -151,23 +151,6 @@ public class SeekTool {
     }
 
     @Deprecated(forRemoval = true)
-    public static Entity vehicleSeekEntity(VehicleEntity vehicle, Level level, double seekRange, double seekAngle) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> {
-                    if (e.distanceTo(vehicle) <= seekRange && calculateAngleVehicle(e, vehicle) < seekAngle
-                            && e != vehicle
-                            && baseFilter(e)
-                            && smokeFilter(e)
-                            && e.getVehicle() == null
-                            && !friendlyToPlayer(vehicle, e)) {
-                        return level.clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle)).getType() != HitResult.Type.BLOCK;
-                    }
-                    return false;
-                }).min(Comparator.comparingDouble(e -> calculateAngleVehicle(e, vehicle))).orElse(null);
-    }
-
-    @Deprecated(forRemoval = true)
     public static List<Entity> seekLivingEntitiesThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
         return seekLivingEntitiesThroughWall(entity, seekRange, seekAngle);
     }
@@ -210,13 +193,6 @@ public class SeekTool {
     private static double calculateAngle(Entity entityA, Entity entityB) {
         Vec3 start = new Vec3(entityA.getX() - entityB.getX(), entityA.getY() - entityB.getY(), entityA.getZ() - entityB.getZ());
         Vec3 end = entityB.getLookAngle();
-        return VectorTool.calculateAngle(start, end);
-    }
-
-    private static double calculateAngleVehicle(Entity entityA, VehicleEntity entityB) {
-        Vec3 entityBEyePos = entityB.getNewEyePos(1);
-        Vec3 start = new Vec3(entityA.getX() - entityBEyePos.x, entityA.getY() - entityBEyePos.y, entityA.getZ() - entityBEyePos.z);
-        Vec3 end = entityB.getBarrelVector(1);
         return VectorTool.calculateAngle(start, end);
     }
 
@@ -510,11 +486,11 @@ public class SeekTool {
             return this;
         }
 
-        public Builder vehicleNoClip() {
+        public Builder vehicleNoClip(Entity entity) {
             this.filters.add(e -> {
                         if (this.entity instanceof VehicleEntity vehicle) {
                             return this.entity.level()
-                                    .clip(new ClipContext(vehicle.getNewEyePos(1), vehicle.getNewEyePos(1), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle))
+                                    .clip(new ClipContext(vehicle.driverZoomPos(entity, 1), vehicle.driverZoomPos(entity, 1), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle))
                                     .getType() != HitResult.Type.BLOCK;
                         }
                         return false;

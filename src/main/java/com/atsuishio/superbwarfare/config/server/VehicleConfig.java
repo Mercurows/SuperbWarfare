@@ -64,12 +64,6 @@ public class VehicleConfig {
     public static ForgeConfigSpec.DoubleValue AH_6_ROCKET_EXPLOSION_RADIUS;
     public static ForgeConfigSpec.BooleanValue AH_6_CANNON_DESTROY;
 
-    public static ForgeConfigSpec.IntValue LAV_150_ENERGY_COST;
-    public static ForgeConfigSpec.IntValue LAV_150_CANNON_DAMAGE;
-    public static ForgeConfigSpec.IntValue LAV_150_CANNON_EXPLOSION_DAMAGE;
-    public static ForgeConfigSpec.DoubleValue LAV_150_CANNON_EXPLOSION_RADIUS;
-    public static ForgeConfigSpec.DoubleValue LAV_150_MACHINE_GUN_DAMAGE;
-
     public static ForgeConfigSpec.IntValue TOM_6_ENERGY_COST;
     public static ForgeConfigSpec.IntValue TOM_6_BOMB_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.DoubleValue TOM_6_BOMB_EXPLOSION_RADIUS;
@@ -283,25 +277,6 @@ public class VehicleConfig {
 
         builder.comment("Whether to destroy the block when cannon of AH-6 hits a block");
         AH_6_CANNON_DESTROY = builder.define("ah_6_cannon_destroy", true);
-
-        builder.pop();
-
-        builder.push("LAV-150");
-
-        builder.comment("The energy cost of LAV-150 per tick");
-        LAV_150_ENERGY_COST = builder.defineInRange("lav_150_energy_cost", 64, 0, 2147483647);
-
-        builder.comment("The cannon damage of LAV-150");
-        LAV_150_CANNON_DAMAGE = builder.defineInRange("lav_150_cannon_damage", 45, 1, 10000000);
-
-        builder.comment("The cannon explosion damage of LAV-150");
-        LAV_150_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("lav_150_cannon_explosion_damage", 12, 1, 10000000);
-
-        builder.comment("The cannon explosion radius of LAV-150");
-        LAV_150_CANNON_EXPLOSION_RADIUS = builder.defineInRange("lav_150_cannon_explosion_radius", 4d, 1d, 10000000d);
-
-        builder.comment("The machine gun damage of LAV-150");
-        LAV_150_MACHINE_GUN_DAMAGE = builder.defineInRange("lav_150_machine_gun_damage", 9.5, 1d, 10000000d);
 
         builder.pop();
 

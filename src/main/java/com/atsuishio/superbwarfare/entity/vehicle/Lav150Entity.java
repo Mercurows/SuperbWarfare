@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
@@ -130,7 +129,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
                                 .sound3pFar(ModSounds.LAV_CANNON_FAR.get())
                                 .sound3pVeryFar(ModSounds.LAV_CANNON_VERYFAR.get()),
                         new ProjectileWeapon()
-                                .damage(VehicleConfig.LAV_150_MACHINE_GUN_DAMAGE.get())
                                 .headShot(2)
                                 .zoom(false)
                                 .sound(ModSounds.INTO_CANNON.get())
@@ -359,14 +357,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return Mth.abs(entityData.get(POWER)) * 0.4f;
     }
 
-
-    @Override
-    public Vec3 driverZoomPos(float ticks) {
-        Matrix4f transform = getTurretTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0.3f, 0.75f, 0.56f);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
     @Override
     public Vec3 getBarrelPosition() {
         return new Vec3(0.0234375, 0.33795, 0.825);
@@ -509,7 +499,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (zoom || isFirstPerson) {
             if (this.getSeatIndex(player) == 0) {
                 if (zoom) {
-                    return new Vec3(this.driverZoomPos(partialTicks).x, Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), this.driverZoomPos(partialTicks).z);
+                    return new Vec3(this.driverZoomPos(player, partialTicks).x, this.driverZoomPos(player, partialTicks).y, this.driverZoomPos(player, partialTicks).z);
                 } else {
                     return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
                 }

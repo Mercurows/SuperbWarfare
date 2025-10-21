@@ -694,13 +694,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 driverZoomPos(float ticks) {
-        Matrix4f transform = getVehicleTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, 0, 3.725f, 4.15f);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 

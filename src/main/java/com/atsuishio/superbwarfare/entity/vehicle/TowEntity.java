@@ -232,7 +232,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 driverZoomPos(float ticks) {
+    public Vec3 driverZoomPos(Entity entity, float ticks) {
         Matrix4f transform = getVehicleFlatTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0.2535875f, 1.33235625f, 0.121875f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -241,11 +241,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public Vec3 getShootPos(int seatIndex, float ticks) {
         return new Vec3(getX(), getY() + 1.174775f, getZ());
-    }
-
-    @Override
-    public Vec3 getNewEyePos(float pPartialTicks) {
-        return driverZoomPos(pPartialTicks);
     }
 
     @Override
@@ -285,7 +280,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (isFirstPerson || zoom) {
-            return driverZoomPos(partialTicks);
+            return driverZoomPos(player, partialTicks);
         }
         return super.getCameraPosition(partialTicks, player, false, false);
     }

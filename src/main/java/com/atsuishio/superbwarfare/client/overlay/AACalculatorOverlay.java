@@ -65,7 +65,7 @@ public class AACalculatorOverlay implements IGuiOverlay {
                         .smokeFilter()
                         .noVehicle()
                         .notFriendly()
-                        .vehicleNoClip()
+                        .vehicleNoClip(player)
                         .buildWithClosest();
 
                 Entity target;

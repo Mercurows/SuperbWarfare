@@ -110,7 +110,7 @@ public class CannonHudOverlay implements IGuiOverlay {
                     Vec3 shootPos = player.getEyePosition(partialTick);
 
                     if (!(cannon instanceof AnnihilatorEntity)) {
-                        shootPos = cannon.driverZoomPos(partialTick);
+                        shootPos = cannon.driverZoomPos(player, partialTick);
                     }
 
                     Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
