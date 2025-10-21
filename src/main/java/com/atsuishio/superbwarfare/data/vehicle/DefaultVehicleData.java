@@ -89,8 +89,11 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("HasUpgradeSlots")
     public boolean hasUpgradeSlots = false;
 
+    // TODO 能不能挪assets里
     @SerializedName("Icon")
     public VehicleIconInfo icon = new VehicleIconInfo(Mod.loc("textures/gun_icon/default_icon.png").toString(), null);
+    @SerializedName("HUDColor")
+    public int hudColor = 0x66FF00;
 
     @SerializedName("Type")
     public VehicleType type = VehicleType.EMPTY;

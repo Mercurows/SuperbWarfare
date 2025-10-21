@@ -20,6 +20,7 @@
       "MaxYaw": 105
     }
   ],
+  "HUDColor": "0x00FFF6",
   "Engine": {
     "Type": "Track",
     "Buoyancy": 0,

@@ -1097,11 +1097,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public int getHudColor() {
-        return 0x00FFF6;
-    }
-
-    @Override
     public boolean turretHasPassengerWeapon() {
         return true;
     }

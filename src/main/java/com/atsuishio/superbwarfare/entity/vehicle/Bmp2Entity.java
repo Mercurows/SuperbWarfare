@@ -735,11 +735,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public int getHudColor() {
-        return 0xFFC700;
-    }
-
-    @Override
     public boolean hasTracks() {
         return true;
     }

@@ -945,11 +945,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         return 2.375f;
     }
 
-    @Override
-    public int getHudColor() {
-        return super.getHudColor();
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

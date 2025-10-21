@@ -258,9 +258,9 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("SeekRange")
     public double seekRange = 384;
 
+    // TODO 能不能挪assets里面去
     @SerializedName("GunIcon")
     public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();
-
     /*
      * 准星类型
      * 预制的字段有：
@@ -270,9 +270,11 @@ public class DefaultGunData implements IDBasedData {
      */
     @SerializedName("Crosshair")
     public String crosshair = "@GunDefault";
+    // TODO 解决解析问题
+    @SerializedName("CrosshairColor")
+    public int crosshairColor = 0xFFFFFF;
     @SerializedName("Name")
     public String name = "superbwarfare.gun.default";
-
     @SerializedName("HideCrosshairWhenZoom")
     public boolean hideCrosshairWhenZoom = true;
 }

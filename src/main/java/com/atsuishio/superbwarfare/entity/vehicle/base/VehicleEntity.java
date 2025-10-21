@@ -4447,7 +4447,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public int getHudColor() {
-        return 0x66FF00;
+        return data().get(VehicleProp.HUD_COLOR);
     }
 
     public float getPower() {
