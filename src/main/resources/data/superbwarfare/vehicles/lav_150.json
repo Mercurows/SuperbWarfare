@@ -19,9 +19,13 @@
             "Ammo": "Infinity",
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
             "Override": {
-              "Transform" : "Barrel",
-              "Position": [0.0609375, 0.0517, 3.2],
-              "Direction" : "Barrel",
+              "Transform": "Barrel",
+              "Position": [
+                0.0609375,
+                0.0517,
+                3.2
+              ],
+              "Direction": "Barrel",
               "ExplosionDamage": 12,
               "ExplosionRadius": 4
             }
@@ -34,9 +38,13 @@
               "Damage": 9.5,
               "BypassesArmor": 0.3,
               "Velocity": 30,
-              "Transform" : "Barrel",
-              "Position": [0.3, 0.0517, 0.5],
-              "Direction" : "Barrel",
+              "Transform": "Barrel",
+              "Position": [
+                0.3,
+                0.0517,
+                0.5
+              ],
+              "Direction": "Barrel",
               "Crosshair": "@VehicleCommonGun"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
@@ -47,9 +55,13 @@
             "Override": {
               "RPM": 60,
               "Damage": 270,
-              "Transform" : "Barrel",
-              "Position": [0.0609375, 0.0517, 3.2],
-              "Direction" : "Barrel",
+              "Transform": "Barrel",
+              "Position": [
+                0.0609375,
+                0.0517,
+                3.2
+              ],
+              "Direction": "Barrel",
               "ExplosionDamage": 150,
               "ExplosionRadius": 12,
               "Crosshair": "@VehicleCommonMissile"
@@ -63,41 +75,66 @@
               "ProjectileAmount": 5,
               "Spread": 2.5,
               "RPM": 240,
-              "Transform" : "Barrel",
-              "Position": [0.0609375, 0.0517, 3.2],
-              "Direction" : "Barrel",
+              "Transform": "Barrel",
+              "Position": [
+                0.0609375,
+                0.0517,
+                3.2
+              ],
+              "Direction": "Barrel",
               "ExplosionDamage": 10,
-              "ExplosionRadius": 8
+              "ExplosionRadius": 8,
+              "Crosshair": "superbwarfare:textures/overlay/vehicle/crosshair/ru_apc.png"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/cm_shell.png"
           }
         ]
       },
-      "Transform" : "Turret",
-      "Position": [0.36, -0.65, 0.56],
+      "Transform": "Turret",
+      "Position": [
+        0.36,
+        -0.65,
+        0.56
+      ],
       "CanRotateHead": false,
       "MinPitch": -15,
       "MaxPitch": 32.5
     },
     {
       "HidePassenger": true,
-      "Transform" : "Vehicle",
-      "Position": [0, 1, 0]
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     },
     {
       "HidePassenger": true,
-      "Transform" : "Vehicle",
-      "Position": [0, 1, 0]
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     },
     {
       "HidePassenger": true,
-      "Transform" : "Vehicle",
-      "Position": [0, 1, 0]
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     },
     {
       "HidePassenger": true,
-      "Transform" : "Vehicle",
-      "Position": [0, 1, 0]
+      "Transform": "Vehicle",
+      "Position": [
+        0,
+        1,
+        0
+      ]
     }
   ],
   "Engine": {
