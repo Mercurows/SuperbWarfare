@@ -131,13 +131,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public boolean initialized() {
-        return data.hasUUID("UUID");
+        return item.isInitialized(this);
     }
 
     public void initialize() {
-        if (initialized()) return;
-
-        data.putUUID("UUID", UUID.randomUUID());
+        item.init(this);
     }
 
     public static GunData create(Item item) {

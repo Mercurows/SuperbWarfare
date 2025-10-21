@@ -166,6 +166,16 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return 0x95E9FF;
     }
 
+    public void init(GunData data) {
+        if (isInitialized(data)) return;
+
+        data.data.putUUID("UUID", UUID.randomUUID());
+    }
+
+    public boolean isInitialized(GunData data) {
+        return data.data.hasUUID("UUID");
+    }
+
     protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
