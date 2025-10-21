@@ -4347,6 +4347,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.flap3Rot = pFlap3Rot;
     }
 
+    // TODO 用数据包定义，直接定义最大数量会不会更好？
     public boolean hasDecoy() {
         return false;
     }

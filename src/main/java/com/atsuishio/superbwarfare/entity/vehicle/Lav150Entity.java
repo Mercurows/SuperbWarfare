@@ -16,11 +16,8 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -424,22 +421,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (gunData == null) return 0;
 
         return Math.toIntExact(Math.round(gunData.heat.get()));
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
-        super.renderThirdPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
-
-        float heat = getWeaponHeat(player) / 100F;
-
-        // TODO 正确显示文本和备弹数量
-        int ammoCount = this.getAmmoCount(player);
-        if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount)), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
-        } else {
-            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount)), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
-        }
     }
 
     @Override
