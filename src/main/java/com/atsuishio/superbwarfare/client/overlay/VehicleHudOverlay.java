@@ -53,32 +53,28 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     public static final ResourceLocation ID = Mod.loc("vehicle_hud");
     public static final int ANIMATION_TIME = 300;
 
-    private static final ResourceLocation FRAME = Mod.loc("textures/screens/land/tv_frame.png");
-
     private static final ResourceLocation ARMOR = Mod.loc("textures/overlay/vehicle/base/armor.png");
     private static final ResourceLocation ENERGY = Mod.loc("textures/overlay/vehicle/base/energy.png");
     private static final ResourceLocation VALUE_BAR = Mod.loc("textures/overlay/vehicle/base/value_bar.png");
     private static final ResourceLocation VALUE_FRAME = Mod.loc("textures/overlay/vehicle/base/value_frame.png");
     private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
+    private static final ResourceLocation DRIVER = Mod.loc("textures/overlay/vehicle/base/driver.png");
+    private static final ResourceLocation PASSENGER = Mod.loc("textures/overlay/vehicle/base/passenger.png");
 
-    private static final ResourceLocation DRIVER = Mod.loc("textures/screens/driver.png");
-    private static final ResourceLocation PASSENGER = Mod.loc("textures/screens/passenger.png");
     private static final ResourceLocation SELECTED = Mod.loc("textures/screens/vehicle_weapon/selected.png");
     private static final ResourceLocation NUMBER = Mod.loc("textures/screens/vehicle_weapon/number.png");
     private static final ResourceLocation GEAR = Mod.loc("textures/screens/aircraft/gear.png");
-    private static final ResourceLocation LAND_LINE = Mod.loc("textures/screens/land/line.png");
+
+    private static final ResourceLocation FRAME = Mod.loc("textures/overlay/vehicle/land/tv_frame.png");
+    private static final ResourceLocation LINE = Mod.loc("textures/overlay/vehicle/land/line.png");
     private static final ResourceLocation ROLL_IND = Mod.loc("textures/screens/helicopter/roll_ind.png");
 
-    // 炮塔
-    private static final ResourceLocation BARREL = Mod.loc("textures/screens/land/line.png");
-    // 车身
-    private static final ResourceLocation BODY = Mod.loc("textures/screens/land/body.png");
-    // 左轮
-    private static final ResourceLocation LEFT_WHEEL = Mod.loc("textures/screens/land/left_wheel.png");
-    // 右轮
-    private static final ResourceLocation RIGHT_WHEEL = Mod.loc("textures/screens/land/right_wheel.png");
-    // 引擎
-    private static final ResourceLocation ENGINE = Mod.loc("textures/screens/land/engine.png");
+    // 地面载具车身显示
+    private static final ResourceLocation BARREL = Mod.loc("textures/overlay/vehicle/land/line.png");
+    private static final ResourceLocation BODY = Mod.loc("textures/overlay/vehicle/land/body.png");
+    private static final ResourceLocation LEFT_WHEEL = Mod.loc("textures/overlay/vehicle/land/left_wheel.png");
+    private static final ResourceLocation RIGHT_WHEEL = Mod.loc("textures/overlay/vehicle/land/right_wheel.png");
+    private static final ResourceLocation ENGINE = Mod.loc("textures/overlay/vehicle/land/engine.png");
 
     private static final ResourceLocation HIT_MARKER = Mod.loc("textures/overlay/crosshair/hit_marker.png");
     private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/overlay/crosshair/hit_marker_vehicle.png");
@@ -88,7 +84,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation KILL_MARKER_3 = Mod.loc("textures/overlay/crosshair/kill_marker_3.png");
     private static final ResourceLocation KILL_MARKER_4 = Mod.loc("textures/overlay/crosshair/kill_marker_4.png");
 
-    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
+    private static final ResourceLocation CROSSHAIR_THIRD_CAMERA = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
 
     private static final AnimationTimer[] WEAPON_SLOTS_TIMER = AnimationTimer.createTimers(9, ANIMATION_TIME, AnimationCurves.EASE_OUT_CIRC);
     private static final AnimationTimer WEAPON_INDEX_UPDATE_TIMER = new AnimationTimer(ANIMATION_TIME).animation(AnimationCurves.EASE_OUT_CIRC);
@@ -218,7 +214,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 int addW = (screenWidth / screenHeight) * 48;
                 int addH = (screenWidth / screenHeight) * 27;
                 preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
-                RenderHelper.preciseBlitWithColor(guiGraphics, LAND_LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0.0F, 128, 1, 128, 1, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0.0F, 128, 1, 128, 1, color);
 
                 // 指南针
                 RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, (float) screenWidth / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
@@ -303,7 +299,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                     float x = (float) p.x;
                     float y = (float) p.y;
 
-                    preciseBlit(guiGraphics, DRONE, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                    preciseBlit(guiGraphics, CROSSHAIR_THIRD_CAMERA, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
                     renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
                     poseStack.pushPose();
