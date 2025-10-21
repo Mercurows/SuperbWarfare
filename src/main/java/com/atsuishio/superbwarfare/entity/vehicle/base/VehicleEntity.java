@@ -22,6 +22,9 @@ import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
@@ -108,8 +111,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -2120,7 +2123,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     protected void clampRotation(Entity entity) {
         int index = getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seats = data().get(VehicleProp.SEATS);
+        if (index < 0 || index >= seats.size()) return;
+        var seat = seats.get(index);
 
         if (seat.transform.equals("Vehicle")
                 || seat.transform.equals("VehicleFlat")
@@ -2185,12 +2190,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Matrix4f getTransformFromString(String string, float ticks) {
         return switch (string) {
-            default -> getVehicleTransform(ticks);
             case "VehicleFlat" -> getVehicleFlatTransform(ticks);
             case "Turret" -> getTurretTransform(ticks);
             case "Barrel" -> getBarrelTransform(ticks);
             case "WeaponStation" -> getGunTransform(ticks);
             case "WeaponStationBarrel" -> getGunnerBarrelTransform(ticks);
+            default -> getVehicleTransform(ticks);
         };
     }
 
@@ -2947,6 +2952,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public boolean hidePassenger(Entity passenger) {
         return hidePassenger(getSeatIndex(passenger));
+    }
+
+    public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
+        if (this instanceof WeaponVehicleEntity weaponVehicle) {
+            var weapons = weaponVehicle.getAvailableWeapons(getSeatIndex(passenger));
+            if (weaponIndex < 0 || weaponIndex >= weapons.size()) return 0;
+
+            var weapon = weapons.get(weaponIndex);
+            if (InventoryTool.hasCreativeAmmoBox(passenger) && !(weapon instanceof LaserWeapon) && !(weapon instanceof SmallRocketWeapon) && !(weapon instanceof SwarmDroneWeapon)) {
+                return -1;
+            }
+
+            return weaponVehicle.getAmmoCount(passenger);
+        }
+        return 0;
     }
 
     @Override

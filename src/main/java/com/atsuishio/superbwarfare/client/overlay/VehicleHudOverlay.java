@@ -11,11 +11,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.MathTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
+import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -503,10 +504,13 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 );
 
                 preciseBlit(guiGraphics, SELECTED, w - 95, startY, 100, 0, 0, 8, 8, 8, 8);
-                if (InventoryTool.hasCreativeAmmoBox(player) && !(weapon instanceof LaserWeapon) && !(weapon instanceof SmallRocketWeapon) && !(weapon instanceof SwarmDroneWeapon)) {
+                var ammoCount = vehicle.getAmmoCount(player, i);
+
+                if (ammoCount == Integer.MAX_VALUE) {
                     preciseBlit(guiGraphics, NUMBER, w - 28 + xOffset, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
                 } else {
-                    renderNumber(guiGraphics, weaponVehicle.getAmmoCount(player), weapon instanceof LaserWeapon,
+                    // TODO 替换LaserWeapon判断
+                    renderNumber(guiGraphics, ammoCount, weapon instanceof LaserWeapon,
                             w - 20 + xOffset, h - frameIndex * 18 - 15.5f, 0.25f);
                 }
             }

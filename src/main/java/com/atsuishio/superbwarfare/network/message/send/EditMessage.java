@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -69,47 +68,7 @@ public class EditMessage {
                     data.withdrawAmmo(player);
                     data.attachment.set(AttachmentType.MAGAZINE, att);
                 }
-                case 5 -> {
-                    var diff = message.add ? 1 : -1;
-                    var selectedAmmoType = data.selectedAmmoType.get() + diff;
-
-                    if (!player.isCreative()
-                            && selectedAmmoType >= 0
-                            && selectedAmmoType <= data.get(GunProp.AMMO_CONSUMER).size() - 1
-                    ) {
-                        var currentConsumer = data.selectedAmmoConsumer();
-                        var targetConsumer = data.get(GunProp.AMMO_CONSUMER).get(selectedAmmoType);
-                        if (currentConsumer == targetConsumer) return;
-
-                        var currentSlot = currentConsumer.ammoSlot;
-                        var targetSlot = targetConsumer.ammoSlot;
-
-                        if (currentSlot == null) currentSlot = "Default";
-                        if (targetSlot == null) targetSlot = "Default";
-
-                        if (currentSlot.equals(targetSlot)) {
-                            data.withdrawAmmo(player);
-                        } else {
-                            var ammo = data.ammo.get();
-                            var virtualAmmo = data.virtualAmmo.get();
-                            data.ammoSlot.set(currentSlot, ammo, virtualAmmo);
-
-                            data.ammo.set(data.ammoSlot.getAmmo(targetSlot));
-                            data.virtualAmmo.set(data.ammoSlot.getVirtualAmmo(targetSlot));
-                            data.ammoSlot.reset(targetSlot);
-                        }
-                    }
-
-                    data.changeAmmoConsumer(selectedAmmoType);
-
-                    if (player.isCreative()) {
-                        data.ammo.set(data.get(GunProp.MAGAZINE));
-                    }
-
-                    data.item.whenNoAmmo(data);
-
-                    data.closeHammer.set(false);
-                }
+                case 5 -> data.changeAmmoConsumer(data.selectedAmmoType.get() + (message.add ? 1 : -1), player);
             }
             SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
         });

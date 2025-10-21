@@ -84,6 +84,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         ammo = new IntValue(data, "Ammo");
         virtualAmmo = new IntValue(data, "VirtualAmmo");
+        backupAmmoCount = new IntValue(data, "BackupAmmoCount");
         ammoSlot = new AmmoSlot(data);
         burstAmount = new IntValue(data, "BurstAmount");
 
@@ -309,8 +310,42 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return selectedAmmoConsumer(get(GunProp.AMMO_CONSUMER));
     }
 
-    public void changeAmmoConsumer(int index) {
-        this.selectedAmmoType.set(Mth.clamp(index, 0, this.get(GunProp.AMMO_CONSUMER).size() - 1));
+    public void changeAmmoConsumer(int index, @Nullable Entity ammoSupplier) {
+        var consumers = this.get(GunProp.AMMO_CONSUMER);
+        var targetIndex = Mth.clamp(index, 0, consumers.size() - 1);
+        if (targetIndex == selectedAmmoType.get()) return;
+
+        if (!(ammoSupplier instanceof Player player && player.isCreative())) {
+            var currentConsumer = selectedAmmoConsumer();
+            var targetConsumer = consumers.get(selectedAmmoType.get());
+
+            var currentSlot = currentConsumer.ammoSlot;
+            var targetSlot = targetConsumer.ammoSlot;
+
+            if (currentSlot == null) currentSlot = "Default";
+            if (targetSlot == null) targetSlot = "Default";
+
+            if (currentSlot.equals(targetSlot) && ammoSupplier != null) {
+                this.withdrawAmmo(ammoSupplier);
+            } else {
+                var ammo = this.ammo.get();
+                var virtualAmmo = this.virtualAmmo.get();
+                this.ammoSlot.set(currentSlot, ammo, virtualAmmo);
+
+                this.ammo.set(this.ammoSlot.getAmmo(targetSlot));
+                this.virtualAmmo.set(this.ammoSlot.getVirtualAmmo(targetSlot));
+                this.ammoSlot.reset(targetSlot);
+            }
+        }
+
+        this.selectedAmmoType.set(targetIndex);
+
+        if (ammoSupplier instanceof Player player && player.isCreative()) {
+            this.ammo.set(this.get(GunProp.MAGAZINE));
+        }
+
+        this.item.whenNoAmmo(this);
+        this.closeHammer.set(false);
     }
 
     public FireModeInfo selectedFireModeInfo(List<FireModeInfo> fireModes) {
@@ -384,7 +419,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         if (entity instanceof Player player && player.isCreative() || InventoryTool.hasCreativeAmmoBox(entity))
             return Integer.MAX_VALUE;
 
-        return countBackupAmmoItem(entity) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
+        return Math.toIntExact(Math.min((long) countBackupAmmoItem(entity) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get(), Integer.MAX_VALUE));
     }
 
     /**
@@ -394,7 +429,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         if (handler == null) return virtualAmmo.get();
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Integer.MAX_VALUE;
 
-        return countBackupAmmoItem(handler) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get();
+        return Math.toIntExact(Math.min((long) countBackupAmmoItem(handler) * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get(), Integer.MAX_VALUE));
     }
 
     public int countBackupAmmoItem(@Nullable Entity entity) {
@@ -700,6 +735,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public final IntValue ammo;
     public final IntValue virtualAmmo;
+
+    // backup ammo count override
+    public final IntValue backupAmmoCount;
+
     public final AmmoSlot ammoSlot;
 
     public final IntValue burstAmount;
