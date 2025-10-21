@@ -43,18 +43,20 @@ public class CrossHairOverlay implements IGuiOverlay {
     public static final String CROSSHAIR_GUN_DEFAULT = "Gun$Default";
     public static final String CROSSHAIR_GUN_REPAIR_TOOL = "Gun$RepairTool";
     public static final String CROSSHAIR_GUN_BOCEK = "Gun$Bocek";
+    public static final String CROSSHAIR_GUN_GRENADE = "Gun$Grenade";
 
-    private static final ResourceLocation REX_HORIZONTAL = Mod.loc("textures/screens/rex_horizontal.png");
-    private static final ResourceLocation REX_VERTICAL = Mod.loc("textures/screens/rex_vertical.png");
-    private static final ResourceLocation POINT = Mod.loc("textures/screens/point.png");
-    private static final ResourceLocation SHOTGUN_HUD = Mod.loc("textures/screens/shotgun_hud.png");
-    private static final ResourceLocation HIT_MARKER = Mod.loc("textures/screens/hit_marker.png");
-    private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/screens/hit_marker_vehicle.png");
-    private static final ResourceLocation HEADSHOT_MARK = Mod.loc("textures/screens/headshot_mark.png");
-    private static final ResourceLocation KILL_MARK1 = Mod.loc("textures/screens/kill_mark1.png");
-    private static final ResourceLocation KILL_MARK2 = Mod.loc("textures/screens/kill_mark2.png");
-    private static final ResourceLocation KILL_MARK3 = Mod.loc("textures/screens/kill_mark3.png");
-    private static final ResourceLocation KILL_MARK4 = Mod.loc("textures/screens/kill_mark4.png");
+    private static final ResourceLocation REX = Mod.loc("textures/overlay/crosshair/rex.png");
+    private static final ResourceLocation REX_HORIZONTAL = Mod.loc("textures/overlay/crosshair/rex_horizontal.png");
+    private static final ResourceLocation REX_VERTICAL = Mod.loc("textures/overlay/crosshair/rex_vertical.png");
+    private static final ResourceLocation POINT = Mod.loc("textures/overlay/crosshair/point.png");
+    private static final ResourceLocation SHOTGUN = Mod.loc("textures/overlay/crosshair/shotgun.png");
+    private static final ResourceLocation HIT_MARKER = Mod.loc("textures/overlay/crosshair/hit_marker.png");
+    private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/overlay/crosshair/hit_marker_vehicle.png");
+    private static final ResourceLocation HEADSHOT_MARKER = Mod.loc("textures/overlay/crosshair/headshot_marker.png");
+    private static final ResourceLocation KILL_MARKER_1 = Mod.loc("textures/overlay/crosshair/kill_marker_1.png");
+    private static final ResourceLocation KILL_MARKER_2 = Mod.loc("textures/overlay/crosshair/kill_marker_2.png");
+    private static final ResourceLocation KILL_MARKER_3 = Mod.loc("textures/overlay/crosshair/kill_marker_3.png");
+    private static final ResourceLocation KILL_MARKER_4 = Mod.loc("textures/overlay/crosshair/kill_marker_4.png");
 
     public static int hitIndicator = 0;
     public static int headIndicator = 0;
@@ -120,6 +122,8 @@ public class CrossHairOverlay implements IGuiOverlay {
                         renderRepairToolCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY);
                 case CROSSHAIR_GUN_BOCEK ->
                         renderBocekCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
+                case CROSSHAIR_GUN_GRENADE ->
+                        renderGrenadeCrosshair(guiGraphics, screenWidth, screenHeight);
             }
         }
 
@@ -161,7 +165,7 @@ public class CrossHairOverlay implements IGuiOverlay {
      * 渲染圆形准星
      */
     public static void shotgunCrossHair(GuiGraphics guiGraphics, float finPosX, float finPosY, float finLength) {
-        preciseBlit(guiGraphics, SHOTGUN_HUD, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
+        preciseBlit(guiGraphics, SHOTGUN, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
     }
 
     public static void renderGunDefaultCrosshair(GuiGraphics guiGraphics, GunData data, Player player, int screenWidth, int screenHeight,
@@ -222,6 +226,10 @@ public class CrossHairOverlay implements IGuiOverlay {
         }
     }
 
+    public static void renderGrenadeCrosshair(GuiGraphics guiGraphics, int screenWidth, int screenHeight) {
+        guiGraphics.blit(REX, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
+    }
+
     private static void renderKillIndicator(GuiGraphics guiGraphics, int w, int h, float moveX, float moveY) {
         float posX = w / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
         float posY = h / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
@@ -236,7 +244,7 @@ public class CrossHairOverlay implements IGuiOverlay {
         }
 
         if (headIndicator > 0) {
-            preciseBlit(guiGraphics, HEADSHOT_MARK, posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, HEADSHOT_MARKER, posX + moveX, posY + moveY, 0, 0, 16, 16, 16, 16);
         }
 
         if (killIndicator > 0) {
@@ -245,10 +253,10 @@ public class CrossHairOverlay implements IGuiOverlay {
             float posX2 = w / 2f - 7.5f + 2 - rate + moveX;
             float posY2 = h / 2f - 7.5f + 2 - rate + moveY;
 
-            preciseBlit(guiGraphics, KILL_MARK1, posX1, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, KILL_MARK2, posX2, posY1, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, KILL_MARK3, posX1, posY2, 0, 0, 16, 16, 16, 16);
-            preciseBlit(guiGraphics, KILL_MARK4, posX2, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARKER_1, posX1, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARKER_2, posX2, posY1, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARKER_3, posX1, posY2, 0, 0, 16, 16, 16, 16);
+            preciseBlit(guiGraphics, KILL_MARKER_4, posX2, posY2, 0, 0, 16, 16, 16, 16);
         }
     }
 

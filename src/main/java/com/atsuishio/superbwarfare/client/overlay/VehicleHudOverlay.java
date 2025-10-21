@@ -81,11 +81,11 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
     private static final ResourceLocation HIT_MARKER = Mod.loc("textures/screens/hit_marker.png");
     private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/screens/hit_marker_vehicle.png");
-    private static final ResourceLocation HEADSHOT_MARK = Mod.loc("textures/screens/headshot_mark.png");
-    private static final ResourceLocation KILL_MARK1 = Mod.loc("textures/screens/kill_mark1.png");
-    private static final ResourceLocation KILL_MARK2 = Mod.loc("textures/screens/kill_mark2.png");
-    private static final ResourceLocation KILL_MARK3 = Mod.loc("textures/screens/kill_mark3.png");
-    private static final ResourceLocation KILL_MARK4 = Mod.loc("textures/screens/kill_mark4.png");
+    private static final ResourceLocation HEADSHOT_MARK = Mod.loc("textures/screens/headshot_marker.png");
+    private static final ResourceLocation KILL_MARK1 = Mod.loc("textures/screens/kill_marker_1.png");
+    private static final ResourceLocation KILL_MARK2 = Mod.loc("textures/screens/kill_marker_2.png");
+    private static final ResourceLocation KILL_MARK3 = Mod.loc("textures/screens/kill_marker_3.png");
+    private static final ResourceLocation KILL_MARK4 = Mod.loc("textures/screens/kill_marker_4.png");
     private static final ResourceLocation COMPASS = Mod.loc("textures/screens/compass.png");
     private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
 
