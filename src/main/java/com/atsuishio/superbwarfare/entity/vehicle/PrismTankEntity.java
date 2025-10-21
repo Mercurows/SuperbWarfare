@@ -599,11 +599,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public int getHudColor() {
-        return 0x00FFF6;
-    }
-
-    @Override
     public List<OBB> getOBBs() {
         return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obbTurret);
     }

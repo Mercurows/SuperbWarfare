@@ -439,11 +439,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int getHudColor() {
-        return super.getHudColor();
-    }
-
-    @Override
     public List<OBB> getOBBs() {
         return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7);
     }

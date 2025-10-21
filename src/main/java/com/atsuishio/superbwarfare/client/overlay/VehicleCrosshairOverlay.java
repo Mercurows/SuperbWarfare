@@ -68,7 +68,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
         PoseStack poseStack = guiGraphics.pose();
 
         String crosshairPath = data.get(GunProp.CROSSHAIR);
-        int color = vehicle.getHudColor();
+        int color = data.get(GunProp.CROSSHAIR_COLOR);
 
         poseStack.pushPose();
 
