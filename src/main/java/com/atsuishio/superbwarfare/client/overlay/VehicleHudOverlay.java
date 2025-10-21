@@ -288,7 +288,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
-                Vec3 pos = vehicle.getTurretShootPos(player, partialTick).add(vehicle.getBarrelVector(partialTick).scale(192));
+                Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getShootVec(player, partialTick).scale(192));
                 Vec3 p = VectorUtil.worldToScreen(pos);
                 // 第三人称准星
                 if (VectorUtil.canSee(pos)) {

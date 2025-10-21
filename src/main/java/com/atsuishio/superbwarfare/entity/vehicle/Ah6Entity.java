@@ -227,14 +227,14 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 shootPos(float tickDelta) {
+    public Vec3 getShootPos(int seatIndex, float tickDelta) {
         Matrix4f transform = getVehicleTransform(tickDelta);
         Vector4f worldPosition = transformPosition(transform, 0f, 0.62f, 0.8f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override
-    public Vec3 shootVec(float tickDelta) {
+    public Vec3 getShootVec(int seatIndex, float tickDelta) {
         Matrix4f transform = getVehicleTransform(tickDelta);
         Vector4f worldPosition = transformPosition(transform, 0, 0, 0);
         Vector4f worldPosition2 = transformPosition(transform, 0, 0.01f, 1);

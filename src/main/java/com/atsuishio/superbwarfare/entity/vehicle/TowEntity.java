@@ -148,12 +148,12 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (entityData.get(STATE) != 1) return;
         var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(living);
 
-        wgMissileEntity.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+        wgMissileEntity.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
         wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 2, 0f);
         wgMissileEntity.setLauncherVehicle(this.uuid);
         living.level().addFreshEntity(wgMissileEntity);
 
-        Vec3 pos = getTurretShootPos(living, 1).add(getBarrelVector(1).scale(-0.5));
+        Vec3 pos = getShootPos(living, 1).add(getBarrelVector(1).scale(-0.5));
 
         AABB ab = new AABB(pos, pos).inflate(0.75).move(getBarrelVector(1).scale(-2)).expandTowards(getBarrelVector(1).scale(-5));
 
@@ -169,11 +169,11 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), pos, serverLevel, this);
             ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1), pos, serverLevel, this);
             for (int j = 0; j < 20; j += 4) {
-                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getBarrelVector(1), getTurretShootPos(living, 1).add(getBarrelVector(1).scale(1))));
+                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getBarrelVector(1), getShootPos(living, 1).add(getBarrelVector(1).scale(1))));
             }
         }
 
-        playShootSound3p(living, 0, 6, 0, 0, getTurretShootPos(living, 1));
+        playShootSound3p(living, 0, 6, 0, 0, getShootPos(living, 1));
 
         this.entityData.set(STATE, this.getEntityData().get(STATE) + 1);
     }
@@ -239,7 +239,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
+    public Vec3 getShootPos(int seatIndex, float ticks) {
         return new Vec3(getX(), getY() + 1.174775f, getZ());
     }
 

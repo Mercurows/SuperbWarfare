@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.StringOrVec3;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Set;
@@ -122,6 +124,12 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     // TODO 这俩换到 gun assets里面
     public static final GunProp<String> GUN_ICON = new GunProp<>("GunIcon");
     public static final GunProp<String> CROSSHAIR = new GunProp<>("Crosshair");
+
+
+    public static final GunProp<String> TRANSFORM = new GunProp<>("Transform");
+    public static final GunProp<Vec3> POSITION = new GunProp<>("Position");
+    public static final GunProp<StringOrVec3> DIRECTION = new GunProp<>("Direction");
+
 
     private GunProp(String name) {
         super(DefaultGunData.class, name);

@@ -11,7 +11,10 @@
         "AmmoType": [
           {
             "Ammo": "Infinity",
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png"
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+            "Transform" : "Barrel",
+            "Position": [0.0609375, 0.0517, 3.2],
+            "Direction" : "Barrel"
           },
           {
             "Ammo": "Infinity",

@@ -434,7 +434,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
 
-        entityToSpawn.setPos(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z);
+        entityToSpawn.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
         entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, projectileVelocity(living), 0.25f);
         level().addFreshEntity(entityToSpawn);
 
@@ -459,11 +459,11 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     @Override
     public Vec3 getNewEyePos(float pPartialTicks) {
-        return getTurretShootPos(getFirstPassenger(), pPartialTicks);
+        return getShootPos(getFirstPassenger(), pPartialTicks);
     }
 
     @Override
-    public Vec3 getTurretShootPos(int seatIndex, float ticks) {
+    public Vec3 getShootPos(int seatIndex, float ticks) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 0.35f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);

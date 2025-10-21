@@ -105,8 +105,8 @@ public class AACalculatorOverlay implements IGuiOverlay {
                     }
 
                     if (lockOn) {
-                        Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getTurretShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick), target.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
-                        Vec3 shootPos = vehicle.getTurretShootPos(player, partialTick).add(shootVector.scale(vehicle.getTurretShootPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick))));
+                        Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick), target.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
+                        Vec3 shootPos = vehicle.getShootPos(player, partialTick).add(shootVector.scale(vehicle.getShootPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick))));
                         Vec3 point0 = VectorUtil.worldToScreen(shootPos);
 
                         if (VectorUtil.canSee(shootPos)) {
