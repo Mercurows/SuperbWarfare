@@ -16,6 +16,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -121,7 +122,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
 
             poseStack.pushPose();
 
-            renderWeaponInfoFirst(guiGraphics, vehicle, player, data, screenWidth, screenHeight, color);
+            renderWeaponInfoFirst(guiGraphics, vehicle, player, data, mc.font, screenWidth, screenHeight, color);
 
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
@@ -144,6 +145,8 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                 // 载具自定义第三人称渲染
                 vehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, screenWidth, screenHeight, scale);
 
+                renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
+
                 double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
                         FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
@@ -164,20 +167,26 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
     }
 
     // TODO 正确显示文本和备弹数量，正确判断是否应该显示武器名称
-    private static void renderWeaponInfoFirst(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, int screenWidth, int screenHeight, int color) {
+    private static void renderWeaponInfoFirst(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font, int screenWidth, int screenHeight, int color) {
         if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
         if (!vehicle.amphibiousVehicle()) return;
 
         int heat = weaponVehicle.getWeaponHeat(player);
         int ammoCount = weaponVehicle.getAmmoCount(player);
-        var font = Minecraft.getInstance().font;
         var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
         guiGraphics.drawString(font, component, (screenWidth - font.width(component)) / 2, screenHeight - 65,
                 MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
     }
 
-    private static void renderWeaponInfoThird() {
+    private static void renderWeaponInfoThird(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font) {
+        if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
 
+        float heat = weaponVehicle.getWeaponHeat(player) / 100F;
+
+        int ammoCount = weaponVehicle.getAmmoCount(player);
+        var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
+
+        guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
     }
 }
