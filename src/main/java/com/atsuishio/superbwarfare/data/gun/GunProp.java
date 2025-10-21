@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun;
 
+import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import net.minecraft.util.Mth;
@@ -124,7 +125,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     // TODO 这几个换到 gun assets里面
     public static final GunProp<String> GUN_ICON = new GunProp<>("GunIcon");
     public static final GunProp<String> CROSSHAIR = new GunProp<>("Crosshair");
-    public static final GunProp<Integer> CROSSHAIR_COLOR = new GunProp<>("CrosshairColor");
+    public static final GunProp<ModColor> CROSSHAIR_COLOR = new GunProp<>("CrosshairColor");
     public static final GunProp<Boolean> HIDE_CROSSHAIR_WHEN_ZOOM = new GunProp<>("HideCrosshairWhenZoom");
     public static final GunProp<String> NAME = new GunProp<>("Name");
 
