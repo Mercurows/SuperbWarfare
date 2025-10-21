@@ -31,7 +31,7 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
     public static final ResourceLocation ID = Mod.loc("yx100_swarm_drone_hud");
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
-    private static final ResourceLocation LAV_MISSILE_CROSS = Mod.loc("textures/screens/land/lav_missile_cross.png");
+    private static final ResourceLocation LAV_MISSILE_CROSS = Mod.loc("textures/screens/land/common_missile.png");
 
     @Override
     @ParametersAreNonnullByDefault

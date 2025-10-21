@@ -3076,8 +3076,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // TODO 正确渲染准心
         var texture = Mod.loc(switch (weaponVehicle.getWeaponIndex(0)) {
             case 0 -> "textures/screens/land/lav_cannon_cross.png";
-            case 1 -> "textures/screens/land/lav_gun_cross.png";
-            case 2 -> "textures/screens/land/lav_missile_cross.png";
+            case 1 -> "textures/screens/land/common_gun.png";
+            case 2 -> "textures/screens/land/common_missile.png";
             default -> "";
         });
         if (texture.getPath().isEmpty()) return;

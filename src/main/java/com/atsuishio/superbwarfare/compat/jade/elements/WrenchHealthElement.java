@@ -16,7 +16,7 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
 public class WrenchHealthElement extends Element {
 
-    private static final ResourceLocation WRENCH_ICON = Mod.loc("textures/screens/vehicle_health.png");
+    private static final ResourceLocation WRENCH_ICON = Mod.loc("textures/overlay/vehicle/jade/vehicle_health.png");
 
     private final String text;
 

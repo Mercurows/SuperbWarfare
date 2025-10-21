@@ -531,7 +531,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         float centerH = ((screenHeight - scaledMinWH) / 2);
 
         // 准心
-        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/land/common_missile.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
 
         // 武器名称+过热
         int heat = this.getEntityData().get(HEAT);

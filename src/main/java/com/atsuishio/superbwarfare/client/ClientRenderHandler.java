@@ -55,6 +55,7 @@ public class ClientRenderHandler {
         event.registerBelow(IglaHudOverlay.ID, AACalculatorOverlay.ID, new AACalculatorOverlay());
         event.registerBelow(AACalculatorOverlay.ID, VehicleHudOverlay.ID, new VehicleHudOverlay());
         event.registerBelow(VehicleHudOverlay.ID, VehicleMgHudOverlay.ID, new VehicleMgHudOverlay());
+        event.registerBelow(VehicleMgHudOverlay.ID, VehicleCrosshairOverlay.ID, new VehicleCrosshairOverlay());
         event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
         event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
