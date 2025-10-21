@@ -61,8 +61,21 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation DRIVER = Mod.loc("textures/overlay/vehicle/base/driver.png");
     private static final ResourceLocation PASSENGER = Mod.loc("textures/overlay/vehicle/base/passenger.png");
 
-    private static final ResourceLocation SELECTED = Mod.loc("textures/screens/vehicle_weapon/selected.png");
-    private static final ResourceLocation NUMBER = Mod.loc("textures/screens/vehicle_weapon/number.png");
+    private static final ResourceLocation SELECTED = Mod.loc("textures/overlay/vehicle/weapon/frame/selected.png");
+    private static final ResourceLocation NUMBER = Mod.loc("textures/overlay/vehicle/weapon/frame/number.png");
+
+    private static final ResourceLocation[] FRAMES = {
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_1.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_2.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_3.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_4.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_5.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_6.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_7.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_8.png"),
+            Mod.loc("textures/overlay/vehicle/weapon/frame/frame_9.png")
+    };
+
     private static final ResourceLocation GEAR = Mod.loc("textures/screens/aircraft/gear.png");
 
     private static final ResourceLocation FRAME = Mod.loc("textures/overlay/vehicle/land/tv_frame.png");
@@ -480,7 +493,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         for (int i = weapons.size() - 1; i >= 0 && i < 9; i--) {
             var weapon = weapons.get(i);
 
-            ResourceLocation frame = Mod.loc("textures/screens/vehicle_weapon/frame_" + (i + 1) + ".png");
+            var frame = FRAMES[i];
+
             pose.pushPose();
 
             // 相对于最左边的偏移量
