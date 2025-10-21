@@ -226,6 +226,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         data = data.copy();
         consumer.accept(data);
+        data.save();
         map.put(index, data);
 
         entityData.set(GUN_DATA_MAP, map);
@@ -749,6 +750,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     protected void initSeatData(int targetSize) {
         padList(orderedPassengers, targetSize, null, null);
+
+        // 移除多余GunData
+        var gunDataMap = entityData.get(GUN_DATA_MAP);
+        var newMap = new HashMap<Integer, GunData>();
+
+        for (var kv : gunDataMap.entrySet()) {
+            if (kv.getKey() < targetSize) {
+                newMap.put(kv.getKey(), kv.getValue());
+            }
+        }
+
+        entityData.set(GUN_DATA_MAP, newMap);
     }
 
     protected <T> void padList(@NotNull List<T> list, int targetSize, T defaultValue, @Nullable Consumer<T> onRemove) {
@@ -980,6 +993,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(OVERRIDE, "")
                 .define(LAST_ATTACKER_UUID, "undefined")
                 .define(LAST_DRIVER_UUID, "undefined")
+                .define(GUN_DATA_MAP, new HashMap<>())
 
                 .define(AI_TURRET_TARGET_UUID, "undefined")
                 .define(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined")
@@ -1123,6 +1137,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.entityData.set(OVERRIDE, compound.getString("Override"));
 
+        // GunData
+        var state = compound.getCompound("WeaponState");
+        var gunDataMap = new HashMap<Integer, GunData>();
+        for (var key : state.getAllKeys()) {
+            var tag = state.get(key);
+            assert tag != null;
+
+            ItemStack.parse(this.level().registryAccess(), tag)
+                    .ifPresent(is -> gunDataMap.put(Integer.parseInt(key), GunData.from(is)));
+        }
+        entityData.set(GUN_DATA_MAP, gunDataMap);
+
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
         } else {
@@ -1174,6 +1200,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putString("Override", this.entityData.get(OVERRIDE));
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));
         compound.putString("LastDriver", this.entityData.get(LAST_DRIVER_UUID));
+
+        var gunDataMap = entityData.get(GUN_DATA_MAP);
+        var tag = new CompoundTag();
+        for (var kv : gunDataMap.entrySet()) {
+            tag.put(String.valueOf(kv.getKey()), kv.getValue().stack.save(this.level().registryAccess()));
+        }
+        compound.put("WeaponState", tag);
 
         compound.putFloat("TurretHealth", this.entityData.get(TURRET_HEALTH));
         compound.putFloat("LeftWheelHealth", this.entityData.get(L_WHEEL_HEALTH));
@@ -1501,6 +1534,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 inCarMusic.accept(this);
             }
         }
+
+        var newMap = new HashMap<Integer, GunData>();
+        for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
+            var newData = kv.getValue().copy();
+            newData.tick(this, true);
+            newMap.put(kv.getKey(), newData);
+        }
+        entityData.set(GUN_DATA_MAP, newMap);
 
         this.wasEngineRunning = this.engineRunning();
         this.wasHornWorking = this.hornWorking();
@@ -2210,7 +2251,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         int index = getSeatIndex(passenger);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seats = data().get(VehicleProp.SEATS);
+        if (index < 0 || index >= seats.size()) return;
+
+        var seat = seats.get(index);
         passengerPos(passenger, callback, seat.position, seat.transform);
     }
 
@@ -2256,7 +2300,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getShootPos(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            // TODO 发射位置读取失败？
             Vec3 vec3 = data.get(GunProp.POSITION);
             Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.TRANSFORM), ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);

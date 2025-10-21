@@ -8,17 +8,17 @@
       "WeaponData": {
         "DefaultFireMode": "Auto",
         "AvailableFireModes": "Auto",
+        "Transform": "Barrel",
+        "Position": [
+          0.0609375,
+          0.0517,
+          3.2
+        ],
+        "Direction": "Barrel",
         "AmmoType": [
           {
             "Ammo": "Infinity",
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
-            "Transform": "Barrel",
-            "Position": [
-              0.0609375,
-              0.0517,
-              3.2
-            ],
-            "Direction": "Barrel"
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png"
           },
           {
             "Ammo": "Infinity",

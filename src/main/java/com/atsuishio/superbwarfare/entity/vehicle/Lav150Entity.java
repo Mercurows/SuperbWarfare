@@ -2,10 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
-import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -16,7 +14,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
@@ -26,9 +23,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -38,7 +33,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
@@ -56,9 +50,7 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
@@ -90,30 +82,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-
-        builder.define(GUN_DATA_MAP, new HashMap<>());
-    }
-
-    // 移除多余GunData
-    @Override
-    protected void initSeatData(int targetSize) {
-        super.initSeatData(targetSize);
-
-        var gunDataMap = entityData.get(GUN_DATA_MAP);
-        var newMap = new HashMap<Integer, GunData>();
-
-        for (var kv : gunDataMap.entrySet()) {
-            if (kv.getKey() < targetSize) {
-                newMap.put(kv.getKey(), kv.getValue());
-            }
-        }
-
-        entityData.set(GUN_DATA_MAP, newMap);
-    }
-
-    @Override
     public void changeWeapon(int index, int value, boolean isScroll) {
         var gunData = getGunData(index);
         if (gunData == null) return;
@@ -137,35 +105,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
 
         return gunData.backupAmmoCount.get();
-    }
-
-    @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-
-        var state = compound.getCompound("WeaponState");
-        var gunDataMap = new HashMap<Integer, GunData>();
-        for (var key : state.getAllKeys()) {
-            var tag = state.get(key);
-            assert tag != null;
-
-            ItemStack.parse(this.level().registryAccess(), tag)
-                    .ifPresent(is -> gunDataMap.put(Integer.parseInt(key), GunData.from(is)));
-        }
-        entityData.set(GUN_DATA_MAP, gunDataMap);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-
-        var gunDataMap = entityData.get(GUN_DATA_MAP);
-
-        var tag = new CompoundTag();
-        for (var kv : gunDataMap.entrySet()) {
-            tag.put(String.valueOf(kv.getKey()), kv.getValue().stack.save(this.level().registryAccess()));
-        }
-        compound.put("WeaponState", tag);
     }
 
     // TODO 移除这个
@@ -318,40 +257,24 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return getDeltaMovement().horizontalDistance() > 0.09 || Mth.abs(this.entityData.get(POWER)) > 0.15;
     }
 
-
-    // TODO 正确计算位置
-    public Function<VehicleEntity, ShootRay> MACHINE_GUN_POS = createShootAnchorPoint("MachineGun", v -> {
-        var worldPosition = transformPosition(getBarrelTransform(1), 0.3f, 0.08f, 0);
-
-        return new ShootRay(
-                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
-                getBarrelVector(1)
-        );
-    });
-
-    public Function<VehicleEntity, ShootRay> CANNON_POS = createShootAnchorPoint("Cannon", v -> {
-        var worldPosition = transformPosition(getBarrelTransform(1), 0.0609375f, 0.0517f, 0);
-
-        return new ShootRay(
-                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
-                getBarrelVector(1)
-        );
-    });
-
-    @Override
-    public void tick() {
-        super.tick();
-
-        var newMap = new HashMap<Integer, GunData>();
-
-        for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
-            var newData = kv.getValue().copy();
-            newData.tick(this, true);
-            newMap.put(kv.getKey(), newData);
-        }
-
-        entityData.set(GUN_DATA_MAP, newMap);
-    }
+//    // TODO 正确计算位置
+//    public Function<VehicleEntity, ShootRay> MACHINE_GUN_POS = createShootAnchorPoint("MachineGun", v -> {
+//        var worldPosition = transformPosition(getBarrelTransform(1), 0.3f, 0.08f, 0);
+//
+//        return new ShootRay(
+//                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
+//                getBarrelVector(1)
+//        );
+//    });
+//
+//    public Function<VehicleEntity, ShootRay> CANNON_POS = createShootAnchorPoint("Cannon", v -> {
+//        var worldPosition = transformPosition(getBarrelTransform(1), 0.0609375f, 0.0517f, 0);
+//
+//        return new ShootRay(
+//                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
+//                getBarrelVector(1)
+//        );
+//    });
 
     @Override
     public int getWeaponIndex(int index) {
@@ -364,25 +287,15 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public void vehicleShoot(LivingEntity living, int type) {
-        boolean hasCreativeAmmo = false;
-        for (int i = 0; i < getMaxPassengers() - 1; i++) {
-            if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
-                hasCreativeAmmo = true;
-            }
-        }
 
         // TODO 移除WeaponIndex
 //        if (getWeaponIndex(0) == 0) {
         var seatIndex = getSeatIndex(living);
-        var data = getGunData(seatIndex);
-        if (data == null || !data.canShoot(this)) return;
 
-        var ray = MACHINE_GUN_POS.apply(this);
-        data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
-
-        var currentMap = entityData.get(GUN_DATA_MAP);
-        currentMap.put(seatIndex, data);
-        entityData.set(GUN_DATA_MAP, currentMap);
+        modifyGunData(seatIndex, data -> {
+            if (!data.canShoot(getAmmoSupplier())) return;
+            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
+        });
 
         sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
         playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
@@ -392,7 +305,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.entityData.set(CANNON_RECOIL_TIME, 40);
         this.entityData.set(YAW, getTurretYRot());
 
-        this.entityData.set(HEAT, this.entityData.get(HEAT) + data.get(GunProp.HEAT_PER_SHOOT).intValue());
         this.entityData.set(FIRE_ANIM, 3);
 //        } else if (getWeaponIndex(0) == 1) {
 //            if (this.cannotFireCoax) return;
