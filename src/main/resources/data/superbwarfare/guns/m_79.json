@@ -16,7 +16,7 @@
   "GunType": "CurvedLauncher",
   "AmmoType": "superbwarfare:grenade_40mm",
   "GunIcon": "superbwarfare:textures/gun_icon/m_79_icon.png",
-  "Crosshair": "Gun$Grenade",
+  "Crosshair": "@GunGrenade",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
