@@ -264,12 +264,12 @@ public class DefaultGunData implements IDBasedData {
     /*
      * 准星类型
      * 预制的字段有：
-     * Custom - 自定义
-     * Gun$Default - 默认枪械准星
-     * Vehicle$Default - 默认载具准星
+     * @Custom - 自定义
+     * @GunDefault - 默认枪械准星
+     * @VehicleDefault - 默认载具准星
      */
     @SerializedName("Crosshair")
-    public String crosshair = "Gun$Default";
+    public String crosshair = "@GunDefault";
 
     @SerializedName("HideCrosshairWhenZoom")
     public boolean hideCrosshairWhenZoom = true;

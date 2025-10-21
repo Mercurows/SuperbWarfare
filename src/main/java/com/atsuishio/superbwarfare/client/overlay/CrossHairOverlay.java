@@ -45,11 +45,11 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class CrossHairOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("cross_hair");
-    public static final String CROSSHAIR_CUSTOM = "Custom";
-    public static final String CROSSHAIR_GUN_DEFAULT = "Gun$Default";
-    public static final String CROSSHAIR_GUN_REPAIR_TOOL = "Gun$RepairTool";
-    public static final String CROSSHAIR_GUN_BOCEK = "Gun$Bocek";
-    public static final String CROSSHAIR_GUN_GRENADE = "Gun$Grenade";
+    public static final String CROSSHAIR_CUSTOM = "@Custom";
+    public static final String CROSSHAIR_GUN_DEFAULT = "@GunDefault";
+    public static final String CROSSHAIR_GUN_REPAIR_TOOL = "@GunRepairTool";
+    public static final String CROSSHAIR_GUN_BOCEK = "@GunBocek";
+    public static final String CROSSHAIR_GUN_GRENADE = "@GunGrenade";
 
     private static final ResourceLocation REX = Mod.loc("textures/overlay/crosshair/rex.png");
     private static final ResourceLocation REX_HORIZONTAL = Mod.loc("textures/overlay/crosshair/rex_horizontal.png");

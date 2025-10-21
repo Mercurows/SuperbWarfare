@@ -16,7 +16,7 @@
   },
   "AmmoType": "minecraft:arrow",
   "GunIcon": "superbwarfare:textures/gun_icon/bocek_icon.png",
-  "Crosshair": "Gun$Bocek",
+  "Crosshair": "@GunBocek",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",
