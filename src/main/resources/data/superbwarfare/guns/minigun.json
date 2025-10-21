@@ -13,6 +13,7 @@
   "RPM": 1200,
   "DefaultFireMode": "Auto",
   "GunType": "MachineGun",
+  "HideCrosshairWhenZoom": false,
   "AvailableFireModes": [
     "Auto"
   ],

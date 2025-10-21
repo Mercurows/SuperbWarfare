@@ -18,6 +18,7 @@
   "RPM": 360,
   "HeatPerShoot": 2,
   "GunType": "MachineGun",
+  "HideCrosshairWhenZoom": false,
   "AvailableFireModes": [
     "Semi",
     "Auto"

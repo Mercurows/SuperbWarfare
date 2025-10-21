@@ -179,7 +179,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
     public static void renderGunDefaultCrosshair(GuiGraphics guiGraphics, GunData data, Player player, int screenWidth, int screenHeight,
                                                  float moveX, float moveY, float finPosX, float finPosY, float finLength, double spread) {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-            if (ClientEventHandler.zoomTime > 0.8) return;
+            if (ClientEventHandler.zoomTime > 0.8 && data.get(GunProp.HIDE_CROSSHAIR_WHEN_ZOOM)) return;
         }
 
         preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);

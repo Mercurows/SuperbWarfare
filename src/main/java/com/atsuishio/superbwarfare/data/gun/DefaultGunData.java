@@ -270,4 +270,7 @@ public class DefaultGunData implements IDBasedData {
      */
     @SerializedName("Crosshair")
     public String crosshair = "Gun$Default";
+
+    @SerializedName("HideCrosshairWhenZoom")
+    public boolean hideCrosshairWhenZoom = true;
 }
