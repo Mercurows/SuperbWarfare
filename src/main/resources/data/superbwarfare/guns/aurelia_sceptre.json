@@ -17,6 +17,7 @@
   "ShootDelay": 5,
   "HeatPerShoot": 1,
   "GunType": "Handgun",
+  "HideCrosshairWhenZoom": false,
   "AvailableFireModes": [
     "Auto"
   ],
