@@ -734,6 +734,8 @@
   "info.superbwarfare.speedboat": "The Speedboat is a light vessel armed with a .50 CAL heavy machine gun. It accommodates 5 crew members and achieves high speeds on water.",
   "info.superbwarfare.waveforce_tower": "The Wave-Force Tower is an advanced base defense structure for the Empire of the Rising Sun in Red Alert 3. This stationary turret eliminates ground threats with superheated energy barrages.",
   "info.superbwarfare.truck": "Trucks are civilian transport vehicles capable of carrying large quantities of cargo.",
+  "superbwarfare.lav_150.cannon": "20MM CANNON %1$s",
+  "superbwarfare.lav_150.gun": "7.62MM COAX %1$s",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",
@@ -812,9 +814,6 @@
   "des.superbwarfare.perk_speed_reduce": "Velocity -",
   "des.superbwarfare.perk_speed_plus": "Velocity +",
   "des.superbwarfare.perk_slug": "Slug",
-
-  "des.superbwarfare.revolver.da": "DA",
-  "des.superbwarfare.revolver.sa": "SA",
 
   "des.superbwarfare.developing": "This item is still under development",
 

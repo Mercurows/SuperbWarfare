@@ -2,10 +2,13 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -20,6 +23,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -119,6 +123,12 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
             }
 
             poseStack.popPose();
+
+            poseStack.pushPose();
+
+            renderWeaponInfoFirst(guiGraphics, vehicle, player, data, screenWidth, screenHeight, color);
+
+            poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
             // 渲染第三人称
             Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getShootVec(player, partialTick).scale(192));
@@ -156,5 +166,23 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
     private static void resetScale() {
         scopeScale = 0.7f;
+    }
+
+    // TODO 正确显示文本和备弹数量，正确判断是否应该显示武器名称
+    private static void renderWeaponInfoFirst(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, int screenWidth, int screenHeight, int color) {
+        if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
+        if (!vehicle.amphibiousVehicle()) return;
+
+        int heat = weaponVehicle.getWeaponHeat(player);
+        int ammoCount = weaponVehicle.getAmmoCount(player);
+        var font = Minecraft.getInstance().font;
+        var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
+
+        guiGraphics.drawString(font, component, (screenWidth - font.width(component)) / 2, screenHeight - 65,
+                MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+    }
+
+    private static void renderWeaponInfoThird() {
+
     }
 }

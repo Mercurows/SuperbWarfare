@@ -13,10 +13,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -426,22 +424,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (gunData == null) return 0;
 
         return Math.toIntExact(Math.round(gunData.heat.get()));
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
-        super.renderFirstPersonOverlay(guiGraphics, poseStack, font, player, screenWidth, screenHeight, scale, color);
-
-        int heat = getWeaponHeat(player);
-
-        // TODO 正确显示文本和备弹数量
-        int ammoCount = this.getAmmoCount(player);
-        if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (ammoCount == Integer.MAX_VALUE ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-        } else {
-            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (ammoCount == Integer.MAX_VALUE ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-        }
     }
 
     @OnlyIn(Dist.CLIENT)
