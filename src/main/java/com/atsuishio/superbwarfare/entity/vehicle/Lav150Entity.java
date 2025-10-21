@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.*;
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
+import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -173,7 +176,15 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public void setWeaponIndex(int index, int type) {
-        modifyGunData(index, gunData -> gunData.changeAmmoConsumer(type));
+        modifyGunData(index, gunData -> gunData.changeAmmoConsumer(type, getAmmoSupplier()));
+    }
+
+    @Override
+    public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
+        var gunData = getGunData(getSeatIndex(passenger));
+        if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
+
+        return gunData.backupAmmoCount.get();
     }
 
     @Override
@@ -281,7 +292,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         updateOBB();
 
         if (this.level() instanceof ServerLevel) {
-            this.handleAmmo();
+            updateBackupAmmoCount();
         }
 
         lowHealthWarning();
@@ -290,6 +301,22 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         releaseSmokeDecoy(getTurretVector(1));
 
         this.refreshDimensions();
+    }
+
+    protected void updateBackupAmmoCount() {
+        for (int i = 0; i < getMaxPassengers(); i++) {
+            modifyGunData(i, data -> {
+                if (data.useBackpackAmmo()) {
+                    data.backupAmmoCount.set(data.countBackupAmmo(getAmmoSupplier()));
+                } else {
+                    data.backupAmmoCount.reset();
+                }
+            });
+        }
+    }
+
+    protected Entity getAmmoSupplier() {
+        return this;
     }
 
     // 炮塔最大水平旋转速度
@@ -346,23 +373,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return getDeltaMovement().horizontalDistance() > 0.09 || Mth.abs(this.entityData.get(POWER)) > 0.15;
     }
 
-    // TODO 移除这个
-    private void handleAmmo() {
-        if (!(this.getFirstPassenger() instanceof Player)) return;
-
-        int ammoCount = this.getItemStacks().stream().filter(stack -> {
-            if (stack.is(ModItems.AMMO_BOX.get())) {
-                return Ammo.RIFLE.get(stack) > 0;
-            }
-            return false;
-        }).mapToInt(Ammo.RIFLE::get).sum() + countItem(ModItems.RIFLE_AMMO.get());
-
-        if (getWeaponIndex(0) == 0) {
-            this.entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
-        } else if (getWeaponIndex(0) == 1) {
-            this.entityData.set(AMMO, ammoCount);
-        }
-    }
 
     // TODO 正确计算位置
     public Function<VehicleEntity, ShootRay> MACHINE_GUN_POS = createShootAnchorPoint("MachineGun", v -> {
@@ -423,7 +433,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (data == null || !data.canShoot(this)) return;
 
         var ray = MACHINE_GUN_POS.apply(this);
-        data.shoot(new ShootParameters(this, living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, data.get(GunProp.SPREAD), true, null, null));
+        data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), ray.shootPosition(), ray.shootDirection(), data, data.get(GunProp.SPREAD), true, null, null));
 
         var currentMap = entityData.get(GUN_DATA_MAP);
         currentMap.put(seatIndex, data);
@@ -537,17 +547,20 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return data.get(GunProp.RPM);
     }
 
+    // client side
     @Override
     public boolean canShoot(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
 
-        return gunData != null && gunData.canShoot(this);
+        return gunData != null && gunData.canShoot(getAmmoSupplier());
     }
 
     // TODO 正确计算AmmoCount
     @Override
     public int getAmmoCount(LivingEntity living) {
-        return this.entityData.get(AMMO);
+        var data = getGunData(getSeatIndex(living));
+        if (data == null) return 0;
+        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }
 
     @Override
@@ -576,10 +589,11 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         int heat = getWeaponHeat(player);
 
         // TODO 正确显示文本和备弹数量
+        int ammoCount = this.getAmmoCount(player);
         if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (ammoCount == Integer.MAX_VALUE ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         } else {
-            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (ammoCount == Integer.MAX_VALUE ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         }
     }
 
@@ -591,10 +605,11 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         float heat = getWeaponHeat(player) / 100F;
 
         // TODO 正确显示文本和备弹数量
+        int ammoCount = this.getAmmoCount(player);
         if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
+            guiGraphics.drawString(font, Component.literal("20MM CANNON " + (ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount)), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
         } else {
-            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
+            guiGraphics.drawString(font, Component.literal("7.62MM COAX " + (ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount)), 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
         }
     }
 

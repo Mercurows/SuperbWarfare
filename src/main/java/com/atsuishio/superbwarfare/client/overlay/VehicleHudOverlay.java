@@ -11,8 +11,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.*;
@@ -506,10 +504,13 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 );
 
                 preciseBlit(guiGraphics, SELECTED, screenWidth - 95, startY, 100, 0, 0, 8, 8, 8, 8);
-                if (InventoryTool.hasCreativeAmmoBox(player) && !(weapon instanceof LaserWeapon) && !(weapon instanceof SmallRocketWeapon) && !(weapon instanceof SwarmDroneWeapon)) {
+                var ammoCount = vehicle.getAmmoCount(player, i);
+
+                if (ammoCount == Integer.MAX_VALUE) {
                     preciseBlit(guiGraphics, NUMBER, screenWidth - 28 + xOffset, screenHeight - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
                 } else {
-                    renderNumber(guiGraphics, weaponVehicle.getAmmoCount(player), weapon instanceof LaserWeapon,
+                    // TODO 替换LaserWeapon判断
+                    renderNumber(guiGraphics, ammoCount, weapon instanceof LaserWeapon,
                             screenWidth - 20 + xOffset, screenHeight - frameIndex * 18 - 15.5f, 0.25f);
                 }
             }
