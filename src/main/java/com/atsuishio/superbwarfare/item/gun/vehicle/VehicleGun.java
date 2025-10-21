@@ -13,11 +13,19 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-// TODO 实现基于VehicleGun的开火控制
 public class VehicleGun extends GunItem {
 
     public VehicleGun() {
         super(new Properties());
+    }
+
+    @Override
+    public void init(GunData data) {
+    }
+
+    @Override
+    public boolean isInitialized(GunData data) {
+        return true;
     }
 
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
