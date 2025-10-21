@@ -410,7 +410,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public Vec3 driverZoomPos(float ticks) {
+    public Vec3 driverZoomPos(Entity entity, float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0f, 0.5f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -448,11 +448,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
     public float shootingPitch() {
         return 0.8f + entityData.get(FIRE_TIME) * 0.1f;
-    }
-
-    @Override
-    public Vec3 getNewEyePos(float pPartialTicks) {
-        return getShootPos(getFirstPassenger(), pPartialTicks);
     }
 
     @Override
@@ -559,7 +554,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
             if (zoom) {
-                return new Vec3(this.driverZoomPos(partialTicks).x, this.driverZoomPos(partialTicks).y, this.driverZoomPos(partialTicks).z);
+                return new Vec3(this.driverZoomPos(player, partialTicks).x, this.driverZoomPos(player, partialTicks).y, this.driverZoomPos(player, partialTicks).z);
             } else {
                 return new Vec3(this.driverPos(partialTicks).x, this.driverPos(partialTicks).y, this.driverPos(partialTicks).z);
             }

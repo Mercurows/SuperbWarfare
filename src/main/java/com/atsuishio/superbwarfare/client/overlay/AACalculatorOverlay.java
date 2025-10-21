@@ -67,7 +67,7 @@ public class AACalculatorOverlay implements LayeredDraw.Layer {
                         .smokeFilter()
                         .noVehicle()
                         .notFriendly()
-                        .vehicleNoClip()
+                        .vehicleNoClip(player)
                         .buildWithClosest();
 
                 Entity target;

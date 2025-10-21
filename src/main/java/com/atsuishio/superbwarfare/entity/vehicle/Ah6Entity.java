@@ -383,7 +383,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 driverZoomPos(float ticks) {
+    public Vec3 driverZoomPos(Entity entity, float ticks) {
         Matrix4f transform = getVehicleTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, -1.75f, 2.2f, -4.5f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -429,7 +429,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
             } else {
                 if (zoom) {
-                    return driverZoomPos(partialTicks);
+                    return driverZoomPos(player, partialTicks);
                 } else {
                     return finalPos;
                 }

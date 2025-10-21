@@ -8,24 +8,42 @@
       "WeaponData": {
         "DefaultFireMode": "Auto",
         "AvailableFireModes": "Auto",
-        "Transform": "Barrel",
-        "Position": [
-          0.0609375,
-          0.0517,
-          3.2
-        ],
-        "Direction": "Barrel",
+        "Projectile": "superbwarfare:small_cannon_shell",
+        "RPM": 240,
+        "Velocity": 20,
+        "Damage": 45,
+        "HeatPerShoot": 0.5,
         "AmmoType": [
           {
             "Ammo": "Infinity",
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png"
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+            "Override": {
+              "Transform": "Barrel",
+              "Position": [
+                0.0609375,
+                0.0517,
+                3.2
+              ],
+              "Direction": "Barrel",
+              "ExplosionDamage": 12,
+              "ExplosionRadius": 4
+            }
           },
           {
             "Ammo": "Infinity",
             "Override": {
-              "RPM": 50,
-              "Damage": 300,
-              "Velocity": 100
+              "Projectile": "superbwarfare:projectile",
+              "RPM": 600,
+              "Damage": 9.5,
+              "BypassesArmor": 0.3,
+              "Velocity": 30,
+              "Transform": "Barrel",
+              "Position": [
+                0.3,
+                0.0517,
+                0.5
+              ],
+              "Direction": "Barrel"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
           },
@@ -33,27 +51,40 @@
             "Ammo": "Infinity",
             "Projectile": "superbwarfare:rpg_rocket_tbg",
             "Override": {
-              "RPM": 450
+              "RPM": 60,
+              "Damage": 270,
+              "Transform": "Barrel",
+              "Position": [
+                0.0609375,
+                0.0517,
+                3.2
+              ],
+              "Direction": "Barrel",
+              "ExplosionDamage": 150,
+              "ExplosionRadius": 12
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
           },
           {
             "Ammo": "Infinity",
             "Override": {
+              "Damage": 20,
               "ProjectileAmount": 5,
               "Spread": 2.5,
-              "RPM": 600
+              "RPM": 240,
+              "Transform": "Barrel",
+              "Position": [
+                0.0609375,
+                0.0517,
+                3.2
+              ],
+              "Direction": "Barrel",
+              "ExplosionDamage": 10,
+              "ExplosionRadius": 8
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/cm_shell.png"
           }
-        ],
-        "RPM": 1200,
-        "Velocity": 10,
-        "Damage": 100,
-        "ExplosionDamage": 100,
-        "ExplosionRadius": 5,
-        "BypassesArmor": 0.5,
-        "HeatPerShoot": 0.5
+        ]
       },
       "Transform": "Turret",
       "Position": [

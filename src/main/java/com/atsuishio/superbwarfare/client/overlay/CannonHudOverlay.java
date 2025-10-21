@@ -115,7 +115,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                     Vec3 shootPos = player.getEyePosition(deltaTracker.getRealtimeDeltaTicks());
 
                     if (!(cannon instanceof AnnihilatorEntity)) {
-                        shootPos = cannon.driverZoomPos(deltaTracker.getRealtimeDeltaTicks());
+                        shootPos = cannon.driverZoomPos(player, deltaTracker.getRealtimeDeltaTicks());
                     }
 
                     Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
