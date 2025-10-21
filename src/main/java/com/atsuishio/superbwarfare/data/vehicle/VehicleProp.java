@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
+import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
@@ -36,7 +37,7 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
     public static final VehicleProp<Boolean> HAS_UPGRADE_SLOTS = new VehicleProp<>("HasUpgradeSlots");
 
     public static final VehicleProp<VehicleIconInfo> ICON = new VehicleProp<>("Icon");
-    public static final VehicleProp<Integer> HUD_COLOR = new VehicleProp<>("HUDColor");
+    public static final VehicleProp<ModColor> HUD_COLOR = new VehicleProp<>("HUDColor");
 
     public static final VehicleProp<VehicleType> TYPE = new VehicleProp<>("Type");
     public static final VehicleProp<EngineInfo> ENGINE = new VehicleProp<>("Engine");

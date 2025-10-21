@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.IDBasedData;
+import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
@@ -93,7 +94,7 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("Icon")
     public VehicleIconInfo icon = new VehicleIconInfo(Mod.loc("textures/gun_icon/default_icon.png").toString(), null);
     @SerializedName("HUDColor")
-    public int hudColor = 0x66FF00;
+    public ModColor hudColor = new ModColor(0x66FF00);
 
     @SerializedName("Type")
     public VehicleType type = VehicleType.EMPTY;

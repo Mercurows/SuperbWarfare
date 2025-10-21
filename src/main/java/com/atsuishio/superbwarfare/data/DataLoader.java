@@ -53,6 +53,7 @@ public class DataLoader {
                 .setLenient()
                 .serializeSpecialFloatingPointValues()
                 .registerTypeAdapter(Vec3.class, new Vec3Adapter())
+                .registerTypeAdapter(ModColor.class, new ModColor.ModColorAdapter())
                 .registerTypeAdapter(StringOrVec3.class, new StringOrVec3.StringOrVec3Adapter())
                 .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())
                 .registerTypeAdapterFactory(new StringToObject.AdapterFactory());

@@ -2,10 +2,7 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.data.IDBasedData;
-import com.atsuishio.superbwarfare.data.ObjectToList;
-import com.atsuishio.superbwarfare.data.StringOrVec3;
-import com.atsuishio.superbwarfare.data.StringToObject;
+import com.atsuishio.superbwarfare.data.*;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
 
@@ -270,9 +267,8 @@ public class DefaultGunData implements IDBasedData {
      */
     @SerializedName("Crosshair")
     public String crosshair = "@GunDefault";
-    // TODO 解决解析问题
     @SerializedName("CrosshairColor")
-    public int crosshairColor = 0xFFFFFF;
+    public ModColor crosshairColor = new ModColor();
     @SerializedName("Name")
     public String name = "superbwarfare.gun.default";
     @SerializedName("HideCrosshairWhenZoom")
