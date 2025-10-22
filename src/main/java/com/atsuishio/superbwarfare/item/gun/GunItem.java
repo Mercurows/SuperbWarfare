@@ -630,6 +630,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     /**
      * 服务端处理单次开火
+     *
      * @param parameters 开火参数
      */
     public void shoot(@NotNull ShootParameters parameters) {
@@ -692,6 +693,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     /**
      * 播放开火音效
      */
+    // TODO 替换音效
     public void playFireSounds(GunData data, @Nullable Entity shooter, boolean zoom) {
         if (shooter == null) return;
 
