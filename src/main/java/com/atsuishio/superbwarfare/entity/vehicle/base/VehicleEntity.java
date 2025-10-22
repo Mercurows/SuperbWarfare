@@ -326,6 +326,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int holdPowerTick;
     public float destroyRot;
 
+    public int currentFirePosIndex;
+
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.isInitialized = true;
@@ -2293,11 +2295,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param entity 操控载具的实体
      * @return 炮弹发射位置
      */
-
+    // TODO 解耦炮镜和发射位置
     public Vec3 getShootPos(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            Vec3 vec3 = data.get(GunProp.POSITION);
+            var list = data.get(GunProp.POSITION);
+            var vec3 = list.get(this.currentFirePosIndex % list.size());
+            this.currentFirePosIndex = ++this.currentFirePosIndex % list.size();
+
             Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.TRANSFORM), ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }

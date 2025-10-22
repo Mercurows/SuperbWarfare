@@ -23,9 +23,16 @@
             "Override": {
               "Transform": "Barrel",
               "Position": [
-                0.0609375,
-                0.0517,
-                3.2
+                [
+                  0.0609375,
+                  0.0517,
+                  3.2
+                ],
+                [
+                  -0.0609375,
+                  -0.0517,
+                  -3.2
+                ]
               ],
               "Direction": "Barrel",
               "ExplosionDamage": 12,
@@ -42,9 +49,11 @@
               "Velocity": 30,
               "Transform": "Barrel",
               "Position": [
-                0.3,
-                0.0517,
-                0.5
+                [
+                  0.3,
+                  0.0517,
+                  0.5
+                ]
               ],
               "Direction": "Barrel",
               "Crosshair": "@VehicleCommonGun",
@@ -60,9 +69,11 @@
               "Damage": 270,
               "Transform": "Barrel",
               "Position": [
-                0.0609375,
-                0.0517,
-                3.2
+                [
+                  0.0609375,
+                  0.0517,
+                  3.2
+                ]
               ],
               "Direction": "Barrel",
               "ExplosionDamage": 150,
@@ -80,9 +91,11 @@
               "RPM": 240,
               "Transform": "Barrel",
               "Position": [
-                0.0609375,
-                0.0517,
-                3.2
+                [
+                  0.0609375,
+                  0.0517,
+                  3.2
+                ]
               ],
               "Direction": "Barrel",
               "ExplosionDamage": 10,
