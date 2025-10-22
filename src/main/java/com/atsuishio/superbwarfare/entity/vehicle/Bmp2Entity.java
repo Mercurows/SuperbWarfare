@@ -558,7 +558,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public Vec3 driverZoomPos(Entity entity, float ticks) {
+    public Vec3 zoomPos(Entity entity, float ticks) {
         Matrix4f transform = getTurretTransform(ticks);
         Vector4f worldPosition = transformPosition(transform, 0, 0, 0.75f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -773,7 +773,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         if (zoom || isFirstPerson) {
             if (this.getSeatIndex(player) == 0) {
                 if (zoom) {
-                    return new Vec3(this.driverZoomPos(player, partialTicks).x, this.driverZoomPos(player, partialTicks).y, this.driverZoomPos(player, partialTicks).z);
+                    return new Vec3(this.zoomPos(player, partialTicks).x, this.zoomPos(player, partialTicks).y, this.zoomPos(player, partialTicks).z);
                 } else {
                     return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
                 }

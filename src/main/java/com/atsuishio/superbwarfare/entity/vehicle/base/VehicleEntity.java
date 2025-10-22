@@ -2929,7 +2929,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.gunXRot = pGunXRot;
     }
 
-    public Vec3 driverZoomPos(Entity entity, float ticks) {
+    public Vec3 zoomPos(Entity entity, float ticks) {
         return getShootPos(entity, ticks);
     }
 
