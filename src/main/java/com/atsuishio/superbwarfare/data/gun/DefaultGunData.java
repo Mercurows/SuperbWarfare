@@ -253,6 +253,9 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("SeekRange")
     public double seekRange = 384;
 
+    @SerializedName("SoundInfo")
+    public SoundInfo soundInfo = new SoundInfo();
+
     // TODO 能不能挪assets里面去
     @SerializedName("GunIcon")
     public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();

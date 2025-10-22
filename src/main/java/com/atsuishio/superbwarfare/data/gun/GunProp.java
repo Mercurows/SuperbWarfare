@@ -130,6 +130,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<ShootPos> SHOOT_POS = new GunProp<>("ShootPos");
     public static final GunProp<ZoomPos> ZOOM_POS = new GunProp<>("ZoomPos");
 
+    public static final GunProp<SoundInfo> SOUND_INFO = new GunProp<>("SoundInfo");
+
 
     private GunProp(String name) {
         super(DefaultGunData.class, name);

@@ -985,9 +985,6 @@ public class ClientEventHandler {
             return;
         }
 
-        String origin = stack.getItem().getDescriptionId();
-        String name = origin.substring(origin.lastIndexOf(".") + 1);
-
         if (stack.getItem() == ModItems.SENTINEL.get()) {
             boolean[] charged = {false};
 
@@ -996,7 +993,7 @@ public class ClientEventHandler {
             );
 
             if (charged[0]) {
-                player.playSound(ModSounds.SENTINEL_CHARGE_FIRE_1P.get(), 2f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
+                player.playSound(ModSounds.SENTINEL_CHARGE_FIRE_1P.get(), 2f, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
                 return;
             }
         }
@@ -1009,26 +1006,26 @@ public class ClientEventHandler {
             boolean isChargedFire = zoom && hasEnoughEnergy;
 
             if (isChargedFire) {
-                player.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_1P_CHARGE.get(), 2f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + 1.0f));
+                player.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_1P_CHARGE.get(), 2f, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));
                 return;
             }
         }
 
-
         var data = GunData.from(stack);
         var perk = data.perk.get(Perk.Type.AMMO);
+        SoundInfo soundInfo = data.get(GunProp.SOUND_INFO);
+
         float pitch = data.heat.get() <= 75 ? 1 : (float) (1 - 0.02 * Math.abs(75 - data.heat.get()));
 
         if (perk == ModPerks.BEAST_BULLET.get()) {
-            player.playSound(ModSounds.HENG.get(), 1f, (float) ((2 * org.joml.Math.random() - 1) * 0.1f + pitch));
+            player.playSound(ModSounds.HENG.get(), 1f, (float) ((2 * Math.random() - 1) * 0.1f + pitch));
         }
 
-        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
+        boolean isSilent = GunData.from(stack).attachment.get(AttachmentType.BARREL) == 2;
+        var fire1p = SoundInfo.getSoundEvent(isSilent ? soundInfo.fire1PSilent : soundInfo.fire1P);
 
-        SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + (barrelType == 2 ? "_fire_1p_s" : "_fire_1p")));
-
-        if (sound1p != null) {
-            player.playSound(sound1p, 4f, (float) ((2 * org.joml.Math.random() - 1) * 0.05f + pitch));
+        if (fire1p != null) {
+            player.playSound(fire1p, 4f, (float) ((2 * Math.random() - 1) * 0.05f + pitch));
         }
 
         double shooterHeight = player.getEyePosition().distanceTo((Vec3.atLowerCornerOf(player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
