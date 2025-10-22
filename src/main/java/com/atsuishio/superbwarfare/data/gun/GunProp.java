@@ -133,6 +133,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<List<Vec3>> POSITION = new GunProp<>("Position");
     public static final GunProp<StringOrVec3> DIRECTION = new GunProp<>("Direction");
 
+    public static final GunProp<ZoomPos> ZOOM_POS = new GunProp<>("ZoomPos");
+
 
     private GunProp(String name) {
         super(DefaultGunData.class, name);

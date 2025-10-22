@@ -76,12 +76,13 @@ public class DefaultGunData implements IDBasedData {
 
     @SerializedName("Transform")
     public String transform = "Default";
-
     @SerializedName("Position")
     public ObjectToList<Vec3> position = new ObjectToList<>(Vec3.ZERO);
-
     @SerializedName("Direction")
     public StringOrVec3 direction = new StringOrVec3("Default");
+
+    @SerializedName("ZoomPos")
+    public ZoomPos zoomPos = new ZoomPos();
 
     @SerializedName("AmmoCostPerShoot")
     public int ammoCostPerShoot = 1;
