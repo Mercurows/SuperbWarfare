@@ -40,5 +40,19 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:butterfly_bullet",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:ntw_20_fire_1p",
+    "Fire3P": "superbwarfare:ntw_20_fire_3p",
+    "Fire3PFar": "superbwarfare:ntw_20_far",
+    "Fire3PVeryFar": "superbwarfare:ntw_20_veryfar",
+    "ReloadNormal": "superbwarfare:ntw_20_reload_normal",
+    "ReloadEmpty": "superbwarfare:ntw_20_reload_empty",
+    "Bolt": "superbwarfare:ntw_20_bolt",
+    "CancellableSounds": [
+      "superbwarfare:ntw_20_reload_normal",
+      "superbwarfare:ntw_20_reload_empty",
+      "superbwarfare:ntw_20_bolt"
+    ]
+  }
 }

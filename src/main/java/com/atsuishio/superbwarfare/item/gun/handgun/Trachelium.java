@@ -37,11 +37,6 @@ public class Trachelium extends GunGeoItem {
     }
 
     @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.TRACHELIUM_RELOAD_EMPTY.get());
-    }
-
-    @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return TracheliumItemRenderer::new;
     }

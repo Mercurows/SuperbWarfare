@@ -40,5 +40,17 @@
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:sks_fire_1p",
+    "Fire3P": "superbwarfare:sks_fire_3p",
+    "Fire3PFar": "superbwarfare:sks_far",
+    "Fire3PVeryFar": "superbwarfare:sks_veryfar",
+    "ReloadNormal": "superbwarfare:sks_reload_normal",
+    "ReloadEmpty": "superbwarfare:sks_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:sks_reload_normal",
+      "superbwarfare:sks_reload_empty"
+    ]
+  }
 }

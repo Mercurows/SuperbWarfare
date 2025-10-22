@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -30,7 +29,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class SentinelItem extends GunGeoItem {
@@ -97,16 +95,6 @@ public class SentinelItem extends GunGeoItem {
                         energy.extractEnergy(1, false);
                     }
                 }
-        );
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(
-                ModSounds.SENTINEL_RELOAD_EMPTY.get(),
-                ModSounds.SENTINEL_RELOAD_NORMAL.get(),
-                ModSounds.SENTINEL_CHARGE.get(),
-                ModSounds.SENTINEL_BOLT.get()
         );
     }
 

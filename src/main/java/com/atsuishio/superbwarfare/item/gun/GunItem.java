@@ -90,18 +90,13 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     protected static final ResourceLocation DEFAULT_ICON = Mod.loc("textures/gun_icon/default_icon.png");
 
+    protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
     protected final RandomSource random = RandomSource.create();
 
-    @Override
-    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        var cap = new ItemEnergyStorage(stack,
-                s -> GunData.from(stack).get(GunProp.MAX_ENERGY),
-                s -> GunData.from(stack).get(GunProp.MAX_RECEIVE_ENERGY),
-                s -> GunData.from(stack).get(GunProp.MAX_EXTRACT_ENERGY)
-        );
+    public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
+    public final Map<Integer, Consumer<GunData>> boltTimeBehaviors = new HashMap<>();
 
-        return new ItemEnergyProvider(stack, LazyOptional.of(() -> cap));
-    }
+    private boolean isDamageable = false;
 
     public GunItem(Properties properties) {
         super(properties.stacksTo(1));
@@ -118,6 +113,17 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         setProperty(GunProp.WEIGHT, (data, v) -> v + getCustomWeight(data));
         setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data));
         setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data));
+    }
+
+    @Override
+    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        var cap = new ItemEnergyStorage(stack,
+                s -> GunData.from(stack).get(GunProp.MAX_ENERGY),
+                s -> GunData.from(stack).get(GunProp.MAX_RECEIVE_ENERGY),
+                s -> GunData.from(stack).get(GunProp.MAX_EXTRACT_ENERGY)
+        );
+
+        return new ItemEnergyProvider(stack, LazyOptional.of(() -> cap));
     }
 
     @Override
@@ -174,8 +180,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public boolean isInitialized(GunData data) {
         return data.data.hasUUID("UUID");
     }
-
-    protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -241,10 +245,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return Optional.of(new GunImageComponent(pStack));
     }
 
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of();
-    }
-
     public ResourceLocation getGunIcon(ItemStack stack) {
         return getGunIcon(GunData.from(stack));
     }
@@ -268,8 +268,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
         return false;
     }
-
-    private boolean isDamageable = false;
 
     @Override
     public int getMaxDamage(@NotNull ItemStack stack) {
@@ -482,9 +480,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public boolean canSwitchScope(GunData data) {
         return false;
     }
-
-    public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
-    public final Map<Integer, Consumer<GunData>> boltTimeBehaviors = new HashMap<>();
 
     /**
      * 添加达到指定换弹时间时的额外行为

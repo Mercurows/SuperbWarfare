@@ -4,14 +4,12 @@ import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M2HBItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -32,7 +30,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -87,11 +84,6 @@ public class M2HBItem extends GunGeoItem {
         data.add(fireAnimController);
         var idleController = new AnimationController<>(this, "idleController", 4, this::idlePredicate);
         data.add(idleController);
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.M_2_HB_RELOAD_EMPTY.get(), ModSounds.M_2_HB_RELOAD_NORMAL.get());
     }
 
     @Override

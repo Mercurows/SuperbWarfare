@@ -3,12 +3,10 @@ package com.atsuishio.superbwarfare.item.gun.shotgun;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M870ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +19,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class M870Item extends GunGeoItem {
@@ -76,12 +73,5 @@ public class M870Item extends GunGeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var fireAnimController = new AnimationController<>(this, "fireAnimController", 1, this::fireAnimPredicate);
         data.add(fireAnimController);
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.M_870_PREPARE_LOAD.get(),
-                ModSounds.M_870_LOOP.get(),
-                ModSounds.M_870_BOLT.get());
     }
 }

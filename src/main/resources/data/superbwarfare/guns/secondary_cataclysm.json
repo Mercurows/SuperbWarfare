@@ -61,5 +61,19 @@
     "superbwarfare:micro_missile",
     "superbwarfare:regeneration",
     "superbwarfare:one_two_punch"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p",
+    "Fire3P": "superbwarfare:secondary_cataclysm_fire_3p",
+    "Fire3PFar": "superbwarfare:secondary_cataclysm_far",
+    "Fire3PVeryFar": "superbwarfare:secondary_cataclysm_veryfar",
+    "ReloadPrepareLoad": "superbwarfare:secondary_cataclysm_prepare_load",
+    "ReloadLoop": "superbwarfare:secondary_cataclysm_loop",
+    "ReloadEnd": "superbwarfare:secondary_cataclysm_end",
+    "CancellableSounds": [
+      "superbwarfare:secondary_cataclysm_prepare_load",
+      "superbwarfare:secondary_cataclysm_loop",
+      "superbwarfare:secondary_cataclysm_end"
+    ]
+  }
 }

@@ -21,5 +21,13 @@
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:volt_overload"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:taser_fire_1p",
+    "Fire3P": "superbwarfare:taser_fire_3p",
+    "ReloadEmpty": "superbwarfare:taser_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:taser_reload_empty"
+    ]
+  }
 }

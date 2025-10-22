@@ -39,5 +39,20 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:butterfly_bullet",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:trachelium_fire_1p",
+    "Fire3P": "superbwarfare:trachelium_fire_3p",
+    "Fire3PFar": "superbwarfare:trachelium_far",
+    "Fire3PVeryFar": "superbwarfare:trachelium_veryfar",
+    "Fire1PSilent": "superbwarfare:trachelium_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:trachelium_fire_3p_s",
+    "Fire3PFarSilent": "superbwarfare:trachelium_far_s",
+    "ReloadEmpty": "superbwarfare:trachelium_reload_empty",
+    "Bolt": "superbwarfare:trachelium_bolt",
+    "CancellableSounds": [
+      "superbwarfare:trachelium_reload_empty",
+      "superbwarfare:trachelium_bolt"
+    ]
+  }
 }

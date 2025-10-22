@@ -115,11 +115,6 @@ public class VectorItem extends GunGeoItem {
     }
 
     @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.VECTOR_RELOAD_NORMAL.get(), ModSounds.VECTOR_RELOAD_EMPTY.get());
-    }
-
-    @Override
     public boolean isOpenBolt(GunData data) {
         return true;
     }

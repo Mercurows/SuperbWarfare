@@ -20,7 +20,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
@@ -38,7 +37,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class JavelinItem extends GunGeoItem {
@@ -74,11 +72,6 @@ public class JavelinItem extends GunGeoItem {
     }
 
     @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.JAVELIN_RELOAD_EMPTY.get(), ModSounds.JAVELIN_LOCK.get(), ModSounds.JAVELIN_LOCKON.get());
-    }
-
-    @Override
     public boolean useSpecialFireProcedure(GunData data) {
         return true;
     }
@@ -104,7 +97,6 @@ public class JavelinItem extends GunGeoItem {
         firePos.rotateY(-yRot * Mth.DEG_TO_RAD);
 
         if (shooter.level() instanceof ServerLevel serverLevel) {
-
             Entity targetEntity = EntityFindUtil.findEntity(serverLevel, String.valueOf(targetUUID));
             int guideType = targetEntity == null ? 1 : 0;
 
@@ -136,7 +128,6 @@ public class JavelinItem extends GunGeoItem {
                     shooter.getZ() + 1.8 * shooter.getLookAngle().z,
                     30, 0.4, 0.4, 0.4, 0.005, true);
 
-
             if (shooter instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_FIRE_1P.get(), 2, 1);
                 Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
@@ -144,7 +135,6 @@ public class JavelinItem extends GunGeoItem {
 
             SoundTool.playDistantSound(serverLevel, ModSounds.JAVELIN_FIRE_3P.get(), shooter.position(), 4, 1, shooter);
             SoundTool.playDistantSound(serverLevel, ModSounds.JAVELIN_FAR.get(), shooter.position(), 10, 1, shooter);
-
         }
 
         data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
