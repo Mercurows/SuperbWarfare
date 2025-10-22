@@ -2301,7 +2301,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (data != null) {
             var list = data.get(GunProp.POSITION);
             var vec3 = list.get(this.currentFirePosIndex % list.size());
-            this.currentFirePosIndex = ++this.currentFirePosIndex % list.size();
 
             Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.TRANSFORM), ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
