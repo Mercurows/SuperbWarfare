@@ -3,8 +3,9 @@ package com.atsuishio.superbwarfare.data.gun;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SoundInfo {
 
@@ -33,8 +34,13 @@ public class SoundInfo {
     public String reloadNormal = "";
     @SerializedName("ReloadEmpty")
     public String reloadEmpty = "";
+
     @SerializedName("ReloadPrepare")
     public String reloadPrepare = "";
+    @SerializedName("ReloadPrepareEmpty")
+    public String reloadPrepareEmpty = "";
+    @SerializedName("ReloadPrepareLoad")
+    public String reloadPrepareLoad = "";
     @SerializedName("ReloadLoop")
     public String reloadLoop = "";
     @SerializedName("ReloadEnd")
@@ -51,21 +57,17 @@ public class SoundInfo {
     @SerializedName("Locked")
     public String locked = "";
 
-    public static SoundEvent getSoundEvent(String path) {
+    @Nullable
+    public SoundEvent getSoundEvent(@NotNull String path) {
         if (path.isEmpty()) {
-            return SoundEvents.EMPTY;
+            return null;
         }
 
         ResourceLocation location = ResourceLocation.tryParse(path);
         if (location == null) {
-            return SoundEvents.EMPTY;
+            return null;
         }
 
-        SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(location);
-        if (sound == null) {
-            return SoundEvents.EMPTY;
-        }
-
-        return sound;
+        return ForgeRegistries.SOUND_EVENTS.getValue(location);
     }
 }

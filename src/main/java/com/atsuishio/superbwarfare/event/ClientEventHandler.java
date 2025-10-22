@@ -23,7 +23,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -56,7 +55,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationProcessor;
@@ -350,7 +348,7 @@ public class ClientEventHandler {
     }
 
     public static void lockWeaponSeeking(Player player, ItemStack stack) {
-        if (stack.getItem() instanceof GunItem gunItem) {
+        if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
             //锁定所需时间
             int lockTime = data.get(GunProp.SEEK_TIME);
@@ -442,14 +440,13 @@ public class ClientEventHandler {
                         }
                     }
                 } else if (data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_ZOOM) {
-
                     // 瞄准锁定只能锁实体
                     if (seekingTime > lockTime + 2 && !lockOn) {
                         lockingEntity = seekingEntity;
                         lockOn = true;
                     }
 
-                    //锁定失败
+                    // 锁定失败
                     if (seekingEntity != null && (VectorTool.calculateAngle(player.getLookAngle(), player.getEyePosition().vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(seekingEntity, 1))) > seekAngle
                             || !SeekTool.NOT_IN_SMOKE.test(seekingEntity)
                             || !noClip(player, seekingEntity))) {
@@ -497,11 +494,11 @@ public class ClientEventHandler {
             }
 
             if (seekingTime == 2) {
-                playLockSound(stack, player);
+                playLockingSound(data, player);
             }
 
             if (seekingTime > lockTime) {
-                playLockOnSound(stack, player);
+                playLockedSound(data, player);
                 if (guideType == 0 && lockingEntity != null && (!lockingEntity.getPassengers().isEmpty() || lockingEntity instanceof VehicleEntity) && player.tickCount % 2 == 0) {
                     Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntity.getUUID()));
                 }
@@ -509,21 +506,17 @@ public class ClientEventHandler {
         }
     }
 
-    public static void playLockSound(ItemStack stack, Player player) {
-        String origin = stack.getItem().getDescriptionId();
-        String name = origin.substring(origin.lastIndexOf(".") + 1);
-        SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_lock"));
-
+    public static void playLockingSound(GunData data, Player player) {
+        var soundInfo = data.get(GunProp.SOUND_INFO);
+        var sound = soundInfo.getSoundEvent(soundInfo.locking);
         if (sound != null) {
             player.playSound(sound, 4f, 1);
         }
     }
 
-    public static void playLockOnSound(ItemStack stack, Player player) {
-        String origin = stack.getItem().getDescriptionId();
-        String name = origin.substring(origin.lastIndexOf(".") + 1);
-        SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_lockon"));
-
+    public static void playLockedSound(GunData data, Player player) {
+        var soundInfo = data.get(GunProp.SOUND_INFO);
+        var sound = soundInfo.getSoundEvent(soundInfo.locked);
         if (sound != null) {
             player.playSound(sound, 4f, 1);
         }
@@ -1022,7 +1015,7 @@ public class ClientEventHandler {
         }
 
         boolean isSilent = GunData.from(stack).attachment.get(AttachmentType.BARREL) == 2;
-        var fire1p = SoundInfo.getSoundEvent(isSilent ? soundInfo.fire1PSilent : soundInfo.fire1P);
+        var fire1p = soundInfo.getSoundEvent(isSilent ? soundInfo.fire1PSilent : soundInfo.fire1P);
 
         if (fire1p != null) {
             player.playSound(fire1p, 4f, (float) ((2 * Math.random() - 1) * 0.05f + pitch));

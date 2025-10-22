@@ -15,18 +15,15 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.MissingMappingsEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,33 +54,32 @@ public class GunEventHandler {
      * 播放拉栓音效
      */
     public static void playGunBoltSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = data.stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.bolt);
 
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_bolt"));
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 2f, 1f);
-
-                double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
-
-                Mod.queueServerWork((int) (data.bolt.actionTimer.get() / 2.0 + 1.5 * shooterHeight), () -> {
-                    if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-                        var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
-                        switch (ammoType) {
-                            case SHOTGUN ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
-                            case SNIPER, HEAVY ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
-                            default ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
-                        }
-                    } else {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
-                    }
-                });
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 2f, 1f);
             }
+
+            double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
+
+            Mod.queueServerWork((int) (data.bolt.actionTimer.get() / 2.0 + 1.5 * shooterHeight), () -> {
+                if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                    var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
+                    switch (ammoType) {
+                        case SHOTGUN ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
+                        case SNIPER, HEAVY ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                        default ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                    }
+                } else {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                }
+            });
         }
     }
 
@@ -297,30 +293,23 @@ public class GunEventHandler {
     }
 
     public static void playGunEmptyReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        ItemStack stack = data.stack;
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.reloadEmpty);
 
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
-
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_reload_empty"));
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
             }
         }
     }
 
     public static void playGunNormalReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        ItemStack stack = data.stack;
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.reloadNormal);
 
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
-
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_reload_normal"));
-
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
             }
         }
     }
@@ -456,108 +445,102 @@ public class GunEventHandler {
     }
 
     public static void playGunPrepareReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = data.stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.reloadPrepare);
 
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_prepare"));
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
             }
         }
     }
 
     public static void playGunEmptyPrepareSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = data.stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.reloadPrepareEmpty);
 
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_prepare_empty"));
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
-
-                double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
-
-                Mod.queueServerWork((int) (data.get(GunProp.PREPARE_EMPTY_TIME) / 2.0 + 3 + 1.5 * shooterHeight), () -> {
-                    if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-                        var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
-                        switch (ammoType) {
-                            case SHOTGUN ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
-                            case SNIPER, HEAVY ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
-                            default ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
-                        }
-                    } else {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
-                    }
-                });
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
             }
+
+            double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
+
+            Mod.queueServerWork((int) (data.get(GunProp.PREPARE_EMPTY_TIME) / 2.0 + 3 + 1.5 * shooterHeight), () -> {
+                if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                    var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
+                    switch (ammoType) {
+                        case SHOTGUN ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
+                        case SNIPER, HEAVY ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                        default ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                    }
+                } else {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                }
+            });
         }
     }
 
     public static void playGunPrepareLoadReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        ItemStack stack = data.stack;
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.reloadPrepareLoad);
 
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
-
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_prepare_load"));
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
-
-                double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
-
-                Mod.queueServerWork((int) (8 + 1.5 * shooterHeight), () -> {
-                    if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-                        var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
-                        switch (ammoType) {
-                            case SHOTGUN ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
-                            case SNIPER, HEAVY ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
-                            default ->
-                                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
-                        }
-                    } else {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
-                    }
-                });
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
             }
+
+            double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
+
+            Mod.queueServerWork((int) (8 + 1.5 * shooterHeight), () -> {
+                if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
+                    var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
+                    switch (ammoType) {
+                        case SHOTGUN ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_SHOTGUN.get(), (float) Math.max(0.75 - 0.12 * shooterHeight, 0), 1);
+                        case SNIPER, HEAVY ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_50CAL.get(), (float) Math.max(1 - 0.15 * shooterHeight, 0), 1);
+                        default ->
+                                SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                    }
+                } else {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1);
+                }
+            });
         }
     }
 
     public static void playGunLoopReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = data.stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.reloadLoop);
 
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_loop"));
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
             }
         }
     }
 
     public static void playGunEndReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
-        if (shooter != null && !shooter.level().isClientSide) {
-            String origin = data.stack.getItem().getDescriptionId();
-            String name = origin.substring(origin.lastIndexOf(".") + 1);
+        if (shooter instanceof ServerPlayer serverPlayer) {
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+            var sound = soundInfo.getSoundEvent(soundInfo.reloadEnd);
 
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc(name + "_end"));
-            if (sound1p != null && shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 10f, 1f);
+            if (sound != null) {
+                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
+            }
 
-                double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
+            double shooterHeight = shooter.getEyePosition().distanceTo((Vec3.atLowerCornerOf(shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(new Vec3(0, -1, 0).scale(10)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter)).getBlockPos())));
 
-                if (data.stack.is(ModItems.MARLIN.get())) {
-                    Mod.queueServerWork((int) (5 + 1.5 * shooterHeight), () -> SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
-                }
+            // TODO 为什么要特判这个
+            if (data.stack.is(ModItems.MARLIN.get())) {
+                Mod.queueServerWork((int) (5 + 1.5 * shooterHeight), () -> SoundTool.playLocalSound(serverPlayer, ModSounds.SHELL_CASING_NORMAL.get(), (float) Math.max(1.5 - 0.2 * shooterHeight, 0), 1));
             }
         }
     }
@@ -570,9 +553,8 @@ public class GunEventHandler {
         if (data.charge.starter.start()) {
             data.charge.timer.set(127);
 
-            SoundEvent sound1p = ForgeRegistries.SOUND_EVENTS.getValue(Mod.loc("sentinel_charge"));
-            if (sound1p != null && entity instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, sound1p, 2f, 1f);
+            if (entity instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.SENTINEL_CHARGE.get(), 2f, 1f);
             }
         }
 
