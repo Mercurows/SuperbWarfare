@@ -2315,7 +2315,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getShootVec(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            // TODO 发射方向读取失败？
             StringOrVec3 stringOrVec3 = data.get(GunProp.DIRECTION);
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks);
