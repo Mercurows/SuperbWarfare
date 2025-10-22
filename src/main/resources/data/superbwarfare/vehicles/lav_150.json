@@ -16,6 +16,16 @@
         "Crosshair": "@VehicleUsApc",
         "CrosshairColor": "0x66FF00",
         "Name": "superbwarfare.lav_150.cannon",
+        "ZoomPos": {
+          "Transform": "Barrel",
+          "Position": [
+            0.1,
+            0.0517,
+            0
+          ],
+          "Direction": "Barrel"
+        },
+
         "AmmoType": [
           {
             "Ammo": "Infinity",

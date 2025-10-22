@@ -289,7 +289,7 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     @Override
-    public Vec3 driverZoomPos(Entity entity, float ticks) {
+    public Vec3 zoomPos(Entity entity, float ticks) {
         Matrix4f transform = getBarrelTransform(ticks);
 
         float x = 0f;
@@ -373,7 +373,7 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     @Override
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (this.getSeatIndex(player) == 0 && zoom) {
-            return new Vec3(this.driverZoomPos(player, partialTicks).x, this.driverZoomPos(player, partialTicks).y, this.driverZoomPos(player, partialTicks).z);
+            return new Vec3(this.zoomPos(player, partialTicks).x, this.zoomPos(player, partialTicks).y, this.zoomPos(player, partialTicks).z);
         }
         return super.getCameraPosition(partialTicks, player, zoom, isFirstPerson);
     }
