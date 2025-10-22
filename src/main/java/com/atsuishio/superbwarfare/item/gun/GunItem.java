@@ -32,7 +32,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -693,13 +692,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     /**
      * 播放开火音效
      */
-    // TODO 替换音效
     public void playFireSounds(GunData data, @Nullable Entity shooter, boolean zoom) {
         if (shooter == null) return;
-
-        ItemStack stack = data.stack;
-        String origin = stack.getItem().getDescriptionId();
-        String name = origin.substring(origin.lastIndexOf(".") + 1);
 
         float pitch = data.heat.get() <= 75 ? 1 : (float) (1 - 0.02 * Math.abs(75 - data.heat.get()));
 
@@ -709,19 +703,20 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
 
         float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
-        int barrelType = data.attachment.get(AttachmentType.BARREL);
+        var soundInfo = data.get(GunProp.SOUND_INFO);
+        boolean isSilent = data.attachment.get(AttachmentType.BARREL) == 2;
 
-        SoundEvent sound3p = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_fire_3p_s" : "_fire_3p")));
+        SoundEvent sound3p = soundInfo.getSoundEvent(isSilent ? soundInfo.fire3PSilent : soundInfo.fire3P);
         if (sound3p != null) {
             shooter.playSound(sound3p, soundRadius * 0.4f, pitch);
         }
 
-        SoundEvent soundFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_far_s" : "_far")));
+        SoundEvent soundFar = soundInfo.getSoundEvent(isSilent ? soundInfo.fire3PFarSilent : soundInfo.fire3PFar);
         if (soundFar != null) {
             shooter.playSound(soundFar, soundRadius * 0.7f, pitch);
         }
 
-        SoundEvent soundVeryFar = BuiltInRegistries.SOUND_EVENT.get(Mod.loc(name + (barrelType == 2 ? "_veryfar_s" : "_veryfar")));
+        SoundEvent soundVeryFar = soundInfo.getSoundEvent(isSilent ? soundInfo.fire3PVeryFarSilent : soundInfo.fire3PVeryFar);
         if (soundVeryFar != null) {
             shooter.playSound(soundVeryFar, soundRadius, pitch);
         }
