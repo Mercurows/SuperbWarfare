@@ -2308,10 +2308,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getShootPos(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            var list = data.get(GunProp.POSITION);
+            var list = data.get(GunProp.SHOOT_POS).positions.list;
             var vec3 = list.get(this.currentFirePosIndex % list.size());
 
-            Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.TRANSFORM), ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            Vector4f worldPosition = transformPosition(
+                    this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
+                    (float) vec3.x, (float) vec3.y, (float) vec3.z
+            );
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
         return getEyePosition();
@@ -2324,7 +2327,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getShootVec(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            StringOrVec3 stringOrVec3 = data.get(GunProp.DIRECTION);
+            StringOrVec3 stringOrVec3 = data.get(GunProp.SHOOT_POS).direction;
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks);
             } else {

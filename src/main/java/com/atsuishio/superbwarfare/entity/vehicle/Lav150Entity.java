@@ -312,7 +312,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
         var data = getGunData(getSeatIndex(living));
         if (data != null) {
-            var list = data.get(GunProp.POSITION);
+            var list = data.get(GunProp.SHOOT_POS).positions.list;
             this.currentFirePosIndex = ++this.currentFirePosIndex % list.size();
         }
 

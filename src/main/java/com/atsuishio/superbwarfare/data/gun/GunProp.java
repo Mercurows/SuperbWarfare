@@ -2,9 +2,7 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.Prop;
-import com.atsuishio.superbwarfare.data.StringOrVec3;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Set;
@@ -129,10 +127,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Boolean> HIDE_CROSSHAIR_WHEN_ZOOM = new GunProp<>("HideCrosshairWhenZoom");
     public static final GunProp<String> NAME = new GunProp<>("Name");
 
-    public static final GunProp<String> TRANSFORM = new GunProp<>("Transform");
-    public static final GunProp<List<Vec3>> POSITION = new GunProp<>("Position");
-    public static final GunProp<StringOrVec3> DIRECTION = new GunProp<>("Direction");
-
+    public static final GunProp<ShootPos> SHOOT_POS = new GunProp<>("ShootPos");
     public static final GunProp<ZoomPos> ZOOM_POS = new GunProp<>("ZoomPos");
 
 
