@@ -877,11 +877,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public boolean hasTracks() {
-        return true;
-    }
-
-    @Override
     public int getWeaponHeat(LivingEntity living) {
         if (living == getNthEntity(0)) {
             return entityData.get(COAX_HEAT);
