@@ -4,13 +4,11 @@ import com.atsuishio.superbwarfare.client.renderer.gun.M98bItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +17,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class M98bItem extends GunGeoItem {
@@ -73,11 +70,6 @@ public class M98bItem extends GunGeoItem {
         data.add(fireAnimController);
         var editController = new AnimationController<>(this, "editController", 1, this::editPredicate);
         data.add(editController);
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.M_98B_RELOAD_EMPTY.get(), ModSounds.M_98B_RELOAD_NORMAL.get(), ModSounds.M_98B_BOLT.get());
     }
 
     @Override

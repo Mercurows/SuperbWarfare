@@ -2,12 +2,10 @@ package com.atsuishio.superbwarfare.item.gun.sniper;
 
 import com.atsuishio.superbwarfare.client.renderer.gun.MosinNagantItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +16,6 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class MosinNagantItem extends GunGeoItem {
@@ -74,16 +71,5 @@ public class MosinNagantItem extends GunGeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var fireAnimController = new AnimationController<>(this, "fireAnimController", 1, this::fireAnimPredicate);
         data.add(fireAnimController);
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(
-                ModSounds.MOSIN_NAGANT_BOLT.get(),
-                ModSounds.MOSIN_NAGANT_PREPARE.get(),
-                ModSounds.MOSIN_NAGANT_PREPARE_EMPTY.get(),
-                ModSounds.MOSIN_NAGANT_LOOP.get(),
-                ModSounds.MOSIN_NAGANT_END.get()
-        );
     }
 }

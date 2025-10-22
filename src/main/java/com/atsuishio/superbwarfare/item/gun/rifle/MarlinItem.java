@@ -3,12 +3,10 @@ package com.atsuishio.superbwarfare.item.gun.rifle;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.MarlinItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +16,6 @@ import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -70,14 +67,6 @@ public class MarlinItem extends GunGeoItem {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var fireAnimController = new AnimationController<>(this, "fireAnimController", 1, this::fireAnimPredicate);
         data.add(fireAnimController);
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.MARLIN_LOOP.get(),
-                ModSounds.MARLIN_PREPARE.get(),
-                ModSounds.MARLIN_END.get(),
-                ModSounds.MARLIN_BOLT.get());
     }
 
     @Override

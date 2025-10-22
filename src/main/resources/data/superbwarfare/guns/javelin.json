@@ -28,5 +28,18 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:javelin_fire_1p",
+    "Fire3P": "superbwarfare:javelin_fire_3p",
+    "Fire3PFar": "superbwarfare:javelin_far",
+    "ReloadEmpty": "superbwarfare:javelin_reload_empty",
+    "Locking": "superbwarfare:javelin_lock",
+    "Locked": "superbwarfare:javelin_lockon",
+    "CancellableSounds": [
+      "superbwarfare:javelin_reload_empty",
+      "superbwarfare:javelin_lock",
+      "superbwarfare:javelin_lockon"
+    ]
+  }
 }

@@ -38,5 +38,15 @@
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:micro_missile"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:rpg_fire_1p",
+    "Fire3P": "superbwarfare:rpg_fire_3p",
+    "Fire3PFar": "superbwarfare:rpg_far",
+    "Fire3PVeryFar": "superbwarfare:rpg_veryfar",
+    "ReloadEmpty": "superbwarfare:rpg_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:rpg_reload_empty"
+    ]
+  }
 }

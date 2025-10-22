@@ -47,5 +47,21 @@
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:m_4_fire_1p",
+    "Fire3P": "superbwarfare:m_4_fire_3p",
+    "Fire3PFar": "superbwarfare:m_4_far",
+    "Fire3PVeryFar": "superbwarfare:m_4_veryfar",
+    "Fire1PSilent": "superbwarfare:m_4_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:m_4_fire_3p_s",
+    "Fire3PFarSilent": "superbwarfare:ak_12_far_s",
+    "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s",
+    "ReloadNormal": "superbwarfare:m_4_reload_normal",
+    "ReloadEmpty": "superbwarfare:m_4_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:m_4_reload_normal",
+      "superbwarfare:m_4_reload_empty"
+    ]
+  }
 }

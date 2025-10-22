@@ -4,13 +4,11 @@ import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -26,7 +24,6 @@ import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class TaserItem extends GunGeoItem {
@@ -38,11 +35,6 @@ public class TaserItem extends GunGeoItem {
     @Override
     public int getEnergyBarColor(GunData data) {
         return 0xFFFF00;
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.TASER_RELOAD_EMPTY.get());
     }
 
     @Override

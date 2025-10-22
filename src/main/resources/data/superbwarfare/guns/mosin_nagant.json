@@ -42,5 +42,23 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:butterfly_bullet",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:mosin_nagant_fire_1p",
+    "Fire3P": "superbwarfare:mosin_nagant_fire_3p",
+    "Fire3PFar": "superbwarfare:mosin_nagant_far",
+    "Fire3PVeryFar": "superbwarfare:mosin_nagant_veryfar",
+    "ReloadPrepare": "superbwarfare:mosin_nagant_prepare",
+    "ReloadPrepareEmpty": "superbwarfare:mosin_nagant_prepare_empty",
+    "ReloadLoop": "superbwarfare:mosin_nagant_loop",
+    "ReloadEnd": "superbwarfare:mosin_nagant_end",
+    "Bolt": "superbwarfare:mosin_nagant_bolt",
+    "CancellableSounds": [
+      "superbwarfare:mosin_nagant_prepare",
+      "superbwarfare:mosin_nagant_prepare_empty",
+      "superbwarfare:mosin_nagant_loop",
+      "superbwarfare:mosin_nagant_end",
+      "superbwarfare:mosin_nagant_bolt"
+    ]
+  }
 }

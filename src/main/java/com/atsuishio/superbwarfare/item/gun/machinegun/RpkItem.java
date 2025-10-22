@@ -4,14 +4,12 @@ import com.atsuishio.superbwarfare.client.renderer.gun.RpkItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -23,7 +21,6 @@ import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class RpkItem extends GunGeoItem {
@@ -134,11 +131,6 @@ public class RpkItem extends GunGeoItem {
     @Override
     public boolean canAdjustZoom(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 3;
-    }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.RPK_RELOAD_EMPTY.get(), ModSounds.RPK_RELOAD_NORMAL.get());
     }
 
     @Override

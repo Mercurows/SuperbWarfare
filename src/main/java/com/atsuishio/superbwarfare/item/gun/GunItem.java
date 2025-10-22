@@ -81,6 +81,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     protected static final ResourceLocation DEFAULT_ICON = Mod.loc("textures/gun_icon/default_icon.png");
 
+    protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
     protected final RandomSource random = RandomSource.create();
 
     @Override
@@ -98,6 +99,11 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return GunData.from(stack).get(GunProp.MAX_EXTRACT_ENERGY);
     }
 
+    public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
+    public final Map<Integer, Consumer<GunData>> boltTimeBehaviors = new HashMap<>();
+
+    private boolean isDamageable = false;
+
     public GunItem(Properties properties) {
         super(properties.stacksTo(1));
 
@@ -114,6 +120,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         setProperty(GunProp.VELOCITY, (data, v) -> v + getCustomVelocity(data));
         setProperty(GunProp.SOUND_RADIUS, (data, v) -> v + getCustomSoundRadius(data));
     }
+
 
     @Override
     public boolean isBarVisible(@NotNull ItemStack stack) {
@@ -167,8 +174,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public boolean isInitialized(GunData data) {
         return data.data.hasUUID("UUID");
     }
-
-    protected final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> propertyModifiers = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -235,10 +240,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new GunImageComponent(pStack));
-    }
-
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of();
     }
 
     public ResourceLocation getGunIcon(ItemStack stack) {
@@ -480,9 +481,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public boolean canSwitchScope(GunData data) {
         return false;
     }
-
-    public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
-    public final Map<Integer, Consumer<GunData>> boltTimeBehaviors = new HashMap<>();
 
     /**
      * 添加达到指定换弹时间时的额外行为
