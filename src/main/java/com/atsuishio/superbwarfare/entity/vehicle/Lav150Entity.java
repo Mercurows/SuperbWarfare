@@ -455,7 +455,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
             if (this.getSeatIndex(player) == 0) {
-                return new Vec2((float) -getYRotFromVector(this.getBarrelVector(partialTicks)), (float) -getXRotFromVector(this.getBarrelVector(partialTicks)));
+                return new Vec2((float) -getYRotFromVector(zoomDirection(player, partialTicks)), (float) -getXRotFromVector(zoomDirection(player, partialTicks)));
             } else {
                 return new Vec2(Mth.lerp(partialTicks, player.yHeadRotO, player.getYHeadRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
             }
@@ -469,14 +469,12 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         if (zoom || isFirstPerson) {
             if (this.getSeatIndex(player) == 0) {
                 if (zoom) {
-                    return new Vec3(this.zoomPos(player, partialTicks).x, this.zoomPos(player, partialTicks).y, this.zoomPos(player, partialTicks).z);
+                    return zoomPos(player, partialTicks);
                 } else {
-                    return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
+                    return entityEyePos(player, partialTicks);
                 }
             } else {
-                return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()) - 6 * player.getViewVector(partialTicks).x,
-                        Mth.lerp(partialTicks, player.yo + player.getEyeHeight() + 1, player.getEyeY() + 1) - 6 * player.getViewVector(partialTicks).y,
-                        Mth.lerp(partialTicks, player.zo, player.getZ()) - 6 * player.getViewVector(partialTicks).z);
+                return passengerCustom3PPosInFirstPerson(player, partialTicks, 6, 1);
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);
