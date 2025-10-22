@@ -54,7 +54,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation INDICATOR = Mod.loc("textures/screens/cannon/indicator.png");
     private static final ResourceLocation LASER_CANNON_CROSSHAIR = Mod.loc("textures/screens/cannon/laser_cannon_crosshair.png");
     private static final ResourceLocation CANNON_CROSSHAIR = Mod.loc("textures/screens/cannon/cannon_crosshair.png");
-    private static final ResourceLocation CANNON_CROSSHAIR_NOTZOOM = Mod.loc("textures/screens/cannon/cannon_crosshair_notzoom.png");
+    private static final ResourceLocation CANNON_CROSSHAIR_NOTZOOM = Mod.loc("textures/screens/cannon/common_cannon.png");
     private static final ResourceLocation HPJ_CROSSHAIR = Mod.loc("textures/screens/cannon/hpj_crosshair.png");
     private static final ResourceLocation HPJ_CROSSHAIR_NOTZOOM = Mod.loc("textures/screens/cannon/hpj_crosshair_notzoom.png");
 

@@ -13,7 +13,10 @@
       "MinPitch": -25,
       "MaxPitch": 50,
       "MinYaw": -105,
-      "MaxYaw": 105
+      "MaxYaw": 105,
+      "WeaponData": {
+        "Crosshair": "@VehicleCommonCannon"
+      }
     },
     {
       "Transform": "Vehicle",

@@ -83,7 +83,8 @@
               ],
               "Direction": "Barrel",
               "ExplosionDamage": 10,
-              "ExplosionRadius": 8
+              "ExplosionRadius": 8,
+              "Crosshair": "superbwarfare:textures/overlay/vehicle/crosshair/ru_apc.png"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/cm_shell.png"
           }

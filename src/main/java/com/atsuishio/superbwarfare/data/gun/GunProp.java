@@ -127,6 +127,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<String> CROSSHAIR = new GunProp<>("Crosshair");
     public static final GunProp<ModColor> CROSSHAIR_COLOR = new GunProp<>("CrosshairColor");
     public static final GunProp<Boolean> HIDE_CROSSHAIR_WHEN_ZOOM = new GunProp<>("HideCrosshairWhenZoom");
+    public static final GunProp<String> NAME = new GunProp<>("Name");
 
     public static final GunProp<String> TRANSFORM = new GunProp<>("Transform");
     public static final GunProp<Vec3> POSITION = new GunProp<>("Position");
