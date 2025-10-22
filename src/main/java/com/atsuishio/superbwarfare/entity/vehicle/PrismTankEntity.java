@@ -514,11 +514,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         return entityData.get(HEAT);
     }
 
-    @Override
-    public boolean hasTracks() {
-        return true;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {

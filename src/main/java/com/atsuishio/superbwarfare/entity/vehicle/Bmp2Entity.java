@@ -735,11 +735,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public boolean hasTracks() {
-        return true;
-    }
-
-    @Override
     public boolean hasDecoy() {
         return true;
     }

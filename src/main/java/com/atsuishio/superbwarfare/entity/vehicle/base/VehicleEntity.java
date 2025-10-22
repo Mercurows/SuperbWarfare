@@ -1528,7 +1528,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             if (!this.wasEngineRunning && this.engineRunning()) {
                 engineSound.accept(this);
                 swimSound.accept(this);
-                if (this.hasTracks()) {
+                if (data().get(VehicleProp.ENGINE_TYPE) == EngineType.TRACK) {
                     trackSound.accept(this);
                 }
             }
@@ -3204,10 +3204,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (this.hasEnergyStorage()) {
             energy = LazyOptional.of(() -> new VehicleEnergyStorage(this));
         }
-    }
-
-    public boolean hasTracks() {
-        return false;
     }
 
     public boolean canCrushEntities() {
