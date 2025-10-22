@@ -38,5 +38,17 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:butterfly_bullet",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:homemade_shotgun_fire_1p",
+    "Fire3P": "superbwarfare:homemade_shotgun_fire_3p",
+    "Fire3PFar": "superbwarfare:homemade_shotgun_far",
+    "Fire3PVeryFar": "superbwarfare:homemade_shotgun_very_far",
+    "ReloadNormal": "superbwarfare:homemade_shotgun_reload_normal",
+    "ReloadEmpty": "superbwarfare:homemade_shotgun_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:homemade_shotgun_reload_normal",
+      "superbwarfare:homemade_shotgun_reload_empty"
+    ]
+  }
 }

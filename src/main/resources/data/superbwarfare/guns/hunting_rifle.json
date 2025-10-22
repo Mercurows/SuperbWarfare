@@ -33,5 +33,15 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:butterfly_bullet",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:hunting_rifle_fire_1p",
+    "Fire3P": "superbwarfare:hunting_rifle_fire_3p",
+    "Fire3PFar": "superbwarfare:hunting_rifle_far",
+    "Fire3PVeryFar": "superbwarfare:hunting_rifle_very_far",
+    "ReloadEmpty": "superbwarfare:hunting_rifle_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:hunting_rifle_reload_empty"
+    ]
+  }
 }

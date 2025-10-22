@@ -22,5 +22,18 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:igla_9k38_fire_1p",
+    "Fire3P": "superbwarfare:igla_9k38_fire_3p",
+    "Fire3PFar": "superbwarfare:igla_9k38_far",
+    "ReloadEmpty": "superbwarfare:igla_9k38_reload_empty",
+    "Locking": "superbwarfare:igla_9k38_lock",
+    "Locked": "superbwarfare:igla_9k38_lockon",
+    "CancellableSounds": [
+      "superbwarfare:igla_9k38_reload_empty",
+      "superbwarfare:igla_9k38_lock",
+      "superbwarfare:igla_9k38_lockon"
+    ]
+  }
 }

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun;
 
+import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -56,6 +57,10 @@ public class SoundInfo {
     public String locking = "";
     @SerializedName("Locked")
     public String locked = "";
+
+    // 切枪时应该被中止播放的音效
+    @SerializedName("CancellableSounds")
+    public ObjectToList<String> cancellableSounds = new ObjectToList<>();
 
     @Nullable
     public SoundEvent getSoundEvent(@NotNull String path) {
