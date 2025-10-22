@@ -27,11 +27,6 @@
                   0.0609375,
                   0.0517,
                   3.2
-                ],
-                [
-                  -0.0609375,
-                  -0.0517,
-                  -3.2
                 ]
               ],
               "Direction": "Barrel",
@@ -63,21 +58,27 @@
           },
           {
             "Ammo": "Infinity",
-            "Projectile": "superbwarfare:rpg_rocket_tbg",
+            "Projectile": "superbwarfare:rpg_rocket_standard",
             "Override": {
-              "RPM": 60,
+              "RPM": 600,
               "Damage": 270,
-              "Transform": "Barrel",
+              "Velocity": 6,
+              "Transform": "Turret",
               "Position": [
                 [
-                  0.0609375,
-                  0.0517,
-                  3.2
+                  1,
+                  0.5,
+                  0
+                ],
+                [
+                  -1,
+                  0.5,
+                  0
                 ]
               ],
               "Direction": "Barrel",
-              "ExplosionDamage": 150,
-              "ExplosionRadius": 12,
+              "ExplosionDamage": 80,
+              "ExplosionRadius": 7,
               "Crosshair": "@VehicleCommonMissile"
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"

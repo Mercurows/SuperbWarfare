@@ -309,6 +309,13 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.entityData.set(YAW, getTurretYRot());
 
         this.entityData.set(FIRE_ANIM, 3);
+
+        var data = getGunData(getSeatIndex(living));
+        if (data != null) {
+            var list = data.get(GunProp.POSITION);
+            this.currentFirePosIndex = ++this.currentFirePosIndex % list.size();
+        }
+
 //        } else if (getWeaponIndex(0) == 1) {
 //            if (this.cannotFireCoax) return;
 //            if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
