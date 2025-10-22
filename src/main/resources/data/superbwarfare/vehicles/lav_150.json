@@ -140,20 +140,16 @@
       ]
     }
   ],
-  "Engine": {
-    "Type": "Wheel",
+  "EngineType": "Wheel",
+  "EngineInfo": {
     "Buoyancy": 0.052,
     "EnergyCostRate": 64,
-    "Wheel": {
-      "RotSpeed": 1.25,
-      "Differential": 0.3
-    },
-    "Power": {
-      "MaxForwardSpeedRate": 1,
-      "MaxBackwardSpeedRate": 0.5,
-      "Increment": 0.03,
-      "Decrement": 0.02
-    },
+    "WheelRotSpeed": 1.25,
+    "WheelDifferential": 0.3,
+    "MaxForwardSpeedRate": 1,
+    "MaxBackwardSpeedRate": 0.5,
+    "Increment": 0.03,
+    "Decrement": 0.02,
     "SteeringSpeed": 0.07
   },
   "UpStep": 1.5,

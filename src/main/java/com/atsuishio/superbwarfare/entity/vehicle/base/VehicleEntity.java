@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -16,6 +17,7 @@ import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
@@ -2537,11 +2539,27 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void travel() {
-        var engine = data().get(VehicleProp.ENGINE);
-        switch (engine.type) {
-            case WHEEL -> this.wheelEngine(engine);
-            case TRACK -> this.trackEngine(engine);
-            case HELICOPTER -> this.helicopterEngine(engine);
+        var engineType = data().get(VehicleProp.ENGINE_TYPE);
+        if (engineType == EngineType.EMPTY) return;
+
+        var engineInfo = data().get(VehicleProp.ENGINE_INFO);
+        try {
+            switch (engineType) {
+                case WHEEL -> {
+                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Wheel.class);
+                    this.wheelEngine(info);
+                }
+                case TRACK -> {
+                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Track.class);
+                    this.trackEngine(info);
+                }
+                case HELICOPTER -> {
+                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Helicopter.class);
+                    this.helicopterEngine(info);
+                }
+            }
+        } catch (Exception e) {
+            Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e);
         }
     }
 
@@ -3160,18 +3178,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
 
-    public void trackEngine(EngineInfo engineInfo) {
+    public void trackEngine(EngineInfo.Track engineInfo) {
         this.trackEngine(
                 engineInfo.buoyancy,
                 (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
-                engineInfo.wheel.rotSpeed,
-                engineInfo.wheel.differential,
-                engineInfo.track.rotSpeed,
-                engineInfo.track.differential,
-                engineInfo.power.maxForwardSpeedRate,
-                engineInfo.power.maxBackwardSpeedRate,
-                engineInfo.power.increment,
-                engineInfo.power.decrement,
+                engineInfo.wheelRotSpeed,
+                engineInfo.wheelDifferential,
+                engineInfo.trackRotSpeed,
+                engineInfo.trackDifferential,
+                engineInfo.maxForwardSpeedRate,
+                engineInfo.maxBackwardSpeedRate,
+                engineInfo.increment,
+                engineInfo.decrement,
                 engineInfo.steeringSpeed
         );
     }
@@ -3283,16 +3301,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    public void wheelEngine(EngineInfo engineInfo) {
+    public void wheelEngine(EngineInfo.Wheel engineInfo) {
         this.wheelEngine(
                 engineInfo.buoyancy,
                 (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
-                engineInfo.wheel.rotSpeed,
-                engineInfo.wheel.differential,
-                engineInfo.power.maxForwardSpeedRate,
-                engineInfo.power.maxBackwardSpeedRate,
-                engineInfo.power.increment,
-                engineInfo.power.decrement,
+                engineInfo.wheelRotSpeed,
+                engineInfo.wheelDifferential,
+                engineInfo.maxForwardSpeedRate,
+                engineInfo.maxBackwardSpeedRate,
+                engineInfo.increment,
+                engineInfo.decrement,
                 engineInfo.steeringSpeed
         );
     }
@@ -3404,15 +3422,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    public void helicopterEngine(EngineInfo engineInfo) {
+    public void helicopterEngine(EngineInfo.Helicopter engineInfo) {
         this.helicopterEngine(
                 (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
-                engineInfo.power.increment,
-                engineInfo.power.decrement,
-                engineInfo.heliControl.pitchSpeed,
-                engineInfo.heliControl.yawSpeed,
-                engineInfo.heliControl.rollSpeed,
-                engineInfo.heliControl.liftSpeed
+                engineInfo.increment,
+                engineInfo.decrement,
+                engineInfo.pitchSpeed,
+                engineInfo.yawSpeed,
+                engineInfo.rollSpeed,
+                engineInfo.liftSpeed
         );
     }
 

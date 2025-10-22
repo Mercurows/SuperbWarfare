@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -99,6 +100,8 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("Type")
     public VehicleType type = VehicleType.EMPTY;
 
-    @SerializedName("Engine")
-    public EngineInfo engine = new EngineInfo();
+    @SerializedName("EngineType")
+    public EngineType engineType = EngineType.EMPTY;
+    @SerializedName("EngineInfo")
+    public JsonObject engineInfo = new JsonObject();
 }

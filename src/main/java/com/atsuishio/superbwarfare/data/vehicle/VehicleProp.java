@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
+import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -40,7 +41,8 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
     public static final VehicleProp<ModColor> HUD_COLOR = new VehicleProp<>("HUDColor");
 
     public static final VehicleProp<VehicleType> TYPE = new VehicleProp<>("Type");
-    public static final VehicleProp<EngineInfo> ENGINE = new VehicleProp<>("Engine");
+    public static final VehicleProp<EngineType> ENGINE_TYPE = new VehicleProp<>("EngineType");
+    public static final VehicleProp<JsonObject> ENGINE_INFO = new VehicleProp<>("EngineInfo");
 
     private VehicleProp(String name) {
         super(DefaultVehicleData.class, name);
