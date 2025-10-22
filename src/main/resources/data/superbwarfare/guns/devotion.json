@@ -41,5 +41,17 @@
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
-  ]
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:devotion_fire_1p",
+    "Fire3P": "superbwarfare:devotion_fire_3p",
+    "Fire3PFar": "superbwarfare:devotion_far",
+    "Fire3PVeryFar": "superbwarfare:devotion_very_far",
+    "ReloadNormal": "superbwarfare:devotion_reload_normal",
+    "ReloadEmpty": "superbwarfare:devotion_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:devotion_reload_normal",
+      "superbwarfare:devotion_reload_empty"
+    ]
+  }
 }

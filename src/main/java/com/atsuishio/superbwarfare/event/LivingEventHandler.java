@@ -27,6 +27,7 @@ import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -371,9 +372,9 @@ public class LivingEventHandler {
                         || (newStack.getItem() instanceof GunItem && oldStack.getItem() instanceof GunItem && !Objects.equals(GunsTool.getGunUUID(newStack), GunsTool.getGunUUID(oldStack)))
                 ) {
                     if (oldStack.getItem() instanceof GunItem oldGun) {
-                        stopGunReloadSound(serverPlayer, oldGun);
-
                         var oldData = GunData.from(oldStack);
+
+                        stopGunReloadSound(serverPlayer, oldData);
 
                         if (oldData.get(GunProp.BOLT_ACTION_TIME) > 0) {
                             oldData.bolt.actionTimer.reset();
@@ -461,8 +462,15 @@ public class LivingEventHandler {
         }
     }
 
-    private static void stopGunReloadSound(ServerPlayer player, GunItem gun) {
-        gun.getReloadSound().forEach(sound -> player.connection.send(new ClientboundStopSoundPacket(sound.getLocation(), SoundSource.PLAYERS)));
+    private static void stopGunReloadSound(ServerPlayer player, GunData data) {
+        var soundInfo = data.get(GunProp.SOUND_INFO);
+        soundInfo.cancellableSounds.list
+                .forEach(str -> {
+                    var location = ResourceLocation.tryParse(str);
+                    if (location != null) {
+                        player.connection.send(new ClientboundStopSoundPacket(location, SoundSource.PLAYERS));
+                    }
+                });
     }
 
     /**

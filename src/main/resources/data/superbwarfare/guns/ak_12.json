@@ -58,6 +58,10 @@
     "Fire3PFarSilent": "superbwarfare:ak_12_far_s",
     "Fire3PVeryFarSilent": "superbwarfare:ak_12_very_far_s",
     "ReloadNormal": "superbwarfare:ak_12_reload_normal",
-    "ReloadEmpty": "superbwarfare:ak_12_reload_empty"
+    "ReloadEmpty": "superbwarfare:ak_12_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:ak_12_reload_normal",
+      "superbwarfare:ak_12_reload_empty"
+    ]
   }
 }
