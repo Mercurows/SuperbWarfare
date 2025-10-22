@@ -130,7 +130,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<String> NAME = new GunProp<>("Name");
 
     public static final GunProp<String> TRANSFORM = new GunProp<>("Transform");
-    public static final GunProp<Vec3> POSITION = new GunProp<>("Position");
+    public static final GunProp<List<Vec3>> POSITION = new GunProp<>("Position");
     public static final GunProp<StringOrVec3> DIRECTION = new GunProp<>("Direction");
 
 
