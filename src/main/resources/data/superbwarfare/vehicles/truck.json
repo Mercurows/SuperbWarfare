@@ -5,8 +5,12 @@
   "Seats": [
     {
       "IsEnclosed": true,
-      "Transform" : "Vehicle",
-      "Position": [0.834375, 1.65, 4.63],
+      "Transform": "Vehicle",
+      "Position": [
+        0.834375,
+        1.65,
+        4.63
+      ],
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -95,
@@ -14,28 +18,28 @@
     },
     {
       "IsEnclosed": true,
-      "Transform" : "Vehicle",
-      "Position": [-0.834375, 1.65, 4.63],
+      "Transform": "Vehicle",
+      "Position": [
+        -0.834375,
+        1.65,
+        4.63
+      ],
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -95,
       "MaxYaw": 95
     }
   ],
-  "Engine": {
-    "Type": "Wheel",
+  "EngineType": "Wheel",
+  "EngineInfo": {
     "Buoyancy": 0,
     "EnergyCostRate": 64,
-    "Wheel": {
-      "RotSpeed": 1.25,
-      "Differential": 0.5
-    },
-    "Power": {
-      "MaxForwardSpeedRate": 0.98,
-      "MaxBackwardSpeedRate": 0.7,
-      "Increment": 0.012,
-      "Decrement": 0.009
-    },
+    "WheelRotSpeed": 1.25,
+    "WheelDifferential": 0.5,
+    "MaxForwardSpeedRate": 0.98,
+    "MaxBackwardSpeedRate": 0.7,
+    "Increment": 0.012,
+    "Decrement": 0.009,
     "SteeringSpeed": 0.05
   },
   "UpStep": 1.5,

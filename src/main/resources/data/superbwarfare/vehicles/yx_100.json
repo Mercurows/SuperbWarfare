@@ -5,47 +5,53 @@
   "Seats": [
     {
       "HidePassenger": true,
-      "Transform" : "Turret",
-      "Position": [0.6669625, 0.07, 0.4776875],
+      "Transform": "Turret",
+      "Position": [
+        0.6669625,
+        0.07,
+        0.4776875
+      ],
       "CanRotateHead": false,
       "MinPitch": -10,
       "MaxPitch": 30
     },
     {
       "HidePassenger": true,
-      "Transform" : "Turret",
-      "Position": [-0.75805625, 0.3, -0.57275625],
+      "Transform": "Turret",
+      "Position": [
+        -0.75805625,
+        0.3,
+        -0.57275625
+      ],
       "CanRotateHead": false,
       "MinPitch": -10,
       "MaxPitch": 60
     },
     {
-      "Transform" : "Turret",
-      "Position": [0.86219375, 0.07, -0.5696875],
+      "Transform": "Turret",
+      "Position": [
+        0.86219375,
+        0.07,
+        -0.5696875
+      ],
       "CanRotateBody": true,
       "MinPitch": -25,
       "MaxPitch": 90
     }
   ],
   "HUDColor": "0x00FFF6",
-  "Engine": {
-    "Type": "Track",
+  "EngineType": "Track",
+  "EngineInfo": {
     "Buoyancy": 0,
     "EnergyCostRate": 128,
-    "Wheel": {
-      "RotSpeed": 1.25,
-      "Differential": 0.75
-    },
-    "Track": {
-      "RotSpeed": 1.3,
-      "Differential": 0.6
-    },
-    "Power": {
-      "MaxForwardSpeedRate": 1.1,
-      "MaxBackwardSpeedRate": 0.55,
-      "Increment": 0.02,
-      "Decrement": 0.01
-    },
+    "WheelRotSpeed": 1.25,
+    "WheelDifferential": 0.75,
+    "TrackRotSpeed": 1.3,
+    "TrackDifferential": 0.6,
+    "MaxForwardSpeedRate": 1.1,
+    "MaxBackwardSpeedRate": 0.55,
+    "Increment": 0.02,
+    "Decrement": 0.01,
     "SteeringSpeed": 0.1
   },
   "UpStep": 2.25,
