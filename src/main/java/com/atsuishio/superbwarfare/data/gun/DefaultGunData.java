@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.data.*;
+import com.atsuishio.superbwarfare.data.IDBasedData;
+import com.atsuishio.superbwarfare.data.ModColor;
+import com.atsuishio.superbwarfare.data.ObjectToList;
+import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Set;
@@ -74,13 +76,8 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
 
-    @SerializedName("Transform")
-    public String transform = "Default";
-    @SerializedName("Position")
-    public ObjectToList<Vec3> position = new ObjectToList<>(Vec3.ZERO);
-    @SerializedName("Direction")
-    public StringOrVec3 direction = new StringOrVec3("Default");
-
+    @SerializedName("ShootPos")
+    public ShootPos shootPos = new ShootPos();
     @SerializedName("ZoomPos")
     public ZoomPos zoomPos = new ZoomPos();
 

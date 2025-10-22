@@ -30,15 +30,17 @@
             "Ammo": "Infinity",
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
             "Override": {
-              "Transform": "Barrel",
-              "Position": [
-                [
-                  0.0609375,
-                  0.0517,
-                  3.2
-                ]
-              ],
-              "Direction": "Barrel",
+              "ShootPos": {
+                "Transform": "Barrel",
+                "Positions": [
+                  [
+                    0.0609375,
+                    0.0517,
+                    3.2
+                  ]
+                ],
+                "Direction": "Barrel"
+              },
               "ExplosionDamage": 12,
               "ExplosionRadius": 4
             }
@@ -51,15 +53,17 @@
               "Damage": 9.5,
               "BypassesArmor": 0.3,
               "Velocity": 30,
-              "Transform": "Barrel",
-              "Position": [
-                [
-                  0.3,
-                  0.0517,
-                  0.5
-                ]
-              ],
-              "Direction": "Barrel",
+              "ShootPos": {
+                "Transform": "Barrel",
+                "Positions": [
+                  [
+                    0.3,
+                    0.0517,
+                    0.5
+                  ]
+                ],
+                "Direction": "Barrel"
+              },
               "Crosshair": "@VehicleCommonGun",
               "Name": "superbwarfare.lav_150.gun"
             },
@@ -72,20 +76,22 @@
               "RPM": 600,
               "Damage": 270,
               "Velocity": 6,
-              "Transform": "Turret",
-              "Position": [
-                [
-                  1,
-                  0.5,
-                  0
+              "ShootPos": {
+                "Transform": "Turret",
+                "Positions": [
+                  [
+                    1,
+                    0.5,
+                    0
+                  ],
+                  [
+                    -1,
+                    0.5,
+                    0
+                  ]
                 ],
-                [
-                  -1,
-                  0.5,
-                  0
-                ]
-              ],
-              "Direction": "Barrel",
+                "Direction": "Barrel"
+              },
               "ExplosionDamage": 80,
               "ExplosionRadius": 7,
               "Crosshair": "@VehicleCommonMissile"
@@ -99,15 +105,17 @@
               "ProjectileAmount": 5,
               "Spread": 2.5,
               "RPM": 240,
-              "Transform": "Barrel",
-              "Position": [
-                [
-                  0.0609375,
-                  0.0517,
-                  3.2
-                ]
-              ],
-              "Direction": "Barrel",
+              "ShootPos": {
+                "Transform": "Barrel",
+                "Positions": [
+                  [
+                    0.0609375,
+                    0.0517,
+                    3.2
+                  ]
+                ],
+                "Direction": "Barrel"
+              },
               "ExplosionDamage": 10,
               "ExplosionRadius": 8,
               "Crosshair": "superbwarfare:textures/overlay/vehicle/crosshair/ru_apc.png"
