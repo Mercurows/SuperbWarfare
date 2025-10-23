@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -14,12 +15,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class OnceLogger implements ResourceManagerReloadListener {
-    private static final OnceLogger INSTANCE = new OnceLogger();
-    private static final List<OnceLogger> LOGGERS = new ArrayList<>();
+// 仅在客户端资源重载时记录一次的Logger
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+public class ResourceOnceLogger {
+    private static final ReloadListener INSTANCE = new ReloadListener();
+    private static final List<ResourceOnceLogger> LOGGERS = new ArrayList<>();
     private final Set<Object> logged = new HashSet<>();
 
-    public OnceLogger() {
+    public ResourceOnceLogger() {
         LOGGERS.add(this);
     }
 
@@ -36,9 +39,12 @@ public class OnceLogger implements ResourceManagerReloadListener {
         event.registerReloadListener(INSTANCE);
     }
 
-    @Override
-    public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
-        LOGGERS.forEach(l -> l.logged.clear());
+    static class ReloadListener implements ResourceManagerReloadListener {
+
+        @Override
+        public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
+            LOGGERS.forEach(l -> l.logged.clear());
+        }
     }
 
 }

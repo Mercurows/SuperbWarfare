@@ -9,7 +9,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
-import com.atsuishio.superbwarfare.tools.OnceLogger;
+import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -42,7 +42,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("vehicle_crosshair");
 
-    private static final OnceLogger LOGGER = new OnceLogger();
+    private static final ResourceOnceLogger LOGGER = new ResourceOnceLogger();
 
     public static final Map<String, ResourceLocation> CROSSHAIR_MAP = Map.ofEntries(
             Map.entry("@VehicleUsApc", Mod.loc("textures/overlay/vehicle/crosshair/us_apc.png")),
