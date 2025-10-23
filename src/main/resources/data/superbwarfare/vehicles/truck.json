@@ -11,6 +11,9 @@
         1.65,
         4.63
       ],
+      "CameraPos": {
+        "Direction": "Self"
+      },
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -95,
@@ -24,6 +27,9 @@
         1.65,
         4.63
       ],
+      "CameraPos": {
+        "Direction": "Self"
+      },
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -95,

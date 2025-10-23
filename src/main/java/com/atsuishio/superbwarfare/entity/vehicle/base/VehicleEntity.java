@@ -20,6 +20,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
@@ -2356,8 +2357,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             Vector4f worldPosition = transformPosition(
                     this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
-                    (float) vec3.x, (float) vec3.y, (float) vec3.z
-            );
+                    (float) vec3.x, (float) vec3.y, (float) vec3.z);
+
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
         return getEyePosition(ticks);
@@ -2377,8 +2378,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
             } else {
+
+                var listP = data.get(GunProp.SHOOT_POS).positions.list;
+                var vec3 = listP.get(this.currentFirePosIndex % list.size());
+
+                Vector4f worldPosition = transformPosition(
+                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
+                        (float) vec3.x + (float) stringOrVec3.vec3.x,
+                        (float) vec3.y + (float) stringOrVec3.vec3.y,
+                        (float) vec3.z + (float) stringOrVec3.vec3.z);
+
                 Vec3 startPos = getShootPos(entity, ticks);
-                Vec3 endPos = startPos.add(stringOrVec3.vec3);
+                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                 return startPos.vectorTo(endPos).normalize();
             }
         }
@@ -3014,8 +3025,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
                 }
             } else {
-                Vec3 startPos = getShootPos(entity, ticks);
-                Vec3 endPos = startPos.add(stringOrVec3.vec3);
+                var vec3 = data.position;
+
+                Vector4f worldPosition = transformPosition(
+                        this.getTransformFromString(data.transform, ticks),
+                        (float) vec3.x + (float) stringOrVec3.vec3.x,
+                        (float) vec3.y + (float) stringOrVec3.vec3.y,
+                        (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+                Vec3 startPos = cameraPos(entity, ticks);
+                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                 return startPos.vectorTo(endPos).normalize();
             }
         }
@@ -3027,7 +3046,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = data().get(VehicleProp.SEATS).get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-
             var vec3 = data.zoomPosition;
 
             Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
@@ -3041,13 +3059,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = data().get(VehicleProp.SEATS).get(index);
         if (seat != null) {
             var data = seat.cameraPos;
+            var vec3 = data.zoomPosition;
 
             StringOrVec3 stringOrVec3 = data.zoomDirection;
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
             } else {
+
+                Vector4f worldPosition = transformPosition(
+                        this.getTransformFromString(data.transform, ticks),
+                        (float) vec3.x + (float) stringOrVec3.vec3.x,
+                        (float) vec3.y + (float) stringOrVec3.vec3.y,
+                        (float) vec3.z + (float) stringOrVec3.vec3.z);
+
                 Vec3 startPos = getShootPos(entity, ticks);
-                Vec3 endPos = startPos.add(stringOrVec3.vec3);
+                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                 return startPos.vectorTo(endPos).normalize();
             }
         }
@@ -4303,87 +4329,92 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         });
 
-        // TODO 相对动量过大的时候再走碰撞
-//            for (var entity : entities) {
-//                double entitySize = entity.getBoundingBox().getSize();
-//                double thisSize = this.getBoundingBox().getSize();
-//                double f;
-//                double f1;
-//
-//                Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
-//                if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
-//
-//                // TODO 给非载具实体也设置质量
-//
-//                if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION.get()))
-//                    return;
-//
-//                if (entity instanceof VehicleEntity vehicle) {
-//                    f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
-//                    f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
-//                } else {
-//                    f = Mth.clamp(entitySize / thisSize, 0.25, 4);
-//                    f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
-//
-//                }
-//
-//                float v = (float) v0.length();
-//                var velAdd = v0.normalize().scale(0.8 * v);
-//
-//                if (v > 0.3) {
-//                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-//                }
-//
-//                if (vec3.length() > 0.3) {
-//                    if (entity instanceof LivingEntity) {
-//                        DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 80 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-//                    } else {
-//                        entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 60 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-//                    }
-//
-//                    if (entity instanceof VehicleEntity) {
-//                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-//                    }
-//                }
-//
-//                if (!(entity instanceof TargetEntity)) {
-//                    this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
-//                }
-//
-//                if (entity instanceof VehicleEntity mobileVehicle) {
-//                    if (this instanceof OBBEntity obbEntity) {
-//                        if (isInObb(obbEntity, entity, Vec3.ZERO)) {
-//                            Vec3 thisPos = this.position();
-//                            Vec3 otherPos = entity.position();
-//
-//                            for (OBB obb : obbEntity.getOBBs()) {
-//                                if (entity instanceof OBBEntity obbEntity2) {
-//                                    var obbList2 = obbEntity2.getOBBs();
-//                                    for (var obb2 : obbList2) {
-//                                        if (OBB.isColliding(obb, obb2)) {
-//                                            thisPos = new Vec3(obb.center());
-//                                            otherPos = new Vec3(obb2.center());
-//                                        }
-//                                    }
-//                                } else {
-//                                    if (OBB.isColliding(obb, entity.getBoundingBox())) {
-//                                        thisPos = new Vec3(obb.center());
-//                                    }
-//                                }
-//                            }
-//
-//                            Vec3 toVec = thisPos.add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(otherPos);
-//                            velAdd = toVec.normalize().scale(Math.max(thisPos.distanceTo(otherPos), 0) * 0.01);
-//                            this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
-//                        }
-//                    }
-//
-//                    mobileVehicle.pushNew(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
-//                } else {
-//                    entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
-//                }
-//            }
-//        }
+
+        if (vec3.length() > 0.3) {
+            for (var entity : entities) {
+                double entitySize = entity.getBoundingBox().getSize();
+                double thisSize = this.getBoundingBox().getSize();
+                double f;
+                double f1;
+
+                Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
+                if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
+
+                // TODO 给非载具实体也设置质量
+
+                if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION))
+                    return;
+
+                if (entity instanceof VehicleEntity vehicle) {
+                    f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
+                    f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
+                } else {
+                    f = Mth.clamp(entitySize / thisSize, 0.25, 4);
+                    f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
+
+                }
+
+                float v = (float) v0.length();
+                var velAdd = v0.normalize().scale(0.8 * v);
+
+                if (v > 0.3) {
+                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                }
+
+
+                if (entity instanceof LivingEntity) {
+                    DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 80 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                } else {
+                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 60 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                }
+
+                if (entity instanceof VehicleEntity) {
+                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+                }
+
+                if (!(entity instanceof TargetEntity)) {
+                    this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
+                }
+
+                if (entity instanceof VehicleEntity mobileVehicle) {
+                    if (this instanceof OBBEntity obbEntity) {
+                        if (isInObb(obbEntity, entity, Vec3.ZERO)) {
+                            Vec3 thisPos = this.position();
+                            Vec3 otherPos = entity.position();
+
+                            for (OBB obb : obbEntity.getOBBs()) {
+                                if (entity instanceof OBBEntity obbEntity2) {
+                                    var obbList2 = obbEntity2.getOBBs();
+                                    for (var obb2 : obbList2) {
+                                        if (OBB.isColliding(obb, obb2)) {
+                                            thisPos = new Vec3(obb.center());
+                                            otherPos = new Vec3(obb2.center());
+                                        }
+                                    }
+                                } else {
+                                    if (OBB.isColliding(obb, entity.getBoundingBox())) {
+                                        thisPos = new Vec3(obb.center());
+                                    }
+                                }
+                            }
+
+                            Vec3 toVec = thisPos.add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(otherPos);
+                            velAdd = toVec.normalize().scale(Math.max(thisPos.distanceTo(otherPos), 0) * 0.01);
+                            this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
+                        }
+                    }
+
+                    Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
+                    mobileVehicle.pushNew(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
+                } else {
+                    Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
+                    entity.push(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
+                }
+            }
+        }
+
+
+
     }
 
     public boolean isInObb(OBBEntity obbEntity, Entity entity, Vec3 vec3) {

@@ -12,9 +12,7 @@
           0.0517,
           0
         ],
-        "Directions": [
-          "Barrel"
-        ]
+        "Direction": "Barrel"
       },
       "WeaponData": {
         "DefaultFireMode": "Auto",
