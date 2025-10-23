@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -26,13 +27,18 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         this.name = name;
 
         try {
-            this.field = Arrays.stream(this.rawDataType.getFields())
+            var findResult = Arrays.stream(this.rawDataType.getFields())
                     .filter(f -> {
                         var annotation = f.getAnnotation(SerializedName.class);
                         return annotation != null && annotation.value().equals(this.name);
                     })
-                    .findFirst()
-                    .orElseThrow();
+                    .findFirst();
+
+            if (findResult.isEmpty()) {
+                throw new NoSuchElementException("Could not find field " + name + " in " + rawDataType.getName() + "!");
+            }
+
+            this.field = findResult.get();
             this.field.setAccessible(true);
         } catch (Exception exception) {
             Mod.LOGGER.error("Could not find field {} in RAW_DATA!", name);

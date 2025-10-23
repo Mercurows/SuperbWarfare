@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
+import com.atsuishio.superbwarfare.tools.OnceLogger;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -40,6 +41,8 @@ import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.DECO
 public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("vehicle_crosshair");
+
+    private static final OnceLogger LOGGER = new OnceLogger();
 
     public static final Map<String, ResourceLocation> CROSSHAIR_MAP = Map.ofEntries(
             Map.entry("@VehicleUsApc", Mod.loc("textures/overlay/vehicle/crosshair/us_apc.png")),
@@ -115,12 +118,16 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                     texture = ResourceLocation.tryParse(crosshairPath);
                 }
 
-                float minWH = (float) Math.min(screenWidth, screenHeight);
-                float scaledMinWH = Mth.floor(minWH * scale);
-                float centerW = (screenWidth - scaledMinWH) / 2;
-                float centerH = (screenHeight - scaledMinWH) / 2;
+                if (texture == null) {
+                    LOGGER.log(crosshairPath, logger -> logger.error("Failed to load crosshair texture for {}", crosshairPath));
+                } else {
+                    float minWH = (float) Math.min(screenWidth, screenHeight);
+                    float scaledMinWH = Mth.floor(minWH * scale);
+                    float centerW = (screenWidth - scaledMinWH) / 2;
+                    float centerH = (screenHeight - scaledMinWH) / 2;
 
-                RenderHelper.preciseBlitWithColor(guiGraphics, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                    RenderHelper.preciseBlitWithColor(guiGraphics, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                }
             }
 
             poseStack.popPose();
