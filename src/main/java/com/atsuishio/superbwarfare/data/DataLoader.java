@@ -4,18 +4,16 @@ import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -23,26 +21,60 @@ import java.util.stream.Collectors;
 @EventBusSubscriber(modid = Mod.MODID)
 public class DataLoader {
 
-    private static final HashMap<String, GeneralData<?>> loadedData = new HashMap<>();
+    private static final Map<ResourceLocation, GeneralData<?>> LOADED_DATA = new HashMap<>();
+    private static final Map<ResourceLocation, GeneralData<?>> LOADED_RESOURCE = new HashMap<>();
 
-    private record GeneralData<T extends IDBasedData>(
+    public record GeneralData<T extends IDBasedData>(
             Class<?> type, DataMap<T> proxyMap,
             HashMap<String, Object> data,
             @Nullable Consumer<Map<String, Object>> onReload
     ) {
     }
 
-    public static <T extends IDBasedData> DataMap<T> createData(String name, Class<T> clazz) {
-        return createData(name, clazz, null);
+    public static final ComplexJsonResourceReloadListener SERVER_LISTENER = new ComplexJsonResourceReloadListener(LOADED_DATA);
+    public static final ComplexJsonResourceReloadListener CLIENT_LISTENER = new ComplexJsonResourceReloadListener(LOADED_RESOURCE);
+
+    @SubscribeEvent
+    public static void addDataReloadListener(AddReloadListenerEvent event) {
+        event.addListener(SERVER_LISTENER);
+    }
+
+    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    static class ClientReloadListener {
+        @SubscribeEvent
+        public static void addResourceReloadListener(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener(CLIENT_LISTENER);
+        }
+    }
+
+    public static <T extends IDBasedData> DataMap<T> createData(String namespace, String directory, Class<T> clazz) {
+        return createData(namespace, directory, clazz, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends IDBasedData> DataMap<T> createData(String name, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
-        if (loadedData.containsKey(name)) {
-            return (DataMap<T>) loadedData.get(name).proxyMap;
+    public static <T extends IDBasedData> DataMap<T> createData(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
+        var loc = ResourceLocation.fromNamespaceAndPath(namespace, directory);
+        if (LOADED_DATA.containsKey(loc)) {
+            return (DataMap<T>) LOADED_DATA.get(loc).proxyMap;
         } else {
-            var proxyMap = new DataMap<T>(name);
-            loadedData.put(name, new GeneralData<>(clazz, proxyMap, new HashMap<>(), onReload));
+            var proxyMap = new DataMap<T>(ResourceLocation.fromNamespaceAndPath(namespace, directory), LOADED_DATA);
+            LOADED_DATA.put(loc, new GeneralData<>(clazz, proxyMap, new HashMap<>(), onReload));
+            return proxyMap;
+        }
+    }
+
+    public static <T extends IDBasedData> DataMap<T> createResource(String namespace, String directory, Class<T> clazz) {
+        return createResource(namespace, directory, clazz, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends IDBasedData> DataMap<T> createResource(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
+        var loc = ResourceLocation.fromNamespaceAndPath(namespace, directory);
+        if (LOADED_RESOURCE.containsKey(loc)) {
+            return (DataMap<T>) LOADED_RESOURCE.get(loc).proxyMap;
+        } else {
+            var proxyMap = new DataMap<T>(ResourceLocation.fromNamespaceAndPath(namespace, directory), LOADED_RESOURCE);
+            LOADED_RESOURCE.put(loc, new GeneralData<>(clazz, proxyMap, new HashMap<>(), onReload));
             return proxyMap;
         }
     }
@@ -63,47 +95,6 @@ public class DataLoader {
 
     public static final Gson GSON = createCommonBuilder().create();
 
-    private static void reloadAllData(ResourceManager manager) {
-        loadedData.forEach((name, value) -> {
-            var map = value.data;
-            map.clear();
-
-            for (var entry : manager.listResources(name, location -> location.getNamespace().equals(Mod.MODID) && location.getPath().endsWith(".json")).entrySet()) {
-                var attribute = entry.getValue();
-                try {
-                    var data = (IDBasedData) GSON.fromJson(new InputStreamReader(attribute.open()), value.type);
-
-                    String id;
-                    if (!data.getId().isEmpty()) {
-                        id = data.getId();
-                    } else {
-                        var path = entry.getKey().getPath();
-                        id = Mod.MODID + ":" + path.substring(name.length() + 1, path.length() - name.length() - 1);
-                        Mod.LOGGER.warn("{} ID for {} is empty, try using {} as id", name, id, path);
-                    }
-
-                    map.put(id, data);
-                } catch (Exception e) {
-                    Mod.LOGGER.error(e.getMessage());
-                }
-            }
-
-            if (value.onReload != null) {
-                value.onReload.accept(map);
-            }
-        });
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void serverStarted(ServerStartedEvent event) {
-        reloadAllData(event.getServer().getResourceManager());
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void onDataPackSync(OnDatapackSyncEvent event) {
-        reloadAllData(event.getPlayerList().getServer().getResourceManager());
-    }
-
     /**
      * 将StringToObject和ObjectToList转换为原始值
      */
@@ -119,29 +110,31 @@ public class DataLoader {
     // read-only custom data map
 
     public static class DataMap<T extends IDBasedData> extends HashMap<String, T> {
-        private final String name;
+        private final ResourceLocation location;
+        private final Map<ResourceLocation, GeneralData<?>> loadedData;
 
-        private DataMap(String name) {
-            this.name = name;
+        private DataMap(ResourceLocation location, Map<ResourceLocation, GeneralData<?>> loadedData) {
+            this.location = location;
+            this.loadedData = loadedData;
         }
 
         @Override
         public int size() {
-            if (!loadedData.containsKey(name)) return 0;
-            return loadedData.get(name).data.size();
+            if (!this.loadedData.containsKey(location)) return 0;
+            return this.loadedData.get(location).data.size();
         }
 
         @Override
         public boolean isEmpty() {
-            if (!loadedData.containsKey(name)) return true;
-            return loadedData.get(name).data.isEmpty();
+            if (!this.loadedData.containsKey(location)) return true;
+            return this.loadedData.get(location).data.isEmpty();
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T get(Object key) {
-            if (!loadedData.containsKey(name)) return null;
-            return (T) loadedData.get(name).data.get(key);
+            if (!this.loadedData.containsKey(location)) return null;
+            return (T) this.loadedData.get(location).data.get(key);
         }
 
         @Override
@@ -152,58 +145,62 @@ public class DataLoader {
 
         @Override
         public boolean containsKey(Object key) {
-            if (!loadedData.containsKey(name)) return false;
-            return loadedData.get(name).data.containsKey(key);
+            if (!this.loadedData.containsKey(location)) return false;
+            return this.loadedData.get(location).data.containsKey(key);
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T put(String key, T value) {
-            return (T) loadedData.get(name).data.put(key, value);
+            return (T) this.loadedData.get(location).data.put(key, value);
         }
 
         @Override
         public void putAll(Map<? extends String, ? extends T> m) {
-            loadedData.get(name).data.putAll(m);
+            this.loadedData.get(location).data.putAll(m);
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T remove(Object key) {
-            return (T) loadedData.get(name).data.remove(key);
+            return (T) this.loadedData.get(location).data.remove(key);
         }
 
         @Override
         public void clear() {
-            loadedData.get(name).data.clear();
+            this.loadedData.get(location).data.clear();
         }
 
         @Override
         public boolean containsValue(Object value) {
-            if (!loadedData.containsKey(name)) return false;
-            return loadedData.get(name).data.containsValue(value);
+            if (!this.loadedData.containsKey(location)) return false;
+            return this.loadedData.get(location).data.containsValue(value);
         }
 
         @Override
         public @NotNull Set<String> keySet() {
-            if (!loadedData.containsKey(name)) return Set.of();
-            return loadedData.get(name).data.keySet();
+            if (!this.loadedData.containsKey(location)) return Set.of();
+            return this.loadedData.get(location).data.keySet();
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public @NotNull Collection<T> values() {
-            if (!loadedData.containsKey(name)) return Set.of();
-            return loadedData.get(name).data.values().stream().map(v -> (T) v).toList();
+            if (!this.loadedData.containsKey(location)) return Set.of();
+            return this.loadedData.get(location).data.values().stream().map(v -> (T) v).toList();
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public @NotNull Set<Entry<String, T>> entrySet() {
-            if (!loadedData.containsKey(name)) return Set.of();
-            return loadedData.get(name).data.entrySet().stream()
+            if (!this.loadedData.containsKey(location)) return Set.of();
+            return this.loadedData.get(location).data.entrySet().stream()
                     .map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey(), (T) e.getValue()))
                     .collect(Collectors.toCollection(HashSet::new));
+        }
+
+        public ResourceLocation getLocation() {
+            return location;
         }
     }
 }
