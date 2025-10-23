@@ -290,8 +290,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         lowHealthWarning();
 
-        releaseDecoy();
-
         //  计算航弹落点
         if (level().isClientSide) {
             bombLandingPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(0, 1), getShootVec(0, 1), -0.06);

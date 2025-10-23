@@ -26,6 +26,7 @@ public class VehicleProp<T> extends Prop<VehicleData, DefaultVehicleData, T> {
 
     public static final VehicleProp<Float> UP_STEP = new VehicleProp<>("UpStep");
     public static final VehicleProp<Boolean> ALLOW_FREE_CAM = new VehicleProp<>("AllowFreeCam");
+    public static final VehicleProp<Boolean> HAS_DECOY = new VehicleProp<>("HasDecoy");
     public static final VehicleProp<Boolean> APPLY_DEFAULT_DAMAGE_MODIFIERS = new VehicleProp<>("ApplyDefaultDamageModifiers");
 
     public static final VehicleProp<List<DamageModify>> DAMAGE_MODIFIERS = new VehicleProp<>("DamageModifiers");

@@ -96,6 +96,7 @@
     },
     "SteeringSpeed": 0.1
   },
+  "HasDecoy": true,
   "UpStep": 2.25,
   "Mass": 14.6,
   "DamageModifiers": [

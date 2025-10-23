@@ -179,7 +179,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         this.terrainCompact(4.6375f, 5.171875f);
         inertiaRotate(1);
 
-        releaseSmokeDecoy(getTurretVector(1));
 
         lowHealthWarning();
         this.refreshDimensions();

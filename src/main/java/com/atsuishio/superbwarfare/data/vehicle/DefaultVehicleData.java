@@ -70,6 +70,9 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("AllowFreeCam")
     public boolean allowFreeCam = false;
 
+    @SerializedName("HasDecoy")
+    public boolean hasDecoy = false;
+
     @SerializedName("ApplyDefaultDamageModifiers")
     public boolean applyDefaultDamageModifiers = true;
 

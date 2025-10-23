@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -90,6 +91,15 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
+    public int getWeaponIndex(int index) {
+        var gunData = getGunData(index);
+        if (gunData == null) return 0;
+
+        var consumersSize = gunData.get(GunProp.AMMO_CONSUMER).size();
+        return Mth.clamp(gunData.selectedAmmoType.get(), 0, consumersSize - 1);
+    }
+
+    @Override
     public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
         var gunData = getGunData(getSeatIndex(passenger));
         if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
@@ -124,7 +134,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public void baseTick() {
         super.baseTick();
         updateOBB();
-        releaseDecoy();
         lowHealthWarning();
         this.terrainCompact(2.7f, 2.7f);
 

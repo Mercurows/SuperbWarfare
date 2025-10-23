@@ -60,7 +60,7 @@ public class GameRendererMixin {
             matrices.mulPose(Axis.ZP.rotationDegrees((float) Mth.nextDouble(RandomSource.create(), 8, 12) * shakeStrength));
         }
 
-        if (entity != null && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || (vehicle.amphibiousVehicle() && ClientEventHandler.zoomVehicle))) {
+        if (entity != null && entity.getRootVehicle() instanceof VehicleEntity vehicle && (!mainCamera.isDetached() || ClientEventHandler.zoomVehicle)) {
             // rotate camera
             float a = Mth.wrapDegrees(mainCamera.getYRot() - Mth.lerp(tickDelta, vehicle.yRotO, vehicle.getYRot()));
 
