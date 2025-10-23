@@ -1471,6 +1471,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     @Override
+    public boolean canCollideWith(Entity pEntity) {
+        return !(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty();
+    }
+
+    @Override
     public boolean isPushable() {
         return super.isPushable();
     }
