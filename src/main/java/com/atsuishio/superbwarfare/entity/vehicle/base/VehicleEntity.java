@@ -2336,7 +2336,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 return startPos.vectorTo(endPos).normalize();
             }
         }
-        return this.getLookAngle();
+        return this.getViewVector(ticks);
     }
 
     /**
@@ -2932,21 +2932,59 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.gunXRot = pGunXRot;
     }
 
+    public Vec3 cameraPos(Entity entity, float ticks) {
+        var data = getGunData(getSeatIndex(entity));
+        if (data != null) {
+            if (data.get(GunProp.CAMERA_POS).useSimulate3P) {
+                var vec2 = data.get(GunProp.CAMERA_POS).simulate3PPos;
+                simulate3P(entity, ticks, vec2.x, vec2.y);
+            }
+            if (data.get(GunProp.CAMERA_POS).useFixedCameraPos) {
+                var vec3 = data.get(GunProp.CAMERA_POS).position;
+                Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.CAMERA_POS).transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+                return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            }
+        }
+        return entityEyePos(entity, ticks);
+    }
+
+    public Vec3 cameraDirection(Entity entity, float ticks) {
+        var data = getGunData(getSeatIndex(entity));
+        if (data != null) {
+            if (data.get(GunProp.CAMERA_POS).useSimulate3P) {
+                return entity.getViewVector(ticks);
+            }
+            StringOrVec3 stringOrVec3 = data.get(GunProp.CAMERA_POS).direction;
+            if (stringOrVec3.isString()) {
+                if (stringOrVec3.string.equals("Self")) {
+                    return entity.getViewVector(ticks);
+                } else {
+                    return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
+                }
+            } else {
+                Vec3 startPos = getShootPos(entity, ticks);
+                Vec3 endPos = stringOrVec3.vec3;
+                return startPos.vectorTo(endPos).normalize();
+            }
+        }
+        return entity.getViewVector(ticks);
+    }
+
     public Vec3 zoomPos(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            var vec3 = data.get(GunProp.ZOOM_POS).position;
+            var vec3 = data.get(GunProp.CAMERA_POS).zoomPosition;
 
-            Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.ZOOM_POS).transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.CAMERA_POS).transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
-        return entity.getEyePosition();
+        return entityEyePos(entity, ticks);
     }
 
     public Vec3 zoomDirection(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            StringOrVec3 stringOrVec3 = data.get(GunProp.ZOOM_POS).direction;
+            StringOrVec3 stringOrVec3 = data.get(GunProp.CAMERA_POS).zoomDirection;
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
             } else {
@@ -2955,17 +2993,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 return startPos.vectorTo(endPos).normalize();
             }
         }
-        return this.getLookAngle();
+        return entity.getViewVector(ticks);
     }
 
     public static Vec3 entityEyePos(Entity entity, float partialTicks) {
         return new Vec3(Mth.lerp(partialTicks, entity.xo, entity.getX()), Mth.lerp(partialTicks, entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(partialTicks, entity.zo, entity.getZ()));
     }
 
-    public static Vec3 passengerCustom3PPosInFirstPerson(Player player, float partialTicks, double distance, double height) {
-        return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()) - distance * player.getViewVector(partialTicks).x,
-                Mth.lerp(partialTicks, player.yo + player.getEyeHeight() + height, player.getEyeY() + height) - distance * player.getViewVector(partialTicks).y,
-                Mth.lerp(partialTicks, player.zo, player.getZ()) - distance * player.getViewVector(partialTicks).z);
+    public static Vec3 simulate3P(Entity entity, float partialTicks, double distance, double height) {
+        return new Vec3(Mth.lerp(partialTicks, entity.xo, entity.getX()) - distance * entity.getViewVector(partialTicks).x,
+                Mth.lerp(partialTicks, entity.yo + entity.getEyeHeight() + height, entity.getEyeY() + height) - distance * entity.getViewVector(partialTicks).y,
+                Mth.lerp(partialTicks, entity.zo, entity.getZ()) - distance * entity.getViewVector(partialTicks).z);
     }
 
     public double getMouseSensitivity() {

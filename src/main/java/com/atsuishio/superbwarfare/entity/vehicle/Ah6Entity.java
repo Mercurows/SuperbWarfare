@@ -20,8 +20,6 @@ import com.atsuishio.superbwarfare.tools.CameraTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -384,11 +382,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public float rotateYOffset() {
         return 1.45f;
-    }
-
-    @Override
-    public boolean useFixedCameraPos(Entity entity) {
-        return !level().isClientSide || Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON;
     }
 
     @Override

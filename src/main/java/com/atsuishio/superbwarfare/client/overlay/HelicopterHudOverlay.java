@@ -51,8 +51,8 @@ public class HelicopterHudOverlay implements IGuiOverlay {
     private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/screens/helicopter/crosshair_ind.png");
     private static final ResourceLocation HELI_DRIVER_ANGLE = Mod.loc("textures/screens/helicopter/heli_driver_angle.png");
 
-    private static final ResourceLocation COMPASS = Mod.loc("textures/screens/compass.png");
-    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
+    private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
+    private static final ResourceLocation CROSSHAIR_3P = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
 
     private static float scopeScale = 1;
     private static float lerpVy = 1;
@@ -174,7 +174,7 @@ public class HelicopterHudOverlay implements IGuiOverlay {
             } else if (VectorUtil.canSee(pos)) {
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
-                preciseBlit(guiGraphics, DRONE, x - 8, y - 8, 0, 0, 16, 16, 16, 16);
+                preciseBlit(guiGraphics, CROSSHAIR_3P, x - 8, y - 8, 0, 0, 16, 16, 16, 16);
                 renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
                 poseStack.pushPose();

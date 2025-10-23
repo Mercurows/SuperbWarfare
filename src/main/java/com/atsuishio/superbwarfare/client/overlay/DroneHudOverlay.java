@@ -50,7 +50,7 @@ public class DroneHudOverlay implements IGuiOverlay {
 
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
     private static final ResourceLocation TV_FRAME = Mod.loc("textures/screens/land/tv_frame.png");
-    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
+    private static final ResourceLocation DRONE = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
     private static final ResourceLocation DRONE_FOV = Mod.loc("textures/screens/drone_fov.png");
     private static final ResourceLocation DRONE_FOV_MOVE = Mod.loc("textures/screens/drone_fov_move.png");
     private static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
