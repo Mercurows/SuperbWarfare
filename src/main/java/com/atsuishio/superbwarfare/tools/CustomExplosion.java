@@ -51,10 +51,7 @@ public class CustomExplosion extends Explosion {
     private int fireTime;
     private float damageMultiplier = 1;
 
-    private boolean hit;
-
-    public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source,
-                           @Nullable ExplosionDamageCalculator pDamageCalculator,
+    public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, @Nullable ExplosionDamageCalculator pDamageCalculator,
                            float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius,
                            BlockInteraction pBlockInteraction, ParticleOptions smallParticle, ParticleOptions bigParticle, Holder<SoundEvent> sound) {
         super(pLevel, pSource, source, null, pToBlowX, pToBlowY, pToBlowZ, pRadius, false, pBlockInteraction, smallParticle, bigParticle, sound);
@@ -165,6 +162,8 @@ public class CustomExplosion extends Explosion {
         EventHooks.onExplosionDetonate(this.level, this, list, diameter);
         Vec3 position = new Vec3(this.x, this.y, this.z);
 
+        boolean hit = false;
+
         for (Entity entity : list) {
             if (!entity.ignoreExplosion(this)) {
                 double distanceRate = Math.sqrt(entity.distanceToSqr(position)) / (double) diameter;
@@ -203,7 +202,6 @@ public class CustomExplosion extends Explosion {
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
             }
         }
-
     }
 
     public static class Builder {
