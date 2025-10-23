@@ -124,6 +124,8 @@ public class ModEntities {
             EntityType.Builder.<WaveforceTowerEntity>of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(WaveforceTowerEntity::new).fireImmune().sized(1.75f, 3.3f));
     public static final RegistryObject<EntityType<TowEntity>> TOW = register("tow",
             EntityType.Builder.<TowEntity>of(TowEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(TowEntity::new).fireImmune().sized(0.5f, 1.35f));
+    public static final RegistryObject<EntityType<SteelCoilEntity>> STEEL_COIL = register("steel_coil",
+            EntityType.Builder.of(SteelCoilEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(2, 2));
 
     // Boats
     public static final RegistryObject<EntityType<SpeedboatEntity>> SPEEDBOAT = register("speedboat",

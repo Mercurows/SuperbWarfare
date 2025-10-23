@@ -1,0 +1,13 @@
+{
+  "ID": "superbwarfare:steel_coil",
+  "MaxHealth": 500,
+  "UpStep": 0.5,
+  "Mass": 50,
+  "DamageModifiers": [
+    "minecraft:is_fire 0",
+    "All - 10",
+    "All * 0.05"
+  ],
+  "VehicleContainerType": "Empty",
+  "Type": "Special"
+}
