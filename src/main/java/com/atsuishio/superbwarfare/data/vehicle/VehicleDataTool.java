@@ -14,7 +14,7 @@ import java.util.HashMap;
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class VehicleDataTool {
 
-    public static HashMap<String, DefaultVehicleData> vehicleData = CustomData.VEHICLE;
+    public static HashMap<String, DefaultVehicleData> vehicleData = CustomData.VEHICLE_DATA;
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {

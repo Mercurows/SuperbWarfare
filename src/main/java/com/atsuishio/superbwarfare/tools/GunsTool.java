@@ -19,7 +19,7 @@ import java.util.UUID;
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class GunsTool {
 
-    public static HashMap<String, DefaultGunData> gunsData = CustomData.GUN;
+    public static HashMap<String, DefaultGunData> gunsData = CustomData.GUN_DATA;
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
