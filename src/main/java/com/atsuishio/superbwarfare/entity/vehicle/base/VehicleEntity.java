@@ -1784,8 +1784,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.setRecoilShake(java.lang.Math.pow(entityData.get(CANNON_RECOIL_TIME), 4) * 0.0000007 * java.lang.Math.sin(0.2 * java.lang.Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5)));
 
-        preventStacking();
-        crushEntities(this.getDeltaMovement());
+        this.preventStacking();
+        this.supportEntities(this.getDeltaMovement());
+        this.crushEntities(this.getDeltaMovement());
 
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
 
@@ -4147,7 +4148,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(ModTags.Blocks.SOFT_COLLISION) && isInObb(obbEntity, pos, getDeltaMovement())) {
+                if (blockstate.is(ModTags.Blocks.SOFT_COLLISION) && obbEntity.isInObb(pos, getDeltaMovement())) {
                     this.level().destroyBlock(pos, true);
                 }
             });
@@ -4167,7 +4168,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION) && isInObb(obbEntity, pos, getDeltaMovement())) {
+                if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION) && obbEntity.isInObb(pos, getDeltaMovement())) {
                     this.level().destroyBlock(pos, true);
                 }
             });
@@ -4190,7 +4191,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
 
-                if (blockstate.is(ModTags.Blocks.HARD_COLLISION) && isInObb(obbEntity, pos, getDeltaMovement())) {
+                if (blockstate.is(ModTags.Blocks.HARD_COLLISION) && obbEntity.isInObb(pos, getDeltaMovement())) {
                     this.level().destroyBlock(pos, true);
                     this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
                 }
@@ -4215,7 +4216,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = this.level().getBlockState(pos);
                 float hardness = blockstate.getBlock().defaultDestroyTime();
-                if (hardness > 0 && hardness <= 4 && isInObb(obbEntity, pos, getDeltaMovement())) {
+                if (hardness > 0 && hardness <= 4 && obbEntity.isInObb(pos, getDeltaMovement())) {
                     this.level().destroyBlock(pos, true);
                 }
             });
@@ -4327,27 +4328,51 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.setDeltaMovement(this.getDeltaMovement().add(pX, pY, pZ));
     }
 
+    public void supportEntities(Vec3 vec3) {
+        if (this.isRemoved()) return;
+        if (!(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
+            return;
+        }
+
+        var frontBox = this.calculateCombinedAABBOptimized().inflate(1);
+        List<Entity> entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                        entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                .stream().filter(entity -> {
+                            if (entity.isAlive() && obbEntity.isInObb(entity, vec3)) {
+                                var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+                                if (type == null) return false;
+                                return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+                            }
+                            return false;
+                        }
+                )
+                .toList();
+
+        entities.forEach(e -> {
+            if (e instanceof Player player && this.level().isClientSide) {
+                this.support(player);
+            } else if (!this.level().isClientSide) {
+                this.support(e);
+            }
+        });
+    }
+
     /**
      * 撞击实体并造成伤害
      *
      * @param vec3 动量
      */
     public void crushEntities(Vec3 vec3) {
-//        if (level() instanceof ServerLevel) {
         if (!this.canCrushEntities()) return;
         if (isRemoved()) return;
 
         List<Entity> entities;
-
         if (this instanceof OBBEntity obbEntity) {
-//                var frontBox = getBoundingBox().move(vec3).inflate(6);
-
-            var frontBox = this.calculateCombinedAABBOptimized().inflate(1);
-
+            var frontBox = getBoundingBox().move(vec3).inflate(6);
             entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
                             entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
                     .stream().filter(entity -> {
-                                if (entity.isAlive() && isInObb(obbEntity, entity, vec3)) {
+                                if (entity.isAlive() && obbEntity.isInObb(entity, vec3)) {
                                     var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
                                     if (type == null) return false;
                                     return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
@@ -4374,133 +4399,85 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     .toList();
         }
 
-        entities.forEach(e -> {
-            if (e instanceof Player player && this.level().isClientSide) {
-                this.support(player);
-            } else if (!this.level().isClientSide) {
-                this.support(e);
+        // TODO 继续优化这个逆天碰撞
+        for (var entity : entities) {
+            double entitySize = entity.getBoundingBox().getSize();
+            double thisSize = this.getBoundingBox().getSize();
+            double f;
+            double f1;
+
+            Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
+            if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
+
+            // TODO 给非载具实体也设置质量
+            if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION.get())) {
+                continue;
             }
-        });
 
+            if (entity instanceof VehicleEntity vehicle) {
+                f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
+                f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
+            } else {
+                f = Mth.clamp(entitySize / thisSize, 0.25, 4);
+                f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
+            }
 
-        if (vec3.length() > 0.3) {
-            for (var entity : entities) {
-                double entitySize = entity.getBoundingBox().getSize();
-                double thisSize = this.getBoundingBox().getSize();
-                double f;
-                double f1;
+            float length = (float) v0.length();
+            var velAdd = v0.normalize().scale(0.8 * length);
 
-                Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
-                if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
+            if (length <= 0.3) {
+                continue;
+            }
 
-                // TODO 给非载具实体也设置质量
+            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
 
-                if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION.get()))
-                    return;
+            if (entity instanceof LivingEntity) {
+                DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 80 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)));
+            } else {
+                entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 60 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)));
+            }
 
-                if (entity instanceof VehicleEntity vehicle) {
-                    f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
-                    f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
-                } else {
-                    f = Mth.clamp(entitySize / thisSize, 0.25, 4);
-                    f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
+            if (!(entity instanceof TargetEntity)) {
+                this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
+            }
 
-                }
+            if (entity instanceof VehicleEntity mobileVehicle) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)));
 
-                float v = (float) v0.length();
-                var velAdd = v0.normalize().scale(0.8 * v);
+                if (this instanceof OBBEntity obbEntity) {
+                    if (obbEntity.isInObb(entity, Vec3.ZERO)) {
+                        Vec3 thisPos = this.position();
+                        Vec3 otherPos = entity.position();
 
-                if (v > 0.3) {
-                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-                }
-
-
-
-                if (entity instanceof LivingEntity) {
-                    DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 80 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-                } else {
-                    entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 60 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-                }
-
-                if (entity instanceof VehicleEntity) {
-                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-                }
-
-                if (!(entity instanceof TargetEntity)) {
-                    this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
-                }
-
-                if (entity instanceof VehicleEntity mobileVehicle) {
-                    if (this instanceof OBBEntity obbEntity) {
-                        if (isInObb(obbEntity, entity, Vec3.ZERO)) {
-                            Vec3 thisPos = this.position();
-                            Vec3 otherPos = entity.position();
-
-                            for (OBB obb : obbEntity.getOBBs()) {
-                                if (entity instanceof OBBEntity obbEntity2) {
-                                    var obbList2 = obbEntity2.getOBBs();
-                                    for (var obb2 : obbList2) {
-                                        if (OBB.isColliding(obb, obb2)) {
-                                            thisPos = new Vec3(obb.center());
-                                            otherPos = new Vec3(obb2.center());
-                                        }
-                                    }
-                                } else {
-                                    if (OBB.isColliding(obb, entity.getBoundingBox())) {
+                        for (OBB obb : obbEntity.getOBBs()) {
+                            if (entity instanceof OBBEntity obbEntity2) {
+                                var obbList2 = obbEntity2.getOBBs();
+                                for (var obb2 : obbList2) {
+                                    if (OBB.isColliding(obb, obb2)) {
                                         thisPos = new Vec3(obb.center());
+                                        otherPos = new Vec3(obb2.center());
                                     }
                                 }
+                            } else {
+                                if (OBB.isColliding(obb, entity.getBoundingBox())) {
+                                    thisPos = new Vec3(obb.center());
+                                }
                             }
-
-                            Vec3 toVec = thisPos.add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(otherPos);
-                            velAdd = toVec.normalize().scale(Math.max(thisPos.distanceTo(otherPos), 0) * 0.01);
-                            this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
                         }
-                    }
 
-                    Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
-                    mobileVehicle.pushNew(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
-                } else {
-                    Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
-                    entity.push(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
-                }
-            }
-        }
-
-
-
-    }
-
-    public boolean isInObb(OBBEntity obbEntity, Entity entity, Vec3 vec3) {
-        var obbList = obbEntity.getOBBs();
-        for (var obb : obbList) {
-            obb = obb.move(vec3);
-            if (entity instanceof OBBEntity obbEntity2) {
-                var obbList2 = obbEntity2.getOBBs();
-                for (var obb2 : obbList2) {
-                    if (OBB.isColliding(obb, obb2)) {
-                        return true;
+                        Vec3 toVec = thisPos.add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(otherPos);
+                        velAdd = toVec.normalize().scale(Math.max(thisPos.distanceTo(otherPos), 0) * 0.01);
+                        this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
                     }
                 }
+
+                Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
+                mobileVehicle.pushNew(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
             } else {
-                if (OBB.isColliding(obb, entity.getBoundingBox())) {
-                    return true;
-                }
+                Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
+                entity.push(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
             }
         }
-        return false;
-    }
-
-    public boolean isInObb(OBBEntity obbEntity, BlockPos pos, Vec3 vec3) {
-        var obbList = obbEntity.getOBBs();
-        AABB aabb1 = new AABB(pos, pos).inflate(0.3, 0.6, 0.3);
-        for (var obb : obbList) {
-            obb = obb.move(vec3);
-            if (OBB.isColliding(obb, aabb1)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public Vector3f getForwardDirection() {
