@@ -70,7 +70,9 @@
                 "Positions": [
                   [1.7, 0.62, 0.8], [-1.7, 0.62, 0.8]
                 ],
-                "Direction": "Vehicle"
+                "Directions": [
+                  "Vehicle", [0, 1, 1]
+                ]
               },
               "SoundInfo": {
                 "Fire1P": "superbwarfare:small_rocket_fire_1p",
