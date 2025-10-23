@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
+
 public class ShootPos {
 
     @SerializedName("Transform")
@@ -14,7 +16,6 @@ public class ShootPos {
     @SerializedName("Positions")
     public ObjectToList<Vec3> positions = new ObjectToList<>(Vec3.ZERO);
 
-    // TODO 把这个也改成List后好像炸了
     @SerializedName("Directions")
-    public ObjectToList<StringOrVec3> directions = new ObjectToList<>(new StringOrVec3("Default"));
+    public List<StringOrVec3> directions = List.of(new StringOrVec3("Default"));
 }

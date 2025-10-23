@@ -2371,7 +2371,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
 
-            var list = data.get(GunProp.SHOOT_POS).directions.list;
+            var list = data.get(GunProp.SHOOT_POS).directions;
             var stringOrVec3 = list.get(this.currentFirePosIndex % list.size());
 
             if (stringOrVec3.isString()) {
