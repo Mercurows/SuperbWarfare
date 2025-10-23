@@ -752,7 +752,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             if (this.getSeatIndex(player) == 0) {
                 return new Vec2((float) -getYRotFromVector(this.getBarrelVector(partialTicks)), (float) -getXRotFromVector(this.getBarrelVector(partialTicks)));
             } else {
-                return new Vec2(Mth.lerp(partialTicks, player.yHeadRotO, player.getYHeadRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
+                return new Vec2(Mth.lerp(partialTicks, player.yRotO, player.getYRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
             }
         }
         return super.getCameraRotation(partialTicks, player, false, false);

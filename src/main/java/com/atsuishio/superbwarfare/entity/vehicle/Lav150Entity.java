@@ -444,11 +444,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
-            if (this.getSeatIndex(player) == 0) {
-                return new Vec2((float) -getYRotFromVector(zoomDirection(player, partialTicks)), (float) -getXRotFromVector(zoomDirection(player, partialTicks)));
-            } else {
-                return new Vec2(Mth.lerp(partialTicks, player.yHeadRotO, player.getYHeadRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
-            }
+            return new Vec2((float) -getYRotFromVector(cameraDirection(player, partialTicks)), (float) -getXRotFromVector(cameraDirection(player, partialTicks)));
         }
         return super.getCameraRotation(partialTicks, player, false, false);
     }
@@ -457,14 +453,10 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
-            if (this.getSeatIndex(player) == 0) {
-                if (zoom) {
-                    return zoomPos(player, partialTicks);
-                } else {
-                    return entityEyePos(player, partialTicks);
-                }
+            if (zoom) {
+                return zoomPos(player, partialTicks);
             } else {
-                return passengerCustom3PPosInFirstPerson(player, partialTicks, 6, 1);
+                return cameraPos(player, partialTicks);
             }
         }
         return super.getCameraPosition(partialTicks, player, false, false);

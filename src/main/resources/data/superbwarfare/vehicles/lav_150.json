@@ -16,9 +16,9 @@
         "Crosshair": "@VehicleUsApc",
         "CrosshairColor": "0x66FF00",
         "Name": "superbwarfare.lav_150.cannon",
-        "ZoomPos": {
+        "CameraPos": {
           "Transform": "Barrel",
-          "Position": [
+          "ZoomPosition": [
             0.1,
             0.0517,
             0
@@ -141,7 +141,12 @@
         0,
         1,
         0
-      ]
+      ],
+      "CameraPos": {
+        "useSimulate3P": true,
+        "simulate3PPos": [6, 1],
+        "Direction": "Self"
+      }
     },
     {
       "HidePassenger": true,

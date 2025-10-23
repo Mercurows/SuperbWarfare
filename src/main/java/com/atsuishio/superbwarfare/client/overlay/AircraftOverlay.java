@@ -67,9 +67,9 @@ public class AircraftOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation HELICOPTER_ROLL_IND = Mod.loc("textures/screens/helicopter/roll_ind.png");
     private static final ResourceLocation HELICOPTER_SPEED_FRAME = Mod.loc("textures/screens/helicopter/speed_frame.png");
 
-    private static final ResourceLocation COMPASS = Mod.loc("textures/screens/compass.png");
-    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
-    private static final ResourceLocation SHOTGUN_HUD = Mod.loc("textures/screens/shotgun_hud.png");
+    private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
+    private static final ResourceLocation CROSSHAIR_3P = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
+    private static final ResourceLocation BOMB_RING = Mod.loc("textures/overlay/crosshair/rex_circle.png");
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -290,7 +290,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                     poseStack.translate(x, y, 0);
                     poseStack.scale(0.75f, 0.75f, 1);
 
-                    ResourceLocation cross = DRONE;
+                    ResourceLocation cross = CROSSHAIR_3P;
                     float size = 16;
 
                     if (vehicle instanceof A10Entity a10Entity) {
@@ -300,7 +300,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
-                            cross = SHOTGUN_HUD;
+                            cross = BOMB_RING;
                             size = 24;
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 3) {
