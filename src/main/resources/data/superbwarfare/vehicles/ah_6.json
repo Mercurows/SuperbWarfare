@@ -67,7 +67,9 @@
                     0.8
                   ]
                 ],
-                "Direction": "Vehicle"
+                "Directions": [
+                  "Vehicle", [0, 1, 1]
+                ]
               }
             }
           },
