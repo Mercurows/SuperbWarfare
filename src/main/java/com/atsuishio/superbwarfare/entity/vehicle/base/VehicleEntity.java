@@ -2924,15 +2924,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 cameraPos(Entity entity, float ticks) {
-        var data = getGunData(getSeatIndex(entity));
+        var data = data().get(VehicleProp.CAMERA_POS);
         if (data != null) {
-            if (data.get(GunProp.CAMERA_POS).useSimulate3P) {
-                var vec2 = data.get(GunProp.CAMERA_POS).simulate3PPos;
-                simulate3P(entity, ticks, vec2.x, vec2.y);
+            if (data.useSimulate3P) {
+                var vec2 = data.simulate3PPos;
+                return simulate3P(entity, ticks, vec2.x, vec2.y);
             }
-            if (data.get(GunProp.CAMERA_POS).useFixedCameraPos) {
-                var vec3 = data.get(GunProp.CAMERA_POS).position;
-                Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.CAMERA_POS).transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            if (data.useFixedCameraPos) {
+                var vec3 = data.position;
+                Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
                 return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
             }
         }
@@ -2940,12 +2940,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 cameraDirection(Entity entity, float ticks) {
-        var data = getGunData(getSeatIndex(entity));
+        var data = data().get(VehicleProp.CAMERA_POS);
+
         if (data != null) {
-            if (data.get(GunProp.CAMERA_POS).useSimulate3P) {
+            if (data.useSimulate3P) {
                 return entity.getViewVector(ticks);
             }
-            StringOrVec3 stringOrVec3 = data.get(GunProp.CAMERA_POS).direction;
+            StringOrVec3 stringOrVec3 = data.direction;
             if (stringOrVec3.isString()) {
                 if (stringOrVec3.string.equals("Self")) {
                     return entity.getViewVector(ticks);
@@ -2962,20 +2963,20 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 zoomPos(Entity entity, float ticks) {
-        var data = getGunData(getSeatIndex(entity));
+        var data = data().get(VehicleProp.CAMERA_POS);
         if (data != null) {
-            var vec3 = data.get(GunProp.CAMERA_POS).zoomPosition;
+            var vec3 = data.zoomPosition;
 
-            Vector4f worldPosition = transformPosition(getTransformFromString(data.get(GunProp.CAMERA_POS).transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
         return entityEyePos(entity, ticks);
     }
 
     public Vec3 zoomDirection(Entity entity, float ticks) {
-        var data = getGunData(getSeatIndex(entity));
+        var data = data().get(VehicleProp.CAMERA_POS);
         if (data != null) {
-            StringOrVec3 stringOrVec3 = data.get(GunProp.CAMERA_POS).zoomDirection;
+            StringOrVec3 stringOrVec3 = data.zoomDirection;
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
             } else {

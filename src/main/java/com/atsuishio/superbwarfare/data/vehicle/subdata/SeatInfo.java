@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
+import com.atsuishio.superbwarfare.data.gun.CameraPos;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
@@ -43,4 +44,7 @@ public class SeatInfo {
 
     @SerializedName("WeaponData")
     public DefaultGunData weaponData = null;
+
+    @SerializedName("CameraPos")
+    public CameraPos cameraPos = new CameraPos();
 }
