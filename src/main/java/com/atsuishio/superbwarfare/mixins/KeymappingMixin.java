@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -40,7 +39,7 @@ public class KeymappingMixin {
                     cir.setReturnValue(false);
                 }
 
-                if (vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player)) {
+                if (vehicle.banHand(player)) {
                     if (this.clickCount > 0) {
                         --this.clickCount;
                     }

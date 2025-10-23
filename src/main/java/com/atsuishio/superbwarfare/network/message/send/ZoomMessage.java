@@ -37,17 +37,19 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
                     && vehicle instanceof WeaponVehicleEntity weaponEntity
                     && vehicle instanceof VehicleEntity vehicleEntity
                     && weaponEntity.hasWeapon(vehicleEntity.getSeatIndex(player))
-                    && weaponEntity.banHand(player)
+                    && vehicleEntity.banHand(player)
             ) {
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
             }
 
-        } else if (message.msgType == 1) {
+        }
+
+        if (message.msgType == 1) {
             if (player.isPassenger()
                     && vehicle instanceof WeaponVehicleEntity weaponEntity
                     && vehicle instanceof VehicleEntity vehicleEntity
                     && weaponEntity.hasWeapon(vehicleEntity.getSeatIndex(player))
-                    && weaponEntity.banHand(player)
+                    && vehicleEntity.banHand(player)
             ) {
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get(), 2, 1);
             }

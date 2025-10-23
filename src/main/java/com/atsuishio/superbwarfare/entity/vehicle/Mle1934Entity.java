@@ -481,7 +481,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         if (this.entityData.get(COOL_DOWN) > 0) return;
         if (getFirstPassenger() != null && getFirstPassenger() != living) return;
 
-        if (living.level() instanceof ServerLevel serverLevel) {
+        if (living.level() instanceof ServerLevel) {
             if (getAmmoCount(living) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
             Matrix4f transform = getVehicleFlatTransform(1);
 
@@ -626,11 +626,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         }
 
         return playerAmmo + entityData.get(AMMO_COUNT);
-    }
-
-    @Override
-    public boolean banHand(LivingEntity entity) {
-        return true;
     }
 
     @Override

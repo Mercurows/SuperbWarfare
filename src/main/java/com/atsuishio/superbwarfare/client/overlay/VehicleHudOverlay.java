@@ -395,7 +395,8 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static void renderWeaponInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int screenWidth, int screenHeight) {
         Player player = Minecraft.getInstance().player;
 
-        if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player))) return;
+        if (!vehicle.banHand(player)) return;
+        if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
 
         var temp = wasRenderingWeapons;
         wasRenderingWeapons = false;
@@ -404,6 +405,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
         int index = vehicle.getSeatIndex(player);
         if (index == -1) return;
+
 
         var weapons = weaponVehicle.getAvailableWeapons(index);
         if (weapons.isEmpty()) return;

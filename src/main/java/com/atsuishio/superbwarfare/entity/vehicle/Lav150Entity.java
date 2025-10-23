@@ -26,14 +26,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -250,25 +245,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return getDeltaMovement().horizontalDistance() > 0.09 || Mth.abs(this.entityData.get(POWER)) > 0.15;
     }
 
-//    // TODO 正确计算位置
-//    public Function<VehicleEntity, ShootRay> MACHINE_GUN_POS = createShootAnchorPoint("MachineGun", v -> {
-//        var worldPosition = transformPosition(getBarrelTransform(1), 0.3f, 0.08f, 0);
-//
-//        return new ShootRay(
-//                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
-//                getBarrelVector(1)
-//        );
-//    });
-//
-//    public Function<VehicleEntity, ShootRay> CANNON_POS = createShootAnchorPoint("Cannon", v -> {
-//        var worldPosition = transformPosition(getBarrelTransform(1), 0.0609375f, 0.0517f, 0);
-//
-//        return new ShootRay(
-//                new Vec3(worldPosition.x, worldPosition.y, worldPosition.z),
-//                getBarrelVector(1)
-//        );
-//    });
-
     @Override
     public int getWeaponIndex(int index) {
         var gunData = getGunData(index);
@@ -413,11 +389,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     }
 
     @Override
-    public boolean banHand(LivingEntity entity) {
-        return true;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }
@@ -438,28 +409,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return zoom ? 0.23 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.3 : 0.4;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (zoom || isFirstPerson) {
-            return new Vec2((float) -getYRotFromVector(cameraDirection(player, partialTicks)), (float) -getXRotFromVector(cameraDirection(player, partialTicks)));
-        }
-        return super.getCameraRotation(partialTicks, player, false, false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (zoom || isFirstPerson) {
-            if (zoom) {
-                return zoomPos(player, partialTicks);
-            } else {
-                return cameraPos(player, partialTicks);
-            }
-        }
-        return super.getCameraPosition(partialTicks, player, false, false);
     }
 
     @Override

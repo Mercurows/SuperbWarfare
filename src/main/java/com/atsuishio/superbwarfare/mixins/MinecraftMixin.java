@@ -34,7 +34,8 @@ public class MinecraftMixin {
      */
     @Inject(method = "handleKeybinds()V", at = @At("HEAD"), cancellable = true)
     private void handleKeybinds(CallbackInfo ci) {
-        if (player == null || !(player.getVehicle() instanceof VehicleEntity vehicle)) return;
+        if (player == null || !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle))
+            return;
 
         var index = -1;
         for (int i = 0; i < 9; ++i) {
@@ -62,7 +63,7 @@ public class MinecraftMixin {
 
         var seatIndex = vehicle.getSeatIndex(player);
 
-        if (vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.banHand(player)) {
+        if (vehicle.banHand(player)) {
             ci.cancel();
             options.keyHotbarSlots[index].consumeClick();
 

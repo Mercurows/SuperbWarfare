@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen;
 import com.atsuishio.superbwarfare.client.tooltip.ClientDogTagImageTooltip;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -403,7 +402,7 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
         LivingEntity attacker = record.attacker;
         if (attacker.getVehicle() instanceof VehicleEntity vehicleEntity) {
             // 载具图标
-            if ((vehicleEntity instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(attacker)) || record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
+            if ((vehicleEntity.banHand(attacker)) || record.damageType == ModDamageTypes.VEHICLE_STRIKE) {
                 return vehicleEntity.getVehicleIcon();
             } else {
                 if (record.stack.getItem() instanceof GunItem gunItem) {

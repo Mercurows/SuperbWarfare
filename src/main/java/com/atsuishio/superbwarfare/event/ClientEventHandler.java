@@ -663,7 +663,7 @@ public class ClientEventHandler {
             var data = GunData.from(stack);
             if (gunItem.hasMeleeAttack(data) && gunMelee == 0 && drawTime < 0.01
                     && (ModKeyMappings.MELEE.isDown() || (data.meleeOnly() && holdFire))
-                    && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
+                    && !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
                     && !holdFireVehicle
                     && !notInGame()
                     && !isEditing
@@ -797,7 +797,7 @@ public class ClientEventHandler {
         }
 
         if (((holdFire || burstFireAmount > 0) && shootDelay >= data.get(GunProp.SHOOT_DELAY))
-                && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
+                && !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
                 && !holdFireVehicle
                 && gunItem.canShoot(data, player)
                 && !gunItem.useSpecialFireProcedure(data)
@@ -1192,7 +1192,7 @@ public class ClientEventHandler {
         cameraYaw = event.getYaw();
         cameraRoll *= 0.99f;
 
-        if (player != null && player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) {
+        if (player != null && player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
             return;
         }
 
@@ -1259,7 +1259,7 @@ public class ClientEventHandler {
             event.setCanceled(true);
         }
 
-        if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
             event.setCanceled(true);
         }
     }
@@ -1429,7 +1429,7 @@ public class ClientEventHandler {
         double speed = 7 / (weight + 2);
 
         if (zoom
-                && !(player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
+                && !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
                 && !notInGame()
                 && drawTime < 0.01
                 && !isEditing
@@ -1779,7 +1779,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         final var tag = NBTTool.getTag(stack);
 
-        if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && zoomVehicle && iVehicle.banHand(player)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && zoomVehicle) {
             event.setFOV(event.getFOV() / iVehicle.zoomFov());
             fov = event.getFOV();
             return;
@@ -1943,7 +1943,7 @@ public class ClientEventHandler {
         Player player = mc.player;
         if (player == null) return;
 
-        if (player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
             event.setCanceled(true);
         }
     }

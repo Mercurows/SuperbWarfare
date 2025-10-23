@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -88,17 +88,17 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!DisplayConfig.AMMO_HUD.get()) return;
 
-        int w = guiGraphics.guiWidth();
-        int h = guiGraphics.guiHeight();
+        int screenWidth = guiGraphics.guiWidth();
+        int screenHeight = guiGraphics.guiHeight();
         Player player = Minecraft.getInstance().player;
 
         if (player == null) return;
         if (player.isSpectator()) return;
 
         ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))) {
-            int x = w + DisplayConfig.WEAPON_HUD_X_OFFSET.get();
-            int y = h + DisplayConfig.WEAPON_HUD_Y_OFFSET.get();
+        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))) {
+            int x = screenWidth + DisplayConfig.WEAPON_HUD_X_OFFSET.get();
+            int y = screenHeight + DisplayConfig.WEAPON_HUD_Y_OFFSET.get();
 
             PoseStack poseStack = guiGraphics.pose();
             var data = GunData.from(stack);

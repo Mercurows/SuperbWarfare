@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -26,7 +26,7 @@ public class ItemInHandLayerMixin {
     private void renderArmWithItemHead(LivingEntity entity, ItemStack stack, ItemDisplayContext display, HumanoidArm arm, PoseStack poseStack, MultiBufferSource source, int light, CallbackInfo ci) {
         if (entity.getType() == EntityType.PLAYER) {
             if (arm == HumanoidArm.LEFT || arm == HumanoidArm.RIGHT) {
-                if (entity instanceof Player player && player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player)) {
+                if (entity instanceof Player player && player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
                     ci.cancel();
                 }
             }

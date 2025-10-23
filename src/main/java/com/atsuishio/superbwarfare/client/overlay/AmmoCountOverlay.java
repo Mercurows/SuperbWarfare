@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.client.animation.ValueAnimator;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
@@ -60,7 +60,7 @@ public class AmmoCountOverlay implements LayeredDraw.Layer {
         var currentTime = System.currentTimeMillis();
         ItemStack stack = player.getMainHandItem();
         if ((stack.getItem() instanceof AmmoSupplierItem || stack.getItem() == ModItems.AMMO_BOX.get())
-                && !(player.getVehicle() instanceof ArmedVehicleEntity vehicle && vehicle.banHand(player))
+                && !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
         ) {
             // 刚拿出弹药物品时，视为开始弹药信息渲染
             startRenderingAmmoInfo = ammoInfoTimer.getProgress(currentTime) == 0;

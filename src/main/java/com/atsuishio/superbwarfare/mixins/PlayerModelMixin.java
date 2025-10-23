@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -51,8 +50,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
             }
 
             // 飞行器
-            if (player.getVehicle() instanceof ArmedVehicleEntity armedVehicle && armedVehicle.banHand(player) && player.getVehicle() instanceof VehicleEntity vehicle
-                    && (vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER)) {
+            if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && (vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER)) {
                 model.head.xRot = 0;
                 model.head.yRot = 0;
                 model.head.zRot = 0;

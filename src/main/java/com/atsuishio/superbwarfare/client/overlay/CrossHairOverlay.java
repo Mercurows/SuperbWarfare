@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -83,7 +82,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         if (ClientEventHandler.isEditing) return;
 
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem) || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player)))
+        if (!(stack.getItem() instanceof GunItem) || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)))
             return;
 
         var data = GunData.from(stack);

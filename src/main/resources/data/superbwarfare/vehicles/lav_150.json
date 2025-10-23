@@ -136,6 +136,7 @@
     },
     {
       "HidePassenger": true,
+      "BanHand": true,
       "Transform": "Vehicle",
       "Position": [
         0,
@@ -150,6 +151,7 @@
     },
     {
       "HidePassenger": true,
+      "BanHand": true,
       "Transform": "Vehicle",
       "Position": [
         0,
@@ -164,6 +166,7 @@
     },
     {
       "HidePassenger": true,
+      "BanHand": true,
       "Transform": "Vehicle",
       "Position": [
         0,
@@ -178,6 +181,7 @@
     },
     {
       "HidePassenger": true,
+      "BanHand": true,
       "Transform": "Vehicle",
       "Position": [
         0,
