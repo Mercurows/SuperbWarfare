@@ -170,7 +170,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Integer> COAX_HEAT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> DECOY_COUNT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> DECOY_READY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
     public static final EntityDataAccessor<Float> PROPELLER_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> GEAR_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
@@ -1019,7 +1019,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(AMMO, 0)
                 .define(FIRE_ANIM, 0)
                 .define(COAX_HEAT, 0)
-                .define(DECOY_COUNT, 0)
+                .define(DECOY_READY, false)
                 .define(GEAR_ROT, 0)
                 .define(GEAR_UP, false)
                 .define(FORWARD_INPUT_DOWN, false)
@@ -1166,7 +1166,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.set(ENGINE2_DAMAGED, compound.getBoolean("Engine2Damaged"));
 
         this.entityData.set(POWER, compound.getFloat("Power"));
-        this.entityData.set(DECOY_COUNT, compound.getInt("DecoyCount"));
+        this.entityData.set(DECOY_READY, compound.getBoolean("DecoyReady"));
         this.entityData.set(GEAR_ROT, compound.getInt("GearRot"));
         this.entityData.set(GEAR_UP, compound.getBoolean("GearUp"));
         this.entityData.set(PROPELLER_ROT, compound.getFloat("PropellerRot"));
@@ -1219,7 +1219,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putBoolean("Engine2Damaged", this.entityData.get(ENGINE2_DAMAGED));
 
         compound.putFloat("Power", this.entityData.get(POWER));
-        compound.putInt("DecoyCount", this.entityData.get(DECOY_COUNT));
+        compound.putBoolean("DecoyReady", this.entityData.get(DECOY_READY));
         compound.putInt("GearRot", this.entityData.get(GEAR_ROT));
         compound.putBoolean("GearUp", this.entityData.get(GEAR_UP));
         compound.putFloat("PropellerRot", this.entityData.get(PROPELLER_ROT));
@@ -3726,7 +3726,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     //烟雾诱饵
     public void releaseSmokeDecoy(Vec3 vec3) {
         if (decoyInputDown()) {
-            if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
+            if (this.entityData.get(DECOY_READY) && this.level() instanceof ServerLevel) {
                 Entity passenger = getFirstPassenger();
                 for (int i = 0; i < 8; i++) {
                     SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity((LivingEntity) passenger, this.level());
@@ -3736,12 +3736,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 }
                 this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
                 decoyReloadCoolDown = 500;
-                this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
+                this.getEntityData().set(DECOY_READY, false);
             }
             setDecoyInputDown(false);
         }
-        if (this.entityData.get(DECOY_COUNT) < 1 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
-            this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
+        if (!this.entityData.get(DECOY_READY) && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+            this.entityData.set(DECOY_READY, true);
             this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
             decoyReloadCoolDown = 500;
         }
@@ -3750,27 +3750,41 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     //热诱弹诱饵
     public void releaseDecoy() {
         if (decoyInputDown()) {
-            if (this.entityData.get(DECOY_COUNT) > 0 && this.level() instanceof ServerLevel) {
+            if (this.entityData.get(DECOY_READY) && this.level() instanceof ServerLevel) {
                 Entity passenger = getFirstPassenger();
-                for (int i = 0; i < 4; i++) {
-                    FlareDecoyEntity flareDecoyEntity = new FlareDecoyEntity(this.level());
-                    flareDecoyEntity.setPos(this.getX() + this.getDeltaMovement().x, this.getY() + 0.5 + this.getDeltaMovement().y, this.getZ() + this.getDeltaMovement().z);
-                    flareDecoyEntity.decoyShoot(this, this.getViewVector(1).yRot((45 + 90 * i) * Mth.DEG_TO_RAD), 0.8f, 8);
-                    this.level().addFreshEntity(flareDecoyEntity);
+
+                for (int i = 0; i < 48; i += 4) {
+                    Mod.queueServerWork(i, () -> {
+                        Matrix4f transform = getVehicleTransform(1);
+                        Vector4f worldPositionO = transformPosition(transform, 0, 0, 0);
+                        Vector4f worldPosition = transformPosition(transform, 1, -0.2f, 0.6f);
+                        Vector4f worldPosition2 = transformPosition(transform, -1, -0.2f, 0.6f);
+                        Vec3 shootVecO = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+                        Vec3 shootVec1 = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                        Vec3 shootVec2 = new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z);
+                        shootDecoy((LivingEntity) passenger, shootVecO.vectorTo(shootVec1).normalize());
+                        shootDecoy((LivingEntity) passenger, shootVecO.vectorTo(shootVec2).normalize());
+                    });
                 }
-                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 2, 1);
-                if (this.getEntityData().get(DECOY_COUNT) == 4) {
-                    decoyReloadCoolDown = 300;
-                }
-                this.getEntityData().set(DECOY_COUNT, this.getEntityData().get(DECOY_COUNT) - 1);
+
+                decoyReloadCoolDown = 40;
+                this.getEntityData().set(DECOY_READY, false);
             }
             setDecoyInputDown(false);
         }
-        if (this.entityData.get(DECOY_COUNT) < 4 && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
-            this.entityData.set(DECOY_COUNT, this.entityData.get(DECOY_COUNT) + 1);
+        if (!this.entityData.get(DECOY_READY) && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
+            this.entityData.set(DECOY_READY, true);
             this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
-            decoyReloadCoolDown = 300;
+            decoyReloadCoolDown = 40;
         }
+    }
+
+    public void shootDecoy(LivingEntity passenger, Vec3 shootVec) {
+        FlareDecoyEntity flareDecoyEntity = new FlareDecoyEntity(this.level());
+        flareDecoyEntity.setPos(this.getX() + this.getDeltaMovement().x, this.getY() + 0.5 + this.getDeltaMovement().y, this.getZ() + this.getDeltaMovement().z);
+        flareDecoyEntity.decoyShoot(this, shootVec, (float) (getDeltaMovement().length() * 0.3f + 0.7), 8);
+        this.level().addFreshEntity(flareDecoyEntity);
+        this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 2, 1);
     }
 
     // 惯性倾斜
@@ -4484,8 +4498,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return entityData.get(POWER);
     }
 
-    public int getDecoyCount() {
-        return entityData.get(DECOY_COUNT);
+    public String getDecoyState() {
+        return entityData.get(DECOY_READY) ? "READY" : "RELOADING";
     }
 
     @NotNull
