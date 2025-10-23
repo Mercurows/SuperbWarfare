@@ -31,4 +31,7 @@ public class CameraPos {
 
     @SerializedName("Simulate3PPos")
     public Vec2 simulate3PPos = new Vec2(6, 1);
+
+    @SerializedName("AircraftCamera")
+    public Boolean aircraftCamera = false;
 }

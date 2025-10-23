@@ -198,7 +198,10 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
                     }
                 }
 
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), 25, 1, -1, false);
+                if (vehicle.hasDecoy()) {
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), 25, 1, -1, false);
+                }
+
                 poseStack.popPose();
                 poseStack.popPose();
             }

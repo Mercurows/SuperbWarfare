@@ -26,6 +26,7 @@ import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.menu.VehicleMenu;
@@ -1810,9 +1811,29 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
 
+        if (this.level() instanceof ServerLevel) {
+            updateBackupAmmoCount();
+        }
+
         entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) * 0.5f);
 
         this.refreshDimensions();
+    }
+
+    protected void updateBackupAmmoCount() {
+        for (int i = 0; i < getMaxPassengers(); i++) {
+            modifyGunData(i, data -> {
+                if (data.useBackpackAmmo()) {
+                    data.backupAmmoCount.set(data.countBackupAmmo(getAmmoSupplier()));
+                } else {
+                    data.backupAmmoCount.reset();
+                }
+            });
+        }
+    }
+
+    protected Entity getAmmoSupplier() {
+        return this;
     }
 
     public void handlePartDamaged(OBBEntity obbEntity) {
@@ -2331,7 +2352,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             );
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
-        return getEyePosition();
+        return getEyePosition(ticks);
     }
 
     public Vec3 getShootVec(int seatIndex, float ticks) {
@@ -3217,6 +3238,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @OnlyIn(Dist.CLIENT)
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        int index = this.getSeatIndex(player);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        if (seat != null) {
+            var data = seat.cameraPos;
+            if (data.aircraftCamera) {
+                return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
+            }
+        }
         if (zoom || isFirstPerson) {
             return new Vec2((float) -getYRotFromVector(cameraDirection(player, partialTicks)), (float) -getXRotFromVector(cameraDirection(player, partialTicks)));
         }
@@ -3231,12 +3260,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @OnlyIn(Dist.CLIENT)
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (zoom || isFirstPerson) {
-            if (zoom) {
-                return zoomPos(player, partialTicks);
-            } else {
-                return cameraPos(player, partialTicks);
+
+        int index = this.getSeatIndex(player);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        if (seat != null) {
+            var data = seat.cameraPos;
+            if (zoom || isFirstPerson) {
+                if (zoom) {
+                    return zoomPos(player, partialTicks);
+                } else {
+                    return cameraPos(player, partialTicks);
+                }
+            } else if (data.aircraftCamera) {
+                Matrix4f transform = getClientVehicleTransform(partialTicks);
+                Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 2.45f, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
+                return CameraTool.getMaxZoom(transform, maxCameraPosition);
             }
+            return null;
         }
         return null;
     }
@@ -4518,7 +4558,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.flap3Rot = pFlap3Rot;
     }
 
-    // TODO 用数据包定义，直接定义最大数量会不会更好？
+    // TODO 用数据包定义
     public boolean hasDecoy() {
         return false;
     }

@@ -35,7 +35,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.DECOY_READY;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
@@ -164,7 +163,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                         FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
 
                 if (vehicle.hasDecoy()) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getEntityData().get(DECOY_READY)), 30, 11, -1, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), 30, 11, -1, false);
                 }
 
                 poseStack.popPose();
