@@ -69,5 +69,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.IGLA_MISSILE.get(), IglaMissileRenderer::new);
         event.registerEntityRenderer(ModEntities.TRUCK.get(), TruckRenderer::new);
         event.registerEntityRenderer(ModEntities.TOW.get(), TowRenderer::new);
+        event.registerEntityRenderer(ModEntities.STEEL_COIL.get(), SteelCoilRenderer::new);
     }
 }

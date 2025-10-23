@@ -13,5 +13,6 @@ public enum VehicleType {
     @SerializedName("Artillery") ARTILLERY,
     @SerializedName("Defense") DEFENSE,
     @SerializedName("Boat") BOAT,
-    @SerializedName("Drone") DRONE
+    @SerializedName("Drone") DRONE,
+    @SerializedName("Special") SPECIAL,
 }
