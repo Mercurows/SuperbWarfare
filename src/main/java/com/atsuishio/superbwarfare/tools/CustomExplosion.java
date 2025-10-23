@@ -47,8 +47,6 @@ public class CustomExplosion extends Explosion {
     private int fireTime;
     private float damageMultiplier = 1;
 
-    private boolean hit;
-
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, @Nullable ExplosionDamageCalculator pDamageCalculator,
                            float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius,
                            Explosion.BlockInteraction pBlockInteraction) {
@@ -152,6 +150,8 @@ public class CustomExplosion extends Explosion {
         net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.level, this, list, diameter);
         Vec3 position = new Vec3(this.x, this.y, this.z);
 
+        boolean hit = false;
+
         for (Entity entity : list) {
             if (!entity.ignoreExplosion()) {
                 double distanceRate = Math.sqrt(entity.distanceToSqr(position)) / (double) diameter;
@@ -190,7 +190,6 @@ public class CustomExplosion extends Explosion {
                 Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
             }
         }
-
     }
 
     public static class Builder {
