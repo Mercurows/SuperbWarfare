@@ -34,8 +34,7 @@ public class MinecraftMixin {
      */
     @Inject(method = "handleKeybinds()V", at = @At("HEAD"), cancellable = true)
     private void handleKeybinds(CallbackInfo ci) {
-        if (player == null || !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle))
-            return;
+        if (player == null || !(player.getVehicle() instanceof VehicleEntity vehicle)) return;
 
         var index = -1;
         for (int i = 0; i < 9; ++i) {
@@ -67,11 +66,13 @@ public class MinecraftMixin {
             ci.cancel();
             options.keyHotbarSlots[index].consumeClick();
 
-            // 数字键 武器切换
-            if (!options.keyShift.isDown()
-                    && weaponVehicle.hasWeapon(seatIndex)
-                    && weaponVehicle.getWeaponIndex(seatIndex) != index) {
-                PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, false));
+            if (vehicle instanceof WeaponVehicleEntity weaponVehicle) {
+                // 数字键 武器切换
+                if (!options.keyShift.isDown()
+                        && weaponVehicle.hasWeapon(seatIndex)
+                        && weaponVehicle.getWeaponIndex(seatIndex) != index) {
+                    PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, false));
+                }
             }
         }
     }
