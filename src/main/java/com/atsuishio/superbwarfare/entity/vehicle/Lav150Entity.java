@@ -14,15 +14,14 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -88,9 +87,15 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         var ammoList = gunData.get(GunProp.AMMO_CONSUMER);
         var targetIndex = isScroll ? (value + gunData.selectedAmmoType.get()) % ammoList.size() : value;
         setWeaponIndex(index, targetIndex);
+        var soundInfo = gunData.get(GunProp.SOUND_INFO);
 
         // TODO 正确播放武器切换音效
-        this.level().playSound(null, this, SoundEvents.ARROW_HIT_PLAYER, this.getSoundSource(), 1, 1);
+        SoundEvent soundEvent = soundInfo.getSoundEvent(soundInfo.change);
+
+        if (soundEvent != null) {
+            this.level().playSound(null, this, soundEvent, this.getSoundSource(), 1, 1);
+        }
+
     }
 
     @Override
@@ -129,33 +134,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
                                 .sound3pVeryFar(ModSounds.RPK_VERYFAR.get()),
                 }
         };
-    }
-
-    // TODO 正确实现武器信息
-    @Override
-    public List<VehicleWeapon> getAvailableWeapons(int index) {
-        var weapons = getAllWeapons();
-        if (index < 0 || index >= weapons.length) return List.of();
-
-        return List.of(weapons[index]);
-    }
-
-    @Override
-    public VehicleWeapon[][] getAllWeapons() {
-        return getGunDataMap().values().stream().map(data -> {
-            if (data == null) return List.of();
-
-            var ammoTypes = data.get(GunProp.AMMO_CONSUMER);
-
-            return ammoTypes.stream().map(a -> new ProjectileWeapon()
-                    .zoom(false)
-                    .sound(ModSounds.INTO_CANNON.get())
-                    .icon(ResourceLocation.tryParse(a.icon))
-                    .sound1p(ModSounds.COAX_FIRE_1P.get())
-                    .sound3p(ModSounds.RPK_FIRE_3P.get())
-                    .sound3pFar(ModSounds.RPK_FAR.get())
-                    .sound3pVeryFar(ModSounds.RPK_VERYFAR.get())).toArray(VehicleWeapon[]::new);
-        }).toArray(VehicleWeapon[][]::new);
     }
 
     @Override
@@ -266,9 +244,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public void vehicleShoot(LivingEntity living, int type) {
-
-        // TODO 移除WeaponIndex
-//        if (getWeaponIndex(0) == 0) {
         var seatIndex = getSeatIndex(living);
 
         modifyGunData(seatIndex, data -> {
@@ -278,8 +253,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
         sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
         playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
-
-//        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
+        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
         this.entityData.set(CANNON_RECOIL_TIME, 40);
         this.entityData.set(YAW, getTurretYRot());
@@ -291,38 +265,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             var list = data.get(GunProp.SHOOT_POS).positions.list;
             this.currentFirePosIndex = ++this.currentFirePosIndex % list.size();
         }
-
-//        } else if (getWeaponIndex(0) == 1) {
-//            if (this.cannotFireCoax) return;
-//            if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
-//                var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
-//
-//                projectile.bypassArmorRate(0.2f);
-//                projectile.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
-//                projectile.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 36,
-//                        0.25f);
-//                this.level().addFreshEntity(projectile);
-//
-//                if (!hasCreativeAmmo) {
-//                    ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-//                        if (stack.is(ModItems.AMMO_BOX.get())) {
-//                            return Ammo.RIFLE.get(stack) > 0;
-//                        }
-//                        return false;
-//                    }).findFirst().orElse(ItemStack.EMPTY);
-//
-//                    if (!ammoBox.isEmpty()) {
-//                        Ammo.RIFLE.add(ammoBox, -1);
-//                    } else {
-//                        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.RIFLE_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-//                    }
-//                }
-//            }
-//
-//            this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 3);
-//            this.entityData.set(FIRE_ANIM, 2);
-//            playShootSound3p(living, 0, 3, 6, 12, new Vec3(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z));
-//        }
     }
 
     @Override

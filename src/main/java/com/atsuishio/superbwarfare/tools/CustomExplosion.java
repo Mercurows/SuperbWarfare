@@ -1,10 +1,14 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -19,6 +23,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -41,6 +46,8 @@ public class CustomExplosion extends Explosion {
     private final float damage;
     private int fireTime;
     private float damageMultiplier = 1;
+
+    private boolean hit;
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, @Nullable ExplosionDamageCalculator pDamageCalculator,
                            float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius,
@@ -164,6 +171,9 @@ public class CustomExplosion extends Explosion {
                         } else {
                             DamageHandler.doDamage(entity, this.damageSource, (float) damageFinal);
                         }
+
+                        hit = true;
+
                         entity.invulnerableTime = 1;
 
                         if (fireTime > 0) {
@@ -173,6 +183,14 @@ public class CustomExplosion extends Explosion {
                 }
             }
         }
+
+        if (hit) {
+            if (this.damageSource.getEntity() instanceof ServerPlayer player) {
+                SoundTool.playLocalSound(player, ModSounds.INDICATION.get());
+                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+            }
+        }
+
     }
 
     public static class Builder {

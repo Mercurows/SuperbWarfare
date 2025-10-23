@@ -25,10 +25,7 @@ import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.menu.VehicleMenu;
@@ -1116,6 +1113,32 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     // energy end
+
+    // TODO 正确实现武器信息
+    public List<VehicleWeapon> getAvailableWeapons(int index) {
+        var weapons = getAllWeapons();
+        if (index < 0 || index >= weapons.length) return List.of();
+
+        return List.of(weapons[index]);
+    }
+
+    public VehicleWeapon[][] getAllWeapons() {
+        return getGunDataMap().values().stream().map(data -> {
+            if (data == null) return List.of();
+
+            var ammoTypes = data.get(GunProp.AMMO_CONSUMER);
+            var soundInfo = data.get(GunProp.SOUND_INFO);
+
+            return ammoTypes.stream().map(a -> new ProjectileWeapon()
+                    .zoom(false)
+                    .sound(soundInfo.getSoundEvent(soundInfo.change))
+                    .icon(ResourceLocation.tryParse(a.icon))
+                    .sound1p(soundInfo.getSoundEvent(soundInfo.fire1P))
+                    .sound3p(soundInfo.getSoundEvent(soundInfo.fire3P))
+                    .sound3pFar(soundInfo.getSoundEvent(soundInfo.fire3PFar))
+                    .sound3pVeryFar(soundInfo.getSoundEvent(soundInfo.fire3PVeryFar))).toArray(VehicleWeapon[]::new);
+        }).toArray(VehicleWeapon[][]::new);
+    }
 
     /**
      * 初始化武器数组
