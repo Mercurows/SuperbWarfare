@@ -25,6 +25,13 @@
         "Crosshair": "@VehicleUsApc",
         "CrosshairColor": "0x66FF00",
         "Name": "superbwarfare.lav_150.cannon",
+        "SoundInfo": {
+          "Fire1P": "superbwarfare:lav_cannon_fire_1p",
+          "Fire3P": "superbwarfare:lav_cannon_fire_3p",
+          "Fire3PFar": "superbwarfare:lav_cannon_far",
+          "Fire3PVeryFar": "superbwarfare:lav_cannon_veryfar",
+          "Change": "superbwarfare:into_missile"
+        },
         "AmmoType": [
           {
             "Ammo": "Infinity",
@@ -65,7 +72,14 @@
                 "Direction": "Barrel"
               },
               "Crosshair": "@VehicleCommonGun",
-              "Name": "superbwarfare.lav_150.gun"
+              "Name": "superbwarfare.lav_150.gun",
+              "SoundInfo": {
+                "Fire1P": "superbwarfare:coax_fire_1p",
+                "Fire3P": "superbwarfare:m_60_fire_3p",
+                "Fire3PFar": "superbwarfare:m_60_far",
+                "Fire3PVeryFar": "superbwarfare:m_60_veryfar",
+                "Change": "superbwarfare:into_cannon"
+              }
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
           },
@@ -94,7 +108,14 @@
               },
               "ExplosionDamage": 80,
               "ExplosionRadius": 7,
-              "Crosshair": "@VehicleCommonMissile"
+              "Crosshair": "@VehicleCommonMissile",
+              "SoundInfo": {
+                "Fire1P": "superbwarfare:small_rocket_fire_1p",
+                "Fire3P": "superbwarfare:small_rocket_fire_3p",
+                "Fire3PFar": "null",
+                "Fire3PVeryFar": "null",
+                "Change": "superbwarfare:into_cannon"
+              }
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
           },
