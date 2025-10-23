@@ -143,8 +143,8 @@
         0
       ],
       "CameraPos": {
-        "useSimulate3P": true,
-        "simulate3PPos": [6, 1],
+        "UseSimulate3P": true,
+        "Simulate3PPos": [6, 1],
         "Direction": "Self"
       }
     },
@@ -157,8 +157,8 @@
         0
       ],
       "CameraPos": {
-        "useSimulate3P": true,
-        "simulate3PPos": [6, 1],
+        "UseSimulate3P": true,
+        "Simulate3PPos": [6, 1],
         "Direction": "Self"
       }
     },
@@ -171,8 +171,8 @@
         0
       ],
       "CameraPos": {
-        "useSimulate3P": true,
-        "simulate3PPos": [6, 1],
+        "UseSimulate3P": true,
+        "Simulate3PPos": [6, 1],
         "Direction": "Self"
       }
     },
@@ -185,8 +185,8 @@
         0
       ],
       "CameraPos": {
-        "useSimulate3P": true,
-        "simulate3PPos": [6, 1],
+        "UseSimulate3P": true,
+        "Simulate3PPos": [6, 1],
         "Direction": "Self"
       }
     }

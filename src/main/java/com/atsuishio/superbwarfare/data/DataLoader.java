@@ -5,6 +5,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,6 +54,7 @@ public class DataLoader {
                 .setLenient()
                 .serializeSpecialFloatingPointValues()
                 .registerTypeAdapter(Vec3.class, new Vec3Adapter())
+                .registerTypeAdapter(Vec2.class, new Vec2Adapter())
                 .registerTypeAdapter(ModColor.class, new ModColor.ModColorAdapter())
                 .registerTypeAdapter(StringOrVec3.class, new StringOrVec3.StringOrVec3Adapter())
                 .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())

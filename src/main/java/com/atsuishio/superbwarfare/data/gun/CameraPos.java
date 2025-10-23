@@ -23,12 +23,12 @@ public class CameraPos {
     @SerializedName("ZoomDirection")
     public StringOrVec3 zoomDirection = direction;
 
-    @SerializedName("useFixedCameraPos")
+    @SerializedName("UseFixedCameraPos")
     public Boolean useFixedCameraPos = false;
 
-    @SerializedName("useSimulate3P")
+    @SerializedName("UseSimulate3P")
     public Boolean useSimulate3P = false;
 
-    @SerializedName("simulate3PPos")
+    @SerializedName("Simulate3PPos")
     public Vec2 simulate3PPos = new Vec2(6, 1);
 }

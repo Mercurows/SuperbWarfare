@@ -2279,7 +2279,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return switch (string) {
             case "Turret" -> getTurretVector(ticks);
             case "Barrel" -> getBarrelVector(ticks);
-            case "Bomb" -> ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(seatIndex, ticks), getShootVec(seatIndex, ticks), -0.06);
+            case "Bomb" ->
+                    ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(seatIndex, ticks), getShootVec(seatIndex, ticks), -0.06);
             case "WeaponStationBarrel" -> getGunnerVector(ticks);
             default -> getViewVector(ticks);
         };
@@ -2924,11 +2925,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 cameraPos(Entity entity, float ticks) {
-        var data = data().get(VehicleProp.CAMERA_POS);
-        if (data != null) {
+        int index = this.getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        if (seat != null) {
+            var data = seat.cameraPos;
+
             if (data.useSimulate3P) {
-                var vec2 = data.simulate3PPos;
-                return simulate3P(entity, ticks, vec2.x, vec2.y);
+                var simulate3PPos = data.simulate3PPos;
+                return simulate3P(entity, ticks, simulate3PPos.x, simulate3PPos.y);
             }
             if (data.useFixedCameraPos) {
                 var vec3 = data.position;
@@ -2940,9 +2944,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 cameraDirection(Entity entity, float ticks) {
-        var data = data().get(VehicleProp.CAMERA_POS);
+        int index = this.getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        if (seat != null) {
+            var data = seat.cameraPos;
 
-        if (data != null) {
             if (data.useSimulate3P) {
                 return entity.getViewVector(ticks);
             }
@@ -2963,8 +2969,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 zoomPos(Entity entity, float ticks) {
-        var data = data().get(VehicleProp.CAMERA_POS);
-        if (data != null) {
+        int index = this.getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        if (seat != null) {
+            var data = seat.cameraPos;
+
             var vec3 = data.zoomPosition;
 
             Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
@@ -2974,8 +2983,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 zoomDirection(Entity entity, float ticks) {
-        var data = data().get(VehicleProp.CAMERA_POS);
-        if (data != null) {
+        int index = this.getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        if (seat != null) {
+            var data = seat.cameraPos;
+
             StringOrVec3 stringOrVec3 = data.zoomDirection;
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
