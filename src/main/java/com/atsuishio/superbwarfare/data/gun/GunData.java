@@ -38,6 +38,14 @@ import java.util.function.Supplier;
 
 public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
+    public static final LoadingCache<ItemStack, GunData> DATA_CACHE = CacheBuilder.newBuilder()
+            .weakKeys()
+            .build(new CacheLoader<>() {
+                public @NotNull GunData load(@NotNull ItemStack stack) {
+                    return new GunData(stack);
+                }
+            });
+
     public final ItemStack stack;
     public final GunItem item;
     public final CompoundTag tag;
@@ -49,14 +57,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     @NotNull
     public Supplier<DefaultGunData> defaultDataSupplier;
-
-    public static final LoadingCache<ItemStack, GunData> dataCache = CacheBuilder.newBuilder()
-            .weakKeys()
-            .build(new CacheLoader<>() {
-                public @NotNull GunData load(@NotNull ItemStack stack) {
-                    return new GunData(stack);
-                }
-            });
 
     private GunData(ItemStack stack) {
         if (!(stack.getItem() instanceof GunItem gunItem)) {
@@ -148,7 +148,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public static GunData from(ItemStack stack) {
-        return dataCache.getUnchecked(stack);
+        return DATA_CACHE.getUnchecked(stack);
     }
 
     public GunItem item() {
@@ -182,8 +182,9 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return data;
     }
 
+    @Override
     public DefaultGunData getDefault() {
-        return defaultDataSupplier.get();
+        return this.defaultDataSupplier.get();
     }
 
     public static DefaultGunData getDefault(ItemStack stack) {
