@@ -20,7 +20,6 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
@@ -4142,123 +4141,134 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param vec3 动量
      */
     public void crushEntities(Vec3 vec3) {
-        if (level() instanceof ServerLevel) {
-            if (!this.canCrushEntities()) return;
-            if (isRemoved()) return;
+//        if (level() instanceof ServerLevel) {
+        if (!this.canCrushEntities()) return;
+        if (isRemoved()) return;
 
-            List<Entity> entities;
+        List<Entity> entities;
 
-            if (this instanceof OBBEntity obbEntity) {
-                var frontBox = getBoundingBox().move(vec3).inflate(6);
-                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                        .stream().filter(entity -> {
-                                    if (entity.isAlive() && isInObb(obbEntity, entity, vec3)) {
-                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-                                    }
-                                    return false;
+        if (this instanceof OBBEntity obbEntity) {
+//                var frontBox = getBoundingBox().move(vec3).inflate(6);
+
+            var frontBox = this.calculateCombinedAABBOptimized().inflate(1);
+
+            entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                            entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                    .stream().filter(entity -> {
+                                if (entity.isAlive() && isInObb(obbEntity, entity, vec3)) {
+                                    var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
                                 }
-                        )
-                        .toList();
-
-            } else {
-                var frontBox = getBoundingBox().move(vec3);
-                entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                        .stream().filter(entity -> {
-                                    if (entity.isAlive()) {
-                                        var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-                                        return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
-                                                || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
-                                                || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-                                    }
-                                    return false;
-                                }
-                        )
-                        .toList();
-            }
-
-            for (var entity : entities) {
-                double entitySize = entity.getBoundingBox().getSize();
-                double thisSize = this.getBoundingBox().getSize();
-                double f;
-                double f1;
-
-                Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
-                if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
-
-                // TODO 给非载具实体也设置质量
-
-                if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION))
-                    return;
-
-                if (entity instanceof VehicleEntity vehicle) {
-                    f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
-                    f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
-                } else {
-                    f = Mth.clamp(entitySize / thisSize, 0.25, 4);
-                    f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
-
-                }
-
-                float v = (float) v0.length();
-                var velAdd = v0.normalize().scale(0.8 * v);
-
-                if (v > 0.3) {
-                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-                }
-
-                if (vec3.length() > 0.3) {
-                    if (entity instanceof LivingEntity) {
-                        DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 80 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-                    } else {
-                        entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 60 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-                    }
-
-                    if (entity instanceof VehicleEntity) {
-                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
-                    }
-                }
-
-                if (!(entity instanceof TargetEntity)) {
-                    this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
-                }
-
-                if (entity instanceof VehicleEntity mobileVehicle) {
-                    if (this instanceof OBBEntity obbEntity) {
-                        if (isInObb(obbEntity, entity, Vec3.ZERO)) {
-                            Vec3 thisPos = this.position();
-                            Vec3 otherPos = entity.position();
-
-                            for (OBB obb : obbEntity.getOBBs()) {
-                                if (entity instanceof OBBEntity obbEntity2) {
-                                    var obbList2 = obbEntity2.getOBBs();
-                                    for (var obb2 : obbList2) {
-                                        if (OBB.isColliding(obb, obb2)) {
-                                            thisPos = new Vec3(obb.center());
-                                            otherPos = new Vec3(obb2.center());
-                                        }
-                                    }
-                                } else {
-                                    if (OBB.isColliding(obb, entity.getBoundingBox())) {
-                                        thisPos = new Vec3(obb.center());
-                                    }
-                                }
+                                return false;
                             }
-
-                            Vec3 toVec = thisPos.add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(otherPos);
-                            velAdd = toVec.normalize().scale(Math.max(thisPos.distanceTo(otherPos), 0) * 0.01);
-                            this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
-                        }
-                    }
-
-                    mobileVehicle.pushNew(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
-                } else {
-                    entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
-                }
-            }
+                    )
+                    .toList();
+        } else {
+            var frontBox = getBoundingBox().move(vec3);
+            entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
+                            entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
+                    .stream().filter(entity -> {
+                                if (entity.isAlive()) {
+                                    var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
+                                            || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
+                                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
+                                }
+                                return false;
+                            }
+                    )
+                    .toList();
         }
+
+        entities.forEach(e -> {
+            if (e instanceof Player player && this.level().isClientSide) {
+                this.support(player);
+            } else if (!this.level().isClientSide) {
+                this.support(e);
+            }
+        });
+
+        // TODO 相对动量过大的时候再走碰撞
+//            for (var entity : entities) {
+//                double entitySize = entity.getBoundingBox().getSize();
+//                double thisSize = this.getBoundingBox().getSize();
+//                double f;
+//                double f1;
+//
+//                Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
+//                if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
+//
+//                // TODO 给非载具实体也设置质量
+//
+//                if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION.get()))
+//                    return;
+//
+//                if (entity instanceof VehicleEntity vehicle) {
+//                    f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
+//                    f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
+//                } else {
+//                    f = Mth.clamp(entitySize / thisSize, 0.25, 4);
+//                    f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
+//
+//                }
+//
+//                float v = (float) v0.length();
+//                var velAdd = v0.normalize().scale(0.8 * v);
+//
+//                if (v > 0.3) {
+//                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+//                }
+//
+//                if (vec3.length() > 0.3) {
+//                    if (entity instanceof LivingEntity) {
+//                        DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 80 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+//                    } else {
+//                        entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 60 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+//                    }
+//
+//                    if (entity instanceof VehicleEntity) {
+//                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(v) - 0.3) * (Mth.abs(v) - 0.3)));
+//                    }
+//                }
+//
+//                if (!(entity instanceof TargetEntity)) {
+//                    this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
+//                }
+//
+//                if (entity instanceof VehicleEntity mobileVehicle) {
+//                    if (this instanceof OBBEntity obbEntity) {
+//                        if (isInObb(obbEntity, entity, Vec3.ZERO)) {
+//                            Vec3 thisPos = this.position();
+//                            Vec3 otherPos = entity.position();
+//
+//                            for (OBB obb : obbEntity.getOBBs()) {
+//                                if (entity instanceof OBBEntity obbEntity2) {
+//                                    var obbList2 = obbEntity2.getOBBs();
+//                                    for (var obb2 : obbList2) {
+//                                        if (OBB.isColliding(obb, obb2)) {
+//                                            thisPos = new Vec3(obb.center());
+//                                            otherPos = new Vec3(obb2.center());
+//                                        }
+//                                    }
+//                                } else {
+//                                    if (OBB.isColliding(obb, entity.getBoundingBox())) {
+//                                        thisPos = new Vec3(obb.center());
+//                                    }
+//                                }
+//                            }
+//
+//                            Vec3 toVec = thisPos.add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(otherPos);
+//                            velAdd = toVec.normalize().scale(Math.max(thisPos.distanceTo(otherPos), 0) * 0.01);
+//                            this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
+//                        }
+//                    }
+//
+//                    mobileVehicle.pushNew(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+//                } else {
+//                    entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
+//                }
+//            }
+//        }
     }
 
     public boolean isInObb(OBBEntity obbEntity, Entity entity, Vec3 vec3) {
@@ -4527,105 +4537,99 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return data().get(VehicleProp.TYPE);
     }
 
-    // TODO 实现正确的OBB碰撞检测
-//    /**
-//     * @author YWZJ Ranpoes
-//     */
-//    public void support(Entity entity) {
-//        if (!(this instanceof OBBEntity obbEntity)) return;
-//
-//        Vec3 feetPos = entity.position().subtract(new Vec3(0, 0.1f, 0));
-//        for (var obb : obbEntity.getOBBs()) {
-//            if (obb.contains(feetPos)) {
-//                if (!entity.noPhysics && !this.noPhysics) {
-//                    double gravity = Math.max(entity.getDeltaMovement().y, 0);
-//                    if (gravity == 0) {
-//                        entity.setOnGround(true);
-//                    }
-//                    double depth = obb.getEmbeddingDepth(feetPos);
-//                    entity.setDeltaMovement(this.getDeltaMovement().add(0, gravity + depth < 0.1f ? 0 : depth, 0));
-//
-//                    continue;
-//                }
-//            }
-//            if (!entity.noPhysics && !this.noPhysics) {
-//                var aabb = entity.getBoundingBox();
-//                if (OBB.isColliding(obb, aabb)) {
-//                    int face = obb.getEmbeddingFace(feetPos);
-//                    var axes = obb.getAxes();
-//                    var support = axes[Math.abs(face) - 1];
-//                    if (face < 0) {
-//                        support.negate();
-//                    }
-//                    if (entity.isPushable()) {
-//                        float force = 0.1f;
-//                        if (this.getDeltaMovement().length() > 0.01 && face != -2) {
-//                            force = 0.2f;
-//                        }
-//                        entity.setPos(entity.position().add(new Vec3(support).scale(force)));
-//                        this.hasImpulse = true;
-//                    }
-//                }
-//            }
-//        }
-//    }
+    /**
+     * @author YWZJ Ranpoes
+     */
+    public void support(Entity entity) {
+        if (!(this instanceof OBBEntity obbEntity)) return;
+
+        Vec3 feetPos = entity.position().subtract(new Vec3(0, 0.1f, 0));
+        for (var obb : obbEntity.getOBBs()) {
+            if (obb.contains(feetPos)) {
+                if (!entity.noPhysics && !this.noPhysics) {
+                    double gravity = Math.max(entity.getDeltaMovement().y, 0);
+                    if (gravity == 0) {
+                        entity.setOnGround(true);
+                    }
+                    double depth = obb.getEmbeddingDepth(feetPos);
+                    entity.setDeltaMovement(this.getDeltaMovement().add(0, gravity + depth < 0.1f ? 0 : depth, 0));
+
+                    continue;
+                }
+            }
+            if (!entity.noPhysics && !this.noPhysics) {
+                var aabb = entity.getBoundingBox();
+                if (OBB.isColliding(obb, aabb)) {
+                    int face = obb.getEmbeddingFace(feetPos);
+                    var axes = obb.getAxes();
+                    var support = axes[Math.abs(face) - 1];
+                    if (face < 0) {
+                        support.negate();
+                    }
+                    if (entity.isPushable()) {
+                        float force = 0.1f;
+                        if (this.getDeltaMovement().length() > 0.01 && Math.abs(face) != 2) {
+                            force = 0.2f;
+                        }
+                        var vec = new Vec3(support).scale(force);
+                        vec = new Vec3(vec.x, Math.max(0, vec.y), vec.z);
+                        entity.setPos(entity.position().add(vec));
+                        this.hasImpulse = true;
+                    }
+                }
+            }
+        }
+    }
 
     // TODO 实现正确的AABB包围箱
-//    @Override
-//    public EntityDimensions getDimensions(Pose pPose) {
-//        var aabb = this.calculateCombinedAABBOptimized();
-//        var max = Math.max(aabb.getXsize(), aabb.getZsize());
-//        return EntityDimensions.scalable((float) max, (float) aabb.getYsize());
-//    }
-//
-//    public AABB calculateCombinedAABBOptimized() {
-//        if (!(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
-//            return this.getBoundingBox();
-//        }
-//
-//        var obbList = obbEntity.getOBBs();
-//
-//        Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-//        Vector3f max = new Vector3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
-//
-//        for (OBB obb : obbList) {
-//            Vector3f[] vertices = getOBBVertices(obb);
-//
-//            for (Vector3f vertex : vertices) {
-//                min.x = Math.min(min.x, vertex.x);
-//                min.y = Math.min(min.y, vertex.y);
-//                min.z = Math.min(min.z, vertex.z);
-//
-//                max.x = Math.max(max.x, vertex.x);
-//                max.y = Math.max(max.y, vertex.y);
-//                max.z = Math.max(max.z, vertex.z);
-//            }
-//        }
-//
-//        return new AABB(new Vec3(min), new Vec3(max));
-//    }
-//
-//    private Vector3f[] getOBBVertices(OBB obb) {
-//        Vector3f[] vertices = new Vector3f[8];
-//
-//        Vector3f[] axes = new Vector3f[3];
-//        axes[0] = obb.rotation().transform(new Vector3f(1, 0, 0));
-//        axes[1] = obb.rotation().transform(new Vector3f(0, 1, 0));
-//        axes[2] = obb.rotation().transform(new Vector3f(0, 0, 1));
-//
-//        for (int i = 0; i < 8; i++) {
-//            float signX = ((i & 1) == 0) ? 1.0f : -1.0f;
-//            float signY = ((i & 2) == 0) ? 1.0f : -1.0f;
-//            float signZ = ((i & 4) == 0) ? 1.0f : -1.0f;
-//
-//            Vector3f vertex = new Vector3f(obb.center());
-//            vertex.add(new Vector3f(axes[0]).mul(obb.extents().x * signX));
-//            vertex.add(new Vector3f(axes[1]).mul(obb.extents().y * signY));
-//            vertex.add(new Vector3f(axes[2]).mul(obb.extents().z * signZ));
-//
-//            vertices[i] = vertex;
-//        }
-//
-//        return vertices;
-//    }
+    public AABB calculateCombinedAABBOptimized() {
+        if (!(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
+            return this.getBoundingBox();
+        }
+
+        var obbList = obbEntity.getOBBs();
+
+        Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+        Vector3f max = new Vector3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+
+        for (OBB obb : obbList) {
+            Vector3f[] vertices = getOBBVertices(obb);
+
+            for (Vector3f vertex : vertices) {
+                min.x = Math.min(min.x, vertex.x);
+                min.y = Math.min(min.y, vertex.y);
+                min.z = Math.min(min.z, vertex.z);
+
+                max.x = Math.max(max.x, vertex.x);
+                max.y = Math.max(max.y, vertex.y);
+                max.z = Math.max(max.z, vertex.z);
+            }
+        }
+
+        return new AABB(new Vec3(min), new Vec3(max));
+    }
+
+    private Vector3f[] getOBBVertices(OBB obb) {
+        Vector3f[] vertices = new Vector3f[8];
+
+        Vector3f[] axes = new Vector3f[3];
+        axes[0] = obb.rotation().transform(new Vector3f(1, 0, 0));
+        axes[1] = obb.rotation().transform(new Vector3f(0, 1, 0));
+        axes[2] = obb.rotation().transform(new Vector3f(0, 0, 1));
+
+        for (int i = 0; i < 8; i++) {
+            float signX = ((i & 1) == 0) ? 1.0f : -1.0f;
+            float signY = ((i & 2) == 0) ? 1.0f : -1.0f;
+            float signZ = ((i & 4) == 0) ? 1.0f : -1.0f;
+
+            Vector3f vertex = new Vector3f(obb.center());
+            vertex.add(new Vector3f(axes[0]).mul(obb.extents().x * signX));
+            vertex.add(new Vector3f(axes[1]).mul(obb.extents().y * signY));
+            vertex.add(new Vector3f(axes[2]).mul(obb.extents().z * signZ));
+
+            vertices[i] = vertex;
+        }
+
+        return vertices;
+    }
 }
