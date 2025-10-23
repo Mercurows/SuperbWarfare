@@ -139,7 +139,7 @@ public class HelicopterHudOverlay implements IGuiOverlay {
                     }
                 }
 
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyCount()), screenWidth / 2 - 160, screenHeight / 2 - 50, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), screenWidth / 2 - 160, screenHeight / 2 - 50, color, false);
 
                 if (lerpVy * 20 < -24) {
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
@@ -191,7 +191,7 @@ public class HelicopterHudOverlay implements IGuiOverlay {
                     }
                 }
 
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyCount()), 25, 1, -1, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), 25, 1, -1, false);
                 poseStack.popPose();
                 poseStack.popPose();
             }
