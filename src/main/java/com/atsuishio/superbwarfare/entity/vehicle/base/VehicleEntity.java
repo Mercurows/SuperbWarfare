@@ -1817,6 +1817,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) * 0.5f);
 
+        if (hasDecoy()) {
+            if (getVehicleType() == VehicleType.AIRPLANE || getVehicleType() == VehicleType.HELICOPTER) {
+                releaseDecoy();
+            } else {
+                releaseSmokeDecoy(getTurretVector(1));
+            }
+        }
+
         this.refreshDimensions();
     }
 
@@ -3286,6 +3294,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
+        int index = this.getSeatIndex(entity);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        if (seat != null) {
+            var data = seat.cameraPos;
+            return data.useFixedCameraPos;
+        }
         return false;
     }
 
@@ -4560,7 +4574,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // TODO 用数据包定义
     public boolean hasDecoy() {
-        return false;
+        return data().get(VehicleProp.HAS_DECOY);
     }
 
     public boolean engineRunning() {

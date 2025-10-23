@@ -11,6 +11,7 @@
   "UpStep": 1.1,
   "Mass": 20,
   "AllowFreeCam": true,
+  "HasDecoy": true,
   "DamageModifiers": [
     "minecraft:arrow * 1.5",
     "minecraft:trident * 1.5",

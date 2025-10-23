@@ -21,7 +21,7 @@ public class CameraPos {
     public Vec3 zoomPosition = Vec3.ZERO;
 
     @SerializedName("ZoomDirection")
-    public StringOrVec3 zoomDirection = direction;
+    public StringOrVec3 zoomDirection = new StringOrVec3("Default");
 
     @SerializedName("UseFixedCameraPos")
     public Boolean useFixedCameraPos = false;

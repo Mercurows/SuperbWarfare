@@ -10,6 +10,7 @@
     "MinYaw": -45,
     "MaxYaw": 45
   },
+  "HasDecoy": true,
   "UpStep": 1.1,
   "Mass": 0.02,
   "AllowFreeCam": true,

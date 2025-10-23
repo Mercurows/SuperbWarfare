@@ -333,7 +333,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         lowHealthWarning();
         terrainCompact(4.375f, 6.3125f);
         inertiaRotate(1.2f);
-        releaseSmokeDecoy(getTurretVector(1));
 
         this.refreshDimensions();
     }

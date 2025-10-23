@@ -100,7 +100,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
             float k = ((screenWidth - i) / 2);
             float l = ((screenHeight - j) / 2);
 
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 RenderHelper.preciseBlitWithColor(guiGraphics, HELI_BASE, k, l, 0, 0.0F, i, j, i, j, color);
                 renderDriverAngle(guiGraphics, player, vehicle, k, l, i, j, partialTick, color, poseStack);
 
@@ -175,10 +175,10 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
             float x = (float) p.x;
             float y = (float) p.y;
 
-            if (mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            if (mc.options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 RenderHelper.preciseBlitWithColor(guiGraphics, CROSSHAIR_IND, x - 8, y - 8, 0, 0, 16, 16, 16, 16, color);
                 renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-            } else if (VectorUtil.canSee(pos)) {
+            } else if (VectorUtil.canSee(pos) && !ClientEventHandler.zoomVehicle) {
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
                 preciseBlit(guiGraphics, CROSSHAIR_3P, x - 8, y - 8, 0, 0, 16, 16, 16, 16);

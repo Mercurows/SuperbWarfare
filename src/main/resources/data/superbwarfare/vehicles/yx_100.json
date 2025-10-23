@@ -54,6 +54,7 @@
     "Decrement": 0.01,
     "SteeringSpeed": 0.1
   },
+  "HasDecoy": true,
   "UpStep": 2.25,
   "Mass": 70,
   "DamageModifiers": [

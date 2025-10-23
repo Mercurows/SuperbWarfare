@@ -59,6 +59,7 @@
       "MaxYaw": 90
     }
   ],
+  "HasDecoy": true,
   "Mass": 0.7,
   "DamageModifiers": [
     "All * 0.5",

@@ -284,7 +284,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
         this.terrainCompact(4f, 5f);
         inertiaRotate(1);
-        releaseSmokeDecoy(getTurretVector(1));
         lowHealthWarning();
 
         for (int i = 1; i < 7; i++) {

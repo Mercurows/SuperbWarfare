@@ -12,11 +12,17 @@
       ],
       "CameraPos": {
         "Transform": "Vehicle",
-        "ZoomPosition": [
-          -1.75,
-          2.2,
-          -4.5
+        "Position": [
+          0.45,
+          2.45,
+          1
         ],
+        "ZoomPosition": [
+          0.45,
+          2.45,
+          1.25
+        ],
+        "UseFixedCameraPos": true,
         "AircraftCamera": true
       },
       "CanRotateHead": false,
@@ -28,7 +34,7 @@
         "DefaultFireMode": "Auto",
         "AvailableFireModes": "Auto",
         "Projectile": "superbwarfare:small_cannon_shell",
-        "RPM": 400,
+        "RPM": 500,
         "Velocity": 30,
         "Damage": 45,
         "ExplosionDamage": 12,
@@ -69,7 +75,7 @@
             "Ammo": "Infinity",
             "Projectile": "superbwarfare:small_rocket",
             "Override": {
-              "RPM": 600,
+              "RPM": 500,
               "Damage": 80,
               "ExplosionDamage": 40,
               "ExplosionRadius": 5,
@@ -151,6 +157,7 @@
   "UpStep": 1.1,
   "Mass": 1.2,
   "AllowFreeCam": true,
+  "HasDecoy": true,
   "DamageModifiers": [
     "minecraft:arrow * 0.2",
     "minecraft:trident * 0.4",
