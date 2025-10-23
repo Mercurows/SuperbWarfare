@@ -50,7 +50,9 @@
                 "Positions": [
                   [1.15, 0.62, 0.8], [-1.15, 0.62, 0.8]
                 ],
-                "Direction": "Vehicle"
+                "Directions": [
+                  "Vehicle", [0, 1, 1]
+                ]
               }
             }
           },

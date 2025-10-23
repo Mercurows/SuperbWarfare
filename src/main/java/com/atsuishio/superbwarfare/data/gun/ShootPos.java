@@ -14,6 +14,7 @@ public class ShootPos {
     @SerializedName("Positions")
     public ObjectToList<Vec3> positions = new ObjectToList<>(Vec3.ZERO);
 
-    @SerializedName("Direction")
-    public StringOrVec3 direction = new StringOrVec3("Default");
+    // TODO 把这个也改成List后好像炸了
+    @SerializedName("Directions")
+    public ObjectToList<StringOrVec3> directions = new ObjectToList<>(new StringOrVec3("Default"));
 }

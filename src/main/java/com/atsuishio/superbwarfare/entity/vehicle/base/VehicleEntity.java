@@ -2379,12 +2379,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getShootVec(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            StringOrVec3 stringOrVec3 = data.get(GunProp.SHOOT_POS).direction;
+
+            var list = data.get(GunProp.SHOOT_POS).directions.list;
+            var stringOrVec3 = list.get(this.currentFirePosIndex % list.size());
+
             if (stringOrVec3.isString()) {
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
             } else {
                 Vec3 startPos = getShootPos(entity, ticks);
-                Vec3 endPos = stringOrVec3.vec3;
+                Vec3 endPos = startPos.add(stringOrVec3.vec3);
                 return startPos.vectorTo(endPos).normalize();
             }
         }
@@ -3021,7 +3024,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 }
             } else {
                 Vec3 startPos = getShootPos(entity, ticks);
-                Vec3 endPos = stringOrVec3.vec3;
+                Vec3 endPos = startPos.add(stringOrVec3.vec3);
                 return startPos.vectorTo(endPos).normalize();
             }
         }
@@ -3053,7 +3056,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
             } else {
                 Vec3 startPos = getShootPos(entity, ticks);
-                Vec3 endPos = stringOrVec3.vec3;
+                Vec3 endPos = startPos.add(stringOrVec3.vec3);
                 return startPos.vectorTo(endPos).normalize();
             }
         }
