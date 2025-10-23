@@ -873,14 +873,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public boolean banHand(LivingEntity entity) {
-        if (entity == getNthEntity(0) || entity == getNthEntity(1)) {
-            return true;
-        }
-        return entity == getNthEntity(2) && !entity.isShiftKeyDown();
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }

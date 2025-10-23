@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -41,7 +41,7 @@ public class HeatBarOverlay implements IGuiOverlay {
         double heat;
         if (ClientEventHandler.isEditing
                 || !(player.getMainHandItem().getItem() instanceof GunItem)
-                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
+                || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
         ) {
             heat = 0;
         } else {

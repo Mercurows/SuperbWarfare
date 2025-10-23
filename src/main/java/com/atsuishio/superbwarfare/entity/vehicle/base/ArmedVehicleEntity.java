@@ -53,19 +53,6 @@ public interface ArmedVehicleEntity {
     int getAmmoCount(LivingEntity living);
 
     /**
-     * 是否禁用玩家手臂
-     *
-     * @param entity 玩家
-     */
-    default boolean banHand(LivingEntity entity) {
-        // 若玩家所在位置有可用武器，则默认禁用手臂
-        if (this instanceof VehicleEntity vehicle && this instanceof WeaponVehicleEntity weaponVehicle) {
-            return weaponVehicle.hasWeapon(vehicle.getSeatIndex(entity));
-        }
-        return false;
-    }
-
-    /**
      * 瞄准时的放大倍率
      *
      * @return 放大倍率

@@ -90,7 +90,7 @@ public class ClickHandler {
 
     private static boolean cancelFireKey(Player player, ItemStack stack) {
         return stack.getItem() instanceof GunItem || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || stack.is(ModItems.ARTILLERY_INDICATOR.get()) || player.hasEffect(ModMobEffects.SHOCK.get())
-                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player));
+                || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player));
     }
 
     private static boolean cancelZoomKey(Player player, ItemStack stack) {
@@ -216,7 +216,7 @@ public class ClickHandler {
                 && player.getVehicle() instanceof VehicleEntity vehicle
                 && vehicle instanceof WeaponVehicleEntity weaponVehicle
                 && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))
-                && weaponVehicle.banHand(player)
+                && vehicle.banHand(player)
         ) {
             int index = vehicle.getSeatIndex(player);
             Mod.PACKET_HANDLER.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
@@ -413,8 +413,8 @@ public class ClickHandler {
 
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return;
 
-        if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.banHand(player)) {
-            if (player.getVehicle() instanceof VehicleEntity pVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
+        if (player.getVehicle() instanceof VehicleEntity pVehicle && pVehicle.banHand(player)) {
+            if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
                 ClientEventHandler.holdFireVehicle = true;
             }
             return;
@@ -516,7 +516,7 @@ public class ClickHandler {
 
         isEditing = false;
 
-        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player)) && iVehicle.banHand(player)) {
+        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player)) && pVehicle.banHand(player)) {
             ClientEventHandler.zoomVehicle = true;
             return;
         }

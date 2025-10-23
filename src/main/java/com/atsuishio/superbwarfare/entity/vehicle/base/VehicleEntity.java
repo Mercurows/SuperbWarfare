@@ -3132,6 +3132,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     /**
+     * 是否禁用玩家手臂
+     *
+     * @param entity 玩家
+     */
+    public boolean banHand(LivingEntity entity) {
+        int index = getSeatIndex(entity);
+        var gunData = getGunData(index);
+        var seat = data().get(VehicleProp.SEATS).get(index);
+        return gunData != null || seat.banHand;
+    }
+
+    /**
      * 是否隐藏载具上的玩家
      *
      * @return 是否隐藏
@@ -3195,8 +3207,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param isFirstPerson 是否是第一人称视角
      */
     @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        if (zoom || isFirstPerson) {
+            return new Vec2((float) -getYRotFromVector(cameraDirection(player, partialTicks)), (float) -getXRotFromVector(cameraDirection(player, partialTicks)));
+        }
         return null;
     }
 
@@ -3208,6 +3222,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @OnlyIn(Dist.CLIENT)
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+        if (zoom || isFirstPerson) {
+            if (zoom) {
+                return zoomPos(player, partialTicks);
+            } else {
+                return cameraPos(player, partialTicks);
+            }
+        }
         return null;
     }
 

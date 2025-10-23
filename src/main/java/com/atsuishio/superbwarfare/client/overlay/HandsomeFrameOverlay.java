@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -50,7 +50,7 @@ public class HandsomeFrameOverlay implements IGuiOverlay {
 
         if (ClientEventHandler.isEditing)
             return;
-        if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player))
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
             return;
 
         if (stack.getItem() instanceof GunItem && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {

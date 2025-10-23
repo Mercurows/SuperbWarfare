@@ -47,4 +47,7 @@ public class SeatInfo {
 
     @SerializedName("CameraPos")
     public CameraPos cameraPos = new CameraPos();
+
+    @SerializedName("BanHand")
+    public Boolean banHand = false;
 }

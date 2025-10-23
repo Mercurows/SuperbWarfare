@@ -906,11 +906,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public boolean banHand(LivingEntity entity) {
-        return true;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }

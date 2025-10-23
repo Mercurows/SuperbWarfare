@@ -635,11 +635,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public boolean banHand(LivingEntity entity) {
-        return true;
-    }
-
-    @Override
     public int zoomFov() {
         return 5;
     }

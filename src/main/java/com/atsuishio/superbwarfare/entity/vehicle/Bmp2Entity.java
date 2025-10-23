@@ -668,12 +668,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             return this.entityData.get(MG_AMMO);
         }
     }
-
-    @Override
-    public boolean banHand(LivingEntity entity) {
-        return true;
-    }
-
     @Override
     public int zoomFov() {
         return 3;

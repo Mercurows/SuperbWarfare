@@ -500,11 +500,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public boolean banHand(LivingEntity entity) {
-        return entity == getFirstPassenger();
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }
