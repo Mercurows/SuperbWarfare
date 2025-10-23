@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
@@ -8,8 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -114,26 +111,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     // TODO 移除这个
     @Override
     public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        new SmallCannonShellWeapon()
-                                .sound(ModSounds.INTO_MISSILE.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_20mm.png"))
-                                .sound1p(ModSounds.LAV_CANNON_FIRE_1P.get())
-                                .sound3p(ModSounds.LAV_CANNON_FIRE_3P.get())
-                                .sound3pFar(ModSounds.LAV_CANNON_FAR.get())
-                                .sound3pVeryFar(ModSounds.LAV_CANNON_VERYFAR.get()),
-                        new ProjectileWeapon()
-                                .headShot(2)
-                                .zoom(false)
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_7_62mm.png"))
-                                .sound1p(ModSounds.COAX_FIRE_1P.get())
-                                .sound3p(ModSounds.RPK_FIRE_3P.get())
-                                .sound3pFar(ModSounds.RPK_FAR.get())
-                                .sound3pVeryFar(ModSounds.RPK_VERYFAR.get()),
-                }
-        };
+        return null;
     }
 
     @Override
@@ -157,33 +135,11 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public void baseTick() {
         super.baseTick();
         updateOBB();
-
-        if (this.level() instanceof ServerLevel) {
-            updateBackupAmmoCount();
-        }
-
         lowHealthWarning();
         this.terrainCompact(2.7f, 3.61f);
         inertiaRotate(1.25f);
         releaseSmokeDecoy(getTurretVector(1));
-
         this.refreshDimensions();
-    }
-
-    protected void updateBackupAmmoCount() {
-        for (int i = 0; i < getMaxPassengers(); i++) {
-            modifyGunData(i, data -> {
-                if (data.useBackpackAmmo()) {
-                    data.backupAmmoCount.set(data.countBackupAmmo(getAmmoSupplier()));
-                } else {
-                    data.backupAmmoCount.reset();
-                }
-            });
-        }
-    }
-
-    protected Entity getAmmoSupplier() {
-        return this;
     }
 
     // 炮塔最大水平旋转速度
@@ -320,7 +276,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public int mainGunRpm(LivingEntity living) {
         var data = getGunData(getSeatIndex(living));
         if (data == null) return 0;
-
         return data.get(GunProp.RPM);
     }
 
@@ -328,7 +283,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public boolean canShoot(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
-
         return gunData != null && gunData.canShoot(getAmmoSupplier());
     }
 
@@ -349,13 +303,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public int getWeaponHeat(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
         if (gunData == null) return 0;
-
         return Math.toIntExact(Math.round(gunData.heat.get()));
-    }
-
-    @Override
-    public boolean hasDecoy() {
-        return true;
     }
 
     @Override

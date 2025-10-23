@@ -10,11 +10,76 @@
         0.85,
         1
       ],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "ZoomPosition": [-1.75, 2.2, -4.5],
+        "AircraftCamera": true
+      },
       "CanRotateHead": false,
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,
-      "MaxYaw": 80
+      "MaxYaw": 80,
+      "WeaponData": {
+        "DefaultFireMode": "Auto",
+        "AvailableFireModes": "Auto",
+        "Projectile": "superbwarfare:small_cannon_shell",
+        "RPM": 400,
+        "Velocity": 30,
+        "Damage": 45,
+        "ExplosionDamage": 12,
+        "ExplosionRadius": 3.5,
+        "HeatPerShoot": 0.5,
+        "Name": "superbwarfare.ah_6.cannon",
+        "SoundInfo": {
+          "Fire1P": "superbwarfare:heli_cannon_fire_1p",
+          "Fire3P": "superbwarfare:heli_cannon_fire_3p",
+          "Fire3PFar": "superbwarfare:heli_cannon_far",
+          "Fire3PVeryFar": "superbwarfare:heli_cannon_veryfar",
+          "Change": "superbwarfare:into_cannon"
+        },
+        "AmmoType": [
+          {
+            "Ammo": "Infinity",
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+            "Override": {
+              "ShootPos": {
+                "Transform": "Vehicle",
+                "Positions": [
+                  [1.15, 0.62, 0.8], [-1.15, 0.62, 0.8]
+                ],
+                "Direction": "Vehicle"
+              }
+            }
+          },
+          {
+            "Ammo": "Infinity",
+            "Projectile": "superbwarfare:small_rocket",
+            "Override": {
+              "RPM": 600,
+              "Damage": 80,
+              "ExplosionDamage": 40,
+              "ExplosionRadius": 5,
+              "Velocity": 16,
+              "ShootPos": {
+                "Transform": "Vehicle",
+                "Positions": [
+                  [1.7, 0.62, 0.8], [-1.7, 0.62, 0.8]
+                ],
+                "Direction": "Vehicle"
+              },
+              "SoundInfo": {
+                "Fire1P": "superbwarfare:small_rocket_fire_1p",
+                "Fire3P": "superbwarfare:small_rocket_fire_3p",
+                "Fire3PFar": "null",
+                "Fire3PVeryFar": "null",
+                "Change": "superbwarfare:into_missile"
+              }
+            },
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
+          }
+        ]
+      }
     },
     {
       "Transform": "Vehicle",
