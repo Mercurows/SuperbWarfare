@@ -67,7 +67,11 @@ public abstract class GunGeoItem extends GunItem implements GeoItem, CustomRende
 
         var resource = GunResource.from(stack);
         var data = GunData.from(stack);
-        var animation = resource.getDefault().animation;
+
+        var defaultResource = resource.getDefault();
+        if (defaultResource == null) return PlayState.STOP;
+
+        var animation = defaultResource.animation;
         if (animation == null || animation.idle == null) return PlayState.STOP;
 
         // Idle
