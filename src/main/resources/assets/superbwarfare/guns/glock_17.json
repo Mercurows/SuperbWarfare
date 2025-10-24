@@ -1,8 +1,8 @@
 {
   "ID": "superbwarfare:glock_17",
   "Animation": {
-    "Idle":"animation.glock_17.idle",
-    "ReloadNormal":"animation.glock_17.reload_empty",
-    "ReloadEmpty":"animation.glock_17.reload_normal"
+    "Idle": "animation.glock_17.idle",
+    "ReloadNormal": "animation.glock_17.reload_empty",
+    "ReloadEmpty": "animation.glock_17.reload_normal"
   }
 }
