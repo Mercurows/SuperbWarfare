@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:rpg",
+  "Animation": {
+    "Idle": "animation.rpg.idle",
+    "Edit": "animation.rpg.edit",
+    "Reload": "animation.rpg.reload",
+    "Run": "animation.rpg.run",
+    "Sprint": "animation.rpg.run_fast"
+  }
+}
