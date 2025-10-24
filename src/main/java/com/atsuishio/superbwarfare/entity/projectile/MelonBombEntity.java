@@ -45,13 +45,16 @@ public class MelonBombEntity extends DestroyableProjectile implements ExplosiveP
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            AABB aabb = new AABB(blockHitResult.getLocation(), blockHitResult.getLocation()).inflate(5);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
-                if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1 && new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(blockHitResult.getLocation()) < 3) {
-                    this.level().destroyBlock(pos, true);
-                }
-            });
+            if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
+                AABB aabb = new AABB(blockHitResult.getLocation(), blockHitResult.getLocation()).inflate(5);
+                BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                    float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+                    if (hard != -1 && new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(blockHitResult.getLocation()) < 3) {
+                        this.level().destroyBlock(pos, true);
+                    }
+                });
+            }
+
             ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
             this.discard();
         }

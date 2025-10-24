@@ -193,7 +193,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                         durability -= 10 + (int) (0.5 * hardness);
                     }
 
-                    if (hardness <= durability && hardness != -1) {
+                    if (hardness <= durability && hardness != -1 && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
                         this.level().destroyBlock(pos, true);
                     }
                     if (hardness == -1 || hardness > durability || durability <= 0) {
