@@ -133,9 +133,11 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器射速的文本组件
      */
     protected Component getRpmComponent() {
-        if (this.stack.getItem() instanceof GunItem &&
-                (GunData.from(this.stack).get(GunProp.AVAILABLE_FIRE_MODES).contains(FireMode.AUTO)
-                        || GunData.from(this.stack).get(GunProp.AVAILABLE_FIRE_MODES).contains(FireMode.BURST))) {
+        if (!(this.stack.getItem() instanceof GunItem)) return Component.empty();
+        var data = GunData.from(this.stack);
+        var info = data.selectedFireModeInfo();
+
+        if (info.mode == FireMode.AUTO || info.mode == FireMode.BURST) {
             return Component.translatable("des.superbwarfare.guns.rpm").withStyle(ChatFormatting.GRAY)
                     .append(Component.empty().withStyle(ChatFormatting.RESET))
                     .append(Component.literal(FormatTool.format0D(data.get(GunProp.RPM)))
