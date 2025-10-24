@@ -2,6 +2,6 @@
   "ID": "superbwarfare:hunting_rifle",
   "Animation": {
     "Idle":"animation.hunting_rifle.idle",
-    "ReloadEmpty":"animation.hunting_rifle.reload"
+    "Reload":"animation.hunting_rifle.reload"
   }
 }
