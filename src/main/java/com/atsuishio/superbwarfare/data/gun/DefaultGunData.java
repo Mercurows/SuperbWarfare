@@ -106,6 +106,9 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("ZoomReload")
     public boolean zoomReload = true;
 
+    @SerializedName("ClearHoldProgressAfterShoot")
+    public boolean ClearHoldProgressAfterShoot = false;
+
     @SerializedName("BurstAmount")
     public int burstAmount;
     @SerializedName("BypassesArmor")

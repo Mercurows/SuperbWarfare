@@ -1,0 +1,112 @@
+{
+  "ID": "superbwarfare:ql_1031",
+  "MinZoom": 1.25,
+  "MaxZoom": 6,
+  "Spread": 4,
+  "RecoilX": 0.002,
+  "RecoilY": 0.012,
+  "Damage": 9.8,
+  "Headshot": 2,
+  "Velocity": 44,
+  "Weight": 4,
+  "DefaultFireMode": "Auto",
+  "BypassesArmor": 0.5,
+  "SoundRadius": 12,
+  "RPM": 600,
+  "HeatPerShoot": 1.25,
+  "GunType": "Sniper",
+  "AvailableFireModes": [
+    "Auto",
+    {
+      "Mode": "Semi",
+      "Name": "Semi",
+      "Override": {
+        "RecoilX": 0.004,
+        "RecoilY": 0.009,
+        "Spread": 6,
+        "Damage": 24,
+        "Headshot": 2.5,
+        "Velocity": 51,
+        "BypassesArmor": 0.7,
+        "HeatPerShoot": 5,
+        "RPM": 300,
+        "AmmoCostPerShoot": 1000,
+        "SoundInfo": {
+          "Fire1P": "superbwarfare:mk_14_fire_1p",
+          "Fire3P": "superbwarfare:mk_14_fire_3p",
+          "Fire3PFar": "superbwarfare:mk_14_far",
+          "Fire3PVeryFar": "superbwarfare:mk_14_veryfar",
+          "Fire1PSilent": "superbwarfare:mk_14_fire_1p_s",
+          "Fire3PSilent": "superbwarfare:mk_14_fire_3p_s",
+          "Fire3PFarSilent": "superbwarfare:mk_14_far_s"
+        }
+      }
+    },
+    {
+      "Mode": "Semi",
+      "Name": "Hold",
+      "Override": {
+        "Spread": 8,
+        "RecoilX": 0.01,
+        "RecoilY": 0.038,
+        "ShootDelay": 20,
+        "ClearHoldProgressAfterShoot": true,
+        "Damage": 100,
+        "Headshot": 3,
+        "Velocity": 74,
+        "BypassesArmor": 1.3,
+        "HeatPerShoot": 33,
+        "AmmoCostPerShoot": 5000,
+        "RPM": 1200,
+        "SoundInfo": {
+          "Fire1P": "superbwarfare:m_98b_fire_1p",
+          "Fire3P": "superbwarfare:m_98b_fire_3p",
+          "Fire3PFar": "superbwarfare:m_98b_far",
+          "Fire3PVeryFar": "superbwarfare:m_98b_veryfar",
+          "Fire1PSilent": "superbwarfare:m_98b_fire_1p_s",
+          "Fire3PSilent": "superbwarfare:m_98b_fire_3p_s"
+        }
+      }
+    }
+  ],
+  "DamageReduce": {
+    "Type": "Sniper"
+  },
+  "AmmoType": "FE",
+  "AmmoCostPerShoot": 500,
+  "MaxEnergy": 100000,
+  "GunIcon": "superbwarfare:textures/gun_icon/ql_1031_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:head_seeker",
+    "superbwarfare:desperado",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:fair_means",
+    "superbwarfare:firefly",
+    "superbwarfare:high_impact_reserves",
+    "superbwarfare:powerful_cooler",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:qbz_95_fire_1p",
+    "Fire3P": "superbwarfare:qbz_95_fire_3p",
+    "Fire3PFar": "superbwarfare:qbz_95_far",
+    "Fire3PVeryFar": "superbwarfare:qbz_95_veryfar",
+    "Fire1PSilent": "superbwarfare:qbz_95_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:qbz_95_fire_3p_s",
+    "Fire3PFarSilent": "superbwarfare:ak_12_far_s",
+    "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s"
+  }
+}

@@ -74,6 +74,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Qbz191Item> QBZ_191 = GUNS.register("qbz_191", Qbz191Item::new);
     public static final DeferredHolder<Item, InsidiousItem> INSIDIOUS = GUNS.register("insidious", InsidiousItem::new);
     public static final DeferredHolder<Item, Mk14Item> MK_14 = GUNS.register("mk_14", Mk14Item::new);
+    public static final DeferredHolder<Item, Ql1031Item> QL_1031 = GUNS.register("ql_1031", Ql1031Item::new);
     public static final DeferredHolder<Item, MarlinItem> MARLIN = GUNS.register("marlin", MarlinItem::new);
     public static final DeferredHolder<Item, K98Item> K_98 = GUNS.register("k_98", K98Item::new);
     public static final DeferredHolder<Item, MosinNagantItem> MOSIN_NAGANT = GUNS.register("mosin_nagant", MosinNagantItem::new);
