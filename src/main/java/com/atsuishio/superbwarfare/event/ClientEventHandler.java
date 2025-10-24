@@ -860,6 +860,10 @@ public class ClientEventHandler {
             holdFire = false;
         }
 
+        if (data.get(GunProp.CLEAR_HOLD_PROGRESS_AFTER_SHOOT)) {
+            shootDelay = 0;
+        }
+
         if (mode == FireMode.BURST && burstFireAmount == 1) {
             fireCooldown = data.get(GunProp.BURST_COOLDOWN);
         }

@@ -72,6 +72,7 @@ public class ModItems {
     public static final RegistryObject<Item> QBZ_191 = GUNS.register("qbz_191", Qbz191Item::new);
     public static final RegistryObject<Item> INSIDIOUS = GUNS.register("insidious", InsidiousItem::new);
     public static final RegistryObject<Item> MK_14 = GUNS.register("mk_14", Mk14Item::new);
+    public static final RegistryObject<Item> QL_1031 = GUNS.register("ql_1031", Ql1031Item::new);
     public static final RegistryObject<Item> MARLIN = GUNS.register("marlin", MarlinItem::new);
     public static final RegistryObject<Item> K_98 = GUNS.register("k_98", K98Item::new);
     public static final RegistryObject<Item> MOSIN_NAGANT = GUNS.register("mosin_nagant", MosinNagantItem::new);

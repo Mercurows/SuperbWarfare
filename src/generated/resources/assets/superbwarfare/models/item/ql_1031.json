@@ -1,0 +1,15 @@
+{
+  "base": {
+    "parent": "superbwarfare:item/ql_1031_base"
+  },
+  "gui_light": "front",
+  "loader": "forge:separate_transforms",
+  "perspectives": {
+    "gui": {
+      "parent": "superbwarfare:item/ql_1031_icon"
+    }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/ql_1031_icon"
+  }
+}

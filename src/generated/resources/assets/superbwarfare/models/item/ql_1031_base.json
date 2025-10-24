@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/ql_1031.item",
+  "textures": {
+    "layer0": "superbwarfare:item/ql_1031"
+  }
+}
