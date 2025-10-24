@@ -19,6 +19,10 @@ public class DefaultGunResource implements IDBasedData {
 
     @SerializedName("GunIcon")
     public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();
+
+    @SerializedName("Animation")
+    public GunAnimation animation = new GunAnimation();
+
     /*
      * 准星类型
      * 预制的字段有：
@@ -30,6 +34,7 @@ public class DefaultGunResource implements IDBasedData {
     public String crosshair = "@GunDefault";
     @SerializedName("CrosshairColor")
     public ModColor crosshairColor = new ModColor();
+
     @SerializedName("Name")
     public String name = "superbwarfare.gun.default";
     @SerializedName("HideCrosshairWhenZoom")

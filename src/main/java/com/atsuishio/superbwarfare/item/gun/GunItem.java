@@ -102,8 +102,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public final Map<Integer, Consumer<GunData>> reloadTimeBehaviors = new HashMap<>();
     public final Map<Integer, Consumer<GunData>> boltTimeBehaviors = new HashMap<>();
 
-    private boolean isDamageable = false;
-
     public GunItem(Properties properties) {
         super(properties.stacksTo(1));
 
