@@ -23,7 +23,7 @@ public class DataLoader {
     private static final Map<ResourceLocation, GeneralData<?>> LOADED_DATA = new HashMap<>();
     private static final Map<ResourceLocation, GeneralData<?>> LOADED_RESOURCE = new HashMap<>();
 
-    public record GeneralData<T extends IDBasedData>(
+    public record GeneralData<T>(
             Class<?> type, DataMap<T> proxyMap,
             HashMap<String, Object> data,
             @Nullable Consumer<Map<String, Object>> onReload
@@ -46,12 +46,12 @@ public class DataLoader {
         }
     }
 
-    public static <T extends IDBasedData> DataMap<T> createData(String namespace, String directory, Class<T> clazz) {
+    public static <T> DataMap<T> createData(String namespace, String directory, Class<T> clazz) {
         return createData(namespace, directory, clazz, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends IDBasedData> DataMap<T> createData(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
+    public static <T> DataMap<T> createData(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
         var loc = new ResourceLocation(namespace, directory);
         if (LOADED_DATA.containsKey(loc)) {
             return (DataMap<T>) LOADED_DATA.get(loc).proxyMap;
@@ -62,12 +62,12 @@ public class DataLoader {
         }
     }
 
-    public static <T extends IDBasedData> DataMap<T> createResource(String namespace, String directory, Class<T> clazz) {
+    public static <T> DataMap<T> createResource(String namespace, String directory, Class<T> clazz) {
         return createResource(namespace, directory, clazz, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends IDBasedData> DataMap<T> createResource(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
+    public static <T> DataMap<T> createResource(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
         var loc = new ResourceLocation(namespace, directory);
         if (LOADED_RESOURCE.containsKey(loc)) {
             return (DataMap<T>) LOADED_RESOURCE.get(loc).proxyMap;
@@ -108,7 +108,7 @@ public class DataLoader {
 
     // read-only custom data map
 
-    public static class DataMap<T extends IDBasedData> extends HashMap<String, T> {
+    public static class DataMap<T> extends HashMap<String, T> {
         private final ResourceLocation location;
         private final Map<ResourceLocation, GeneralData<?>> loadedData;
 

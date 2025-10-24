@@ -40,11 +40,11 @@ public class ComplexJsonResourceReloadListener extends SimplePreparableReloadLis
                 if (!pathLocation.getNamespace().equals(namespace)) continue;
 
                 try (var reader = entry.getValue().openAsReader()) {
-                    var data = (IDBasedData) DataLoader.GSON.fromJson(reader, value.type());
+                    var data = DataLoader.GSON.fromJson(reader, value.type());
 
                     String id;
-                    if (!data.getId().isEmpty()) {
-                        id = data.getId();
+                    if (data instanceof IDBasedData IDData && !IDData.getId().isEmpty()) {
+                        id = IDData.getId();
                     } else {
                         id = pathLocation.toString();
                         Mod.LOGGER.warn("{} ID for {} is empty, try using {} as id", name, id, pathLocation);
