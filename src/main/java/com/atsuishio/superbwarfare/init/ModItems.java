@@ -292,6 +292,7 @@ public class ModItems {
     public static final DeferredHolder<Item, BlueprintItem> SECONDARY_CATACLYSM_BLUEPRINT = ITEMS.register("secondary_cataclysm_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> INSIDIOUS_BLUEPRINT = ITEMS.register("insidious_blueprint", () -> new BlueprintItem(Rarity.EPIC));
     public static final DeferredHolder<Item, BlueprintItem> AURELIA_SCEPTRE_BLUEPRINT = ITEMS.register("aurelia_sceptre_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
+    public static final DeferredHolder<Item, BlueprintItem> QL_1031_BLUEPRINT = ITEMS.register("ql_1031_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MK_42_BLUEPRINT = ITEMS.register("mk_42_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> MLE_1934_BLUEPRINT = ITEMS.register("mle_1934_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));
     public static final DeferredHolder<Item, BlueprintItem> BL_132_BLUEPRINT = ITEMS.register("bl_132_blueprint", () -> new BlueprintItem(ModEnumExtensions.getLegendary()));

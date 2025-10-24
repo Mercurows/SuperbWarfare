@@ -73,7 +73,7 @@
     "Type": "Sniper"
   },
   "AmmoType": "FE",
-  "AmmoCostPerShoot": 500,
+  "AmmoCostPerShoot": 300,
   "MaxEnergy": 100000,
   "GunIcon": "superbwarfare:textures/gun_icon/ql_1031_icon.png",
   "AvailablePerks": [

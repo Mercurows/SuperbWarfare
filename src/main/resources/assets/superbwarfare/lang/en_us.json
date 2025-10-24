@@ -62,6 +62,8 @@
   "item.superbwarfare.awm": "AWM",
   "item.superbwarfare.igla_9k38": "IGLA-9K38 MANPADS",
   "item.superbwarfare.repair_tool": "Repair Tool",
+  "item.superbwarfare.ql_1031": "QL-1031 \"Qinglan\"",
+
   "item.superbwarfare.vehicle_gun": "Vehicle Gun",
   "des.superbwarfare.vehicle_gun": "You should not have got this",
 
@@ -132,6 +134,7 @@
   "item.superbwarfare.qbz_191_blueprint": "QBZ-191 Blueprint",
   "item.superbwarfare.bl_132_blueprint": "130mm/58 BL-132 Blueprint",
   "item.superbwarfare.igla_9k38_blueprint": "IGLA-9K38 MANPADS Blueprint",
+  "item.superbwarfare.ql_1031_blueprint": "QL-1031 \"Qinglan\" Blueprint",
 
   "item.superbwarfare.common_material_pack": "Common Material Pack",
   "item.superbwarfare.rare_material_pack": "Rare Material Pack",
