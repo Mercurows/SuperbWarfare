@@ -757,6 +757,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final IntValue level;
     public final DoubleValue exp;
     public final DoubleValue upgradePoint;
+
+    // Max: 100
     public final DoubleValue heat;
 
     public final BooleanValue overHeat;

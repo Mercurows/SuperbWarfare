@@ -31,6 +31,7 @@ public class VehicleGun extends GunItem {
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
         return data.get(GunProp.PROJECTILE_AMOUNT) > 0
                 && !data.overHeat.get()
+                && data.get(GunProp.HEAT_PER_SHOOT) <= (100 - data.heat.get())
                 && !data.reloading()
                 && !data.charging()
                 && !data.bolt.needed.get()
