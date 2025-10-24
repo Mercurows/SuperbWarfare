@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.data.gun.CameraPos;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
@@ -14,7 +13,6 @@ public class SeatInfo {
     @ServerOnly
     public Boolean isEnclosed = null;
 
-    // TODO 座位锚点
     @SerializedName("Transform")
     public String transform = "Default";
 
