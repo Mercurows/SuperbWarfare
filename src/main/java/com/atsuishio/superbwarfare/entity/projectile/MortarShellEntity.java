@@ -158,12 +158,10 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         BlockPos resultPos = blockHitResult.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
 
-        if (this.level() instanceof ServerLevel) {
+        if (this.level() instanceof ServerLevel && ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                    this.level().destroyBlock(resultPos, true);
-                }
+                this.level().destroyBlock(resultPos, true);
             }
         }
 

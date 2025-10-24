@@ -6,6 +6,7 @@ public class ExplosionConfig {
 
     public static ModConfigSpec.IntValue EXPLOSION_PENETRATION_RATIO;
     public static ModConfigSpec.BooleanValue EXPLOSION_DESTROY;
+    public static ModConfigSpec.BooleanValue EXTRA_EXPLOSION_EFFECT;
 
     public static ModConfigSpec.IntValue RGO_GRENADE_EXPLOSION_DAMAGE;
     public static ModConfigSpec.IntValue RGO_GRENADE_EXPLOSION_RADIUS;
@@ -48,6 +49,9 @@ public class ExplosionConfig {
 
         builder.comment("Set true to allow Explosion to destroy blocks");
         EXPLOSION_DESTROY = builder.define("explosion_destroy", true);
+
+        builder.comment("Set true to enable extra explosion effect. For example, C4 and RPG will destroy blocks before explosion");
+        EXTRA_EXPLOSION_EFFECT = builder.define("extra_explosion_effect", true);
 
         builder.push("RGO Grenade");
 

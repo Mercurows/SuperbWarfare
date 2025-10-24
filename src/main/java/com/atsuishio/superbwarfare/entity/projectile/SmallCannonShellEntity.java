@@ -108,7 +108,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         if (this.level() instanceof ServerLevel) {
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
                     boolean destroy = Math.random() < Mth.clamp(1 - (hardness / 50), 0.1, 1);
                     if (destroy) {
                         this.level().destroyBlock(resultPos, true);
