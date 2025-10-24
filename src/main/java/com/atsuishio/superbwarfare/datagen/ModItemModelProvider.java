@@ -217,6 +217,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunBlueprintItem(ModItems.MP_5_BLUEPRINT);
         gunBlueprintItem(ModItems.QBZ_191_BLUEPRINT);
         gunBlueprintItem(ModItems.IGLA_BLUEPRINT);
+        gunBlueprintItem(ModItems.QL_1031_BLUEPRINT);
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE);

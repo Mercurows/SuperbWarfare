@@ -97,8 +97,5 @@
         1.1
       ]
     }
-  },
-  "textures": {
-    "particle": "item/texture"
   }
 }

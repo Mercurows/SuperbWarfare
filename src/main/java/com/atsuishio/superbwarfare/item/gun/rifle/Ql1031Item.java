@@ -39,7 +39,6 @@ public class Ql1031Item extends GunGeoItem {
         return Ql1031ItemRenderer::new;
     }
 
-
     private PlayState editPredicate(AnimationState<Ql1031Item> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
