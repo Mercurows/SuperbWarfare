@@ -1,11 +1,10 @@
-package com.atsuishio.superbwarfare.data.gun;
+package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
-// TODO 摄像机位置可能不应该写到枪里，因为没武器的乘客也有可能需要这个
 public class CameraPos {
 
     @SerializedName("Transform")
