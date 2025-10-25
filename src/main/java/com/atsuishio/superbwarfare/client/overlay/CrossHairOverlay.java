@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -116,7 +117,7 @@ public class CrossHairOverlay implements IGuiOverlay {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
             switch (crosshair) {
                 case CROSSHAIR_GUN_DEFAULT ->
-                        renderGunDefaultCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
+                        renderGunDefaultCrosshair(guiGraphics, stack, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
                 case CROSSHAIR_GUN_REPAIR_TOOL ->
                         renderRepairToolCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY);
                 case CROSSHAIR_GUN_BOCEK ->
@@ -128,7 +129,7 @@ public class CrossHairOverlay implements IGuiOverlay {
 
         // 第三人称下的准星
         if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0)) {
-            renderGunDefaultCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
+            renderGunDefaultCrosshair(guiGraphics, stack, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
         }
 
         // 在开启伤害指示器时才进行渲染
@@ -167,10 +168,13 @@ public class CrossHairOverlay implements IGuiOverlay {
         preciseBlit(guiGraphics, SHOTGUN, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
     }
 
-    public static void renderGunDefaultCrosshair(GuiGraphics guiGraphics, GunData data, Player player, int screenWidth, int screenHeight,
+    public static void renderGunDefaultCrosshair(GuiGraphics guiGraphics, ItemStack stack, Player player, int screenWidth, int screenHeight,
                                                  float moveX, float moveY, float finPosX, float finPosY, float finLength, double spread) {
+        GunData data = GunData.from(stack);
+        GunResource resource = GunResource.from(stack);
+
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-            if (ClientEventHandler.zoomTime > 0.8 && data.get(GunProp.HIDE_CROSSHAIR_WHEN_ZOOM)) return;
+            if (ClientEventHandler.zoomTime > 0.8 && resource.getDefault().hideCrosshairWhenZoom) return;
         }
 
         preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
