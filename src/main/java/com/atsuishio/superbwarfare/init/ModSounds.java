@@ -522,5 +522,22 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_VERYFAR_S_HOLD = REGISTRY.register("ql_1031_veryfar_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_hold")));
     public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_CHARGE = REGISTRY.register("ql_1031_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_charge")));
     public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_DISCHARGE = REGISTRY.register("ql_1031_discharge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_discharge")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_1P_SEMI = REGISTRY.register("ql_1031_fire_1p_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_3P_SEMI = REGISTRY.register("ql_1031_fire_3p_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_1P_S_SEMI = REGISTRY.register("ql_1031_fire_1p_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_3P_S_SEMI = REGISTRY.register("ql_1031_fire_3p_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FAR_SEMI = REGISTRY.register("ql_1031_far_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_VERYFAR_SEMI = REGISTRY.register("ql_1031_veryfar_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FAR_S_SEMI = REGISTRY.register("ql_1031_far_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_VERYFAR_S_SEMI = REGISTRY.register("ql_1031_veryfar_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_semi")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_1P_AUTO = REGISTRY.register("ql_1031_fire_1p_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_auto")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_3P_AUTO = REGISTRY.register("ql_1031_fire_3p_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_auto")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_1P_S_AUTO = REGISTRY.register("ql_1031_fire_1p_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_auto")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FIRE_3P_S_AUTO = REGISTRY.register("ql_1031_fire_3p_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_auto")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FAR_AUTO = REGISTRY.register("ql_1031_far_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_auto")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_VERYFAR_AUTO = REGISTRY.register("ql_1031_veryfar_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_auto")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FAR_S_AUTO = REGISTRY.register("ql_1031_far_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_auto")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_VERYFAR_S_AUTO = REGISTRY.register("ql_1031_veryfar_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_auto")));
+
 }
 

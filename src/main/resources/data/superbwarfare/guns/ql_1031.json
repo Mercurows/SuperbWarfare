@@ -32,14 +32,14 @@
         "RPM": 300,
         "AmmoCostPerShoot": 1000,
         "SoundInfo": {
-          "Fire1P": "superbwarfare:mk_14_fire_1p",
-          "Fire3P": "superbwarfare:mk_14_fire_3p",
-          "Fire3PFar": "superbwarfare:mk_14_far",
-          "Fire3PVeryFar": "superbwarfare:mk_14_veryfar",
-          "Fire1PSilent": "superbwarfare:mk_14_fire_1p_s",
-          "Fire3PSilent": "superbwarfare:mk_14_fire_3p_s",
-          "Fire3PFarSilent": "superbwarfare:mk_14_far_s",
-          "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s"
+          "Fire1P": "superbwarfare:ql_1031_fire_1p_semi",
+          "Fire3P": "superbwarfare:ql_1031_fire_3p_semi",
+          "Fire3PFar": "superbwarfare:ql_1031_far_semi",
+          "Fire3PVeryFar": "superbwarfare:ql_1031_veryfar_semi",
+          "Fire1PSilent": "superbwarfare:ql_1031_fire_1p_s_semi",
+          "Fire3PSilent": "superbwarfare:ql_1031_fire_3p_s_semi",
+          "Fire3PFarSilent": "superbwarfare:ql_1031_far_s_semi",
+          "Fire3PVeryFarSilent": "superbwarfare:ql_1031_veryfar_s_semi"
         }
       }
     },
@@ -96,13 +96,13 @@
     "!superbwarfare:cupid_arrow"
   ],
   "SoundInfo": {
-    "Fire1P": "superbwarfare:qbz_95_fire_1p",
-    "Fire3P": "superbwarfare:qbz_95_fire_3p",
-    "Fire3PFar": "superbwarfare:qbz_95_far",
-    "Fire3PVeryFar": "superbwarfare:qbz_95_veryfar",
-    "Fire1PSilent": "superbwarfare:qbz_95_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:qbz_95_fire_3p_s",
-    "Fire3PFarSilent": "superbwarfare:ak_12_far_s",
-    "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s"
+    "Fire1P": "superbwarfare:ql_1031_fire_1p_auto",
+    "Fire3P": "superbwarfare:ql_1031_fire_3p_auto",
+    "Fire3PFar": "superbwarfare:ql_1031_far_auto",
+    "Fire3PVeryFar": "superbwarfare:ql_1031_veryfar_auto",
+    "Fire1PSilent": "superbwarfare:ql_1031_fire_1p_s_auto",
+    "Fire3PSilent": "superbwarfare:ql_1031_fire_3p_s_auto",
+    "Fire3PFarSilent": "superbwarfare:ql_1031_far_s_auto",
+    "Fire3PVeryFarSilent": "superbwarfare:ql_1031_veryfar_s_auto"
   }
 }
