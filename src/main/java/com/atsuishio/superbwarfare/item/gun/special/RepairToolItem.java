@@ -184,11 +184,6 @@ public class RepairToolItem extends GunGeoItem {
         }
     }
 
-    @Override
-    public boolean canZoom(GunData data, @Nullable Entity shooter) {
-        return false;
-    }
-
     public void summonRayHitParticle(ServerLevel serverLevel, @Nullable BlockState state, Vec3 pos, Vec3 dir) {
         if (state != null) {
             BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);

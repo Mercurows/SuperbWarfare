@@ -20,6 +20,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -525,14 +526,18 @@ public class ClickHandler {
             return;
         }
 
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
-        if (!gunItem.canZoom(GunData.from(stack), player)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
+        var resource = GunResource.from(stack);
+        if (!resource.getDefault().canZoom) return;
+
+        var data = GunData.from(stack);
         ClientEventHandler.zoom = true;
-        int level = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+
+        int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
         if (level > 0) {
             if (ClientEventHandler.entity == null) {
-                if (GunData.from(stack).perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || GunData.from(stack).perk.has(ModPerks.BEAST_BULLET.get())) {
+                if (data.perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || data.perk.has(ModPerks.BEAST_BULLET.get())) {
                     ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, 32 + 8 * (level - 1), 20);
                 } else {
                     ClientEventHandler.entity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 20);
