@@ -3696,7 +3696,7 @@
       }
     ]
   },
-  "repair_tool_3p": {
+  "repair_tool_fire_3p": {
     "sounds": [
       {
         "name": "superbwarfare:repair_tool/repair_tool_fire_3p",

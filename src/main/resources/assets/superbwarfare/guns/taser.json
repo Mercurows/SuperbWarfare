@@ -9,5 +9,6 @@
     "Model": "superbwarfare:geo/taser.geo.json",
     "Texture": "superbwarfare:textures/item/taser.png",
     "LODModel": "superbwarfare:geo/lod/taser.geo.json"
-  }
+  },
+  "EnergyBarColor": "0xFFFF00"
 }

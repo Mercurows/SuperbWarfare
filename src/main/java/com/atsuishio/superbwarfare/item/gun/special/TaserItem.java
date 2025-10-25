@@ -27,11 +27,6 @@ public class TaserItem extends GunGeoItem {
     }
 
     @Override
-    public int getEnergyBarColor(GunData data) {
-        return 0xFFFF00;
-    }
-
-    @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return TaserItemRenderer::new;
     }

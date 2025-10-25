@@ -31,11 +31,6 @@ public class Ql1031Item extends GunGeoItem {
     }
 
     @Override
-    public int getEnergyBarColor(GunData data) {
-        return 0xFFFF00;
-    }
-
-    @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return Ql1031ItemRenderer::new;
     }

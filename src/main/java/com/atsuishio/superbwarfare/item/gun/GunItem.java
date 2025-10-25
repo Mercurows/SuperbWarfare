@@ -24,6 +24,7 @@ import com.atsuishio.superbwarfare.item.EnergyStorageItem;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -152,15 +153,16 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             return super.getBarColor(stack);
         }
 
+        var resource = GunResource.from(stack);
         if (data.get(GunProp.MAX_ENERGY) > 0) {
-            return getEnergyBarColor(data);
+            return this.getEnergyBarColor(resource);
         }
 
         return super.getBarColor(stack);
     }
 
-    public int getEnergyBarColor(GunData data) {
-        return 0x95E9FF;
+    public int getEnergyBarColor(GunResource resource) {
+        return resource.getDefault().energyBarColor.get();
     }
 
     public void init(GunData data) {
