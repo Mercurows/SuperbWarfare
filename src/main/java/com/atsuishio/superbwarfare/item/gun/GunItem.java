@@ -361,13 +361,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     /**
-     * 武器是否会抛壳
-     */
-    public boolean canEjectShell(GunData data) {
-        return false;
-    }
-
-    /**
      * 武器是否能进行近战攻击
      */
     public boolean hasMeleeAttack(GunData data) {
