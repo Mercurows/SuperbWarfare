@@ -46,4 +46,7 @@ public class DefaultGunResource implements IDBasedData {
     public String name = "superbwarfare.gun.default";
     @SerializedName("HideCrosshairWhenZoom")
     public boolean hideCrosshairWhenZoom = true;
+
+    @SerializedName("EnergyBarColor")
+    public ModColor energyBarColor = new ModColor(0x95E9FF);
 }

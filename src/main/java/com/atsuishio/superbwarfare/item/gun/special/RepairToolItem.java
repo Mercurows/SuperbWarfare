@@ -39,7 +39,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -68,12 +67,7 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 public class RepairToolItem extends GunGeoItem {
 
     public RepairToolItem() {
-        super(new Properties().rarity(Rarity.COMMON));
-    }
-
-    @Override
-    public int getEnergyBarColor(GunData data) {
-        return 0xFFFF00;
+        super(new Properties());
     }
 
     @Override
