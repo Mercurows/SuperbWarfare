@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ModColor;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.world.phys.Vec3;
 
 public class DefaultGunResource implements IDBasedData {
 
@@ -29,6 +30,15 @@ public class DefaultGunResource implements IDBasedData {
 
     @SerializedName("Animation")
     public GunAnimation animation = new GunAnimation();
+
+    @SerializedName("UseOldHandRenderer")
+    public boolean useOldHandRenderer = false;
+
+    @SerializedName("FlarePosition")
+    public Vec3 flarePosition = null;
+
+    @SerializedName("FlareSize")
+    public float flareSize = 1;
 
     /*
      * 准星类型

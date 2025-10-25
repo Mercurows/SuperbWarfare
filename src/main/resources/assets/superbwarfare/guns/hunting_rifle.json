@@ -10,5 +10,11 @@
   "Animation": {
     "Idle": "animation.hunting_rifle.idle",
     "Reload": "animation.hunting_rifle.reload"
-  }
+  },
+  "FlarePosition": [
+    0,
+    0,
+    2.234375
+  ],
+  "FlareSize": 0.6
 }

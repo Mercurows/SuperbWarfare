@@ -48,7 +48,7 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3);
                 }
 
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.025, 2, 0.5);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {

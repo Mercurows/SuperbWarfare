@@ -48,7 +48,7 @@ public class Ntw20Renderer extends CustomGunRenderer<Ntw20Item> {
                 }
 
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 3.70229375, 0.8);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
                     if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2

@@ -29,7 +29,7 @@ public class K98Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(K98ItemModel::new, 0, 0, 1.9772, 0.4, true);
+        return GunRendererBuilder.simple(K98ItemModel::new);
     }
 
     private PlayState fireAnimPredicate(AnimationState<K98Item> event) {

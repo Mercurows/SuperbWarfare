@@ -40,7 +40,7 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
 
     @Override
     public DefaultGunResource getDefault() {
-        return CustomData.GUN_RESOURCE.get(id);
+        return CustomData.GUN_RESOURCE.getOrDefault(id, new DefaultGunResource());
     }
 
     public static DefaultGunResource getDefault(ItemStack stack) {

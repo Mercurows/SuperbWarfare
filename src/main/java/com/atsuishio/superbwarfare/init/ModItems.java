@@ -91,11 +91,11 @@ public class ModItems {
     public static final RegistryObject<Item> M_2_HB = GUNS.register("m_2_hb", M2HBItem::new);
     public static final RegistryObject<Item> MINIGUN = GUNS.register("minigun", MinigunItem::new);
     public static final RegistryObject<Item> M_79 = GUNS.register("m_79", M79Item::new);
-    public static final RegistryObject<Item> SECONDARY_CATACLYSM = GUNS.register("secondary_cataclysm", SecondaryCataclysm::new);
+    public static final RegistryObject<Item> SECONDARY_CATACLYSM = GUNS.register("secondary_cataclysm", SecondaryCataclysmItem::new);
     public static final RegistryObject<Item> RPG = GUNS.register("rpg", RpgItem::new);
     public static final RegistryObject<Item> JAVELIN = GUNS.register("javelin", JavelinItem::new);
     public static final RegistryObject<Item> IGLA_9K38 = GUNS.register("igla_9k38", IglaItem::new);
-    public static final RegistryObject<Item> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptre::new);
+    public static final RegistryObject<Item> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptreItem::new);
     public static final RegistryObject<Item> BOCEK = GUNS.register("bocek", BocekItem::new);
 
     public static final RegistryObject<Item> VEHICLE_GUN = GUNS.register("vehicle_gun", VehicleGun::new);

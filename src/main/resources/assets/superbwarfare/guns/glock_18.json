@@ -11,5 +11,11 @@
     "Texture": "superbwarfare:textures/item/glock_17.png",
     "LODModel": "superbwarfare:geo/lod/glock_17.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/glock_17.png"
-  }
+  },
+  "FlarePosition": [
+    0,
+    0,
+    0.3022
+  ],
+  "FlareSize": 0.3
 }

@@ -66,7 +66,7 @@ public class TracheliumItemRenderer extends CustomGunRenderer<Trachelium> {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                 }
 
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 0.734375, 0.5);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {

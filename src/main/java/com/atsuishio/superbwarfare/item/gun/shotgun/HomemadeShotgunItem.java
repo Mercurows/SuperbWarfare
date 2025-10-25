@@ -22,7 +22,7 @@ public class HomemadeShotgunItem extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(HomemadeShotgunItemModel::new, 0, 0.05, 0.25, 1.2);
+        return GunRendererBuilder.simple(HomemadeShotgunItemModel::new);
     }
 
     @Override

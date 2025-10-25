@@ -29,7 +29,7 @@ public class Aa12Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(Aa12ItemModel::new, 0, 0, 1.31465, 0.5, true);
+        return GunRendererBuilder.simple(Aa12ItemModel::new);
     }
 
     private PlayState idlePredicate(AnimationState<Aa12Item> event) {

@@ -20,7 +20,7 @@ public class Glock17Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(Glock17ItemModel::new, 0, 0, 0.3022, 0.3);
+        return GunRendererBuilder.simple(Glock17ItemModel::new);
     }
 
     @Override

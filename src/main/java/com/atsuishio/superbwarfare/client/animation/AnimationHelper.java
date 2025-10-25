@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -90,15 +91,26 @@ public class AnimationHelper {
         }
     }
 
+
+    public static void handleShootFlare(String name, PoseStack stack, ItemStack itemStack, GeoBone bone, MultiBufferSource buffer, int packedLightIn) {
+        var resource = GunResource.from(itemStack);
+        var defaultResource = resource.getDefault();
+        if (defaultResource.flarePosition != null) {
+            handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, defaultResource.flarePosition.x, defaultResource.flarePosition.y, defaultResource.flarePosition.z, defaultResource.flareSize);
+        }
+    }
+
     public static void handleShootFlare(String name, PoseStack stack, ItemStack itemStack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, double size) {
-        if (name.equals("flare") && ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.5 && GunData.from(itemStack).attachment.get(AttachmentType.BARREL) != 2) {
+        var data = GunData.from(itemStack);
+
+        if (name.equals("flare") && ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.5 && data.attachment.get(AttachmentType.BARREL) != 2) {
             bone.setScaleX((float) (size + 0.8 * size * (Math.random() - 0.5)));
             bone.setScaleY((float) (size + 0.8 * size * (Math.random() - 0.5)));
             bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
 
             float height = 0f;
 
-            if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
+            if ((data.attachment.get(AttachmentType.SCOPE) == 2 || data.attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
                 height = -0.07f;
             }
 

@@ -54,7 +54,7 @@ public class AK47ItemRenderer extends CustomGunRenderer<AK47Item> {
                 }
 
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.02, 1.12375, 0.3);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
                     if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2

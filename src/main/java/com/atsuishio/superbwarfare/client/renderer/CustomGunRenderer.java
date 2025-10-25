@@ -143,11 +143,15 @@ public class CustomGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Geo
         } else {
             modelLocation = geoModel.getModelResource(animatable);
         }
+        // 资源包重载过程中该值可能为空（恼）
+        if (modelLocation == null) return;
 
         BakedGeoModel model = geoModel.getBakedModel(modelLocation);
 
         if (renderType == null)
             renderType = getRenderType(animatable, getTextureLocation(animatable), bufferSource, partialTick);
+
+        if (renderType == null) return;
 
         if (buffer == null)
             buffer = bufferSource.getBuffer(renderType);

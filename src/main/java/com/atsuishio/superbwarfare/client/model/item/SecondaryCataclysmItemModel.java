@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
+import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysmItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -11,10 +11,10 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
-public class SecondaryCataclysmItemModel extends CustomGunModel<SecondaryCataclysm> {
+public class SecondaryCataclysmItemModel extends CustomGunModel<SecondaryCataclysmItem> {
 
     @Override
-    public void setCustomAnimations(SecondaryCataclysm animatable, long instanceId, AnimationState<SecondaryCataclysm> animationState) {
+    public void setCustomAnimations(SecondaryCataclysmItem animatable, long instanceId, AnimationState<SecondaryCataclysmItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();

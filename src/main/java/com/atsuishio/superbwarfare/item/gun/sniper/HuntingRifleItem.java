@@ -17,6 +17,6 @@ public class HuntingRifleItem extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(HuntingRifleItemModel::new, 0, 0, 2.234375, 0.6);
+        return GunRendererBuilder.simple(HuntingRifleItemModel::new);
     }
 }

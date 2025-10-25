@@ -51,7 +51,7 @@ public class Mk14ItemRenderer extends CustomGunRenderer<Mk14Item> {
                     bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
                 }
 
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.475, 0.33);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {

@@ -6,5 +6,11 @@
     "Texture": "superbwarfare:textures/item/qbz_191.png",
     "LODModel": "superbwarfare:geo/lod/qbz_191.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/qbz_191.png"
-  }
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.353125
+  ],
+  "FlareSize": 0.3
 }

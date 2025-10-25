@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.handgun.AureliaSceptre;
+import com.atsuishio.superbwarfare.item.gun.handgun.AureliaSceptreItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -11,12 +11,12 @@ import software.bernie.geckolib.core.animation.AnimationState;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.*;
 
-public class AureliaSceptreItemModel extends CustomGunModel<AureliaSceptre> {
+public class AureliaSceptreItemModel extends CustomGunModel<AureliaSceptreItem> {
 
     public static float firePosMove = 0f;
 
     @Override
-    public void setCustomAnimations(AureliaSceptre animatable, long instanceId, AnimationState<AureliaSceptre> animationState) {
+    public void setCustomAnimations(AureliaSceptreItem animatable, long instanceId, AnimationState<AureliaSceptreItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();

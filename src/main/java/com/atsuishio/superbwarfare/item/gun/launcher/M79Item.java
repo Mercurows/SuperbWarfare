@@ -33,7 +33,7 @@ public class M79Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(M79ItemModel::new, 0, 0, 0.59375, 1, true);
+        return GunRendererBuilder.simple(M79ItemModel::new);
     }
 
     private PlayState idlePredicate(AnimationState<M79Item> event) {

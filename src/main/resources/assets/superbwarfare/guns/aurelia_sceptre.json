@@ -5,5 +5,11 @@
     "Model": "superbwarfare:geo/aurelia_sceptre.geo.json",
     "Texture": "superbwarfare:textures/item/aurelia_sceptre.png"
   },
-  "HideCrosshairWhenZoom": false
+  "HideCrosshairWhenZoom": false,
+  "FlarePosition": [
+    0,
+    0,
+    0.3022
+  ],
+  "FlareSize": 0.3
 }

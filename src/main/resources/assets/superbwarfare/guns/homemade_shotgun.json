@@ -10,5 +10,11 @@
     "Model": "superbwarfare:geo/homemade_shotgun.geo.json",
     "Texture": "superbwarfare:textures/item/homemade_shotgun.png",
     "LODModel": "superbwarfare:geo/lod/homemade_shotgun.geo.json"
-  }
+  },
+  "FlarePosition": [
+    0,
+    0.05,
+    0.25
+  ],
+  "FlareSize": 1.2
 }
