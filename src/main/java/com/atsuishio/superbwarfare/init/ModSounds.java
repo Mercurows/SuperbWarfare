@@ -511,5 +511,14 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> TRUCK_ENGINE = REGISTRY.register("truck_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_engine")));
     public static final RegistryObject<SoundEvent> TRUCK_HORN = REGISTRY.register("truck_horn", () -> SoundEvent.createVariableRangeEvent(Mod.loc("truck_horn")));
+
+    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_HOLD = REGISTRY.register("ql_1031_fire_1p_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_HOLD = REGISTRY.register("ql_1031_fire_3p_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_S_HOLD = REGISTRY.register("ql_1031_fire_1p_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_S_HOLD = REGISTRY.register("ql_1031_fire_3p_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_FAR_HOLD = REGISTRY.register("ql_1031_far_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_HOLD = REGISTRY.register("ql_1031_veryfar_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_FAR_S_HOLD = REGISTRY.register("ql_1031_far_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_S_HOLD = REGISTRY.register("ql_1031_veryfar_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_hold")));
 }
 

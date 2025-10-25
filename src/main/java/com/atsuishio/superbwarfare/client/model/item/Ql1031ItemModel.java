@@ -123,7 +123,7 @@ public class Ql1031ItemModel extends CustomGunModel<Ql1031Item> {
 
         var data = GunData.from(stack);
         if (data.selectedFireModeInfo().name.equals("Hold")) {
-            ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 3.5f, 1.3f, 1f, 0.7f, 0.55f);
+            ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.7f, 0.55f);
         } else {
             switch (data.selectedFireModeInfo().mode) {
                 case SEMI -> ClientEventHandler.handleShootAnimation(shen, 2.5f, 0.5f, 2f, 1.5f, 2f, 1.4f, 0.65f, 0.7f);
