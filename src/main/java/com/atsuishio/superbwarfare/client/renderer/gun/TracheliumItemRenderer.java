@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
+import com.atsuishio.superbwarfare.item.gun.handgun.TracheliumItem;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -20,14 +20,14 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-public class TracheliumItemRenderer extends CustomGunRenderer<Trachelium> {
+public class TracheliumItemRenderer extends CustomGunRenderer<TracheliumItem> {
 
     public TracheliumItemRenderer() {
         super(new TracheliumItemModel());
     }
 
     @Override
-    public void renderRecursively(PoseStack stack, Trachelium animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, int color) {
+    public void renderRecursively(PoseStack stack, TracheliumItem animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, int color) {
         Minecraft mc = Minecraft.getInstance();
         String name = bone.getName();
         boolean renderingArms = false;

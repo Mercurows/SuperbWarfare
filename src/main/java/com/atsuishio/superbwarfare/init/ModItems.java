@@ -62,7 +62,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Mp443Item> MP_443 = GUNS.register("mp_443", Mp443Item::new);
     public static final DeferredHolder<Item, M1911Item> M_1911 = GUNS.register("m_1911", M1911Item::new);
     public static final DeferredHolder<Item, HomemadeShotgunItem> HOMEMADE_SHOTGUN = GUNS.register("homemade_shotgun", HomemadeShotgunItem::new);
-    public static final DeferredHolder<Item, Trachelium> TRACHELIUM = GUNS.register("trachelium", Trachelium::new);
+    public static final DeferredHolder<Item, TracheliumItem> TRACHELIUM = GUNS.register("trachelium", TracheliumItem::new);
     public static final DeferredHolder<Item, Mp5Item> MP_5 = GUNS.register("mp_5", Mp5Item::new);
     public static final DeferredHolder<Item, VectorItem> VECTOR = GUNS.register("vector", VectorItem::new);
     public static final DeferredHolder<Item, AK47Item> AK_47 = GUNS.register("ak_47", AK47Item::new);

@@ -22,9 +22,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class Trachelium extends GunGeoItem {
+public class TracheliumItem extends GunGeoItem {
 
-    public Trachelium() {
+    public TracheliumItem() {
         super(new Properties().rarity(Rarity.EPIC));
     }
 
@@ -33,7 +33,7 @@ public class Trachelium extends GunGeoItem {
         return TracheliumItemRenderer::new;
     }
 
-    private PlayState fireAnimPredicate(AnimationState<Trachelium> event) {
+    private PlayState fireAnimPredicate(AnimationState<TracheliumItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
@@ -60,7 +60,7 @@ public class Trachelium extends GunGeoItem {
         }
     }
 
-    private PlayState idlePredicate(AnimationState<Trachelium> event) {
+    private PlayState idlePredicate(AnimationState<TracheliumItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
@@ -119,7 +119,7 @@ public class Trachelium extends GunGeoItem {
         }
     }
 
-    private PlayState editPredicate(AnimationState<Trachelium> event) {
+    private PlayState editPredicate(AnimationState<TracheliumItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
