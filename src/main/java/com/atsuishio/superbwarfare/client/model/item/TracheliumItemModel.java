@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
+import com.atsuishio.superbwarfare.item.gun.handgun.TracheliumItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +15,7 @@ import software.bernie.geckolib.core.animation.AnimationState;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class TracheliumItemModel extends CustomGunModel<Trachelium> {
+public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
 
     public static float posYAlt = -0.83f;
     public static float scaleZAlt = 0.8f;
@@ -24,7 +24,7 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
     public static float rotXBipod = 0f;
 
     @Override
-    public void setCustomAnimations(Trachelium animatable, long instanceId, AnimationState<Trachelium> animationState) {
+    public void setCustomAnimations(TracheliumItem animatable, long instanceId, AnimationState<TracheliumItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();

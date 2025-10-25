@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.renderer.gun.TracheliumItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.ChatFormatting;
@@ -13,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -27,12 +25,11 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
-public class Trachelium extends GunGeoItem {
+public class TracheliumItem extends GunGeoItem {
 
-    public Trachelium() {
+    public TracheliumItem() {
         super(new Item.Properties().rarity(Rarity.EPIC));
     }
 
@@ -41,7 +38,7 @@ public class Trachelium extends GunGeoItem {
         return TracheliumItemRenderer::new;
     }
 
-    private PlayState fireAnimPredicate(AnimationState<Trachelium> event) {
+    private PlayState fireAnimPredicate(AnimationState<TracheliumItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
@@ -67,7 +64,7 @@ public class Trachelium extends GunGeoItem {
         }
     }
 
-    private PlayState idlePredicate(AnimationState<Trachelium> event) {
+    private PlayState idlePredicate(AnimationState<TracheliumItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
@@ -125,7 +122,7 @@ public class Trachelium extends GunGeoItem {
         }
     }
 
-    private PlayState editPredicate(AnimationState<Trachelium> event) {
+    private PlayState editPredicate(AnimationState<TracheliumItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
