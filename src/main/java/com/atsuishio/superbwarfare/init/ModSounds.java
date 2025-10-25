@@ -520,5 +520,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_VERYFAR_HOLD = REGISTRY.register("ql_1031_veryfar_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_hold")));
     public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_FAR_S_HOLD = REGISTRY.register("ql_1031_far_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_hold")));
     public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_VERYFAR_S_HOLD = REGISTRY.register("ql_1031_veryfar_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_hold")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_CHARGE = REGISTRY.register("ql_1031_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_charge")));
+    public static final DeferredHolder<SoundEvent, SoundEvent> QL_1031_DISCHARGE = REGISTRY.register("ql_1031_discharge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_discharge")));
 }
 

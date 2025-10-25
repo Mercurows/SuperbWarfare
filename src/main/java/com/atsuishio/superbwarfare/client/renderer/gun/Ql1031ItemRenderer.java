@@ -56,7 +56,7 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
                     if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !tag.getBoolean("ScopeAlt") && (name.equals("hidden") || name.equals("qianzhunxingzu"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3 && (bone.getName().endsWith("_hide3") || name.equals("qianzhunxingzu"))) {
+                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3 && (bone.getName().endsWith("_hide3") || name.equals("qianzhunxingzu") || name.equals("Barrel"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 

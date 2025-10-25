@@ -443,6 +443,10 @@ public class ClickHandler {
 
             if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
                 if (!data.meleeOnly()) {
+                    if (stack.is(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold")) {
+                        player.playSound(ModSounds.QL_1031_CHARGE.get(), 1, 1);
+                        playQLDischargeSound = false;
+                    }
                     player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
                 }
             } else {

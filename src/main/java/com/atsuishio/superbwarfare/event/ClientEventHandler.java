@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -156,7 +157,8 @@ public class ClientEventHandler {
     public static double actionMove = 0;
 
     public static int shootDelay = 0;
-
+    public static float qlHoldProgress = 0;
+    public static boolean playQLDischargeSound = false;
     public static double revolverPreTime = 0;
     public static double revolverWheelPreTime = 0;
 
@@ -269,6 +271,12 @@ public class ClientEventHandler {
                 if (stack.is(ModItems.MINIGUN.get())) {
                     float rpm = (float) data.get(GunProp.RPM) / 3600;
                     player.playSound(ModSounds.MINIGUN_ROT.get(), 1, 0.7f + rpm);
+                }
+
+                // QL特有的樱花特效
+                if (stack.is(ModItems.QL_1031.get()) && (player.tickCount & 5) == 0) {
+                    double random = (Math.random() - 0.5) * 2;
+                    player.level().addParticle(ParticleTypes.CHERRY_LEAVES, player.getX() + random, player.getEyeY() + 0.5 * random, player.getZ() + random, 0, 0, 0);
                 }
             }
         }
@@ -751,9 +759,15 @@ public class ClientEventHandler {
             gunSpread = 0;
             return;
         }
-        var data = GunData.from(stack);
 
+        var data = GunData.from(stack);
         var mode = data.selectedFireModeInfo().mode;
+
+        qlHoldProgress = Mth.lerp(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), qlHoldProgress, shootDelay);
+        if (qlHoldProgress > shootDelay && qlHoldProgress > data.get(GunProp.SHOOT_DELAY) * 0.25 && !playQLDischargeSound) {
+            player.playSound(ModSounds.QL_1031_DISCHARGE.get(), qlHoldProgress * 0.03f, 0.6f + qlHoldProgress * 0.02f);
+            playQLDischargeSound = true;
+        }
 
         // 精准度
         float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
