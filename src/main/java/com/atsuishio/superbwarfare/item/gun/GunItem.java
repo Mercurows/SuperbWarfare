@@ -19,6 +19,7 @@ import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
@@ -726,6 +727,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.hasEnoughAmmoToShoot(player)) {
             data.forceStop.set(true);
         }
+        if (player instanceof ServerPlayer serverPlayer && data.stack.is(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold")) {
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("ql_1031_discharge"), SoundSource.PLAYERS);
+            serverPlayer.connection.send(clientboundstopsoundpacket);
+        }
     }
 
     /**
@@ -737,6 +742,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             String origin = stack.getItem().getDescriptionId();
             String name = origin.substring(origin.lastIndexOf(".") + 1);
             var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc(name + "_lock"), SoundSource.PLAYERS);
+            serverPlayer.connection.send(clientboundstopsoundpacket);
+        }
+        if (player instanceof ServerPlayer serverPlayer && data.stack.is(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold")) {
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("ql_1031_charge"), SoundSource.PLAYERS);
             serverPlayer.connection.send(clientboundstopsoundpacket);
         }
     }

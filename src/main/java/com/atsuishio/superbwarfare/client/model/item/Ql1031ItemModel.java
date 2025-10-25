@@ -148,5 +148,15 @@ public class Ql1031ItemModel extends CustomGunModel<Ql1031Item> {
 
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 0, 0, false);
 
+        CoreGeoBone main = getAnimationProcessor().getBone("0");
+
+        float num = (float) (1 - 0.95 * zt);
+
+        main.setRotX(num * main.getRotX());
+        main.setRotY(num * main.getRotY());
+        main.setRotZ(num * main.getRotZ());
+        main.setPosX(num * main.getPosX());
+        main.setPosY(num * main.getPosY());
+        main.setPosZ(num * main.getPosZ());
     }
 }

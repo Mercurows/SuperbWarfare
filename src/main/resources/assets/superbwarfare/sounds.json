@@ -3789,5 +3789,21 @@
         "stream": false
       }
     ]
+  },
+  "ql_1031_charge": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_charge",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_discharge": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_discharge",
+        "stream": false
+      }
+    ]
   }
 }
