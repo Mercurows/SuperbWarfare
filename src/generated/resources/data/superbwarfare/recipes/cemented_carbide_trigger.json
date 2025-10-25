@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "A": {
-      "item": "superbwarfare:cemented_carbide_ingot"
+      "tag": "superbwarfare:ingots/cemented_carbide"
     },
     "B": {
       "item": "minecraft:tripwire_hook"

@@ -7,13 +7,10 @@
     },
     "b": {
       "tag": "forge:dyes/black"
-    },
-    "c": {
-      "item": "superbwarfare:steel_ingot"
     }
   },
   "pattern": [
-    "aca",
+    "aaa",
     "aba"
   ],
   "result": {

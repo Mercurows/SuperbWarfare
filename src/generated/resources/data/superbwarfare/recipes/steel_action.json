@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "A": {
-      "item": "superbwarfare:steel_ingot"
+      "tag": "superbwarfare:ingots/steel"
     }
   },
   "pattern": [
