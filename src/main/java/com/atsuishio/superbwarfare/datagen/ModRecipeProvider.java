@@ -1519,7 +1519,7 @@ public class ModRecipeProvider extends RecipeProvider {
         gunSmithing(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.KNIFE.get(), ModItems.SECONDARY_CATACLYSM.get());
         gunSmithing(writer, ModItems.INSIDIOUS_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.INSIDIOUS.get());
         gunSmithing(writer, ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(), GunRarity.LEGENDARY, Items.END_CRYSTAL, ModItems.AURELIA_SCEPTRE.get());
-        gunSmithing(writer, ModItems.QL_1031_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.CELL.get(), ModItems.QL_1031.get());
+        gunSmithing(writer, ModItems.QL_1031_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.BATTERY.get(), ModItems.QL_1031.get());
 
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.HOMEMADE_SHOTGUN.get())
                 .pattern("aab")

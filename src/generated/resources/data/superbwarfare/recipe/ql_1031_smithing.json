@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smithing_transform",
   "addition": {
-    "item": "superbwarfare:cell"
+    "item": "superbwarfare:battery"
   },
   "base": {
     "item": "superbwarfare:legendary_material_pack"
