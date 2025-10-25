@@ -3729,5 +3729,69 @@
         "name": "superbwarfare:truck/truck_horn"
       }
     ]
+  },
+  "ql_1031_fire_1p_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_1p_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_far",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_far_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:ql_1031/hold/ql_1031_veryfar_s",
+        "stream": false
+      }
+    ]
   }
 }

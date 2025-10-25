@@ -38,7 +38,8 @@
           "Fire3PVeryFar": "superbwarfare:mk_14_veryfar",
           "Fire1PSilent": "superbwarfare:mk_14_fire_1p_s",
           "Fire3PSilent": "superbwarfare:mk_14_fire_3p_s",
-          "Fire3PFarSilent": "superbwarfare:mk_14_far_s"
+          "Fire3PFarSilent": "superbwarfare:mk_14_far_s",
+          "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s"
         }
       }
     },
@@ -59,12 +60,14 @@
         "AmmoCostPerShoot": 5000,
         "RPM": 1200,
         "SoundInfo": {
-          "Fire1P": "superbwarfare:m_98b_fire_1p",
-          "Fire3P": "superbwarfare:m_98b_fire_3p",
-          "Fire3PFar": "superbwarfare:m_98b_far",
-          "Fire3PVeryFar": "superbwarfare:m_98b_veryfar",
-          "Fire1PSilent": "superbwarfare:m_98b_fire_1p_s",
-          "Fire3PSilent": "superbwarfare:m_98b_fire_3p_s"
+          "Fire1P": "superbwarfare:ql_1031_fire_1p_hold",
+          "Fire3P": "superbwarfare:ql_1031_fire_3p_hold",
+          "Fire3PFar": "superbwarfare:ql_1031_far_hold",
+          "Fire3PVeryFar": "superbwarfare:ql_1031_veryfar_hold",
+          "Fire1PSilent": "superbwarfare:ql_1031_fire_1p_s_hold",
+          "Fire3PSilent": "superbwarfare:ql_1031_fire_3p_s_hold",
+          "Fire3PFarSilent": "superbwarfare:ql_1031_far_s_hold",
+          "Fire3PVeryFarSilent": "superbwarfare:ql_1031_veryfar_s_hold"
         }
       }
     }

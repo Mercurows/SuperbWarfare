@@ -567,7 +567,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
-            data.item.whenNoAmmo(data);
+//            data.item.whenNoAmmo(data);
         } else {
             data.consumeBackupAmmo(ammoSupplier, data.get(GunProp.AMMO_COST_PER_SHOOT));
         }

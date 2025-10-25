@@ -1501,7 +1501,7 @@ public class ClientEventHandler {
         float pitch = event.getPitch();
 
         if (0 < fireRotTimer) {
-            float shake = (float) (MathTool.decayingOscillation(0.5f, 3, 0.75f, (float) fireRotTimer) * (1 + amplitude) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0));
+            float shake = (float) (MathTool.decayingOscillation(0.5f, 2f, 0.75f, (float) fireRotTimer) * (1 + amplitude) * (float) (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0));
             if (recoilY > 0) {
                 event.setYaw(yaw - 0.5f * shake);
                 event.setPitch(pitch + shake);
@@ -1546,10 +1546,11 @@ public class ClientEventHandler {
         };
 
         float zoomRecoil = switch (scopeType) {
-            case 2 -> 0.45f;
-            case 3 -> 0.25f;
+            case 2 -> 1.25f - (float) (zoomTime * 0.8f);
+            case 3 -> 1.25f - (float) zoomTime;
             default -> 1.25f;
         };
+
 
         float pose = 1;
         if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && !isProne(player)) {
