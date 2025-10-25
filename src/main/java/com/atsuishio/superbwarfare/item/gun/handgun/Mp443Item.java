@@ -27,7 +27,7 @@ public class Mp443Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(Mp443ItemModel::new, 0, 0, 0.33345, 0.3);
+        return GunRendererBuilder.simple(Mp443ItemModel::new);
     }
 
     private PlayState fireAnimPredicate(AnimationState<Mp443Item> event) {

@@ -25,7 +25,7 @@ public class M870Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(M870ItemModel::new, 0, 0, 1.4209, 0.8, true);
+        return GunRendererBuilder.simple(M870ItemModel::new);
     }
 
     private PlayState fireAnimPredicate(AnimationState<M870Item> event) {

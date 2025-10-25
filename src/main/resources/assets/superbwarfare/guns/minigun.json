@@ -6,5 +6,7 @@
     "Texture": "superbwarfare:textures/item/minigun.png",
     "LODModel": "superbwarfare:geo/lod/minigun.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/minigun.png"
-  }
+  },
+  "FlarePosition": [0, 0.1, 1.45],
+  "FlareSize": 0.9
 }

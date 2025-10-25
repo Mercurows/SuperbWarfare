@@ -30,15 +30,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class AureliaSceptre extends GunGeoItem {
+public class AureliaSceptreItem extends GunGeoItem {
 
-    public AureliaSceptre() {
+    public AureliaSceptreItem() {
         super(new Properties().rarity(ModEnumExtensions.getLegendary()));
     }
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(AureliaSceptreItemModel::new, 0, 0, 0.3022, 0.3);
+        return GunRendererBuilder.simple(AureliaSceptreItemModel::new);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -53,7 +53,7 @@ public class AureliaSceptre extends GunGeoItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private PlayState idlePredicate(AnimationState<AureliaSceptre> event) {
+    private PlayState idlePredicate(AnimationState<AureliaSceptreItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
@@ -71,7 +71,7 @@ public class AureliaSceptre extends GunGeoItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private PlayState firePredicate(AnimationState<AureliaSceptre> event) {
+    private PlayState firePredicate(AnimationState<AureliaSceptreItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
@@ -89,7 +89,7 @@ public class AureliaSceptre extends GunGeoItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private PlayState meleePredicate(AnimationState<AureliaSceptre> event) {
+    private PlayState meleePredicate(AnimationState<AureliaSceptreItem> event) {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
 

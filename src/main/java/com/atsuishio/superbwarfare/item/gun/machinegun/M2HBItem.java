@@ -32,7 +32,7 @@ public class M2HBItem extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(M2HBItemModel::new, 0, 0.1, 2.95, 1.2);
+        return GunRendererBuilder.simple(M2HBItemModel::new);
     }
 
     @Override

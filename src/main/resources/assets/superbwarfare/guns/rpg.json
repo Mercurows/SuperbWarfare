@@ -13,5 +13,7 @@
     "Texture": "superbwarfare:textures/item/rpg.png",
     "LODModel": "superbwarfare:geo/lod/rpg.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/rpg.png"
-  }
+  },
+  "FlarePosition": [0, 0, 0.625],
+  "FlareSize": 0.7
 }

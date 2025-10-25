@@ -10,24 +10,8 @@ import java.util.function.Supplier;
 
 public class GunRendererBuilder {
 
-    public static <T extends GunGeoItem & GeoAnimatable> Supplier<CustomGunRenderer<T>> simple(
-            Supplier<GeoModel<T>> model,
-            double x,
-            double y,
-            double z,
-            double size
-    ) {
-        return simple(model, x, y, z, size, false);
+    public static <T extends GunGeoItem & GeoAnimatable> Supplier<? extends CustomGunRenderer<T>> simple(Supplier<GeoModel<T>> model) {
+        return () -> new SimpleGunRenderer<>(model.get());
     }
 
-    public static <T extends GunGeoItem & GeoAnimatable> Supplier<CustomGunRenderer<T>> simple(
-            Supplier<GeoModel<T>> model,
-            double x,
-            double y,
-            double z,
-            double size,
-            boolean useOldHandRender
-    ) {
-        return () -> new SimpleGunRenderer<>(model.get(), x, y, z, size, useOldHandRender);
-    }
 }

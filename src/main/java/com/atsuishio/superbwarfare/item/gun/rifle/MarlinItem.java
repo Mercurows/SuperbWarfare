@@ -27,7 +27,7 @@ public class MarlinItem extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(MarlinItemModel::new, 0, 0, 1.33720625, 0.4, true);
+        return GunRendererBuilder.simple(MarlinItemModel::new);
     }
 
     private PlayState fireAnimPredicate(AnimationState<MarlinItem> event) {

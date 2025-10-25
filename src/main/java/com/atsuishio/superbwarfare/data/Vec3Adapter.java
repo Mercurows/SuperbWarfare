@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.data;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.world.phys.Vec3;
 
@@ -20,6 +21,10 @@ public class Vec3Adapter extends TypeAdapter<Vec3> {
 
     @Override
     public Vec3 read(JsonReader in) throws IOException {
+        if (in.peek() == JsonToken.NULL) {
+            return null;
+        }
+
         in.beginArray();
         var x = in.nextDouble();
         var y = in.nextDouble();

@@ -36,9 +36,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class SecondaryCataclysm extends GunGeoItem {
+public class SecondaryCataclysmItem extends GunGeoItem {
 
-    public SecondaryCataclysm() {
+    public SecondaryCataclysmItem() {
         super(new Properties().fireResistant().rarity(ModEnumExtensions.getLegendary()));
     }
 
@@ -55,10 +55,10 @@ public class SecondaryCataclysm extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(SecondaryCataclysmItemModel::new, 0, 0, 1.0375, 0.6);
+        return GunRendererBuilder.simple(SecondaryCataclysmItemModel::new);
     }
 
-    private PlayState reloadAnimPredicate(AnimationState<SecondaryCataclysm> event) {
+    private PlayState reloadAnimPredicate(AnimationState<SecondaryCataclysmItem> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
         ItemStack stack = player.getMainHandItem();
@@ -87,7 +87,7 @@ public class SecondaryCataclysm extends GunGeoItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
     }
 
-    private PlayState meleePredicate(AnimationState<SecondaryCataclysm> event) {
+    private PlayState meleePredicate(AnimationState<SecondaryCataclysmItem> event) {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.secondary_cataclysm.idle"));
 
