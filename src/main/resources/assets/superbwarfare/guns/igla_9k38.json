@@ -1,0 +1,8 @@
+{
+  "ID": "superbwarfare:igla_9k38",
+  "Model": {
+    "Animation": "superbwarfare:animations/igla_9k38.animation.json",
+    "Model": "superbwarfare:geo/igla_9k38.geo.json",
+    "Texture": "superbwarfare:textures/item/igla_9k38.png"
+  }
+}

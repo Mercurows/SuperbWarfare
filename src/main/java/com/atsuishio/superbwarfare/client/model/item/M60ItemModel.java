@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M60Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,31 +15,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class M60ItemModel extends CustomGunModel<M60Item> {
-
-    @Override
-    public ResourceLocation getAnimationResource(M60Item animatable) {
-        return Mod.loc("animations/m_60.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(M60Item animatable) {
-        return Mod.loc("geo/m_60.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(M60Item animatable) {
-        return Mod.loc("textures/item/m_60.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(M60Item animatable) {
-        return Mod.loc("geo/lod/m_60.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(M60Item animatable) {
-        return Mod.loc("textures/item/lod/m_60.png");
-    }
 
     @Override
     public void setCustomAnimations(M60Item animatable, long instanceId, AnimationState<M60Item> animationState) {

@@ -1577,12 +1577,14 @@ public class ClientEventHandler {
 
         float zoom = (float) (1 - zoomMultiply * zoomTime) * pose;
 
-        bone.setPosX(zoom * x * (float) (ClientEventHandler.recoilHorizon * (0.12f * firePos)));
-        bone.setPosY(zoom * y * (float) (0.05f * firePos));
-        bone.setPosZ(zoom * z * (float) (firePos + 0.3f * firePosZ) * (float) (1 - 0.25 * zoomTime));
-        bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime) * zoomRecoil);
-        bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime) * zoomRecoil);
-        bone.setRotZ(zoom * rotZ * (float) fireRotZ * gripRecoilY * recoil * (float) (1 - 0.25 * zoomTime) * zoomRecoil);
+        if (bone != null) {
+            bone.setPosX(zoom * x * (float) (ClientEventHandler.recoilHorizon * (0.12f * firePos)));
+            bone.setPosY(zoom * y * (float) (0.05f * firePos));
+            bone.setPosZ(zoom * z * (float) (firePos + 0.3f * firePosZ) * (float) (1 - 0.25 * zoomTime));
+            bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime) * zoomRecoil);
+            bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime) * zoomRecoil);
+            bone.setRotZ(zoom * rotZ * (float) fireRotZ * gripRecoilY * recoil * (float) (1 - 0.25 * zoomTime) * zoomRecoil);
+        }
     }
 
     private static void handleWeaponShell() {

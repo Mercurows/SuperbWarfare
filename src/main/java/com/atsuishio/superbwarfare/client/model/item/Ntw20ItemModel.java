@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.Ntw20Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,33 +14,8 @@ import software.bernie.geckolib.core.animation.AnimationState;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class Ntw20Model extends CustomGunModel<Ntw20Item> {
+public class Ntw20ItemModel extends CustomGunModel<Ntw20Item> {
     public static float rotXBipod = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(Ntw20Item animatable) {
-        return Mod.loc("animations/ntw_20.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Ntw20Item animatable) {
-        return Mod.loc("geo/ntw_20.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Ntw20Item animatable) {
-        return Mod.loc("textures/item/ntw_20.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Ntw20Item animatable) {
-        return Mod.loc("geo/lod/ntw_20.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Ntw20Item animatable) {
-        return Mod.loc("textures/item/lod/ntw_20.png");
-    }
 
     @Override
     public void setCustomAnimations(Ntw20Item animatable, long instanceId, AnimationState<Ntw20Item> animationState) {

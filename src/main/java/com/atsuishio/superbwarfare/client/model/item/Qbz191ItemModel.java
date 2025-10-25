@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.rifle.Qbz191Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,33 +17,6 @@ public class Qbz191ItemModel extends CustomGunModel<Qbz191Item> {
 
     public static float rotXSight = 0f;
     public static float rotXBipod = 0f;
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(Qbz191Item animatable) {
-        return Mod.loc("animations/qbz_191.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Qbz191Item animatable) {
-        return Mod.loc("geo/qbz_191.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Qbz191Item animatable) {
-        return Mod.loc("textures/item/qbz_191.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Qbz191Item animatable) {
-        return Mod.loc("geo/lod/qbz_191.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Qbz191Item animatable) {
-        return Mod.loc("textures/item/lod/qbz_191.png");
-    }
 
     @Override
     public void setCustomAnimations(Qbz191Item animatable, long instanceId, AnimationState<Qbz191Item> animationState) {

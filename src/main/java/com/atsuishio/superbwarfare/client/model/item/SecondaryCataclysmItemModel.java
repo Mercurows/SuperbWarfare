@@ -1,44 +1,17 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.launcher.SecondaryCataclysm;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
-public class SecondaryCataclysmModel extends CustomGunModel<SecondaryCataclysm> {
-
-    @Override
-    public ResourceLocation getAnimationResource(SecondaryCataclysm animatable) {
-        return Mod.loc("animations/secondary_cataclysm.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(SecondaryCataclysm animatable) {
-        return Mod.loc("geo/secondary_cataclysm.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(SecondaryCataclysm animatable) {
-        return Mod.loc("textures/item/secondary_cataclysm.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(SecondaryCataclysm animatable) {
-        return Mod.loc("geo/lod/secondary_cataclysm.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(SecondaryCataclysm animatable) {
-        return Mod.loc("textures/item/lod/secondary_cataclysm.png");
-    }
+public class SecondaryCataclysmItemModel extends CustomGunModel<SecondaryCataclysm> {
 
     @Override
     public void setCustomAnimations(SecondaryCataclysm animatable, long instanceId, AnimationState<SecondaryCataclysm> animationState) {

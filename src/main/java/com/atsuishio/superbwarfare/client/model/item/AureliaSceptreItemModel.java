@@ -1,10 +1,8 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.handgun.AureliaSceptre;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,26 +11,9 @@ import software.bernie.geckolib.core.animation.AnimationState;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.*;
 
-public class AureliaSceptreModel extends CustomGunModel<AureliaSceptre> {
+public class AureliaSceptreItemModel extends CustomGunModel<AureliaSceptre> {
 
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
     public static float firePosMove = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(AureliaSceptre animatable) {
-        return Mod.loc("animations/aurelia_sceptre.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(AureliaSceptre animatable) {
-        return Mod.loc("geo/aurelia_sceptre.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(AureliaSceptre animatable) {
-        return Mod.loc("textures/item/aurelia_sceptre.png");
-    }
 
     @Override
     public void setCustomAnimations(AureliaSceptre animatable, long instanceId, AnimationState<AureliaSceptre> animationState) {

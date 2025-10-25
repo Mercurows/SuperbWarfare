@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.HuntingRifleItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,31 +12,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class HuntingRifleItemModel extends CustomGunModel<HuntingRifleItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(HuntingRifleItem animatable) {
-        return Mod.loc("animations/hunting_rifle.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(HuntingRifleItem animatable) {
-        return Mod.loc("geo/hunting_rifle.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(HuntingRifleItem animatable) {
-        return Mod.loc("textures/item/hunting_rifle.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(HuntingRifleItem animatable) {
-        return Mod.loc("geo/lod/hunting_rifle.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(HuntingRifleItem animatable) {
-        return Mod.loc("textures/item/lod/hunting_rifle.png");
-    }
 
     @Override
     public void setCustomAnimations(HuntingRifleItem animatable, long instanceId, AnimationState<HuntingRifleItem> animationState) {

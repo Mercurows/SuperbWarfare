@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.handgun.Mp443Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,31 +13,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class Mp443ItemModel extends CustomGunModel<Mp443Item> {
-
-    @Override
-    public ResourceLocation getAnimationResource(Mp443Item animatable) {
-        return Mod.loc("animations/mp_443.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Mp443Item animatable) {
-        return Mod.loc("geo/mp_443.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Mp443Item animatable) {
-        return Mod.loc("textures/item/mp_443.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Mp443Item animatable) {
-        return Mod.loc("geo/lod/mp_443.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Mp443Item animatable) {
-        return Mod.loc("textures/item/lod/mp_443.png");
-    }
 
     @Override
     public void setCustomAnimations(Mp443Item animatable, long instanceId, AnimationState<Mp443Item> animationState) {

@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.rifle.MarlinItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,33 +12,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class MarlinItemModel extends CustomGunModel<MarlinItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(MarlinItem animatable) {
-        return Mod.loc("animations/marlin.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(MarlinItem animatable) {
-        return Mod.loc("geo/marlin.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(MarlinItem animatable) {
-        return Mod.loc("textures/item/marlin.png");
-    }
-
-
-    @Override
-    public ResourceLocation getLODModelResource(MarlinItem animatable) {
-        return Mod.loc("geo/lod/marlin.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(MarlinItem animatable) {
-        return Mod.loc("textures/item/lod/marlin.png");
-    }
-
 
     @Override
     public void setCustomAnimations(MarlinItem animatable, long instanceId, AnimationState<MarlinItem> animationState) {

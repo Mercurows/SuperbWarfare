@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.MosinNagantItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,31 +12,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class MosinNagantItemModel extends CustomGunModel<MosinNagantItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(MosinNagantItem animatable) {
-        return Mod.loc("animations/mosin_nagant.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(MosinNagantItem animatable) {
-        return Mod.loc("geo/mosin_nagant.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(MosinNagantItem animatable) {
-        return Mod.loc("textures/item/mosin_nagant.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(MosinNagantItem animatable) {
-        return Mod.loc("geo/lod/mosin_nagant.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(MosinNagantItem animatable) {
-        return Mod.loc("textures/item/lod/mosin_nagant.png");
-    }
 
     @Override
     public void setCustomAnimations(MosinNagantItem animatable, long instanceId, AnimationState<MosinNagantItem> animationState) {

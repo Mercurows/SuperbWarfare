@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.rifle.InsidiousItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,34 +12,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class InsidiousItemModel extends CustomGunModel<InsidiousItem> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(InsidiousItem animatable) {
-        return Mod.loc("animations/insidious.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(InsidiousItem animatable) {
-        return Mod.loc("geo/insidious.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(InsidiousItem animatable) {
-        return Mod.loc("textures/item/insidious.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(InsidiousItem animatable) {
-        return Mod.loc("geo/lod/insidious.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(InsidiousItem animatable) {
-        return Mod.loc("textures/item/lod/insidious.png");
-    }
 
     @Override
     public void setCustomAnimations(InsidiousItem animatable, long instanceId, AnimationState<InsidiousItem> animationState) {

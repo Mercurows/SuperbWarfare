@@ -20,6 +20,13 @@ public class DefaultGunResource implements IDBasedData {
     @SerializedName("GunIcon")
     public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();
 
+    @SerializedName("Model")
+    public GunModel model = new GunModel();
+
+    public GunModel getModel() {
+        return model == null ? new GunModel() : model;
+    }
+
     @SerializedName("Animation")
     public GunAnimation animation = new GunAnimation();
 

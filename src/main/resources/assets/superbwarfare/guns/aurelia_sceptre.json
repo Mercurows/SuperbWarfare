@@ -1,0 +1,8 @@
+{
+  "ID": "superbwarfare:aurelia_sceptre",
+  "Model": {
+    "Animation": "superbwarfare:animations/aurelia_sceptre.animation.json",
+    "Model": "superbwarfare:geo/aurelia_sceptre.geo.json",
+    "Texture": "superbwarfare:textures/item/aurelia_sceptre.png"
+  }
+}

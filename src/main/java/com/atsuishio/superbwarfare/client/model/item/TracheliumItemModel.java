@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -24,31 +22,6 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
     public static float posZAlt = 13.7f;
 
     public static float rotXBipod = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(Trachelium animatable) {
-        return Mod.loc("animations/trachelium.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Trachelium animatable) {
-        return Mod.loc("geo/trachelium.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Trachelium animatable) {
-        return Mod.loc("textures/item/trachelium.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Trachelium animatable) {
-        return Mod.loc("geo/lod/trachelium.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Trachelium animatable) {
-        return Mod.loc("textures/item/lod/trachelium.png");
-    }
 
     @Override
     public void setCustomAnimations(Trachelium animatable, long instanceId, AnimationState<Trachelium> animationState) {
