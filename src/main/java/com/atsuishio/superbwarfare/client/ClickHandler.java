@@ -19,6 +19,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
@@ -519,11 +520,14 @@ public class ClickHandler {
             return;
         }
 
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
-        var data = GunData.from(stack);
-        if (!gunItem.canZoom(data, player)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
+        var resource = GunResource.from(stack);
+        if (!resource.getDefault().canZoom) return;
+
+        var data = GunData.from(stack);
         ClientEventHandler.zoom = true;
+
         int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
         if (level > 0) {
             if (ClientEventHandler.entity == null) {
