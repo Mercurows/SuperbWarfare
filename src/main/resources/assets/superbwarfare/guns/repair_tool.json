@@ -5,5 +5,9 @@
     "Model": "superbwarfare:geo/repair_tool.geo.json",
     "Texture": "superbwarfare:textures/item/repair_tool.png"
   },
+  "Animation": {
+    "Idle": "animation.repair_tool.idle",
+    "Fire": "animation.repair_tool.fire"
+  },
   "EnergyBarColor": "0xFFFF00"
 }
