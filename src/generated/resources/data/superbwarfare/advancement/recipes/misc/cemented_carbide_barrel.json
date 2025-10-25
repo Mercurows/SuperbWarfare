@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:cemented_carbide_ingot"
+            "items": "#superbwarfare:ingots/cemented_carbide"
           }
         ]
       },
