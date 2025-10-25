@@ -93,11 +93,6 @@ public class M2HBItem extends GunGeoItem {
     }
 
     @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
-
-    @Override
     public boolean hasBulletInBarrel(GunData data) {
         return true;
     }

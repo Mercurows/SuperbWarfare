@@ -61,9 +61,4 @@ public class DevotionItem extends GunGeoItem {
     public boolean hasBulletInBarrel(GunData data) {
         return true;
     }
-
-    @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
 }

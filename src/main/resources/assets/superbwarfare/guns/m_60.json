@@ -9,5 +9,6 @@
   },
   "FlarePosition": [0, 0.1, 1.95],
   "FlareSize": 0.45,
-  "UseOldHandRenderer": true
+  "UseOldHandRenderer": true,
+  "EjectShell": true
 }

@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import net.minecraft.client.CameraType;
@@ -1022,6 +1023,8 @@ public class ClientEventHandler {
         }
 
         var data = GunData.from(stack);
+        var resource = GunResource.from(stack);
+
         var perk = data.perk.get(Perk.Type.AMMO);
         SoundInfo soundInfo = data.get(GunProp.SOUND_INFO);
 
@@ -1042,7 +1045,7 @@ public class ClientEventHandler {
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
         Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> {
-            if (gunItem.canEjectShell(data)) {
+            if (resource.getDefault().ejectShell) {
                 if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                     var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                     switch (ammoType) {

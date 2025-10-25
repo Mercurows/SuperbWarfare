@@ -30,9 +30,4 @@ public class Aa12Item extends GunGeoItem {
     public boolean hasBulletInBarrel(GunData data) {
         return true;
     }
-
-    @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
 }

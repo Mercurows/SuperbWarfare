@@ -7,6 +7,11 @@
     "LODModel": "superbwarfare:geo/lod/mp_5.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/mp_5.png"
   },
-  "FlarePosition": [0, 0.05, 1],
-  "FlareSize": 0.35
+  "FlarePosition": [
+    0,
+    0.05,
+    1
+  ],
+  "FlareSize": 0.35,
+  "EjectShell": true
 }

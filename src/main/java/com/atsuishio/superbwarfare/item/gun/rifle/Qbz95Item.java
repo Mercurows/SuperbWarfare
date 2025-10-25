@@ -164,11 +164,6 @@ public class Qbz95Item extends GunGeoItem {
     }
 
     @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
-
-    @Override
     public void whenNoAmmo(GunData data) {
         data.holdOpen.set(true);
     }

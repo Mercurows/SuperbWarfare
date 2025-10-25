@@ -144,11 +144,6 @@ public class VectorItem extends GunGeoItem {
     }
 
     @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
-
-    @Override
     public boolean canEditAttachments(GunData data) {
         return true;
     }

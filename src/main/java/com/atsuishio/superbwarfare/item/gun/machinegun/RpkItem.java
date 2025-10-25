@@ -188,11 +188,6 @@ public class RpkItem extends GunGeoItem {
     }
 
     @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
-
-    @Override
     public boolean hasBipod(GunData data) {
         return true;
     }

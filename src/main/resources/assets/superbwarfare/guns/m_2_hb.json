@@ -8,6 +8,11 @@
     "LODTexture": "superbwarfare:textures/item/lod/m_2_hb.png"
   },
   "HideCrosshairWhenZoom": false,
-  "FlarePosition": [0, 0.1, 2.95],
-  "FlareSize": 1.2
+  "FlarePosition": [
+    0,
+    0.1,
+    2.95
+  ],
+  "FlareSize": 1.2,
+  "EjectShell": true
 }

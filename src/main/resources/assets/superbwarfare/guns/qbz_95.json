@@ -7,6 +7,11 @@
     "LODModel": "superbwarfare:geo/lod/qbz_95.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/qbz_95.png"
   },
-  "FlarePosition": [0, 0.02, 1.12375],
-  "FlareSize": 0.3
+  "FlarePosition": [
+    0,
+    0.02,
+    1.12375
+  ],
+  "FlareSize": 0.3,
+  "EjectShell": true
 }
