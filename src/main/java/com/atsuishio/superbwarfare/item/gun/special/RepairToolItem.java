@@ -5,21 +5,17 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.world.phys.EntityResult;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,21 +27,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -63,29 +54,6 @@ public class RepairToolItem extends GunGeoItem {
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
         return RepairToolItemRenderer::new;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private PlayState idlePredicate(AnimationState<RepairToolItem> event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return PlayState.STOP;
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem gunItem)) return PlayState.STOP;
-        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.repair_tool.idle"));
-
-        var data = GunData.from(stack);
-        if (ClientEventHandler.holdFire && gunItem.canShoot(data, player)) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.repair_tool.fire"));
-        }
-
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.repair_tool.idle"));
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        AnimationController<RepairToolItem> idleController = new AnimationController<>(this, "idleController", 3, this::idlePredicate);
-        data.add(idleController);
     }
 
     @Override

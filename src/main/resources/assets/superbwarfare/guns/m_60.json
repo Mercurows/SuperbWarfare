@@ -9,5 +9,5 @@
   },
   "FlarePosition": [0, 0.1, 1.95],
   "FlareSize": 0.45,
-  "UseOldHandRender": true
+  "UseOldHandRenderer": true
 }

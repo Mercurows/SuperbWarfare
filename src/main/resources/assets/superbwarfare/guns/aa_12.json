@@ -7,7 +7,12 @@
     "LODModel": "superbwarfare:geo/lod/aa_12.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/aa_12.png"
   },
+  "Animation": {
+    "Idle": "animation.aa_12.idle",
+    "ReloadNormal": "animation.aa_12.reload_empty",
+    "ReloadEmpty": "animation.aa_12.reload_normal"
+  },
   "FlarePosition": [0, 0, 1.31465],
   "FlareSize": 0.5,
-  "UseOldHandRender": true
+  "UseOldHandRenderer": true
 }
