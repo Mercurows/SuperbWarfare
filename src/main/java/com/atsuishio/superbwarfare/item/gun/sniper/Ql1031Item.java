@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModRarities;
+import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -17,12 +18,15 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
@@ -113,6 +117,38 @@ public class Ql1031Item extends GunGeoItem {
         var chargeController = new AnimationController<>(this, "chargeController", 1, this::chargePredicate);
         data.add(editController);
         data.add(chargeController);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, world, entity, slot, selected);
+
+        if (entity instanceof Player player) {
+            for (var cell : player.getInventory().items) {
+                if (cell.getItem() instanceof BatteryItem) {
+                    assert stack.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent();
+                    var stackStorage = stack.getCapability(ForgeCapabilities.ENERGY).resolve().get();
+                    int stackMaxEnergy = stackStorage.getMaxEnergyStored();
+                    int stackEnergy = stackStorage.getEnergyStored();
+
+                    assert cell.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent();
+                    var cellStorage = cell.getCapability(ForgeCapabilities.ENERGY).resolve().get();
+                    int cellEnergy = cellStorage.getEnergyStored();
+
+                    int stackEnergyNeed = Math.min(cellEnergy, stackMaxEnergy - stackEnergy);
+
+                    if (cellEnergy > 0) {
+                        stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(
+                                iEnergyStorage -> iEnergyStorage.receiveEnergy(stackEnergyNeed, false)
+                        );
+                    }
+                    cell.getCapability(ForgeCapabilities.ENERGY).ifPresent(
+                            cEnergy -> cEnergy.extractEnergy(stackEnergyNeed, false)
+                    );
+                }
+            }
+        }
     }
 
     @Override

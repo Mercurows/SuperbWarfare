@@ -138,7 +138,7 @@ public class AnimationHelper {
     }
 
     public static void handleZoomCrossHair(MultiBufferSource currentBuffer, RenderType renderType, String boneName, PoseStack stack, GeoBone bone, MultiBufferSource buffer, double x, double y, double z, float size, int r, int g, int b, int a, String name, boolean hasBlackPart) {
-        if (boneName.equals("cross") && ClientEventHandler.zoomPos > 0.8) {
+        if (boneName.equals("cross") && ClientEventHandler.zoomPos > 0.1) {
             stack.pushPose();
             stack.translate(x, y, -z);
             RenderUtils.translateMatrixToBone(stack, bone);
@@ -150,6 +150,8 @@ public class AnimationHelper {
             Matrix4f $$7 = $$6.pose();
             Matrix3f $$8 = $$6.normal();
             ResourceLocation tex = Mod.loc("textures/crosshair/" + name + ".png");
+
+            a = (int) (3 * Mth.clamp(ClientEventHandler.zoomTime - 0.34, 0, 1) * 255);
 
             int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
