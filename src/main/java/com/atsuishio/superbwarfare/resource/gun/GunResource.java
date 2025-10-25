@@ -24,9 +24,6 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
     public final GunItem item;
     public final String id;
 
-    @NotNull
-    public DefaultGunResource defaultResource;
-
     private GunResource(ItemStack stack) {
         if (!(stack.getItem() instanceof GunItem gunItem)) {
             throw new IllegalArgumentException("stack is not GunItem!");
@@ -35,13 +32,23 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
         this.item = gunItem;
         this.stack = stack;
         this.id = getRegistryId(stack.getItem());
+    }
 
-        this.defaultResource = CustomData.GUN_RESOURCE.get(id);
+    public static DefaultGunResource getDefault(String id) {
+        return CustomData.GUN_RESOURCE.getOrDefault(id, new DefaultGunResource());
     }
 
     @Override
     public DefaultGunResource getDefault() {
-        return this.defaultResource;
+        return CustomData.GUN_RESOURCE.get(id);
+    }
+
+    public static DefaultGunResource getDefault(ItemStack stack) {
+        return getDefault(stack.getItem());
+    }
+
+    public static DefaultGunResource getDefault(Item item) {
+        return getDefault(getRegistryId(item));
     }
 
     public static GunResource create(Item item) {

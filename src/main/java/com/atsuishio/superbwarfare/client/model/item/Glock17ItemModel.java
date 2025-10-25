@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.handgun.Glock17Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,30 +13,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
-    @Override
-    public ResourceLocation getAnimationResource(Glock17Item animatable) {
-        return Mod.loc("animations/glock_17.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Glock17Item animatable) {
-        return Mod.loc("geo/glock_17.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Glock17Item animatable) {
-        return Mod.loc("textures/item/glock_17.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Glock17Item animatable) {
-        return Mod.loc("geo/lod/glock_17.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Glock17Item animatable) {
-        return Mod.loc("textures/item/lod/glock_17.png");
-    }
 
     @Override
     public void setCustomAnimations(Glock17Item animatable, long instanceId, AnimationState<Glock17Item> animationState) {

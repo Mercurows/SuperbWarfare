@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.M98bItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,31 +20,6 @@ public class M98bItemModel extends CustomGunModel<M98bItem> {
     public static float posYAlt = 0.5625f;
     public static float scaleZAlt = 0.88f;
     public static float posZAlt = 7.6f;
-
-    @Override
-    public ResourceLocation getAnimationResource(M98bItem animatable) {
-        return Mod.loc("animations/m_98b.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(M98bItem animatable) {
-        return Mod.loc("geo/m_98b.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(M98bItem animatable) {
-        return Mod.loc("textures/item/m_98b.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(M98bItem animatable) {
-        return Mod.loc("geo/lod/m_98b.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(M98bItem animatable) {
-        return Mod.loc("textures/item/lod/m_98b.png");
-    }
 
     @Override
     public void setCustomAnimations(M98bItem animatable, long instanceId, AnimationState<M98bItem> animationState) {

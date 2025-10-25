@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.machinegun.RpkItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,34 +14,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class RpkItemModel extends CustomGunModel<RpkItem> {
-
-    public static float fireRotY = 0f;
-    public static float fireRotZ = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(RpkItem animatable) {
-        return Mod.loc("animations/ak_47.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(RpkItem animatable) {
-        return Mod.loc("geo/rpk.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(RpkItem animatable) {
-        return Mod.loc("textures/item/rpk.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(RpkItem animatable) {
-        return Mod.loc("geo/lod/rpk.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(RpkItem animatable) {
-        return Mod.loc("textures/item/lod/rpk.png");
-    }
 
     @Override
     public void setCustomAnimations(RpkItem animatable, long instanceId, AnimationState<RpkItem> animationState) {

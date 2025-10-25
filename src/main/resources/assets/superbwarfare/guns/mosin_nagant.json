@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:mosin_nagant",
+  "Model": {
+    "Animation": "superbwarfare:animations/mosin_nagant.animation.json",
+    "Model": "superbwarfare:geo/mosin_nagant.geo.json",
+    "Texture": "superbwarfare:textures/item/mosin_nagant.png",
+    "LODModel": "superbwarfare:geo/lod/mosin_nagant.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/mosin_nagant.png"
+  }
+}

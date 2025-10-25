@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,31 +12,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class TaserItemModel extends CustomGunModel<TaserItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(TaserItem animatable) {
-        return Mod.loc("animations/taser.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(TaserItem animatable) {
-        return Mod.loc("geo/taser.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(TaserItem animatable) {
-        return Mod.loc("textures/item/taser.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(TaserItem animatable) {
-        return Mod.loc("geo/lod/taser.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(TaserItem animatable) {
-        return Mod.loc("textures/item/taser.png");
-    }
 
     @Override
     public void setCustomAnimations(TaserItem animatable, long instanceId, AnimationState<TaserItem> animationState) {

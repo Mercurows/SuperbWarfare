@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.rifle.Ql1031Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,31 +21,6 @@ public class Ql1031ItemModel extends CustomGunModel<Ql1031Item> {
     public static float posZAlt = 7.8f;
     public static float rotXSight = 0f;
     public static float rotXBipod = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(Ql1031Item animatable) {
-        return Mod.loc("animations/ql_1031.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Ql1031Item animatable) {
-        return Mod.loc("geo/ql_1031.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Ql1031Item animatable) {
-        return Mod.loc("textures/item/ql_1031.png");
-    }
-
-//    @Override
-//    public ResourceLocation getLODModelResource(Ql1031Item animatable) {
-//        return Mod.loc("geo/lod/m_4.geo.json");
-//    }
-//
-//    @Override
-//    public ResourceLocation getLODTextureResource(Ql1031Item animatable) {
-//        return Mod.loc("textures/item/lod/m_4.png");
-//    }
 
     @Override
     public void setCustomAnimations(Ql1031Item animatable, long instanceId, AnimationState<Ql1031Item> animationState) {

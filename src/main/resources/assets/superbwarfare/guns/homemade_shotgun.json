@@ -4,5 +4,11 @@
     "Idle": "animation.homemade_shotgun.idle",
     "ReloadNormal": "animation.homemade_shotgun.reload_normal",
     "ReloadEmpty": "animation.homemade_shotgun.reload_empty"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/homemade_shotgun.animation.json",
+    "Model": "superbwarfare:geo/homemade_shotgun.geo.json",
+    "Texture": "superbwarfare:textures/item/homemade_shotgun.png",
+    "LODModel": "superbwarfare:geo/lod/homemade_shotgun.geo.json"
   }
 }

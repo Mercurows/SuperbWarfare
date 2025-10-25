@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:minigun",
+  "Model": {
+    "Animation": "superbwarfare:animations/minigun.animation.json",
+    "Model": "superbwarfare:geo/minigun.geo.json",
+    "Texture": "superbwarfare:textures/item/minigun.png",
+    "LODModel": "superbwarfare:geo/lod/minigun.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/minigun.png"
+  }
+}

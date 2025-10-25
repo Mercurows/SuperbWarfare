@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.smg.Mp5Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,31 +14,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class Mp5ItemModel extends CustomGunModel<Mp5Item> {
-
-    @Override
-    public ResourceLocation getAnimationResource(Mp5Item animatable) {
-        return Mod.loc("animations/mp_5.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Mp5Item animatable) {
-        return Mod.loc("geo/mp_5.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Mp5Item animatable) {
-        return Mod.loc("geo/lod/mp_5.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Mp5Item animatable) {
-        return Mod.loc("textures/item/mp_5.png");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Mp5Item animatable) {
-        return Mod.loc("textures/item/lod/mp_5.png");
-    }
 
     @Override
     public void setCustomAnimations(Mp5Item animatable, long instanceId, AnimationState<Mp5Item> animationState) {
@@ -56,10 +29,6 @@ public class Mp5ItemModel extends CustomGunModel<Mp5Item> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-
-        double fpz = ClientEventHandler.firePosZ * 15 * times;
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
 
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 

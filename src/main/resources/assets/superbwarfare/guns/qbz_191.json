@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:qbz_191",
+  "Model": {
+    "Animation": "superbwarfare:animations/qbz_191.animation.json",
+    "Model": "superbwarfare:geo/qbz_191.geo.json",
+    "Texture": "superbwarfare:textures/item/qbz_191.png",
+    "LODModel": "superbwarfare:geo/lod/qbz_191.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/qbz_191.png"
+  }
+}

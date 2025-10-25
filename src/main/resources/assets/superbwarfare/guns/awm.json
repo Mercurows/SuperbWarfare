@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:awm",
+  "Model": {
+    "Animation": "superbwarfare:animations/awm.animation.json",
+    "Model": "superbwarfare:geo/awm.geo.json",
+    "Texture": "superbwarfare:textures/item/awm.png",
+    "LODModel": "superbwarfare:geo/lod/awm.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/awm.png"
+  }
+}

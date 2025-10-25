@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
-import com.atsuishio.superbwarfare.client.model.item.Ntw20Model;
+import com.atsuishio.superbwarfare.client.model.item.Ntw20ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -22,7 +22,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 public class Ntw20Renderer extends CustomGunRenderer<Ntw20Item> {
 
     public Ntw20Renderer() {
-        super(new Ntw20Model());
+        super(new Ntw20ItemModel());
     }
 
     @Override

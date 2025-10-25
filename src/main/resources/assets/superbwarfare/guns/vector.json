@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:vector",
+  "Model": {
+    "Animation": "superbwarfare:animations/vector.animation.json",
+    "Model": "superbwarfare:geo/vector.geo.json",
+    "Texture": "superbwarfare:textures/item/vector.png",
+    "LODModel": "superbwarfare:geo/lod/vector.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/vector.png"
+  }
+}

@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,31 +12,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class HomemadeShotgunItemModel extends CustomGunModel<HomemadeShotgunItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(HomemadeShotgunItem animatable) {
-        return Mod.loc("animations/homemade_shotgun.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(HomemadeShotgunItem animatable) {
-        return Mod.loc("geo/homemade_shotgun.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(HomemadeShotgunItem animatable) {
-        return Mod.loc("textures/item/homemade_shotgun.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(HomemadeShotgunItem animatable) {
-        return Mod.loc("geo/lod/homemade_shotgun.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(HomemadeShotgunItem animatable) {
-        return Mod.loc("textures/item/homemade_shotgun.png");
-    }
 
     @Override
     public void setCustomAnimations(HomemadeShotgunItem animatable, long instanceId, AnimationState<HomemadeShotgunItem> animationState) {

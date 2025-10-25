@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.AwmItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,31 +17,6 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
 
     public static float rotXBipod = 0f;
     public static float rotXSight = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(AwmItem animatable) {
-        return Mod.loc("animations/awm.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(AwmItem animatable) {
-        return Mod.loc("geo/awm.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(AwmItem animatable) {
-        return Mod.loc("textures/item/awm.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(AwmItem animatable) {
-        return Mod.loc("geo/lod/awm.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(AwmItem animatable) {
-        return Mod.loc("textures/item/lod/awm.png");
-    }
 
     @Override
     public void setCustomAnimations(AwmItem animatable, long instanceId, AnimationState<AwmItem> animationState) {

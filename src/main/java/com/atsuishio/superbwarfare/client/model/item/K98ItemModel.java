@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.K98Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,31 +12,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class K98ItemModel extends CustomGunModel<K98Item> {
-
-    @Override
-    public ResourceLocation getAnimationResource(K98Item animatable) {
-        return Mod.loc("animations/k_98.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(K98Item animatable) {
-        return Mod.loc("geo/k_98.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(K98Item animatable) {
-        return Mod.loc("textures/item/k_98.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(K98Item animatable) {
-        return Mod.loc("geo/lod/k_98.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(K98Item animatable) {
-        return Mod.loc("textures/item/lod/k_98.png");
-    }
 
     @Override
     public void setCustomAnimations(K98Item animatable, long instanceId, AnimationState<K98Item> animationState) {

@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.handgun;
 
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
-import com.atsuishio.superbwarfare.client.model.item.AureliaSceptreModel;
+import com.atsuishio.superbwarfare.client.model.item.AureliaSceptreItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
@@ -38,7 +38,7 @@ public class AureliaSceptre extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(AureliaSceptreModel::new, 0, 0, 0.3022, 0.3);
+        return GunRendererBuilder.simple(AureliaSceptreItemModel::new, 0, 0, 0.3022, 0.3);
     }
 
     @OnlyIn(Dist.CLIENT)

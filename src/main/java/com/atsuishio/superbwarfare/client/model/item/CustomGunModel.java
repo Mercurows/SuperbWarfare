@@ -4,6 +4,9 @@ import com.atsuishio.superbwarfare.client.molang.MolangVariable;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource;
+import com.atsuishio.superbwarfare.resource.gun.GunModel;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -16,16 +19,40 @@ import software.bernie.geckolib.loading.math.MathParser;
 import software.bernie.geckolib.loading.math.MolangQueries;
 import software.bernie.geckolib.model.GeoModel;
 
+import java.util.Objects;
 import java.util.function.DoubleSupplier;
 
 public abstract class CustomGunModel<T extends GunGeoItem & GeoAnimatable> extends GeoModel<T> {
 
+    @Override
+    public ResourceLocation getAnimationResource(T animatable) {
+        return getModel(animatable).animation;
+    }
+
+    @Override
+    public ResourceLocation getModelResource(T animatable) {
+        return getModel(animatable).model;
+    }
+
+    @Override
+    public ResourceLocation getTextureResource(T animatable) {
+        return getModel(animatable).texture;
+    }
+
     public ResourceLocation getLODModelResource(T animatable) {
-        return this.getModelResource(animatable, null);
+        return Objects.requireNonNullElseGet(getModel(animatable).lodModel, () -> getModelResource(animatable));
     }
 
     public ResourceLocation getLODTextureResource(T animatable) {
-        return this.getTextureResource(animatable, null);
+        return Objects.requireNonNullElseGet(getModel(animatable).lodTexture, () -> getTextureResource(animatable));
+    }
+
+    protected GunModel getModel(T animatable) {
+        return getResource(animatable).getModel();
+    }
+
+    protected DefaultGunResource getResource(T animatable) {
+        return GunResource.getDefault(animatable);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.launcher.IglaItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,21 +11,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class IglaItemModel extends CustomGunModel<IglaItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(IglaItem animatable) {
-        return Mod.loc("animations/igla_9k38.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(IglaItem animatable) {
-        return Mod.loc("geo/igla_9k38.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(IglaItem animatable) {
-        return Mod.loc("textures/item/igla_9k38.png");
-    }
 
     @Override
     public void setCustomAnimations(IglaItem animatable, long instanceId, AnimationState<IglaItem> animationState) {

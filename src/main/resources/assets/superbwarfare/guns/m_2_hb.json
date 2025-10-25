@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:m_2_hb",
+  "Model": {
+    "Animation": "superbwarfare:animations/m_2_hb.animation.json",
+    "Model": "superbwarfare:geo/m_2_hb.geo.json",
+    "Texture": "superbwarfare:textures/item/m_2_hb.png",
+    "LODModel": "superbwarfare:geo/lod/m_2_hb.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/m_2_hb.png"
+  }
+}

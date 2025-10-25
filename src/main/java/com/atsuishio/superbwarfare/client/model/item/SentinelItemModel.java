@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.SentinelItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -14,31 +12,6 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class SentinelItemModel extends CustomGunModel<SentinelItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(SentinelItem animatable) {
-        return Mod.loc("animations/sentinel.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(SentinelItem animatable) {
-        return Mod.loc("geo/sentinel.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(SentinelItem animatable) {
-        return Mod.loc("textures/item/sentinel.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(SentinelItem animatable) {
-        return Mod.loc("geo/lod/sentinel.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(SentinelItem animatable) {
-        return Mod.loc("textures/item/lod/sentinel.png");
-    }
 
     @Override
     public void setCustomAnimations(SentinelItem animatable, long instanceId, AnimationState<SentinelItem> animationState) {

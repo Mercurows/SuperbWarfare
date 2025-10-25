@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
-import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmModel;
+import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
@@ -55,7 +55,7 @@ public class SecondaryCataclysm extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(SecondaryCataclysmModel::new, 0, 0, 1.0375, 0.6);
+        return GunRendererBuilder.simple(SecondaryCataclysmItemModel::new, 0, 0, 1.0375, 0.6);
     }
 
     private PlayState reloadAnimPredicate(AnimationState<SecondaryCataclysm> event) {
