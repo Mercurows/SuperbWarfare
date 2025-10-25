@@ -200,11 +200,6 @@ public class Qbz191Item extends GunGeoItem {
     }
 
     @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
-
-    @Override
     public boolean hasBipod(GunData data) {
         return data.attachment.get(AttachmentType.GRIP) == 1;
     }

@@ -160,11 +160,6 @@ public class AK12Item extends GunGeoItem {
     }
 
     @Override
-    public boolean canEjectShell(GunData data) {
-        return true;
-    }
-
-    @Override
     public boolean canEditAttachments(GunData data) {
         return true;
     }

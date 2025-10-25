@@ -18,5 +18,6 @@
     1.31465
   ],
   "FlareSize": 0.5,
-  "UseOldHandRenderer": true
+  "UseOldHandRenderer": true,
+  "EjectShell": true
 }

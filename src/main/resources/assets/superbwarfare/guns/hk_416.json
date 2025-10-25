@@ -12,5 +12,6 @@
     0,
     1.440625
   ],
-  "FlareSize": 0.3
+  "FlareSize": 0.3,
+  "EjectShell": true
 }

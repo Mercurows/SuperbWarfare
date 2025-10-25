@@ -59,4 +59,6 @@ public class DefaultGunResource implements IDBasedData {
 
     @SerializedName("EnergyBarColor")
     public ModColor energyBarColor = new ModColor(0x95E9FF);
+    @SerializedName("EjectShell")
+    public boolean ejectShell = false;
 }
