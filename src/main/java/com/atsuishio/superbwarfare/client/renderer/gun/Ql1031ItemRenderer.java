@@ -58,11 +58,16 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
-                if (name.equals("energy_illuminated") || name.equals("energy2_illuminated") || name.equals("energy3_illuminated") || name.equals("energy4_illuminated")) {
-                    var cap = itemStack.getCapability(Capabilities.EnergyStorage.ITEM);
-                    var energy = cap != null ? cap.getEnergyStored() : 0;
+                var cap = itemStack.getCapability(Capabilities.EnergyStorage.ITEM);
+                var energy = cap != null ? cap.getEnergyStored() : 0;
+
+                if (name.equals("energy2_illuminated") || name.equals("energy3_illuminated") || name.equals("energy4_illuminated")) {
                     bone.setScaleX((float) energy / data.get(GunProp.MAX_ENERGY));
                     bone.setHidden(ClientEventHandler.zoomPos < 0.7);
+                }
+
+                if (name.equals("energy_illuminated")) {
+                    bone.setScaleX((float) energy / data.get(GunProp.MAX_ENERGY));
                 }
 
                 if (name.equals("kuang_illuminated") || name.equals("kuang2_illuminated") || name.equals("kuang3_illuminated")) {
