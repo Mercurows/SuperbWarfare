@@ -9,5 +9,6 @@
   },
   "FlarePosition": [0, 0, 0.59375],
   "FlareSize": 1,
-  "UseOldHandRenderer": true
+  "UseOldHandRenderer": true,
+  "Crosshair": "@GunGrenade"
 }

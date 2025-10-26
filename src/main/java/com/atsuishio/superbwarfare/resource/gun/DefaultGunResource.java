@@ -47,6 +47,7 @@ public class DefaultGunResource implements IDBasedData {
      * @GunDefault - 默认枪械准星
      * @VehicleDefault - 默认载具准星
      */
+    // TODO 支持override之后把二次灾变的霰弹模式的普通准星加上
     @SerializedName("Crosshair")
     public String crosshair = "@GunDefault";
     @SerializedName("CrosshairColor")

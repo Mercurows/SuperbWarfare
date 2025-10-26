@@ -7,6 +7,11 @@
     "LODModel": "superbwarfare:geo/lod/secondary_cataclysm.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/secondary_cataclysm.png"
   },
-  "FlarePosition": [0, 0, 1.10375],
-  "FlareSize": 0.6
+  "FlarePosition": [
+    0,
+    0,
+    1.10375
+  ],
+  "FlareSize": 0.6,
+  "Crosshair": "@GunGrenade"
 }

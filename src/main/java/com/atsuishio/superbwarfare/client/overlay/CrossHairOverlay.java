@@ -87,8 +87,9 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
             return;
 
         var data = GunData.from(stack);
+        var resource = GunResource.from(stack);
 
-        var crosshair = data.get(GunProp.CROSSHAIR);
+        var crosshair = resource.getDefault().crosshair;
         if (crosshair.equals(CROSSHAIR_CUSTOM)) return;
 
         double spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos;
