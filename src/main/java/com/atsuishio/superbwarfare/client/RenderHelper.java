@@ -361,7 +361,7 @@ public class RenderHelper {
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         poseStack.rotateAround(Axis.ZP.rotationDegrees(-90), centerX, centerY, 0);
 
@@ -369,29 +369,22 @@ public class RenderHelper {
         float scale = useRate ? Math.min(window.getGuiScaledWidth(), window.getGuiScaledHeight()) : 1;
 
         // 绘制背景圆环
-        drawCircularRing(poseStack, centerX, centerY, outerRadius * scale, innerRadius * scale, backgroundColor, 1.0f);
+        drawCircularRing(guiGraphics, centerX, centerY, outerRadius * scale, innerRadius * scale, backgroundColor, 1.0f);
 
         // 绘制进度圆环
-        drawCircularRing(poseStack, centerX, centerY, outerRadius * scale, innerRadius * scale, progressColor, progress);
+        drawCircularRing(guiGraphics, centerX, centerY, outerRadius * scale, innerRadius * scale, progressColor, progress);
 
         poseStack.popPose();
-
         RenderSystem.disableBlend();
     }
 
-    public static void drawCircularRing(PoseStack poseStack, float centerX, float centerY, float outerRadius, float innerRadius,
-                                        float[] color, float progressAngle) {
-        poseStack.pushPose();
+    public static void drawCircularRing(GuiGraphics guiGraphics, float centerX, float centerY, float outerRadius, float innerRadius, float[] color, float progressAngle) {
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
-        Tesselator tesselator = Tesselator.getInstance();
-
-        Matrix4f matrix = poseStack.last().pose();
+        PoseStack.Pose pose = guiGraphics.pose().last();
+        Matrix4f matrix = pose.pose();
         float angleStep = (float) (2 * Math.PI / 180);
         float maxAngle = (float) (2 * Math.PI * progressAngle);
-
-        RenderSystem.setShaderColor(color[0], color[1], color[2], color[3]);
-
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION);
 
         for (int i = 0; i <= 180 * progressAngle; i++) {
             float angle = i * angleStep;
@@ -405,21 +398,18 @@ public class RenderHelper {
             // 外圆点
             float outerX = centerX + outerRadius * cos;
             float outerY = centerY + outerRadius * sin;
-            buffer.addVertex(matrix, outerX, outerY, 0);
+            buffer.addVertex(matrix, outerX, outerY, 0)
+                    .setColor(color[0], color[1], color[2], color[3]);
 
             // 内圆点
             float innerX = centerX + innerRadius * cos;
             float innerY = centerY + innerRadius * sin;
-            buffer.addVertex(matrix, innerX, innerY, 0);
+            buffer.addVertex(matrix, innerX, innerY, 0)
+                    .setColor(color[0], color[1], color[2], color[3]);
 
             if (angle >= maxAngle) break;
         }
 
-        tesselator.clear();
-
-        // 重置颜色
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-        poseStack.popPose();
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 }
