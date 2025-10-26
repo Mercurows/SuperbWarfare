@@ -257,10 +257,11 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
 
         // 射击延迟
-        if (stack.getItem() instanceof GunItem) {
+        if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
 
-            if (holdFire || (zoom && stack.is(ModItems.MINIGUN.get()))) {
+            if ((holdFire || (zoom && stack.is(ModItems.MINIGUN.get()))) && gunItem.canShoot(data, player)) {
+
                 shootDelay = Math.min(shootDelay + 2, data.get(GunProp.SHOOT_DELAY) + 1);
 
                 // 加特林特有的旋转音效
@@ -763,6 +764,10 @@ public class ClientEventHandler {
         if (qlHoldProgress > shootDelay && qlHoldProgress > data.get(GunProp.SHOOT_DELAY) * 0.25 && !playQLDischargeSound) {
             player.playSound(ModSounds.QL_1031_DISCHARGE.get(), qlHoldProgress * 0.03f, 0.6f + qlHoldProgress * 0.02f);
             playQLDischargeSound = true;
+        }
+
+        if (!gunItem.canShoot(data, player)) {
+            holdFire = false;
         }
 
         // 精准度

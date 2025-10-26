@@ -441,7 +441,7 @@ public class ClickHandler {
             ClientEventHandler.holdFire = true;
         }
 
-        if (stack.getItem() instanceof GunItem && !(player.getVehicle() != null
+        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null
                 && player.getVehicle() instanceof CannonEntity)
                 && clientTimer.getProgress() == 0
                 && !notInGame()
@@ -450,7 +450,7 @@ public class ClickHandler {
 
             if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
                 if (!data.meleeOnly()) {
-                    if (stack.is(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold")) {
+                    if (stack.is(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold") && gunItem.canShoot(data, player)) {
                         player.playSound(ModSounds.QL_1031_CHARGE.get(), 1, 1);
                         playQLDischargeSound = false;
                     }
@@ -488,7 +488,13 @@ public class ClickHandler {
                             player.setSprinting(false);
                             ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT);
                         }
-                    } else {
+                    } else if (data.selectedFireModeInfo().mode == FireMode.SEMI) {
+                        if (ClientEventHandler.burstFireAmount == 0) {
+                            cantSprint = 3;
+                            player.setSprinting(false);
+                            ClientEventHandler.burstFireAmount = 1;
+                        }
+                    }{
                         ClientEventHandler.holdFire = true;
                         player.setSprinting(false);
                     }
