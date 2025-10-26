@@ -22,7 +22,6 @@
   "AmmoType": "FE",
   "AmmoCostPerShoot": 50,
   "GunIcon": "superbwarfare:textures/gun_icon/repair_tool_icon.png",
-  "Crosshair": "@GunRepairTool",
   "AvailablePerks": [
     "superbwarfare:regeneration",
     "superbwarfare:powerful_cooler"

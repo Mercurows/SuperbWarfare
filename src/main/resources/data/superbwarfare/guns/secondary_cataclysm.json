@@ -39,8 +39,7 @@
         "ProjectileAmount": 6,
         "Velocity": 10,
         "RecoilX": 0.006,
-        "RecoilY": 0.018,
-        "Crosshair": "Gun$Default"
+        "RecoilY": 0.018
       }
     },
     {
@@ -52,7 +51,6 @@
     }
   ],
   "GunIcon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
-  "Crosshair": "@GunGrenade",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
