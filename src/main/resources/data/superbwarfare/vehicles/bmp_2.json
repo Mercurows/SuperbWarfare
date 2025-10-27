@@ -104,24 +104,18 @@
     }
   ],
   "HUDColor": "0xFFC700",
-  "Engine": {
-    "Type": "Track",
-    "Buoyancy": 0.052,
+  "EngineType": "Track",
+  "EngineInfo": {
+    "Buoyancy": 0,
     "EnergyCostRate": 96,
-    "Wheel": {
-      "RotSpeed": 1.25,
-      "Differential": 0.5
-    },
-    "Track": {
-      "RotSpeed": 1.9,
-      "Differential": 0.8
-    },
-    "Power": {
-      "MaxForwardSpeedRate": 0.82,
-      "MaxBackwardSpeedRate": 0.4,
-      "Increment": 0.025,
-      "Decrement": 0.015
-    },
+    "WheelRotSpeed": 1.25,
+    "WheelDifferential": 0.5,
+    "TrackRotSpeed": 1.9,
+    "TrackDifferential": 0.8,
+    "MaxForwardSpeedRate": 0.82,
+    "MaxBackwardSpeedRate": 0.4,
+    "Increment": 0.025,
+    "Decrement": 0.015,
     "SteeringSpeed": 0.1
   },
   "HasDecoy": true,
