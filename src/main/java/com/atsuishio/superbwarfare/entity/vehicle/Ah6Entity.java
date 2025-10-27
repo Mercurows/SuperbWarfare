@@ -172,11 +172,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
-        this.entityData.set(CANNON_RECOIL_TIME, 40);
-        this.entityData.set(YAW, getTurretYRot());
-
-        this.entityData.set(FIRE_ANIM, 3);
-
         var data = getGunData(getSeatIndex(living));
         if (data != null) {
             var list = data.get(GunProp.SHOOT_POS).positions.list;

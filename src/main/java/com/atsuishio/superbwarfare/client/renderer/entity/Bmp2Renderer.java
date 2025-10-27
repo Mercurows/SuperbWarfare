@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -16,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -35,7 +34,15 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
     }
 
     @Override
-    public void render(Bmp2Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+    public void preRender(PoseStack poseStack, Bmp2Entity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        float scale = 1f;
+        this.scaleHeight = scale;
+        this.scaleWidth = scale;
+        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    @Override
+    public void render(Bmp2Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
         Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
@@ -48,15 +55,28 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
     @Override
     public void renderRecursively(PoseStack poseStack, Bmp2Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         String name = bone.getName();
-        for (int i = 0; i < 8; i++) {
-            if (name.equals("wheelL" + i)) {
-                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
-            }
-            if (name.equals("wheelR" + i)) {
-                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
+
+//        for (int i = 0; i < 8; i++) {
+//            if (name.equals("wheelL" + i)) {
+//                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
+//            }
+//            if (name.equals("wheelR" + i)) {
+//                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
+//            }
+//        }
+        // CHANGED PART START
+        if (name.length() == 7 && name.startsWith("wheel")) {
+            char side = name.charAt(5);
+            char digit = name.charAt(6);
+            if (digit >= '0' && digit <= '7') {
+                if (side == 'L') {
+                    bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
+                } else if (side == 'R') {
+                    bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
+                }
             }
         }
-
+        // CHANGED PART END
         if (name.equals("cannon")) {
 
             Player player = Minecraft.getInstance().player;
@@ -76,7 +96,7 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
                 r2 = a / 90f;
             } else {
                 if (a < 0) {
-                    r2 = - (180f + a) / 90f;
+                    r2 = -(180f + a) / 90f;
                 } else {
                     r2 = (180f - a) / 90f;
                 }
@@ -113,7 +133,7 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
                 r2 = a / 90f;
             } else {
                 if (a < 0) {
-                    r2 = - (180f + a) / 90f;
+                    r2 = -(180f + a) / 90f;
                 } else {
                     r2 = (180f - a) / 90f;
                 }
@@ -123,63 +143,129 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
             bone.setRotZ(r2 * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * Mth.DEG_TO_RAD * 0.2f);
         }
 
-        if (name.equals("root")) {
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(player != null && animatable == player.getVehicle() && animatable.getFirstPassenger() != player && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle));
+//        for (int i = 0; i < 51; i++) {
+//            float tO = animatable.leftTrackO + 2 * i;
+//            float t = animatable.getLeftTrack() + 2 * i;
+//
+//            while (t >= 100) {
+//                t -= 100;
+//            }
+//            while (t <= 0) {
+//                t += 100;
+//            }
+//            while (tO >= 100) {
+//                tO -= 100;
+//            }
+//            while (tO <= 0) {
+//                tO += 100;
+//            }
+//
+//            float tO2 = animatable.rightTrackO + 2 * i;
+//            float t2 = animatable.getRightTrack() + 2 * i;
+//
+//            while (t2 >= 100) {
+//                t2 -= 100;
+//            }
+//            while (t2 <= 0) {
+//                t2 += 100;
+//            }
+//            while (tO2 >= 100) {
+//                tO2 -= 100;
+//            }
+//            while (tO2 <= 0) {
+//                tO2 += 100;
+//            }
+//
+//            if (name.equals("trackL" + i)) {
+//                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
+//                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
+//            }
+//
+//            if (name.equals("trackR" + i)) {
+//                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
+//                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
+//            }
+//
+//            if (name.equals("trackLRot" + i)) {
+//                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
+//            }
+//
+//            if (name.equals("trackRRot" + i)) {
+//                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
+//            }
+//
+//        }
+
+        // CHANGED PART START
+        // old code iterated 51 times per bone, new code parses the index from the bone name
+        if (name.startsWith("trackLRot") || name.startsWith("trackRRot") || name.startsWith("trackL") || name.startsWith("trackR")) {
+            boolean isRot;
+            boolean isLeft;
+            int idxStart;
+
+            if (name.startsWith("trackLRot")) {
+                isRot = true;
+                isLeft = true;
+                idxStart = 9; // length of "trackLRot"
+            } else if (name.startsWith("trackRRot")) {
+                isRot = true;
+                isLeft = false;
+                idxStart = 9; // length of "trackRRot"
+            } else if (name.startsWith("trackL")) {
+                isRot = false;
+                isLeft = true;
+                idxStart = 6; // length of "trackL"
+            } else {
+                isRot = false;
+                isLeft = false; // starts with trackR
+                idxStart = 6; // length of "trackR"
+            }
+
+            int idx = -1;
+            try {
+                idx = Integer.parseInt(name.substring(idxStart));
+            } catch (Exception ignored) {
+            }
+
+            if (idx >= 0 && idx < 51) {
+                float offset = 2f * idx;
+                if (isLeft) {
+                    float tO = animatable.leftTrackO + offset;
+                    float t = animatable.getLeftTrack() + offset;
+
+                    // wrap into (0, 100]
+                    t = t % 100f;
+                    if (t <= 0f) t += 100f;
+                    tO = tO % 100f;
+                    if (tO <= 0f) tO += 100f;
+
+                    if (isRot) {
+                        bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
+                    } else {
+                        bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
+                        bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
+                    }
+                } else {
+                    float tO2 = animatable.rightTrackO + offset;
+                    float t2 = animatable.getRightTrack() + offset;
+
+                    // wrap into (0, 100]
+                    t2 = t2 % 100f;
+                    if (t2 <= 0f) t2 += 100f;
+                    tO2 = tO2 % 100f;
+                    if (tO2 <= 0f) tO2 += 100f;
+
+                    if (isRot) {
+                        bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
+                    } else {
+                        bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
+                        bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
+                    }
+                }
+            }
+
         }
-
-        for (int i = 0; i < 51; i++) {
-            float tO = animatable.leftTrackO + 2 * i;
-            float t = animatable.getLeftTrack() + 2 * i;
-
-            while (t >= 100) {
-                t -= 100;
-            }
-            while (t <= 0) {
-                t += 100;
-            }
-            while (tO >= 100) {
-                tO -= 100;
-            }
-            while (tO <= 0) {
-                tO += 100;
-            }
-
-            float tO2 = animatable.rightTrackO + 2 * i;
-            float t2 = animatable.getRightTrack() + 2 * i;
-
-            while (t2 >= 100) {
-                t2 -= 100;
-            }
-            while (t2 <= 0) {
-                t2 += 100;
-            }
-            while (tO2 >= 100) {
-                tO2 -= 100;
-            }
-            while (tO2 <= 0) {
-                tO2 += 100;
-            }
-
-            if (name.equals("trackL" + i)) {
-                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
-                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
-            }
-
-            if (name.equals("trackR" + i)) {
-                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
-                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
-            }
-
-            if (name.equals("trackLRot" + i)) {
-                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
-            }
-
-            if (name.equals("trackRRot" + i)) {
-                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
-            }
-
-        }
+        //CHANGED PART END
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
