@@ -5,7 +5,10 @@
   "ingredient": {
     "tag": "c:dusts/silver"
   },
-  "result": "superbwarfare:silver_ingot",
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:silver_ingot"
+  },
   "neoforge:conditions": [
     {
       "type": "neoforge:not",
