@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.layer.vehicle.PrismTankLaserLayer;
 import com.atsuishio.superbwarfare.client.layer.vehicle.PrismTankLightLayer;
 import com.atsuishio.superbwarfare.client.model.entity.PrismTankModel;
 import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -14,28 +13,20 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.*;
 
-public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
+public class PrismTankRenderer extends VehicleRenderer<PrismTankEntity> {
 
     public PrismTankRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new PrismTankModel());
         this.addRenderLayer(new PrismTankLaserLayer(this));
         this.addRenderLayer(new PrismTankLightLayer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(PrismTankEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -51,6 +42,8 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
 
     @Override
     public void renderRecursively(PoseStack poseStack, PrismTankEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        processBone(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
+
         String name = bone.getName();
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -65,22 +58,12 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
             bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
         }
 
-        for (int i = 0; i < 8; i++) {
-            if (name.equals("wheelL" + i)) {
-                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
-            }
-            if (name.equals("wheelR" + i)) {
-                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
-            }
-        }
-
         if (name.equals("cannon") || name.equals("cannon2")) {
-            bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+            bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
         }
 
         if (name.equals("head")) {
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
         }
 
         if (name.equals("laser")) {
@@ -99,85 +82,20 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
             bone.setRotY((System.currentTimeMillis() % 36000000) / 75f);
         }
 
-        if (name.equals("barrel") || name.equals("barrel2")) {
-
-            float a = animatable.getTurretYaw(partialTick);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            bone.setRotX(
-                    -Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD
-                            - r * animatable.getPitch(partialTick) * Mth.DEG_TO_RAD
-                            - r2 * animatable.getRoll(partialTick) * Mth.DEG_TO_RAD
-            );
-        }
-
-        for (int i = 0; i < 51; i++) {
-            float tO = animatable.leftTrackO + 2 * i;
-            float t = animatable.getLeftTrack() + 2 * i;
-
-            while (t >= 100) {
-                t -= 100;
-            }
-            while (t <= 0) {
-                t += 100;
-            }
-            while (tO >= 100) {
-                tO -= 100;
-            }
-            while (tO <= 0) {
-                tO += 100;
-            }
-
-            float tO2 = animatable.rightTrackO + 2 * i;
-            float t2 = animatable.getRightTrack() + 2 * i;
-
-            while (t2 >= 100) {
-                t2 -= 100;
-            }
-            while (t2 <= 0) {
-                t2 += 100;
-            }
-            while (tO2 >= 100) {
-                tO2 -= 100;
-            }
-            while (tO2 <= 0) {
-                tO2 += 100;
-            }
-
-            if (name.equals("trackL" + i)) {
-                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
-                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
-            }
-
-            if (name.equals("trackR" + i)) {
-                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
-                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
-            }
-
-            if (name.equals("trackLRot" + i)) {
-                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
-            }
-
-            if (name.equals("trackRRot" + i)) {
-                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
-            }
-
-        }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
 
+    @Override
+    public boolean hasTrack() {
+        return true;
+    }
+
+    @Override
+    public boolean hasBarrel() {
+        return true;
+    }
+
+    @Override
     public float getBoneRotX(float t) {
         if (t <= 37.6667) return 0F;
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 0F, -45F);
@@ -205,6 +123,7 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
         return 0F;
     }
 
+    @Override
     public float getBoneMoveY(float t) {
         if (t <= 37.6667) return 0F;
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 0F, -1.8F);
@@ -222,6 +141,7 @@ public class PrismTankRenderer extends GeoEntityRenderer<PrismTankEntity> {
         return Mth.lerp((t - 99.25F) / (100F - 99.25F), -0.25F, 0F);
     }
 
+    @Override
     public float getBoneMoveZ(float t) {
         if (t <= 37.6667) return Mth.lerp(t / (37.6667F - 0F), 0F, 111.6F);
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 111.6F, 113.25F);

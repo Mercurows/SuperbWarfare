@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.layer.vehicle.Hpj11HeatLayer;
 import com.atsuishio.superbwarfare.client.layer.vehicle.Hpj11Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Hpj11Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.CameraType;
@@ -12,15 +11,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity.ANIM_TIME;
 
-public class Hpj11Renderer extends GeoEntityRenderer<Hpj11Entity> {
+public class Hpj11Renderer extends VehicleRenderer<Hpj11Entity> {
 
     public Hpj11Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Hpj11Model());
@@ -30,18 +27,11 @@ public class Hpj11Renderer extends GeoEntityRenderer<Hpj11Entity> {
     }
 
     @Override
-    public RenderType getRenderType(Hpj11Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
-    }
-
-
-    @Override
     public void renderRecursively(PoseStack poseStack, Hpj11Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         String name = bone.getName();
 
         if (name.equals("root")) {
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
         }
 
         if (name.equals("paotiroll")) {

@@ -13,28 +13,21 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW;
 
-public class SpeedboatRenderer extends GeoEntityRenderer<SpeedboatEntity> {
+public class SpeedboatRenderer extends VehicleRenderer<SpeedboatEntity> {
 
     public SpeedboatRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new SpeedboatModel());
         this.addRenderLayer(new SpeedBoatLayer(this));
         this.addRenderLayer(new SpeedBoatPowerLayer(this));
         this.addRenderLayer(new SpeedBoatHeatLayer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(SpeedboatEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -56,8 +49,11 @@ public class SpeedboatRenderer extends GeoEntityRenderer<SpeedboatEntity> {
         poseStack.popPose();
     }
 
+    // TODO 枪呢？
     @Override
     public void renderRecursively(PoseStack poseStack, SpeedboatEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        processBone(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
+
         String name = bone.getName();
         if (name.equals("root")) {
             float a = animatable.getEntityData().get(YAW);
@@ -89,35 +85,15 @@ public class SpeedboatRenderer extends GeoEntityRenderer<SpeedboatEntity> {
             bone.setRotY(Mth.lerp(partialTick, animatable.rudderRotO, animatable.getRudderRot()));
         }
         if (name.equals("paota")) {
-            bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+            bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
         }
-        if (name.equals("gun")) {
 
-            float a = animatable.getTurretYaw(partialTick);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            bone.setRotX(
-                    -Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD
-                            - r * animatable.getPitch(partialTick) * Mth.DEG_TO_RAD
-                            - r2 * animatable.getRoll(partialTick) * Mth.DEG_TO_RAD
-            );
-        }
-        if (name.equals("flare")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-        }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
+    }
+
+    @Override
+    public boolean hasBarrel() {
+        return true;
     }
 
     @Override

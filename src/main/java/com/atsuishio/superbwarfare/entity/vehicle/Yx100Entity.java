@@ -448,7 +448,10 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return getDeltaMovement().horizontalDistance() > 0.3;
     }
 
+    // TODO 移除这个
     private void handleAmmo() {
+        if (getWeapon(0) == null) return;
+        
         if (getWeapon(0).mainGun) {
             entityData.set(SELECTED_AMMO_TYPE, getWeaponIndex(0));
         }

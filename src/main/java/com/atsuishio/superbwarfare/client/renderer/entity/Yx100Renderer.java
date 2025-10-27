@@ -3,34 +3,24 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.layer.vehicle.Yx100GlowLayer;
 import com.atsuishio.superbwarfare.client.model.entity.Yx100Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity.YAW;
 
-public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
+public class Yx100Renderer extends VehicleRenderer<Yx100Entity> {
 
     public Yx100Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Yx100Model());
         this.addRenderLayer(new Yx100GlowLayer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(Yx100Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -46,46 +36,18 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
 
     @Override
     public void renderRecursively(PoseStack poseStack, Yx100Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        processBone(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
+
         String name = bone.getName();
-        for (int i = 0; i < 9; i++) {
-            if (name.equals("wheelL" + i)) {
-                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
-            }
-            if (name.equals("wheelR" + i)) {
-                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
-            }
-        }
 
         if (name.equals("turret")) {
             bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
         }
 
-        if (name.equals("barrel")) {
-            float a = animatable.getTurretYaw(partialTick);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            bone.setRotX(
-                    -Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD
-                            - r * animatable.getPitch(partialTick) * Mth.DEG_TO_RAD
-                            - r2 * animatable.getRoll(partialTick) * Mth.DEG_TO_RAD
-            );
-        }
-
         if (name.equals("HMG")) {
-            bone.setRotY(Mth.lerp(partialTick, animatable.gunYRotO, animatable.getGunYRot()) * Mth.DEG_TO_RAD - Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+            bone.setRotY(Mth.lerp(partialTick, animatable.gunYRotO, animatable.getGunYRot()) * Mth.DEG_TO_RAD - turretYRot * Mth.DEG_TO_RAD);
         }
+
         if (name.equals("qiangguan")) {
             float a = animatable.getTurretYaw(partialTick);
             float r = (Mth.abs(a) - 90f) / 90f;
@@ -104,17 +66,10 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
 
             bone.setRotX(Mth.clamp(
                     -Mth.lerp(partialTick, animatable.gunXRotO, animatable.getGunXRot()) * Mth.DEG_TO_RAD
-                            - r * animatable.getPitch(partialTick) * Mth.DEG_TO_RAD
-                            - r2 * animatable.getRoll(partialTick) * Mth.DEG_TO_RAD,
+                            - r * pitch * Mth.DEG_TO_RAD
+                            - r2 * roll * Mth.DEG_TO_RAD,
                     -10 * Mth.DEG_TO_RAD, 60 * Mth.DEG_TO_RAD)
             );
-        }
-
-        if (name.equals("flare")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-        }
-        if (name.equals("flare2")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
         }
 
         if (name.equals("base")) {
@@ -141,66 +96,28 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
         }
 
         if (name.equals("root")) {
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
         }
 
-        for (int i = 0; i < 41; i++) {
-            float tO = animatable.leftTrackO + 2 * i;
-            float t = animatable.getLeftTrack() + 2 * i;
-
-            while (t >= 80) {
-                t -= 80;
-            }
-            while (t <= 0) {
-                t += 80;
-            }
-            while (tO >= 80) {
-                tO -= 80;
-            }
-            while (tO <= 0) {
-                tO += 80;
-            }
-
-            float tO2 = animatable.rightTrackO + 2 * i;
-            float t2 = animatable.getRightTrack() + 2 * i;
-
-            while (t2 >= 80) {
-                t2 -= 80;
-            }
-            while (t2 <= 0) {
-                t2 += 80;
-            }
-            while (tO2 >= 80) {
-                tO2 -= 80;
-            }
-            while (tO2 <= 0) {
-                tO2 += 80;
-            }
-
-            if (name.equals("trackL" + i)) {
-                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
-                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
-            }
-
-            if (name.equals("TrackR" + i)) {
-                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
-                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
-            }
-
-            if (name.equals("trackLRot" + i)) {
-                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
-            }
-
-            if (name.equals("trackRRot" + i)) {
-                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
-            }
-
-        }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
 
+    @Override
+    public int getDefaultWrapRange() {
+        return 80;
+    }
 
+    @Override
+    public boolean hasTrack() {
+        return true;
+    }
+
+    @Override
+    public boolean hasBarrel() {
+        return true;
+    }
+
+    @Override
     public float getBoneRotX(float t) {
         if (t <= 34.75) return 0F;
         if (t <= 35.5) return Mth.lerp((t - 34.75F) / (35.5F - 34.75F), 0F, -45F);
@@ -231,6 +148,7 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
         return 0F;
     }
 
+    @Override
     public float getBoneMoveY(float t) {
         if (t <= 35.1667) return 0F;
         if (t <= 36.1667) return Mth.lerp(t - 35.1667F, 0F, -2.91F);
@@ -248,6 +166,7 @@ public class Yx100Renderer extends GeoEntityRenderer<Yx100Entity> {
         return Mth.lerp((t - 79.25F) / (80F - 79.25F), -0.025F, 0F);
     }
 
+    @Override
     public float getBoneMoveZ(float t) {
         if (t <= 35.1667) return Mth.lerp(t / (35.1667F - 0F), 0F, 121.385F);
         if (t <= 36.1667) return Mth.lerp(t - 35.1667F, 121.385F, 124.37F);

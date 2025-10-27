@@ -2,33 +2,23 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.Bl132Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity.*;
 
-public class Bl132Renderer extends GeoEntityRenderer<Bl132Entity> {
+public class Bl132Renderer extends VehicleRenderer<Bl132Entity> {
 
     public Bl132Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Bl132Model());
         this.shadowRadius = 2f;
-    }
-
-    @Override
-    public RenderType getRenderType(Bl132Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -44,8 +34,7 @@ public class Bl132Renderer extends GeoEntityRenderer<Bl132Entity> {
         String name = bone.getName();
 
         if (name.equals("main")) {
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
         }
 
         if (name.equals("flare")) {

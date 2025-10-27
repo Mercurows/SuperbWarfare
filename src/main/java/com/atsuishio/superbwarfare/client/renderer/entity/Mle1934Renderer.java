@@ -2,25 +2,21 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.Mle1934Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity.COOL_DOWN;
 import static com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity.RIGHT_BARREL_ANIM;
 
-public class Mle1934Renderer extends GeoEntityRenderer<Mle1934Entity> {
+public class Mle1934Renderer extends VehicleRenderer<Mle1934Entity> {
 
     public Mle1934Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Mle1934Model());
@@ -45,8 +41,7 @@ public class Mle1934Renderer extends GeoEntityRenderer<Mle1934Entity> {
         String name = bone.getName();
 
         if (name.equals("bone")) {
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
         }
 
         if (name.equals("flare2")) {

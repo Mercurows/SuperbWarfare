@@ -8,25 +8,18 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Type63Entity.LOADED_AMMO;
 
 
-public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
+public class Type63Renderer extends VehicleRenderer<Type63Entity> {
 
     public Type63Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Type63Model());
         this.shadowRadius = 0.8f;
-    }
-
-    @Override
-    public RenderType getRenderType(Type63Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -49,26 +42,25 @@ public class Type63Renderer extends GeoEntityRenderer<Type63Entity> {
         }
 
         if (name.equals("main")) {
-            bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+            bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
         }
 
         if (name.equals("paotou")) {
-            bone.setRotX(-Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD);
+            bone.setRotX(-turretXRot * Mth.DEG_TO_RAD);
         }
 
         if (name.equals("shoulunx")) {
-            bone.setRotX(-Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * 3);
+            bone.setRotX(-turretXRot * 3);
         }
 
         if (name.equals("shouluny")) {
-            bone.setRotZ(-Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * 6);
+            bone.setRotZ(-turretYRot * 6);
         }
 
-        for (int i = 0; i < 12; i++) {
+        if (name.startsWith("shell") && name.length() > 5) {
             var items = animatable.getEntityData().get(LOADED_AMMO);
-            if (name.equals("shell" + i)) {
-                bone.setHidden(items.get(i) == -1);
-            }
+            int i = Integer.parseInt(name.substring(5));
+            bone.setHidden(items.get(i) == -1);
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);

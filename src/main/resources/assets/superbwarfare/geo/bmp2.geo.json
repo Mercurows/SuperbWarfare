@@ -8769,13 +8769,13 @@
 					]
 				},
 				{
-					"name": "trackL0",
+					"name": "trackMovL0",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot0",
-					"parent": "trackL0",
+					"name": "trackRotL0",
+					"parent": "trackMovL0",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8795,13 +8795,13 @@
 					]
 				},
 				{
-					"name": "trackL1",
+					"name": "trackMovL1",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot1",
-					"parent": "trackL1",
+					"name": "trackRotL1",
+					"parent": "trackMovL1",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8821,13 +8821,13 @@
 					]
 				},
 				{
-					"name": "trackL2",
+					"name": "trackMovL2",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot2",
-					"parent": "trackL2",
+					"name": "trackRotL2",
+					"parent": "trackMovL2",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8847,13 +8847,13 @@
 					]
 				},
 				{
-					"name": "trackL3",
+					"name": "trackMovL3",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot3",
-					"parent": "trackL3",
+					"name": "trackRotL3",
+					"parent": "trackMovL3",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8873,13 +8873,13 @@
 					]
 				},
 				{
-					"name": "trackL4",
+					"name": "trackMovL4",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot4",
-					"parent": "trackL4",
+					"name": "trackRotL4",
+					"parent": "trackMovL4",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8899,13 +8899,13 @@
 					]
 				},
 				{
-					"name": "trackL5",
+					"name": "trackMovL5",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot5",
-					"parent": "trackL5",
+					"name": "trackRotL5",
+					"parent": "trackMovL5",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8925,13 +8925,13 @@
 					]
 				},
 				{
-					"name": "trackL6",
+					"name": "trackMovL6",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot6",
-					"parent": "trackL6",
+					"name": "trackRotL6",
+					"parent": "trackMovL6",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8951,13 +8951,13 @@
 					]
 				},
 				{
-					"name": "trackL7",
+					"name": "trackMovL7",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot7",
-					"parent": "trackL7",
+					"name": "trackRotL7",
+					"parent": "trackMovL7",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -8977,13 +8977,13 @@
 					]
 				},
 				{
-					"name": "trackL8",
+					"name": "trackMovL8",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot8",
-					"parent": "trackL8",
+					"name": "trackRotL8",
+					"parent": "trackMovL8",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9003,13 +9003,13 @@
 					]
 				},
 				{
-					"name": "trackL9",
+					"name": "trackMovL9",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot9",
-					"parent": "trackL9",
+					"name": "trackRotL9",
+					"parent": "trackMovL9",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9029,13 +9029,13 @@
 					]
 				},
 				{
-					"name": "trackL10",
+					"name": "trackMovL10",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot10",
-					"parent": "trackL10",
+					"name": "trackRotL10",
+					"parent": "trackMovL10",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9055,13 +9055,13 @@
 					]
 				},
 				{
-					"name": "trackL11",
+					"name": "trackMovL11",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot11",
-					"parent": "trackL11",
+					"name": "trackRotL11",
+					"parent": "trackMovL11",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9081,13 +9081,13 @@
 					]
 				},
 				{
-					"name": "trackL12",
+					"name": "trackMovL12",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot12",
-					"parent": "trackL12",
+					"name": "trackRotL12",
+					"parent": "trackMovL12",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9107,13 +9107,13 @@
 					]
 				},
 				{
-					"name": "trackL13",
+					"name": "trackMovL13",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot13",
-					"parent": "trackL13",
+					"name": "trackRotL13",
+					"parent": "trackMovL13",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9133,13 +9133,13 @@
 					]
 				},
 				{
-					"name": "trackL14",
+					"name": "trackMovL14",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot14",
-					"parent": "trackL14",
+					"name": "trackRotL14",
+					"parent": "trackMovL14",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9159,13 +9159,13 @@
 					]
 				},
 				{
-					"name": "trackL15",
+					"name": "trackMovL15",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot15",
-					"parent": "trackL15",
+					"name": "trackRotL15",
+					"parent": "trackMovL15",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9185,13 +9185,13 @@
 					]
 				},
 				{
-					"name": "trackL16",
+					"name": "trackMovL16",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot16",
-					"parent": "trackL16",
+					"name": "trackRotL16",
+					"parent": "trackMovL16",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9211,13 +9211,13 @@
 					]
 				},
 				{
-					"name": "trackL17",
+					"name": "trackMovL17",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot17",
-					"parent": "trackL17",
+					"name": "trackRotL17",
+					"parent": "trackMovL17",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9237,13 +9237,13 @@
 					]
 				},
 				{
-					"name": "trackL18",
+					"name": "trackMovL18",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot18",
-					"parent": "trackL18",
+					"name": "trackRotL18",
+					"parent": "trackMovL18",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9263,13 +9263,13 @@
 					]
 				},
 				{
-					"name": "trackL19",
+					"name": "trackMovL19",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot19",
-					"parent": "trackL19",
+					"name": "trackRotL19",
+					"parent": "trackMovL19",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9289,13 +9289,13 @@
 					]
 				},
 				{
-					"name": "trackL20",
+					"name": "trackMovL20",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot20",
-					"parent": "trackL20",
+					"name": "trackRotL20",
+					"parent": "trackMovL20",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9315,13 +9315,13 @@
 					]
 				},
 				{
-					"name": "trackL21",
+					"name": "trackMovL21",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot21",
-					"parent": "trackL21",
+					"name": "trackRotL21",
+					"parent": "trackMovL21",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9341,13 +9341,13 @@
 					]
 				},
 				{
-					"name": "trackL22",
+					"name": "trackMovL22",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot22",
-					"parent": "trackL22",
+					"name": "trackRotL22",
+					"parent": "trackMovL22",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9367,13 +9367,13 @@
 					]
 				},
 				{
-					"name": "trackL23",
+					"name": "trackMovL23",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot23",
-					"parent": "trackL23",
+					"name": "trackRotL23",
+					"parent": "trackMovL23",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9393,13 +9393,13 @@
 					]
 				},
 				{
-					"name": "trackL24",
+					"name": "trackMovL24",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot24",
-					"parent": "trackL24",
+					"name": "trackRotL24",
+					"parent": "trackMovL24",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9419,13 +9419,13 @@
 					]
 				},
 				{
-					"name": "trackL25",
+					"name": "trackMovL25",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot25",
-					"parent": "trackL25",
+					"name": "trackRotL25",
+					"parent": "trackMovL25",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9445,13 +9445,13 @@
 					]
 				},
 				{
-					"name": "trackL26",
+					"name": "trackMovL26",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot26",
-					"parent": "trackL26",
+					"name": "trackRotL26",
+					"parent": "trackMovL26",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9471,13 +9471,13 @@
 					]
 				},
 				{
-					"name": "trackL27",
+					"name": "trackMovL27",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot27",
-					"parent": "trackL27",
+					"name": "trackRotL27",
+					"parent": "trackMovL27",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9497,13 +9497,13 @@
 					]
 				},
 				{
-					"name": "trackL28",
+					"name": "trackMovL28",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot28",
-					"parent": "trackL28",
+					"name": "trackRotL28",
+					"parent": "trackMovL28",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9523,13 +9523,13 @@
 					]
 				},
 				{
-					"name": "trackL29",
+					"name": "trackMovL29",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot29",
-					"parent": "trackL29",
+					"name": "trackRotL29",
+					"parent": "trackMovL29",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9549,13 +9549,13 @@
 					]
 				},
 				{
-					"name": "trackL30",
+					"name": "trackMovL30",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot30",
-					"parent": "trackL30",
+					"name": "trackRotL30",
+					"parent": "trackMovL30",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9575,13 +9575,13 @@
 					]
 				},
 				{
-					"name": "trackL31",
+					"name": "trackMovL31",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot31",
-					"parent": "trackL31",
+					"name": "trackRotL31",
+					"parent": "trackMovL31",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9601,13 +9601,13 @@
 					]
 				},
 				{
-					"name": "trackL32",
+					"name": "trackMovL32",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot32",
-					"parent": "trackL32",
+					"name": "trackRotL32",
+					"parent": "trackMovL32",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9627,13 +9627,13 @@
 					]
 				},
 				{
-					"name": "trackL33",
+					"name": "trackMovL33",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot33",
-					"parent": "trackL33",
+					"name": "trackRotL33",
+					"parent": "trackMovL33",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9653,13 +9653,13 @@
 					]
 				},
 				{
-					"name": "trackL34",
+					"name": "trackMovL34",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot34",
-					"parent": "trackL34",
+					"name": "trackRotL34",
+					"parent": "trackMovL34",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9679,13 +9679,13 @@
 					]
 				},
 				{
-					"name": "trackL35",
+					"name": "trackMovL35",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot35",
-					"parent": "trackL35",
+					"name": "trackRotL35",
+					"parent": "trackMovL35",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9705,13 +9705,13 @@
 					]
 				},
 				{
-					"name": "trackL36",
+					"name": "trackMovL36",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot36",
-					"parent": "trackL36",
+					"name": "trackRotL36",
+					"parent": "trackMovL36",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9731,13 +9731,13 @@
 					]
 				},
 				{
-					"name": "trackL37",
+					"name": "trackMovL37",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot37",
-					"parent": "trackL37",
+					"name": "trackRotL37",
+					"parent": "trackMovL37",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9757,13 +9757,13 @@
 					]
 				},
 				{
-					"name": "trackL38",
+					"name": "trackMovL38",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot38",
-					"parent": "trackL38",
+					"name": "trackRotL38",
+					"parent": "trackMovL38",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9783,13 +9783,13 @@
 					]
 				},
 				{
-					"name": "trackL39",
+					"name": "trackMovL39",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot39",
-					"parent": "trackL39",
+					"name": "trackRotL39",
+					"parent": "trackMovL39",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9809,13 +9809,13 @@
 					]
 				},
 				{
-					"name": "trackL40",
+					"name": "trackMovL40",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot40",
-					"parent": "trackL40",
+					"name": "trackRotL40",
+					"parent": "trackMovL40",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9835,13 +9835,13 @@
 					]
 				},
 				{
-					"name": "trackL41",
+					"name": "trackMovL41",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot41",
-					"parent": "trackL41",
+					"name": "trackRotL41",
+					"parent": "trackMovL41",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9861,13 +9861,13 @@
 					]
 				},
 				{
-					"name": "trackL42",
+					"name": "trackMovL42",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot42",
-					"parent": "trackL42",
+					"name": "trackRotL42",
+					"parent": "trackMovL42",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9887,13 +9887,13 @@
 					]
 				},
 				{
-					"name": "trackL43",
+					"name": "trackMovL43",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot43",
-					"parent": "trackL43",
+					"name": "trackRotL43",
+					"parent": "trackMovL43",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9913,13 +9913,13 @@
 					]
 				},
 				{
-					"name": "trackL44",
+					"name": "trackMovL44",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot44",
-					"parent": "trackL44",
+					"name": "trackRotL44",
+					"parent": "trackMovL44",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9939,13 +9939,13 @@
 					]
 				},
 				{
-					"name": "trackL45",
+					"name": "trackMovL45",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot45",
-					"parent": "trackL45",
+					"name": "trackRotL45",
+					"parent": "trackMovL45",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9965,13 +9965,13 @@
 					]
 				},
 				{
-					"name": "trackL46",
+					"name": "trackMovL46",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot46",
-					"parent": "trackL46",
+					"name": "trackRotL46",
+					"parent": "trackMovL46",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -9991,13 +9991,13 @@
 					]
 				},
 				{
-					"name": "trackL47",
+					"name": "trackMovL47",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot47",
-					"parent": "trackL47",
+					"name": "trackRotL47",
+					"parent": "trackMovL47",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10017,13 +10017,13 @@
 					]
 				},
 				{
-					"name": "trackL48",
+					"name": "trackMovL48",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot48",
-					"parent": "trackL48",
+					"name": "trackRotL48",
+					"parent": "trackMovL48",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10043,13 +10043,13 @@
 					]
 				},
 				{
-					"name": "trackL49",
+					"name": "trackMovL49",
 					"parent": "trackL",
 					"pivot": [30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackLRot49",
-					"parent": "trackL49",
+					"name": "trackRotL49",
+					"parent": "trackMovL49",
 					"pivot": [30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10201,13 +10201,13 @@
 					]
 				},
 				{
-					"name": "trackR0",
+					"name": "trackMovR0",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot0",
-					"parent": "trackR0",
+					"name": "trackRotR0",
+					"parent": "trackMovR0",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10227,13 +10227,13 @@
 					]
 				},
 				{
-					"name": "trackR1",
+					"name": "trackMovR1",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot1",
-					"parent": "trackR1",
+					"name": "trackRotR1",
+					"parent": "trackMovR1",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10253,13 +10253,13 @@
 					]
 				},
 				{
-					"name": "trackR2",
+					"name": "trackMovR2",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot2",
-					"parent": "trackR2",
+					"name": "trackRotR2",
+					"parent": "trackMovR2",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10279,13 +10279,13 @@
 					]
 				},
 				{
-					"name": "trackR3",
+					"name": "trackMovR3",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot3",
-					"parent": "trackR3",
+					"name": "trackRotR3",
+					"parent": "trackMovR3",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10305,13 +10305,13 @@
 					]
 				},
 				{
-					"name": "trackR4",
+					"name": "trackMovR4",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot4",
-					"parent": "trackR4",
+					"name": "trackRotR4",
+					"parent": "trackMovR4",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10331,13 +10331,13 @@
 					]
 				},
 				{
-					"name": "trackR5",
+					"name": "trackMovR5",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot5",
-					"parent": "trackR5",
+					"name": "trackRotR5",
+					"parent": "trackMovR5",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10357,13 +10357,13 @@
 					]
 				},
 				{
-					"name": "trackR6",
+					"name": "trackMovR6",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot6",
-					"parent": "trackR6",
+					"name": "trackRotR6",
+					"parent": "trackMovR6",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10383,13 +10383,13 @@
 					]
 				},
 				{
-					"name": "trackR7",
+					"name": "trackMovR7",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot7",
-					"parent": "trackR7",
+					"name": "trackRotR7",
+					"parent": "trackMovR7",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10409,13 +10409,13 @@
 					]
 				},
 				{
-					"name": "trackR8",
+					"name": "trackMovR8",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot8",
-					"parent": "trackR8",
+					"name": "trackRotR8",
+					"parent": "trackMovR8",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10435,13 +10435,13 @@
 					]
 				},
 				{
-					"name": "trackR9",
+					"name": "trackMovR9",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot9",
-					"parent": "trackR9",
+					"name": "trackRotR9",
+					"parent": "trackMovR9",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10461,13 +10461,13 @@
 					]
 				},
 				{
-					"name": "trackR10",
+					"name": "trackMovR10",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot10",
-					"parent": "trackR10",
+					"name": "trackRotR10",
+					"parent": "trackMovR10",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10487,13 +10487,13 @@
 					]
 				},
 				{
-					"name": "trackR11",
+					"name": "trackMovR11",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot11",
-					"parent": "trackR11",
+					"name": "trackRotR11",
+					"parent": "trackMovR11",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10513,13 +10513,13 @@
 					]
 				},
 				{
-					"name": "trackR12",
+					"name": "trackMovR12",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot12",
-					"parent": "trackR12",
+					"name": "trackRotR12",
+					"parent": "trackMovR12",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10539,13 +10539,13 @@
 					]
 				},
 				{
-					"name": "trackR13",
+					"name": "trackMovR13",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot13",
-					"parent": "trackR13",
+					"name": "trackRotR13",
+					"parent": "trackMovR13",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10565,13 +10565,13 @@
 					]
 				},
 				{
-					"name": "trackR14",
+					"name": "trackMovR14",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot14",
-					"parent": "trackR14",
+					"name": "trackRotR14",
+					"parent": "trackMovR14",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10591,13 +10591,13 @@
 					]
 				},
 				{
-					"name": "trackR15",
+					"name": "trackMovR15",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot15",
-					"parent": "trackR15",
+					"name": "trackRotR15",
+					"parent": "trackMovR15",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10617,13 +10617,13 @@
 					]
 				},
 				{
-					"name": "trackR16",
+					"name": "trackMovR16",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot16",
-					"parent": "trackR16",
+					"name": "trackRotR16",
+					"parent": "trackMovR16",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10643,13 +10643,13 @@
 					]
 				},
 				{
-					"name": "trackR17",
+					"name": "trackMovR17",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot17",
-					"parent": "trackR17",
+					"name": "trackRotR17",
+					"parent": "trackMovR17",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10669,13 +10669,13 @@
 					]
 				},
 				{
-					"name": "trackR18",
+					"name": "trackMovR18",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot18",
-					"parent": "trackR18",
+					"name": "trackRotR18",
+					"parent": "trackMovR18",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10695,13 +10695,13 @@
 					]
 				},
 				{
-					"name": "trackR19",
+					"name": "trackMovR19",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot19",
-					"parent": "trackR19",
+					"name": "trackRotR19",
+					"parent": "trackMovR19",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10721,13 +10721,13 @@
 					]
 				},
 				{
-					"name": "trackR20",
+					"name": "trackMovR20",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot20",
-					"parent": "trackR20",
+					"name": "trackRotR20",
+					"parent": "trackMovR20",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10747,13 +10747,13 @@
 					]
 				},
 				{
-					"name": "trackR21",
+					"name": "trackMovR21",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot21",
-					"parent": "trackR21",
+					"name": "trackRotR21",
+					"parent": "trackMovR21",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10773,13 +10773,13 @@
 					]
 				},
 				{
-					"name": "trackR22",
+					"name": "trackMovR22",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot22",
-					"parent": "trackR22",
+					"name": "trackRotR22",
+					"parent": "trackMovR22",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10799,13 +10799,13 @@
 					]
 				},
 				{
-					"name": "trackR23",
+					"name": "trackMovR23",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot23",
-					"parent": "trackR23",
+					"name": "trackRotR23",
+					"parent": "trackMovR23",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10825,13 +10825,13 @@
 					]
 				},
 				{
-					"name": "trackR24",
+					"name": "trackMovR24",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot24",
-					"parent": "trackR24",
+					"name": "trackRotR24",
+					"parent": "trackMovR24",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10851,13 +10851,13 @@
 					]
 				},
 				{
-					"name": "trackR25",
+					"name": "trackMovR25",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot25",
-					"parent": "trackR25",
+					"name": "trackRotR25",
+					"parent": "trackMovR25",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10877,13 +10877,13 @@
 					]
 				},
 				{
-					"name": "trackR26",
+					"name": "trackMovR26",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot26",
-					"parent": "trackR26",
+					"name": "trackRotR26",
+					"parent": "trackMovR26",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10903,13 +10903,13 @@
 					]
 				},
 				{
-					"name": "trackR27",
+					"name": "trackMovR27",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot27",
-					"parent": "trackR27",
+					"name": "trackRotR27",
+					"parent": "trackMovR27",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10929,13 +10929,13 @@
 					]
 				},
 				{
-					"name": "trackR28",
+					"name": "trackMovR28",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot28",
-					"parent": "trackR28",
+					"name": "trackRotR28",
+					"parent": "trackMovR28",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10955,13 +10955,13 @@
 					]
 				},
 				{
-					"name": "trackR29",
+					"name": "trackMovR29",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot29",
-					"parent": "trackR29",
+					"name": "trackRotR29",
+					"parent": "trackMovR29",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -10981,13 +10981,13 @@
 					]
 				},
 				{
-					"name": "trackR30",
+					"name": "trackMovR30",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot30",
-					"parent": "trackR30",
+					"name": "trackRotR30",
+					"parent": "trackMovR30",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11007,13 +11007,13 @@
 					]
 				},
 				{
-					"name": "trackR31",
+					"name": "trackMovR31",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot31",
-					"parent": "trackR31",
+					"name": "trackRotR31",
+					"parent": "trackMovR31",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11033,13 +11033,13 @@
 					]
 				},
 				{
-					"name": "trackR32",
+					"name": "trackMovR32",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot32",
-					"parent": "trackR32",
+					"name": "trackRotR32",
+					"parent": "trackMovR32",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11059,13 +11059,13 @@
 					]
 				},
 				{
-					"name": "trackR33",
+					"name": "trackMovR33",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot33",
-					"parent": "trackR33",
+					"name": "trackRotR33",
+					"parent": "trackMovR33",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11085,13 +11085,13 @@
 					]
 				},
 				{
-					"name": "trackR34",
+					"name": "trackMovR34",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot34",
-					"parent": "trackR34",
+					"name": "trackRotR34",
+					"parent": "trackMovR34",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11111,13 +11111,13 @@
 					]
 				},
 				{
-					"name": "trackR35",
+					"name": "trackMovR35",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot35",
-					"parent": "trackR35",
+					"name": "trackRotR35",
+					"parent": "trackMovR35",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11137,13 +11137,13 @@
 					]
 				},
 				{
-					"name": "trackR36",
+					"name": "trackMovR36",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot36",
-					"parent": "trackR36",
+					"name": "trackRotR36",
+					"parent": "trackMovR36",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11163,13 +11163,13 @@
 					]
 				},
 				{
-					"name": "trackR37",
+					"name": "trackMovR37",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot37",
-					"parent": "trackR37",
+					"name": "trackRotR37",
+					"parent": "trackMovR37",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11189,13 +11189,13 @@
 					]
 				},
 				{
-					"name": "trackR38",
+					"name": "trackMovR38",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot38",
-					"parent": "trackR38",
+					"name": "trackRotR38",
+					"parent": "trackMovR38",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11215,13 +11215,13 @@
 					]
 				},
 				{
-					"name": "trackR39",
+					"name": "trackMovR39",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot39",
-					"parent": "trackR39",
+					"name": "trackRotR39",
+					"parent": "trackMovR39",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11241,13 +11241,13 @@
 					]
 				},
 				{
-					"name": "trackR40",
+					"name": "trackMovR40",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot40",
-					"parent": "trackR40",
+					"name": "trackRotR40",
+					"parent": "trackMovR40",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11267,13 +11267,13 @@
 					]
 				},
 				{
-					"name": "trackR41",
+					"name": "trackMovR41",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot41",
-					"parent": "trackR41",
+					"name": "trackRotR41",
+					"parent": "trackMovR41",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11293,13 +11293,13 @@
 					]
 				},
 				{
-					"name": "trackR42",
+					"name": "trackMovR42",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot42",
-					"parent": "trackR42",
+					"name": "trackRotR42",
+					"parent": "trackMovR42",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11319,13 +11319,13 @@
 					]
 				},
 				{
-					"name": "trackR43",
+					"name": "trackMovR43",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot43",
-					"parent": "trackR43",
+					"name": "trackRotR43",
+					"parent": "trackMovR43",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11345,13 +11345,13 @@
 					]
 				},
 				{
-					"name": "trackR44",
+					"name": "trackMovR44",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot44",
-					"parent": "trackR44",
+					"name": "trackRotR44",
+					"parent": "trackMovR44",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11371,13 +11371,13 @@
 					]
 				},
 				{
-					"name": "trackR45",
+					"name": "trackMovR45",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot45",
-					"parent": "trackR45",
+					"name": "trackRotR45",
+					"parent": "trackMovR45",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11397,13 +11397,13 @@
 					]
 				},
 				{
-					"name": "trackR46",
+					"name": "trackMovR46",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot46",
-					"parent": "trackR46",
+					"name": "trackRotR46",
+					"parent": "trackMovR46",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11423,13 +11423,13 @@
 					]
 				},
 				{
-					"name": "trackR47",
+					"name": "trackMovR47",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot47",
-					"parent": "trackR47",
+					"name": "trackRotR47",
+					"parent": "trackMovR47",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11449,13 +11449,13 @@
 					]
 				},
 				{
-					"name": "trackR48",
+					"name": "trackMovR48",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot48",
-					"parent": "trackR48",
+					"name": "trackRotR48",
+					"parent": "trackMovR48",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{
@@ -11475,13 +11475,13 @@
 					]
 				},
 				{
-					"name": "trackR49",
+					"name": "trackMovR49",
 					"parent": "trackR",
 					"pivot": [-30, 24.93117, -55.08519]
 				},
 				{
-					"name": "trackRRot49",
-					"parent": "trackR49",
+					"name": "trackRotR49",
+					"parent": "trackMovR49",
 					"pivot": [-30, 24.93117, -55.08519],
 					"cubes": [
 						{

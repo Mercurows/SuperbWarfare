@@ -10,23 +10,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.TowEntity.STATE;
 
-public class TowRenderer extends GeoEntityRenderer<TowEntity> {
+public class TowRenderer extends VehicleRenderer<TowEntity> {
 
     public TowRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new TowModel());
-    }
-
-    @Override
-    public RenderType getRenderType(TowEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
