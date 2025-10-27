@@ -9,8 +9,8 @@
   },
   "Animation": {
     "Idle": "animation.aa_12.idle",
-    "ReloadNormal": "animation.aa_12.reload_empty",
-    "ReloadEmpty": "animation.aa_12.reload_normal"
+    "ReloadNormal": "animation.aa_12.reload_normal",
+    "ReloadEmpty": "animation.aa_12.reload_empty"
   },
   "FlarePosition": [0, 0, 1.31465],
   "FlareSize": 0.5,
