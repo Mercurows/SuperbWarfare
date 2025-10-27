@@ -2,8 +2,8 @@
   "ID": "superbwarfare:glock_18",
   "Animation": {
     "Idle": "animation.glock_17.idle",
-    "ReloadNormal": "animation.glock_17.reload_empty",
-    "ReloadEmpty": "animation.glock_17.reload_normal"
+    "ReloadNormal": "animation.glock_17.reload_normal",
+    "ReloadEmpty": "animation.glock_17.reload_empty"
   },
   "Model": {
     "Animation": "superbwarfare:animations/glock_17.animation.json",
