@@ -59,8 +59,8 @@ import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -457,7 +457,10 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return getDeltaMovement().horizontalDistance() > 0.3;
     }
 
+    // TODO 移除这个
     private void handleAmmo() {
+        if (getWeapon(0) == null) return;
+        
         if (getWeapon(0).mainGun) {
             entityData.set(SELECTED_AMMO_TYPE, getWeaponIndex(0));
         }

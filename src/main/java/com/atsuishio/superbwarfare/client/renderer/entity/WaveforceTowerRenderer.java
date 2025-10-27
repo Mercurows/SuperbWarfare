@@ -13,24 +13,17 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class WaveforceTowerRenderer extends GeoEntityRenderer<WaveforceTowerEntity> {
+public class WaveforceTowerRenderer extends VehicleRenderer<WaveforceTowerEntity> {
 
     public WaveforceTowerRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new WaveforceTowerModel());
         this.addRenderLayer(new WaveforceTowerGlowLayer(this));
         this.addRenderLayer(new WaveforceTowerLaserLayer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(WaveforceTowerEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -58,11 +51,11 @@ public class WaveforceTowerRenderer extends GeoEntityRenderer<WaveforceTowerEnti
         }
 
         if (name.equals("turret") || name.equals("turret2")) {
-            bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+            bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
         }
 
         if (name.equals("barrel") || name.equals("barrel2")) {
-            bone.setRotX(-Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD);
+            bone.setRotX(-turretXRot * Mth.DEG_TO_RAD);
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);

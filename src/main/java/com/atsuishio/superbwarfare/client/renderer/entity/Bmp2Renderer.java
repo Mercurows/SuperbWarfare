@@ -3,34 +3,24 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.layer.vehicle.Bmp2Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Bmp2Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW;
 
-public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
+public class Bmp2Renderer extends VehicleRenderer<Bmp2Entity> {
 
     public Bmp2Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Bmp2Model());
         this.addRenderLayer(new Bmp2Layer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(Bmp2Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -54,78 +44,23 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
 
     @Override
     public void renderRecursively(PoseStack poseStack, Bmp2Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        processBone(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+
         String name = bone.getName();
 
-//        for (int i = 0; i < 8; i++) {
-//            if (name.equals("wheelL" + i)) {
-//                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
-//            }
-//            if (name.equals("wheelR" + i)) {
-//                bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
-//            }
-//        }
-        // CHANGED PART START
-        if (name.length() == 7 && name.startsWith("wheel")) {
-            char side = name.charAt(5);
-            char digit = name.charAt(6);
-            if (digit >= '0' && digit <= '7') {
-                if (side == 'L') {
-                    bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.leftWheelRotO, animatable.getLeftWheelRot()));
-                } else if (side == 'R') {
-                    bone.setRotX(1.5f * Mth.lerp(partialTick, animatable.rightWheelRotO, animatable.getRightWheelRot()));
-                }
-            }
-        }
-        // CHANGED PART END
         if (name.equals("cannon")) {
-
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
-
-            bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
-        }
-
-        if (name.equals("barrel")) {
-
-            float a = animatable.getTurretYaw(partialTick);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            bone.setRotX(
-                    -Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD
-                            - r * animatable.getPitch(partialTick) * Mth.DEG_TO_RAD
-                            - r2 * animatable.getRoll(partialTick) * Mth.DEG_TO_RAD
-            );
-        }
-
-        if (name.equals("flare")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-        }
-        if (name.equals("flare2")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
+            bone.setHidden(hideFor1stPassengerWhileZooming);
+            bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
         }
 
         if (name.equals("base")) {
-
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
 
             float a = animatable.getEntityData().get(YAW);
             float r = (Mth.abs(a) - 90f) / 90f;
 
-            bone.setPosZ(r * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * 0.125f);
-            bone.setRotX(r * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * Mth.DEG_TO_RAD * 0.06f);
+            bone.setPosZ(r * recoilShake * 0.125f);
+            bone.setRotX(r * recoilShake * Mth.DEG_TO_RAD * 0.06f);
 
             float r2;
 
@@ -139,8 +74,8 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
                 }
             }
 
-            bone.setPosX(r2 * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * 0.125f);
-            bone.setRotZ(r2 * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * Mth.DEG_TO_RAD * 0.2f);
+            bone.setPosX(r2 * recoilShake * 0.125f);
+            bone.setRotZ(r2 * recoilShake * Mth.DEG_TO_RAD * 0.2f);
         }
 
 //        for (int i = 0; i < 51; i++) {
@@ -196,79 +131,20 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
 //
 //        }
 
-        // CHANGED PART START
-        // old code iterated 51 times per bone, new code parses the index from the bone name
-        if (name.startsWith("trackLRot") || name.startsWith("trackRRot") || name.startsWith("trackL") || name.startsWith("trackR")) {
-            boolean isRot;
-            boolean isLeft;
-            int idxStart;
-
-            if (name.startsWith("trackLRot")) {
-                isRot = true;
-                isLeft = true;
-                idxStart = 9; // length of "trackLRot"
-            } else if (name.startsWith("trackRRot")) {
-                isRot = true;
-                isLeft = false;
-                idxStart = 9; // length of "trackRRot"
-            } else if (name.startsWith("trackL")) {
-                isRot = false;
-                isLeft = true;
-                idxStart = 6; // length of "trackL"
-            } else {
-                isRot = false;
-                isLeft = false; // starts with trackR
-                idxStart = 6; // length of "trackR"
-            }
-
-            int idx = -1;
-            try {
-                idx = Integer.parseInt(name.substring(idxStart));
-            } catch (Exception ignored) {
-            }
-
-            if (idx >= 0 && idx < 51) {
-                float offset = 2f * idx;
-                if (isLeft) {
-                    float tO = animatable.leftTrackO + offset;
-                    float t = animatable.getLeftTrack() + offset;
-
-                    // wrap into (0, 100]
-                    t = t % 100f;
-                    if (t <= 0f) t += 100f;
-                    tO = tO % 100f;
-                    if (tO <= 0f) tO += 100f;
-
-                    if (isRot) {
-                        bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
-                    } else {
-                        bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
-                        bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
-                    }
-                } else {
-                    float tO2 = animatable.rightTrackO + offset;
-                    float t2 = animatable.getRightTrack() + offset;
-
-                    // wrap into (0, 100]
-                    t2 = t2 % 100f;
-                    if (t2 <= 0f) t2 += 100f;
-                    tO2 = tO2 % 100f;
-                    if (tO2 <= 0f) tO2 += 100f;
-
-                    if (isRot) {
-                        bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
-                    } else {
-                        bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
-                        bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
-                    }
-                }
-            }
-
-        }
-        //CHANGED PART END
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
+    @Override
+    public boolean hasTrack() {
+        return true;
+    }
+
+    @Override
+    public boolean hasBarrel() {
+        return true;
+    }
+
+    @Override
     public float getBoneRotX(float t) {
         if (t <= 37.6667) return 0F;
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 0F, -45F);
@@ -296,6 +172,7 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
         return 0F;
     }
 
+    @Override
     public float getBoneMoveY(float t) {
         if (t <= 37.6667) return 0F;
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 0F, -1.8F);
@@ -313,6 +190,7 @@ public class Bmp2Renderer extends GeoEntityRenderer<Bmp2Entity> {
         return Mth.lerp((t - 99.25F) / (100F - 99.25F), -0.25F, 0F);
     }
 
+    @Override
     public float getBoneMoveZ(float t) {
         if (t <= 37.6667) return Mth.lerp(t / (37.6667F - 0F), 0F, 111.6F);
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 111.6F, 113.25F);

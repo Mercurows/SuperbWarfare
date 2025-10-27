@@ -12,23 +12,16 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class LaserTowerRenderer extends GeoEntityRenderer<LaserTowerEntity> {
+public class LaserTowerRenderer extends VehicleRenderer<LaserTowerEntity> {
 
     public LaserTowerRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new LaserTowerModel());
         this.addRenderLayer(new LaserTowerPowerLayer(this));
         this.addRenderLayer(new LaserTowerLaserLayer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(LaserTowerEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -47,11 +40,11 @@ public class LaserTowerRenderer extends GeoEntityRenderer<LaserTowerEntity> {
             bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
         }
 
-        if (name.equals("turret") || name.equals("turret2")) {
+        if (name.startsWith("turret")) {
             bone.setRotY(-Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot()) * Mth.DEG_TO_RAD);
         }
 
-        if (name.equals("barrel") || name.equals("barrel2")) {
+        if (name.startsWith("barrel")) {
             bone.setRotX(-Mth.lerp(partialTick, animatable.xRotO, animatable.getXRot()) * Mth.DEG_TO_RAD);
         }
 

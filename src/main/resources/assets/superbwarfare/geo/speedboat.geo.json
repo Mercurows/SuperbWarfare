@@ -186,7 +186,7 @@
 					]
 				},
 				{
-					"name": "gun",
+					"name": "barrel1",
 					"parent": "paota",
 					"pivot": [0, 47.54144, 9.71768],
 					"cubes": [
@@ -222,7 +222,7 @@
 				},
 				{
 					"name": "flare",
-					"parent": "gun",
+					"parent": "barrel1",
 					"pivot": [0, 50.29, -25.68133],
 					"cubes": [
 						{
@@ -283,7 +283,7 @@
 				},
 				{
 					"name": "gun2",
-					"parent": "gun",
+					"parent": "barrel",
 					"pivot": [0.58117, 50.57041, 12.14555]
 				},
 				{

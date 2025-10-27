@@ -3,34 +3,24 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.layer.vehicle.Lav150Layer;
 import com.atsuishio.superbwarfare.client.model.entity.Lav150Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Lav150Entity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW;
 
-public class Lav150Renderer extends GeoEntityRenderer<Lav150Entity> {
+public class Lav150Renderer extends VehicleRenderer<Lav150Entity> {
 
     public Lav150Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Lav150Model());
         this.addRenderLayer(new Lav150Layer(this));
-    }
-
-    @Override
-    public RenderType getRenderType(Lav150Entity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
@@ -63,9 +53,7 @@ public class Lav150Renderer extends GeoEntityRenderer<Lav150Entity> {
         }
 
         if (name.equals("base")) {
-
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
 
             float a = animatable.getEntityData().get(YAW);
             float r = (Mth.abs(a) - 90f) / 90f;
@@ -90,43 +78,20 @@ public class Lav150Renderer extends GeoEntityRenderer<Lav150Entity> {
         }
 
         if (name.equals("cannon")) {
-
-            Player player = Minecraft.getInstance().player;
-            bone.setHidden(ClientEventHandler.zoomVehicle && animatable.getFirstPassenger() == player);
-
-            bone.setRotY(Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+            bone.setHidden(hideFor1stPassengerWhileZooming);
+            bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
         }
-        if (name.equals("barrel")) {
 
-            float a = animatable.getTurretYaw(partialTick);
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = - (180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            bone.setRotX(
-                    -Mth.lerp(partialTick, animatable.turretXRotO, animatable.getTurretXRot()) * Mth.DEG_TO_RAD
-                    - r * animatable.getPitch(partialTick) * Mth.DEG_TO_RAD
-                    - r2 * animatable.getRoll(partialTick) * Mth.DEG_TO_RAD
-            );
-        }
-        if (name.equals("flare")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-        }
-        if (name.equals("flare2")) {
+        if (name.startsWith("flare")) {
             bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    @Override
+    public boolean hasBarrel() {
+        return true;
     }
 
     @Override
