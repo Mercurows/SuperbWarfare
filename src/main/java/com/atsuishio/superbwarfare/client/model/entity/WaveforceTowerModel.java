@@ -1,76 +1,41 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
-import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.CHARGED_ENERGY;
 import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.WAVEFORCE_LENGTH;
 
-public class WaveforceTowerModel extends GeoModel<WaveforceTowerEntity> {
+public class WaveforceTowerModel extends VehicleModel<WaveforceTowerEntity> {
 
-    @Override
-    public ResourceLocation getAnimationResource(WaveforceTowerEntity entity) {
-        return Mod.loc("animations/waveforce_tower.animation.json");
-    }
+    int energy0 = 0;
 
-    @Override
-    public ResourceLocation getModelResource(WaveforceTowerEntity entity) {
-        return Mod.loc("geo/waveforce_tower.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(WaveforceTowerEntity entity) {
-        return Mod.loc("textures/entity/waveforce_tower.png");
-    }
-
+    // TODO 修复渲染问题
     @Override
     public void setCustomAnimations(WaveforceTowerEntity animatable, long instanceId, AnimationState<WaveforceTowerEntity> animationState) {
-        CoreGeoBone laser = getAnimationProcessor().getBone("laser");
-        CoreGeoBone glow = getAnimationProcessor().getBone("glow2");
-        laser.setScaleZ(animatable.getEntityData().get(WAVEFORCE_LENGTH));
-        glow.setPosZ(-16 * animatable.getEntityData().get(WAVEFORCE_LENGTH));
+        var processor = getAnimationProcessor();
+        var entityData = animatable.getEntityData();
 
+        processor.getBone("laser").setScaleZ(entityData.get(WAVEFORCE_LENGTH));
+        processor.getBone("glow2").setPosZ(-16 * entityData.get(WAVEFORCE_LENGTH));
 
-        CoreGeoBone lightOn = getAnimationProcessor().getBone("light_on");
-        CoreGeoBone lightOn2 = getAnimationProcessor().getBone("light_on2");
-        CoreGeoBone lightOn3 = getAnimationProcessor().getBone("light_on3");
-        CoreGeoBone lightOn4 = getAnimationProcessor().getBone("light_on4");
-        CoreGeoBone lightOn5 = getAnimationProcessor().getBone("light_on5");
-        CoreGeoBone lightOn6 = getAnimationProcessor().getBone("light_on6");
-        CoreGeoBone lightOn7 = getAnimationProcessor().getBone("light_on7");
+        int energy = entityData.get(CHARGED_ENERGY);
+        float energyRate = (float) energy / animatable.maxChargeEnergy;
+        float energyRate0 = (float) energy0 / animatable.maxChargeEnergy;
 
-        CoreGeoBone lightOff = getAnimationProcessor().getBone("light_off");
-        CoreGeoBone lightOff2 = getAnimationProcessor().getBone("light_off2");
-        CoreGeoBone lightOff3 = getAnimationProcessor().getBone("light_off3");
-        CoreGeoBone lightOff4 = getAnimationProcessor().getBone("light_off4");
-        CoreGeoBone lightOff5 = getAnimationProcessor().getBone("light_off5");
-        CoreGeoBone lightOff6 = getAnimationProcessor().getBone("light_off6");
-        CoreGeoBone lightOff7 = getAnimationProcessor().getBone("light_off7");
+        for (int i = 1; i <= 7; i++) {
+            var lightOn = processor.getBone("light_on" + i);
+            var lightOff = processor.getBone("light_off" + i);
 
-        float energy = animatable.getEntityData().get(CHARGED_ENERGY);
-        float c0 = energy / animatable.maxChargeEnergy;
+            var shouldTurnOn = energyRate >= i / 7f;
+            lightOff.setHidden(shouldTurnOn);
+            lightOn.setHidden(!shouldTurnOn);
+        }
 
-        lightOn.setHidden(c0 < 1 / 7f);
-        lightOn2.setHidden(c0 < 2 / 7f);
-        lightOn3.setHidden(c0 < 3 / 7f);
-        lightOn4.setHidden(c0 < 4 / 7f);
-        lightOn5.setHidden(c0 < 5 / 7f);
-        lightOn6.setHidden(c0 < 6 / 7f);
-        lightOn7.setHidden(c0 < 1f);
+        processor.getBone("charge").setScaleZ(Mth.lerp(Minecraft.getInstance().getDeltaFrameTime(), energyRate0, energyRate));
 
-        lightOff.setHidden(!lightOn.isHidden());
-        lightOff2.setHidden(!lightOn2.isHidden());
-        lightOff3.setHidden(!lightOn3.isHidden());
-        lightOff4.setHidden(!lightOn4.isHidden());
-        lightOff5.setHidden(!lightOn5.isHidden());
-        lightOff6.setHidden(!lightOn6.isHidden());
-        lightOff7.setHidden(!lightOn7.isHidden());
-
-        CoreGeoBone charge = getAnimationProcessor().getBone("charge");
-        charge.setScaleZ(c0);
+        energy0 = energy;
     }
 }

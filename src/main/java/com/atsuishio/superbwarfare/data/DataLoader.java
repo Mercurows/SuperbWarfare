@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
@@ -141,6 +142,11 @@ public class DataLoader {
         public T getOrDefault(Object key, T defaultValue) {
             var value = get(key);
             return value == null ? defaultValue : value;
+        }
+
+        public T getOrElseGet(Object key, Supplier<T> supplier) {
+            var value = get(key);
+            return value == null ? supplier.get() : value;
         }
 
         @Override

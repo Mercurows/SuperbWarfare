@@ -182,7 +182,7 @@
 					"pivot": [0, 39.66362, -0.53991]
 				},
 				{
-					"name": "light_off",
+					"name": "light_off1",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 42.04904],
 					"cubes": [
@@ -285,7 +285,7 @@
 					"pivot": [0, 39.66362, -0.53991]
 				},
 				{
-					"name": "light_on",
+					"name": "light_on1",
 					"parent": "on",
 					"pivot": [-0.00002, 57.0169, 42.04904],
 					"cubes": [

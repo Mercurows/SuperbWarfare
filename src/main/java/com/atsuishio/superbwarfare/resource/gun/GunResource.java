@@ -35,12 +35,12 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
     }
 
     public static DefaultGunResource getDefault(String id) {
-        return CustomData.GUN_RESOURCE.getOrDefault(id, new DefaultGunResource());
+        return CustomData.GUN_RESOURCE.getOrElseGet(id, DefaultGunResource::new);
     }
 
     @Override
     public DefaultGunResource getDefault() {
-        return CustomData.GUN_RESOURCE.getOrDefault(id, new DefaultGunResource());
+        return CustomData.GUN_RESOURCE.getOrElseGet(id, DefaultGunResource::new);
     }
 
     public static DefaultGunResource getDefault(ItemStack stack) {

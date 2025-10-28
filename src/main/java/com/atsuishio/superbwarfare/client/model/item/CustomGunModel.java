@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.mixins.AnimationProcessorAccessor;
 import com.atsuishio.superbwarfare.mixins.GeoModelAccessor;
+import com.atsuishio.superbwarfare.resource.ModelResource;
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource;
-import com.atsuishio.superbwarfare.resource.gun.GunModel;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -23,8 +23,6 @@ import software.bernie.geckolib.core.molang.MolangParser;
 import software.bernie.geckolib.core.molang.MolangQueries;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.util.RenderUtils;
-
-import java.util.Objects;
 
 public abstract class CustomGunModel<T extends GunGeoItem & GeoAnimatable> extends GeoModel<T> {
 
@@ -44,14 +42,14 @@ public abstract class CustomGunModel<T extends GunGeoItem & GeoAnimatable> exten
     }
 
     public ResourceLocation getLODModelResource(T animatable) {
-        return Objects.requireNonNullElseGet(getModel(animatable).lodModel, () -> getModelResource(animatable));
+        return getModel(animatable).getLODModel(Integer.MAX_VALUE);
     }
 
     public ResourceLocation getLODTextureResource(T animatable) {
-        return Objects.requireNonNullElseGet(getModel(animatable).lodTexture, () -> getTextureResource(animatable));
+        return getModel(animatable).getLODTexture(Integer.MAX_VALUE);
     }
 
-    protected GunModel getModel(T animatable) {
+    protected ModelResource getModel(T animatable) {
         return getResource(animatable).getModel();
     }
 

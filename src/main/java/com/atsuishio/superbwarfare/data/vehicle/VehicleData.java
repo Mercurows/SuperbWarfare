@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
 import com.atsuishio.superbwarfare.data.StringPropModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -54,8 +55,8 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
     }
 
     public static DefaultVehicleData getDefault(String id) {
-        var isDefault = !VehicleDataTool.vehicleData.containsKey(id);
-        var data = VehicleDataTool.vehicleData.getOrDefault(id, new DefaultVehicleData());
+        var isDefault = !CustomData.VEHICLE_DATA.containsKey(id);
+        var data = CustomData.VEHICLE_DATA.getOrElseGet(id, DefaultVehicleData::new);
         data.isDefaultData = isDefault;
         return data;
     }

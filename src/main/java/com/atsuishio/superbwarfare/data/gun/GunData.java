@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -171,8 +170,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public static DefaultGunData getDefault(String id) {
-        var isDefault = !GunsTool.gunsData.containsKey(id);
-        var data = GunsTool.gunsData.getOrDefault(id, new DefaultGunData());
+        var isDefault = !com.atsuishio.superbwarfare.data.CustomData.GUN_DATA.containsKey(id);
+        var data = com.atsuishio.superbwarfare.data.CustomData.GUN_DATA.getOrElseGet(id, DefaultGunData::new);
         data.isDefaultData = isDefault;
         return data;
     }

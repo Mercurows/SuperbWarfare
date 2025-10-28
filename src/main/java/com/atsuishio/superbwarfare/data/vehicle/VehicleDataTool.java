@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.VehiclesDataMessage;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,12 +9,8 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 
-import java.util.HashMap;
-
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class VehicleDataTool {
-
-    public static HashMap<String, DefaultVehicleData> vehicleData = CustomData.VEHICLE_DATA;
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
