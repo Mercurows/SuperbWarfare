@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.command;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientTacticalSprintSyncMessage;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -87,7 +87,7 @@ public class ConfigCommand {
                     MiscConfig.ALLOW_TACTICAL_SPRINT.set(value);
                     MiscConfig.ALLOW_TACTICAL_SPRINT.save();
 
-                    Mod.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientTacticalSprintSyncMessage(value));
+                    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientTacticalSprintSyncMessage(value));
 
                     context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.tactical_sprint.enabled" : "commands.config.tactical_sprint.disabled"), true);
                     return 0;

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -43,7 +44,7 @@ public class PlayerStopRidingMessage {
             if (player.getVehicle() instanceof VehicleEntity vehicle) {
                 if (message.ejection) {
                     var vec = vehicle.getDismountMovement(player, vehicle.getTagSeatIndex(player));
-                    Mod.queueServerWork(1, () -> Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientSetMotionMessage(vec)));
+                    Mod.queueServerWork(1, () -> NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientSetMotionMessage(vec)));
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, 1);
                     if (player.level() instanceof ServerLevel serverLevel) {
                         for (int p = 0; p < 8; p++) {

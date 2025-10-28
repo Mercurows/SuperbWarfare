@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.menu;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.FinishAssemblingVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -91,7 +91,7 @@ public class VehicleAssemblingMenu extends AbstractContainerMenu {
             }
 
             player.inventoryMenu.broadcastFullState();
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new FinishAssemblingVehicleMessage(this.containerId));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new FinishAssemblingVehicleMessage(this.containerId));
         });
     }
 

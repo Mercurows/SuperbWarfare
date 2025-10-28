@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
@@ -319,7 +320,7 @@ public class ClientEventHandler {
         }
 
         if (keys != keysCache) {
-            Mod.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(keys));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new VehicleMovementMessage(keys));
             keysCache = keys;
         }
 
@@ -330,7 +331,7 @@ public class ClientEventHandler {
         if ((stack.is(ModItems.ARTILLERY_INDICATOR.get()) || (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get()))) && holdFire) {
             holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 20);
             if (holdArtilleryIndicator >= 19) {
-                Mod.PACKET_HANDLER.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
+                NetworkRegistry.PACKET_HANDLER.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
             }
         } else {
             holdArtilleryIndicator = 0;
@@ -339,7 +340,7 @@ public class ClientEventHandler {
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowEjection() && ModKeyMappings.DISMOUNT.isDown()) {
             holdToEjection = Mth.clamp(holdToEjection + 1, 0, 10);
             if (holdToEjection >= 10) {
-                Mod.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(true));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(true));
             }
         } else {
             holdToEjection = 0;
@@ -401,7 +402,7 @@ public class ClientEventHandler {
                         } else {
                             if (lockOn) {
                                 if (lockingPos != null) {
-                                    Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, null, lockingPos.toVector3f()));
+                                    NetworkRegistry.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, null, lockingPos.toVector3f()));
                                 }
                                 lockOn = false;
                             }
@@ -433,14 +434,14 @@ public class ClientEventHandler {
                             if (naerestEntity != null && lockingPos == null) {
                                 seekingTime++;
                                 if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOn) {
-                                    Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntity.getUUID()));
+                                    NetworkRegistry.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntity.getUUID()));
                                 }
                                 guideType = 0;
                             }
                         } else {
                             if (lockOn) {
                                 if (lockingEntity != null) {
-                                    Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
+                                    NetworkRegistry.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
                                 }
                                 lockOn = false;
                             }
@@ -473,7 +474,7 @@ public class ClientEventHandler {
                         if (naerestEntity != null && data.hasEnoughAmmoToShoot(player)) {
                             seekingTime++;
                             if ((!seekingEntity.getPassengers().isEmpty() || seekingEntity instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOn) {
-                                Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntity.getUUID()));
+                                NetworkRegistry.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntity.getUUID()));
                             }
                         }
                     } else {
@@ -483,7 +484,7 @@ public class ClientEventHandler {
                     }
 
                     if (lockOn && holdFire && lockingEntity != null) {
-                        Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
                         holdFire = false;
                     }
                 }
@@ -510,7 +511,7 @@ public class ClientEventHandler {
             if (seekingTime > lockTime) {
                 playLockedSound(data, player);
                 if (guideType == 0 && lockingEntity != null && (!lockingEntity.getPassengers().isEmpty() || lockingEntity instanceof VehicleEntity) && player.tickCount % 2 == 0) {
-                    Mod.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntity.getUUID()));
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntity.getUUID()));
                 }
             }
         }
@@ -546,7 +547,7 @@ public class ClientEventHandler {
 
     public static void weaponZooming(ItemStack stack) {
         if (stack.getItem() instanceof GunItem) {
-            Mod.PACKET_HANDLER.sendToServer(new WeaponZoomingMessage(zoomTime >= 0.7));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new WeaponZoomingMessage(zoomTime >= 0.7));
         }
     }
 
@@ -608,9 +609,9 @@ public class ClientEventHandler {
         }
 
         if (tacticalSprint && (player.onGround() || player.jumping)) {
-            Mod.PACKET_HANDLER.sendToServer(new TacticalSprintMessage(true));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new TacticalSprintMessage(true));
         } else {
-            Mod.PACKET_HANDLER.sendToServer(new TacticalSprintMessage(false));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new TacticalSprintMessage(false));
         }
     }
 
@@ -691,7 +692,7 @@ public class ClientEventHandler {
         player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
         Entity lookingEntity = TraceTool.findMeleeEntity(player, player.getEntityReach());
         if (lookingEntity != null) {
-            Mod.PACKET_HANDLER.sendToServer(new MeleeAttackMessage(lookingEntity.getUUID()));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new MeleeAttackMessage(lookingEntity.getUUID()));
         }
     }
 
@@ -712,12 +713,12 @@ public class ClientEventHandler {
             BlockState blockState = player.level().getBlockState(BlockPos.containing(looking.x(), looking.y(), looking.z()));
 
             if (lookingEntity != null) {
-                Mod.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(0, lookingEntity.getUUID(), result.getLocation()));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(0, lookingEntity.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
                 lungeDraw = 15;
             } else if ((blockState.canOcclude() || blockState.getBlock() instanceof DoorBlock || blockState.getBlock() instanceof CrossCollisionBlock || blockState.getBlock() instanceof BellBlock) && lungeSprint == 0) {
-                Mod.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(1, player.getUUID(), result.getLocation()));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new LungeMineAttackMessage(1, player.getUUID(), result.getLocation()));
                 lungeSprint = 0;
                 lungeAttack = 0;
                 lungeDraw = 15;
@@ -935,7 +936,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        Mod.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? entity.getUUID() : null));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? entity.getUUID() : null));
         fireRecoilTime = 10;
 
         // 真实后座（
@@ -1102,7 +1103,7 @@ public class ClientEventHandler {
 
                     // 低帧率下的开火次数补偿
                     do {
-                        Mod.PACKET_HANDLER.sendToServer(new VehicleFireMessage(pVehicle.getSeatIndex(player)));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new VehicleFireMessage(pVehicle.getSeatIndex(player)));
                         playVehicleClientSounds(player, iVehicle, pVehicle.getSeatIndex(player));
 
                         newProgress -= cooldown;
@@ -2039,7 +2040,7 @@ public class ClientEventHandler {
                 List<Entity> entities = SeekTool.seekLivingEntities(villager, 16, 120);
                 for (var e : entities) {
                     if (e == player) {
-                        Mod.PACKET_HANDLER.sendToServer(new AimVillagerMessage(villager.getId()));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new AimVillagerMessage(villager.getId()));
                         aimVillagerCountdown = 80;
                     }
                 }

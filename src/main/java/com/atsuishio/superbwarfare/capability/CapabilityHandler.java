@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.capability;
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -38,7 +39,7 @@ public class CapabilityHandler {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        com.atsuishio.superbwarfare.Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
+        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
                 new PlayerVariablesSyncMessage(player.getId(), PlayerVariable.getOrDefault(player).compareAndUpdate()));
     }
 
@@ -46,7 +47,7 @@ public class CapabilityHandler {
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        com.atsuishio.superbwarfare.Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
+        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
                 new PlayerVariablesSyncMessage(player.getId(), PlayerVariable.getOrDefault(player).compareAndUpdate()));
     }
 
@@ -54,7 +55,7 @@ public class CapabilityHandler {
     public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        com.atsuishio.superbwarfare.Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
+        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
                 new PlayerVariablesSyncMessage(player.getId(), PlayerVariable.getOrDefault(player).forceUpdate()));
     }
 

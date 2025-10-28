@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.FiringParametersEditMessage;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
@@ -188,7 +189,7 @@ public class FiringParametersScreen extends Screen {
             if (FiringParametersScreen.this.minecraft != null) {
                 FiringParametersScreen.this.minecraft.setScreen(null);
             }
-            Mod.PACKET_HANDLER.sendToServer(
+            NetworkRegistry.PACKET_HANDLER.sendToServer(
                     new FiringParametersEditMessage(
                             getEditBoxValue(FiringParametersScreen.this.posX.getValue()),
                             getEditBoxValue(FiringParametersScreen.this.posY.getValue()),

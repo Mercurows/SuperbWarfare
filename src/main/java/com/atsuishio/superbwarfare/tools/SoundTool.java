@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.SoundClientMessage;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -58,7 +58,7 @@ public class SoundTool {
         var location = ForgeRegistries.SOUND_EVENTS.getKey(soundEvent);
 
         for (var serverPlayer : players) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
                     new SoundClientMessage(location, pos.x, pos.y, pos.z, radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
         }
     }

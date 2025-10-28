@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.google.common.collect.Sets;
@@ -187,7 +187,7 @@ public class CustomExplosion extends Explosion {
         if (hit) {
             if (this.damageSource.getEntity() instanceof ServerPlayer player) {
                 SoundTool.playLocalSound(player, ModSounds.INDICATION.get());
-                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
             }
         }
     }

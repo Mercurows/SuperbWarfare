@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
@@ -19,6 +18,7 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -150,7 +150,7 @@ public class ClickHandler {
 
         if (button == ModKeyMappings.MARK.getKey().getValue()) {
             if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+                NetworkRegistry.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
             }
             if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                 droneLeftClick(stack, player);
@@ -220,16 +220,16 @@ public class ClickHandler {
                 && vehicle.banHand(player)
         ) {
             int index = vehicle.getSeatIndex(player);
-            Mod.PACKET_HANDLER.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
             event.setCanceled(true);
         }
 
         if (stack.getItem() instanceof GunItem && ClientEventHandler.zoom) {
             var data = GunData.from(stack);
             if (data.canSwitchScope()) {
-                Mod.PACKET_HANDLER.sendToServer(new SwitchScopeMessage(scroll));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SwitchScopeMessage(scroll));
             } else if (data.canAdjustZoom() || stack.is(ModItems.MINIGUN.get())) {
-                Mod.PACKET_HANDLER.sendToServer(new AdjustZoomFovMessage(scroll));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new AdjustZoomFovMessage(scroll));
             }
             event.setCanceled(true);
         }
@@ -246,7 +246,7 @@ public class ClickHandler {
 
         Entity looking = TraceTool.findLookingEntity(player, 6);
         if (looking instanceof MortarEntity && player.isShiftKeyDown()) {
-            Mod.PACKET_HANDLER.sendToServer(new AdjustMortarAngleMessage(scroll));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new AdjustMortarAngleMessage(scroll));
             event.setCanceled(true);
         }
     }
@@ -286,19 +286,19 @@ public class ClickHandler {
                 lockingEntity = null;
                 seekingEntity = null;
                 lockingPos = null;
-                Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
+                NetworkRegistry.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue() || key == ModKeyMappings.CHANGE_FIRE_MODE_BACKWARD.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(false));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireModeMessage(false));
             }
             if (key == ModKeyMappings.CHANGE_FIRE_MODE_FORWARD.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(true));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireModeMessage(true));
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 if (stack.getItem() instanceof GunItem) {
                     KeyMapping.click(mc.options.keyUse.getKey());
                 } else if (stack.is(ModItems.MONITOR.get())) {
-                    Mod.PACKET_HANDLER.sendToServer(InteractMessage.INSTANCE);
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(InteractMessage.INSTANCE);
                 }
             }
 
@@ -306,14 +306,14 @@ public class ClickHandler {
                 var data = GunData.from(stack);
                 if (key == ModKeyMappings.UNLOAD.getKey().getValue()) {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return;
-                    Mod.PACKET_HANDLER.sendToServer(UnloadMessage.INSTANCE);
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(UnloadMessage.INSTANCE);
                 }
                 if (data.get(GunProp.AMMO_CONSUMER).size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
-                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
                     }
                     if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
-                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
                     }
                 }
             }
@@ -346,10 +346,10 @@ public class ClickHandler {
                 breath = true;
             }
             if (key == ModKeyMappings.SENSITIVITY_INCREASE.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new SensitivityMessage(true));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SensitivityMessage(true));
             }
             if (key == ModKeyMappings.SENSITIVITY_REDUCE.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new SensitivityMessage(false));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SensitivityMessage(false));
             }
 
             if (stack.getItem() instanceof GunItem
@@ -376,7 +376,7 @@ public class ClickHandler {
 
             if (key == ModKeyMappings.MARK.getKey().getValue()) {
                 if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                    Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
                 }
                 if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                     droneLeftClick(stack, player);
@@ -426,7 +426,7 @@ public class ClickHandler {
         }
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {
-            Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
         }
 
         if (stack.is(ModItems.MONITOR.get())) {
@@ -467,7 +467,7 @@ public class ClickHandler {
 
             if (!data.useBackpackAmmo() && !data.meleeOnly() && !data.hasEnoughAmmoToShoot(player) && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
-                    Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
                     burstFireAmount = 0;
                     seekingTime = 0;
                     lockOn = false;
@@ -476,7 +476,7 @@ public class ClickHandler {
                     lockingPos = null;
                 }
             } else {
-                Mod.PACKET_HANDLER.sendToServer(new FireKeyMessage(0, bowPower, zoom));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireKeyMessage(0, bowPower, zoom));
                 if ((!data.reloading()
                         && !data.charging()
                         && !data.bolt.needed.get())
@@ -504,7 +504,7 @@ public class ClickHandler {
     }
 
     public static void handleWeaponFireRelease() {
-        Mod.PACKET_HANDLER.sendToServer(new FireKeyMessage(1, bowPower, zoom));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new FireKeyMessage(1, bowPower, zoom));
         bowPull = false;
         holdFire = false;
         holdFireVehicle = false;
@@ -518,12 +518,12 @@ public class ClickHandler {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.is(ModItems.BOCEK.get())) {
-            Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
         }
     }
 
     public static void handleWeaponZoomPress(Player player, ItemStack stack) {
-        Mod.PACKET_HANDLER.sendToServer(new ZoomMessage(0));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new ZoomMessage(0));
 
         isEditing = false;
 
@@ -553,7 +553,7 @@ public class ClickHandler {
     }
 
     public static void handleWeaponZoomRelease() {
-        Mod.PACKET_HANDLER.sendToServer(new ZoomMessage(1));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new ZoomMessage(1));
         ClientEventHandler.zoom = false;
         ClientEventHandler.zoomVehicle = false;
         ClientEventHandler.entity = null;
@@ -573,13 +573,13 @@ public class ClickHandler {
         if (canDoubleJump) {
             player.setDeltaMovement(new Vec3(player.getLookAngle().x, 0.8, player.getLookAngle().z));
             level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
-            Mod.PACKET_HANDLER.sendToServer(DoubleJumpMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.sendToServer(DoubleJumpMessage.INSTANCE);
             canDoubleJump = false;
         }
     }
 
     private static void handleParachute() {
-        Mod.PACKET_HANDLER.sendToServer(ParachuteMessage.INSTANCE);
+        NetworkRegistry.PACKET_HANDLER.sendToServer(ParachuteMessage.INSTANCE);
     }
 
     private static void handleConfigScreen(Player player) {
@@ -602,7 +602,7 @@ public class ClickHandler {
                 ClientEventHandler.dismountCountdown = 20;
                 return;
             }
-            Mod.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(false));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(false));
         }
 
     }
@@ -627,7 +627,7 @@ public class ClickHandler {
                     pos = lookingEntity.position();
                 }
 
-                Mod.PACKET_HANDLER.sendToServer(new DroneFireMessage(pos.toVector3f()));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new DroneFireMessage(pos.toVector3f()));
             }
         }
     }

@@ -21,8 +21,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.bernie.geckolib.network.SerializableDataTicket;
@@ -87,32 +85,28 @@ public class Mod {
         return new ResourceLocation(MODID, path);
     }
 
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel PACKET_HANDLER = NetworkRegistry.newSimpleChannel(new ResourceLocation(MODID, MODID), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
-    public static int messageID = 0;
-
-    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueue = new ConcurrentLinkedQueue<>();
-    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueueC = new ConcurrentLinkedQueue<>();
+    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> SERVER_QUEUE = new ConcurrentLinkedQueue<>();
+    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> CLIENT_QUEUE = new ConcurrentLinkedQueue<>();
 
     public static void queueServerWork(int tick, Runnable action) {
-        workQueue.add(new AbstractMap.SimpleEntry<>(action, tick));
+        SERVER_QUEUE.add(new AbstractMap.SimpleEntry<>(action, tick));
     }
 
     public static void queueClientWork(int tick, Runnable action) {
-        workQueueC.add(new AbstractMap.SimpleEntry<>(action, tick));
+        CLIENT_QUEUE.add(new AbstractMap.SimpleEntry<>(action, tick));
     }
 
     @SubscribeEvent
     public void tick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             List<AbstractMap.SimpleEntry<Runnable, Integer>> actions = new ArrayList<>();
-            workQueue.forEach(work -> {
+            SERVER_QUEUE.forEach(work -> {
                 work.setValue(work.getValue() - 1);
                 if (work.getValue() == 0)
                     actions.add(work);
             });
             actions.forEach(e -> e.getKey().run());
-            workQueue.removeAll(actions);
+            SERVER_QUEUE.removeAll(actions);
         }
     }
 
@@ -120,13 +114,13 @@ public class Mod {
     public void tick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             List<AbstractMap.SimpleEntry<Runnable, Integer>> actions = new ArrayList<>();
-            workQueueC.forEach(work -> {
+            CLIENT_QUEUE.forEach(work -> {
                 work.setValue(work.getValue() - 1);
                 if (work.getValue() == 0)
                     actions.add(work);
             });
             actions.forEach(e -> e.getKey().run());
-            workQueueC.removeAll(actions);
+            CLIENT_QUEUE.removeAll(actions);
         }
     }
 

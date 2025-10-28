@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.FiringParametersEditMessage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -183,7 +184,7 @@ public class ArtilleryIndicatorScreen extends Screen {
             if (ArtilleryIndicatorScreen.this.minecraft != null) {
                 ArtilleryIndicatorScreen.this.minecraft.setScreen(null);
             }
-            Mod.PACKET_HANDLER.sendToServer(
+            NetworkRegistry.PACKET_HANDLER.sendToServer(
                     new FiringParametersEditMessage(
                             getEditBoxValue(ArtilleryIndicatorScreen.this.posX.getValue()),
                             getEditBoxValue(ArtilleryIndicatorScreen.this.posY.getValue()),

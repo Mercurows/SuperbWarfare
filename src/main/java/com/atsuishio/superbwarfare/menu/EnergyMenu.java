@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.menu;
 
-import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyDataSlot;
 import com.atsuishio.superbwarfare.network.message.receive.ContainerDataMessage;
@@ -45,7 +45,7 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
 
         if (!pairs.isEmpty()) {
             PacketDistributor.PacketTarget target = PacketDistributor.NMLIST.with(this.usingPlayers.stream().map(serverPlayer -> serverPlayer.connection.connection)::toList);
-            Mod.PACKET_HANDLER.send(target, new ContainerDataMessage(this.containerId, pairs));
+            NetworkRegistry.PACKET_HANDLER.send(target, new ContainerDataMessage(this.containerId, pairs));
         }
 
         super.broadcastChanges();
@@ -68,7 +68,7 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
             for (int i = 0; i < menu.containerEnergyDataSlots.size(); ++i) {
                 toSync.add(new ContainerDataMessage.Pair(i, menu.containerEnergyDataSlots.get(i).get()));
             }
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ContainerDataMessage(menu.containerId, toSync));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ContainerDataMessage(menu.containerId, toSync));
         }
     }
 
