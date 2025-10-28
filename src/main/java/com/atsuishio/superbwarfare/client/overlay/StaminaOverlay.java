@@ -29,15 +29,16 @@ public class StaminaOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (!DisplayConfig.STAMINA_HUD.get()) return;
+
         Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        if (ClientEventHandler.isEditing) return;
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) return;
+        if (ClientEventHandler.switchTime <= 0) return;
+
         var w = guiGraphics.guiWidth();
         var h = guiGraphics.guiHeight();
-
-        if (player != null && ClientEventHandler.isEditing)
-            return;
-        if (player != null && player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
-            return;
-        if (!shouldRender(player)) return;
 
         guiGraphics.pose().pushPose();
 
@@ -59,11 +60,5 @@ public class StaminaOverlay implements LayeredDraw.Layer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         guiGraphics.pose().popPose();
-    }
-
-    private static boolean shouldRender(Player player) {
-        if (!DisplayConfig.STAMINA_HUD.get()) return false;
-        if (player == null) return false;
-        return ClientEventHandler.switchTime > 0;
     }
 }
