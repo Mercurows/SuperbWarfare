@@ -82,7 +82,7 @@ public class HeatBarOverlay implements IGuiOverlay {
 
         RenderHelper.preciseBlit(guiGraphics, TEXTURE, posX, posY, 0, 0, 37 / 4f, 233 / 4f, width, height);
 
-        float rate = (float) (heat / 100.0);
+        float rate = (float) Mth.clamp(heat / 100.0, 0, 1);
         float barHeight = 56 * rate;
 
         poseStack.pushPose();

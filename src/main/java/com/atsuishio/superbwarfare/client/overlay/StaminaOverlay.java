@@ -24,13 +24,13 @@ public class StaminaOverlay implements IGuiOverlay {
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
-        Player player = gui.getMinecraft().player;
+        if (!DisplayConfig.STAMINA_HUD.get()) return;
 
-        if (player != null && ClientEventHandler.isEditing)
-            return;
-        if (player != null && player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
-            return;
-        if (!shouldRender(player)) return;
+        Player player = gui.getMinecraft().player;
+        if (player == null) return;
+        if (ClientEventHandler.isEditing) return;
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) return;
+        if (ClientEventHandler.switchTime <= 0) return;
 
         guiGraphics.pose().pushPose();
 
@@ -52,11 +52,5 @@ public class StaminaOverlay implements IGuiOverlay {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         guiGraphics.pose().popPose();
-    }
-
-    private static boolean shouldRender(Player player) {
-        if (!DisplayConfig.STAMINA_HUD.get()) return false;
-        if (player == null) return false;
-        return ClientEventHandler.switchTime > 0;
     }
 }
