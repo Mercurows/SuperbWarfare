@@ -86,7 +86,8 @@ public class Lav150Renderer extends VehicleRenderer<Lav150Entity> {
             bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
         }
 
-        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
+//        bufferSource.getBuffer(RenderType.waterMask())
+        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, bufferSource.getBuffer(RenderType.waterMask()), isReRender, partialTick, packedLight, packedOverlay, color);
     }
 
     @Override
