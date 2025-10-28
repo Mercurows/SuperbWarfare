@@ -1,7 +1,7 @@
 {
   "ID": "superbwarfare:waveforce_tower",
   "Model": {
-    "Animation": "superbwarfare:animations/waveforce_tower.geo.json",
+    "Animation": "superbwarfare:animations/waveforce_tower.animation.json",
     "Model": "superbwarfare:geo/waveforce_tower.geo.json",
     "Texture": "superbwarfare:textures/entity/waveforce_tower.png"
   }
