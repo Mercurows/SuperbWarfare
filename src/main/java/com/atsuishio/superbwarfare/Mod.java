@@ -97,25 +97,25 @@ public class Mod {
     }
 
 
-    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueue = new ConcurrentLinkedQueue<>();
-    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueueC = new ConcurrentLinkedQueue<>();
+    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> SERVER_QUEUE = new ConcurrentLinkedQueue<>();
+    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> CLIENT_QUEUE = new ConcurrentLinkedQueue<>();
 
     public static void queueServerWork(int tick, Runnable action) {
-        workQueue.add(new AbstractMap.SimpleEntry<>(action, tick));
+        SERVER_QUEUE.add(new AbstractMap.SimpleEntry<>(action, tick));
     }
 
     public static void queueClientWork(int tick, Runnable action) {
-        workQueueC.add(new AbstractMap.SimpleEntry<>(action, tick));
+        CLIENT_QUEUE.add(new AbstractMap.SimpleEntry<>(action, tick));
     }
 
     @SubscribeEvent
     public void tick(ServerTickEvent.Post event) {
-        executeWork(workQueue);
+        executeWork(SERVER_QUEUE);
     }
 
     @SubscribeEvent
     public void tick(ClientTickEvent.Post event) {
-        executeWork(workQueueC);
+        executeWork(CLIENT_QUEUE);
     }
 
     private void executeWork(Collection<AbstractMap.SimpleEntry<Runnable, Integer>> workQueueC) {
