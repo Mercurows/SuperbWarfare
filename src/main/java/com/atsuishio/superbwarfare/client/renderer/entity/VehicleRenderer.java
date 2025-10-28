@@ -73,62 +73,6 @@ public abstract class VehicleRenderer<T extends VehicleEntity & GeoAnimatable> e
                 bone.setRotX(1.5f * rightWheelRot);
             }
         }
-
-        // flare.*
-        if (name.startsWith("flare")) {
-            bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-        }
-
-        // barrel.*
-        if (hasBarrel() && name.startsWith("barrel")) {
-            float a = turretYaw;
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            bone.setRotX(-turretXRot * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD);
-        }
-
-        // track(Mov|Rot)\d+
-        if (hasTrack() && name.length() > 9 && name.startsWith("track")) {
-            var isL = name.charAt(9) == 'L';
-
-            if (name.startsWith("trackRot")) {
-                int i = Integer.parseInt(name.substring(9));
-                if (isL) {
-                    float t = wrap(vehicle.getLeftTrack() + 2 * i);
-                    float tO = wrap(vehicle.leftTrackO + 2 * i);
-                    bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
-                } else {
-                    float tO2 = wrap(vehicle.rightTrackO + 2 * i);
-                    float t2 = wrap(vehicle.getRightTrack() + 2 * i);
-                    bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
-                }
-            } else if (name.startsWith("trackMov")) {
-                int i = Integer.parseInt(name.substring(9));
-                if (isL) {
-                    float tO = wrap(vehicle.leftTrackO + 2 * i);
-                    float t = wrap(vehicle.getLeftTrack() + 2 * i);
-                    bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
-                    bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
-                } else {
-                    float tO2 = wrap(vehicle.rightTrackO + 2 * i);
-                    float t2 = wrap(vehicle.getRightTrack() + 2 * i);
-                    bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
-                    bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
-                }
-            }
-        }
     }
 
     public boolean hasTrack() {
