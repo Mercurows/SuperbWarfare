@@ -23,9 +23,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AmmoBox extends Item {
+public class AmmoBoxItem extends Item {
 
-    public AmmoBox() {
+    private static final List<String> AMMO_TYPE_LIST = generateAmmoTypeList();
+
+    public AmmoBoxItem() {
         super(new Properties().stacksTo(1));
     }
 
@@ -68,8 +70,6 @@ public class AmmoBox extends Item {
         return InteractionResultHolder.consume(stack);
     }
 
-    private static final List<String> ammoTypeList = generateAmmoTypeList();
-
     private static List<String> generateAmmoTypeList() {
         var list = new ArrayList<String>();
         list.add("All");
@@ -81,15 +81,14 @@ public class AmmoBox extends Item {
         return list;
     }
 
-
     @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (entity instanceof Player player && player.isCrouching()) {
             var tag = stack.getOrCreateTag();
             if (tag.getBoolean("IsDrop")) return false;
 
-            var index = Math.max(0, ammoTypeList.indexOf(tag.getString("Type")));
-            var typeString = ammoTypeList.get((index + 1) % ammoTypeList.size());
+            var index = Math.max(0, AMMO_TYPE_LIST.indexOf(tag.getString("Type")));
+            var typeString = AMMO_TYPE_LIST.get((index + 1) % AMMO_TYPE_LIST.size());
 
             tag.putString("Type", typeString);
             entity.playSound(ModSounds.FIRE_RATE.get(), 1f, 1f);

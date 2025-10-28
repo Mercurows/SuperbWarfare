@@ -115,7 +115,7 @@ public class ModItems {
     public static final RegistryObject<Item> SNIPER_AMMO_BOX = AMMO.register("sniper_ammo_box", SniperAmmoBox::new);
     public static final RegistryObject<Item> SHOTGUN_AMMO_BOX = AMMO.register("shotgun_ammo_box", ShotgunAmmoBox::new);
     public static final RegistryObject<Item> CREATIVE_AMMO_BOX = AMMO.register("creative_ammo_box", CreativeAmmoBox::new);
-    public static final RegistryObject<Item> AMMO_BOX = AMMO.register("ammo_box", AmmoBox::new);
+    public static final RegistryObject<Item> AMMO_BOX = AMMO.register("ammo_box", AmmoBoxItem::new);
     public static final RegistryObject<Item> TASER_ELECTRODE = AMMO.register("taser_electrode", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> GRENADE_40MM = AMMO.register("grenade_40mm", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
