@@ -97,7 +97,9 @@ public abstract class VehicleModel<T extends VehicleEntity & GeoAnimatable> exte
             barrel.setRotX(-turretXRot * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD);
         }
 
-//        // track(Mov|Rot)\d+
+        // TODO 怎么根据命名找对应模型
+
+        // track(Mov|Rot)\d+
 //        if (hasTrack() && name.length() > 9 && name.startsWith("track")) {
 //            var isL = name.charAt(9) == 'L';
 //
