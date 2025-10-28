@@ -1,9 +1,10 @@
-package com.atsuishio.superbwarfare.item.common.ammo.box;
+package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.ChatFormatting;
@@ -25,9 +26,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AmmoBox extends Item {
+public class AmmoBoxItem extends Item {
 
-    public AmmoBox() {
+    private static final List<String> AMMO_TYPE_LIST = generateAmmoTypeList();
+
+    public AmmoBoxItem() {
         super(new Properties().stacksTo(1));
     }
 
@@ -72,8 +75,6 @@ public class AmmoBox extends Item {
         return InteractionResultHolder.consume(stack);
     }
 
-    private static final List<String> ammoTypeList = generateAmmoTypeList();
-
     private static List<String> generateAmmoTypeList() {
         var list = new ArrayList<String>();
         list.add("All");
@@ -94,8 +95,8 @@ public class AmmoBox extends Item {
 
             if (info.isDrop()) return false;
 
-            var index = Math.max(0, ammoTypeList.indexOf(info.type()));
-            var typeString = ammoTypeList.get((index + 1) % ammoTypeList.size());
+            var index = Math.max(0, AMMO_TYPE_LIST.indexOf(info.type()));
+            var typeString = AMMO_TYPE_LIST.get((index + 1) % AMMO_TYPE_LIST.size());
 
             stack.set(ModDataComponents.AMMO_BOX_INFO, new AmmoBoxInfo(typeString, false));
             SoundTool.playLocalSound(serverPlayer, ModSounds.FIRE_RATE.get(), SoundSource.PLAYERS, 1f, 1f);

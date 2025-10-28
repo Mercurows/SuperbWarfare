@@ -7,6 +7,7 @@ public class MiscConfig {
     public static ModConfigSpec.BooleanValue ALLOW_TACTICAL_SPRINT;
     public static ModConfigSpec.BooleanValue SEND_KILL_FEEDBACK;
     public static ModConfigSpec.BooleanValue ALLOW_FORCE_DAMAGE;
+    public static ModConfigSpec.BooleanValue DROP_AMMO_BOX;
     public static ModConfigSpec.IntValue DEFAULT_ARMOR_LEVEL;
     public static ModConfigSpec.IntValue MILITARY_ARMOR_LEVEL;
     public static ModConfigSpec.IntValue HEAVY_MILITARY_ARMOR_LEVEL;
@@ -30,6 +31,9 @@ public class MiscConfig {
 
         builder.comment("Set true to enable force damage");
         ALLOW_FORCE_DAMAGE = builder.define("allow_force_damage", false);
+
+        builder.comment("Whether to drop an ammo box after the player dies when GameRule KeepInventory is False");
+        DROP_AMMO_BOX = builder.define("drop_ammo_box", true);
 
         builder.comment("The default maximum armor level for normal armors");
         DEFAULT_ARMOR_LEVEL = builder.defineInRange("default_armor_level", 1, 0, 10000000);

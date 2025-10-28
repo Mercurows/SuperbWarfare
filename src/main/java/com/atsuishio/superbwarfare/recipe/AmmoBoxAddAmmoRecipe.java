@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.recipe;
 
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.init.ModRecipes;
+import com.atsuishio.superbwarfare.item.common.ammo.AmmoBoxItem;
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
-import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBox;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -28,7 +28,7 @@ public class AmmoBoxAddAmmoRecipe extends CustomRecipe {
         var hasAmmo = false;
 
         for (var item : input.items()) {
-            if (item.getItem() instanceof AmmoBox) {
+            if (item.getItem() instanceof AmmoBoxItem) {
                 if (hasAmmoBox) return false;
                 hasAmmoBox = true;
             } else if (item.getItem() instanceof AmmoSupplierItem) {
@@ -55,7 +55,7 @@ public class AmmoBoxAddAmmoRecipe extends CustomRecipe {
         for (var item : input.items()) {
             if (item.getItem() instanceof AmmoSupplierItem ammoSupplier) {
                 addAmmo(map, ammoSupplier.type, ammoSupplier.ammoToAdd);
-            } else if (item.getItem() instanceof AmmoBox) {
+            } else if (item.getItem() instanceof AmmoBoxItem) {
                 ammoBox = item.copy();
                 for (var type : Ammo.values()) {
                     addAmmo(map, type, type.get(item));

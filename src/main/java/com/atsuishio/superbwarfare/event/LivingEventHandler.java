@@ -584,48 +584,62 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
-        // 死亡掉落弹药盒
-        if (event.getEntity() instanceof Player player && !player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
-            var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
+        playerDropAmmoBox(event);
+        vehicleCollectDrops(event);
+    }
 
-            boolean drop = Stream.of(Ammo.values())
-                    .mapToInt(type -> type.get(cap))
-                    .sum() > 0;
+    /**
+     * 开启死亡掉落 & 保留武器弹药时，玩家死亡会掉落一个弹药盒
+     */
+    private static void playerDropAmmoBox(LivingDropsEvent event) {
+        if (!MiscConfig.DROP_AMMO_BOX.get()) return;
 
-            if (drop) {
-                var stack = new ItemStack(ModItems.AMMO_BOX.get());
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (!player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) return;
 
-                for (var type : Ammo.values()) {
-                    type.set(stack, type.get(cap));
-                    type.set(cap, 0);
-                }
+        var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
 
-                var info = new AmmoBoxInfo("All", true);
-                stack.set(ModDataComponents.AMMO_BOX_INFO, info);
+        boolean drop = Stream.of(Ammo.values())
+                .mapToInt(type -> type.get(cap))
+                .sum() > 0;
+        if (!drop) return;
 
-                player.setData(ModAttachments.PLAYER_VARIABLE, cap);
-                cap.sync(player);
+        var stack = new ItemStack(ModItems.AMMO_BOX.get());
 
-                event.getDrops().add(new ItemEntity(player.level(), player.getX(), player.getY() + 1, player.getZ(), stack));
-            }
+        for (var type : Ammo.values()) {
+            type.set(stack, type.get(cap));
+            type.set(cap, 0);
         }
 
+        var info = new AmmoBoxInfo("All", true);
+        stack.set(ModDataComponents.AMMO_BOX_INFO, info);
+
+        player.setData(ModAttachments.PLAYER_VARIABLE, cap);
+        cap.sync(player);
+
+        event.getDrops().add(new ItemEntity(player.level(), player.getX(), player.getY() + 1, player.getZ(), stack));
+    }
+
+    /**
+     * 载具撞死生物时自动收集掉落物
+     */
+    private static void vehicleCollectDrops(LivingDropsEvent event) {
+        if (!VehicleConfig.COLLECT_DROPS_BY_CRASHING.get()) return;
+
         DamageSource source = event.getSource();
+        if (!source.is(ModDamageTypes.VEHICLE_STRIKE)) return;
+
         Entity sourceEntity = source.getEntity();
         if (!(sourceEntity instanceof Player player)) return;
 
-        // 创生物收集掉落物
-        if (VehicleConfig.COLLECT_DROPS_BY_CRASHING.get()
-                && player.getVehicle() instanceof VehicleEntity containerVehicleEntity
-                && source.is(ModDamageTypes.VEHICLE_STRIKE)
-        ) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle) {
             var drops = event.getDrops();
             var removed = new ArrayList<ItemEntity>();
 
             drops.forEach(itemEntity -> {
                 ItemStack stack = itemEntity.getItem();
 
-                InventoryTool.insertItem(containerVehicleEntity.getItemStacks(), stack);
+                InventoryTool.insertItem(vehicle.getItemStacks(), stack);
 
                 if (stack.getCount() <= 0) {
                     player.drop(stack, false);

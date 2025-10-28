@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.item.common.BlueprintItem;
 import com.atsuishio.superbwarfare.item.common.MaterialPack;
 import com.atsuishio.superbwarfare.item.common.MedicalKitItem;
 import com.atsuishio.superbwarfare.item.common.ammo.*;
-import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBox;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem;
 import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem;
@@ -117,7 +116,7 @@ public class ModItems {
     public static final DeferredHolder<Item, SniperAmmoBox> SNIPER_AMMO_BOX = AMMO.register("sniper_ammo_box", SniperAmmoBox::new);
     public static final DeferredHolder<Item, ShotgunAmmoBox> SHOTGUN_AMMO_BOX = AMMO.register("shotgun_ammo_box", ShotgunAmmoBox::new);
     public static final DeferredHolder<Item, CreativeAmmoBox> CREATIVE_AMMO_BOX = AMMO.register("creative_ammo_box", CreativeAmmoBox::new);
-    public static final DeferredHolder<Item, AmmoBox> AMMO_BOX = AMMO.register("ammo_box", AmmoBox::new);
+    public static final DeferredHolder<Item, AmmoBoxItem> AMMO_BOX = AMMO.register("ammo_box", AmmoBoxItem::new);
     public static final DeferredHolder<Item, Item> TASER_ELECTRODE = AMMO.register("taser_electrode", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> GRENADE_40MM = AMMO.register("grenade_40mm", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
