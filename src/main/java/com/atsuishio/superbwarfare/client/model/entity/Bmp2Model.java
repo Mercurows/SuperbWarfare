@@ -47,12 +47,12 @@ public class Bmp2Model extends VehicleModel<Bmp2Entity> {
     }
 
     @Override
-    public void setCustomAnimations(Bmp2Entity animatable, long instanceId, AnimationState<Bmp2Entity> animationState) {
-        super.setCustomAnimations(animatable, instanceId, animationState);
+    public void setCustomAnimations(Bmp2Entity vehicle, long instanceId, AnimationState<Bmp2Entity> animationState) {
+        super.setCustomAnimations(vehicle, instanceId, animationState);
         var base = getAnimationProcessor().getBone("base");
         base.setHidden(hideFor1stPassengerWhileZooming);
 
-        float a = animatable.getEntityData().get(YAW);
+        float a = vehicle.getEntityData().get(YAW);
         float r = (Mth.abs(a) - 90f) / 90f;
 
         base.setPosZ(r * recoilShake * 0.125f);
@@ -136,5 +136,10 @@ public class Bmp2Model extends VehicleModel<Bmp2Entity> {
         if (t <= 99.25) return Mth.lerp((t - 98.8333F) / (99.25F - 98.8333F), -3.03F, -1.95F);
 
         return Mth.lerp((t - 99.25F) / (100F - 99.25F), -1.95F, 0F);
+    }
+
+    @Override
+    public boolean hasTrack() {
+        return true;
     }
 }
