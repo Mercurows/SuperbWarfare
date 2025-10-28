@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.api.event.ShootEvent;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
@@ -827,9 +828,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 if (tag != null) {
                     entity.load(tag);
                 }
-            } else if (LaunchableEntityTool.launchableEntitiesData.containsKey(projectileType)) {
+            } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileType)) {
                 var newInfo = new ProjectileInfo();
-                newInfo.data = LaunchableEntityTool.launchableEntitiesData.get(projectileType).data;
+                newInfo.data = CustomData.LAUNCHABLE_ENTITY.get(projectileType).data;
                 newInfo.type = projectileType;
 
                 var tag = LaunchableEntityTool.getModifiedTag(

@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.tools.BufferSerializer;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -35,15 +35,15 @@ public record GunsDataMessage(List<DefaultGunData> data) implements CustomPacket
     );
 
     public static GunsDataMessage create() {
-        return new GunsDataMessage(GunsTool.gunsData.values().stream().toList());
+        return new GunsDataMessage(CustomData.GUN_DATA.values().stream().toList());
     }
 
     public static void handler(final GunsDataMessage message, final IPayloadContext context) {
-        GunsTool.gunsData.clear();
+        CustomData.GUN_DATA.clear();
 
         for (var entry : message.data) {
-            if (GunsTool.gunsData.containsKey(entry.id)) continue;
-            GunsTool.gunsData.put(entry.id, entry);
+            if (CustomData.GUN_DATA.containsKey(entry.id)) continue;
+            CustomData.GUN_DATA.put(entry.id, entry);
         }
     }
 

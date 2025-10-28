@@ -1,15 +1,20 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource;
+import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource;
+import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 
-public abstract class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoModel<T> {
+public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoModel<T> {
 
     protected float pitch;
     protected float yaw;
@@ -22,19 +27,55 @@ public abstract class VehicleModel<T extends VehicleEntity & GeoAnimatable> exte
     protected float recoilShake;
     protected boolean hideFor1stPassengerWhileZooming;
 
+    private final ResourceOnceLogger LOGGER = new ResourceOnceLogger();
+
     @Override
-    public ResourceLocation getAnimationResource(T entity) {
-        return null;
+    public ResourceLocation getAnimationResource(T vehicle) {
+        return getDefault(vehicle).getModel().animation;
     }
 
     @Override
-    public ResourceLocation getModelResource(T entity) {
-        return null;
+    public ResourceLocation getModelResource(T vehicle) {
+        int lodLevel = getLODLevel(vehicle);
+        var lodModel = getDefault(vehicle).getModel().getLODModel(lodLevel);
+        if (lodModel == null) {
+            LOGGER.log(vehicle, logger -> logger.error("failed to load model for {}!", vehicle));
+            return Mod.loc("geo/" + VehicleResource.getRegistryId(vehicle.getType()) + ".geo.json");
+        }
+        return lodModel;
     }
 
     @Override
-    public ResourceLocation getTextureResource(T entity) {
-        return null;
+    public ResourceLocation getTextureResource(T vehicle) {
+        int lodLevel = getLODLevel(vehicle);
+        var lodTexture = getDefault(vehicle).getModel().getLODTexture(lodLevel);
+        if (lodTexture == null) {
+            LOGGER.log(vehicle, logger -> logger.error("failed to load texture for {}!", vehicle));
+            return Mod.loc("textures/entity/" + VehicleResource.getRegistryId(vehicle.getType()) + ".png");
+        }
+        return lodTexture;
+    }
+
+    public int getLODLevel(T vehicle) {
+        var defaultData = getDefault(vehicle);
+        var model = defaultData.getModel();
+        if (defaultData.lodDistance == null || defaultData.lodDistance.list.isEmpty() || !model.hasLOD()) return 0;
+
+        Player player = Minecraft.getInstance().player;
+        if (player == null || player.isScoping()) return 0;
+
+        var distance = player.position().distanceTo(vehicle.position());
+        for (int i = 0; i < defaultData.lodDistance.list.size(); i++) {
+            if (distance <= defaultData.lodDistance.list.get(i)) {
+                return i;
+            }
+        }
+
+        return Integer.MAX_VALUE;
+    }
+
+    private static <T extends VehicleEntity & GeoAnimatable> DefaultVehicleResource getDefault(T vehicle) {
+        return VehicleResource.getDefault(vehicle);
     }
 
     @Override

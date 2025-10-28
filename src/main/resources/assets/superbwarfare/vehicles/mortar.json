@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:mortar",
+  "Model": {
+    "Animation": "superbwarfare:animations/mortar.animation.json",
+    "Model": "superbwarfare:geo/mortar.geo.json",
+    "LODModel": "superbwarfare:geo/vehicle_lod/mortar.lod1.geo.json",
+    "Texture": "superbwarfare:textures/entity/mortar.png"
+  },
+  "LODDistance": 48
+}

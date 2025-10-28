@@ -1,0 +1,7 @@
+{
+  "ID": "superbwarfare:prism_tank",
+  "Model": {
+    "Model": "superbwarfare:geo/prism_tank.geo.json",
+    "Texture": "superbwarfare:textures/entity/prism_tank.png"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "ID": "superbwarfare:a_10a",
+  "Model": {
+    "Model": "superbwarfare:geo/a10.geo.json",
+    "Texture": "superbwarfare:textures/entity/a10.png"
+  }
+}

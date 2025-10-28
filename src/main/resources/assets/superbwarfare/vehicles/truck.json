@@ -1,0 +1,6 @@
+{
+  "ID": "superbwarfare:truck",
+  "Model": {
+    "Model": "superbwarfare:geo/truck.geo.json"
+  }
+}

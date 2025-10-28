@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
-import com.atsuishio.superbwarfare.data.vehicle.VehicleDataTool;
 import com.atsuishio.superbwarfare.tools.BufferSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -34,15 +34,15 @@ public record VehiclesDataMessage(List<DefaultVehicleData> data) implements Cust
     );
 
     public static VehiclesDataMessage create() {
-        return new VehiclesDataMessage(VehicleDataTool.vehicleData.values().stream().toList());
+        return new VehiclesDataMessage(CustomData.VEHICLE_DATA.values().stream().toList());
     }
 
     public static void handler(final VehiclesDataMessage message) {
-        VehicleDataTool.vehicleData.clear();
+        CustomData.VEHICLE_DATA.clear();
 
         for (var entry : message.data) {
-            if (VehicleDataTool.vehicleData.containsKey(entry.id)) continue;
-            VehicleDataTool.vehicleData.put(entry.id, entry);
+            if (CustomData.VEHICLE_DATA.containsKey(entry.id)) continue;
+            CustomData.VEHICLE_DATA.put(entry.id, entry);
         }
     }
 

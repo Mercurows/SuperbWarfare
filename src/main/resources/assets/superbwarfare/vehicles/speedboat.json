@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:speedboat",
+  "Model": {
+    "Animation": "superbwarfare:animations/speedboat.animation.json",
+    "Model": "superbwarfare:geo/speedboat.geo.json",
+    "LODModel": "superbwarfare:geo/vehicle_lod/speedboat.lod1.geo.json",
+    "Texture": "superbwarfare:textures/entity/speedboat.png"
+  },
+  "LODDistance": 32
+}

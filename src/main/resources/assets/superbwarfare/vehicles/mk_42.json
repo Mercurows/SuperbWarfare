@@ -1,0 +1,16 @@
+{
+  "ID": "superbwarfare:mk_42",
+  "Model": {
+    "Animation": "superbwarfare:animations/mk_42.animation.json",
+    "Model": "superbwarfare:geo/sherman.geo.json",
+    "LODModel": [
+      "superbwarfare:geo/vehicle_lod/sherman_lod1.geo.json",
+      "superbwarfare:geo/vehicle_lod/sherman_lod2.geo.json"
+    ],
+    "Texture": "superbwarfare:textures/entity/mk42.png"
+  },
+  "LODDistance": [
+    32,
+    64
+  ]
+}
