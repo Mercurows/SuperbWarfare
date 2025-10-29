@@ -537,12 +537,11 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -3f, 3f), -85, 15f));
     }
 
-
     private PlayState movementPredicate(AnimationState<Mk42Entity> event) {
         if (this.entityData.get(COOL_DOWN) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mk42.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mk_42.fire"));
         }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mk42.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mk_42.idle"));
     }
 
     @Override

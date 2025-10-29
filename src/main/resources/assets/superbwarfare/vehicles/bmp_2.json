@@ -1,12 +1,12 @@
 {
   "ID": "superbwarfare:bmp_2",
   "Model": {
-    "Animation": "superbwarfare:animations/lav.animation.json",
-    "Model": "superbwarfare:geo/bmp2.geo.json",
+    "Animation": "superbwarfare:animations/lav_150.animation.json",
+    "Model": "superbwarfare:geo/bmp_2.geo.json",
     "LODModel": [
-      "superbwarfare:geo/vehicle_lod/bmp2.lod1.geo.json",
-      "superbwarfare:geo/vehicle_lod/bmp2.lod2.geo.json"
+      "superbwarfare:geo/vehicle_lod/bmp_2_lod1.geo.json",
+      "superbwarfare:geo/vehicle_lod/bmp_2_lod2.geo.json"
     ],
-    "Texture": "superbwarfare:textures/entity/bmp2.png"
+    "Texture": "superbwarfare:textures/entity/bmp_2.png"
   }
 }
