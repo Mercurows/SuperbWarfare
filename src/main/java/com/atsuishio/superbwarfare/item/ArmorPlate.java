@@ -50,7 +50,7 @@ public class ArmorPlate extends Item {
             armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        if (armor.getOrCreateTag().getDouble("ArmorPlate") < armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) {
+        if (armor.getOrCreateTag().getDouble("ArmorPlate") < armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()) {
             playerIn.startUsingItem(handIn);
         }
 
@@ -74,7 +74,7 @@ public class ArmorPlate extends Item {
                 armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
             }
 
-            armor.getOrCreateTag().putDouble("ArmorPlate", Mth.clamp(armor.getOrCreateTag().getDouble("ArmorPlate") + MiscConfig.ARMOR_PONT_PER_LEVEL.get(), 0, armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()));
+            armor.getOrCreateTag().putDouble("ArmorPlate", Mth.clamp(armor.getOrCreateTag().getDouble("ArmorPlate") + MiscConfig.ARMOR_POINT_PER_LEVEL.get(), 0, armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()));
 
             if (pLivingEntity instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARMOR_EQUIP_IRON, SoundSource.PLAYERS, 0.5f, 1);

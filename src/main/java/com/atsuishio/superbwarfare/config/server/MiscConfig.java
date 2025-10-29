@@ -11,7 +11,7 @@ public class MiscConfig {
     public static ForgeConfigSpec.IntValue DEFAULT_ARMOR_LEVEL;
     public static ForgeConfigSpec.IntValue MILITARY_ARMOR_LEVEL;
     public static ForgeConfigSpec.IntValue HEAVY_MILITARY_ARMOR_LEVEL;
-    public static ForgeConfigSpec.IntValue ARMOR_PONT_PER_LEVEL;
+    public static ForgeConfigSpec.IntValue ARMOR_POINT_PER_LEVEL;
     public static ForgeConfigSpec.IntValue CHARGING_STATION_MAX_ENERGY;
     public static ForgeConfigSpec.IntValue CHARGING_STATION_GENERATE_SPEED;
     public static ForgeConfigSpec.IntValue CHARGING_STATION_TRANSFER_SPEED;
@@ -45,7 +45,7 @@ public class MiscConfig {
         HEAVY_MILITARY_ARMOR_LEVEL = builder.defineInRange("heavy_military_armor_level", 3, 0, 10000000);
 
         builder.comment("The points per level for armor plate");
-        ARMOR_PONT_PER_LEVEL = builder.defineInRange("armor_point_per_level", 15, 0, 10000000);
+        ARMOR_POINT_PER_LEVEL = builder.defineInRange("armor_point_per_level", 15, 0, 10000000);
 
         builder.comment("Max energy storage of charging station");
         CHARGING_STATION_MAX_ENERGY = builder.defineInRange("charging_station_max_energy", 4000000, 1, Integer.MAX_VALUE);

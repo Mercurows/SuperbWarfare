@@ -123,17 +123,17 @@ public class PlayerEventHandler {
             armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        if (armorPlate < armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) {
+        if (armorPlate < armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()) {
             for (var stack : player.getInventory().items) {
                 if (stack.is(ModItems.ARMOR_PLATE.get())) {
                     if (stack.getTag() != null && stack.getTag().getBoolean("Infinite")) {
-                        armor.getOrCreateTag().putDouble("ArmorPlate", armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get());
+                        armor.getOrCreateTag().putDouble("ArmorPlate", armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get());
 
                         if (player instanceof ServerPlayer serverPlayer) {
                             serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARMOR_EQUIP_IRON, SoundSource.PLAYERS, 0.5f, 1);
                         }
                     } else {
-                        for (int index0 = 0; index0 < Math.ceil(((armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) - armorPlate) / MiscConfig.ARMOR_PONT_PER_LEVEL.get()); index0++) {
+                        for (int index0 = 0; index0 < Math.ceil(((armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()) - armorPlate) / MiscConfig.ARMOR_POINT_PER_LEVEL.get()); index0++) {
                             stack.finishUsingItem(player.level(), player);
                         }
                     }

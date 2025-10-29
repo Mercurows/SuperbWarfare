@@ -48,7 +48,7 @@ public class ArmorPlateOverlay implements IGuiOverlay {
             armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        var max = armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get();
+        var max = armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get();
         double amount = 60 * (stack.getTag().getDouble("ArmorPlate") / max);
 
         ResourceLocation texture = switch (armorLevel) {
