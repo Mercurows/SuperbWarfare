@@ -1,10 +1,10 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.mle1934.idle": {
+		"animation.mle_1934.idle": {
 			"loop": true
 		},
-		"animation.mle1934.fire_left": {
+		"animation.mle_1934.fire_left": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {
@@ -50,7 +50,7 @@
 				}
 			}
 		},
-		"animation.mle1934.fire_right": {
+		"animation.mle_1934.fire_right": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {

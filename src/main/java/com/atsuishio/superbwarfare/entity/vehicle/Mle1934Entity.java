@@ -584,16 +584,16 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
     private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
         if (this.entityData.get(COOL_DOWN) > 54) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire_left"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_left"));
         }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle1934.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
     }
 
     private PlayState fireRightPredicate(AnimationState<Mle1934Entity> event) {
         if (this.entityData.get(RIGHT_BARREL_ANIM) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle1934.fire_right"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_right"));
         }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle1934.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
     }
 
     @Override
