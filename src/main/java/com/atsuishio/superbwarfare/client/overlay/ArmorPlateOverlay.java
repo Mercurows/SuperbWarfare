@@ -53,7 +53,7 @@ public class ArmorPlateOverlay implements LayeredDraw.Layer {
             armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        var max = armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get();
+        var max = armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get();
         double amount = 60 * (NBTTool.getTag(stack).getDouble("ArmorPlate") / max);
 
         ResourceLocation texture = switch (armorLevel) {

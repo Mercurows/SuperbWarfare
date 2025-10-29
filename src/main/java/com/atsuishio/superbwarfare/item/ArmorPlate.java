@@ -54,7 +54,7 @@ public class ArmorPlate extends Item {
             armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        if (NBTTool.getTag(armor).getDouble("ArmorPlate") < armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) {
+        if (NBTTool.getTag(armor).getDouble("ArmorPlate") < armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()) {
             playerIn.startUsingItem(handIn);
         }
 
@@ -80,7 +80,7 @@ public class ArmorPlate extends Item {
             }
 
             var tag = NBTTool.getTag(armor);
-            tag.putDouble("ArmorPlate", Mth.clamp(tag.getDouble("ArmorPlate") + MiscConfig.ARMOR_PONT_PER_LEVEL.get(), 0, armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()));
+            tag.putDouble("ArmorPlate", Mth.clamp(tag.getDouble("ArmorPlate") + MiscConfig.ARMOR_POINT_PER_LEVEL.get(), 0, armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()));
             NBTTool.saveTag(armor, tag);
 
             if (pLivingEntity instanceof ServerPlayer serverPlayer) {
