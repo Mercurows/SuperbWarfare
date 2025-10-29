@@ -1,50 +1,13 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity.*;
 
-public class AnnihilatorModel extends GeoModel<AnnihilatorEntity> {
-
-    @Override
-    public ResourceLocation getAnimationResource(AnnihilatorEntity entity) {
-        return Mod.loc("animations/annihilator.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(AnnihilatorEntity entity) {
-        if (RenderHelper.isInGui()) {
-            return Mod.loc("geo/annihilator.geo.json");
-        }
-
-        Player player = Minecraft.getInstance().player;
-
-        int distance = 0;
-
-        if (player != null) {
-            distance = (int) player.position().distanceTo(entity.position());
-        }
-
-        if (distance < 64) {
-            return Mod.loc("geo/annihilator.geo.json");
-        } else {
-            return Mod.loc("geo/vehicle_lod/annihilator.lod1.geo.json");
-        }
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(AnnihilatorEntity entity) {
-        return Mod.loc("textures/entity/annihilator.png");
-    }
+public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
 
     @Override
     public void setCustomAnimations(AnnihilatorEntity animatable, long instanceId, AnimationState<AnnihilatorEntity> animationState) {
