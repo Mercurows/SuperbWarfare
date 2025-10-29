@@ -288,9 +288,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float leftTrack;
     public float rightTrack;
 
-    public float rotorRot;
-    public float rotorRotO;
-
     public float propellerRot;
     public float propellerRotO;
 
@@ -1585,8 +1582,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         leftTrackO = this.getLeftTrack();
         rightTrackO = this.getRightTrack();
-
-        rotorRotO = this.getRotorRot();
 
         rudderRotO = this.getRudderRot();
 
@@ -4359,6 +4354,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
             if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
 
+            if (this.getDeltaMovement().lengthSqr() < 0.09) return;
+
             // TODO 给非载具实体也设置质量
             if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION)) {
                 continue;
@@ -4504,14 +4501,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void setRightTrack(float pRightTrack) {
         this.rightTrack = pRightTrack;
-    }
-
-    public float getRotorRot() {
-        return this.rotorRot;
-    }
-
-    public void setRotorRot(float pRotorRot) {
-        this.rotorRot = pRotorRot;
     }
 
     public float getPropellerRot() {
