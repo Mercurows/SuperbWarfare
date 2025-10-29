@@ -73,6 +73,7 @@ public class DefaultVehicleData implements IDBasedData {
     @SerializedName("HasDecoy")
     public boolean hasDecoy = false;
 
+    @ServerOnly
     @SerializedName("ApplyDefaultDamageModifiers")
     public boolean applyDefaultDamageModifiers = true;
 
