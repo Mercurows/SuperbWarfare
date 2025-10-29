@@ -166,9 +166,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     };
 
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> CANNON_RECOIL_FORCE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> CANNON_RECOIL_ROTATE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> YAW_WHILE_SHOOT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Integer> FIRE_ANIM = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> COAX_HEAT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
@@ -1022,8 +1024,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.define(ENGINE2_DAMAGED, false);
 
         this.entityData.define(CANNON_RECOIL_TIME, 0);
+        this.entityData.define(CANNON_RECOIL_FORCE, 0f);
+        this.entityData.define(CANNON_RECOIL_ROTATE, 0f);
         this.entityData.define(POWER, 0f);
-        this.entityData.define(YAW, 0f);
+        this.entityData.define(YAW_WHILE_SHOOT, 0f);
         this.entityData.define(AMMO, 0);
         this.entityData.define(FIRE_ANIM, 0);
         this.entityData.define(COAX_HEAT, 0);

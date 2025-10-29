@@ -432,7 +432,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                 ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
-                this.entityData.set(YAW, getTurretYRot());
+                this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
 
                 this.entityData.set(HEAT, this.entityData.get(HEAT) + 7);
                 this.entityData.set(FIRE_ANIM, 3);

@@ -16,18 +16,18 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "wheel",
+					"name": "Wheel",
 					"parent": "root",
 					"pivot": [0, 3.92797, -10.06562]
 				},
 				{
-					"name": "wheelL",
-					"parent": "wheel",
+					"name": "WheelL",
+					"parent": "Wheel",
 					"pivot": [0, 3.92797, -10.06562]
 				},
 				{
 					"name": "wheelL0",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [29.51762, 9.89026, -50.35391],
 					"cubes": [
 						{
@@ -78,7 +78,7 @@
 				},
 				{
 					"name": "wheelL1",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [29.51762, 9.89026, -34.23594],
 					"cubes": [
 						{
@@ -129,7 +129,7 @@
 				},
 				{
 					"name": "wheelL2",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [29.51762, 9.89026, -18.17187],
 					"cubes": [
 						{
@@ -180,7 +180,7 @@
 				},
 				{
 					"name": "wheelL3",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [29.51762, 9.89026, 13.41718],
 					"cubes": [
 						{
@@ -231,7 +231,7 @@
 				},
 				{
 					"name": "wheelL4",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [29.51762, 9.89026, 29.48125],
 					"cubes": [
 						{
@@ -282,7 +282,7 @@
 				},
 				{
 					"name": "wheelL5",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [29.51762, 9.89026, 45.54531],
 					"cubes": [
 						{
@@ -333,7 +333,7 @@
 				},
 				{
 					"name": "wheelL8",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [29.51762, 9.89026, -2.64687],
 					"cubes": [
 						{
@@ -384,7 +384,7 @@
 				},
 				{
 					"name": "wheelL6",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [28.43908, 20.56876, -65.71725],
 					"cubes": [
 						{
@@ -435,7 +435,7 @@
 				},
 				{
 					"name": "wheelL7",
-					"parent": "wheelL",
+					"parent": "WheelL",
 					"pivot": [26.8759, 20.02979, 59.34526],
 					"cubes": [
 						{
@@ -485,13 +485,13 @@
 					]
 				},
 				{
-					"name": "wheelR",
-					"parent": "wheel",
+					"name": "WheelR",
+					"parent": "Wheel",
 					"pivot": [0, 3.92797, -10.06562]
 				},
 				{
 					"name": "wheelR0",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-29.51762, 9.89026, -50.35391],
 					"cubes": [
 						{
@@ -542,7 +542,7 @@
 				},
 				{
 					"name": "wheelR1",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-29.51762, 9.89026, -34.23594],
 					"cubes": [
 						{
@@ -593,7 +593,7 @@
 				},
 				{
 					"name": "wheelR2",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-29.51762, 9.89026, -18.17187],
 					"cubes": [
 						{
@@ -644,7 +644,7 @@
 				},
 				{
 					"name": "wheelR3",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-28.65512, 9.89026, 13.41718],
 					"cubes": [
 						{
@@ -695,7 +695,7 @@
 				},
 				{
 					"name": "wheelR4",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-28.65512, 9.89026, 29.48125],
 					"cubes": [
 						{
@@ -746,7 +746,7 @@
 				},
 				{
 					"name": "wheelR5",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-28.65512, 9.89026, 45.54531],
 					"cubes": [
 						{
@@ -797,7 +797,7 @@
 				},
 				{
 					"name": "wheelR6",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-28.43908, 20.56876, -65.71725],
 					"cubes": [
 						{
@@ -848,7 +848,7 @@
 				},
 				{
 					"name": "wheelR7",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-26.8759, 20.02979, 55.03276],
 					"cubes": [
 						{
@@ -899,7 +899,7 @@
 				},
 				{
 					"name": "wheelR8",
-					"parent": "wheelR",
+					"parent": "WheelR",
 					"pivot": [-29.51762, 9.89026, -2.64687],
 					"cubes": [
 						{
@@ -949,13 +949,13 @@
 					]
 				},
 				{
-					"name": "trackR",
+					"name": "TrackR",
 					"parent": "root",
 					"pivot": [0, 3.92797, -10.06562]
 				},
 				{
 					"name": "trackMovR0",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -980,7 +980,7 @@
 				},
 				{
 					"name": "trackMovR1",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1005,7 +1005,7 @@
 				},
 				{
 					"name": "trackMovR2",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1030,7 +1030,7 @@
 				},
 				{
 					"name": "trackMovR3",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1055,7 +1055,7 @@
 				},
 				{
 					"name": "trackMovR4",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1080,7 +1080,7 @@
 				},
 				{
 					"name": "trackMovR5",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1105,7 +1105,7 @@
 				},
 				{
 					"name": "trackMovR6",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1130,7 +1130,7 @@
 				},
 				{
 					"name": "trackMovR7",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1155,7 +1155,7 @@
 				},
 				{
 					"name": "trackMovR8",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1180,7 +1180,7 @@
 				},
 				{
 					"name": "trackMovR9",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1205,7 +1205,7 @@
 				},
 				{
 					"name": "trackMovR10",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1230,7 +1230,7 @@
 				},
 				{
 					"name": "trackMovR11",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1255,7 +1255,7 @@
 				},
 				{
 					"name": "trackMovR12",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1280,7 +1280,7 @@
 				},
 				{
 					"name": "trackMovR13",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1305,7 +1305,7 @@
 				},
 				{
 					"name": "trackMovR14",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1330,7 +1330,7 @@
 				},
 				{
 					"name": "trackMovR15",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1355,7 +1355,7 @@
 				},
 				{
 					"name": "trackMovR16",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1380,7 +1380,7 @@
 				},
 				{
 					"name": "trackMovR17",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1405,7 +1405,7 @@
 				},
 				{
 					"name": "trackMovR18",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1430,7 +1430,7 @@
 				},
 				{
 					"name": "trackMovR19",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1455,7 +1455,7 @@
 				},
 				{
 					"name": "trackMovR20",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1480,7 +1480,7 @@
 				},
 				{
 					"name": "trackMovR21",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1505,7 +1505,7 @@
 				},
 				{
 					"name": "trackMovR22",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1530,7 +1530,7 @@
 				},
 				{
 					"name": "trackMovR23",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1555,7 +1555,7 @@
 				},
 				{
 					"name": "trackMovR24",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1580,7 +1580,7 @@
 				},
 				{
 					"name": "trackMovR25",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1605,7 +1605,7 @@
 				},
 				{
 					"name": "trackMovR26",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1630,7 +1630,7 @@
 				},
 				{
 					"name": "trackMovR27",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1655,7 +1655,7 @@
 				},
 				{
 					"name": "trackMovR28",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1680,7 +1680,7 @@
 				},
 				{
 					"name": "trackMovR29",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1705,7 +1705,7 @@
 				},
 				{
 					"name": "trackMovR30",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1730,7 +1730,7 @@
 				},
 				{
 					"name": "trackMovR31",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1755,7 +1755,7 @@
 				},
 				{
 					"name": "trackMovR32",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1780,7 +1780,7 @@
 				},
 				{
 					"name": "trackMovR33",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1805,7 +1805,7 @@
 				},
 				{
 					"name": "trackMovR34",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1830,7 +1830,7 @@
 				},
 				{
 					"name": "trackMovR35",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1855,7 +1855,7 @@
 				},
 				{
 					"name": "trackMovR36",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1880,7 +1880,7 @@
 				},
 				{
 					"name": "trackMovR37",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1905,7 +1905,7 @@
 				},
 				{
 					"name": "trackMovR38",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1930,7 +1930,7 @@
 				},
 				{
 					"name": "trackMovR39",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1955,7 +1955,7 @@
 				},
 				{
 					"name": "trackMovR40",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -1980,7 +1980,7 @@
 				},
 				{
 					"name": "bone3",
-					"parent": "trackR",
+					"parent": "TrackR",
 					"pivot": [-26.68359, 31.62051, 91.7169],
 					"cubes": [
 						{
@@ -2130,13 +2130,13 @@
 					]
 				},
 				{
-					"name": "trackL",
+					"name": "TrackL",
 					"parent": "root",
 					"pivot": [0, 3.92797, -10.06562]
 				},
 				{
 					"name": "bone2",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [26.68359, 31.62051, 91.7169],
 					"cubes": [
 						{
@@ -2287,7 +2287,7 @@
 				},
 				{
 					"name": "trackMovL0",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2312,7 +2312,7 @@
 				},
 				{
 					"name": "trackMovL1",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2337,7 +2337,7 @@
 				},
 				{
 					"name": "trackMovL2",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2362,7 +2362,7 @@
 				},
 				{
 					"name": "trackMovL3",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2387,7 +2387,7 @@
 				},
 				{
 					"name": "trackMovL4",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2412,7 +2412,7 @@
 				},
 				{
 					"name": "trackMovL5",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2437,7 +2437,7 @@
 				},
 				{
 					"name": "trackMovL6",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2462,7 +2462,7 @@
 				},
 				{
 					"name": "trackMovL7",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2487,7 +2487,7 @@
 				},
 				{
 					"name": "trackMovL8",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2512,7 +2512,7 @@
 				},
 				{
 					"name": "trackMovL9",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2537,7 +2537,7 @@
 				},
 				{
 					"name": "trackMovL10",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2562,7 +2562,7 @@
 				},
 				{
 					"name": "trackMovL11",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2587,7 +2587,7 @@
 				},
 				{
 					"name": "trackMovL12",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2612,7 +2612,7 @@
 				},
 				{
 					"name": "trackMovL13",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2637,7 +2637,7 @@
 				},
 				{
 					"name": "trackMovL14",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2662,7 +2662,7 @@
 				},
 				{
 					"name": "trackMovL15",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2687,7 +2687,7 @@
 				},
 				{
 					"name": "trackMovL16",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2712,7 +2712,7 @@
 				},
 				{
 					"name": "trackMovL17",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2737,7 +2737,7 @@
 				},
 				{
 					"name": "trackMovL18",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2762,7 +2762,7 @@
 				},
 				{
 					"name": "trackMovL19",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2787,7 +2787,7 @@
 				},
 				{
 					"name": "trackMovL20",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2812,7 +2812,7 @@
 				},
 				{
 					"name": "trackMovL21",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2837,7 +2837,7 @@
 				},
 				{
 					"name": "trackMovL22",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2862,7 +2862,7 @@
 				},
 				{
 					"name": "trackMovL23",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2887,7 +2887,7 @@
 				},
 				{
 					"name": "trackMovL24",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2912,7 +2912,7 @@
 				},
 				{
 					"name": "trackMovL25",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2937,7 +2937,7 @@
 				},
 				{
 					"name": "trackMovL26",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2962,7 +2962,7 @@
 				},
 				{
 					"name": "trackMovL27",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -2987,7 +2987,7 @@
 				},
 				{
 					"name": "trackMovL28",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3012,7 +3012,7 @@
 				},
 				{
 					"name": "trackMovL29",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3037,7 +3037,7 @@
 				},
 				{
 					"name": "trackMovL30",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3062,7 +3062,7 @@
 				},
 				{
 					"name": "trackMovL31",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3087,7 +3087,7 @@
 				},
 				{
 					"name": "trackMovL32",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3112,7 +3112,7 @@
 				},
 				{
 					"name": "trackMovL33",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3137,7 +3137,7 @@
 				},
 				{
 					"name": "trackMovL34",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3162,7 +3162,7 @@
 				},
 				{
 					"name": "trackMovL35",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3187,7 +3187,7 @@
 				},
 				{
 					"name": "trackMovL36",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3212,7 +3212,7 @@
 				},
 				{
 					"name": "trackMovL37",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3237,7 +3237,7 @@
 				},
 				{
 					"name": "trackMovL38",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3262,7 +3262,7 @@
 				},
 				{
 					"name": "trackMovL39",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -3287,7 +3287,7 @@
 				},
 				{
 					"name": "trackMovL40",
-					"parent": "trackL",
+					"parent": "TrackL",
 					"pivot": [28.30078, 25.32637, -59.86624]
 				},
 				{
@@ -7593,7 +7593,7 @@
 					]
 				},
 				{
-					"name": "HMG",
+					"name": "passengerWeaponStationYaw",
 					"parent": "turret",
 					"pivot": [-12.12891, 52.00922, 16.06406],
 					"cubes": [
@@ -7800,7 +7800,7 @@
 				},
 				{
 					"name": "pattern_hmg",
-					"parent": "HMG",
+					"parent": "passengerWeaponStationYaw",
 					"pivot": [-5.88059, 55.58835, 16.46836],
 					"cubes": [
 						{
@@ -7824,8 +7824,8 @@
 					]
 				},
 				{
-					"name": "qiangguan",
-					"parent": "HMG",
+					"name": "passengerWeaponStationPitch",
+					"parent": "passengerWeaponStationYaw",
 					"pivot": [-12.10492, 57.76751, 15.18738],
 					"cubes": [
 						{
@@ -7964,7 +7964,7 @@
 				},
 				{
 					"name": "action",
-					"parent": "qiangguan",
+					"parent": "passengerWeaponStationPitch",
 					"pivot": [-12.19022, 57.88315, -13.0251],
 					"cubes": [
 						{
@@ -8059,7 +8059,7 @@
 				},
 				{
 					"name": "flare",
-					"parent": "qiangguan",
+					"parent": "passengerWeaponStationPitch",
 					"pivot": [-12.2, 57.87982, -16.27799],
 					"cubes": [
 						{

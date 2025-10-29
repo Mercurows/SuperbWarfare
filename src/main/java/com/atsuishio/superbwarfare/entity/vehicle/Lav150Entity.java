@@ -211,7 +211,9 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
         this.entityData.set(CANNON_RECOIL_TIME, 40);
-        this.entityData.set(YAW, getTurretYRot());
+        this.entityData.set(CANNON_RECOIL_FORCE, 0.2f);
+        this.entityData.set(CANNON_RECOIL_ROTATE, 0.5f);
+        this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
 
         this.entityData.set(FIRE_ANIM, 3);
 

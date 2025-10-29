@@ -59,8 +59,8 @@ import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -525,7 +525,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                 this.entityData.set(LOADED_SHELL, "null");
 
                 this.consumeEnergy(10000);
-                this.entityData.set(YAW, getTurretYRot());
+                this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
 
                 reloadCoolDown = 80;
 
