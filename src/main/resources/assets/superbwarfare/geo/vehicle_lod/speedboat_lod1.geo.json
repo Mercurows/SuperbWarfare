@@ -16,7 +16,7 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "duo",
+					"name": "rudder",
 					"parent": "root",
 					"pivot": [0, 3.48, 52.97574],
 					"cubes": [
@@ -74,13 +74,13 @@
 					]
 				},
 				{
-					"name": "paota",
+					"name": "turret",
 					"parent": "root",
 					"pivot": [0, 39.38661, 9.04995]
 				},
 				{
 					"name": "bone15",
-					"parent": "paota",
+					"parent": "turret",
 					"pivot": [0, 43.38661, 9.04995],
 					"cubes": [
 						{
@@ -186,8 +186,8 @@
 					]
 				},
 				{
-					"name": "gun",
-					"parent": "paota",
+					"name": "barrel",
+					"parent": "turret",
 					"pivot": [0, 47.54144, 9.71768],
 					"cubes": [
 						{
@@ -294,7 +294,7 @@
 				},
 				{
 					"name": "flare",
-					"parent": "gun",
+					"parent": "barrel",
 					"pivot": [0, 47.54, -21.93133],
 					"cubes": [
 						{
@@ -354,13 +354,13 @@
 					]
 				},
 				{
-					"name": "barrel",
-					"parent": "gun",
+					"name": "qiangguan",
+					"parent": "barrel",
 					"pivot": [-0.9802, 137.6418, 34.1014]
 				},
 				{
 					"name": "action",
-					"parent": "barrel",
+					"parent": "qiangguan",
 					"pivot": [0, 47.55715, -12.40832],
 					"cubes": [
 						{
@@ -381,7 +381,7 @@
 				},
 				{
 					"name": "bone19",
-					"parent": "barrel",
+					"parent": "qiangguan",
 					"pivot": [0, 47.55715, -0.15721],
 					"rotation": [0, 180, 0],
 					"cubes": [
@@ -402,7 +402,7 @@
 					]
 				},
 				{
-					"name": "Rotor",
+					"name": "propeller",
 					"parent": "root",
 					"pivot": [0, -4.8, 38.4],
 					"cubes": [
@@ -450,7 +450,7 @@
 				},
 				{
 					"name": "bone5",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"cubes": [
 						{
@@ -503,7 +503,7 @@
 				},
 				{
 					"name": "bone6",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"rotation": [0, 0, 90],
 					"cubes": [
@@ -557,7 +557,7 @@
 				},
 				{
 					"name": "bone7",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"rotation": [0, 0, -180],
 					"cubes": [
@@ -611,7 +611,7 @@
 				},
 				{
 					"name": "bone8",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"rotation": [0, 0, -90],
 					"cubes": [

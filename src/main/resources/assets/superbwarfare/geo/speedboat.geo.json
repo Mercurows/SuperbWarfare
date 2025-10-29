@@ -16,7 +16,7 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "duo",
+					"name": "rudder",
 					"parent": "root",
 					"pivot": [0, 3.48, 52.97574],
 					"cubes": [
@@ -74,13 +74,13 @@
 					]
 				},
 				{
-					"name": "paota",
+					"name": "turret",
 					"parent": "root",
 					"pivot": [0, 39.38661, 9.04995]
 				},
 				{
 					"name": "bone15",
-					"parent": "paota",
+					"parent": "turret",
 					"pivot": [0, 43.38661, 9.04995],
 					"cubes": [
 						{
@@ -186,8 +186,8 @@
 					]
 				},
 				{
-					"name": "barrel1",
-					"parent": "paota",
+					"name": "barrel",
+					"parent": "turret",
 					"pivot": [0, 47.54144, 9.71768],
 					"cubes": [
 						{
@@ -222,7 +222,7 @@
 				},
 				{
 					"name": "flare",
-					"parent": "barrel1",
+					"parent": "barrel",
 					"pivot": [0, 50.29, -25.68133],
 					"cubes": [
 						{
@@ -719,8 +719,7 @@
 				{
 					"name": "b2",
 					"parent": "bullet2",
-					"pivot": [0, 40.33933, -0.42368],
-					"rotation": [0, 0, 0]
+					"pivot": [0, 40.33933, -0.42368]
 				},
 				{
 					"name": "bone24",
@@ -5112,13 +5111,13 @@
 					]
 				},
 				{
-					"name": "barrel",
+					"name": "qiangguan",
 					"parent": "gun2",
 					"pivot": [-1.02333, 144.36537, 35.17818]
 				},
 				{
 					"name": "action",
-					"parent": "barrel",
+					"parent": "qiangguan",
 					"pivot": [0, 50.317, -13.37797],
 					"cubes": [
 						{
@@ -5174,8 +5173,6 @@
 						{
 							"origin": [-0.29225, 49.61485, -8.15681],
 							"size": [0.58451, 1.4043, 1.8792],
-							"pivot": [0, 50.317, -7.21721],
-							"rotation": [0, 0, 0],
 							"uv": {
 								"south": {"uv": [85, 14], "uv_size": [0.5, 1.25]},
 								"up": {"uv": [84, 13], "uv_size": [0.5, 1.5]},
@@ -5323,7 +5320,7 @@
 				},
 				{
 					"name": "bone38",
-					"parent": "barrel",
+					"parent": "qiangguan",
 					"pivot": [-0.00001, 51.08882, -1.98635],
 					"cubes": [
 						{
@@ -5364,7 +5361,7 @@
 				},
 				{
 					"name": "bone39",
-					"parent": "barrel",
+					"parent": "qiangguan",
 					"pivot": [0.00348, 51.08882, -2.00274]
 				},
 				{
@@ -6841,8 +6838,6 @@
 						{
 							"origin": [-1.3572, 49.524, 8.5572],
 							"size": [0.1566, 0.14616, 0.17226],
-							"pivot": [-1.2528, 49.72758, 8.59896],
-							"rotation": [0, 0, 0],
 							"uv": {
 								"east": {"uv": [97.5, 22.5], "uv_size": [0.25, 0.25]},
 								"west": {"uv": [82.5, 38], "uv_size": [0.25, 0.25]},
@@ -6852,8 +6847,6 @@
 						{
 							"origin": [-1.3572, 49.80066, 8.28054],
 							"size": [0.1566, 0.09396, 0.261],
-							"pivot": [-1.2528, 49.84764, 8.41104],
-							"rotation": [0, 0, 0],
 							"uv": {
 								"north": {"uv": [97.5, 24], "uv_size": [0.25, 0.25]},
 								"east": {"uv": [84, 38], "uv_size": [0.25, 0.25]},
@@ -7102,7 +7095,7 @@
 					]
 				},
 				{
-					"name": "Rotor",
+					"name": "propeller",
 					"parent": "root",
 					"pivot": [0, -4.8, 38.4],
 					"cubes": [
@@ -7150,7 +7143,7 @@
 				},
 				{
 					"name": "bone5",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"cubes": [
 						{
@@ -7215,7 +7208,7 @@
 				},
 				{
 					"name": "bone6",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"rotation": [0, 0, 90],
 					"cubes": [
@@ -7281,7 +7274,7 @@
 				},
 				{
 					"name": "bone7",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"rotation": [0, 0, -180],
 					"cubes": [
@@ -7347,7 +7340,7 @@
 				},
 				{
 					"name": "bone8",
-					"parent": "Rotor",
+					"parent": "propeller",
 					"pivot": [0, -4.8, 48],
 					"rotation": [0, 0, -90],
 					"cubes": [
