@@ -1,7 +1,7 @@
 {
   "ID": "superbwarfare:hpj_11",
   "Model": {
-    "Model": "superbwarfare:geo/1130.geo.json",
-    "Texture": "superbwarfare:textures/entity/1130.png"
+    "Model": "superbwarfare:geo/hpj_11.geo.json",
+    "Texture": "superbwarfare:textures/entity/hpj_11.png"
   }
 }

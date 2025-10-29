@@ -605,14 +605,14 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
 
     private PlayState firePredicate(AnimationState<Bmp2Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire"));
         }
 
         if (this.entityData.get(FIRE_ANIM) > 0 && getWeaponIndex(0) == 1) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav.fire2"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire2"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav_150.idle"));
     }
 
     @Override

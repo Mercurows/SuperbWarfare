@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.lav.idle": {
+		"animation.lav_150.idle": {
 			"animation_length": 0.25,
 			"bones": {
 				"flare": {
@@ -12,7 +12,7 @@
 				}
 			}
 		},
-		"animation.lav.fire": {
+		"animation.lav_150.fire": {
 			"animation_length": 0.4,
 			"bones": {
 				"barrel2": {
@@ -46,7 +46,7 @@
 				}
 			}
 		},
-		"animation.lav.fire2": {
+		"animation.lav_150.fire2": {
 			"animation_length": 0.4,
 			"bones": {
 				"flare": {

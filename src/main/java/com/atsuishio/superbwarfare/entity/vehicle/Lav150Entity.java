@@ -247,18 +247,17 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return 2.2f;
     }
 
-
     // TODO 正确播放动画
     private PlayState firePredicate(AnimationState<Lav150Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav.fire"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire"));
         }
 
         if (this.entityData.get(FIRE_ANIM) > 0 && getWeaponIndex(0) == 1) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav.fire2"));
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire2"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav_150.idle"));
     }
 
     @Override

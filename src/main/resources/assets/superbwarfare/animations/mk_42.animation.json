@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.mk42.idle": {
+		"animation.mk_42.idle": {
 			"loop": true,
 			"bones": {
 				"flare": {
@@ -11,7 +11,7 @@
 				}
 			}
 		},
-		"animation.mk42.fire": {
+		"animation.mk_42.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.5,
 			"bones": {

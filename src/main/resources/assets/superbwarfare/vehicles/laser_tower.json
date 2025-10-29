@@ -4,8 +4,8 @@
     "Animation": "superbwarfare:animations/laser_tower.animation.json",
     "Model": "superbwarfare:geo/laser_tower.geo.json",
     "LODModel": [
-      "superbwarfare:geo/vehicle_lod/laser_tower.lod1.geo.json",
-      "superbwarfare:geo/vehicle_lod/laser_tower.lod2.geo.json"
+      "superbwarfare:geo/vehicle_lod/laser_tower_lod1.geo.json",
+      "superbwarfare:geo/vehicle_lod/laser_tower_lod2.geo.json"
     ],
     "Texture": "superbwarfare:textures/entity/laser_tower.png"
   },
