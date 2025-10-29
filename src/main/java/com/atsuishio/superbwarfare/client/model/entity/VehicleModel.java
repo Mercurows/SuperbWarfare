@@ -138,55 +138,51 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
         }
 
         // track(Mov|Rot)\d+
-        this.getAnimationProcessor().getRegisteredBones().forEach(
-                bone -> {
-                    var name = bone.getName();
-                    if (hasTrack() && name.length() > 9 && name.startsWith("track")) {
-                        var isL = name.charAt(9) == 'L';
+        this.getAnimationProcessor().getRegisteredBones().forEach(bone -> {
+            var name = bone.getName();
+            if (hasTrack() && name.length() > 9 && name.startsWith("track")) {
+                var isL = name.charAt(8) == 'L';
 
-                        // 这个isL好像始终是false
-
-                        if (name.startsWith("trackRot")) {
-                            int i = Integer.parseInt(name.substring(9));
-                            if (isL) {
-                                float t = wrap(vehicle.getLeftTrack() + 2 * i);
-                                float tO = wrap(vehicle.leftTrackO + 2 * i);
-                                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
-                            } else {
-                                float tO2 = wrap(vehicle.rightTrackO + 2 * i);
-                                float t2 = wrap(vehicle.getRightTrack() + 2 * i);
-                                bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
-                            }
-                        } else if (name.startsWith("trackMov")) {
-                            int i = Integer.parseInt(name.substring(9));
-                            if (isL) {
-                                float tO = wrap(vehicle.leftTrackO + 2 * i);
-                                float t = wrap(vehicle.getLeftTrack() + 2 * i);
-                                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
-                                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
-                            } else {
-                                float tO2 = wrap(vehicle.rightTrackO + 2 * i);
-                                float t2 = wrap(vehicle.getRightTrack() + 2 * i);
-                                bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
-                                bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
-                            }
-                        }
-                        if (vehicle.getFirstPassenger() instanceof Player player) {
-                            player.displayClientMessage(Component.literal(vehicle.getLeftTrack() + " " + vehicle.getRightTrack()), true);
-                        }
+                if (name.startsWith("trackRot")) {
+                    int i = Integer.parseInt(name.substring(9));
+                    if (isL) {
+                        float t = wrap(vehicle.getLeftTrack() + 2 * i);
+                        float tO = wrap(vehicle.leftTrackO + 2 * i);
+                        bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
+                    } else {
+                        float tO2 = wrap(vehicle.rightTrackO + 2 * i);
+                        float t2 = wrap(vehicle.getRightTrack() + 2 * i);
+                        bone.setRotX(-Mth.lerp(partialTick, getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
                     }
-
-                    // wheel[LR].*
-                    if (hasTrackWheel() && name.length() >= 6 && name.startsWith("wheel")) {
-                        char LR = name.charAt(5);
-                        if (LR == 'L') {
-                            bone.setRotX(1.5f * leftWheelRot);
-                        } else if (LR == 'R') {
-                            bone.setRotX(1.5f * rightWheelRot);
-                        }
+                } else if (name.startsWith("trackMov")) {
+                    int i = Integer.parseInt(name.substring(9));
+                    if (isL) {
+                        float tO = wrap(vehicle.leftTrackO + 2 * i);
+                        float t = wrap(vehicle.getLeftTrack() + 2 * i);
+                        bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO), getBoneMoveY(t)));
+                        bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO), getBoneMoveZ(t)));
+                    } else {
+                        float tO2 = wrap(vehicle.rightTrackO + 2 * i);
+                        float t2 = wrap(vehicle.getRightTrack() + 2 * i);
+                        bone.setPosY(Mth.lerp(partialTick, getBoneMoveY(tO2), getBoneMoveY(t2)));
+                        bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
                     }
                 }
-        );
+                if (vehicle.getFirstPassenger() instanceof Player player) {
+                    player.displayClientMessage(Component.literal(vehicle.getLeftTrack() + " " + vehicle.getRightTrack()), true);
+                }
+            }
+
+            // wheel[LR].*
+            if (hasTrackWheel() && name.length() >= 6 && name.startsWith("wheel")) {
+                char LR = name.charAt(5);
+                if (LR == 'L') {
+                    bone.setRotX(1.5f * leftWheelRot);
+                } else if (LR == 'R') {
+                    bone.setRotX(1.5f * rightWheelRot);
+                }
+            }
+        });
 
 
     }
