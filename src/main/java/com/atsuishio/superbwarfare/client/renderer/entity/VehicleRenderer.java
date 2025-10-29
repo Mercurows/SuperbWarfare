@@ -4,16 +4,20 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -28,86 +32,48 @@ public abstract class VehicleRenderer<T extends VehicleEntity & GeoAnimatable> e
         return RenderType.entityTranslucent(getTextureLocation(vehicle));
     }
 
-    protected float pitch;
-    protected float yaw;
-    protected float roll;
-    protected float leftWheelRot;
-    protected float rightWheelRot;
+
     protected float turretYRot;
     protected float turretXRot;
-    protected float turretYaw;
-    protected float recoilShake;
+
+
     protected boolean hideFor1stPassengerWhileZooming;
 
     @Override
     public void preRender(PoseStack poseStack, T vehicle, BakedGeoModel model, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
-        pitch = vehicle.getPitch(partialTick);
-        yaw = vehicle.getYaw(partialTick);
-        roll = vehicle.getRoll(partialTick);
-
-        leftWheelRot = Mth.lerp(partialTick, vehicle.leftWheelRotO, vehicle.getLeftWheelRot());
-        rightWheelRot = Mth.lerp(partialTick, vehicle.rightWheelRotO, vehicle.getRightWheelRot());
 
         turretYRot = Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot());
         turretXRot = Mth.lerp(partialTick, vehicle.turretXRotO, vehicle.getTurretXRot());
-
-        turretYaw = vehicle.getTurretYaw(partialTick);
-
-        recoilShake = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
 
         hideFor1stPassengerWhileZooming = ClientEventHandler.zoomVehicle && vehicle.getFirstPassenger() == Minecraft.getInstance().player;
 
         super.preRender(poseStack, vehicle, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
     }
 
-    protected void processBone(PoseStack poseStack, T vehicle, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        var name = bone.getName();
+    @Override
+    public void render(T entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+        poseStack.pushPose();
+        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
+        poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
+        poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())), (float) root.x, (float) root.y, (float) root.z);
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.getRoll())), (float) root.x, (float) root.y, (float) root.z);
+        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+        poseStack.popPose();
+    }
 
-        // TODO 正确旋转轮子
-        // wheel[LR].*
-        if (hasTrackWheel() && name.length() >= 6 && name.startsWith("wheel")) {
-            char LR = name.charAt(5);
-            if (LR == 'L') {
-                bone.setRotX(1.5f * leftWheelRot);
-            } else if (LR == 'R') {
-                bone.setRotX(1.5f * rightWheelRot);
+    @Override
+    public boolean shouldRender(T vehicle, @NotNull Frustum pCamera, double pCamX, double pCamY, double pCamZ) {
+        if (!vehicle.shouldRender(pCamX, pCamY, pCamZ)) {
+            return false;
+        } else if (vehicle.noCulling) {
+            return true;
+        } else {
+            AABB aabb = vehicle.getBoundingBoxForCulling().inflate(3);
+            if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+                aabb = new AABB(vehicle.getX() - 5.0, vehicle.getY() - 4.0, vehicle.getZ() - 5.0, vehicle.getX() + 5.0, vehicle.getY() + 4.0, vehicle.getZ() + 5.0);
             }
+
+            return pCamera.isVisible(aabb);
         }
-    }
-
-    public boolean hasTrack() {
-        return false;
-    }
-
-    public boolean hasTrackWheel() {
-        return hasTrack();
-    }
-
-    public boolean hasBarrel() {
-        return false;
-    }
-
-    public float getBoneRotX(float t) {
-        return t;
-    }
-
-    public float getBoneMoveY(float t) {
-        return t;
-    }
-
-    public float getBoneMoveZ(float t) {
-        return t;
-    }
-
-    protected float wrap(float value, int range) {
-        return ((value % range) + range) % range;
-    }
-
-    protected float wrap(float value) {
-        return wrap(value, getDefaultWrapRange());
-    }
-
-    public int getDefaultWrapRange() {
-        return 100;
     }
 }

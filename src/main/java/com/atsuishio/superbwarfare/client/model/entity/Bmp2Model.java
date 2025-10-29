@@ -2,39 +2,8 @@ package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity;
 import net.minecraft.util.Mth;
-import software.bernie.geckolib.animation.AnimationState;
-
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW;
 
 public class Bmp2Model extends VehicleModel<Bmp2Entity> {
-
-    @Override
-    public void setCustomAnimations(Bmp2Entity vehicle, long instanceId, AnimationState<Bmp2Entity> animationState) {
-        super.setCustomAnimations(vehicle, instanceId, animationState);
-        var base = getAnimationProcessor().getBone("base");
-        base.setHidden(hideFor1stPassengerWhileZooming);
-
-        float a = vehicle.getEntityData().get(YAW);
-        float r = (Mth.abs(a) - 90f) / 90f;
-
-        base.setPosZ(r * recoilShake * 0.125f);
-        base.setRotX(r * recoilShake * Mth.DEG_TO_RAD * 0.06f);
-
-        float r2;
-
-        if (Mth.abs(a) <= 90f) {
-            r2 = a / 90f;
-        } else {
-            if (a < 0) {
-                r2 = -(180f + a) / 90f;
-            } else {
-                r2 = (180f - a) / 90f;
-            }
-        }
-
-        base.setPosX(r2 * recoilShake * 0.125f);
-        base.setRotZ(r2 * recoilShake * Mth.DEG_TO_RAD * 0.2f);
-    }
 
     @Override
     public float getBoneRotX(float t) {
@@ -101,12 +70,12 @@ public class Bmp2Model extends VehicleModel<Bmp2Entity> {
     }
 
     @Override
-    public boolean hasTrack() {
+    public boolean hideFor1stPassengerWhileZooming() {
         return true;
     }
 
     @Override
-    public boolean hasTrackWheel() {
+    public boolean hasTrack() {
         return true;
     }
 }

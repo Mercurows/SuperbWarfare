@@ -7,13 +7,16 @@ import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource;
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource;
 import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
+
+import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.CANNON_RECOIL_FORCE;
+import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.CANNON_RECOIL_ROTATE;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW_WHILE_SHOOT;
 
 public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoModel<T> {
 
@@ -99,6 +102,39 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
 
         hideFor1stPassengerWhileZooming = ClientEventHandler.zoomVehicle && vehicle.getFirstPassenger() == Minecraft.getInstance().player;
 
+        // 瞄准时隐藏车体
+
+        var root = getAnimationProcessor().getBone("root");
+
+        if (root != null && hideFor1stPassengerWhileZooming()) {
+            root.setHidden(hideFor1stPassengerWhileZooming);
+        }
+
+        //射击时带来的车体摇晃视觉效果
+
+        var base = getAnimationProcessor().getBone("base");
+        if (base != null) {
+            float a = vehicle.getEntityData().get(YAW_WHILE_SHOOT);
+            float r = (Mth.abs(a) - 90f) / 90f;
+
+            float r2;
+
+            if (Mth.abs(a) <= 90f) {
+                r2 = a / 90f;
+            } else {
+                if (a < 0) {
+                    r2 = -(180f + a) / 90f;
+                } else {
+                    r2 = (180f - a) / 90f;
+                }
+            }
+
+            base.setPosX(r2 * recoilShake * 0.5f * vehicle.getEntityData().get(CANNON_RECOIL_FORCE));
+            base.setPosZ(r * recoilShake * 1f * vehicle.getEntityData().get(CANNON_RECOIL_FORCE));
+            base.setRotX(r * recoilShake * Mth.DEG_TO_RAD * 0.5f * vehicle.getEntityData().get(CANNON_RECOIL_ROTATE));
+            base.setRotZ(r2 * recoilShake * Mth.DEG_TO_RAD * 1f * vehicle.getEntityData().get(CANNON_RECOIL_ROTATE));
+        }
+
         // turret.*
         var turret = getAnimationProcessor().getBone("turret");
 
@@ -107,11 +143,10 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             turret.setRotY(turretYRot * Mth.DEG_TO_RAD);
         }
 
-        // flare.*
-        var flare = getAnimationProcessor().getBone("flare");
+        var turretLaser = getAnimationProcessor().getBone("turretLaser");
 
-        if (flare != null) {
-            flare.setRotZ((float) (0.5 * (Math.random() - 0.5)));
+        if (turret != null && turretLaser != null) {
+            turretLaser.setRotY(turret.getRotY());
         }
 
         // barrel.*
@@ -134,6 +169,53 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             }
 
             barrel.setRotX(-turretXRot * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD);
+        }
+
+        var barrelLaser = getAnimationProcessor().getBone("barrelLaser");
+
+        if (barrel != null && barrelLaser != null) {
+            barrelLaser.setRotX(barrel.getRotX());
+        }
+
+        // turret上的成员武器站Yaw
+        var passengerWeaponStationYaw = getAnimationProcessor().getBone("passengerWeaponStationYaw");
+
+        if (passengerWeaponStationYaw != null) {
+            passengerWeaponStationYaw.setRotY(Mth.lerp(partialTick, vehicle.gunYRotO, vehicle.getGunYRot()) * Mth.DEG_TO_RAD - turretYRot * Mth.DEG_TO_RAD);
+        }
+
+        // turret上的成员武器站Pitch
+        var passengerWeaponStationPitch = getAnimationProcessor().getBone("passengerWeaponStationPitch");
+
+        if (passengerWeaponStationPitch != null) {
+            float a = vehicle.getTurretYaw(partialTick);
+            float r = (Mth.abs(a) - 90f) / 90f;
+
+            float r2;
+
+            if (Mth.abs(a) <= 90f) {
+                r2 = a / 90f;
+            } else {
+                if (a < 0) {
+                    r2 = -(180f + a) / 90f;
+                } else {
+                    r2 = (180f - a) / 90f;
+                }
+            }
+
+            passengerWeaponStationPitch.setRotX(Mth.clamp(
+                    -Mth.lerp(partialTick, vehicle.gunXRotO, vehicle.getGunXRot()) * Mth.DEG_TO_RAD
+                            - r * pitch * Mth.DEG_TO_RAD
+                            - r2 * roll * Mth.DEG_TO_RAD,
+                    -10 * Mth.DEG_TO_RAD, 60 * Mth.DEG_TO_RAD)
+            );
+        }
+
+        // flare.*
+        var flare = getAnimationProcessor().getBone("flare");
+
+        if (flare != null) {
+            flare.setRotZ((float) (0.5 * (Math.random() - 0.5)));
         }
 
         // track(Mov|Rot)\d+
@@ -167,31 +249,33 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
                         bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
                     }
                 }
-                if (vehicle.getFirstPassenger() instanceof Player player) {
-                    player.displayClientMessage(Component.literal(vehicle.getLeftTrack() + " " + vehicle.getRightTrack()), true);
-                }
             }
 
             // wheel[LR].*
-            if (hasTrackWheel() && name.length() >= 6 && name.startsWith("wheel")) {
+            if (hasWheel() && name.length() >= 6 && name.startsWith("wheel")) {
                 char LR = name.charAt(5);
                 if (LR == 'L') {
                     bone.setRotX(1.5f * leftWheelRot);
                 } else if (LR == 'R') {
                     bone.setRotX(1.5f * rightWheelRot);
                 }
+                if (name.endsWith("Turn")) {
+                    bone.setRotY(Mth.lerp(partialTick, vehicle.rudderRotO, vehicle.getRudderRot()));
+                }
             }
         });
+    }
 
-
+    public boolean hideFor1stPassengerWhileZooming() {
+        return false;
     }
 
     public boolean hasTrack() {
         return false;
     }
 
-    public boolean hasTrackWheel() {
-        return false;
+    public boolean hasWheel() {
+        return hasTrack();
     }
 
     public float getBoneRotX(float t) {

@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW_WHILE_SHOOT;
 
 public class SpeedboatRenderer extends VehicleRenderer<SpeedboatEntity> {
 
@@ -52,11 +52,9 @@ public class SpeedboatRenderer extends VehicleRenderer<SpeedboatEntity> {
     // TODO 枪呢？
     @Override
     public void renderRecursively(PoseStack poseStack, SpeedboatEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        processBone(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
-
         String name = bone.getName();
         if (name.equals("root")) {
-            float a = animatable.getEntityData().get(YAW);
+            float a = animatable.getEntityData().get(YAW_WHILE_SHOOT);
             float r = (Mth.abs(a) - 90f) / 90f;
 
             bone.setPosZ(r * Mth.lerp(partialTick, (float) animatable.recoilShakeO, (float) animatable.getRecoilShake()) * 0.125f);
@@ -89,11 +87,6 @@ public class SpeedboatRenderer extends VehicleRenderer<SpeedboatEntity> {
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
-    }
-
-    @Override
-    public boolean hasBarrel() {
-        return true;
     }
 
     @Override

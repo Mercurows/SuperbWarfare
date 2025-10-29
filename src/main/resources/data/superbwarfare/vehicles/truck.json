@@ -40,7 +40,7 @@
   "EngineInfo": {
     "Buoyancy": 0,
     "EnergyCostRate": 64,
-    "WheelRotSpeed": 1.25,
+    "WheelRotSpeed": 0.833,
     "WheelDifferential": 0.5,
     "MaxForwardSpeedRate": 0.98,
     "MaxBackwardSpeedRate": 0.7,

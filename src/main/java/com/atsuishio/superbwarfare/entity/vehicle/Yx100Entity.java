@@ -515,7 +515,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                 this.entityData.set(LOADED_SHELL, "null");
 
                 this.consumeEnergy(10000);
-                this.entityData.set(YAW, getTurretYRot());
+                this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
 
                 reloadCoolDown = 80;
 
