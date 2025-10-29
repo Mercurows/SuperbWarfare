@@ -1,11 +1,11 @@
 package com.atsuishio.superbwarfare.data.gun;
 
+import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SoundInfo {
@@ -13,20 +13,28 @@ public class SoundInfo {
     // 正常的开火音效
     @SerializedName("Fire1P")
     public String fire1P = "";
+
+    @ServerOnly
     @SerializedName("Fire3P")
     public String fire3P = "";
+    @ServerOnly
     @SerializedName("Fire3PFar")
     public String fire3PFar = "";
+    @ServerOnly
     @SerializedName("Fire3PVeryFar")
     public String fire3PVeryFar = "";
 
     // 装备消音器时的开火音效
     @SerializedName("Fire1PSilent")
     public String fire1PSilent = "";
+
+    @ServerOnly
     @SerializedName("Fire3PSilent")
     public String fire3PSilent = "";
+    @ServerOnly
     @SerializedName("Fire3PFarSilent")
     public String fire3PFarSilent = "";
+    @ServerOnly
     @SerializedName("Fire3PVeryFarSilent")
     public String fire3PVeryFarSilent = "";
 
@@ -63,12 +71,12 @@ public class SoundInfo {
     public ObjectToList<String> cancellableSounds = new ObjectToList<>();
 
     @Nullable
-    public SoundEvent getSoundEvent(@NotNull String path) {
-        if (path.isEmpty()) {
+    public SoundEvent getSoundEvent(@Nullable String path) {
+        if (path == null || path.isEmpty()) {
             return null;
         }
 
-        ResourceLocation location = ResourceLocation.tryParse(path);
+        var location = ResourceLocation.tryParse(path);
         if (location == null) {
             return null;
         }

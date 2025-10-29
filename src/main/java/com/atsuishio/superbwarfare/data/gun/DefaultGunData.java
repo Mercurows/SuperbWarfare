@@ -27,13 +27,17 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("MaxDurability")
     public int maxDurability = 0;
 
+    @ServerOnly
     @SerializedName("DurabilityPerShoot")
     public int durabilityPerShoot = 1;
 
     @SerializedName("MaxEnergy")
     public int maxEnergy = 0;
+
+    @ServerOnly
     @SerializedName("MaxReceiveEnergy")
     public int maxReceiveEnergy = -1;
+    @ServerOnly
     @SerializedName("MaxExtractEnergy")
     public int maxExtractEnergy = -1;
 
@@ -76,6 +80,7 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
 
+    @ServerOnly
     @SerializedName("ShootPos")
     public ShootPos shootPos = new ShootPos();
 
@@ -192,6 +197,7 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("BurstCooldown")
     public int burstCooldown = 30;
 
+    @ServerOnly
     @SerializedName("SoundRadius")
     public double soundRadius;
     @SerializedName("RPM")
@@ -207,6 +213,7 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("ShootDelay")
     public int shootDelay = 0;
 
+    @ServerOnly
     @SerializedName("HeatPerShoot")
     public double heatPerShoot = 0;
 
@@ -228,18 +235,23 @@ public class DefaultGunData implements IDBasedData {
     public DamageReduce damageReduce = new DamageReduce();
 
     // 自然情况下每tick减少的热量
+    @ServerOnly
     @SerializedName("NaturalCooldown")
     public double naturalCooldown = 0.25;
     // 在水中或雨中时的散热比例
+    @ServerOnly
     @SerializedName("InWaterCooldownRate")
     public double inWaterCooldownRate = 1.1;
     // 在细雪中时的散热比例
+    @ServerOnly
     @SerializedName("InSnowCooldownRate")
     public double inSnowCooldownRate = 1.5;
     // 在火焰中时的散热比例
+    @ServerOnly
     @SerializedName("InFireCooldownRate")
     public double inFireCooldownRate = 0.6;
     // 在岩浆中时的散热比例
+    @ServerOnly
     @SerializedName("InLavaCooldownRate")
     public double inLavaCooldownRate = 0.2;
 
