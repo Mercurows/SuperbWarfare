@@ -20,7 +20,6 @@ public class HolderMixin {
         var ref = (Holder.Reference<?>) (Object) this;
         if (ref.value() instanceof GunItem gunItem) {
             tags.add(ModTags.Items.GUN);
-            tags.add(ModTags.Items.MACHINE_GUN);
 
             var tag = switch (GunData.getDefault(gunItem).gunType) {
                 case SMG -> ModTags.Items.SMG;
