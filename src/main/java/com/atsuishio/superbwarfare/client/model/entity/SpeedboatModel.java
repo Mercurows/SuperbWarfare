@@ -10,7 +10,7 @@ public class SpeedboatModel extends VehicleModel<SpeedboatEntity> {
     @Override
     public void setCustomAnimations(SpeedboatEntity vehicle, long instanceId, AnimationState<SpeedboatEntity> animationState) {
         super.setCustomAnimations(vehicle, instanceId, animationState);
-        float partialTick = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         var propeller = getAnimationProcessor().getBone("propeller");
 

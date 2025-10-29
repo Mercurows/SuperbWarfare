@@ -13,7 +13,7 @@ public class PrismTankModel extends VehicleModel<PrismTankEntity> {
         super.setCustomAnimations(vehicle, instanceId, animationState);
         // Laser.*
 
-        float partialTick = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         var laser = getAnimationProcessor().getBone("laser");
 

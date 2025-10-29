@@ -10,7 +10,7 @@ public class Ah6Model extends VehicleModel<Ah6Entity> {
     @Override
     public void setCustomAnimations(Ah6Entity vehicle, long instanceId, AnimationState<Ah6Entity> animationState) {
         super.setCustomAnimations(vehicle, instanceId, animationState);
-        float partialTick = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         var propeller = getAnimationProcessor().getBone("propeller");
 

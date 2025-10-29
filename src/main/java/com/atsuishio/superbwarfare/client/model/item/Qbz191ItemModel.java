@@ -32,7 +32,7 @@ public class Qbz191ItemModel extends CustomGunModel<Qbz191Item> {
         GeoBone sight1fold = getAnimationProcessor().getBone("sight1fold");
         GeoBone sight2fold = getAnimationProcessor().getBone("sight2fold");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;

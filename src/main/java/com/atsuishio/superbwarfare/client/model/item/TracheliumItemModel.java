@@ -41,7 +41,7 @@ public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
         GeoBone main = getAnimationProcessor().getBone("0");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
 
-        float times = 0.4f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.4f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;

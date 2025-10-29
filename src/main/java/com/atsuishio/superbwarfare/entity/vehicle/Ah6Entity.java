@@ -167,7 +167,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
 
         this.entityData.set(CANNON_RECOIL_TIME, 40);
-        this.entityData.set(YAW, getTurretYRot());
+        this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
 
         this.entityData.set(FIRE_ANIM, 3);
 
@@ -224,7 +224,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public double getMouseSpeedX() {
-        return 0.4;
+        return super.getMouseSpeedX();
     }
 
     @Override

@@ -210,8 +210,6 @@ public class ClientEventHandler {
         if (player == null) {
             return;
         }
-        float xRotOffset = Mth.lerp(event.getPartialTick(), player.xBobO, player.xBob);
-        float xRot = player.getViewXRot(event.getPartialTick()) - xRotOffset;
 
         var fromY = player.yRotO;
         var toY = player.getYRot();
@@ -765,7 +763,7 @@ public class ClientEventHandler {
         var data = GunData.from(stack);
         var mode = data.selectedFireModeInfo().mode;
 
-        qlHoldProgress = Mth.lerp(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), qlHoldProgress, shootDelay);
+        qlHoldProgress = Mth.lerp(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), qlHoldProgress, shootDelay);
         if (qlHoldProgress > shootDelay && qlHoldProgress > data.get(GunProp.SHOOT_DELAY) * 0.25 && !playQLDischargeSound) {
             player.playSound(ModSounds.QL_1031_DISCHARGE.get(), qlHoldProgress * 0.03f, 0.6f + qlHoldProgress * 0.02f);
             playQLDischargeSound = true;
@@ -776,7 +774,7 @@ public class ClientEventHandler {
         }
 
         // 精准度
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         double basicDev = data.get(GunProp.SPREAD);
         double walk = isMoving() ? 0.3 * basicDev : 0;
@@ -1003,7 +1001,7 @@ public class ClientEventHandler {
 
     public static void playGunClientSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
         if (stack.getItem() == ModItems.SENTINEL.get()) {
             var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
@@ -1142,7 +1140,7 @@ public class ClientEventHandler {
             return;
 
         float pose;
-        float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         if (player.isCrouching() && player.getBbHeight() >= 1 && !isProne(player)) {
             pose = 0.85f;
@@ -1295,7 +1293,7 @@ public class ClientEventHandler {
 
         if (stack.getItem() instanceof GunItem gunItem && entity instanceof Player player) {
             var data = GunData.from(stack);
-            float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+            float times = 2 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
             double pose;
 
             if (player.isShiftKeyDown() && player.getBbHeight() >= 1 && isProne(player)) {
@@ -1316,7 +1314,7 @@ public class ClientEventHandler {
     private static void handleWeaponMove(LivingEntity entity) {
         ItemStack stack = entity.getMainHandItem();
         if (stack.getItem() instanceof GunItem && entity instanceof Player player) {
-            float times = 3.7f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+            float times = 3.7f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
             double moveSpeed = entity.getDeltaMovement().horizontalDistance();
             double animSpeed;
 
@@ -1449,7 +1447,7 @@ public class ClientEventHandler {
         if (!(entity instanceof Player player)) return;
         var stack = player.getMainHandItem();
         var data = GunData.from(stack);
-        float times = 5 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float times = 5 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         double weight = data.get(GunProp.WEIGHT);
         double speed = 7 / (weight + 2);
@@ -1474,7 +1472,7 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
-        float times = (float) (2f * customAnimSpeed * Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.48f));
+        float times = (float) (2f * customAnimSpeed * Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.48f));
         ItemStack stack = entity.getMainHandItem();
 
         var data = GunData.from(stack);
@@ -1603,7 +1601,7 @@ public class ClientEventHandler {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         if (shellIndex >= 5) {
             shellIndex = 0;
@@ -1627,7 +1625,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
         var data = GunData.from(stack);
 
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 1.6);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 1.6);
         int barrelType = data.attachment.get(AttachmentType.BARREL);
         int gripType = data.attachment.get(AttachmentType.GRIP);
 
@@ -1734,15 +1732,15 @@ public class ClientEventHandler {
         double yaw = event.getYaw();
         double pitch = event.getPitch();
         double roll = event.getRoll();
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         LocalPlayer player = Minecraft.getInstance().player;
 
         if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_RIGHT) == GLFW.GLFW_PRESS) {
-            cameraLocation = Mth.clamp(cameraLocation - 0.05 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), -0.6, 0.6);
+            cameraLocation = Mth.clamp(cameraLocation - 0.05 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), -0.6, 0.6);
         }
 
         if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT) == GLFW.GLFW_PRESS) {
-            cameraLocation = Mth.clamp(cameraLocation + 0.05 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), -0.6, 0.6);
+            cameraLocation = Mth.clamp(cameraLocation + 0.05 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), -0.6, 0.6);
         }
 
         if (player == null) return;
@@ -1777,7 +1775,7 @@ public class ClientEventHandler {
     }
 
     private static void handleBowPullAnimation(LivingEntity entity, ItemStack stack) {
-        float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 4 * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         var data = GunData.from(stack);
 
@@ -1799,7 +1797,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onFovUpdate(ViewportEvent.ComputeFov event) {
         Minecraft mc = Minecraft.getInstance();
-        float times = (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 1.6);
+        float times = (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 1.6);
         Player player = mc.player;
         if (player == null) {
             return;
@@ -1897,7 +1895,7 @@ public class ClientEventHandler {
         }
 
         if (stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
-            droneFovLerp = Mth.lerp(0.1 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), droneFovLerp, droneFov);
+            droneFovLerp = Mth.lerp(0.1 * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), droneFovLerp, droneFov);
             event.setFOV(event.getFOV() / droneFovLerp);
             fov = event.getFOV();
         }
@@ -2002,7 +2000,7 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponDraw(LivingEntity entity) {
-        float times = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float times = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
         ItemStack stack = entity.getMainHandItem();
         var data = GunData.from(stack);
         double weight = data.get(GunProp.WEIGHT);

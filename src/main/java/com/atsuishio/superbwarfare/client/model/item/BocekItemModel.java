@@ -27,7 +27,7 @@ public class BocekItemModel extends CustomGunModel<BocekItem> {
         GeoBone rightHand = getAnimationProcessor().getBone("safang");
         GeoBone leftHand = getAnimationProcessor().getBone("lh");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         double pp = ClientEventHandler.bowPullPos;
         double pp2 = 1 - ClientEventHandler.bowPullPos;

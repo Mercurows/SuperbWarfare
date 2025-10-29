@@ -41,7 +41,7 @@ public class M98bItemModel extends CustomGunModel<M98bItem> {
         var data = GunData.from(stack);
         int type = data.attachment.get(AttachmentType.SCOPE);
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;

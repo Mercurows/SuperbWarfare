@@ -26,7 +26,7 @@ public class MinigunItemModel extends CustomGunModel<MinigunItem> {
         GeoBone gun = getAnimationProcessor().getBone("barrel");
         GeoBone shen = getAnimationProcessor().getBone("shen");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         var data = GunData.from(stack);
         int rpm = data.get(GunProp.RPM);

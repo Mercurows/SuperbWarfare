@@ -25,7 +25,6 @@ public class Mp5ItemModel extends CustomGunModel<Mp5Item> {
         GeoBone gun = getAnimationProcessor().getBone("bone");
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;

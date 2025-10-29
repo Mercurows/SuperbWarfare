@@ -34,7 +34,7 @@ public class WaveforceTowerModel extends VehicleModel<WaveforceTowerEntity> {
             lightOn.setHidden(!shouldTurnOn);
         }
 
-        processor.getBone("charge").setScaleZ(Mth.lerp(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), energyRate0, energyRate));
+        processor.getBone("charge").setScaleZ(Mth.lerp(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), energyRate0, energyRate));
 
         energy0 = energy;
     }

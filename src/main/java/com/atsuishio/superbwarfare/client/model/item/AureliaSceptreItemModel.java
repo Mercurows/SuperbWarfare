@@ -22,7 +22,7 @@ public class AureliaSceptreItemModel extends CustomGunModel<AureliaSceptreItem> 
         ItemStack stack = player.getMainHandItem();
         if (shouldCancelRender(stack, animationState)) return;
 
-        float times = 0.2f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.2f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, true);
 

@@ -42,7 +42,7 @@ public class M4ItemModel extends CustomGunModel<M4Item> {
         GeoBone button6 = getAnimationProcessor().getBone("button6");
         GeoBone button7 = getAnimationProcessor().getBone("button7");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;

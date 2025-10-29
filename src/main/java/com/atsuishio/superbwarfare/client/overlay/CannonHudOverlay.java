@@ -112,7 +112,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                 int l = (h - j) / 2;
                 if (ClientEventHandler.zoomVehicle) {
 
-                    float partialTick = deltaTracker.getRealtimeDeltaTicks();
+                    float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
                     Vec3 shootPos = player.getEyePosition(partialTick);
 
                     if (!(cannon instanceof AnnihilatorEntity)) {

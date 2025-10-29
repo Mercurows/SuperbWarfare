@@ -148,7 +148,7 @@ public class ClientMouseHandler {
             return;
         }
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         freeCameraYaw -= 0.4f * times * lerpSpeedX;
         freeCameraPitch += 0.3f * times * lerpSpeedY;

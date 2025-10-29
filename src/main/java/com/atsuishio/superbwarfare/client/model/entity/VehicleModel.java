@@ -84,7 +84,7 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
 
     @Override
     public void setCustomAnimations(T vehicle, long instanceId, AnimationState<T> animationState) {
-        float partialTick = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         pitch = vehicle.getPitch(partialTick);
         yaw = vehicle.getYaw(partialTick);

@@ -30,7 +30,7 @@ public class Mk14ItemModel extends CustomGunModel<Mk14Item> {
         GeoBone scope2 = getAnimationProcessor().getBone("Scope2");
         GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;

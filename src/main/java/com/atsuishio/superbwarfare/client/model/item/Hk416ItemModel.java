@@ -32,7 +32,7 @@ public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
         GeoBone scope3 = getAnimationProcessor().getBone("Scope3");
         GeoBone kuaimanji = getAnimationProcessor().getBone("kuaimanji");
 
-        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), 0.8);
+        float times = 0.6f * (float) Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.8);
 
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;

@@ -22,7 +22,7 @@ public class TruckModel extends VehicleModel<TruckEntity> {
     @Override
     public void setCustomAnimations(TruckEntity vehicle, long instanceId, AnimationState<TruckEntity> animationState) {
         super.setCustomAnimations(vehicle, instanceId, animationState);
-        float partialTick = Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         // 方向盘
 
