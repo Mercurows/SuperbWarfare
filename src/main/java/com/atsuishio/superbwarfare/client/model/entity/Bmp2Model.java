@@ -105,4 +105,9 @@ public class Bmp2Model extends VehicleModel<Bmp2Entity> {
     public boolean hasTrack() {
         return true;
     }
+
+    @Override
+    public boolean hasTrackWheel() {
+        return true;
+    }
 }

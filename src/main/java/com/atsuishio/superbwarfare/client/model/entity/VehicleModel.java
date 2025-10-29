@@ -7,8 +7,10 @@ import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource;
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource;
 import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -142,6 +144,8 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
                     if (hasTrack() && name.length() > 9 && name.startsWith("track")) {
                         var isL = name.charAt(9) == 'L';
 
+                        // 这个isL好像始终是false
+
                         if (name.startsWith("trackRot")) {
                             int i = Integer.parseInt(name.substring(9));
                             if (isL) {
@@ -167,12 +171,31 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
                                 bone.setPosZ(Mth.lerp(partialTick, getBoneMoveZ(tO2), getBoneMoveZ(t2)));
                             }
                         }
+                        if (vehicle.getFirstPassenger() instanceof Player player) {
+                            player.displayClientMessage(Component.literal(vehicle.getLeftTrack() + " " + vehicle.getRightTrack()), true);
+                        }
+                    }
+
+                    // wheel[LR].*
+                    if (hasTrackWheel() && name.length() >= 6 && name.startsWith("wheel")) {
+                        char LR = name.charAt(5);
+                        if (LR == 'L') {
+                            bone.setRotX(1.5f * leftWheelRot);
+                        } else if (LR == 'R') {
+                            bone.setRotX(1.5f * rightWheelRot);
+                        }
                     }
                 }
         );
+
+
     }
 
     public boolean hasTrack() {
+        return false;
+    }
+
+    public boolean hasTrackWheel() {
         return false;
     }
 
