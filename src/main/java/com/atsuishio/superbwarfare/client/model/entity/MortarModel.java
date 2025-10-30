@@ -5,6 +5,8 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.INTELLIGENT;
+
 public class MortarModel extends VehicleModel<MortarEntity> {
 
     @Override
@@ -19,6 +21,10 @@ public class MortarModel extends VehicleModel<MortarEntity> {
                     jiaojia.setRotX(-2 * ((entityData.headPitch() - (10 - entityData.headPitch() * 0.1f)) * Mth.DEG_TO_RAD));
                 }
             };
+        }
+
+        if (boneName.equals("monitor")) {
+            return (bone, vehicle, state) -> bone.setHidden(!vehicle.getEntityData().get(INTELLIGENT));
         }
 
         return super.collectTransform(boneName);

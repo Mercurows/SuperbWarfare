@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.model.entity.Tom6Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -12,10 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
-
-import static com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity.MELON;
 
 public class Tom6Renderer extends GeoEntityRenderer<Tom6Entity> {
 
@@ -40,12 +36,4 @@ public class Tom6Renderer extends GeoEntityRenderer<Tom6Entity> {
         poseStack.popPose();
     }
 
-    @Override
-    public void renderRecursively(PoseStack poseStack, Tom6Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        String name = bone.getName();
-        if (name.equals("melon")) {
-            bone.setHidden(!animatable.getEntityData().get(MELON));
-        }
-        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-    }
 }

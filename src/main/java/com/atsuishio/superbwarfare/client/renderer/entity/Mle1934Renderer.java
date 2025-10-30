@@ -3,16 +3,9 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.model.entity.Mle1934Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib.cache.object.GeoBone;
-
-import static com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity.COOL_DOWN;
-import static com.atsuishio.superbwarfare.entity.vehicle.Mle1934Entity.RIGHT_BARREL_ANIM;
 
 public class Mle1934Renderer extends VehicleRenderer<Mle1934Entity> {
 
@@ -25,19 +18,5 @@ public class Mle1934Renderer extends VehicleRenderer<Mle1934Entity> {
     public void vehicleAxis(Mle1934Entity entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
         Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
-    }
-
-    @Override
-    public void renderRecursively(PoseStack poseStack, Mle1934Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        String name = bone.getName();
-        if (name.equals("flare2")) {
-            bone.setHidden(animatable.getEntityData().get(COOL_DOWN) <= 64);
-        }
-
-        if (name.equals("flare")) {
-            bone.setHidden(animatable.getEntityData().get(RIGHT_BARREL_ANIM) <= 10);
-        }
-
-        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }
