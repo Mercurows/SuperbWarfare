@@ -2807,17 +2807,17 @@
 					]
 				},
 				{
-					"name": "turret2",
+					"name": "turretLaser",
 					"pivot": [0, 32.832, -0.95923]
 				},
 				{
-					"name": "barrel2",
-					"parent": "turret2",
+					"name": "barrelLaser",
+					"parent": "turretLaser",
 					"pivot": [0, 39.66362, -0.53991]
 				},
 				{
 					"name": "beam",
-					"parent": "barrel2",
+					"parent": "barrelLaser",
 					"pivot": [0, 49.0004, -7]
 				},
 				{

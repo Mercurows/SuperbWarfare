@@ -28,4 +28,9 @@ public class Bl132Model extends VehicleModel<Bl132Entity> {
             bone.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
         }
     }
+
+    @Override
+    public boolean hideFor1stPassengerWhileZooming() {
+        return true;
+    }
 }
