@@ -96,23 +96,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     }
 
     @Override
-    public void playerTouch(Player pPlayer) {
-        if (pPlayer.position().distanceToSqr(position()) > 1.2) return;
-        if (pPlayer.isCrouching()
-                && !this.level().isClientSide
-                && pPlayer.getY() < this.getY() + this.getBbHeight()
-                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
-        ) {
-            double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
-            double thisSize = this.getBbWidth() * this.getBbHeight();
-            double f = Math.min(entitySize / thisSize, 2);
-            double f1 = Math.min(thisSize / entitySize, 4);
-            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.22 * f * pPlayer.getDeltaMovement().length())));
-            pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
-        }
-    }
-
-    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         var list = new IntArrayList();
@@ -366,8 +349,8 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
         double s0 = getDeltaMovement().dot(this.getViewVector(1));
 
-        this.setLeftWheelRot((float) (this.getLeftWheelRot() - 1.75 * s0));
-        this.setRightWheelRot((float) (this.getRightWheelRot() - 1.75 * s0));
+        this.setLeftWheelRot((float) (this.getLeftWheelRot() - 1.167 * s0));
+        this.setRightWheelRot((float) (this.getRightWheelRot() - 1.167 * s0));
     }
 
     @Override

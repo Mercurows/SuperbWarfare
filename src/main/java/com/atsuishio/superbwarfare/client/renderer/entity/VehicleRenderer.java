@@ -53,13 +53,17 @@ public abstract class VehicleRenderer<T extends VehicleEntity & GeoAnimatable> e
     @Override
     public void render(T entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
+        vehicleAxis(entityIn, poseStack, entityYaw, partialTicks);
+        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+        renderCustomPart(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+        poseStack.popPose();
+    }
+
+    public void vehicleAxis(T entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
         Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.getRoll())), (float) root.x, (float) root.y, (float) root.z);
-        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-        renderCustomPart(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-        poseStack.popPose();
     }
 
     public void renderCustomPart(T entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {

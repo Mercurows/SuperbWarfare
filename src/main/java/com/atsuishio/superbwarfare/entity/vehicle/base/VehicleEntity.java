@@ -435,21 +435,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(SPRINT_INPUT_DOWN, set);
     }
 
-    @Override
-    public void playerTouch(Player pPlayer) {
-        if (pPlayer.isCrouching()
-                && !this.level().isClientSide
-                && pPlayer.getY() < this.getY() + this.getBbHeight()
-                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
-        ) {
-            double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
-            double thisSize = this.getBbWidth() * this.getBbHeight();
-            double f = Math.min(entitySize / thisSize, 2);
-            double f1 = Math.min(thisSize / entitySize, 4);
-            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.15 * f * pPlayer.getDeltaMovement().length())));
-            pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
-        }
-    }
+//    @Override
+//    public void playerTouch(Player pPlayer) {
+//        if (pPlayer.isCrouching()
+//                && !this.level().isClientSide
+//                && pPlayer.getY() < this.getY() + this.getBbHeight()
+//                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
+//        ) {
+//            double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
+//            double thisSize = this.getBbWidth() * this.getBbHeight();
+//            double f = Math.min(entitySize / thisSize, 2);
+//            double f1 = Math.min(thisSize / entitySize, 4);
+//            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.15 * f * pPlayer.getDeltaMovement().length())));
+//            pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
+//        }
+//    }
 
     protected final HashMap<String, Function<VehicleEntity, ShootRay>> shootAnchorPoints = new HashMap<>();
 
@@ -4768,7 +4768,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     }
                     var vec = new Vec3(support).scale(force);
                     vec = new Vec3(vec.x, Math.max(0, vec.y), vec.z);
-                    entity.setPos(entity.position().add(vec));
+                    if (entity instanceof Player player && player.onGround() && player.isCrouching()) {
+                        // 推车
+                        setDeltaMovement(getDeltaMovement().add(vec.scale(-1).normalize().scale(player.getDeltaMovement().horizontalDistance() * 3)));
+                        player.setDeltaMovement(player.getDeltaMovement().add(vec.scale(1).normalize().scale(player.getDeltaMovement().horizontalDistance() * 0.5)));
+                    } else {
+                        entity.setPos(entity.position().add(vec));
+                        entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.2, 0.2, 0.2));
+                    }
+
                     this.hasImpulse = true;
                 }
             }

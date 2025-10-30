@@ -22,6 +22,8 @@ public class SpeedboatRenderer extends VehicleRenderer<SpeedboatEntity> {
         this.addRenderLayer(new SpeedBoatHeatLayer(this));
     }
 
+
+    // TODO 单独让一个部件实现WaterMask，而不是渲染个实体（恼
     @Override
     public void renderCustomPart(SpeedboatEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();

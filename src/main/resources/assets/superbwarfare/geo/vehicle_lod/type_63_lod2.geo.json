@@ -16,23 +16,23 @@
 					"pivot": [0, 7.3125, 0]
 				},
 				{
-					"name": "main",
+					"name": "turret",
 					"parent": "root",
 					"pivot": [0, 7.3125, 2.6]
 				},
 				{
-					"name": "paotou",
-					"parent": "main",
+					"name": "barrel",
+					"parent": "turret",
 					"pivot": [0, 17.7125, 5.85]
 				},
 				{
-					"name": "barrel",
-					"parent": "paotou",
+					"name": "tube",
+					"parent": "barrel",
 					"pivot": [5.85, 13.8125, 0.65455]
 				},
 				{
 					"name": "bone1",
-					"parent": "barrel",
+					"parent": "tube",
 					"pivot": [5.85, 13.8125, 0.65455],
 					"cubes": [
 						{
@@ -239,7 +239,7 @@
 				},
 				{
 					"name": "bone3",
-					"parent": "barrel",
+					"parent": "tube",
 					"pivot": [5.85, 17.7125, 0.65455],
 					"cubes": [
 						{
@@ -446,7 +446,7 @@
 				},
 				{
 					"name": "bone4",
-					"parent": "barrel",
+					"parent": "tube",
 					"pivot": [5.85, 21.6125, 0.65455],
 					"cubes": [
 						{
@@ -653,7 +653,7 @@
 				},
 				{
 					"name": "side",
-					"parent": "paotou",
+					"parent": "barrel",
 					"pivot": [0, 12.5125, 0],
 					"cubes": [
 						{
@@ -764,7 +764,7 @@
 				},
 				{
 					"name": "front",
-					"parent": "paotou",
+					"parent": "barrel",
 					"pivot": [4.55, 29.0475, -1.9175],
 					"cubes": [
 						{
@@ -779,7 +779,7 @@
 				},
 				{
 					"name": "back",
-					"parent": "paotou",
+					"parent": "barrel",
 					"pivot": [6.5, 15.4375, 12.0575],
 					"cubes": [
 						{
@@ -794,7 +794,7 @@
 				},
 				{
 					"name": "rollx",
-					"parent": "main",
+					"parent": "turret",
 					"pivot": [0, 17.7125, 5.85],
 					"cubes": [
 						{
@@ -827,7 +827,7 @@
 				},
 				{
 					"name": "paojia",
-					"parent": "main",
+					"parent": "turret",
 					"pivot": [0, 6.175, 2.6],
 					"cubes": [
 						{
@@ -983,7 +983,7 @@
 					]
 				},
 				{
-					"name": "wheel1",
+					"name": "wheelL0",
 					"parent": "root",
 					"pivot": [14.52718, 6.175, -1.7095],
 					"cubes": [
@@ -1041,7 +1041,7 @@
 				},
 				{
 					"name": "bone48",
-					"parent": "wheel1",
+					"parent": "wheelL0",
 					"pivot": [14.49968, 6.175, -1.7095],
 					"cubes": [
 						{
@@ -1097,7 +1097,7 @@
 					]
 				},
 				{
-					"name": "wheel2",
+					"name": "wheelR0",
 					"parent": "root",
 					"pivot": [-14.52718, 6.175, -1.7095],
 					"cubes": [
@@ -1155,7 +1155,7 @@
 				},
 				{
 					"name": "bone2",
-					"parent": "wheel2",
+					"parent": "wheelR0",
 					"pivot": [-14.49968, 6.175, -1.7095],
 					"cubes": [
 						{
