@@ -12,18 +12,19 @@ public class WaveforceTowerModel extends VehicleModel<WaveforceTowerEntity> {
 
     int energy0 = 0;
 
-    // TODO 修复渲染问题
     @Override
-    public void setCustomAnimations(WaveforceTowerEntity animatable, long instanceId, AnimationState<WaveforceTowerEntity> animationState) {
+    public void setCustomAnimations(WaveforceTowerEntity vehicle, long instanceId, AnimationState<WaveforceTowerEntity> animationState) {
+        super.setCustomAnimations(vehicle, instanceId, animationState);
+
         var processor = getAnimationProcessor();
-        var entityData = animatable.getEntityData();
+        var entityData = vehicle.getEntityData();
 
         processor.getBone("laser").setScaleZ(entityData.get(WAVEFORCE_LENGTH));
         processor.getBone("glow2").setPosZ(-16 * entityData.get(WAVEFORCE_LENGTH));
 
         int energy = entityData.get(CHARGED_ENERGY);
-        float energyRate = (float) energy / animatable.maxChargeEnergy;
-        float energyRate0 = (float) energy0 / animatable.maxChargeEnergy;
+        float energyRate = (float) energy / vehicle.maxChargeEnergy;
+        float energyRate0 = (float) energy0 / vehicle.maxChargeEnergy;
 
         for (int i = 1; i <= 7; i++) {
             var lightOn = processor.getBone("light_on" + i);

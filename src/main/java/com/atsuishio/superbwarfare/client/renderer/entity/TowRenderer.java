@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,6 +13,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.TowEntity.STATE;
@@ -20,6 +22,12 @@ public class TowRenderer extends VehicleRenderer<TowEntity> {
 
     public TowRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new TowModel());
+    }
+
+    @Override
+    public void vehicleAxis(TowEntity entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
+        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
+        poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
     }
 
     @Override

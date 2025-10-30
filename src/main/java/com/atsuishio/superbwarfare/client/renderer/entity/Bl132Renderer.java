@@ -33,10 +33,6 @@ public class Bl132Renderer extends VehicleRenderer<Bl132Entity> {
     public void renderRecursively(PoseStack poseStack, Bl132Entity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         String name = bone.getName();
 
-        if (name.equals("main")) {
-            bone.setHidden(hideFor1stPassengerWhileZooming);
-        }
-
         if (name.equals("flare")) {
             bone.setHidden(animatable.getEntityData().get(COOL_DOWN) <= 75);
         }

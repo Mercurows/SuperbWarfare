@@ -16,4 +16,9 @@ public class Mk42Model extends VehicleModel<Mk42Entity> {
             bone.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
         }
     }
+
+    @Override
+    public boolean hideFor1stPassengerWhileZooming() {
+        return true;
+    }
 }

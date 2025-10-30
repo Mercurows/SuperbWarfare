@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.model.entity.LaserTowerModel;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 public class LaserTowerRenderer extends VehicleRenderer<LaserTowerEntity> {
@@ -22,6 +24,12 @@ public class LaserTowerRenderer extends VehicleRenderer<LaserTowerEntity> {
         super(renderManager, new LaserTowerModel());
         this.addRenderLayer(new LaserTowerPowerLayer(this));
         this.addRenderLayer(new LaserTowerLaserLayer(this));
+    }
+
+    @Override
+    public void vehicleAxis(LaserTowerEntity entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
+        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
+        poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
     }
 
     @Override

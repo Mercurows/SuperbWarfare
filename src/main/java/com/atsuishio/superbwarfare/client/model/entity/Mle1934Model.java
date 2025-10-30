@@ -16,4 +16,9 @@ public class Mle1934Model extends VehicleModel<Mle1934Entity> {
             barrel.setRotX((entityData.headPitch()) * Mth.DEG_TO_RAD);
         }
     }
+
+    @Override
+    public boolean hideFor1stPassengerWhileZooming() {
+        return true;
+    }
 }
