@@ -9,6 +9,8 @@ import software.bernie.geckolib.constant.DataTickets;
 
 import java.util.UUID;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity.*;
+
 public class Bl132Model extends VehicleModel<Bl132Entity> {
 
     @Override
@@ -22,16 +24,20 @@ public class Bl132Model extends VehicleModel<Bl132Entity> {
 
     @Override
     public @Nullable TransformContext<Bl132Entity> collectTransform(String boneName) {
-        if (boneName.equals("gun")) {
-            return (bone, vehicle, state) -> {
+        return switch (boneName) {
+            case "gun" -> (bone, vehicle, state) -> {
                 var entityData = state.getData(DataTickets.ENTITY_MODEL_DATA);
                 if (entityData != null) {
                     bone.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
                 }
             };
-        }
+            case "flare" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(COOL_DOWN) <= 75);
+            case "flare2" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_2) <= 10);
+            case "flare3" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_3) <= 10);
+            case "flare4" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_4) <= 10);
 
-        return super.collectTransform(boneName);
+            default -> super.collectTransform(boneName);
+        };
     }
 
     @Override

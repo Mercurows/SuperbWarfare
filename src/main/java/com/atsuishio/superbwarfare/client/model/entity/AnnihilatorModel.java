@@ -1,7 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
@@ -22,6 +26,21 @@ public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
                     (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_MIDDLE_LENGTH) + 0.5f);
             case "laser3" ->
                     (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_RIGHT_LENGTH) + 0.5f);
+            case "bone" -> (bone, vehicle, state) -> {
+                var minecraft = Minecraft.getInstance();
+                var pCamera = minecraft.levelRenderer.getFrustum();
+
+                var aabb = vehicle.getBoundingBoxForCulling().inflate(0.5);
+                if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+                    aabb = new AABB(vehicle.getX() - 6.0, vehicle.getY() - 4.0, vehicle.getZ() - 6.0, vehicle.getX() + 6.0, vehicle.getY() + 4.0, vehicle.getZ() + 6.0);
+                }
+
+                bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
+            };
+            case "main", "main2" ->
+                    (bone, vehicle, state) -> bone.setRotY(-Mth.lerp(state.getPartialTick(), vehicle.yRotO, vehicle.getYRot()) * Mth.DEG_TO_RAD);
+            case "PaoGuan", "PaoGuan2" ->
+                    (bone, vehicle, state) -> bone.setRotX(-Mth.lerp(state.getPartialTick(), vehicle.xRotO, vehicle.getXRot()) * Mth.DEG_TO_RAD);
             default -> {
                 var matcher = LED_PATTERN.matcher(boneName);
                 if (matcher.matches()) {

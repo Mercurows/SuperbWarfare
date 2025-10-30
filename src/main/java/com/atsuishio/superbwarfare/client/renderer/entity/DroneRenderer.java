@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -21,7 +20,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
@@ -134,26 +132,5 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
             poseStack.popPose();
         }
-    }
-
-    @Override
-    public void renderRecursively(PoseStack poseStack, DroneEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        String name = bone.getName();
-        if (!animatable.onGround()) {
-            if (name.equals("wingFL")) {
-                bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-            }
-            if (name.equals("wingFR")) {
-                bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-            }
-            if (name.equals("wingBL")) {
-                bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-            }
-            if (name.equals("wingBR")) {
-                bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-            }
-        }
-
-        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
     }
 }
