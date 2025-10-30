@@ -114,13 +114,13 @@
 					]
 				},
 				{
-					"name": "paotiroll",
+					"name": "turret",
 					"parent": "root",
 					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "guding",
-					"parent": "paotiroll",
+					"parent": "turret",
 					"pivot": [22, 5.6, -12]
 				},
 				{
@@ -1500,7 +1500,7 @@
 				},
 				{
 					"name": "zhou",
-					"parent": "paotiroll",
+					"parent": "turret",
 					"pivot": [0, 2, 0]
 				},
 				{
@@ -1602,13 +1602,13 @@
 					]
 				},
 				{
-					"name": "roll",
-					"parent": "paotiroll",
+					"name": "barrel",
+					"parent": "turret",
 					"pivot": [0, 22, -4]
 				},
 				{
 					"name": "flare",
-					"parent": "roll",
+					"parent": "barrel",
 					"pivot": [0, 26.35, -45.24844]
 				},
 				{
@@ -1677,7 +1677,7 @@
 				},
 				{
 					"name": "paoguanwaike",
-					"parent": "roll",
+					"parent": "barrel",
 					"pivot": [0, 2, 0]
 				},
 				{
@@ -2629,7 +2629,7 @@
 				},
 				{
 					"name": "paoshen",
-					"parent": "roll",
+					"parent": "barrel",
 					"pivot": [0, 33.13398, -1.43206],
 					"cubes": [
 						{
@@ -2721,7 +2721,7 @@
 				},
 				{
 					"name": "zhou11",
-					"parent": "roll",
+					"parent": "barrel",
 					"pivot": [7, 22, -4],
 					"cubes": [
 						{
@@ -2771,7 +2771,7 @@
 				},
 				{
 					"name": "zhou22",
-					"parent": "roll",
+					"parent": "barrel",
 					"pivot": [-9, 22, -4],
 					"cubes": [
 						{
@@ -2821,7 +2821,7 @@
 				},
 				{
 					"name": "paoguanroll",
-					"parent": "roll",
+					"parent": "barrel",
 					"pivot": [0, 26, -33.6]
 				},
 				{

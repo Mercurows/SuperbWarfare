@@ -12,16 +12,16 @@
 			},
 			"bones": [
 				{
-					"name": "bone",
+					"name": "root",
 					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "main",
-					"parent": "bone",
+					"parent": "root",
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "PaoGuan",
+					"name": "turret",
 					"parent": "main",
 					"pivot": [0, 36, -79.2],
 					"cubes": [
@@ -39,7 +39,7 @@
 				},
 				{
 					"name": "YouPaoGuan",
-					"parent": "PaoGuan",
+					"parent": "turret",
 					"pivot": [36, 28.8, -219],
 					"cubes": [
 						{
@@ -327,7 +327,7 @@
 				},
 				{
 					"name": "ZuoPaoGuan",
-					"parent": "PaoGuan",
+					"parent": "turret",
 					"pivot": [-36, 28.8, -219],
 					"cubes": [
 						{
@@ -615,7 +615,7 @@
 				},
 				{
 					"name": "ZhongPaoGuan",
-					"parent": "PaoGuan",
+					"parent": "turret",
 					"pivot": [0, 28.8, -219],
 					"cubes": [
 						{
@@ -3435,7 +3435,7 @@
 				},
 				{
 					"name": "Base",
-					"parent": "bone",
+					"parent": "root",
 					"pivot": [-0.36, 3, 1.584],
 					"cubes": [
 						{

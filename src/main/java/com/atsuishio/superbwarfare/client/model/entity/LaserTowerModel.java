@@ -28,9 +28,9 @@ public class LaserTowerModel extends VehicleModel<LaserTowerEntity> {
 
                 super.collectTransform(boneName);
             };
-            case "turret" ->
+            case "turret", "turret2" ->
                     (bone, vehicle, state) -> bone.setRotY(-Mth.lerp(state.getPartialTick(), vehicle.yRotO, vehicle.getYRot()) * Mth.DEG_TO_RAD);
-            case "barrel" ->
+            case "barrel", "barrel2" ->
                     (bone, vehicle, state) -> bone.setRotX(-Mth.lerp(state.getPartialTick(), vehicle.xRotO, vehicle.getXRot()) * Mth.DEG_TO_RAD);
 
             default -> super.collectTransform(boneName);

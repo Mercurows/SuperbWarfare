@@ -8,9 +8,4 @@ public class Lav150Model extends VehicleModel<Lav150Entity> {
     public boolean hideFor1stPassengerWhileZooming() {
         return true;
     }
-
-    @Override
-    public boolean hasWheel() {
-        return true;
-    }
 }

@@ -26,6 +26,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animation.*;
@@ -58,6 +60,7 @@ public class Ql1031Item extends GunGeoItem {
         TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.ql_1031_2").withStyle(Style.EMPTY.withColor(0xFFECE7)));
     }
 
+    @OnlyIn(Dist.CLIENT)
     private PlayState editPredicate(AnimationState<Ql1031Item> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;
@@ -73,6 +76,7 @@ public class Ql1031Item extends GunGeoItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ql_1031.idle"));
     }
 
+    @OnlyIn(Dist.CLIENT)
     private PlayState chargePredicate(AnimationState<Ql1031Item> event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return PlayState.STOP;

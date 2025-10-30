@@ -322,14 +322,6 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
         return false;
     }
 
-    public boolean hasTrack() {
-        return false;
-    }
-
-    public boolean hasWheel() {
-        return hasTrack();
-    }
-
     public float getBoneRotX(float t) {
         return t;
     }

@@ -26,7 +26,7 @@ public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
                     (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_MIDDLE_LENGTH) + 0.5f);
             case "laser3" ->
                     (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_RIGHT_LENGTH) + 0.5f);
-            case "bone" -> (bone, vehicle, state) -> {
+            case "root" -> (bone, vehicle, state) -> {
                 var minecraft = Minecraft.getInstance();
                 var pCamera = minecraft.levelRenderer.getFrustum();
 
@@ -37,9 +37,8 @@ public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
 
                 bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
             };
-            case "main", "main2" ->
-                    (bone, vehicle, state) -> bone.setRotY(-Mth.lerp(state.getPartialTick(), vehicle.yRotO, vehicle.getYRot()) * Mth.DEG_TO_RAD);
-            case "PaoGuan", "PaoGuan2" ->
+
+            case "barrel", "barrel2" ->
                     (bone, vehicle, state) -> bone.setRotX(-Mth.lerp(state.getPartialTick(), vehicle.xRotO, vehicle.getXRot()) * Mth.DEG_TO_RAD);
             default -> {
                 var matcher = LED_PATTERN.matcher(boneName);

@@ -12,17 +12,17 @@
 			},
 			"bones": [
 				{
-					"name": "bone",
+					"name": "root",
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "maingun",
-					"parent": "bone",
+					"name": "barrel",
+					"parent": "root",
 					"pivot": [0, 34.56, -8.28]
 				},
 				{
 					"name": "paoguan",
-					"parent": "maingun",
+					"parent": "barrel",
 					"pivot": [0, 34.56, -1.8],
 					"rotation": [90, 0, 0]
 				},
@@ -147,7 +147,7 @@
 				},
 				{
 					"name": "move",
-					"parent": "maingun",
+					"parent": "barrel",
 					"pivot": [0, 34.56, -7.2]
 				},
 				{
@@ -393,7 +393,7 @@
 				},
 				{
 					"name": "body",
-					"parent": "bone",
+					"parent": "root",
 					"pivot": [0, 34.56, 8.28]
 				},
 				{
@@ -941,8 +941,6 @@
 						{
 							"origin": [-6.33032, 54.83591, 17.76108],
 							"size": [12.66063, 5.26, 5.26],
-							"pivot": [0, 57.46591, 20.39108],
-							"rotation": [0, 0, 0],
 							"uv": {
 								"east": {"uv": [12, 85], "uv_size": [1, 1]},
 								"west": {"uv": [85, 12], "uv_size": [1, 1]},

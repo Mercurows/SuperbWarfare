@@ -25,7 +25,7 @@ public class Bl132Model extends VehicleModel<Bl132Entity> {
     @Override
     public @Nullable TransformContext<Bl132Entity> collectTransform(String boneName) {
         return switch (boneName) {
-            case "gun" -> (bone, vehicle, state) -> {
+            case "barrel" -> (bone, vehicle, state) -> {
                 var entityData = state.getData(DataTickets.ENTITY_MODEL_DATA);
                 if (entityData != null) {
                     bone.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);

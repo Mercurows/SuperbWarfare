@@ -12,17 +12,17 @@
 			},
 			"bones": [
 				{
-					"name": "main",
+					"name": "root",
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "gun",
-					"parent": "main",
+					"name": "barrel",
+					"parent": "root",
 					"pivot": [0.009, 42, 6.3]
 				},
 				{
 					"name": "xroll",
-					"parent": "gun",
+					"parent": "barrel",
 					"pivot": [0.009, 42, 6.3],
 					"cubes": [
 						{
@@ -79,7 +79,7 @@
 				},
 				{
 					"name": "tube1",
-					"parent": "gun",
+					"parent": "barrel",
 					"pivot": [19.95, 51, -21.291]
 				},
 				{
@@ -352,7 +352,7 @@
 				},
 				{
 					"name": "tube2",
-					"parent": "gun",
+					"parent": "barrel",
 					"pivot": [19.95, 33.3, -21.291]
 				},
 				{
@@ -625,7 +625,7 @@
 				},
 				{
 					"name": "tube3",
-					"parent": "gun",
+					"parent": "barrel",
 					"pivot": [-19.95, 51, -21.291]
 				},
 				{
@@ -898,7 +898,7 @@
 				},
 				{
 					"name": "tube4",
-					"parent": "gun",
+					"parent": "barrel",
 					"pivot": [-19.95, 33.3, -21.291]
 				},
 				{
@@ -1171,7 +1171,7 @@
 				},
 				{
 					"name": "body",
-					"parent": "main",
+					"parent": "root",
 					"pivot": [54.9, 6, -51]
 				},
 				{
