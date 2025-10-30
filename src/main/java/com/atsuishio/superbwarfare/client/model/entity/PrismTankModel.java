@@ -33,11 +33,6 @@ public class PrismTankModel extends VehicleModel<PrismTankEntity> {
     }
 
     @Override
-    public boolean hasTrack() {
-        return true;
-    }
-
-    @Override
     public float getBoneRotX(float t) {
         if (t <= 37.6667) return 0F;
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 0F, -45F);

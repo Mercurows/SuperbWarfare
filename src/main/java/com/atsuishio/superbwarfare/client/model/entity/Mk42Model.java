@@ -9,7 +9,7 @@ public class Mk42Model extends VehicleModel<Mk42Entity> {
 
     @Override
     public @Nullable TransformContext<Mk42Entity> collectTransform(String boneName) {
-        if (boneName.equals("maingun")) {
+        if (boneName.equals("barrel")) {
             return (bone, vehicle, state) -> {
                 var entityData = state.getData(DataTickets.ENTITY_MODEL_DATA);
                 if (entityData != null) {

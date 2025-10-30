@@ -14,15 +14,12 @@ public class Hpj11Model extends VehicleModel<Hpj11Entity> {
     @Override
     public @Nullable TransformContext<Hpj11Entity> collectTransform(String boneName) {
         return switch (boneName) {
-            case "paotiroll" ->
-                    (bone, vehicle, state) -> bone.setRotY(-Mth.lerp(state.getPartialTick(), vehicle.yRotO, vehicle.getYRot()) * Mth.DEG_TO_RAD);
-
             case "radar2" -> (bone, vehicle, state) -> {
                 Player player = Minecraft.getInstance().player;
                 bone.setHidden(vehicle.getFirstPassenger() == player && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
             };
 
-            case "roll", "rdr", "rdr2" ->
+            case "barrel", "rdr", "rdr2" ->
                     (bone, vehicle, state) -> bone.setRotX(-Mth.lerp(state.getPartialTick(), vehicle.xRotO, vehicle.getXRot()) * Mth.DEG_TO_RAD);
 
             case "paoguanroll" -> (bone, vehicle, state) ->

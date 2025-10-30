@@ -32,9 +32,4 @@ public class Type63Model extends VehicleModel<Type63Entity> {
 
         return super.collectTransform(boneName);
     }
-
-    @Override
-    public boolean hasWheel() {
-        return true;
-    }
 }

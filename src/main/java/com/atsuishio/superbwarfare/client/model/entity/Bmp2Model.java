@@ -73,9 +73,4 @@ public class Bmp2Model extends VehicleModel<Bmp2Entity> {
     public boolean hideFor1stPassengerWhileZooming() {
         return true;
     }
-
-    @Override
-    public boolean hasTrack() {
-        return true;
-    }
 }

@@ -26,9 +26,4 @@ public class TruckModel extends VehicleModel<TruckEntity> {
 
         return super.collectTransform(boneName);
     }
-
-    @Override
-    public boolean hasWheel() {
-        return true;
-    }
 }
