@@ -309,7 +309,11 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
         TRANSFORMS.forEach(pair -> {
             var name = pair.getA();
             var bone = getAnimationProcessor().getBone(name);
-            pair.getB().transform(bone, vehicle, animationState);
+
+            // TODO 这里怎么可能为空？
+            if (bone != null) {
+                pair.getB().transform(bone, vehicle, animationState);
+            }
         });
 
     }
