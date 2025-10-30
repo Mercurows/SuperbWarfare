@@ -1,9 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import software.bernie.geckolib.animation.AnimationState;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Pattern;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.CHARGED_ENERGY;
 import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.WAVEFORCE_LENGTH;
@@ -11,32 +12,43 @@ import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.WA
 public class WaveforceTowerModel extends VehicleModel<WaveforceTowerEntity> {
 
     int energy0 = 0;
+    private final Pattern LIGHT_PATTERN = Pattern.compile("^light_(?<type>on|off)(?<id>\\d+)");
 
     @Override
-    public void setCustomAnimations(WaveforceTowerEntity vehicle, long instanceId, AnimationState<WaveforceTowerEntity> animationState) {
-        super.setCustomAnimations(vehicle, instanceId, animationState);
+    public @Nullable TransformContext<WaveforceTowerEntity> collectTransform(String boneName) {
+        switch (boneName) {
+            case "laser" -> {
+                return (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(WAVEFORCE_LENGTH));
+            }
+            case "glow2" -> {
+                return (bone, vehicle, state) -> bone.setPosZ(-16 * vehicle.getEntityData().get(WAVEFORCE_LENGTH));
+            }
+            case "charge" -> {
+                return (bone, vehicle, state) -> {
+                    int energy = vehicle.getEntityData().get(CHARGED_ENERGY);
+                    float energyRate = (float) energy / vehicle.maxChargeEnergy;
+                    float energyRate0 = (float) energy0 / vehicle.maxChargeEnergy;
 
-        var processor = getAnimationProcessor();
-        var entityData = vehicle.getEntityData();
-
-        processor.getBone("laser").setScaleZ(entityData.get(WAVEFORCE_LENGTH));
-        processor.getBone("glow2").setPosZ(-16 * entityData.get(WAVEFORCE_LENGTH));
-
-        int energy = entityData.get(CHARGED_ENERGY);
-        float energyRate = (float) energy / vehicle.maxChargeEnergy;
-        float energyRate0 = (float) energy0 / vehicle.maxChargeEnergy;
-
-        for (int i = 1; i <= 7; i++) {
-            var lightOn = processor.getBone("light_on" + i);
-            var lightOff = processor.getBone("light_off" + i);
-
-            var shouldTurnOn = energyRate >= i / 7f;
-            lightOff.setHidden(shouldTurnOn);
-            lightOn.setHidden(!shouldTurnOn);
+                    bone.setScaleZ(Mth.lerp(state.getPartialTick(), energyRate0, energyRate));
+                    energy0 = energy;
+                };
+            }
         }
 
-        processor.getBone("charge").setScaleZ(Mth.lerp(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), energyRate0, energyRate));
+        var matcher = LIGHT_PATTERN.matcher(boneName);
+        if (matcher.matches()) {
+            var isOn = matcher.group("type").equals("on");
+            var index = Integer.parseInt(matcher.group("id"));
 
-        energy0 = energy;
+            return (bone, vehicle, state) -> {
+                int energy = vehicle.getEntityData().get(CHARGED_ENERGY);
+                float energyRate = (float) energy / vehicle.maxChargeEnergy;
+                var shouldTurnOn = energyRate >= index / 7f;
+
+                bone.setHidden(shouldTurnOn != isOn);
+            };
+        }
+
+        return super.collectTransform(boneName);
     }
 }

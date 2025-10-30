@@ -1,41 +1,30 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import software.bernie.geckolib.animation.AnimationState;
+import org.jetbrains.annotations.Nullable;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.*;
 
 public class PrismTankModel extends VehicleModel<PrismTankEntity> {
     @Override
-    public void setCustomAnimations(PrismTankEntity vehicle, long instanceId, AnimationState<PrismTankEntity> animationState) {
-        super.setCustomAnimations(vehicle, instanceId, animationState);
-        // Laser.*
+    public @Nullable TransformContext<PrismTankEntity> collectTransform(String boneName) {
+        return switch (boneName) {
+            case "laser" -> (laser, vehicle, state) -> {
+                laser.setScaleZ(10 * vehicle.getEntityData().get(LASER_LENGTH));
+                float scale = Math.min(Mth.lerp(state.getPartialTick(), vehicle.getEntityData().get(LASER_SCALE_O), vehicle.getEntityData().get(LASER_SCALE)), 1.2f);
 
-        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+                laser.setScaleX(scale);
+                laser.setScaleY(scale);
+            };
+            case "fanL", "fanR" -> (fanL, vehicle, state) -> {
+                if (vehicle.getEnergy() > 0) {
+                    fanL.setRotY((System.currentTimeMillis() % 36000000) / 75f);
+                }
+            };
+            default -> super.collectTransform(boneName);
+        };
 
-        var laser = getAnimationProcessor().getBone("laser");
-
-        if (laser != null) {
-            laser.setScaleZ(10 * vehicle.getEntityData().get(LASER_LENGTH));
-            float scale = Math.min(Mth.lerp(partialTick, vehicle.getEntityData().get(LASER_SCALE_O), vehicle.getEntityData().get(LASER_SCALE)), 1.2f);
-
-            laser.setScaleX(scale);
-            laser.setScaleY(scale);
-        }
-
-        var fanL = getAnimationProcessor().getBone("fanL");
-
-        if (fanL != null && vehicle.getEnergy() > 0) {
-            fanL.setRotY((System.currentTimeMillis() % 36000000) / 75f);
-        }
-
-        var fanR = getAnimationProcessor().getBone("fanR");
-
-        if (fanR != null && vehicle.getEnergy() > 0) {
-            fanR.setRotY((System.currentTimeMillis() % 36000000) / 75f);
-        }
     }
 
     @Override

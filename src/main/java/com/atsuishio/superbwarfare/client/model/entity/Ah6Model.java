@@ -1,27 +1,21 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import software.bernie.geckolib.animation.AnimationState;
+import org.jetbrains.annotations.Nullable;
 
 public class Ah6Model extends VehicleModel<Ah6Entity> {
 
     @Override
-    public void setCustomAnimations(Ah6Entity vehicle, long instanceId, AnimationState<Ah6Entity> animationState) {
-        super.setCustomAnimations(vehicle, instanceId, animationState);
-        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
-
-        var propeller = getAnimationProcessor().getBone("propeller");
-
-        if (propeller != null) {
-            propeller.setRotY(Mth.lerp(partialTick, vehicle.propellerRotO, vehicle.getPropellerRot()));
+    public @Nullable TransformContext<Ah6Entity> collectTransform(String boneName) {
+        if (boneName.equals("propeller")) {
+            return (bone, vehicle, state) -> bone.setRotY(Mth.lerp(state.getPartialTick(), vehicle.propellerRotO, vehicle.getPropellerRot()));
         }
 
-        var tailPropeller = getAnimationProcessor().getBone("tailPropeller");
-
-        if (tailPropeller != null) {
-            tailPropeller.setRotX(-6 * Mth.lerp(partialTick, vehicle.propellerRotO, vehicle.getPropellerRot()));
+        if (boneName.equals("tailPropeller")) {
+            return (bone, vehicle, state) -> bone.setRotX(-6 * Mth.lerp(state.getPartialTick(), vehicle.propellerRotO, vehicle.getPropellerRot()));
         }
+
+        return super.collectTransform(boneName);
     }
 }

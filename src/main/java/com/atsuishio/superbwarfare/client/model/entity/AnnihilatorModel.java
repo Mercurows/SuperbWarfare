@@ -2,48 +2,43 @@ package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
-import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.cache.object.GeoBone;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Pattern;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity.*;
 
 public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
 
+    private final Pattern LED_PATTERN = Pattern.compile("led(?<type>green|red)(?<id>\\d+)");
+
     @Override
-    public void setCustomAnimations(AnnihilatorEntity animatable, long instanceId, AnimationState<AnnihilatorEntity> animationState) {
-        GeoBone laserLeft = getAnimationProcessor().getBone("laser1");
-        GeoBone laserMiddle = getAnimationProcessor().getBone("laser2");
-        GeoBone laserRight = getAnimationProcessor().getBone("laser3");
+    public @Nullable TransformContext<AnnihilatorEntity> collectTransform(String boneName) {
 
-        laserLeft.setScaleZ(animatable.getEntityData().get(LASER_LEFT_LENGTH) + 0.5f);
-        laserMiddle.setScaleZ(animatable.getEntityData().get(LASER_MIDDLE_LENGTH) + 0.5f);
-        laserRight.setScaleZ(animatable.getEntityData().get(LASER_RIGHT_LENGTH) + 0.5f);
+        return switch (boneName) {
+            case "laser1" ->
+                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_LEFT_LENGTH) + 0.5f);
+            case "laser2" ->
+                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_MIDDLE_LENGTH) + 0.5f);
+            case "laser3" ->
+                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_RIGHT_LENGTH) + 0.5f);
+            default -> {
+                var matcher = LED_PATTERN.matcher(boneName);
+                if (matcher.matches()) {
+                    var isGreen = matcher.group("type").equals("green");
+                    var id = Integer.parseInt(matcher.group("id"));
 
-        GeoBone ledGreen = getAnimationProcessor().getBone("ledgreen");
-        GeoBone ledGreen2 = getAnimationProcessor().getBone("ledgreen2");
-        GeoBone ledGreen3 = getAnimationProcessor().getBone("ledgreen3");
-        GeoBone ledGreen4 = getAnimationProcessor().getBone("ledgreen4");
-        GeoBone ledGreen5 = getAnimationProcessor().getBone("ledgreen5");
+                    yield (bone, vehicle, state) -> {
+                        float coolDown = vehicle.getEntityData().get(COOL_DOWN);
+                        boolean cantShoot = vehicle.getEnergy() < VehicleConfig.ANNIHILATOR_SHOOT_COST.get();
 
-        GeoBone ledRed = getAnimationProcessor().getBone("ledred");
-        GeoBone ledRed2 = getAnimationProcessor().getBone("ledred2");
-        GeoBone ledRed3 = getAnimationProcessor().getBone("ledred3");
-        GeoBone ledRed4 = getAnimationProcessor().getBone("ledred4");
-        GeoBone ledRed5 = getAnimationProcessor().getBone("ledred5");
+                        var hideGreen = coolDown > (100 - id * 20) || cantShoot;
+                        bone.setHidden(isGreen == hideGreen);
+                    };
+                }
 
-        float coolDown = animatable.getEntityData().get(COOL_DOWN);
-        boolean cantShoot = animatable.getEnergy() < VehicleConfig.ANNIHILATOR_SHOOT_COST.get();
-
-        ledGreen.setHidden(coolDown > 80 || cantShoot);
-        ledGreen2.setHidden(coolDown > 60 || cantShoot);
-        ledGreen3.setHidden(coolDown > 40 || cantShoot);
-        ledGreen4.setHidden(coolDown > 20 || cantShoot);
-        ledGreen5.setHidden(coolDown > 0 || cantShoot);
-
-        ledRed.setHidden(!ledGreen.isHidden());
-        ledRed2.setHidden(!ledGreen2.isHidden());
-        ledRed3.setHidden(!ledGreen3.isHidden());
-        ledRed4.setHidden(!ledGreen4.isHidden());
-        ledRed5.setHidden(!ledGreen5.isHidden());
+                yield super.collectTransform(boneName);
+            }
+        };
     }
 }
