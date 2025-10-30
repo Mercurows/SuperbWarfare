@@ -912,7 +912,7 @@
 					"pivot": [0, 91.72092, -117.08214]
 				},
 				{
-					"name": "ledgreen",
+					"name": "ledgreen1",
 					"parent": "led",
 					"pivot": [0, 91.72092, -117.08214],
 					"cubes": [
@@ -1037,7 +1037,7 @@
 					]
 				},
 				{
-					"name": "ledred",
+					"name": "ledred1",
 					"parent": "led",
 					"pivot": [0, 91.72092, -117.08214],
 					"cubes": [

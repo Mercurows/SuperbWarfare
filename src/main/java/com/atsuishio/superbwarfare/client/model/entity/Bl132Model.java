@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animation.AnimationState;
 
 import java.util.UUID;
 
@@ -21,12 +21,17 @@ public class Bl132Model extends VehicleModel<Bl132Entity> {
     }
 
     @Override
-    public void setCustomAnimations(Bl132Entity animatable, long instanceId, AnimationState<Bl132Entity> animationState) {
-        var bone = getAnimationProcessor().getBone("gun");
-        var entityData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
-        if (entityData != null) {
-            bone.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
+    public @Nullable TransformContext<Bl132Entity> collectTransform(String boneName) {
+        if (boneName.equals("gun")) {
+            return (bone, vehicle, state) -> {
+                var entityData = state.getData(DataTickets.ENTITY_MODEL_DATA);
+                if (entityData != null) {
+                    bone.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
+                }
+            };
         }
+
+        return super.collectTransform(boneName);
     }
 
     @Override

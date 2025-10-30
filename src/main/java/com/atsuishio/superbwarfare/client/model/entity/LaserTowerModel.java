@@ -1,15 +1,18 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
-import software.bernie.geckolib.core.animation.AnimationState;
+import org.jetbrains.annotations.Nullable;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity.LASER_LENGTH;
 
 public class LaserTowerModel extends VehicleModel<LaserTowerEntity> {
 
     @Override
-    public void setCustomAnimations(LaserTowerEntity animatable, long instanceId, AnimationState<LaserTowerEntity> animationState) {
-        var laser = getAnimationProcessor().getBone("laser");
-        laser.setScaleZ(10 * animatable.getEntityData().get(LASER_LENGTH));
+    public @Nullable TransformContext<LaserTowerEntity> collectTransform(String boneName) {
+        if (boneName.equals("laser")) {
+            return (bone, vehicle, state) -> bone.setScaleZ(10 * vehicle.getEntityData().get(LASER_LENGTH));
+        }
+
+        return super.collectTransform(boneName);
     }
 }

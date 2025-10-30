@@ -1,28 +1,21 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
+import org.jetbrains.annotations.Nullable;
 
 public class SpeedboatModel extends VehicleModel<SpeedboatEntity> {
 
     @Override
-    public void setCustomAnimations(SpeedboatEntity vehicle, long instanceId, AnimationState<SpeedboatEntity> animationState) {
-        super.setCustomAnimations(vehicle, instanceId, animationState);
-        float partialTick = Minecraft.getInstance().getPartialTick();
-
-        CoreGeoBone propeller = getAnimationProcessor().getBone("propeller");
-
-        if (propeller != null) {
-            propeller.setRotZ(Mth.lerp(partialTick, vehicle.propellerRotO, vehicle.getPropellerRot()));
+    public @Nullable TransformContext<SpeedboatEntity> collectTransform(String boneName) {
+        if (boneName.equals("propeller")) {
+            return (bone, vehicle, state) -> bone.setRotZ(Mth.lerp(state.getPartialTick(), vehicle.propellerRotO, vehicle.getPropellerRot()));
         }
 
-        CoreGeoBone rudder = getAnimationProcessor().getBone("rudder");
-
-        if (rudder != null) {
-            rudder.setRotY(Mth.lerp(partialTick, vehicle.rudderRotO, vehicle.getRudderRot()));
+        if (boneName.equals("rudder")) {
+            return (bone, vehicle, state) -> bone.setRotY(Mth.lerp(state.getPartialTick(), vehicle.rudderRotO, vehicle.getRudderRot()));
         }
+
+        return super.collectTransform(boneName);
     }
 }

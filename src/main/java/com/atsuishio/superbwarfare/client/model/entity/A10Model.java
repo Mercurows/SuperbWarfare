@@ -1,17 +1,16 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
+import org.jetbrains.annotations.Nullable;
 
 public class A10Model extends VehicleModel<A10Entity> {
 
     @Override
-    public void setCustomAnimations(A10Entity vehicle, long instanceId, AnimationState<A10Entity> animationState) {
-        CoreGeoBone root = getAnimationProcessor().getBone("root");
-
-        if (root != null && hideFor1stPassengerWhileZooming()) {
-            root.setHidden(hideFor1stPassengerWhileZooming && vehicle.getWeaponIndex(0) == 2);
+    public @Nullable TransformContext<A10Entity> collectTransform(String boneName) {
+        if (boneName.equals("root")) {
+            return (bone, vehicle, state) -> bone.setHidden(hideFor1stPassengerWhileZooming && vehicle.getWeaponIndex(0) == 2);
         }
+
+        return null;
     }
 }
