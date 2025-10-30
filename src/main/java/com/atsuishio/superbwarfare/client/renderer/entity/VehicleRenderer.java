@@ -58,7 +58,11 @@ public abstract class VehicleRenderer<T extends VehicleEntity & GeoAnimatable> e
         poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.getRoll())), (float) root.x, (float) root.y, (float) root.z);
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+        renderCustomPart(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
+    }
+
+    public void renderCustomPart(T entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
     }
 
     @Override
