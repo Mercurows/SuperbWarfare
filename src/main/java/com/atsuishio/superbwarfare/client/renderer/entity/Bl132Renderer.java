@@ -4,10 +4,8 @@ import com.atsuishio.superbwarfare.client.model.entity.Bl132Model;
 import com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.phys.Vec3;
 
 public class Bl132Renderer extends VehicleRenderer<Bl132Entity> {
 
@@ -17,11 +15,9 @@ public class Bl132Renderer extends VehicleRenderer<Bl132Entity> {
     }
 
     @Override
-    public void render(Bl132Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
-        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-        poseStack.popPose();
+    public void vehicleAxis(Bl132Entity entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
+        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
+        poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
     }
 
 }
