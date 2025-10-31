@@ -167,7 +167,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> CANNON_RECOIL_FORCE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> CANNON_RECOIL_ROTATE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW_WHILE_SHOOT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -1022,7 +1021,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.entityData.define(CANNON_RECOIL_TIME, 0);
         this.entityData.define(CANNON_RECOIL_FORCE, 0f);
-        this.entityData.define(CANNON_RECOIL_ROTATE, 0f);
         this.entityData.define(POWER, 0f);
         this.entityData.define(YAW_WHILE_SHOOT, 0f);
         this.entityData.define(AMMO, 0);
@@ -3005,14 +3003,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (seat != null) {
             var data = seat.cameraPos;
 
-            if (data.useSimulate3P) {
-                var simulate3PPos = data.simulate3PPos;
-                return simulate3P(entity, ticks, simulate3PPos.x, simulate3PPos.y);
-            }
-            if (data.useFixedCameraPos) {
-                var vec3 = data.position;
-                Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
-                return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            if (data != null) {
+                if (data.useSimulate3P) {
+                    var simulate3PPos = data.simulate3PPos;
+                    return simulate3P(entity, ticks, simulate3PPos.x, simulate3PPos.y);
+                }
+                if (data.useFixedCameraPos) {
+                    var vec3 = data.position;
+                    Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+                    return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                }
+            } else {
+                return entityEyePos(entity, ticks);
             }
         }
         return entityEyePos(entity, ticks);
@@ -3024,28 +3026,32 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (seat != null) {
             var data = seat.cameraPos;
 
-            if (data.useSimulate3P) {
-                return entity.getViewVector(ticks);
-            }
-            StringOrVec3 stringOrVec3 = data.direction;
-            if (stringOrVec3.isString()) {
-                if (stringOrVec3.string.equals("Self")) {
+            if (data != null) {
+                if (data.useSimulate3P) {
                     return entity.getViewVector(ticks);
+                }
+                StringOrVec3 stringOrVec3 = data.direction;
+                if (stringOrVec3.isString()) {
+                    if (stringOrVec3.string.equals("Self")) {
+                        return entity.getViewVector(ticks);
+                    } else {
+                        return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
+                    }
                 } else {
-                    return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
+                    var vec3 = data.position;
+
+                    Vector4f worldPosition = transformPosition(
+                            this.getTransformFromString(data.transform, ticks),
+                            (float) vec3.x + (float) stringOrVec3.vec3.x,
+                            (float) vec3.y + (float) stringOrVec3.vec3.y,
+                            (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+                    Vec3 startPos = cameraPos(entity, ticks);
+                    Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                    return startPos.vectorTo(endPos).normalize();
                 }
             } else {
-                var vec3 = data.position;
-
-                Vector4f worldPosition = transformPosition(
-                        this.getTransformFromString(data.transform, ticks),
-                        (float) vec3.x + (float) stringOrVec3.vec3.x,
-                        (float) vec3.y + (float) stringOrVec3.vec3.y,
-                        (float) vec3.z + (float) stringOrVec3.vec3.z);
-
-                Vec3 startPos = cameraPos(entity, ticks);
-                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                return startPos.vectorTo(endPos).normalize();
+                return entity.getViewVector(ticks);
             }
         }
         return entity.getViewVector(ticks);
@@ -3056,10 +3062,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = data().get(VehicleProp.SEATS).get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            var vec3 = data.zoomPosition;
-
-            Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
-            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            if (data != null) {
+                var vec3 = data.zoomPosition;
+                Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+                return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            } else {
+                return entityEyePos(entity, ticks);
+            }
         }
         return entityEyePos(entity, ticks);
     }
@@ -3069,22 +3078,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = data().get(VehicleProp.SEATS).get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            var vec3 = data.zoomPosition;
+            if (data != null) {
+                var vec3 = data.zoomPosition;
+                StringOrVec3 stringOrVec3 = data.zoomDirection;
+                if (stringOrVec3.isString()) {
+                    return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
+                } else {
+                    Vector4f worldPosition = transformPosition(
+                            this.getTransformFromString(data.transform, ticks),
+                            (float) vec3.x + (float) stringOrVec3.vec3.x,
+                            (float) vec3.y + (float) stringOrVec3.vec3.y,
+                            (float) vec3.z + (float) stringOrVec3.vec3.z);
 
-            StringOrVec3 stringOrVec3 = data.zoomDirection;
-            if (stringOrVec3.isString()) {
-                return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
+                    Vec3 startPos = getShootPos(entity, ticks);
+                    Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                    return startPos.vectorTo(endPos).normalize();
+                }
             } else {
-
-                Vector4f worldPosition = transformPosition(
-                        this.getTransformFromString(data.transform, ticks),
-                        (float) vec3.x + (float) stringOrVec3.vec3.x,
-                        (float) vec3.y + (float) stringOrVec3.vec3.y,
-                        (float) vec3.z + (float) stringOrVec3.vec3.z);
-
-                Vec3 startPos = getShootPos(entity, ticks);
-                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                return startPos.vectorTo(endPos).normalize();
+                return entity.getViewVector(ticks);
             }
         }
         return entity.getViewVector(ticks);
@@ -3294,12 +3305,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = data().get(VehicleProp.SEATS).get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            if (data.aircraftCamera) {
-                return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
+            if (data != null ) {
+                if (data.aircraftCamera) {
+                    return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
+                }
+                if (zoom || isFirstPerson) {
+                    return new Vec2((float) -getYRotFromVector(cameraDirection(player, partialTicks)), (float) -getXRotFromVector(cameraDirection(player, partialTicks)));
+                }
+            } else {
+                return null;
             }
-        }
-        if (zoom || isFirstPerson) {
-            return new Vec2((float) -getYRotFromVector(cameraDirection(player, partialTicks)), (float) -getXRotFromVector(cameraDirection(player, partialTicks)));
         }
         return null;
     }
@@ -3317,16 +3332,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = data().get(VehicleProp.SEATS).get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            if (zoom || isFirstPerson) {
-                if (zoom) {
-                    return zoomPos(player, partialTicks);
-                } else {
-                    return cameraPos(player, partialTicks);
+            if (data != null ) {
+                if (zoom || isFirstPerson) {
+                    if (zoom) {
+                        return zoomPos(player, partialTicks);
+                    } else {
+                        return cameraPos(player, partialTicks);
+                    }
+                } else if (data.aircraftCamera) {
+                    Matrix4f transform = getClientVehicleTransform(partialTicks);
+                    Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 2.45f, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
+                    return CameraTool.getMaxZoom(transform, maxCameraPosition);
                 }
-            } else if (data.aircraftCamera) {
-                Matrix4f transform = getClientVehicleTransform(partialTicks);
-                Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 2.45f, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
-                return CameraTool.getMaxZoom(transform, maxCameraPosition);
             }
             return null;
         }
@@ -3342,7 +3359,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = data().get(VehicleProp.SEATS).get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            return data.useFixedCameraPos;
+            if (data != null) {
+                return data.useFixedCameraPos;
+            }
         }
         return false;
     }

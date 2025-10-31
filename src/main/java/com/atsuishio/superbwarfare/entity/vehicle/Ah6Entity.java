@@ -14,7 +14,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -34,8 +33,6 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
-
-import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
@@ -168,15 +165,8 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
         });
 
-        sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
         playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
-
-        var data = getGunData(getSeatIndex(living));
-        if (data != null) {
-            var list = data.get(GunProp.SHOOT_POS).positions.list;
-            this.currentFirePosIndex = ++this.currentFirePosIndex % list.size();
-        }
     }
 
     @Override

@@ -22,6 +22,8 @@
         "Velocity": 20,
         "Damage": 45,
         "HeatPerShoot": 0.5,
+        "RecoilTime" : 40,
+        "RecoilForce" : 0.2,
         "Crosshair": "@VehicleUsApc",
         "CrosshairColor": "0x66FF00",
         "Name": "superbwarfare.lav_150.cannon",
@@ -62,6 +64,8 @@
               "Damage": 9.5,
               "BypassesArmor": 0.3,
               "Velocity": 30,
+              "RecoilTime" : 0,
+              "RecoilForce" : 0,
               "ShootPos": {
                 "Transform": "Barrel",
                 "Positions": [
@@ -94,6 +98,8 @@
               "RPM": 600,
               "Damage": 270,
               "Velocity": 6,
+              "RecoilTime" : 60,
+              "RecoilForce" : 2,
               "ShootPos": {
                 "Transform": "Turret",
                 "Positions": [
@@ -132,6 +138,8 @@
               "ProjectileAmount": 5,
               "Spread": 2.5,
               "RPM": 240,
+              "RecoilTime" : 100,
+              "RecoilForce" : 5,
               "ShootPos": {
                 "Transform": "Barrel",
                 "Positions": [
