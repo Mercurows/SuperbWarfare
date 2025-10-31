@@ -33,6 +33,8 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> RECOIL_Y = new GunProp<>("RecoilY");
     public static final GunProp<Double> RECOIL = new GunProp<>("Recoil");
 
+    public static final GunProp<Integer> RECOIL_TIME = new GunProp<>("RecoilTime");
+    public static final GunProp<Float> RECOIL_FORCE = new GunProp<>("RecoilForce");
     public static final GunProp<Double> SPREAD = new GunProp<>("Spread");
     public static final GunProp<Double> DAMAGE = new GunProp<>("Damage");
     public static final GunProp<Double> HEADSHOT = new GunProp<>("Headshot");

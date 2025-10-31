@@ -44,7 +44,7 @@ public class SeatInfo {
     public DefaultGunData weaponData = null;
 
     @SerializedName("CameraPos")
-    public CameraPos cameraPos = new CameraPos();
+    public CameraPos cameraPos = null;
 
     @SerializedName("BanHand")
     public Boolean banHand = false;
