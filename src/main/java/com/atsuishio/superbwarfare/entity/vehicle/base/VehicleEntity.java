@@ -1128,10 +1128,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     .zoom(false)
                     .sound(soundInfo.getSoundEvent(soundInfo.change))
                     .icon(ResourceLocation.tryParse(a.icon))
-                    .sound1p(soundInfo.getSoundEvent(soundInfo.fire1P))
-                    .sound3p(soundInfo.getSoundEvent(soundInfo.fire3P))
-                    .sound3pFar(soundInfo.getSoundEvent(soundInfo.fire3PFar))
-                    .sound3pVeryFar(soundInfo.getSoundEvent(soundInfo.fire3PVeryFar))).toArray(VehicleWeapon[]::new);
+            ).toArray(VehicleWeapon[]::new);
         }).toArray(VehicleWeapon[][]::new);
     }
 
@@ -1150,6 +1147,29 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         return selected;
+    }
+
+    public void playShootSound3p(LivingEntity living) {
+        var gunData = getGunData(getSeatIndex(living));
+        if (gunData != null) {
+            Vec3 pos = getShootPos(living, 1);
+            var soundInfo = gunData.get(GunProp.SOUND_INFO);
+            float pitch = 1;
+            // TODO 正确获取热量
+//            float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
+
+            if (living.level() instanceof ServerLevel serverLevel) {
+                if (soundInfo.getSoundEvent(soundInfo.fire3P) != null) {
+                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3P), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, null);
+                }
+                if (soundInfo.getSoundEvent(soundInfo.fire3PFar) != null) {
+                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, null);
+                }
+                if (soundInfo.getSoundEvent(soundInfo.fire3PVeryFar) != null) {
+                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PVeryFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, null);
+                }
+            }
+        }
     }
 
     @Override
@@ -2332,6 +2352,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             case "Bomb" ->
                     ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(seatIndex, ticks), getShootVec(seatIndex, ticks), -0.06);
             case "WeaponStationBarrel" -> getGunnerVector(ticks);
+            case "Passenger" -> getNthEntity(seatIndex).getViewVector(1);
             default -> getViewVector(ticks);
         };
     }

@@ -257,7 +257,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             }
 
             if (level() instanceof ServerLevel) {
-                playShootSound3p(living, 0, 5, 5, 5, root);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get());
                 ShakeClientMessage.sendToNearbyPlayers(this, 5, 8, 4, 7);
             }
@@ -288,7 +287,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             }
 
             if (level() instanceof ServerLevel) {
-                playShootSound3p(living, 0, 4, 4, 4, root);
                 this.consumeEnergy(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get());
             }
 

@@ -36,6 +36,7 @@ public record VehicleFireMessage(int msgType) implements CustomPacketPayload {
                 vehicle.currentFirePosIndex = ++vehicle.currentFirePosIndex % list.size();
             }
 
+            vehicle.playShootSound3p(player);
             vehicle.getEntityData().set(YAW_WHILE_SHOOT, vehicle.getTurretYRot());
         }
     }

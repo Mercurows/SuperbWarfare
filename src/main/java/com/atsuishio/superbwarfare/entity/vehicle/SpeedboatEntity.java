@@ -189,8 +189,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
                 (float) 0.4);
         this.level().addFreshEntity(projectile);
 
-        playShootSound3p(living, 0, 4, 12, 24, new Vec3(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z));
-
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 5);
 
         this.entityData.set(CANNON_RECOIL_TIME, 30);

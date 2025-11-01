@@ -155,8 +155,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             }
         }
 
-        playShootSound3p(living, 0, 6, 0, 0, getShootPos(living, 1));
-
         this.entityData.set(STATE, this.getEntityData().get(STATE) + 1);
     }
 

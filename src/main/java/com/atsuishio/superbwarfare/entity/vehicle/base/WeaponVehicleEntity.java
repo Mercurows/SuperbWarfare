@@ -1,10 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
-import com.atsuishio.superbwarfare.tools.SoundTool;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,23 +144,5 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
         var selectedWeapons = new ArrayList<>(vehicle.getEntityData().get(VehicleEntity.SELECTED_WEAPON));
         selectedWeapons.set(index, type);
         vehicle.getEntityData().set(VehicleEntity.SELECTED_WEAPON, selectedWeapons);
-    }
-
-    default void playShootSound3p(LivingEntity living, int seat, int radius, int radius2, int radius3, Vec3 pos) {
-        var weapons = getAvailableWeapons(seat);
-        var weapon = weapons.get(getWeaponIndex(seat));
-        float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
-
-        if (living.level() instanceof ServerLevel serverLevel) {
-            if (weapon.sound3p != null) {
-                SoundTool.playDistantSound(serverLevel, weapon.sound3p, pos, radius, pitch, null);
-            }
-            if (weapon.sound3pFar != null) {
-                SoundTool.playDistantSound(serverLevel, weapon.sound3pFar, pos, radius2, pitch, null);
-            }
-            if (weapon.sound3pVeryFar != null) {
-                SoundTool.playDistantSound(serverLevel, weapon.sound3pVeryFar, pos, radius3, pitch, null);
-            }
-        }
     }
 }

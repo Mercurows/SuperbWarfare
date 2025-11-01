@@ -502,7 +502,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, 15, 0.05f);
             level().addFreshEntity(entityToSpawn);
 
-            playShootSound3p(living, 0, 16, 48, 96, position());
 
             this.entityData.set(COOL_DOWN, 30);
 

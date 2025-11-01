@@ -509,8 +509,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                 entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, cannonShell.velocity, 0.02f);
                 level().addFreshEntity(entityToSpawn);
 
-                playShootSound3p(living, 0, 8, 16, 32, new Vec3(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z));
-
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
                 this.entityData.set(LOADED_SHELL, "null");
 
@@ -577,8 +575,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                     this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
                     this.entityData.set(FIRE_ANIM, 2);
 
-                    playShootSound3p(living, 0, 4, 12, 24, new Vec3(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z));
-
                     if (!hasCreativeAmmo) {
                         ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
                             if (stack.is(ModItems.AMMO_BOX.get())) {
@@ -607,7 +603,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y, getGunnerVector(1).z, 20, 0.3f);
 
             this.level().addFreshEntity(projectileEntity);
-            playShootSound3p(living, 1, 4, 12, 24, new Vec3(passengerWeaponShootPos(living, 1).x, passengerWeaponShootPos(living, 1).y, passengerWeaponShootPos(living, 1).z));
 
             this.entityData.set(GUN_FIRE_TIME, 2);
             this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
