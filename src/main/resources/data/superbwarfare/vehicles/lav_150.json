@@ -24,6 +24,7 @@
         "HeatPerShoot": 0.5,
         "RecoilTime" : 40,
         "RecoilForce" : 0.2,
+        "Spread": 0.5,
         "Crosshair": "@VehicleUsApc",
         "CrosshairColor": "0x66FF00",
         "Name": "superbwarfare.lav_150.cannon",

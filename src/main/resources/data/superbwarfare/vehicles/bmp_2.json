@@ -29,6 +29,7 @@
         "HeatPerShoot": 0.5,
         "RecoilTime" : 40,
         "RecoilForce" : 0.2,
+        "Spread": 0.5,
         "Crosshair": "@VehicleRuApc",
         "CrosshairColor": "0xFFC700",
         "Name": "superbwarfare.bmp_2.cannon",
@@ -72,6 +73,7 @@
               "Velocity": 30,
               "RecoilTime" : 0,
               "RecoilForce" : 0,
+              "Spread": 0.5,
               "ShootPos": {
                 "Transform": "Barrel",
                 "Positions": [
@@ -117,7 +119,7 @@
                   ]
                 ],
                 "Directions": [
-                  "Turret"
+                  "Barrel"
                 ]
               },
               "ExplosionDamage": 60,
@@ -157,6 +159,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -208,6 +211,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -259,6 +263,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -310,6 +315,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -361,6 +367,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -412,6 +419,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
