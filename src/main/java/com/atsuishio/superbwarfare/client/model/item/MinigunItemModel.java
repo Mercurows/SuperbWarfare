@@ -38,7 +38,7 @@ public class MinigunItemModel extends CustomGunModel<MinigunItem> {
             bone.setScaleZ(heat / 2);
         }
 
-        rotZ += times * -0.14f * ((float) rpm / 1200) * ClientEventHandler.shootDelay;
+        rotZ += times * -0.14f * ((float) rpm / 1200) * ClientEventHandler.holdingFireKeyTicks;
         gun.setRotZ(rotZ);
 
         ClientEventHandler.handleShootAnimation(shen, 1, -0.4f, 1.2f, 1.3f, 1, 1, 0f, 0.7f);

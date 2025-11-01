@@ -1823,7 +1823,7 @@
       }
     ]
   },
-  "triggerclick": {
+  "trigger_click": {
     "sounds": [
       {
         "name": "superbwarfare:trigger_click",

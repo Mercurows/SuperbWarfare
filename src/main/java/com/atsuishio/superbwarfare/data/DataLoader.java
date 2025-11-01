@@ -5,6 +5,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -89,6 +90,7 @@ public class DataLoader {
                 .registerTypeAdapter(Vec2.class, new Vec2Adapter())
                 .registerTypeAdapter(Vec3.class, new Vec3Adapter())
                 .registerTypeAdapter(ResourceLocation.class, new ResourceLocationAdapter())
+                .registerTypeAdapter(SoundEvent.class, new SoundEventAdapter())
                 .registerTypeAdapter(ModColor.class, new ModColor.ModColorAdapter())
                 .registerTypeAdapter(StringOrVec3.class, new StringOrVec3.StringOrVec3Adapter())
                 .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())

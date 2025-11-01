@@ -63,7 +63,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         var soundInfo = gunData.get(GunProp.SOUND_INFO);
 
         // TODO 正确播放武器切换音效
-        SoundEvent soundEvent = soundInfo.getSoundEvent(soundInfo.change);
+        SoundEvent soundEvent = soundInfo.change;
 
         if (soundEvent != null) {
             this.level().playSound(null, this, soundEvent, this.getSoundSource(), 1, 1);

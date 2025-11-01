@@ -105,12 +105,12 @@ public abstract class GunGeoItem extends GunItem implements GeoItem, CustomRende
         }
 
         // Fire
-        if (animation.fire != null && ClientEventHandler.holdFire && data.canShoot(player)) {
+        if (animation.fire != null && ClientEventHandler.holdingFireKey && data.canShoot(player)) {
             return event.setAndContinue(RawAnimation.begin().thenLoop(animation.fire));
         }
 
         // Run & Sprint
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
+        if (player.isSprinting() && player.onGround() && ClientEventHandler.noSprintTicks == 0 && ClientEventHandler.drawTime < 0.01) {
             if (animation.sprint != null && ClientEventHandler.tacticalSprint) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop(animation.sprint));
             } else if (animation.run != null) {

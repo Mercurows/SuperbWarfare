@@ -7,5 +7,6 @@
     "LODModel": "superbwarfare:geo/lod/bocek.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/bocek.png"
   },
-  "Crosshair": "@GunBocek"
+  "Crosshair": "@GunBocek",
+  "TriggerSound": null
 }

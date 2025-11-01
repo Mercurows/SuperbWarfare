@@ -18,7 +18,7 @@ public record DrawClientMessage(boolean draw) implements CustomPacketPayload {
     );
 
     public static void handler() {
-        ClientEventHandler.handleDrawMessage();
+        ClientEventHandler.resetGunStatus();
     }
 
     @Override

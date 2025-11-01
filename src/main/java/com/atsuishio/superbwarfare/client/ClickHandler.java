@@ -416,7 +416,7 @@ public class ClickHandler {
         }
 
         if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-            ClientEventHandler.holdFire = true;
+            ClientEventHandler.holdingFireKey = true;
         }
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {
@@ -425,14 +425,14 @@ public class ClickHandler {
 
         if (stack.is(ModItems.MONITOR.get())) {
             if (player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                ClientEventHandler.holdFire = true;
+                ClientEventHandler.holdingFireKey = true;
             } else {
                 droneLeftClick(stack, player);
             }
         }
 
         if (stack.is(ModItems.LUNGE_MINE.get())) {
-            ClientEventHandler.holdFire = true;
+            ClientEventHandler.holdingFireKey = true;
         }
 
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null
@@ -441,18 +441,26 @@ public class ClickHandler {
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
+            var resource = GunResource.from(stack).getDefault();
 
+            // TODO 整合特殊处理
             if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
                 if (!data.meleeOnly()) {
+                    // 普通枪（？）
                     if (stack.is(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold") && gunItem.canShoot(data, player)) {
                         player.playSound(ModSounds.QL_1031_CHARGE.get(), 1, 1);
-                        playQLDischargeSound = false;
+                        shouldPlayDischargeSound = true;
                     }
-                    player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
+
+                    var triggerSound = resource.triggerSound;
+                    if (triggerSound != null && !data.meleeOnly()) {
+                        player.playSound(triggerSound, 1, 1);
+                    }
                 }
             } else {
+                // 波塞克、海月权杖特殊处理
                 bowPower = 0;
-                holdFire = true;
+                holdingFireKey = true;
                 player.setSprinting(false);
                 if (data.hasEnoughAmmoToShoot(player)) {
                     return;
@@ -476,22 +484,24 @@ public class ClickHandler {
                         && !data.bolt.needed.get())
                         && drawTime < 0.01
                 ) {
-                    if (data.selectedFireModeInfo().mode == FireMode.BURST) {
+                    var fireMode = data.selectedFireModeInfo().mode;
+
+                    if (fireMode == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
-                            cantSprint = 8;
+                            noSprintTicks = 8;
                             player.setSprinting(false);
                             ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT);
                         }
-                    } else if (data.selectedFireModeInfo().mode == FireMode.SEMI) {
+                    } else if (fireMode == FireMode.SEMI) {
                         if (ClientEventHandler.burstFireAmount == 0) {
-                            cantSprint = 3;
+                            noSprintTicks = 3;
                             player.setSprinting(false);
                             ClientEventHandler.burstFireAmount = 1;
                         }
-                    }{
-                        ClientEventHandler.holdFire = true;
-                        player.setSprinting(false);
                     }
+
+                    ClientEventHandler.holdingFireKey = true;
+                    player.setSprinting(false);
                 }
             }
         }
@@ -500,7 +510,7 @@ public class ClickHandler {
     public static void handleWeaponFireRelease() {
         PacketDistributor.sendToServer(new FireKeyMessage(1, bowPower, zoom));
         bowPull = false;
-        holdFire = false;
+        holdingFireKey = false;
         holdFireVehicle = false;
         isEditing = false;
         customRpm = 0;

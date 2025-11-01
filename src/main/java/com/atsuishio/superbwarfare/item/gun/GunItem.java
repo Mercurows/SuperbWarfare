@@ -697,17 +697,17 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         var soundInfo = data.get(GunProp.SOUND_INFO);
         boolean isSilent = data.attachment.get(AttachmentType.BARREL) == 2;
 
-        SoundEvent sound3p = soundInfo.getSoundEvent(isSilent ? soundInfo.fire3PSilent : soundInfo.fire3P);
+        SoundEvent sound3p = isSilent ? soundInfo.fire3PSilent : soundInfo.fire3P;
         if (sound3p != null) {
             shooter.playSound(sound3p, soundRadius * 0.4f, pitch);
         }
 
-        SoundEvent soundFar = soundInfo.getSoundEvent(isSilent ? soundInfo.fire3PFarSilent : soundInfo.fire3PFar);
+        SoundEvent soundFar = isSilent ? soundInfo.fire3PFarSilent : soundInfo.fire3PFar;
         if (soundFar != null) {
             shooter.playSound(soundFar, soundRadius * 0.7f, pitch);
         }
 
-        SoundEvent soundVeryFar = soundInfo.getSoundEvent(isSilent ? soundInfo.fire3PVeryFarSilent : soundInfo.fire3PVeryFar);
+        SoundEvent soundVeryFar = isSilent ? soundInfo.fire3PVeryFarSilent : soundInfo.fire3PVeryFar;
         if (soundVeryFar != null) {
             shooter.playSound(soundVeryFar, soundRadius, pitch);
         }
