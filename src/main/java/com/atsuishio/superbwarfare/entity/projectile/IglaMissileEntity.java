@@ -135,9 +135,9 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
                     entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                 }
 
+
                 Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
-                Vec3 targetVec = new Vec3(entity.getDeltaMovement().x, entity.getDeltaMovement().y * 0.2, entity.getDeltaMovement().z);
-                Vec3 toVec = position().vectorTo(targetPos.add(targetVec)).normalize();
+                Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
 
                 if (this.tickCount > 3) {
 
@@ -151,7 +151,17 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
 
                     if (!lostTarget && !lost) {
                         turn(toVec, Mth.clamp(0.6f * tickCount, 0, 40));
-                        this.setDeltaMovement(this.getDeltaMovement().scale(0.1).add(getLookAngle().scale(8)));
+                        this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(10)));
+
+                        if (position().distanceToSqr(entity.position()) < 25) {
+                            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+                            if (entity instanceof LivingEntity) {
+                                entity.invulnerableTime = 0;
+                            }
+                            causeExplode(position());
+                            this.discard();
+                        }
+
                     }
 
                     if (lostTarget) {
@@ -170,7 +180,7 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().multiply(0.9, 0.9, 0.9));
+        this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
 
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
