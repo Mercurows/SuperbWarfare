@@ -179,7 +179,7 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
      * 机枪塔开火
      */
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
+    public void vehicleShoot(LivingEntity living) {
         if (this.cannotFire) return;
         var projectile = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId());
 

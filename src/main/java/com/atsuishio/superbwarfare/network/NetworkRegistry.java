@@ -38,7 +38,7 @@ public class NetworkRegistry {
         playToServer(VehicleMovementMessage.TYPE, VehicleMovementMessage.STREAM_CODEC, VehicleMovementMessage::handler);
         playToServer(MeleeAttackMessage.TYPE, MeleeAttackMessage.STREAM_CODEC, MeleeAttackMessage::handler);
         playToServer(LungeMineAttackMessage.TYPE, LungeMineAttackMessage.STREAM_CODEC, LungeMineAttackMessage::handler);
-        playToServer(VehicleFireMessage.TYPE, VehicleFireMessage.STREAM_CODEC, VehicleFireMessage::handler);
+        playToServer(VehicleFireMessage.TYPE, VehicleFireMessage.STREAM_CODEC, (msg, ctx) -> VehicleFireMessage.handler(ctx));
         playToServer(AimVillagerMessage.TYPE, AimVillagerMessage.STREAM_CODEC, AimVillagerMessage::handler);
         playToServer(RadarChangeModeMessage.TYPE, RadarChangeModeMessage.STREAM_CODEC, RadarChangeModeMessage::handler);
         playToServer(RadarSetParametersMessage.TYPE, RadarSetParametersMessage.STREAM_CODEC, RadarSetParametersMessage::handler);

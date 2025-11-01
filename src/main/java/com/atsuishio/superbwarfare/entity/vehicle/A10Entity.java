@@ -263,11 +263,11 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (this.getFirstPassenger() instanceof Player player && fireInputDown()) {
             if (this.getWeaponIndex(0) == 0) {
                 if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
-                    vehicleShoot(player, 0);
+                    vehicleShoot(player);
                 }
             } else if (this.getWeaponIndex(0) == 1) {
                 if (this.entityData.get(AMMO) > 0) {
-                    vehicleShoot(player, 0);
+                    vehicleShoot(player);
                 }
             }
         }
@@ -729,7 +729,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
+    public void vehicleShoot(LivingEntity living) {
         Matrix4f transform = getVehicleTransform(1);
 
         if (getWeaponIndex(0) == 0) {

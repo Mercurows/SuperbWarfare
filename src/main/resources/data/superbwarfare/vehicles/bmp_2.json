@@ -455,7 +455,7 @@
   "HUDColor": "0xFFC700",
   "EngineType": "Track",
   "EngineInfo": {
-    "Buoyancy": 0,
+    "Buoyancy": 0.052,
     "EnergyCostRate": 96,
     "WheelRotSpeed": 1.25,
     "WheelDifferential": 0.5,

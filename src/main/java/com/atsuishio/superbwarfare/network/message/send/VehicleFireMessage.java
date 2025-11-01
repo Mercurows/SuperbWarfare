@@ -2,10 +2,8 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -13,19 +11,17 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
-public record VehicleFireMessage(int msgType) implements CustomPacketPayload {
+public enum VehicleFireMessage implements CustomPacketPayload {
+    INSTANCE;
     public static final Type<VehicleFireMessage> TYPE = new Type<>(Mod.loc("vehicle_fire"));
 
-    public static final StreamCodec<ByteBuf, VehicleFireMessage> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,
-            VehicleFireMessage::msgType,
-            VehicleFireMessage::new
-    );
+    public static final StreamCodec<ByteBuf, VehicleFireMessage> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public static void handler(VehicleFireMessage message, final IPayloadContext context) {
+    public static void handler(final IPayloadContext context) {
         var player = context.player();
-        if (player.getVehicle() instanceof ArmedVehicleEntity iVehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
-            iVehicle.vehicleShoot(player, message.msgType);
+
+        if (player.getVehicle() instanceof VehicleEntity vehicle) {
+            vehicle.vehicleShoot(player);
 
             var gunData = vehicle.getGunData(vehicle.getSeatIndex(player));
 

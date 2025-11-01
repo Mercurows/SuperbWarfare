@@ -10,13 +10,6 @@ public interface ArmedVehicleEntity {
     }
 
     /**
-     * 载具开火
-     *
-     * @param living 生物
-     */
-    void vehicleShoot(LivingEntity living, int type);
-
-    /**
      * 判断指定玩家是否是载具驾驶员
      *
      * @param living 玩家

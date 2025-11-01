@@ -326,7 +326,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         if (getNthEntity(2) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
             int rpm = 20 / (mainGunRpm(mob) / 60);
             if (tickCount % rpm == 0) {
-                vehicleShoot(mob, 2);
+                vehicleShoot(mob);
             }
         }
 
@@ -488,7 +488,8 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
+    public void vehicleShoot(LivingEntity living) {
+        int type = 114514;
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
             if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
