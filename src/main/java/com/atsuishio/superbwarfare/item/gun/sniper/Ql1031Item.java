@@ -92,7 +92,7 @@ public class Ql1031Item extends GunGeoItem {
 
         var data = GunData.from(stack);
 
-        if (ClientEventHandler.holdFire && gunItem.canShoot(data, player) && data.selectedFireModeInfo().name.equals("Hold")) {
+        if (ClientEventHandler.holdingFireKey && gunItem.canShoot(data, player) && data.selectedFireModeInfo().name.equals("Hold")) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.ql_1031.charge"));
         }
 

@@ -85,7 +85,7 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
                     }
 
                     int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-                    progress = Mth.lerp(partialTick, progress, ClientEventHandler.shootDelay);
+                    progress = Mth.lerp(partialTick, progress, ClientEventHandler.holdingFireKeyTicks);
 
                     switch (scopeType) {
                         case 0 -> {

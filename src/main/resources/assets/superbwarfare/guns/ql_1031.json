@@ -6,10 +6,7 @@
     "Texture": "superbwarfare:textures/item/ql_1031.png"
   },
   "EnergyBarColor": "0xFFFF00",
-  "FlarePosition": [
-    0,
-    0.025,
-    2
-  ],
-  "FlareSize": 0.5
+  "FlarePosition": [0, 0.025, 2],
+  "FlareSize": 0.5,
+  "DischargeSound": "superbwarfare:ql_1031_discharge"
 }

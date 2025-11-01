@@ -28,7 +28,7 @@ public class AureliaSceptreItemModel extends CustomGunModel<AureliaSceptreItem> 
 
         CoreGeoBone rootLeftHand = getAnimationProcessor().getBone("rootLeftHand");
 
-        firePosMove = Mth.lerp((holdFire ? 5 : 2) * times, firePosMove, holdFire ? 1 : 0);
+        firePosMove = Mth.lerp((holdingFireKey ? 5 : 2) * times, firePosMove, holdingFireKey ? 1 : 0);
 
         rootLeftHand.setPosX((float) (-movePosX + 20 * drawTime + 9.3f * movePosHorizon));
         rootLeftHand.setPosY((float) (swayY - movePosY - 40 * drawTime - 2f * velocityY + 1 * firePosMove));

@@ -179,7 +179,7 @@ public class CrossHairOverlay implements IGuiOverlay {
         }
 
         preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
-        if (!player.isSprinting() || ClientEventHandler.cantSprint > 0) {
+        if (!player.isSprinting() || ClientEventHandler.noSprintTicks > 0) {
             if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
                 shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
             } else {
@@ -217,7 +217,7 @@ public class CrossHairOverlay implements IGuiOverlay {
         var perk = data.perk.get(Perk.Type.AMMO);
 
         preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
-        if (!player.isSprinting() || ClientEventHandler.cantSprint > 0 || ClientEventHandler.bowPullPos > 0) {
+        if (!player.isSprinting() || ClientEventHandler.noSprintTicks > 0 || ClientEventHandler.bowPullPos > 0) {
             if (ClientEventHandler.zoomTime < 0.1) {
                 if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
                     normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);

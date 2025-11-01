@@ -3,84 +3,68 @@ package com.atsuishio.superbwarfare.data.gun;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 
 public class SoundInfo {
 
     // 正常的开火音效
     @SerializedName("Fire1P")
-    public String fire1P = "";
+    public SoundEvent fire1P;
 
     @ServerOnly
     @SerializedName("Fire3P")
-    public String fire3P = "";
+    public SoundEvent fire3P;
     @ServerOnly
     @SerializedName("Fire3PFar")
-    public String fire3PFar = "";
+    public SoundEvent fire3PFar;
     @ServerOnly
     @SerializedName("Fire3PVeryFar")
-    public String fire3PVeryFar = "";
+    public SoundEvent fire3PVeryFar;
 
     // 装备消音器时的开火音效
     @SerializedName("Fire1PSilent")
-    public String fire1PSilent = "";
+    public SoundEvent fire1PSilent;
 
     @ServerOnly
     @SerializedName("Fire3PSilent")
-    public String fire3PSilent = "";
+    public SoundEvent fire3PSilent;
     @ServerOnly
     @SerializedName("Fire3PFarSilent")
-    public String fire3PFarSilent = "";
+    public SoundEvent fire3PFarSilent;
     @ServerOnly
     @SerializedName("Fire3PVeryFarSilent")
-    public String fire3PVeryFarSilent = "";
+    public SoundEvent fire3PVeryFarSilent;
 
     // 换弹音效
     @SerializedName("ReloadNormal")
-    public String reloadNormal = "";
+    public SoundEvent reloadNormal;
     @SerializedName("ReloadEmpty")
-    public String reloadEmpty = "";
+    public SoundEvent reloadEmpty;
 
     @SerializedName("ReloadPrepare")
-    public String reloadPrepare = "";
+    public SoundEvent reloadPrepare;
     @SerializedName("ReloadPrepareEmpty")
-    public String reloadPrepareEmpty = "";
+    public SoundEvent reloadPrepareEmpty;
     @SerializedName("ReloadPrepareLoad")
-    public String reloadPrepareLoad = "";
+    public SoundEvent reloadPrepareLoad;
     @SerializedName("ReloadLoop")
-    public String reloadLoop = "";
+    public SoundEvent reloadLoop;
     @SerializedName("ReloadEnd")
-    public String reloadEnd = "";
+    public SoundEvent reloadEnd;
 
     @SerializedName("Bolt")
-    public String bolt = "";
+    public SoundEvent bolt;
 
     @SerializedName("Change")
-    public String change = "";
+    public SoundEvent change;
 
     @SerializedName("Locking")
-    public String locking = "";
+    public SoundEvent locking;
     @SerializedName("Locked")
-    public String locked = "";
+    public SoundEvent locked;
 
     // 切枪时应该被中止播放的音效
     @SerializedName("CancellableSounds")
     public ObjectToList<String> cancellableSounds = new ObjectToList<>();
 
-    @Nullable
-    public SoundEvent getSoundEvent(@Nullable String path) {
-        if (path == null || path.isEmpty()) {
-            return null;
-        }
-
-        var location = ResourceLocation.tryParse(path);
-        if (location == null) {
-            return null;
-        }
-
-        return ForgeRegistries.SOUND_EVENTS.getValue(location);
-    }
 }

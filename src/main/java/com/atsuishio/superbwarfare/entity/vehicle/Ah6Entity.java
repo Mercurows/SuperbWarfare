@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -11,10 +10,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -74,7 +71,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         var soundInfo = gunData.get(GunProp.SOUND_INFO);
 
         // TODO 正确播放武器切换音效
-        SoundEvent soundEvent = soundInfo.getSoundEvent(soundInfo.change);
+        SoundEvent soundEvent = soundInfo.change;
 
         if (soundEvent != null) {
             this.level().playSound(null, this, soundEvent, this.getSoundSource(), 1, 1);
@@ -154,18 +151,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity living) {
-        var seatIndex = getSeatIndex(living);
-
-        modifyGunData(seatIndex, data -> {
-            if (!data.canShoot(getAmmoSupplier())) return;
-            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
-        });
-
-        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
     }
 
     @Override

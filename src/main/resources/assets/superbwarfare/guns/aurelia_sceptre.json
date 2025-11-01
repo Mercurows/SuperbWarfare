@@ -6,10 +6,7 @@
     "Texture": "superbwarfare:textures/item/aurelia_sceptre.png"
   },
   "HideCrosshairWhenZoom": false,
-  "FlarePosition": [
-    0,
-    0,
-    0.3022
-  ],
-  "FlareSize": 0.3
+  "FlarePosition": [0, 0, 0.3022],
+  "FlareSize": 0.3,
+  "TriggerSound": null
 }

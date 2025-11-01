@@ -56,7 +56,7 @@ public class GunEventHandler {
     public static void playGunBoltSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.bolt);
+            var sound = soundInfo.bolt;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 2f, 1f);
@@ -295,7 +295,7 @@ public class GunEventHandler {
     public static void playGunEmptyReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.reloadEmpty);
+            var sound = soundInfo.reloadEmpty;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
@@ -306,7 +306,7 @@ public class GunEventHandler {
     public static void playGunNormalReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.reloadNormal);
+            var sound = soundInfo.reloadNormal;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
@@ -447,7 +447,7 @@ public class GunEventHandler {
     public static void playGunPrepareReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.reloadPrepare);
+            var sound = soundInfo.reloadPrepare;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
@@ -458,7 +458,7 @@ public class GunEventHandler {
     public static void playGunEmptyPrepareSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.reloadPrepareEmpty);
+            var sound = soundInfo.reloadPrepareEmpty;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
@@ -488,7 +488,7 @@ public class GunEventHandler {
     public static void playGunPrepareLoadReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.reloadPrepareLoad);
+            var sound = soundInfo.reloadPrepareLoad;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
@@ -518,7 +518,7 @@ public class GunEventHandler {
     public static void playGunLoopReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.reloadLoop);
+            var sound = soundInfo.reloadLoop;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
@@ -529,7 +529,7 @@ public class GunEventHandler {
     public static void playGunEndReloadSounds(@Nullable Entity shooter, @NotNull GunData data) {
         if (shooter instanceof ServerPlayer serverPlayer) {
             var soundInfo = data.get(GunProp.SOUND_INFO);
-            var sound = soundInfo.getSoundEvent(soundInfo.reloadEnd);
+            var sound = soundInfo.reloadEnd;
 
             if (sound != null) {
                 SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);

@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
-import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
@@ -112,8 +111,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -451,15 +450,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 //            pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
 //        }
 //    }
-
-    protected final HashMap<String, Function<VehicleEntity, ShootRay>> shootAnchorPoints = new HashMap<>();
-
-    public final Function<VehicleEntity, ShootRay> DEFAULT_POS = createShootAnchorPoint("Default", v -> new ShootRay(v.position(), v.getLookAngle()));
-
-    protected Function<VehicleEntity, ShootRay> createShootAnchorPoint(String name, Function<VehicleEntity, ShootRay> func) {
-        shootAnchorPoints.put(name, func);
-        return func;
-    }
 
     protected final Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, DefaultVehicleData, ?>> propertyModifiers = new HashMap<>();
 
@@ -1135,7 +1125,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             return ammoTypes.stream().map(a -> new ProjectileWeapon()
                     .zoom(false)
-                    .sound(soundInfo.getSoundEvent(soundInfo.change))
+                    .sound(soundInfo.change)
                     .icon(ResourceLocation.tryParse(a.icon))
             ).toArray(VehicleWeapon[]::new);
         }).toArray(VehicleWeapon[][]::new);
@@ -1185,14 +1175,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 //            float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
             if (living.level() instanceof ServerLevel serverLevel) {
-                if (soundInfo.getSoundEvent(soundInfo.fire3P) != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3P), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, living);
+                if (soundInfo.fire3P != null) {
+                    SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, living);
                 }
-                if (soundInfo.getSoundEvent(soundInfo.fire3PFar) != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, living);
+                if (soundInfo.fire3PFar != null) {
+                    SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, living);
                 }
-                if (soundInfo.getSoundEvent(soundInfo.fire3PVeryFar) != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PVeryFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, living);
+                if (soundInfo.fire3PVeryFar != null) {
+                    SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, living);
                 }
             }
         }
