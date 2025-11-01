@@ -209,7 +209,7 @@ public class ClientEventHandler {
     public static int guideType;
     public static boolean lockOn;
 
-    public static UUID lastOperatingGunID = null;
+    public static UUID lastOperatingGunUUID = null;
 
     protected static short keysCache = 0;
 
@@ -268,18 +268,17 @@ public class ClientEventHandler {
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
 
-            var uuid = UUID.randomUUID();
+            UUID uuid = null;
             try {
                 uuid = data.data.getUUID("UUID");
             } catch (Exception ignored) {
-                resetGunStatus();
             }
 
             // 切枪时记得重置状态
-            if (!uuid.equals(lastOperatingGunID)) {
+            if (uuid == null || !uuid.equals(lastOperatingGunUUID)) {
                 resetGunStatus();
             }
-            lastOperatingGunID = uuid;
+            lastOperatingGunUUID = uuid;
 
             if ((holdingFireKey || (zoom && stack.is(ModItems.MINIGUN.get()))) && gunItem.canShoot(data, player)) {
 
@@ -297,6 +296,9 @@ public class ClientEventHandler {
                     player.level().addParticle(ParticleTypes.CHERRY_LEAVES, player.getX() + random, player.getEyeY() + 0.5 * random, player.getZ() + random, 0, 0, 0);
                 }
             }
+        } else {
+            lastOperatingGunUUID = null;
+            resetGunStatus();
         }
 
         if (notInGame() && !ClickHandler.switchZoom) {
