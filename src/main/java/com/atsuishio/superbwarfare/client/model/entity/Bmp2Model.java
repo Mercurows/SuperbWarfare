@@ -5,19 +5,22 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 public class Bmp2Model extends VehicleModel<Bmp2Entity> {
 
     @Override
     public @Nullable TransformContext<Bmp2Entity> collectTransform(String boneName) {
-        // TODO 车身晃动干哪去了
         if (boneName.equals("base")) {
-            Player player = Minecraft.getInstance().player;
+            var baseTransform = super.collectTransform(boneName);
+
             return (bone, vehicle, state) -> {
+                var player = Minecraft.getInstance().player;
                 bone.setHidden(player != null && vehicle == player.getVehicle() && vehicle.getFirstPassenger() != player && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle));
-                super.collectTransform(boneName);
+
+                if (baseTransform != null) {
+                    baseTransform.transform(bone, vehicle, state);
+                }
             };
         }
         return super.collectTransform(boneName);
