@@ -14,10 +14,7 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
-import com.atsuishio.superbwarfare.entity.projectile.CustomDamageProjectile;
-import com.atsuishio.superbwarfare.entity.projectile.CustomGravityEntity;
-import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.entity.projectile.*;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -819,6 +816,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             if (entity instanceof ExplosiveProjectile explosive) {
                 explosive.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).floatValue());
                 explosive.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).floatValue());
+            }
+
+            if (entity instanceof WgMissileEntity wgMissileEntity && shooter != null && shooter.getVehicle() != null) {
+                wgMissileEntity.setLauncherVehicle(shooter.getVehicle().getUUID());
             }
 
             // 填充其他自定义NBT数据

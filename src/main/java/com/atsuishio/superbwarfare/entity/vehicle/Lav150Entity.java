@@ -16,11 +16,9 @@ import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -42,8 +40,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-
-import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
@@ -165,23 +161,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return 32.5f;
     }
 
-    // 炮弹发射速度
-    @Override
-    public float projectileVelocity(Entity entity) {
-        var gunData = getGunData(getSeatIndex(entity));
-        if (gunData == null) return 25;
-
-        return gunData.get(GunProp.VELOCITY).floatValue();
-    }
-
-    // 炮弹重力
-    @Override
-    public float projectileGravity(Entity entity) {
-        var gunData = getGunData(getSeatIndex(entity));
-        if (gunData == null) return 0;
-
-        return gunData.get(GunProp.GRAVITY).floatValue();
-    }
 
     @Override
     public boolean canCollideHardBlock() {
@@ -206,11 +185,8 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
         });
 
-        sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z, 1, 0.02, 0.02, 0.02, 0, false);
         playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
-
-        this.entityData.set(FIRE_ANIM, 3);
     }
 
     @Override

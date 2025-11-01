@@ -2408,17 +2408,26 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param entity 操控载具的实体
      * @return 炮弹发射时的初始速度
      */
+
     public float projectileVelocity(Entity entity) {
-        return 10;
+        var gunData = getGunData(getSeatIndex(entity));
+        if (gunData == null) return 25;
+
+        return gunData.get(GunProp.VELOCITY).floatValue();
     }
 
     /**
      * @param entity 操控载具的实体
      * @return 炮弹重力
      */
+
     public float projectileGravity(Entity entity) {
-        return 0.03f;
+        var gunData = getGunData(getSeatIndex(entity));
+        if (gunData == null) return 0;
+
+        return gunData.get(GunProp.GRAVITY).floatValue();
     }
+
 
     /**
      * 本方法用于固定式火炮，其他载具应该使用 {@link VehicleEntity#projectileGravity(Entity)}
@@ -3032,7 +3041,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 }
                 StringOrVec3 stringOrVec3 = data.direction;
                 if (stringOrVec3.isString()) {
-                    if (stringOrVec3.string.equals("Self")) {
+                    if (stringOrVec3.string.equals("Default")) {
                         return entity.getViewVector(ticks);
                     } else {
                         return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));

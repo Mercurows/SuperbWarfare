@@ -71,7 +71,7 @@ public class TraceTool {
         return null;
     }
 
-    public static Vec3 vehicleFindLookingPos(Projectile projectile, VehicleEntity vehicle, Vec3 eye, double entityReach) {
+    public static Vec3 vehicleFindLookingPos(Entity shooter, Projectile projectile, VehicleEntity vehicle, Vec3 eye, double entityReach) {
         double distance = entityReach * entityReach;
         HitResult hitResult = pickNew(eye, 512, vehicle);
 
@@ -79,7 +79,7 @@ public class TraceTool {
         Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = vehicle.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(vehicle, eye, toVec, aabb,
-                p -> !p.isSpectator() && p.isAlive() && SeekTool.BASIC_FILTER.test(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(p) && p != projectile && !(p instanceof Projectile), distance);
+                p -> !p.isSpectator() && p.isAlive() && SeekTool.BASIC_FILTER.test(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(p) && p != shooter && p != projectile && !(p instanceof Projectile), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
         }

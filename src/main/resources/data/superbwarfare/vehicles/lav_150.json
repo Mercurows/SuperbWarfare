@@ -18,7 +18,7 @@
         "DefaultFireMode": "Auto",
         "AvailableFireModes": "Auto",
         "Projectile": "superbwarfare:small_cannon_shell",
-        "RPM": 240,
+        "RPM": 300,
         "Velocity": 20,
         "Damage": 45,
         "HeatPerShoot": 0.5,
@@ -182,8 +182,7 @@
       ],
       "CameraPos": {
         "UseSimulate3P": true,
-        "Simulate3PPos": [6, 1],
-        "Direction": "Self"
+        "Simulate3PPos": [6, 1]
       }
     },
     {
@@ -197,8 +196,7 @@
       ],
       "CameraPos": {
         "UseSimulate3P": true,
-        "Simulate3PPos": [6, 1],
-        "Direction": "Self"
+        "Simulate3PPos": [6, 1]
       }
     },
     {
@@ -212,8 +210,7 @@
       ],
       "CameraPos": {
         "UseSimulate3P": true,
-        "Simulate3PPos": [6, 1],
-        "Direction": "Self"
+        "Simulate3PPos": [6, 1]
       }
     },
     {
@@ -227,8 +224,7 @@
       ],
       "CameraPos": {
         "UseSimulate3P": true,
-        "Simulate3PPos": [6, 1],
-        "Direction": "Self"
+        "Simulate3PPos": [6, 1]
       }
     }
   ],
