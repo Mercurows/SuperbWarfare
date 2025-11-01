@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
+
 public class ClientPacketHandler {
 
     public static void handleLivingKillMessage(LivingEntity attacker, Entity target, boolean headshot, ResourceKey<DamageType> damageType, Supplier<NetworkEvent.Context> ctx) {
@@ -130,7 +132,9 @@ public class ClientPacketHandler {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             Player player = Minecraft.getInstance().player;
             if (player == null) return;
-            if (player.getUUID().equals(message.sender())) return;
+            if (player.getUUID().equals(message.sender())
+                    && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle)
+            ) return;
 
             SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(message.location());
             if (sound == null) return;
