@@ -250,7 +250,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                     type = 3;
                 }
                 setWeaponIndex(0, type);
-                vehicleShoot(player, 0);
+                vehicleShoot(player);
             }
             return InteractionResult.SUCCESS;
         }
@@ -477,7 +477,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
+    public void vehicleShoot(LivingEntity living) {
         shoot(living, false);
     }
 

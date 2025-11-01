@@ -1,39 +1,25 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
-public class VehicleFireMessage {
+public enum VehicleFireMessage {
 
-    private final int type;
+    INSTANCE;
 
-    public VehicleFireMessage(int type) {
-        this.type = type;
-    }
-
-    public static VehicleFireMessage decode(FriendlyByteBuf buffer) {
-        return new VehicleFireMessage(buffer.readInt());
-    }
-
-    public static void encode(VehicleFireMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.type);
-    }
-
-    public static void handler(VehicleFireMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             if (context.getSender() != null) {
                 var player = context.getSender();
 
-                if (player.getVehicle() instanceof ArmedVehicleEntity iVehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
-                    iVehicle.vehicleShoot(player, message.type);
+                if (player.getVehicle() instanceof VehicleEntity vehicle) {
+                    vehicle.vehicleShoot(player);
 
                     var gunData = vehicle.getGunData(vehicle.getSeatIndex(player));
 

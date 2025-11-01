@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -12,12 +11,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -158,7 +155,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
                 int rpm = 20 / (mainGunRpm(mob) / 60);
                 if (tickCount %rpm == 0) {
-                    vehicleShoot(mob, i);
+                    vehicleShoot(mob);
                 }
             }
         }
@@ -190,18 +187,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     @Override
     public boolean canCollideHardBlock() {
         return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity living, int type) {
-        var seatIndex = getSeatIndex(living);
-
-        modifyGunData(seatIndex, data -> {
-            if (!data.canShoot(getAmmoSupplier())) return;
-            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
-        });
-
-        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
     }
 
     @Override

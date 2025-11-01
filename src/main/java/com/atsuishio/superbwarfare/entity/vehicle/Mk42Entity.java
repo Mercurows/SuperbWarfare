@@ -227,7 +227,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                     type = 3;
                 }
                 setWeaponIndex(0, type);
-                vehicleShoot(player, 0);
+                vehicleShoot(player);
             }
             return InteractionResult.SUCCESS;
         }
@@ -388,7 +388,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
                 entityData.set(YAW, (float) -getYRotFromVector(launchVector));
 
                 if (VectorTool.calculateAngle(launchVector, getLookAngle()) < 3) {
-                    shoot(mob, 0, false);
+                    shoot(mob, false);
                 }
             }
         }
@@ -460,15 +460,15 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         }
 
         this.setWeaponIndex(0, type);
-        this.shoot(player, 0, true);
+        this.shoot(player, true);
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
-        shoot(living, type, false);
+    public void vehicleShoot(LivingEntity living) {
+        shoot(living, false);
     }
 
-    public void shoot(LivingEntity living, int type, boolean reset) {
+    public void shoot(LivingEntity living, boolean reset) {
         if (this.entityData.get(COOL_DOWN) > 0) return;
         if (getFirstPassenger() != null && getFirstPassenger() != living) return;
 

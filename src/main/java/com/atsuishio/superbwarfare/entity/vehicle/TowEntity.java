@@ -132,7 +132,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
+    public void vehicleShoot(LivingEntity living) {
         if (entityData.get(STATE) != 1) return;
         var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(living);
 

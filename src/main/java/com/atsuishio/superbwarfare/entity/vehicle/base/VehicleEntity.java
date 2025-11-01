@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.gun.ShootRay;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
@@ -33,6 +34,7 @@ import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.menu.VehicleMenu;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
@@ -1160,6 +1162,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return new int[this.getMaxPassengers()];
     }
 
+    public void vehicleShoot(LivingEntity living) {
+        var seatIndex = getSeatIndex(living);
+
+        modifyGunData(seatIndex, data -> {
+            if (!data.canShoot(getAmmoSupplier())) return;
+            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
+        });
+
+        // TODO 数据包化发射震动
+
+        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
+    }
+
     public void playShootSound3p(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
         if (gunData != null) {
@@ -2061,13 +2076,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void aiTurretShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity weaponVehicle && aiTurretDiff < 2 && weaponVehicle.canShoot(living) && living.level() instanceof ServerLevel) {
-            weaponVehicle.vehicleShoot(living, 0);
+            vehicleShoot(living);
         }
     }
 
     public void aiPassengerWeaponShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity weaponVehicle && aiPassengerDiff < 2 && weaponVehicle.canShoot(living) && living.level() instanceof ServerLevel) {
-            weaponVehicle.vehicleShoot(living, 1);
+            vehicleShoot(living);
         }
     }
 

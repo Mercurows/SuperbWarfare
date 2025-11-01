@@ -1103,7 +1103,7 @@ public class ClientEventHandler {
 
                     // 低帧率下的开火次数补偿
                     do {
-                        NetworkRegistry.PACKET_HANDLER.sendToServer(new VehicleFireMessage(pVehicle.getSeatIndex(player)));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(VehicleFireMessage.INSTANCE);
                         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle) {
                             playVehicleClientSounds(player, pVehicle);
                         }

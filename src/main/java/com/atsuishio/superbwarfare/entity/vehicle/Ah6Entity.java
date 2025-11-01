@@ -157,7 +157,7 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
+    public void vehicleShoot(LivingEntity living) {
         var seatIndex = getSeatIndex(living);
 
         modifyGunData(seatIndex, data -> {

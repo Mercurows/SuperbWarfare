@@ -243,7 +243,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int type) {
+    public void vehicleShoot(LivingEntity living) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 0.5f, 0);
         Vec3 root = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
