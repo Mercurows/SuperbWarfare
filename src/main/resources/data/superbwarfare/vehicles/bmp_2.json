@@ -6,11 +6,7 @@
     {
       "HidePassenger": true,
       "Transform": "Turret",
-      "Position": [
-        0.36,
-        -0.25,
-        0.56
-      ],
+      "Position": [0.36, -0.25, 0.56],
       "CanRotateHead": false,
       "MinPitch": -7.5,
       "MaxPitch": 74,
@@ -33,6 +29,7 @@
         "HeatPerShoot": 0.5,
         "RecoilTime": 40,
         "RecoilForce": 0.2,
+        "Spread": 0.5,
         "Crosshair": "@VehicleRuApc",
         "CrosshairColor": "0xFFC700",
         "Name": "superbwarfare.bmp_2.cannon",
@@ -76,6 +73,7 @@
               "Velocity": 30,
               "RecoilTime": 0,
               "RecoilForce": 0,
+              "Spread": 0.5,
               "ShootPos": {
                 "Transform": "Barrel",
                 "Positions": [
@@ -121,7 +119,7 @@
                   ]
                 ],
                 "Directions": [
-                  "Turret"
+                  "Barrel"
                 ]
               },
               "ExplosionDamage": 60,
@@ -144,11 +142,7 @@
     {
       "HidePassenger": true,
       "Transform": "Vehicle",
-      "Position": [
-        1.803125,
-        0.5,
-        -0.8125
-      ],
+      "Position": [1.803125, 0.5, -0.8125],
       "Orientation": -90,
       "MinPitch": -40,
       "MaxPitch": 40,
@@ -157,11 +151,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [
-          1.803125,
-          1.9765625,
-          -0.8125
-        ]
+        "Position": [1.803125, 1.9765625, -0.8125]
       },
       "WeaponData": {
         "DefaultFireMode": "Auto",
@@ -169,6 +159,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -188,11 +179,7 @@
               "ShootPos": {
                 "Transform": "Vehicle",
                 "Positions": [
-                  [
-                    1.803125,
-                    1.9765625,
-                    -0.8125
-                  ]
+                  [1.803125, 1.9765625, -0.8125]
                 ],
                 "Directions": [
                   "Passenger"
@@ -207,11 +194,7 @@
     {
       "HidePassenger": true,
       "Transform": "Vehicle",
-      "Position": [
-        -1.803125,
-        0.5,
-        -0.8125
-      ],
+      "Position": [-1.803125, 0.5, -0.8125],
       "Orientation": 90,
       "MinPitch": -40,
       "MaxPitch": 40,
@@ -220,11 +203,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [
-          -1.803125,
-          1.9765625,
-          -0.8125
-        ]
+        "Position": [-1.803125, 1.9765625, -0.8125]
       },
       "WeaponData": {
         "DefaultFireMode": "Auto",
@@ -232,6 +211,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -251,11 +231,7 @@
               "ShootPos": {
                 "Transform": "Vehicle",
                 "Positions": [
-                  [
-                    -1.803125,
-                    1.9765625,
-                    -0.8125
-                  ]
+                  [-1.803125, 1.9765625, -0.8125]
                 ],
                 "Directions": [
                   "Passenger"
@@ -270,11 +246,7 @@
     {
       "HidePassenger": true,
       "Transform": "Vehicle",
-      "Position": [
-        1.815625,
-        0.5,
-        -2.1875
-      ],
+      "Position": [1.815625, 0.5, -2.1875],
       "Orientation": -90,
       "MinPitch": -40,
       "MaxPitch": 40,
@@ -283,11 +255,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [
-          1.815625,
-          1.9765625,
-          -0.8125
-        ]
+        "Position": [1.815625, 1.9765625, -0.8125]
       },
       "WeaponData": {
         "DefaultFireMode": "Auto",
@@ -295,6 +263,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -314,11 +283,7 @@
               "ShootPos": {
                 "Transform": "Vehicle",
                 "Positions": [
-                  [
-                    1.815625,
-                    1.9765625,
-                    -0.8125
-                  ]
+                  [1.815625, 1.9765625, -0.8125]
                 ],
                 "Directions": [
                   "Passenger"
@@ -333,11 +298,7 @@
     {
       "HidePassenger": true,
       "Transform": "Vehicle",
-      "Position": [
-        -1.815625,
-        0.5,
-        -2.1875
-      ],
+      "Position": [-1.815625, 0.5, -2.1875],
       "Orientation": 90,
       "MinPitch": -40,
       "MaxPitch": 40,
@@ -346,11 +307,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [
-          -1.815625,
-          1.9765625,
-          -0.8125
-        ]
+        "Position": [-1.815625, 1.9765625, -0.8125]
       },
       "WeaponData": {
         "DefaultFireMode": "Auto",
@@ -358,6 +315,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -377,11 +335,7 @@
               "ShootPos": {
                 "Transform": "Vehicle",
                 "Positions": [
-                  [
-                    -1.815625,
-                    1.9765625,
-                    -0.8125
-                  ]
+                  [-1.815625, 1.9765625, -0.8125]
                 ],
                 "Directions": [
                   "Passenger"
@@ -396,11 +350,7 @@
     {
       "HidePassenger": true,
       "Transform": "Vehicle",
-      "Position": [
-        0.6875,
-        0.5,
-        -4.1
-      ],
+      "Position": [0.6875, 0.5, -4.1],
       "Orientation": 180,
       "MinPitch": -40,
       "MaxPitch": 40,
@@ -409,11 +359,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [
-          0.6875,
-          1.6015625,
-          -4.1
-        ]
+        "Position": [0.6875, 1.6015625, -4.1]
       },
       "WeaponData": {
         "DefaultFireMode": "Auto",
@@ -421,6 +367,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -440,11 +387,7 @@
               "ShootPos": {
                 "Transform": "Vehicle",
                 "Positions": [
-                  [
-                    0.6875,
-                    1.6015625,
-                    -4.1
-                  ]
+                  [0.6875, 1.6015625, -4.1]
                 ],
                 "Directions": [
                   "Passenger"
@@ -459,11 +402,7 @@
     {
       "HidePassenger": true,
       "Transform": "Vehicle",
-      "Position": [
-        -1.50625,
-        0.5,
-        -3.0625
-      ],
+      "Position": [-1.50625, 0.5, -3.0625],
       "Orientation": 90,
       "MinPitch": -40,
       "MaxPitch": 40,
@@ -472,11 +411,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [
-          -1.50625,
-          1.9765625,
-          -3.0625
-        ]
+        "Position": [-1.50625, 1.9765625, -3.0625]
       },
       "WeaponData": {
         "DefaultFireMode": "Auto",
@@ -484,6 +419,7 @@
         "Projectile": "superbwarfare:projectile",
         "RPM": 600,
         "Damage": 9.5,
+        "Spread": 0.5,
         "BypassesArmor": 0.3,
         "Velocity": 30,
         "Crosshair": "@VehicleCommonGun",
@@ -503,11 +439,7 @@
               "ShootPos": {
                 "Transform": "Vehicle",
                 "Positions": [
-                  [
-                    -1.50625,
-                    1.9765625,
-                    -3.0625
-                  ]
+                  [-1.50625, 1.9765625, -3.0625]
                 ],
                 "Directions": [
                   "Passenger"
