@@ -1100,7 +1100,9 @@ public class ClientEventHandler {
                     // 低帧率下的开火次数补偿
                     do {
                         PacketDistributor.sendToServer(new VehicleFireMessage(pVehicle.getSeatIndex(player)));
-                        playVehicleClientSounds(player, iVehicle, pVehicle.getSeatIndex(player));
+                        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle) {
+                            playVehicleClientSounds(player, pVehicle);
+                        }
 
                         newProgress -= cooldown;
                     } while (newProgress - cooldown > 0);
@@ -1115,15 +1117,17 @@ public class ClientEventHandler {
         }
     }
 
-    public static void playVehicleClientSounds(Player player, WeaponVehicleEntity iVehicle, int type) {
-        var weapons = iVehicle.getAvailableWeapons(type);
-        var weapon = weapons.get(iVehicle.getWeaponIndex(type));
+    public static void playVehicleClientSounds(Player player, VehicleEntity vehicle) {
+        var gunData = vehicle.getGunData(vehicle.getSeatIndex(player));
+        if (gunData != null) {
+            var soundInfo = gunData.get(GunProp.SOUND_INFO);
+            float pitch = 1;
+            // TODO 正确获取热量
+//            float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
-        float pitch = iVehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - iVehicle.getWeaponHeat(player)));
-
-        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle) {
-            if (weapon.sound1p != null) {
-                player.playSound(weapon.sound1p, 1f, pitch);
+            var sound = soundInfo.getSoundEvent(soundInfo.fire1P);
+            if (sound != null) {
+                player.playSound(sound, 1f, pitch);
             }
         }
     }

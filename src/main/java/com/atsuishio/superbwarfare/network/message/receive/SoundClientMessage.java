@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.receive;
 
 import com.atsuishio.superbwarfare.Mod;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.UUID;
+
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 public record SoundClientMessage(
         ResourceLocation location,
@@ -45,7 +48,9 @@ public record SoundClientMessage(
     public static void handler(SoundClientMessage message) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
-        if (player.getUUID().equals(message.uuid())) return;
+        if (player.getUUID().equals(message.uuid)
+                && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle)
+        ) return;
 
         SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(message.location());
         if (sound == null) return;

@@ -1160,13 +1160,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             if (living.level() instanceof ServerLevel serverLevel) {
                 if (soundInfo.getSoundEvent(soundInfo.fire3P) != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3P), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, null);
+                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3P), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, living);
                 }
                 if (soundInfo.getSoundEvent(soundInfo.fire3PFar) != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, null);
+                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, living);
                 }
                 if (soundInfo.getSoundEvent(soundInfo.fire3PVeryFar) != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PVeryFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, null);
+                    SoundTool.playDistantSound(serverLevel, soundInfo.getSoundEvent(soundInfo.fire3PVeryFar), pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, living);
                 }
             }
         }
@@ -2346,13 +2346,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 getVectorFromString(String string, float ticks, int seatIndex) {
+        var entity = getNthEntity(seatIndex);
         return switch (string) {
             case "Turret" -> getTurretVector(ticks);
             case "Barrel" -> getBarrelVector(ticks);
             case "Bomb" ->
                     ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(seatIndex, ticks), getShootVec(seatIndex, ticks), -0.06);
             case "WeaponStationBarrel" -> getGunnerVector(ticks);
-            case "Passenger" -> getNthEntity(seatIndex).getViewVector(1);
+            case "Passenger" -> entity != null ? entity.getViewVector(ticks) : getViewVector(ticks);
             default -> getViewVector(ticks);
         };
     }
@@ -3084,8 +3085,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             var data = seat.cameraPos;
             if (data != null) {
                 var vec3 = data.zoomPosition;
-                Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
-                return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                if (vec3 != null) {
+                    Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+                    return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                } else {
+                    return cameraPos(entity, ticks);
+                }
             } else {
                 return entityEyePos(entity, ticks);
             }
@@ -3099,21 +3104,26 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
-                var vec3 = data.zoomPosition;
                 StringOrVec3 stringOrVec3 = data.zoomDirection;
-                if (stringOrVec3.isString()) {
-                    return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
-                } else {
-                    Vector4f worldPosition = transformPosition(
-                            this.getTransformFromString(data.transform, ticks),
-                            (float) vec3.x + (float) stringOrVec3.vec3.x,
-                            (float) vec3.y + (float) stringOrVec3.vec3.y,
-                            (float) vec3.z + (float) stringOrVec3.vec3.z);
+                if (stringOrVec3 != null) {
+                    if (stringOrVec3.isString()) {
+                        return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
+                    } else {
+                        var vec3 = data.zoomPosition;
+                        Vector4f worldPosition = transformPosition(
+                                this.getTransformFromString(data.transform, ticks),
+                                (float) vec3.x + (float) stringOrVec3.vec3.x,
+                                (float) vec3.y + (float) stringOrVec3.vec3.y,
+                                (float) vec3.z + (float) stringOrVec3.vec3.z);
 
-                    Vec3 startPos = getShootPos(entity, ticks);
-                    Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                    return startPos.vectorTo(endPos).normalize();
+                        Vec3 startPos = getShootPos(entity, ticks);
+                        Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                        return startPos.vectorTo(endPos).normalize();
+                    }
+                } else {
+                    return cameraDirection(entity, ticks);
                 }
+
             } else {
                 return entity.getViewVector(ticks);
             }

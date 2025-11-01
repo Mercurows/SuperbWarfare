@@ -17,10 +17,10 @@ public class CameraPos {
     public StringOrVec3 direction = new StringOrVec3("Default");
 
     @SerializedName("ZoomPosition")
-    public Vec3 zoomPosition = Vec3.ZERO;
+    public Vec3 zoomPosition = null;
 
     @SerializedName("ZoomDirection")
-    public StringOrVec3 zoomDirection = new StringOrVec3("Default");
+    public StringOrVec3 zoomDirection = null;
 
     @SerializedName("UseFixedCameraPos")
     public Boolean useFixedCameraPos = false;
