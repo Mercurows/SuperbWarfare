@@ -139,7 +139,7 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
                 Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
                 Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
 
-                if (this.tickCount > 3) {
+                if (this.tickCount > 1) {
 
                     lostTarget = VectorTool.calculateAngle(getDeltaMovement(), toVec) > 120 && !lostTarget;
 
@@ -150,9 +150,10 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
                     }
 
                     if (!lostTarget && !lost) {
-                        turn(toVec, Mth.clamp(0.6f * tickCount, 0, 40));
-                        this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(10)));
+                        turn(toVec, Mth.clamp(tickCount, 0, 40));
+                        this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
 
+                        //近炸
                         if (position().distanceToSqr(entity.position()) < 25) {
                             DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
                             if (entity instanceof LivingEntity) {
@@ -175,12 +176,6 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
                 this.entityData.set(TARGET_UUID, "none");
             }
         }
-
-        if (this.tickCount > 3) {
-            this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
-        }
-
-        this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
 
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel) {
