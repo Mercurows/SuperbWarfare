@@ -572,8 +572,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                 Mod.queueServerWork(i, () -> ParticleTool.spawnBarrelSmoke(1, level, getLookAngle(), new Vec3(pos.x, pos.y, pos.z).add(getLookAngle().scale(7))));
             }
 
-            playShootSound3p(living, 0, 16, 48, 96, position());
-
             consumeAmmo(living);
         }
     }

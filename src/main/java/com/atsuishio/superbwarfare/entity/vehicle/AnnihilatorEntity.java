@@ -419,7 +419,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 25);
         }
 
-        playShootSound3p(living, 0, 12, 32, 64, position());
     }
 
     @Override

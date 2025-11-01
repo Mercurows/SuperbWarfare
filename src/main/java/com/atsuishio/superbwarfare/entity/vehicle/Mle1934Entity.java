@@ -535,8 +535,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
                 Mod.queueServerWork(i, () -> ParticleTool.spawnBarrelSmoke(1, level, getLookAngle(), new Vec3(pos.x, pos.y, pos.z).add(getLookAngle().scale(6.4))));
             }
 
-            playShootSound3p(living, 0, 16, 48, 96, position());
-
             consumeAmmo(living);
         }
     }

@@ -40,6 +40,7 @@
           "Fire3PVeryFar": "superbwarfare:heli_cannon_veryfar",
           "Change": "superbwarfare:into_cannon"
         },
+        "SoundRadius": 24,
         "AmmoType": [
           {
             "Ammo": "Infinity",
@@ -80,7 +81,8 @@
                 "Fire3PFar": "null",
                 "Fire3PVeryFar": "null",
                 "Change": "superbwarfare:into_missile"
-              }
+              },
+              "SoundRadius": 12
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
           }

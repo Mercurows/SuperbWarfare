@@ -165,7 +165,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
         });
 
-        playShootSound3p(living, 0, 4, 12, 24, getShootPos(living, 1));
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
     }
 

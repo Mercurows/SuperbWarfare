@@ -34,6 +34,7 @@
           "Fire3PVeryFar": "superbwarfare:lav_cannon_veryfar",
           "Change": "superbwarfare:into_missile"
         },
+        "SoundRadius": 24,
         "AmmoType": [
           {
             "Ammo": "Infinity",
@@ -87,77 +88,10 @@
                 "Fire3PFar": "superbwarfare:m_60_far",
                 "Fire3PVeryFar": "superbwarfare:m_60_veryfar",
                 "Change": "superbwarfare:into_cannon"
-              }
+              },
+              "SoundRadius": 12
             },
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
-          },
-          {
-            "Ammo": "Infinity",
-            "Projectile": "superbwarfare:rpg_rocket_standard",
-            "Override": {
-              "RPM": 600,
-              "Damage": 270,
-              "Velocity": 6,
-              "RecoilTime" : 60,
-              "RecoilForce" : 2,
-              "ShootPos": {
-                "Transform": "Turret",
-                "Positions": [
-                  [
-                    1,
-                    0.5,
-                    0
-                  ],
-                  [
-                    -1,
-                    0.5,
-                    0
-                  ]
-                ],
-                "Directions": [
-                  "Barrel"
-                ]
-              },
-              "ExplosionDamage": 80,
-              "ExplosionRadius": 7,
-              "Crosshair": "@VehicleCommonMissile",
-              "SoundInfo": {
-                "Fire1P": "superbwarfare:small_rocket_fire_1p",
-                "Fire3P": "superbwarfare:small_rocket_fire_3p",
-                "Fire3PFar": "null",
-                "Fire3PVeryFar": "null",
-                "Change": "superbwarfare:into_cannon"
-              }
-            },
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
-          },
-          {
-            "Ammo": "Infinity",
-            "Override": {
-              "Damage": 20,
-              "ProjectileAmount": 5,
-              "Spread": 2.5,
-              "RPM": 240,
-              "RecoilTime" : 100,
-              "RecoilForce" : 5,
-              "ShootPos": {
-                "Transform": "Barrel",
-                "Positions": [
-                  [
-                    0.0609375,
-                    0.0517,
-                    3.2
-                  ]
-                ],
-                "Directions": [
-                  "Barrel"
-                ]
-              },
-              "ExplosionDamage": 10,
-              "ExplosionRadius": 8,
-              "Crosshair": "superbwarfare:textures/overlay/vehicle/crosshair/ru_apc.png"
-            },
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cm_shell.png"
           }
         ]
       },
