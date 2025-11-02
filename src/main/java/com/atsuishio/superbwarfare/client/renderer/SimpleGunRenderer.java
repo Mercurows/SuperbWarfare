@@ -44,7 +44,7 @@ public class SimpleGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Cus
         }
 
         if (renderingArms) {
-            AnimationHelper.renderArms(player, this.renderPerspective, poseStack, name, bone, bufferSource, renderType, packedLight, GunResource.getDefault(animatable).useOldHandRenderer);
+            AnimationHelper.renderArms(player, this.renderPerspective, poseStack, name, bone, bufferSource, renderType, packedLight, GunResource.compute(itemStack).useOldHandRenderer);
         }
 
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);

@@ -161,7 +161,7 @@ public class ClientEventHandler {
 
     // 按住开火键的持续tick
     public static int holdingFireKeyTicks = 0;
-    public static float partialHoldingFireKeyTicks = 0;
+    public static float holdingFireKeyTicks0 = 0;
     public static boolean shouldPlayDischargeSound = true;
     public static double revolverPreTime = 0;
     public static double revolverWheelPreTime = 0;
@@ -670,7 +670,7 @@ public class ClientEventHandler {
         if (holdingFireKeyTicks > 0 && !holdingFireKey) {
             holdingFireKeyTicks--;
             if (holdingFireKeyTicks == 0) {
-                partialHoldingFireKeyTicks = 0;
+                holdingFireKeyTicks0 = 0;
             }
         }
 
@@ -786,10 +786,12 @@ public class ClientEventHandler {
         }
 
         var data = GunData.from(stack);
-        var resource = GunResource.from(stack).getDefault();
+        var resource = GunResource.compute(stack);
         var mode = data.selectedFireModeInfo().mode;
 
-        partialHoldingFireKeyTicks = Mth.lerp(getDelta(), partialHoldingFireKeyTicks, holdingFireKeyTicks);
+        var partialHoldingFireKeyTicks = Mth.lerp(getDelta(), holdingFireKeyTicks0, holdingFireKeyTicks);
+        holdingFireKeyTicks0 = holdingFireKeyTicks;
+
         if (partialHoldingFireKeyTicks > holdingFireKeyTicks && partialHoldingFireKeyTicks > data.get(GunProp.SHOOT_DELAY) * 0.25 && shouldPlayDischargeSound) {
             var dischargeSound = resource.dischargeSound;
             if (dischargeSound != null) {
@@ -1060,7 +1062,6 @@ public class ClientEventHandler {
         }
 
         var data = GunData.from(stack);
-        var resource = GunResource.from(stack);
 
         var perk = data.perk.get(Perk.Type.AMMO);
         SoundInfo soundInfo = data.get(GunProp.SOUND_INFO);
@@ -1082,7 +1083,7 @@ public class ClientEventHandler {
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getBlockPos())));
 
         Mod.queueClientWork((int) (1 + 1.5 * shooterHeight), () -> {
-            if (resource.getDefault().ejectShell) {
+            if (GunResource.compute(stack).ejectShell) {
                 if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                     var ammoType = data.selectedAmmoConsumer().getPlayerAmmoType();
                     switch (ammoType) {
@@ -2022,7 +2023,7 @@ public class ClientEventHandler {
         zoom = false;
 //        holdingFireKey = false;
         holdingFireKeyTicks = 0;
-        partialHoldingFireKeyTicks = 0;
+        holdingFireKeyTicks0 = 0;
         ClickHandler.switchZoom = false;
         lungeDraw = 30;
         lungeSprint = 0;

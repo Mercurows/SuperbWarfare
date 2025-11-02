@@ -100,10 +100,9 @@ public class AnimationHelper {
 
 
     public static void handleShootFlare(String name, PoseStack stack, ItemStack itemStack, GeoBone bone, MultiBufferSource buffer, int packedLightIn) {
-        var resource = GunResource.from(itemStack);
-        var defaultResource = resource.getDefault();
-        if (defaultResource.flarePosition != null) {
-            handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, defaultResource.flarePosition.x, defaultResource.flarePosition.y, defaultResource.flarePosition.z, defaultResource.flareSize);
+        var gunResource = GunResource.from(itemStack).compute();
+        if (gunResource.flarePosition != null) {
+            handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, gunResource.flarePosition.x, gunResource.flarePosition.y, gunResource.flarePosition.z, gunResource.flareSize);
         }
     }
 

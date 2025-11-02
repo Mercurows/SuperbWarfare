@@ -160,7 +160,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public int getEnergyBarColor(GunResource resource) {
-        return resource.getDefault().energyBarColor.get();
+        return resource.compute().energyBarColor.get();
     }
 
     public void init(GunData data) {

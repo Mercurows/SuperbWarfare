@@ -89,7 +89,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         var data = GunData.from(stack);
         var resource = GunResource.from(stack);
 
-        var crosshair = resource.getDefault().crosshair;
+        var crosshair = resource.compute().crosshair;
         if (crosshair.equals(CROSSHAIR_CUSTOM)) return;
 
         double spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos;
@@ -180,10 +180,9 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
     public static void renderGunDefaultCrosshair(GuiGraphics guiGraphics, ItemStack stack, Player player, int screenWidth, int screenHeight,
                                                  float moveX, float moveY, float finPosX, float finPosY, float finLength, double spread) {
         GunData data = GunData.from(stack);
-        GunResource resource = GunResource.from(stack);
 
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-            if (ClientEventHandler.zoomTime > 0.8 && resource.getDefault().hideCrosshairWhenZoom) return;
+            if (ClientEventHandler.zoomTime > 0.8 && GunResource.compute(stack).hideCrosshairWhenZoom) return;
         }
 
         preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
