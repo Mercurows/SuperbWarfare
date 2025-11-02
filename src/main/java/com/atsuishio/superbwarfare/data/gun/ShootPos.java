@@ -18,4 +18,7 @@ public class ShootPos {
 
     @SerializedName("Directions")
     public List<StringOrVec3> directions = List.of(new StringOrVec3("Default"));
+
+    @SerializedName("ViewDirection")
+    public StringOrVec3 viewDirection = null;
 }

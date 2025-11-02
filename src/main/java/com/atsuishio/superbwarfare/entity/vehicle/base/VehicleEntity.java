@@ -2413,7 +2413,45 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                         (float) vec3.y + (float) stringOrVec3.vec3.y,
                         (float) vec3.z + (float) stringOrVec3.vec3.z);
 
-                Vec3 startPos = getShootPos(entity, ticks);
+                Vector4f worldPositionO = transformPosition(
+                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
+                        (float) vec3.x,
+                        (float) vec3.y,
+                        (float) vec3.z);
+
+                Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                return startPos.vectorTo(endPos).normalize();
+            }
+        }
+        return this.getViewVector(ticks);
+    }
+
+    public Vec3 getViewVec(Entity entity, float ticks) {
+        var data = getGunData(getSeatIndex(entity));
+        if (data != null) {
+
+            StringOrVec3 stringOrVec3 = data.get(GunProp.SHOOT_POS).viewDirection;
+
+            if (stringOrVec3 == null) {
+                return getShootVec(entity, ticks);
+            } else if (stringOrVec3.isString()) {
+                return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
+            } else {
+                var vec3 = stringOrVec3.vec3;
+                Vector4f worldPosition = transformPosition(
+                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
+                        (float) vec3.x + (float) stringOrVec3.vec3.x,
+                        (float) vec3.y + (float) stringOrVec3.vec3.y,
+                        (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+                Vector4f worldPositionO = transformPosition(
+                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
+                        (float) vec3.x,
+                        (float) vec3.y,
+                        (float) vec3.z);
+
+                Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
                 Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                 return startPos.vectorTo(endPos).normalize();
             }

@@ -83,7 +83,6 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
 
             int color = vehicle.getHudColor() | 0xFF000000;
 
-            poseStack.translate(-6 * ClientEventHandler.turnRot[1], -6 * ClientEventHandler.turnRot[0], 0);
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
@@ -168,7 +167,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
                 }
             }
 
-            Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getShootVec(player, partialTick).scale(192));
+            Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getViewVec(player, partialTick).scale(192));
             Vec3 p = VectorUtil.worldToScreen(pos);
 
             poseStack.pushPose();

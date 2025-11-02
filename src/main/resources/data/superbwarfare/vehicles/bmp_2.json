@@ -119,8 +119,9 @@
                   ]
                 ],
                 "Directions": [
-                  "Barrel"
-                ]
+                  "Turret"
+                ],
+                "ViewDirection": "Barrel"
               },
               "ExplosionDamage": 60,
               "ExplosionRadius": 6,
