@@ -26,7 +26,7 @@ public class DrawClientMessage {
 
     public static void handler(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                () -> () -> ClientEventHandler.handleDrawMessage(context)));
+                () -> ClientEventHandler::resetGunStatus));
         context.get().setPacketHandled(true);
     }
 }
