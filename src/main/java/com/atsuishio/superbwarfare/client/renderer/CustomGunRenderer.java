@@ -37,6 +37,15 @@ public class CustomGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Geo
     }
 
     @Override
+    public void preRender(PoseStack poseStack, T animatable, BakedGeoModel model, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        if (this.model instanceof CustomGunModel<T> gunModel) {
+            gunModel.gunItemStack = this.currentItemStack;
+        }
+
+        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    @Override
     public void actuallyRender(PoseStack matrixStackIn, T animatable, BakedGeoModel model, RenderType type, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, boolean isRenderer, float partialTicks, int packedLightIn,
                                int packedOverlayIn, float red, float green, float blue, float alpha) {
         this.currentBuffer = renderTypeBuffer;

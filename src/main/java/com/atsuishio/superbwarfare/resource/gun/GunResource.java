@@ -34,6 +34,15 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
         this.id = getRegistryId(stack.getItem());
     }
 
+    public static DefaultGunResource compute(ItemStack stack) {
+        return from(stack).compute();
+    }
+
+    public DefaultGunResource compute() {
+        // TODO 正确实现属性计算
+        return getDefault();
+    }
+
     public static DefaultGunResource getDefault(String id) {
         return CustomData.GUN_RESOURCE.getOrElseGet(id, DefaultGunResource::new);
     }

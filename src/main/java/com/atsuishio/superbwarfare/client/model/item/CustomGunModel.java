@@ -25,6 +25,7 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.util.RenderUtils;
 
 public abstract class CustomGunModel<T extends GunGeoItem & GeoAnimatable> extends GeoModel<T> {
+    public ItemStack gunItemStack;
 
     @Override
     public ResourceLocation getAnimationResource(T animatable) {
@@ -50,6 +51,10 @@ public abstract class CustomGunModel<T extends GunGeoItem & GeoAnimatable> exten
     }
 
     protected ModelResource getModel(T animatable) {
+        if (this.gunItemStack != null && this.gunItemStack.getItem() instanceof GunGeoItem) {
+            return GunResource.from(this.gunItemStack).compute().getModel();
+        }
+
         return getResource(animatable).getModel();
     }
 

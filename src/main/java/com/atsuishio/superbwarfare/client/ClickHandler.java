@@ -447,7 +447,7 @@ public class ClickHandler {
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
-            var resource = GunResource.from(stack).getDefault();
+            var resource = GunResource.compute(stack);
 
             // TODO 整合特殊处理
             if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
@@ -544,8 +544,7 @@ public class ClickHandler {
 
         if (!(stack.getItem() instanceof GunItem)) return;
 
-        var resource = GunResource.from(stack);
-        if (!resource.getDefault().canZoom) return;
+        if (!GunResource.compute(stack).canZoom) return;
 
         var data = GunData.from(stack);
         ClientEventHandler.zoom = true;
