@@ -11,7 +11,7 @@ public class Bmp2Model extends VehicleModel<Bmp2Entity> {
 
     @Override
     public @Nullable TransformContext<Bmp2Entity> collectTransform(String boneName) {
-        if (boneName.equals("root")) {
+        if (boneName.equals("base") || boneName.equals("TrackL") || boneName.equals("TrackR")) {
             var baseTransform = super.collectTransform(boneName);
 
             return (bone, vehicle, state) -> {
