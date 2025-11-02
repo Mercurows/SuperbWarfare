@@ -30,6 +30,8 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
     protected float roll;
     protected float leftWheelRot;
     protected float rightWheelRot;
+    protected float leftTrack;
+    protected float rightTrack;
     protected float turretYRot;
     protected float turretXRot;
     protected float turretYaw;
@@ -223,31 +225,27 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             if (isRot) {
                 if (isL) {
                     return (bone, vehicle, state) -> {
-                        float t = wrap(vehicle.getLeftTrack() + 2 * index);
-                        float tO = wrap(vehicle.leftTrackO + 2 * index);
-                        bone.setRotX(-Mth.lerp(state.getPartialTick(), getBoneRotX(tO), getBoneRotX(t)) * Mth.DEG_TO_RAD);
+                        float t = wrap(leftTrack + 2 * index);
+                        bone.setRotX(-getBoneRotX(t) * Mth.DEG_TO_RAD);
                     };
                 } else {
                     return (bone, vehicle, state) -> {
-                        float tO2 = wrap(vehicle.rightTrackO + 2 * index);
-                        float t2 = wrap(vehicle.getRightTrack() + 2 * index);
-                        bone.setRotX(-Mth.lerp(state.getPartialTick(), getBoneRotX(tO2), getBoneRotX(t2)) * Mth.DEG_TO_RAD);
+                        float t2 = wrap(rightTrack + 2 * index);
+                        bone.setRotX(-getBoneRotX(t2) * Mth.DEG_TO_RAD);
                     };
                 }
             } else {
                 if (isL) {
                     return (bone, vehicle, state) -> {
-                        float tO = wrap(vehicle.leftTrackO + 2 * index);
-                        float t = wrap(vehicle.getLeftTrack() + 2 * index);
-                        bone.setPosY(Mth.lerp(state.getPartialTick(), getBoneMoveY(tO), getBoneMoveY(t)));
-                        bone.setPosZ(Mth.lerp(state.getPartialTick(), getBoneMoveZ(tO), getBoneMoveZ(t)));
+                        float t = wrap(leftTrack + 2 * index);
+                        bone.setPosY(getBoneMoveY(t));
+                        bone.setPosZ(getBoneMoveZ(t));
                     };
                 } else {
                     return (bone, vehicle, state) -> {
-                        float tO2 = wrap(vehicle.rightTrackO + 2 * index);
-                        float t2 = wrap(vehicle.getRightTrack() + 2 * index);
-                        bone.setPosY(Mth.lerp(state.getPartialTick(), getBoneMoveY(tO2), getBoneMoveY(t2)));
-                        bone.setPosZ(Mth.lerp(state.getPartialTick(), getBoneMoveZ(tO2), getBoneMoveZ(t2)));
+                        float t2 = wrap(rightTrack + 2 * index);
+                        bone.setPosY(getBoneMoveY(t2));
+                        bone.setPosZ(getBoneMoveZ(t2));
                     };
                 }
             }
@@ -295,6 +293,9 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
 
         leftWheelRot = Mth.lerp(partialTick, vehicle.leftWheelRotO, vehicle.getLeftWheelRot());
         rightWheelRot = Mth.lerp(partialTick, vehicle.rightWheelRotO, vehicle.getRightWheelRot());
+
+        leftTrack = Mth.lerp(partialTick, vehicle.leftTrackO, vehicle.getLeftTrack());
+        rightTrack = Mth.lerp(partialTick, vehicle.rightTrackO, vehicle.getRightTrack());
 
         turretYRot = Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot());
         turretXRot = Mth.lerp(partialTick, vehicle.turretXRotO, vehicle.getTurretXRot());

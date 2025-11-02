@@ -32,7 +32,7 @@
         "ExplosionDamage": 12,
         "ExplosionRadius": 3.5,
         "HeatPerShoot": 0.5,
-        "Spread": 0.5,
+        "Spread": 0.25,
         "Name": "superbwarfare.ah_6.cannon",
         "SoundInfo": {
           "Fire1P": "superbwarfare:heli_cannon_fire_1p",
@@ -53,7 +53,7 @@
                   [-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]
                 ],
                 "Directions": [
-                  [0.0046, 0.03, 1], [-0.0046, 0.03, 1]
+                  [0.003, 0.025, 1], [-0.003, 0.025, 1]
                 ]
               }
             }
@@ -67,14 +67,13 @@
               "ExplosionDamage": 40,
               "ExplosionRadius": 5,
               "Velocity": 16,
-              "Spread": 1,
               "ShootPos": {
                 "Transform": "Vehicle",
                 "Positions": [
                   [-1.7, 0.62, 0.8], [1.7, 0.62, 0.8]
                 ],
                 "Directions": [
-                  [0.005, 0.03, 1], [-0.005, 0.03, 1]
+                  [0.003, 0.025, 1], [-0.003, 0.025, 1]
                 ]
               },
               "SoundInfo": {

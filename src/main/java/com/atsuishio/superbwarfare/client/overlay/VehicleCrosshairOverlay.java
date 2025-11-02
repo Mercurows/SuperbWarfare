@@ -136,7 +136,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
             // 渲染第三人称
-            Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getShootVec(player, partialTick).scale(192));
+            Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getViewVec(player, partialTick).scale(192));
             Vec3 p = VectorUtil.worldToScreen(pos);
 
             if (VectorUtil.canSee(pos)) {

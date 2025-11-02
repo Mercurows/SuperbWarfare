@@ -77,7 +77,6 @@ public class HelicopterHudOverlay implements IGuiOverlay {
 
             int color = vehicle.getHudColor();
 
-            poseStack.translate(-6 * ClientEventHandler.turnRot[1], -6 * ClientEventHandler.turnRot[0], 0);
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
@@ -161,7 +160,7 @@ public class HelicopterHudOverlay implements IGuiOverlay {
                 }
             }
 
-            Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getShootVec(player, partialTick).scale(192));
+            Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getViewVec(player, partialTick).scale(192));
             Vec3 p = VectorUtil.worldToScreen(pos);
 
             poseStack.pushPose();
