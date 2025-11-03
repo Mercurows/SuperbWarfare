@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -64,10 +65,11 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public int maxEnergy = 100000;
 
     @SerializedName("Seats")
-    public ObjectToList<SeatInfo> seats = new ObjectToList<>();
+    protected ObjectToList<SeatInfo> seats = new ObjectToList<>();
 
     public List<SeatInfo> seats() {
-        return seats.list;
+        if (seats == null) return List.of();
+        return Collections.unmodifiableList(seats.list);
     }
 
     @SerializedName("UpStep")
@@ -114,4 +116,11 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public EngineType engineType = EngineType.EMPTY;
     @SerializedName("EngineInfo")
     public JsonObject engineInfo = new JsonObject();
+
+    @Override
+    public void limit() {
+        this.maxHealth = Math.max(this.maxHealth, 0);
+        this.repairCooldown = Math.max(this.repairCooldown, 0);
+        this.maxEnergy = Math.max(this.maxEnergy, 0);
+    }
 }

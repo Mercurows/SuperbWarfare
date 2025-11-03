@@ -235,6 +235,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public DefaultGunData compute() {
         var defaultData = getDefault().copy();
         // TODO 正确实现计算
+
+        defaultData.limit();
         return defaultData;
     }
 

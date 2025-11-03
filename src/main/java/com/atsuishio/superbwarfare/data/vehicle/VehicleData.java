@@ -38,6 +38,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         jsonPropModifier.update(this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE));
         raw = jsonPropModifier.compute(this, raw);
 
+        raw.limit();
         return raw;
     }
 
