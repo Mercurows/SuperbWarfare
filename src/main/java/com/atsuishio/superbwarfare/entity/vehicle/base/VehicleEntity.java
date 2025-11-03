@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
+import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
@@ -120,7 +121,7 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public abstract class VehicleEntity extends Entity implements ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
+public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
 
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
