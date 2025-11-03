@@ -232,12 +232,22 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     private final StringPropModifier<GunData, DefaultGunData> stringPropModifier = new StringPropModifier<>();
 
+    private DefaultGunData cache = null;
+
     public DefaultGunData compute() {
+        if (cache != null) return cache;
+
         var defaultData = getDefault().copy();
         // TODO 正确实现计算
 
         defaultData.limit();
+        cache = defaultData;
+
         return defaultData;
+    }
+
+    public void update() {
+        this.cache = null;
     }
 
     // TODO 替换get
@@ -807,6 +817,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public void save() {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        update();
     }
 
     public static StreamCodec<RegistryFriendlyByteBuf, GunData> STREAM_CODEC = new StreamCodec<>() {

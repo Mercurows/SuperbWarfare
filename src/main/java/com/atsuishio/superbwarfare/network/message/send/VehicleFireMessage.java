@@ -28,7 +28,7 @@ public enum VehicleFireMessage implements CustomPacketPayload {
             if (gunData != null) {
                 vehicle.getEntityData().set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
                 vehicle.getEntityData().set(CANNON_RECOIL_FORCE, gunData.get(GunProp.RECOIL_FORCE));
-                var list = gunData.get(GunProp.SHOOT_POS).positions.list;
+                var list = gunData.get(GunProp.SHOOT_POS).positions;
                 vehicle.currentFirePosIndex = ++vehicle.currentFirePosIndex % list.size();
             }
 

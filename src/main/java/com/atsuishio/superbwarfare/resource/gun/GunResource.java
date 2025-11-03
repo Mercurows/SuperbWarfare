@@ -38,10 +38,21 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
         return from(stack).compute();
     }
 
+    private DefaultGunResource cache = null;
+
     public DefaultGunResource compute() {
+        if (cache != null) return cache;
+
         var defaultResource = getDefault().copy();
         // TODO 正确实现属性计算
+
+        cache = defaultResource;
+
         return defaultResource;
+    }
+
+    public void update() {
+        this.cache = null;
     }
 
     public static DefaultGunResource getDefault(String id) {
