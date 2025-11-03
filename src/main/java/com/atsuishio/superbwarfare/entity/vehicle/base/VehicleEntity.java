@@ -109,8 +109,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -980,8 +980,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(HEALTH, this.getMaxHealth());
         this.entityData.define(OVERRIDE, "");
+        this.entityData.define(HEALTH, this.getMaxHealth());
         this.entityData.define(LAST_ATTACKER_UUID, "undefined");
         this.entityData.define(LAST_DRIVER_UUID, "undefined");
         this.entityData.define(GUN_DATA_MAP, new HashMap<>());
