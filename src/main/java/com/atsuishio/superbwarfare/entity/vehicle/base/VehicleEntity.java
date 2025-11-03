@@ -340,6 +340,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     @Override
+    public void onSyncedDataUpdated(@NotNull List<SynchedEntityData.DataValue<?>> dataValues) {
+        super.onSyncedDataUpdated(dataValues);
+
+        data().update();
+    }
+
+    @Override
     public void processInput(short keys) {
         setLeftInputDown((keys & 0b000000001) > 0);
         setRightInputDown((keys & 0b000000010) > 0);
@@ -2382,7 +2389,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getShootPos(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            var list = data.get(GunProp.SHOOT_POS).positions.list;
+            var list = data.get(GunProp.SHOOT_POS).positions;
             var vec3 = list.get(this.currentFirePosIndex % list.size());
 
             Vector4f worldPosition = transformPosition(
@@ -2409,7 +2416,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
             } else {
 
-                var listP = data.get(GunProp.SHOOT_POS).positions.list;
+                var listP = data.get(GunProp.SHOOT_POS).positions;
                 var vec3 = listP.get(this.currentFirePosIndex % list.size());
 
                 Vector4f worldPosition = transformPosition(

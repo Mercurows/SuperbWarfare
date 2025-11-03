@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.data.gun;
 
-import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
@@ -14,7 +13,7 @@ public class ShootPos {
 
     // 注意这个是复数
     @SerializedName("Positions")
-    public ObjectToList<Vec3> positions = new ObjectToList<>(Vec3.ZERO);
+    public List<Vec3> positions = List.of(Vec3.ZERO);
 
     @SerializedName("Directions")
     public List<StringOrVec3> directions = List.of(new StringOrVec3("Default"));

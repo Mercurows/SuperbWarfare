@@ -17,7 +17,7 @@ public class JsonPropModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DE
     }
 
     public void update(String string) {
-        if (string == null || string.equals(this.str)) return;
+        if (string == null || string.isEmpty() || string.equals(this.str)) return;
         this.str = string;
 
         try {

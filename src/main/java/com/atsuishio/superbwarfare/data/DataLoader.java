@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec2;
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class DataLoader {
+
+    public static final Gson GSON = createCommonBuilder().create();
+    public static final WeakHashMap<Object, JsonObject> JSON_OBJECT_CACHE = new WeakHashMap<>();
 
     private static final Map<ResourceLocation, GeneralData<?>> LOADED_DATA = new HashMap<>();
     private static final Map<ResourceLocation, GeneralData<?>> LOADED_RESOURCE = new HashMap<>();
@@ -96,7 +100,6 @@ public class DataLoader {
                 .registerTypeAdapterFactory(new StringToObject.AdapterFactory());
     }
 
-    public static final Gson GSON = createCommonBuilder().create();
 
     /**
      * 将StringToObject和ObjectToList转换为原始值

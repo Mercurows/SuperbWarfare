@@ -43,7 +43,7 @@ public class ComplexJsonResourceReloadListener extends SimplePreparableReloadLis
                     var data = DataLoader.GSON.fromJson(reader, value.type());
 
                     String id;
-                    if (data instanceof IDBasedData IDData && !IDData.getId().isEmpty()) {
+                    if (data instanceof IDBasedData<?> IDData && !IDData.getId().isEmpty()) {
                         id = IDData.getId();
                     } else {
                         id = pathLocation.toString();

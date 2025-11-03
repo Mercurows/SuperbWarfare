@@ -32,14 +32,26 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         return from(vehicle).compute();
     }
 
+    private DefaultVehicleData cache = null;
+
     public DefaultVehicleData compute() {
+        if (cache != null) return cache;
+
         var raw = getDefault().copy();
 
-        jsonPropModifier.update(this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE));
-        raw = jsonPropModifier.compute(this, raw);
+        if (vehicle.isInitialized()) {
+            jsonPropModifier.update(this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE));
+            raw = jsonPropModifier.compute(this, raw);
+        }
 
         raw.limit();
+        cache = raw;
+
         return raw;
+    }
+
+    public void update() {
+        this.cache = null;
     }
 
     public static DefaultVehicleData getDefault(String id) {

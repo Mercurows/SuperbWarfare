@@ -259,6 +259,8 @@ public class GunEventHandler {
                 data.item.whenNoAmmo(data);
             }
         }
+
+        data.update();
     }
 
     private static void startReload(@Nullable Entity shooter, @NotNull GunData data) {

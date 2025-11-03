@@ -227,12 +227,22 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     private final StringPropModifier<GunData, DefaultGunData> stringPropModifier = new StringPropModifier<>();
 
+    private DefaultGunData cache = null;
+
     public DefaultGunData compute() {
+        if (cache != null) return cache;
+
         var defaultData = getDefault().copy();
         // TODO 正确实现计算
 
         defaultData.limit();
+        cache = defaultData;
+
         return defaultData;
+    }
+
+    public void update() {
+        this.cache = null;
     }
 
     // TODO 替换get
