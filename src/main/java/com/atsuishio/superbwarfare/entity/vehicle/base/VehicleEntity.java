@@ -7,15 +7,12 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.DataLoader;
-import com.atsuishio.superbwarfare.data.Prop;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
-import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
-import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
@@ -118,7 +115,7 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
+public abstract class VehicleEntity extends Entity implements ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
 
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
@@ -194,7 +191,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Map<Integer, GunData> getGunDataMap() {
         var rawMap = entityData.get(GUN_DATA_MAP);
         var newMap = new HashMap<Integer, GunData>();
-        var seats = data().get(VehicleProp.SEATS);
+        var seats = computed().seats();
 
         for (int index = 0; index < seats.size(); index++) {
             var seat = seats.get(index);
@@ -446,14 +443,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 //        }
 //    }
 
-    protected final Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, DefaultVehicleData, ?>> propertyModifiers = new HashMap<>();
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public @NotNull Map<VehicleProp<?>, Prop.PropModifyContext<VehicleData, DefaultVehicleData, ?>> getPropModifiers() {
-        return this.propertyModifiers;
-    }
-
     public void mouseInput(double x, double y) {
         entityData.set(MOUSE_SPEED_X, (float) x);
         entityData.set(MOUSE_SPEED_Y, (float) y);
@@ -558,7 +547,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public int getContainerSize() {
-        return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE).getSize();
+        return computed().vehicleContainerType.getSize();
     }
 
     @Override
@@ -678,15 +667,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public boolean hasMenu() {
-        return data().get(VehicleProp.VEHICLE_CONTAINER_TYPE).hasMenu();
+        return computed().vehicleContainerType.hasMenu();
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, Player pPlayer) {
         if (!pPlayer.isSpectator() && this.hasMenu()) {
-            var type = data().get(VehicleProp.VEHICLE_CONTAINER_TYPE);
-            var upgrade = data().get(VehicleProp.HAS_UPGRADE_SLOTS);
+            var computed = computed();
+            var type = computed.vehicleContainerType;
+            var upgrade = computed.hasUpgradeSlots;
             var menu = switch (type) {
                 case MINI ->
                         upgrade ? ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MINI.get();
@@ -765,7 +755,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     protected void checkSeatsSize() {
-        int targetSize = data().get(VehicleProp.SEATS).size();
+        int targetSize = computed().seats().size();
         if (targetSize == orderedPassengers.size()) return;
 
         initSeatData(targetSize);
@@ -835,9 +825,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return VehicleData.from(this);
     }
 
+    public DefaultVehicleData computed() {
+        return VehicleData.compute(this);
+    }
+
     @Override
     public float maxUpStep() {
-        return data().get(VehicleProp.UP_STEP);
+        return computed().upStep;
     }
 
     @Override
@@ -1092,7 +1086,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             Mod.LOGGER.warn("Trying to get max energy of vehicle {}, but it has no energy storage", this.getName());
             return Integer.MAX_VALUE;
         }
-        return data().get(VehicleProp.MAX_ENERGY);
+        return computed().maxEnergy;
     }
 
     public boolean hasEnergyStorage() {
@@ -1495,7 +1489,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public float getMaxHealth() {
-        return data().get(VehicleProp.MAX_HEALTH);
+        return computed().maxHealth;
     }
 
     public float getTurretMaxHealth() {
@@ -1536,7 +1530,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public int getMaxPassengers() {
-        return data().get(VehicleProp.SEATS).size();
+        return computed().seats().size();
     }
 
     public static double getSubmergedHeight(Entity entity) {
@@ -1552,23 +1546,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * 呼吸回血冷却时长(单位:tick)，设为小于0的值以禁用呼吸回血
      */
     public int maxRepairCoolDown() {
-        return data().get(VehicleProp.REPAIR_COOLDOWN);
+        return computed().repairCooldown;
     }
 
     /**
      * 呼吸回血回血量
      */
     public float repairAmount() {
-        return data().get(VehicleProp.REPAIR_AMOUNT);
+        return computed().repairAmount;
     }
 
     @Override
     public void baseTick() {
+        var computed = computed();
         if (this.level().isClientSide) {
             if (!this.wasEngineRunning && this.engineRunning()) {
                 engineSound.accept(this);
                 swimSound.accept(this);
-                if (data().get(VehicleProp.ENGINE_TYPE) == EngineType.TRACK) {
+                if (computed.engineType == EngineType.TRACK) {
                     trackSound.accept(this);
                 }
             }
@@ -1694,10 +1689,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
 
-        var data = data();
-        if (this.getHealth() <= data.get(VehicleProp.SELF_HURT_PERCENT) * this.getMaxHealth()) {
+        if (this.getHealth() <= computed.selfHurtPercent * this.getMaxHealth()) {
             // 血量过低时自动扣血
-            this.onHurt(data.get(VehicleProp.SELF_HURT_AMOUNT), attacker, false);
+            this.onHurt(computed.selfHurtAmount, attacker, false);
         } else {
             // 呼吸回血
             if (repairCoolDown == 0) {
@@ -2271,7 +2265,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     protected void clampRotation(Entity entity) {
         int index = getSeatIndex(entity);
-        var seats = data().get(VehicleProp.SEATS);
+        var seats = computed().seats();
         if (index < 0 || index >= seats.size()) return;
         var seat = seats.get(index);
 
@@ -2302,7 +2296,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entity.setYRot(entity.getYRot() + destroyRot);
 
         int index = getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
 
         if (seat.transform.equals("Vehicle") || seat.transform.equals("VehicleFlat")) {
             if (!seat.canRotateBody) {
@@ -2325,7 +2319,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         int index = getSeatIndex(passenger);
-        var seats = data().get(VehicleProp.SEATS);
+        var seats = computed().seats();
         if (index < 0 || index >= seats.size()) return;
 
         var seat = seats.get(index);
@@ -2608,9 +2602,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void destroy() {
-        var data = data();
-
-        var destroyInfo = data.get(VehicleProp.DESTROY_INFO);
+        var destroyInfo = computed().destroyInfo;
 
         if (destroyInfo.explodePassengers) {
             if (this.crash && destroyInfo.crashPassengers) {
@@ -2674,10 +2666,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void travel() {
-        var engineType = data().get(VehicleProp.ENGINE_TYPE);
+        var computed = computed();
+
+        var engineType = computed.engineType;
         if (engineType == EngineType.EMPTY) return;
 
-        var engineInfo = data().get(VehicleProp.ENGINE_INFO);
+        var engineInfo = computed.engineInfo;
         try {
             switch (engineType) {
                 case WHEEL -> {
@@ -2986,11 +2980,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public ResourceLocation getVehicleIcon() {
-        return ResourceLocation.tryParse(data().get(VehicleProp.ICON).vehicleIcon());
+        return ResourceLocation.tryParse(computed().icon.vehicleIcon());
     }
 
     public boolean allowFreeCam() {
-        return data().get(VehicleProp.ALLOW_FREE_CAM);
+        return computed().allowFreeCam;
     }
 
     // 本方法留空
@@ -3063,7 +3057,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 cameraPos(Entity entity, float ticks) {
         int index = this.getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
 
@@ -3086,7 +3080,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 cameraDirection(Entity entity, float ticks) {
         int index = this.getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
 
@@ -3123,7 +3117,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 zoomPos(Entity entity, float ticks) {
         int index = this.getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
@@ -3143,7 +3137,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 zoomDirection(Entity entity, float ticks) {
         int index = this.getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
@@ -3209,7 +3203,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public float getMass() {
-        return data().get(VehicleProp.MASS);
+        return computed().mass;
     }
 
     @Override
@@ -3265,7 +3259,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @Nullable
     public ResourceLocation getVehicleItemIcon() {
-        String location = data().get(VehicleProp.ICON).containerIcon();
+        String location = computed().icon.containerIcon();
         if (location == null) return null;
         return ResourceLocation.tryParse(location);
     }
@@ -3277,7 +3271,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param index 位置
      */
     public boolean isEnclosed(int index) {
-        var seats = data().get(VehicleProp.SEATS);
+        var seats = computed().seats();
         if (index < 0 || index >= seats.size()) return false;
 
         var seat = seats.get(index);
@@ -3300,7 +3294,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public boolean banHand(LivingEntity entity) {
         int index = getSeatIndex(entity);
         var gunData = getGunData(index);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         return gunData != null || seat.banHand;
     }
 
@@ -3310,7 +3304,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 是否隐藏
      */
     public boolean hidePassenger(int index) {
-        var seats = data().get(VehicleProp.SEATS);
+        var seats = computed().seats();
         if (index < 0 || index >= seats.size()) return false;
 
         var seat = seats.get(index);
@@ -3370,7 +3364,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @OnlyIn(Dist.CLIENT)
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         int index = this.getSeatIndex(player);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
@@ -3397,7 +3391,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
 
         int index = this.getSeatIndex(player);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
@@ -3424,7 +3418,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @OnlyIn(Dist.CLIENT)
     public boolean useFixedCameraPos(Entity entity) {
         int index = this.getSeatIndex(entity);
-        var seat = data().get(VehicleProp.SEATS).get(index);
+        var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
@@ -4679,7 +4673,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // TODO 用数据包定义
     public boolean hasDecoy() {
-        return data().get(VehicleProp.HAS_DECOY);
+        return computed().hasDecoy;
     }
 
     public boolean engineRunning() {
@@ -4694,7 +4688,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public int getHudColor() {
-        return data().get(VehicleProp.HUD_COLOR).get();
+        return computed().hudColor.get();
     }
 
     public float getPower() {
@@ -4751,7 +4745,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public VehicleType getVehicleType() {
-        return data().get(VehicleProp.TYPE);
+        return computed().type;
     }
 
     /**

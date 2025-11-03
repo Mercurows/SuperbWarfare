@@ -13,8 +13,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.List;
+
 @SuppressWarnings("unused")
-public class DefaultVehicleData implements IDBasedData {
+public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("ID")
     public String id = "";
 
@@ -63,6 +65,10 @@ public class DefaultVehicleData implements IDBasedData {
 
     @SerializedName("Seats")
     public ObjectToList<SeatInfo> seats = new ObjectToList<>();
+
+    public List<SeatInfo> seats() {
+        return seats.list;
+    }
 
     @SerializedName("UpStep")
     public float upStep = 0;

@@ -232,6 +232,13 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     private final StringPropModifier<GunData, DefaultGunData> stringPropModifier = new StringPropModifier<>();
 
+    public DefaultGunData compute() {
+        var defaultData = getDefault().copy();
+        // TODO 正确实现计算
+        return defaultData;
+    }
+
+    // TODO 替换get
     @SuppressWarnings("unchecked")
     public <T> T get(GunProp<T> prop) {
         var modifier = prop.asModifier(this);
@@ -565,13 +572,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      */
     public boolean canShoot(@Nullable Entity shooter) {
         return item.canShoot(this, shooter);
-    }
-
-    /**
-     * 当前状态能否瞄准
-     */
-    public boolean canZoom(@Nullable Entity shooter) {
-        return item.canZoom(this, shooter);
     }
 
     /**

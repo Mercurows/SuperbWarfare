@@ -503,13 +503,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         return false;
     }
 
-    /**
-     * 判断武器能否瞄准
-     */
-    public boolean canZoom(GunData data, @Nullable Entity shooter) {
-        return true;
-    }
-
     public int hideBulletChainBelowShots() {
         return -1;
     }

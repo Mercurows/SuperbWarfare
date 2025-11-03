@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -141,7 +140,8 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         inertiaRotate(1);
         lowHealthWarning();
 
-        for (int i = 1; i < data().get(VehicleProp.SEATS).size(); i++) {
+        var seats = computed().seats();
+        for (int i = 1; i < seats.size(); i++) {
             if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
                 int rpm = 20 / (mainGunRpm(mob) / 60);
                 if (tickCount % rpm == 0) {
@@ -250,6 +250,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         if (data == null) return 0;
         return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }
+
     @Override
     public int zoomFov() {
         return 3;

@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
-public class ProjectileInfo implements IDBasedData, DeserializeFromString {
+public class ProjectileInfo implements IDBasedData<ProjectileInfo>, DeserializeFromString {
 
     @SerializedName("Type")
     public String type = "superbwarfare:projectile";
