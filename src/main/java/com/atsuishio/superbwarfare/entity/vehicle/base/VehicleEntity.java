@@ -971,8 +971,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(HEALTH, this.getMaxHealth())
-                .define(OVERRIDE, "")
+        builder.define(OVERRIDE, "")
+                .define(HEALTH, this.getMaxHealth())
                 .define(LAST_ATTACKER_UUID, "undefined")
                 .define(LAST_DRIVER_UUID, "undefined")
                 .define(GUN_DATA_MAP, new HashMap<>())
