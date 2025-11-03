@@ -29,6 +29,10 @@ public class ModColor {
 
         @Override
         public void write(JsonWriter out, ModColor value) throws IOException {
+            if (value == null) {
+                value = new ModColor();
+            }
+            
             out.value(value.color);
         }
 
