@@ -1,11 +1,12 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.CustomData;
+import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
-import com.atsuishio.superbwarfare.data.StringPropModifier;
+import com.atsuishio.superbwarfare.data.JsonPropModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -13,8 +14,7 @@ import com.google.common.cache.LoadingCache;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
@@ -26,32 +26,19 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         this.vehicle = entity;
     }
 
-    private final Set<VehicleProp<?>> operatingProps = new HashSet<>();
+    private final JsonPropModifier<VehicleData, DefaultVehicleData> jsonPropModifier = new JsonPropModifier<>();
 
-    private final StringPropModifier<VehicleData, DefaultVehicleData> stringPropModifier = new StringPropModifier<>();
+    public static DefaultVehicleData compute(VehicleEntity vehicle) {
+        return from(vehicle).compute();
+    }
 
-    public <T> T get(VehicleProp<T> prop) {
-        var modifier = prop.asModifier(this);
+    public DefaultVehicleData compute() {
+        var raw = getDefault().copy();
 
-        if (operatingProps.contains(prop)) {
-            Mod.LOGGER.warn("recursive computation for property {}", prop.name);
-            return modifier.compute();
-        }
+        jsonPropModifier.update(this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE));
+        raw = jsonPropModifier.compute(this, raw);
 
-        operatingProps.add(prop);
-
-        if (this.vehicle.isInitialized()) {
-            // vehicle modifiers
-            modifier.apply(this.vehicle);
-
-            // property override tag
-            var propertyOverrideString = this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE);
-            stringPropModifier.modifyPropertyByString(propertyOverrideString, prop);
-            modifier.apply(stringPropModifier);
-        }
-
-        operatingProps.remove(prop);
-        return modifier.compute();
+        return raw;
     }
 
     public static DefaultVehicleData getDefault(String id) {
@@ -89,14 +76,16 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         return dataCache.getUnchecked(entity);
     }
 
+    @SuppressWarnings("unchecked")
     public DamageModifier damageModifier() {
         var modifier = new DamageModifier();
+        var data = compute();
 
-        if (get(VehicleProp.APPLY_DEFAULT_DAMAGE_MODIFIERS)) {
+        if (data.applyDefaultDamageModifiers) {
             modifier.addAll(DamageModifier.createDefaultModifier().toList());
             modifier.reduce(5, ModDamageTypes.VEHICLE_STRIKE);
         }
 
-        return modifier.addAll(get(VehicleProp.DAMAGE_MODIFIERS));
+        return modifier.addAll((List<DamageModify>) DataLoader.processValue(data.damageModifiers));
     }
 }

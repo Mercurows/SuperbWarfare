@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.resource.ModelResource;
 import com.google.gson.annotations.SerializedName;
 
-public class DefaultVehicleResource implements IDBasedData {
+public class DefaultVehicleResource implements IDBasedData<DefaultVehicleResource> {
 
     @SerializedName("ID")
     public String id = "";

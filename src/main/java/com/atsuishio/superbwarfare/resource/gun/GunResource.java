@@ -39,8 +39,9 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
     }
 
     public DefaultGunResource compute() {
+        var defaultResource = getDefault().copy();
         // TODO 正确实现属性计算
-        return getDefault();
+        return defaultResource;
     }
 
     public static DefaultGunResource getDefault(String id) {

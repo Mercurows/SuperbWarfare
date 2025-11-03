@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec3;
 
-public class DefaultGunResource implements IDBasedData {
+public class DefaultGunResource implements IDBasedData<DefaultGunResource> {
 
     @SerializedName("ID")
     public String id = "";

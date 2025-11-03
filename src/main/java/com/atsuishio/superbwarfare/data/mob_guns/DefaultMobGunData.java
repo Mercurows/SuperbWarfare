@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 
-public class DefaultMobGunData implements IDBasedData {
+public class DefaultMobGunData implements IDBasedData<DefaultMobGunData> {
     @SerializedName("ID")
     String id = "";
 

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -22,7 +22,7 @@ public class LivingEntityRendererMixin<T extends LivingEntity> {
             float a = Mth.wrapDegrees(Mth.lerp(tickDelta, entity.yBodyRotO, entity.yBodyRot) - Mth.lerp(tickDelta, vehicle.yRotO, vehicle.getYRot()));
 
             int index = vehicle.getSeatIndex(entity);
-            var seat = vehicle.data().get(VehicleProp.SEATS).get(index);
+            var seat = VehicleData.compute(vehicle).seats().get(index);
             if (seat.transform.equals("VehicleFlat")) return;
 
             if (entity.yBodyRot == vehicle.getYRot()) {

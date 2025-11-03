@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
-import com.atsuishio.superbwarfare.data.vehicle.VehicleProp;
+import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
@@ -65,7 +65,7 @@ public class GameRendererMixin {
             float a = Mth.wrapDegrees(mainCamera.getYRot() - Mth.lerp(tickDelta, vehicle.yRotO, vehicle.getYRot()));
 
             int index = vehicle.getSeatIndex(entity);
-            var seat = vehicle.data().get(VehicleProp.SEATS).get(index);
+            var seat = VehicleData.compute(vehicle).seats().get(index);
 
             if (seat.transform.equals("VehicleFlat")) {
                 a = 0;
