@@ -169,11 +169,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     }
 
     @Override
-    public float rotateYOffset() {
-        return 2.2f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 

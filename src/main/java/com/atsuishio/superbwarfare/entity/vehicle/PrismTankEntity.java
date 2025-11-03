@@ -461,11 +461,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public float rotateYOffset() {
-        return 3.5f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 

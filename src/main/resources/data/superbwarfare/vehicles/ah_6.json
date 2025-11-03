@@ -136,6 +136,7 @@
     "LiftSpeed": 1
   },
   "UpStep": 1.1,
+  "RotateOffsetHeight": 1.45,
   "Mass": 1.2,
   "AllowFreeCam": true,
   "HasDecoy": true,

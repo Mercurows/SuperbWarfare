@@ -933,11 +933,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         return 0.3;
     }
 
-    @Override
-    public float rotateYOffset() {
-        return 2.375f;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

@@ -770,12 +770,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return new Vec3(0f, 0.35984375f, 0.0551625f);
     }
 
-    @Override
-    public float rotateYOffset() {
-        return 3.5f;
-    }
-
-
     private PlayState cannonShootPredicate(AnimationState<Yx100Entity> event) {
         if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire"));

@@ -61,6 +61,7 @@
   ],
   "HasDecoy": true,
   "Mass": 0.7,
+  "RotateOffsetHeight": 1,
   "DamageModifiers": [
     "All * 0.5",
     "minecraft:arrow * 0.2",

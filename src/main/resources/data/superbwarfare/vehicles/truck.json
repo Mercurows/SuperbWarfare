@@ -44,6 +44,7 @@
   },
   "UpStep": 1.5,
   "Mass": 20,
+  "RotateOffsetHeight": 2.2,
   "DamageModifiers": [
     "All * 0.5",
     "minecraft:arrow * 0.2",

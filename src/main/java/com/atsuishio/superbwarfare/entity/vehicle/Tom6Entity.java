@@ -270,11 +270,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         return 0.3;
     }
 
-    @Override
-    public float rotateYOffset() {
-        return 0.5f;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

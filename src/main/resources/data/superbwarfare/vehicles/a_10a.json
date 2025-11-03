@@ -37,6 +37,7 @@
     "All * 0.75",
     "All - 7"
   ],
+  "RotateOffsetHeight": 2.375,
   "DestroyInfo": {
     "ParticleType": "Giant",
     "ExplosionDamage": 800,

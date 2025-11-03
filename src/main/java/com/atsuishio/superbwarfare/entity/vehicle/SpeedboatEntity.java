@@ -324,11 +324,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         return new Vec3(0, 2.5616625, -0.565625);
     }
 
-    @Override
-    public float rotateYOffset() {
-        return 1f;
-    }
-
     private PlayState firePredicate(AnimationState<SpeedboatEntity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.speedboat.fire"));

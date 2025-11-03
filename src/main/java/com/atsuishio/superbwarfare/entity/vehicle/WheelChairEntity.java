@@ -224,11 +224,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public float rotateYOffset() {
-        return 0.4f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
