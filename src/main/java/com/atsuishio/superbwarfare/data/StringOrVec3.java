@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -15,6 +16,10 @@ public class StringOrVec3 {
     public StringOrVec3(String string) {
         this.string = string;
         this.vec3 = null;
+    }
+
+    public StringOrVec3() {
+        this(Vec3.ZERO);
     }
 
     public StringOrVec3(Vec3 vec3) {
@@ -34,6 +39,11 @@ public class StringOrVec3 {
 
         @Override
         public void write(JsonWriter out, StringOrVec3 value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+                return;
+            }
+
             if (value.string != null) {
                 out.value(value.string);
             } else {
@@ -48,9 +58,16 @@ public class StringOrVec3 {
 
         @Override
         public StringOrVec3 read(JsonReader in) throws IOException {
+            if (in.peek() == JsonToken.NULL) {
+                Mod.LOGGER.warn("null StringOrVec3 value!");
+                return new StringOrVec3();
+            }
+
             if (in.peek() == JsonToken.STRING) {
                 return new StringOrVec3(in.nextString());
-            } else {
+            }
+
+            if (in.peek() == JsonToken.BEGIN_ARRAY) {
                 in.beginArray();
                 var x = in.nextDouble();
                 var y = in.nextDouble();
@@ -58,6 +75,9 @@ public class StringOrVec3 {
                 in.endArray();
                 return new StringOrVec3(new Vec3(x, y, z));
             }
+
+            Mod.LOGGER.warn("invalid StringOrVec3 value!");
+            return new StringOrVec3();
         }
     }
 }
