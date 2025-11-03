@@ -183,11 +183,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return new Vec3(0, 2.4003, 0);
     }
 
-    @Override
-    public float rotateYOffset() {
-        return 2.2f;
-    }
-
     // TODO 正确播放动画
     private PlayState firePredicate(AnimationState<Lav150Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {

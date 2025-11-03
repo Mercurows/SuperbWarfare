@@ -470,6 +470,7 @@
   },
   "HasDecoy": true,
   "UpStep": 2.25,
+  "RotateOffsetHeight": 2.7,
   "Mass": 14.6,
   "DamageModifiers": [
     "All * 0.2",

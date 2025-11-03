@@ -13,6 +13,7 @@
     "MaxYaw": 90
   },
   "UpStep": 1.1,
+  "RotateOffsetHeight": 0.4,
   "Mass": 0.03,
   "DamageModifiers": [
     "superbwarfare:vehicle_strike * 2",

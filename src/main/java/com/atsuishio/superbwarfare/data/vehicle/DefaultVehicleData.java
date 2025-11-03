@@ -117,6 +117,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("EngineInfo")
     public JsonObject engineInfo = new JsonObject();
 
+    @SerializedName("RotateOffsetHeight")
+    public float rotateOffsetHeight = 0;
+
     @Override
     public void limit() {
         this.maxHealth = Math.max(this.maxHealth, 0);

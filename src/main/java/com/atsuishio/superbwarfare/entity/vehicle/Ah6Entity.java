@@ -202,11 +202,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public float rotateYOffset() {
-        return 1.45f;
-    }
-
-    @Override
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         Matrix4f transform = getVehicleTransform(1);
         Vector4f worldPosition;

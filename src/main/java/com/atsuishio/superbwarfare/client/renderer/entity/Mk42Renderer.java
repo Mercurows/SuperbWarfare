@@ -16,7 +16,7 @@ public class Mk42Renderer extends VehicleRenderer<Mk42Entity> {
 
     @Override
     public void vehicleAxis(Mk42Entity entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
-        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
+        Vec3 root = new Vec3(0, entityIn.rotateOffsetHeight(), 0);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
     }
 }

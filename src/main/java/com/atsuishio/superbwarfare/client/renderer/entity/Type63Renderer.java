@@ -17,7 +17,7 @@ public class Type63Renderer extends VehicleRenderer<Type63Entity> {
 
     @Override
     public void vehicleAxis(Type63Entity entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
-        Vec3 root = new Vec3(0, entityIn.rotateYOffset(), 0);
+        Vec3 root = new Vec3(0, entityIn.rotateOffsetHeight(), 0);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-entityYaw), (float) root.x, (float) root.y, (float) root.z);
     }
 }

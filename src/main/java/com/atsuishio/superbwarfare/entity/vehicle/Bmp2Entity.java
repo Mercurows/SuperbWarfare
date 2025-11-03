@@ -202,10 +202,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         return new Vec3(0, 2.25, -0.703125);
     }
 
-    @Override
-    public float rotateYOffset() {
-        return 2.7f;
-    }
 
     private PlayState firePredicate(AnimationState<Bmp2Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
