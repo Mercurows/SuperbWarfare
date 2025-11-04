@@ -43,11 +43,13 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
 
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
+        if (player == null) return;
+
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
         Vec3 viewVec = new Vec3(camera.getLookVector());
         PoseStack poseStack = guiGraphics.pose();
-        if (player == null) return;
+
         var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         ItemStack stack = player.getMainHandItem();
@@ -56,7 +58,6 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
 
         double entityRange = 0;
         Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get());
-
         if (lookingEntity instanceof SmokeDecoyEntity) return;
 
         if (lookingEntity != null) {
@@ -71,11 +72,11 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
 
         if (lookAtEntity && lookingEntity instanceof VehicleEntity vehicle && !usingDrone && !outOfRange) {
             if (entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()) return;
+
             Vec3 pos = new Vec3(Mth.lerp(partialTick, lookingEntity.xo, lookingEntity.getX()), Mth.lerp(partialTick, lookingEntity.yo, lookingEntity.getY()) + lookingEntity.getBbHeight() / 2, Mth.lerp(partialTick, lookingEntity.zo, lookingEntity.getZ()))
                     .add(new Vec3(0, lookingEntity.getBbHeight() / 2 + 0.5, 0));
 
             if (VectorUtil.canSee(pos)) {
-
                 Vec3 point = VectorUtil.worldToScreen(pos);
 
                 float x = (float) point.x;
@@ -95,53 +96,41 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
                     if (controller != null) {
                         color = controller.getTeamColor();
                         String info = controller.getDisplayName().getString() + (controller.getTeam() == null ? "" : " <" + (controller.getTeam().getName()) + ">");
-                        int width = Minecraft.getInstance().font.width(info);
-                        guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
+                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
                     } else {
                         String info = lookingEntity.getDisplayName().getString();
-                        int width = Minecraft.getInstance().font.width(info);
-                        guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
+                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
                     }
                 } else if (vehicle instanceof OwnableEntity ownableEntity) {
                     if (ownableEntity.getOwner() instanceof Player player1) {
                         color = player1.getTeamColor();
                         String info = player1.getDisplayName().getString() + (player1.getTeam() == null ? "" : " <" + (player1.getTeam().getName()) + ">");
-                        int width = Minecraft.getInstance().font.width(info);
-                        guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
+                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
                     } else {
                         String info = lookingEntity.getDisplayName().getString();
-                        int width = Minecraft.getInstance().font.width(info);
-                        guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
+                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
                     }
                 } else {
                     if (vehicle.getMaxPassengers() > 0 && vehicle.getFirstPassenger() instanceof Player player1) {
                         color = player1.getTeamColor();
                         String info = player1.getDisplayName().getString() + (player1.getTeam() == null ? "" : " <" + (player1.getTeam().getName()) + ">");
-                        int width = Minecraft.getInstance().font.width(info);
-                        guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
+                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
                     } else {
                         String info = vehicle.getDisplayName().getString();
-                        int width = Minecraft.getInstance().font.width(info);
-                        guiGraphics.drawString(font, Component.literal(info), -width / 2, -13, color, false);
+                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
                     }
                 }
 
-
                 String range = FormatTool.format1D(entityRange, "M");
-                int width2 = Minecraft.getInstance().font.width(range);
                 int argb = (255 << 24) | color;
 
-                guiGraphics.drawString(font, Component.literal(range), -width2 / 2, 7, color, false);
+                guiGraphics.drawString(font, Component.literal(range), -font.width(range) / 2, 7, color, false);
 
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, -2f, 40.5f, 2f, 0, 0x80000000);
-
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -41.5f, -3, -40.5f, 3, 0, argb);
-
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, -3, 40.5f, -2, 0, argb);
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, 2, 40.5f, 3, 0, argb);
-
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), 40.5f, -3, 41.5f, 3, 0, argb);
-
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40, -1.5f, -40 + 80 * (vehicle.getHealth() / vehicle.getMaxHealth()), 1.5f, 0, argb);
 
                 poseStack.popPose();

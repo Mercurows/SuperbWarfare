@@ -34,10 +34,10 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("handsome_frame");
 
-    private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
-    private static final ResourceLocation FRAME_WEAK = Mod.loc("textures/screens/frame/frame_weak.png");
-    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
-    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
+    private static final ResourceLocation FRAME = Mod.loc("textures/overlay/frame/frame.png");
+    private static final ResourceLocation FRAME_WEAK = Mod.loc("textures/overlay/frame/frame_weak.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target_triangle.png");
+    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
 
     @Override
     @ParametersAreNonnullByDefault

@@ -47,9 +47,10 @@ public class AircraftOverlay implements LayeredDraw.Layer {
     private static float lerpLock = 1;
     private static float lerpG = 1;
 
-    private static final ResourceLocation FRAME = Mod.loc("textures/screens/aircraft/frame.png");
-    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/aircraft/frame_target.png");
-    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/aircraft/frame_lock.png");
+    private static final ResourceLocation FRAME_GREEN = Mod.loc("textures/overlay/frame/frame_green.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target.png");
+    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
+
     private static final ResourceLocation IND_1 = Mod.loc("textures/screens/aircraft/locking_ind1.png");
     private static final ResourceLocation IND_2 = Mod.loc("textures/screens/aircraft/locking_ind2.png");
     private static final ResourceLocation IND_3 = Mod.loc("textures/screens/aircraft/locking_ind3.png");
@@ -355,7 +356,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
                             RenderHelper.preciseBlit(guiGraphics, IND_4, x - 12 + lockTime, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                             RenderHelper.preciseBlit(guiGraphics, FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         } else {
-                            RenderHelper.preciseBlit(guiGraphics, FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
+                            RenderHelper.preciseBlit(guiGraphics, FRAME_GREEN, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
                         }
                         poseStack.popPose();
                     }

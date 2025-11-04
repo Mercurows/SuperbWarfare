@@ -39,7 +39,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
     public static final ResourceLocation ID = Mod.loc("javelin_hud");
 
     private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
-    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target_triangle.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
     private static final ResourceLocation JAVELIN_HUD = Mod.loc("textures/screens/javelin/javelin_hud.png");
     private static final ResourceLocation TOP = Mod.loc("textures/screens/javelin/top.png");
