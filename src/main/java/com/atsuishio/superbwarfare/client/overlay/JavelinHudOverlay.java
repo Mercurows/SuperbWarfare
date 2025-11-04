@@ -38,15 +38,15 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("javelin_hud");
 
-    private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
-    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/screens/frame/frame_target_triangle.png");
-    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/screens/frame/frame_lock.png");
-    private static final ResourceLocation JAVELIN_HUD = Mod.loc("textures/screens/javelin/javelin_hud.png");
-    private static final ResourceLocation TOP = Mod.loc("textures/screens/javelin/top.png");
-    private static final ResourceLocation DIR = Mod.loc("textures/screens/javelin/dir.png");
-    private static final ResourceLocation MISSILE_GREEN = Mod.loc("textures/screens/javelin/missile_green.png");
-    private static final ResourceLocation MISSILE_RED = Mod.loc("textures/screens/javelin/missile_red.png");
-    private static final ResourceLocation SEEK = Mod.loc("textures/screens/javelin/seek.png");
+    private static final ResourceLocation FRAME = Mod.loc("textures/overlay/frame/frame.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target_triangle.png");
+    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
+    private static final ResourceLocation JAVELIN_HUD = Mod.loc("textures/overlay/javelin/javelin_hud.png");
+    private static final ResourceLocation TOP = Mod.loc("textures/overlay/javelin/top.png");
+    private static final ResourceLocation DIR = Mod.loc("textures/overlay/javelin/dir.png");
+    private static final ResourceLocation MISSILE_GREEN = Mod.loc("textures/overlay/javelin/missile_green.png");
+    private static final ResourceLocation MISSILE_RED = Mod.loc("textures/overlay/javelin/missile_red.png");
+    private static final ResourceLocation SEEK = Mod.loc("textures/overlay/javelin/seek.png");
 
     private static float scopeScale = 1;
 

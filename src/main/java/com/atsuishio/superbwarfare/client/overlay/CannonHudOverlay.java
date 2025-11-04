@@ -46,17 +46,17 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("cannon_hud");
 
-    private static final ResourceLocation COMPASS = Mod.loc("textures/screens/compass.png");
-    private static final ResourceLocation DRONE = Mod.loc("textures/screens/drone.png");
-    private static final ResourceLocation ROLL_IND_WHITE = Mod.loc("textures/screens/roll_ind_white.png");
-    private static final ResourceLocation CANNON_PITCH = Mod.loc("textures/screens/cannon/cannon_pitch.png");
-    private static final ResourceLocation CANNON_PITCH_IND = Mod.loc("textures/screens/cannon/cannon_pitch_ind.png");
-    private static final ResourceLocation INDICATOR = Mod.loc("textures/screens/cannon/indicator.png");
-    private static final ResourceLocation LASER_CANNON_CROSSHAIR = Mod.loc("textures/screens/cannon/laser_cannon_crosshair.png");
-    private static final ResourceLocation CANNON_CROSSHAIR = Mod.loc("textures/screens/cannon/cannon_crosshair.png");
-    private static final ResourceLocation CANNON_CROSSHAIR_NOTZOOM = Mod.loc("textures/screens/cannon/common_cannon.png");
-    private static final ResourceLocation HPJ_CROSSHAIR = Mod.loc("textures/screens/cannon/hpj_crosshair.png");
-    private static final ResourceLocation HPJ_CROSSHAIR_NOTZOOM = Mod.loc("textures/screens/cannon/hpj_crosshair_notzoom.png");
+    private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
+    private static final ResourceLocation CROSSHAIR = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
+    private static final ResourceLocation ROLL_IND_WHITE = Mod.loc("textures/overlay/vehicle/cannon/roll_ind_white.png");
+    private static final ResourceLocation CANNON_PITCH = Mod.loc("textures/overlay/vehicle/cannon/cannon_pitch.png");
+    private static final ResourceLocation CANNON_PITCH_IND = Mod.loc("textures/overlay/vehicle/cannon/cannon_pitch_ind.png");
+    private static final ResourceLocation INDICATOR = Mod.loc("textures/overlay/vehicle/cannon/indicator.png");
+    private static final ResourceLocation LASER_CANNON_CROSSHAIR = Mod.loc("textures/overlay/vehicle/cannon/laser_cannon_crosshair.png");
+    private static final ResourceLocation CANNON_CROSSHAIR = Mod.loc("textures/overlay/vehicle/cannon/cannon_crosshair.png");
+    private static final ResourceLocation CANNON_CROSSHAIR_NOTZOOM = Mod.loc("textures/overlay/vehicle/cannon/common_cannon.png");
+    private static final ResourceLocation HPJ_CROSSHAIR = Mod.loc("textures/overlay/vehicle/cannon/hpj_crosshair.png");
+    private static final ResourceLocation HPJ_CROSSHAIR_NOTZOOM = Mod.loc("textures/overlay/vehicle/cannon/hpj_crosshair_not_zoom.png");
 
     @Override
     @ParametersAreNonnullByDefault
@@ -186,7 +186,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                     float x = (float) p.x;
                     float y = (float) p.y;
 
-                    preciseBlit(guiGraphics, DRONE, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
+                    preciseBlit(guiGraphics, CROSSHAIR, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
                     renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
                     poseStack.pushPose();

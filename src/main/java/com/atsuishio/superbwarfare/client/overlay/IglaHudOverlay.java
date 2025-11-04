@@ -36,16 +36,16 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 @OnlyIn(Dist.CLIENT)
 public class IglaHudOverlay implements LayeredDraw.Layer {
 
-    public static final ResourceLocation ID = Mod.loc("igla_hud");
+    public static final ResourceLocation ID = Mod.loc("igla_9k38_hud");
 
-    private static final ResourceLocation FRAME = Mod.loc("textures/screens/igla_9k38/frame.png");
-    private static final ResourceLocation PART_1 = Mod.loc("textures/screens/igla_9k38/part_1.png");
-    private static final ResourceLocation PART_2 = Mod.loc("textures/screens/igla_9k38/part_2.png");
-    private static final ResourceLocation PART_3 = Mod.loc("textures/screens/igla_9k38/part_3.png");
-    private static final ResourceLocation PART_4 = Mod.loc("textures/screens/igla_9k38/part_4.png");
-    private static final ResourceLocation HOLD = Mod.loc("textures/screens/igla_9k38/hold.png");
-    private static final ResourceLocation SHOOT = Mod.loc("textures/screens/igla_9k38/shoot.png");
-    private static final ResourceLocation IGLA_SCOPE = Mod.loc("textures/screens/igla_9k38/igla_scope.png");
+    private static final ResourceLocation FRAME = Mod.loc("textures/overlay/frame/frame_diamond.png");
+    private static final ResourceLocation PART_1 = Mod.loc("textures/overlay/igla_9k38/part_1.png");
+    private static final ResourceLocation PART_2 = Mod.loc("textures/overlay/igla_9k38/part_2.png");
+    private static final ResourceLocation PART_3 = Mod.loc("textures/overlay/igla_9k38/part_3.png");
+    private static final ResourceLocation PART_4 = Mod.loc("textures/overlay/igla_9k38/part_4.png");
+    private static final ResourceLocation HOLD = Mod.loc("textures/overlay/igla_9k38/hold.png");
+    private static final ResourceLocation SHOOT = Mod.loc("textures/overlay/igla_9k38/shoot.png");
+    private static final ResourceLocation IGLA_SCOPE = Mod.loc("textures/overlay/igla_9k38/igla_scope.png");
 
     private static float scopeScale = 1;
     private static float lerpSeeking = 1;

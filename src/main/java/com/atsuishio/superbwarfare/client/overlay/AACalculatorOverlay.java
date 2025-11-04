@@ -32,7 +32,7 @@ public class AACalculatorOverlay implements LayeredDraw.Layer {
 
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target_triangle.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
-    private static final ResourceLocation SHOOT_INDICATOR = Mod.loc("textures/screens/igla_9k38/frame.png");
+    private static final ResourceLocation SHOOT_INDICATOR = Mod.loc("textures/overlay/frame/frame_diamond.png");
     private static final ResourceLocation BLOCK = Mod.loc("textures/overlay/misc/block.png");
 
     private static Entity lockedEntity;

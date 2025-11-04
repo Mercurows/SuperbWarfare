@@ -30,7 +30,7 @@ public class RedTriangleOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("red_triangle");
 
-    private static final ResourceLocation TRIANGLE = Mod.loc("textures/screens/red_triangle.png");
+    private static final ResourceLocation TRIANGLE = Mod.loc("textures/overlay/rpg/red_triangle.png");
 
     @Override
     @ParametersAreNonnullByDefault
@@ -42,14 +42,13 @@ public class RedTriangleOverlay implements LayeredDraw.Layer {
 
         Player player = mc.player;
         if (player == null) return;
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) return;
 
         ItemStack stack = player.getMainHandItem();
         if (stack.is(ModItems.RPG.get()) && GunData.from(stack).selectedAmmoType.get() == 0) {
-            if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
-                return;
-
             Entity idf = SeekTool.seekLivingEntity(player, 128, 6);
             if (idf == null) return;
+
             double distance = idf.position().distanceTo(cameraPos);
             Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.xo, idf.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), idf.zo, idf.getZ()));
             Vec3 point = VectorUtil.worldToScreen(pos);

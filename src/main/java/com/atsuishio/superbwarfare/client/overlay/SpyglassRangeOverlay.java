@@ -42,8 +42,8 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("spyglass_range");
 
-    public static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
-    private static final ResourceLocation SPYGLASS = Mod.loc("textures/screens/spyglass.png");
+    private static final ResourceLocation INDICATOR = Mod.loc("textures/overlay/spyglass/indicator.png");
+    private static final ResourceLocation SPYGLASS = Mod.loc("textures/overlay/spyglass/spyglass.png");
 
     private static float scopeScale = 1;
     private static float lerpHoldArtilleryIndicator;

@@ -51,22 +51,22 @@ public class AircraftOverlay implements LayeredDraw.Layer {
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
 
-    private static final ResourceLocation IND_1 = Mod.loc("textures/screens/aircraft/locking_ind1.png");
-    private static final ResourceLocation IND_2 = Mod.loc("textures/screens/aircraft/locking_ind2.png");
-    private static final ResourceLocation IND_3 = Mod.loc("textures/screens/aircraft/locking_ind3.png");
-    private static final ResourceLocation IND_4 = Mod.loc("textures/screens/aircraft/locking_ind4.png");
-    private static final ResourceLocation BOMB_SCOPE = Mod.loc("textures/screens/aircraft/bomb_scope.png");
-    private static final ResourceLocation BOMB_SCOPE_PITCH = Mod.loc("textures/screens/aircraft/bomb_scope_pitch.png");
-    private static final ResourceLocation HUD_BASE_MISSILE = Mod.loc("textures/screens/aircraft/hud_base_missile.png");
-    private static final ResourceLocation HUD_BASE = Mod.loc("textures/screens/aircraft/hud_base.png");
-    private static final ResourceLocation HUD_LINE = Mod.loc("textures/screens/aircraft/hud_line.png");
-    private static final ResourceLocation HUD_IND = Mod.loc("textures/screens/aircraft/hud_ind.png");
-    private static final ResourceLocation HUD_BASE2 = Mod.loc("textures/screens/aircraft/hud_base2.png");
-    private static final ResourceLocation COMPASS_IND = Mod.loc("textures/screens/aircraft/compass_ind.png");
-    private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/screens/aircraft/crosshair_ind.png");
+    private static final ResourceLocation IND_1 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind1.png");
+    private static final ResourceLocation IND_2 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind2.png");
+    private static final ResourceLocation IND_3 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind3.png");
+    private static final ResourceLocation IND_4 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind4.png");
+    private static final ResourceLocation BOMB_SCOPE = Mod.loc("textures/overlay/vehicle/aircraft/bomb_scope.png");
+    private static final ResourceLocation BOMB_SCOPE_PITCH = Mod.loc("textures/overlay/vehicle/aircraft/bomb_scope_pitch.png");
+    private static final ResourceLocation HUD_BASE_MISSILE = Mod.loc("textures/overlay/vehicle/aircraft/hud_base_missile.png");
+    private static final ResourceLocation HUD_BASE = Mod.loc("textures/overlay/vehicle/aircraft/hud_base.png");
+    private static final ResourceLocation HUD_LINE = Mod.loc("textures/overlay/vehicle/aircraft/hud_line.png");
+    private static final ResourceLocation HUD_IND = Mod.loc("textures/overlay/vehicle/aircraft/hud_ind.png");
+    private static final ResourceLocation HUD_BASE2 = Mod.loc("textures/overlay/vehicle/aircraft/hud_base2.png");
+    private static final ResourceLocation COMPASS_IND = Mod.loc("textures/overlay/vehicle/aircraft/compass_ind.png");
+    private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/overlay/vehicle/aircraft/crosshair_ind.png");
 
-    private static final ResourceLocation HELICOPTER_ROLL_IND = Mod.loc("textures/screens/helicopter/roll_ind.png");
-    private static final ResourceLocation HELICOPTER_SPEED_FRAME = Mod.loc("textures/screens/helicopter/speed_frame.png");
+    private static final ResourceLocation HELICOPTER_ROLL_IND = Mod.loc("textures/overlay/vehicle/helicopter/roll_ind.png");
+    private static final ResourceLocation HELICOPTER_SPEED_FRAME = Mod.loc("textures/overlay/vehicle/helicopter/speed_frame.png");
 
     private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
     private static final ResourceLocation CROSSHAIR_3P = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
