@@ -39,7 +39,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -232,14 +231,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public boolean canCollideHardBlock() {
         return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
-    }
-
-    @Override
-    public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
-        super.move(movementType, movement);
-        if (this.isInWater() && horizontalCollision) {
-            setDeltaMovement(this.getDeltaMovement().add(0, 0.07, 0));
-        }
     }
 
     @Override

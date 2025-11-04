@@ -19,7 +19,6 @@ import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
@@ -36,7 +35,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -610,49 +608,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         setDeltaMovement(getDeltaMovement().add(force.scale(getDeltaMovement().dot(getViewVector(1)) * 0.022 * (1 + Math.sin((onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
 
         this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale(0.4 * this.entityData.get(POWER))));
-    }
-
-    @Override
-    public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
-        if (!this.level().isClientSide()) {
-            VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
-        }
-
-        super.move(movementType, movement);
-        if (level() instanceof ServerLevel) {
-
-            if (lastTickSpeed < 0.3 || collisionCoolDown > 0) return;
-            Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
-
-            if ((verticalCollision)) {
-                if (entityData.get(GEAR_ROT) > 10 || Mth.abs(getRoll()) > 20 || Mth.abs(getXRot()) > 30) {
-                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) ((8 + Mth.abs(getRoll() * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)));
-                    if (!this.level().isClientSide) {
-                        this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-                    }
-                    this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
-                } else {
-                    if (Mth.abs((float) lastTickVerticalSpeed) > 0.4) {
-                        this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (96 * ((Mth.abs((float) lastTickVerticalSpeed) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
-                        if (!this.level().isClientSide) {
-                            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-                        }
-                        this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
-                    }
-                }
-
-            }
-
-            if (this.horizontalCollision) {
-                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (126 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
-                this.bounceHorizontal(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
-                if (!this.level().isClientSide) {
-                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-                }
-                collisionCoolDown = 4;
-                crash = true;
-            }
-        }
     }
 
     @Override

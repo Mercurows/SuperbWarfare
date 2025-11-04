@@ -24,6 +24,7 @@ import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -113,6 +114,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterAutoLandingSystem.findNearestLandingPos;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterAutoLandingSystem.updateAutoLanding;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -3767,6 +3770,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         float diffZ;
 
         if (getHealth() > 0.1f * getMaxHealth()) {
+            var landingPos = findNearestLandingPos(this, 30);
             if (pilot == null) {
                 setLeftInputDown(false);
                 setRightInputDown(false);
@@ -3780,7 +3784,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     this.entityData.set(POWER, this.entityData.get(POWER) * 0.99f);
                 }
             } else {
-                if (!landingInputDown() || findNearestLandingPos(30) == null) {
+                if (!landingInputDown() || landingPos == null) {
                     if (rightInputDown()) {
                         holdTick++;
                         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 2f * Math.min(holdTick, 7) * this.entityData.get(POWER));
@@ -3795,11 +3799,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 }
 
                 this.setYRot(this.getYRot() + yawSpeed * Mth.clamp((this.onGround() ? 0.1f : 2f) * getMouseMoveSpeedX() * this.entityData.get(PROPELLER_ROT) + (this.entityData.get(ENGINE2_DAMAGED) ? 25 : 0) * this.entityData.get(PROPELLER_ROT), -10f, 10f));
-                if (findNearestLandingPos(30) != null && !onGround() && landingInputDown()) {
-                    this.updateAutoLanding(findNearestLandingPos(30));
+                if (landingPos != null && !onGround() && landingInputDown()) {
+                    updateAutoLanding(this, landingPos);
                 }
 
-                if (pilot instanceof Player player && level().isClientSide && findNearestLandingPos(30) != null && !onGround()) {
+                if (pilot instanceof Player player && level().isClientSide && landingPos != null && !onGround()) {
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.press_s_to_landing"), true);
                 }
             }
@@ -3890,108 +3894,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             engineStart = false;
             engineStartOver = false;
         }
-    }
-
-    /**
-     * 查找实体下方半球区域内最近的降落辅助方块位置
-     *
-     * @param radius 搜索半径
-     * @return 钻石块顶面位置，如果未找到则返回null
-     */
-    public Vec3 findNearestLandingPos(int radius) {
-        Level world = this.level();
-        BlockPos entityPos = this.blockPosition();
-        List<BlockPos> landingBlocks = new ArrayList<>();
-
-        // 遍历半球区域内的所有方块
-        for (int x = -radius; x <= radius; x++) {
-            for (int z = -radius; z <= radius; z++) {
-                for (int y = -radius; y <= 0; y++) { // 只检查实体下方的区域
-                    // 检查是否在半球内 (x² + y² + z² ≤ r²)
-                    if (x * x + y * y + z * z <= radius * radius) {
-                        BlockPos checkPos = entityPos.offset(x, y, z);
-
-                        // 检查是否为降落辅助方块
-                        if (world.getBlockState(checkPos).is(ModTags.Blocks.AUTO_LANDING)) {
-                            landingBlocks.add(checkPos);
-                        }
-                    }
-                }
-            }
-        }
-
-        // 如果没有找到降落辅助方块，返回null
-        if (landingBlocks.isEmpty()) {
-            return null;
-        }
-
-        // 按距离排序，找到最近的降落辅助方块
-        landingBlocks.sort(Comparator.comparingDouble(pos ->
-                this.position().distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5)));
-
-        return landingBlocks.getFirst().getCenter();
-    }
-
-    public void updateAutoLanding(Vec3 landingTarget) {
-        // 计算水平方向上的偏移向量 (忽略Y轴)
-        Vec3 currentPos = this.position();
-        Vec3 horizontalOffset = new Vec3(
-                landingTarget.x - currentPos.x,
-                0,
-                landingTarget.z - currentPos.z
-        );
-
-        setDeltaMovement(getDeltaMovement().multiply(0.98, 0.99, 0.98));
-
-        // 计算距离和方向
-        double horizontalDistance = horizontalOffset.length();
-        Vec3 horizontalDirection = horizontalDistance > 0 ?
-                horizontalOffset.normalize() : Vec3.ZERO;
-
-        // 如果已经非常接近目标点，保持水平姿态
-        // 位置容差
-        float positionTolerance = 0.1f;
-        // 倾斜平滑因子
-        float tiltSmoothingFactor = 0.1f;
-        if (horizontalDistance < positionTolerance) {
-            // 平滑过渡到水平姿态
-            this.setXRot(lerpAngle(this.getXRot(), 0, tiltSmoothingFactor));
-            this.setZRot(lerpAngle(this.getRoll(), 0, tiltSmoothingFactor));
-            return;
-        }
-
-        // 计算需要的倾斜角度 (与距离成正比，但有最大限制)
-        // 直升机辅助降落这一块
-        // 最大倾斜角度(度)
-        float maxTiltAngle = 15.0f;
-        float targetTilt = (float) Math.min(maxTiltAngle, horizontalDistance * 2);
-
-        // 将世界方向转换为本地倾斜方向
-        // 需要考虑直升机的当前偏航角(yRot)
-        float yawRad = Math.toRadians(-this.getYRot());
-        Vec3 localDirection = new Vec3(
-                horizontalDirection.x * Math.cos(yawRad) - horizontalDirection.z * Math.sin(yawRad),
-                0,
-                horizontalDirection.x * Math.sin(yawRad) + horizontalDirection.z * Math.cos(yawRad)
-        );
-
-        // 计算目标俯仰和滚转
-        float targetXRot = (float) (-localDirection.z * targetTilt);
-        float targetZRot = (float) (localDirection.x * targetTilt);
-
-        // 平滑过渡到目标姿态
-        this.setXRot(lerpAngle(this.getXRot(), -targetXRot, tiltSmoothingFactor));
-        this.setZRot(lerpAngle(this.getRoll(), -targetZRot, tiltSmoothingFactor));
-    }
-
-    // 角度线性插值方法
-    private float lerpAngle(float current, float target, float factor) {
-        // 处理角度环绕
-        float diff = target - current;
-        while (diff < -180) diff += 360;
-        while (diff > 180) diff -= 360;
-
-        return current + diff * factor;
     }
 
     //烟雾诱饵
@@ -4344,8 +4246,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
 
         if (verticalCollision) {
-            if (this.getVehicleType() == VehicleType.HELICOPTER) {
-                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (60 * ((lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
+            if (this.getVehicleType() == VehicleType.AIRPLANE && ((entityData.get(GEAR_ROT) > 10 && !(this instanceof Tom6Entity)) || Mth.abs(getRoll()) > 20 || Mth.abs(getXRot()) > 30)) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) ((8 + Mth.abs(getRoll() * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)));
+                if (!this.level().isClientSide) {
+                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
+                }
+                this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
+            } else if (this.getVehicleType() == VehicleType.HELICOPTER) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (60 * ((lastTickSpeed - 0.5) * (lastTickSpeed - 0.5))));
                 this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
             } else if (Mth.abs((float) lastTickVerticalSpeed) > 0.4) {
                 this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (96 * ((Mth.abs((float) lastTickVerticalSpeed) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
