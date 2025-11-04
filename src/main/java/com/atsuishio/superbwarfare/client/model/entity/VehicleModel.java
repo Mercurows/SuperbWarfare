@@ -46,25 +46,47 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
         return getDefault(vehicle).getModel().animation;
     }
 
+    protected ResourceLocation modelCache = null;
+
     @Override
     public ResourceLocation getModelResource(T vehicle) {
         int lodLevel = getLODLevel(vehicle);
         var lodModel = getDefault(vehicle).getModel().getLODModel(lodLevel);
+
         if (lodModel == null) {
+            if (modelCache != null) {
+                return modelCache;
+            }
+
             LOGGER.log(vehicle, logger -> logger.error("failed to load model for {}!", vehicle));
-            return Mod.loc("geo/" + VehicleResource.getRegistryId(vehicle.getType()) + ".geo.json");
+            var loc = Mod.loc("geo/" + VehicleResource.getRegistryId(vehicle.getType()) + ".geo.json");
+            modelCache = loc;
+            return loc;
         }
+
+        modelCache = lodModel;
         return lodModel;
     }
+
+    protected ResourceLocation textureCache = null;
 
     @Override
     public ResourceLocation getTextureResource(T vehicle) {
         int lodLevel = getLODLevel(vehicle);
         var lodTexture = getDefault(vehicle).getModel().getLODTexture(lodLevel);
+
         if (lodTexture == null) {
+            if (textureCache != null) {
+                return textureCache;
+            }
+
             LOGGER.log(vehicle, logger -> logger.error("failed to load texture for {}!", vehicle));
-            return Mod.loc("textures/entity/" + VehicleResource.getRegistryId(vehicle.getType()) + ".png");
+            var loc = Mod.loc("textures/entity/" + VehicleResource.getRegistryId(vehicle.getType()) + ".png");
+            textureCache = loc;
+            return loc;
         }
+
+        textureCache = lodTexture;
         return lodTexture;
     }
 
