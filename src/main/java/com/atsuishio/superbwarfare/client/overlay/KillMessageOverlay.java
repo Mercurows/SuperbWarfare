@@ -21,8 +21,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -41,19 +39,18 @@ public class KillMessageOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_kill_message";
 
-    private static final ResourceLocation HEADSHOT = Mod.loc("textures/screens/damage_types/headshot.png");
+    private static final ResourceLocation HEADSHOT = Mod.loc("textures/overlay/damage_types/headshot.png");
 
-    private static final ResourceLocation KNIFE = Mod.loc("textures/screens/damage_types/knife.png");
-    private static final ResourceLocation EXPLOSION = Mod.loc("textures/screens/damage_types/explosion.png");
-    private static final ResourceLocation CLAYMORE = Mod.loc("textures/screens/damage_types/claymore.png");
-    private static final ResourceLocation GENERIC = Mod.loc("textures/screens/damage_types/generic.png");
-    private static final ResourceLocation BEAST = Mod.loc("textures/screens/damage_types/beast.png");
-    private static final ResourceLocation SHOCK = Mod.loc("textures/screens/damage_types/shock.png");
-    private static final ResourceLocation BLOOD_CRYSTAL = Mod.loc("textures/screens/damage_types/blood_crystal.png");
-    private static final ResourceLocation BURN = Mod.loc("textures/screens/damage_types/burn.png");
-    private static final ResourceLocation DRONE = Mod.loc("textures/screens/damage_types/drone.png");
-    private static final ResourceLocation LASER = Mod.loc("textures/screens/damage_types/laser.png");
-    private static final ResourceLocation VEHICLE = Mod.loc("textures/screens/damage_types/vehicle_strike.png");
+    private static final ResourceLocation KNIFE = Mod.loc("textures/overlay/damage_types/knife.png");
+    private static final ResourceLocation EXPLOSION = Mod.loc("textures/overlay/damage_types/explosion.png");
+    private static final ResourceLocation CLAYMORE = Mod.loc("textures/overlay/damage_types/claymore.png");
+    private static final ResourceLocation GENERIC = Mod.loc("textures/overlay/damage_types/generic.png");
+    private static final ResourceLocation BEAST = Mod.loc("textures/overlay/damage_types/beast.png");
+    private static final ResourceLocation SHOCK = Mod.loc("textures/overlay/damage_types/shock.png");
+    private static final ResourceLocation BURN = Mod.loc("textures/overlay/damage_types/burn.png");
+    private static final ResourceLocation DRONE = Mod.loc("textures/overlay/damage_types/drone.png");
+    private static final ResourceLocation LASER = Mod.loc("textures/overlay/damage_types/laser.png");
+    private static final ResourceLocation VEHICLE = Mod.loc("textures/overlay/damage_types/vehicle_strike.png");
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -341,8 +338,6 @@ public class KillMessageOverlay implements IGuiOverlay {
                     icon = BEAST;
                 } else if (record.damageType == ModDamageTypes.MINE) {
                     icon = CLAYMORE;
-                } else if (record.damageType == ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("dreamaticvoyage", "blood_crystal"))) {
-                    icon = BLOOD_CRYSTAL;
                 } else if (record.damageType == ModDamageTypes.SHOCK) {
                     icon = SHOCK;
                 } else if (record.damageType == ModDamageTypes.BURN || record.damageType == DamageTypes.IN_FIRE || record.damageType == DamageTypes.ON_FIRE || record.damageType == DamageTypes.LAVA) {
