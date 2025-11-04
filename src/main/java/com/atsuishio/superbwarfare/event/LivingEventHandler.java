@@ -28,7 +28,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -371,6 +370,8 @@ public class LivingEventHandler {
                         || (oldStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
                         || (newStack.getItem() instanceof GunItem && oldStack.getItem() instanceof GunItem && !Objects.equals(GunsTool.getGunUUID(newStack), GunsTool.getGunUUID(oldStack)))
                 ) {
+                    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), DrawClientMessage.INSTANCE);
+
                     if (oldStack.getItem() instanceof GunItem oldGun) {
                         var oldData = GunData.from(oldStack);
 
@@ -430,10 +431,6 @@ public class LivingEventHandler {
                             if (instance != null) {
                                 instance.perk().onChangeSlot(newData, instance, player);
                             }
-                        }
-
-                        if (player.level() instanceof ServerLevel) {
-                            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new DrawClientMessage(true));
                         }
                     }
                 }

@@ -33,7 +33,7 @@ public class NetworkRegistry {
         playToClient(GunsDataMessage.class, GunsDataMessage::encode, GunsDataMessage::decode, (message, ctx) -> GunsDataMessage.handler(message));
         playToClient(ContainerDataMessage.class, ContainerDataMessage::encode, ContainerDataMessage::decode, ContainerDataMessage::handler);
         playToClient(ShootClientMessage.class, ShootClientMessage::encode, ShootClientMessage::decode, (message, context) -> ShootClientMessage.handler(context));
-        playToClient(DrawClientMessage.class, DrawClientMessage::encode, DrawClientMessage::decode, (msg, ctx) -> DrawClientMessage.handler(ctx));
+        playToClient(DrawClientMessage.INSTANCE, DrawClientMessage::handler);
         playToClient(ResetCameraTypeMessage.INSTANCE, ResetCameraTypeMessage::handler);
         playToClient(RadarMenuOpenMessage.class, RadarMenuOpenMessage::encode, RadarMenuOpenMessage::decode, RadarMenuOpenMessage::handler);
         playToClient(RadarMenuCloseMessage.INSTANCE, RadarMenuCloseMessage::handler);

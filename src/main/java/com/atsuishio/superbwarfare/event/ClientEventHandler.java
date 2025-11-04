@@ -281,7 +281,6 @@ public class ClientEventHandler {
             lastOperatingGunUUID = uuid;
 
             if ((holdingFireKey || (zoom && stack.is(ModItems.MINIGUN.get()))) && gunItem.canShoot(data, player)) {
-
                 holdingFireKeyTicks = Math.min(holdingFireKeyTicks + 1, data.get(GunProp.SHOOT_DELAY) + 1);
 
                 // 加特林特有的旋转音效
@@ -797,6 +796,7 @@ public class ClientEventHandler {
             }
 
             shouldPlayDischargeSound = false;
+            burstFireAmount = 0;
         }
 
         if (!gunItem.canShoot(data, player)) {
@@ -1607,7 +1607,6 @@ public class ClientEventHandler {
             case 3 -> 1.25f - (float) zoomTime;
             default -> 1.25f;
         };
-
 
 
         float pose = 1;

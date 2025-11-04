@@ -441,8 +441,7 @@ public class ClickHandler {
             ClientEventHandler.holdingFireKey = true;
         }
 
-        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() != null
-                && player.getVehicle() instanceof CannonEntity)
+        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof CannonEntity)
                 && clientTimer.getProgress() == 0
                 && !notInGame()
         ) {
