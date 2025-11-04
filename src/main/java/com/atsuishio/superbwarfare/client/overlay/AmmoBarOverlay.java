@@ -35,13 +35,13 @@ import java.util.regex.Pattern;
 public class AmmoBarOverlay implements LayeredDraw.Layer {
     public static final ResourceLocation ID = Mod.loc("ammo_bar");
 
-    private static final ResourceLocation LINE = Mod.loc("textures/ammo_bar/fire_mode/line.png");
-    private static final ResourceLocation MOUSE = Mod.loc("textures/ammo_bar/fire_mode/mouse.png");
-    private static final ResourceLocation CHOSEN = Mod.loc("textures/ammo_bar/attachment/chosen.png");
+    private static final ResourceLocation LINE = Mod.loc("textures/overlay/ammo_bar/fire_mode/line.png");
+    private static final ResourceLocation MOUSE = Mod.loc("textures/overlay/ammo_bar/fire_mode/mouse.png");
+    private static final ResourceLocation CHOSEN = Mod.loc("textures/overlay/ammo_bar/attachment/chosen.png");
     private static final ResourceLocation NOT_CHOSEN = Mod.loc("textures/gui/attachment/not_chosen.png");
     private static final ResourceLocation AMMO_STACK = Mod.loc("textures/gui/attachment/ammo_stack.png");
 
-    private static final Function<String, ResourceLocation> TO_RESOURCE_LOCATION = Util.memoize((str) -> Mod.loc("textures/ammo_bar/fire_mode/" + str + ".png"));
+    private static final Function<String, ResourceLocation> TO_RESOURCE_LOCATION = Util.memoize((str) -> Mod.loc("textures/overlay/ammo_bar/fire_mode/" + str + ".png"));
 
     private static ResourceLocation getFireMode(GunData data) {
         return TO_RESOURCE_LOCATION.apply(toUnderScores(data.selectedFireModeInfo().name));
