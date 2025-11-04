@@ -141,7 +141,7 @@
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,
-      "Ammo": "Infinity",
+      "AmmoType": "Infinity",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
       "ShootPos": {
         "Transform": "Barrel",
