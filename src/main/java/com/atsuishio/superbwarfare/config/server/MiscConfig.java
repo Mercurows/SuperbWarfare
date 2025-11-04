@@ -19,6 +19,7 @@ public class MiscConfig {
     public static ForgeConfigSpec.IntValue CHARGING_STATION_DEFAULT_FUEL_TIME;
     public static ForgeConfigSpec.IntValue ARTILLERY_INDICATOR_LIST_SIZE;
     public static ForgeConfigSpec.BooleanValue MINE_HITBOX_INVISIBLE;
+    public static ForgeConfigSpec.BooleanValue SMOKE_HIDE_TARGET;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         builder.push("misc");
@@ -67,6 +68,9 @@ public class MiscConfig {
 
         builder.comment("Set true to make mine hitbox invisible");
         MINE_HITBOX_INVISIBLE = builder.define("mine_hitbox_invisible", false);
+
+        builder.comment("Set true to allow smoke to prevent entities from being set as target");
+        SMOKE_HIDE_TARGET = builder.define("smoke_hide_target", false);
 
         builder.pop();
     }
