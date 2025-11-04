@@ -24,7 +24,14 @@ public class SoundEventAdapter extends TypeAdapter<SoundEvent> {
 
     @Override
     public SoundEvent read(JsonReader in) throws IOException {
-        if (in.peek() != JsonToken.STRING) return null;
+        if (in.peek() == JsonToken.NULL) {
+            in.nextNull();
+            return null;
+        }
+
+        if (in.peek() != JsonToken.STRING) {
+            throw new IllegalStateException("excepted SoundEvent to be String but was " + in.peek());
+        }
 
         var location = ResourceLocation.tryParse(in.nextString());
         if (location == null) return null;

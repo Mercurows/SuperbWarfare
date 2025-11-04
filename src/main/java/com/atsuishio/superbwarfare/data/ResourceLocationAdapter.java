@@ -22,7 +22,14 @@ public class ResourceLocationAdapter extends TypeAdapter<ResourceLocation> {
 
     @Override
     public ResourceLocation read(JsonReader in) throws IOException {
-        if (in.peek() != JsonToken.STRING) return null;
+        if (in.peek() == JsonToken.NULL) {
+            in.nextNull();
+            return null;
+        }
+
+        if (in.peek() != JsonToken.STRING) {
+            throw new IllegalStateException("excepted ResourceLocation to be String but was " + in.peek());
+        }
 
         return ResourceLocation.tryParse(in.nextString());
     }

@@ -32,7 +32,7 @@ public class ModColor {
             if (value == null) {
                 value = new ModColor();
             }
-            
+
             out.value(value.color);
         }
 
@@ -55,8 +55,10 @@ public class ModColor {
                 }
             } else if (p == JsonToken.NUMBER) {
                 obj.color = 0xFF000000 | in.nextInt();
+            } else if (p == JsonToken.NULL) {
+                in.nextNull();
             } else {
-                Mod.LOGGER.warn("invalid color token: {}", p);
+                throw new IllegalStateException("invalid color token " + p);
             }
 
             return obj;
