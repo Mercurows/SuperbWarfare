@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.JsonObject;
@@ -15,6 +16,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
@@ -120,10 +122,14 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("RotateOffsetHeight")
     public float rotateOffsetHeight = 0;
 
+    @SerializedName("Weapons")
+    public Map<String, DefaultGunData> weapons = Map.of();
+
     @Override
     public void limit() {
         this.maxHealth = Math.max(this.maxHealth, 0);
         this.repairCooldown = Math.max(this.repairCooldown, 0);
         this.maxEnergy = Math.max(this.maxEnergy, 0);
+        this.weapons = weapons == null ? Map.of() : weapons;
     }
 }

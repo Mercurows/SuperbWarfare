@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -74,22 +73,8 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void setWeaponIndex(int index, int type) {
-        modifyGunData(index, gunData -> gunData.changeAmmoConsumer(type, getAmmoSupplier()));
-    }
-
-    @Override
-    public int getWeaponIndex(int index) {
-        var gunData = getGunData(index);
-        if (gunData == null) return 0;
-
-        var consumersSize = gunData.get(GunProp.AMMO_CONSUMER).size();
-        return Mth.clamp(gunData.selectedAmmoType.get(), 0, consumersSize - 1);
-    }
-
-    @Override
     public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
-        var gunData = getGunData(getSeatIndex(passenger));
+        var gunData = getGunData(passenger, weaponIndex);
         if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
 
         return gunData.backupAmmoCount.get();

@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
@@ -187,42 +188,90 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     // Map SeatIndex -> GunData
-    protected static final EntityDataAccessor<Map<Integer, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
+    protected static final EntityDataAccessor<Map<String, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
 
-    public Map<Integer, GunData> getGunDataMap() {
+    public Map<String, GunData> getGunDataMap() {
         var rawMap = entityData.get(GUN_DATA_MAP);
-        var newMap = new HashMap<Integer, GunData>();
-        var seats = computed().seats();
+        var newMap = new HashMap<String, GunData>();
+        var weapons = computed().weapons;
 
-        for (int index = 0; index < seats.size(); index++) {
-            var seat = seats.get(index);
-            var data = rawMap.get(index);
+        for (var kv : weapons.entrySet()) {
+            var data = rawMap.get(kv.getKey());
 
             if (data == null) {
-                if (seat.weaponData == null) continue;
                 data = GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get()));
             }
 
-            data.defaultDataSupplier = () -> seat.weaponData;
-            newMap.put(index, data);
+            data.defaultDataSupplier = kv::getValue;
+            newMap.put(kv.getKey(), data);
         }
 
         return newMap;
     }
 
-    public @Nullable GunData getGunData(int index) {
-        return getGunDataMap().get(index);
+    public @Nullable SeatInfo getSeat(int seatIndex) {
+        if (seatIndex < 0) return null;
+
+        var seats = computed().seats();
+        if (seatIndex >= seats.size()) return null;
+        return seats.get(seatIndex);
     }
 
-    public void modifyGunData(int index, @NotNull Consumer<GunData> consumer) {
+    public @Nullable SeatInfo getSeat(Entity passenger) {
+        return getSeat(getSeatIndex(passenger));
+    }
+
+    public @Nullable GunData getGunData(int seatIndex) {
+        if (seatIndex < 0) return null;
+        var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
+        if (seatIndex >= selectedWeapon.size()) return null;
+        return getGunData(seatIndex, selectedWeapon.get(seatIndex));
+    }
+
+    public @Nullable GunData getGunData(int seatIndex, int weaponIndex) {
+        var seat = getSeat(seatIndex);
+        if (seat == null) return null;
+
+        var weapons = seat.weapons();
+        if (weaponIndex < 0 || weaponIndex >= weapons.size()) return null;
+
+        return getGunData(weapons.get(weaponIndex));
+    }
+
+    public @Nullable GunData getGunData(Entity passenger, int weaponIndex) {
+        return getGunData(getSeatIndex(passenger), weaponIndex);
+    }
+
+    public @Nullable GunData getGunData(String name) {
+        return getGunDataMap().get(name);
+    }
+
+    public void modifyGunData(int seatIndex, @NotNull Consumer<GunData> consumer) {
+        if (seatIndex < 0) return;
+        var seat = getSeat(seatIndex);
+        if (seat == null) return;
+
+        var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
+        if (seatIndex >= selectedWeapon.size()) return;
+
+        var weaponIndex = selectedWeapon.get(seatIndex);
+        if (weaponIndex < 0) return;
+
+        var weapons = seat.weapons();
+        if (weaponIndex >= weapons.size()) return;
+
+        modifyGunData(weapons.get(weaponIndex), consumer);
+    }
+
+    public void modifyGunData(String name, @NotNull Consumer<GunData> consumer) {
         var map = getGunDataMap();
-        var data = getGunData(index);
+        var data = getGunData(name);
         if (data == null) return;
 
         data = data.copy();
         consumer.accept(data);
         data.save();
-        map.put(index, data);
+        map.put(name, data);
 
         entityData.set(GUN_DATA_MAP, map);
     }
@@ -735,18 +784,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     protected void initSeatData(int targetSize) {
         padList(orderedPassengers, targetSize, null, null);
-
-        // 移除多余GunData
-        var gunDataMap = entityData.get(GUN_DATA_MAP);
-        var newMap = new HashMap<Integer, GunData>();
-
-        for (var kv : gunDataMap.entrySet()) {
-            if (kv.getKey() < targetSize) {
-                newMap.put(kv.getKey(), kv.getValue());
-            }
-        }
-
-        entityData.set(GUN_DATA_MAP, newMap);
     }
 
     protected <T> void padList(@NotNull List<T> list, int targetSize, T defaultValue, @Nullable Consumer<T> onRemove) {
@@ -1112,17 +1149,20 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public VehicleWeapon[][] getAllWeapons() {
-        return getGunDataMap().values().stream().map(data -> {
-            if (data == null) return List.of();
+        return computed().seats().stream().map(seat -> {
+            if (seat == null || seat.weapons().isEmpty()) return new ProjectileWeapon[0];
 
-            var ammoTypes = data.get(GunProp.AMMO_CONSUMER);
-            var soundInfo = data.get(GunProp.SOUND_INFO);
+            return seat.weapons().stream().map(name -> {
+                var data = getGunData(name);
+                if (data == null) return new ProjectileWeapon();
 
-            return ammoTypes.stream().map(a -> new ProjectileWeapon()
-                    .zoom(false)
-                    .sound(soundInfo.change)
-                    .icon(ResourceLocation.tryParse(a.icon))
-            ).toArray(VehicleWeapon[]::new);
+                var sound = data.get(GunProp.SOUND_INFO);
+                var icon = data.get(GunProp.GUN_ICON);
+                return new ProjectileWeapon()
+                        .zoom(false)
+                        .sound(sound.change)
+                        .icon(ResourceLocation.tryParse(icon));
+            }).toArray(VehicleWeapon[]::new);
         }).toArray(VehicleWeapon[][]::new);
     }
 
@@ -1188,13 +1228,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         // GunData
         var state = compound.getCompound("WeaponState");
-        var gunDataMap = new HashMap<Integer, GunData>();
+        var gunDataMap = new HashMap<String, GunData>();
         for (var key : state.getAllKeys()) {
             var tag = state.get(key);
             assert tag != null;
 
             ItemStack.parse(this.level().registryAccess(), tag)
-                    .ifPresent(is -> gunDataMap.put(Integer.parseInt(key), GunData.from(is)));
+                    .ifPresent(is -> gunDataMap.put(key, GunData.from(is)));
         }
         entityData.set(GUN_DATA_MAP, gunDataMap);
 
@@ -1585,7 +1625,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
 
-        var newMap = new HashMap<Integer, GunData>();
+        var newMap = new HashMap<String, GunData>();
         for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
             var newData = kv.getValue().copy();
             newData.tick(this, true);

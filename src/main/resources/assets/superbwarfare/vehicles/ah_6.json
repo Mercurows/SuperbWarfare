@@ -9,9 +9,5 @@
     ],
     "Texture": "superbwarfare:textures/entity/ah_6.png"
   },
-  "LODDistance": [
-    32,
-    64,
-    96
-  ]
+  "LODDistance": [32, 64, 96]
 }

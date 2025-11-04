@@ -71,11 +71,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public void setWeaponIndex(int index, int type) {
-        modifyGunData(index, gunData -> gunData.changeAmmoConsumer(type, getAmmoSupplier()));
-    }
-
-    @Override
     public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
         var gunData = getGunData(getSeatIndex(passenger));
         if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;

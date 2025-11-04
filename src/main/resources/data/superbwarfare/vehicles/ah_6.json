@@ -5,11 +5,7 @@
   "Seats": [
     {
       "Transform": "Vehicle",
-      "Position": [
-        0.45,
-        0.85,
-        1
-      ],
+      "Position": [0.45, 0.85, 1],
       "CameraPos": {
         "Transform": "Vehicle",
         "Position": [0.45, 2.45, 1],
@@ -22,81 +18,11 @@
       "MaxPitch": 80,
       "MinYaw": -80,
       "MaxYaw": 80,
-      "WeaponData": {
-        "DefaultFireMode": "Auto",
-        "AvailableFireModes": "Auto",
-        "Projectile": "superbwarfare:small_cannon_shell",
-        "RPM": 500,
-        "Velocity": 30,
-        "Damage": 45,
-        "ExplosionDamage": 12,
-        "ExplosionRadius": 3.5,
-        "HeatPerShoot": 0.5,
-        "Spread": 0.25,
-        "Name": "superbwarfare.ah_6.cannon",
-        "SoundInfo": {
-          "Fire1P": "superbwarfare:heli_cannon_fire_1p",
-          "Fire3P": "superbwarfare:heli_cannon_fire_3p",
-          "Fire3PFar": "superbwarfare:heli_cannon_far",
-          "Fire3PVeryFar": "superbwarfare:heli_cannon_veryfar",
-          "Change": "superbwarfare:into_cannon"
-        },
-        "SoundRadius": 24,
-        "AmmoType": [
-          {
-            "Ammo": "Infinity",
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
-            "Override": {
-              "ShootPos": {
-                "Transform": "Vehicle",
-                "Positions": [
-                  [-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]
-                ],
-                "Directions": [
-                  [0.003, 0.025, 1], [-0.003, 0.025, 1]
-                ]
-              }
-            }
-          },
-          {
-            "Ammo": "Infinity",
-            "Projectile": "superbwarfare:small_rocket",
-            "Override": {
-              "RPM": 500,
-              "Damage": 80,
-              "ExplosionDamage": 40,
-              "ExplosionRadius": 5,
-              "Velocity": 16,
-              "ShootPos": {
-                "Transform": "Vehicle",
-                "Positions": [
-                  [-1.7, 0.62, 0.8], [1.7, 0.62, 0.8]
-                ],
-                "Directions": [
-                  [0.003, 0.025, 1], [-0.003, 0.025, 1]
-                ]
-              },
-              "SoundInfo": {
-                "Fire1P": "superbwarfare:small_rocket_fire_1p",
-                "Fire3P": "superbwarfare:small_rocket_fire_3p",
-                "Fire3PFar": "null",
-                "Fire3PVeryFar": "null",
-                "Change": "superbwarfare:into_missile"
-              },
-              "SoundRadius": 12
-            },
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png"
-          }
-        ]
-      }
+      "Weapons": ["Cannon", "Rocket"]
     },
     {
       "Transform": "Vehicle",
-      "Position": [
-        -0.45,
-        0.85,
-        1
-      ],
+      "Position": [-0.45, 0.85, 1],
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,
@@ -104,27 +30,77 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [
-        -1.4,
-        0.4,
-        0
-      ],
+      "Position": [-1.4, 0.4, 0],
       "Orientation": 90,
       "MinYaw": -80,
       "MaxYaw": 80
     },
     {
       "Transform": "Vehicle",
-      "Position": [
-        1.4,
-        0.4,
-        0
-      ],
+      "Position": [1.4, 0.4, 0],
       "Orientation": -90,
       "MinYaw": -80,
       "MaxYaw": 80
     }
   ],
+  "Weapons": {
+    "Cannon": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "superbwarfare:small_cannon_shell",
+      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+      "RPM": 500,
+      "Velocity": 30,
+      "Damage": 45,
+      "ExplosionDamage": 12,
+      "ExplosionRadius": 3.5,
+      "HeatPerShoot": 0.5,
+      "Spread": 0.25,
+      "Name": "superbwarfare.ah_6.cannon",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:heli_cannon_fire_1p",
+        "Fire3P": "superbwarfare:heli_cannon_fire_3p",
+        "Fire3PFar": "superbwarfare:heli_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:heli_cannon_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 24,
+      "AmmoType": "Infinity",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "Positions": [[-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]],
+        "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
+      }
+    },
+    "Rocket": {
+      "AmmoType": "Infinity",
+      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "superbwarfare:small_rocket",
+      "HeatPerShoot": 0.5,
+      "Spread": 0.25,
+      "Name": "superbwarfare.ah_6.cannon",
+      "RPM": 500,
+      "Damage": 80,
+      "ExplosionDamage": 40,
+      "ExplosionRadius": 5,
+      "Velocity": 16,
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "Positions": [[-1.7, 0.62, 0.8], [1.7, 0.62, 0.8]],
+        "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:small_rocket_fire_1p",
+        "Fire3P": "superbwarfare:small_rocket_fire_3p",
+        "Fire3PFar": "null",
+        "Fire3PVeryFar": "null",
+        "Change": "superbwarfare:into_missile"
+      },
+      "SoundRadius": 12
+    }
+  },
   "EngineType": "Helicopter",
   "EngineInfo": {
     "EnergyCostRate": 256,
