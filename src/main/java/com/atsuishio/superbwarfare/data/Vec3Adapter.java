@@ -26,8 +26,13 @@ public class Vec3Adapter extends TypeAdapter<Vec3> {
 
     @Override
     public Vec3 read(JsonReader in) throws IOException {
-        if (in.peek() != JsonToken.BEGIN_ARRAY) {
+        if (in.peek() == JsonToken.NULL) {
+            in.nextNull();
             return null;
+        }
+
+        if (in.peek() != JsonToken.BEGIN_ARRAY) {
+            throw new IllegalStateException("invalid Vec3 value");
         }
 
         in.beginArray();

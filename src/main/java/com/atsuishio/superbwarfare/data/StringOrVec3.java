@@ -60,6 +60,7 @@ public class StringOrVec3 {
         public StringOrVec3 read(JsonReader in) throws IOException {
             if (in.peek() == JsonToken.NULL) {
                 Mod.LOGGER.warn("null StringOrVec3 value!");
+                in.nextNull();
                 return new StringOrVec3();
             }
 
@@ -76,8 +77,7 @@ public class StringOrVec3 {
                 return new StringOrVec3(new Vec3(x, y, z));
             }
 
-            Mod.LOGGER.warn("invalid StringOrVec3 value!");
-            return new StringOrVec3();
+            throw new IllegalStateException("invalid StringOrVec3 value!");
         }
     }
 }

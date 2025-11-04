@@ -25,8 +25,13 @@ public class Vec2Adapter extends TypeAdapter<Vec2> {
 
     @Override
     public Vec2 read(JsonReader in) throws IOException {
-        if (in.peek() != JsonToken.BEGIN_ARRAY) {
+        if (in.peek() == JsonToken.NULL) {
+            in.nextNull();
             return null;
+        }
+
+        if (in.peek() != JsonToken.BEGIN_ARRAY) {
+            throw new IllegalStateException("invalid Vec2 value");
         }
 
         in.beginArray();

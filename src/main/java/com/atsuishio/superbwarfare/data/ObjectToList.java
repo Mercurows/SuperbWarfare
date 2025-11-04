@@ -61,6 +61,7 @@ public class ObjectToList<T> {
             if (token != JsonToken.BEGIN_ARRAY) {
                 // 单元素
                 if (token == JsonToken.NULL) {
+                    jsonReader.nextNull();
                     return new ObjectToList<>();
                 }
                 return new ObjectToList<>(gson.<T>fromJson(jsonReader, type));
