@@ -41,13 +41,7 @@ public abstract class EntityMixin implements OBBHitter {
     public abstract AABB getBoundingBox();
 
     @Shadow
-    public abstract boolean isPassengerOfSameVehicle(Entity pEntity);
-
-    @Shadow
     public abstract Vec3 position();
-
-    @Shadow
-    public boolean noPhysics;
 
     @Shadow
     public abstract void setDeltaMovement(Vec3 pDeltaMovement);
@@ -84,31 +78,6 @@ public abstract class EntityMixin implements OBBHitter {
         this.sbw$currentHitPart = part;
     }
 
-    // TODO 优化OBB面算法并排除AABB影响，现在下车就动不了了
-//    @Inject(method = "collide", at = @At("HEAD"), cancellable = true)
-//    private void onHitOBB(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-//        AABB boundingBox = this.getBoundingBox();
-//        Entity self = (Entity) (Object) this;
-//        var list = this.level().getEntities(self, boundingBox.expandTowards(movement).inflate(1), e -> true);
-//        var entity = list.stream().filter(e -> e instanceof OBBEntity).min((e1, e2) -> (int) (e1.position().distanceTo(self.position()) - e2.position().distanceTo(self.position()))).orElse(null);
-//        if (entity == null || entity == self) return;
-//
-//        OBBEntity obbEntity = (OBBEntity) entity;
-//        Vec3 position = self.position();
-//        // 第一版实现
-//        var faceInfo = OBB.findClosestFace(obbEntity.getOBBs(), position);
-//        if (faceInfo == null) return;
-//        double dot = movement.dot(new Vec3(faceInfo.faceNormal()));
-//        var vec = new Vec3(faceInfo.faceNormal()).multiply(dot, dot, dot);
-//
-//        if (self instanceof Player player) {
-//            player.displayClientMessage(Component.literal("Vec: [" + vec.x + ", " + vec.y + ", " + vec.z + "]," +
-//                    " Face: [" + faceInfo.faceNormal().x + ", " + faceInfo.faceNormal().y + ", " + faceInfo.faceNormal().z + "]"), true);
-//        }
-//
-//        cir.setReturnValue(movement.subtract(vec));
-//    }
-
     @Inject(method = "turn(DD)V", at = @At("HEAD"), cancellable = true)
     public void turn(double pYRot, double pXRot, CallbackInfo ci) {
         var entity = (Entity) (Object) this;
@@ -136,17 +105,4 @@ public abstract class EntityMixin implements OBBHitter {
             }
         }
     }
-
-//    @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
-//    public void push(Entity entity, CallbackInfo ci) {
-//        //noinspection ConstantValue
-//        if (!(((Entity) (Object) this) instanceof VehicleEntity) && entity instanceof VehicleEntity vehicle) {
-//            if (this.isPassengerOfSameVehicle(entity)) {
-//                ci.cancel();
-//                return;
-//            }
-//            vehicle.support((Entity) (Object) this);
-//            ci.cancel();
-//        }
-//    }
 }
