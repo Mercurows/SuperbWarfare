@@ -23,8 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -78,11 +78,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             this.level().playSound(null, this, soundEvent, this.getSoundSource(), 1, 1);
         }
 
-    }
-
-    @Override
-    public void setWeaponIndex(int index, int type) {
-        modifyGunData(index, gunData -> gunData.changeAmmoConsumer(type, getAmmoSupplier()));
     }
 
     @Override

@@ -9,8 +9,5 @@
     ],
     "Texture": "superbwarfare:textures/entity/laser_tower.png"
   },
-  "LODDistance": [
-    24,
-    48
-  ]
+  "LODDistance": [24, 48]
 }

@@ -8,8 +8,5 @@
     ],
     "Texture": "superbwarfare:textures/entity/type_63.png"
   },
-  "LODDistance": [
-    32,
-    96
-  ]
+  "LODDistance": [32, 96]
 }

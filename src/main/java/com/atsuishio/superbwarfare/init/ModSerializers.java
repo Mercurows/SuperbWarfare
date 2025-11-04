@@ -36,18 +36,18 @@ public class ModSerializers {
             }));
 
 
-    public static final RegistryObject<EntityDataSerializer<Map<Integer, GunData>>> GUN_DATA_MAP_SERIALIZER = REGISTRY.register("gun_data_map_serializer",
+    public static final RegistryObject<EntityDataSerializer<Map<String, GunData>>> GUN_DATA_MAP_SERIALIZER = REGISTRY.register("gun_data_map_serializer",
             () -> EntityDataSerializer.simple((buf, map) -> {
                 buf.writeVarInt(map.size());
                 for (var kv : map.entrySet()) {
-                    buf.writeVarInt(kv.getKey());
+                    buf.writeUtf(kv.getKey());
                     buf.writeItem(kv.getValue().stack);
                 }
             }, buf -> {
                 var length = buf.readVarInt();
-                var map = new HashMap<Integer, GunData>();
+                var map = new HashMap<String, GunData>();
                 for (int i = 0; i < length; i++) {
-                    map.put(buf.readVarInt(), GunData.from(buf.readItem()));
+                    map.put(buf.readUtf(), GunData.from(buf.readItem()));
                 }
 
                 return map;

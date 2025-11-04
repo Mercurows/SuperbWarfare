@@ -1,9 +1,11 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
+import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 public class SeatInfo {
     @SerializedName("HidePassenger")
@@ -40,8 +42,13 @@ public class SeatInfo {
     @SerializedName("MaxYaw")
     public float maxYaw = 514;
 
-    @SerializedName("WeaponData")
-    public DefaultGunData weaponData = null;
+    @SerializedName("Weapons")
+    protected ObjectToList<String> weapons = new ObjectToList<>();
+
+    public List<String> weapons() {
+        if (weapons == null || weapons.list == null) return List.of();
+        return weapons.list;
+    }
 
     @SerializedName("CameraPos")
     public CameraPos cameraPos = null;

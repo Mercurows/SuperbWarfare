@@ -7,101 +7,12 @@
       "HidePassenger": true,
       "CameraPos": {
         "Transform": "Barrel",
-        "ZoomPosition": [
-          0.1,
-          0.0517,
-          0
-        ],
+        "ZoomPosition": [0.1, 0.0517, 0],
         "Direction": "Barrel"
       },
-      "WeaponData": {
-        "DefaultFireMode": "Auto",
-        "AvailableFireModes": "Auto",
-        "Projectile": "superbwarfare:small_cannon_shell",
-        "RPM": 300,
-        "Velocity": 20,
-        "Damage": 45,
-        "HeatPerShoot": 0.5,
-        "RecoilTime" : 40,
-        "RecoilForce" : 0.2,
-        "Spread": 0.5,
-        "Crosshair": "@VehicleUsApc",
-        "CrosshairColor": "0x66FF00",
-        "Name": "superbwarfare.lav_150.cannon",
-        "SoundInfo": {
-          "Fire1P": "superbwarfare:lav_cannon_fire_1p",
-          "Fire3P": "superbwarfare:lav_cannon_fire_3p",
-          "Fire3PFar": "superbwarfare:lav_cannon_far",
-          "Fire3PVeryFar": "superbwarfare:lav_cannon_veryfar",
-          "Change": "superbwarfare:into_missile"
-        },
-        "SoundRadius": 24,
-        "AmmoType": [
-          {
-            "Ammo": "Infinity",
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
-            "Override": {
-              "ShootPos": {
-                "Transform": "Barrel",
-                "Positions": [
-                  [
-                    0.0609375,
-                    0.0517,
-                    3.2
-                  ]
-                ],
-                "Directions": [
-                  "Barrel"
-                ]
-              },
-              "ExplosionDamage": 12,
-              "ExplosionRadius": 4
-            }
-          },
-          {
-            "Ammo": "Infinity",
-            "Override": {
-              "Projectile": "superbwarfare:projectile",
-              "RPM": 600,
-              "Damage": 9.5,
-              "BypassesArmor": 0.3,
-              "Velocity": 30,
-              "RecoilTime" : 0,
-              "RecoilForce" : 0,
-              "ShootPos": {
-                "Transform": "Barrel",
-                "Positions": [
-                  [
-                    0.3,
-                    0.0517,
-                    0.5
-                  ]
-                ],
-                "Directions": [
-                  "Barrel"
-                ]
-              },
-              "Crosshair": "@VehicleCommonGun",
-              "Name": "superbwarfare.lav_150.gun",
-              "SoundInfo": {
-                "Fire1P": "superbwarfare:coax_fire_1p",
-                "Fire3P": "superbwarfare:m_60_fire_3p",
-                "Fire3PFar": "superbwarfare:m_60_far",
-                "Fire3PVeryFar": "superbwarfare:m_60_veryfar",
-                "Change": "superbwarfare:into_cannon"
-              },
-              "SoundRadius": 12
-            },
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
-          }
-        ]
-      },
+      "Weapons": ["Cannon", "MachineGun"],
       "Transform": "Turret",
-      "Position": [
-        0.36,
-        -0.65,
-        0.56
-      ],
+      "Position": [0.36, -0.65, 0.56],
       "CanRotateHead": false,
       "MinPitch": -15,
       "MaxPitch": 32.5
@@ -110,11 +21,7 @@
       "HidePassenger": true,
       "BanHand": true,
       "Transform": "Vehicle",
-      "Position": [
-        0,
-        1,
-        0
-      ],
+      "Position": [0, 1, 0],
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
@@ -124,11 +31,7 @@
       "HidePassenger": true,
       "BanHand": true,
       "Transform": "Vehicle",
-      "Position": [
-        0,
-        1,
-        0
-      ],
+      "Position": [0, 1, 0],
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
@@ -138,11 +41,7 @@
       "HidePassenger": true,
       "BanHand": true,
       "Transform": "Vehicle",
-      "Position": [
-        0,
-        1,
-        0
-      ],
+      "Position": [0, 1, 0],
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
@@ -152,17 +51,78 @@
       "HidePassenger": true,
       "BanHand": true,
       "Transform": "Vehicle",
-      "Position": [
-        0,
-        1,
-        0
-      ],
+      "Position": [0, 1, 0],
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
       }
     }
   ],
+  "Weapons": {
+    "Cannon": {
+      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "superbwarfare:small_cannon_shell",
+      "RPM": 300,
+      "Velocity": 20,
+      "Damage": 45,
+      "HeatPerShoot": 0.5,
+      "RecoilTime": 40,
+      "RecoilForce": 0.2,
+      "Spread": 0.5,
+      "Crosshair": "@VehicleUsAp",
+      "CrosshairColor": "0x66FF00",
+      "Name": "superbwarfare.lav_150.cannon",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:lav_cannon_fire_1p",
+        "Fire3P": "superbwarfare:lav_cannon_fire_3p",
+        "Fire3PFar": "superbwarfare:lav_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:lav_cannon_veryfar",
+        "Change": "superbwarfare:into_missile"
+      },
+      "SoundRadius": 24,
+      "AmmoType": "Infinity",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0.0609375, 0.0517, 3.2]],
+        "Directions": ["Barrel"]
+      },
+      "ExplosionDamage": 12,
+      "ExplosionRadius": 4
+    },
+    "MachineGun": {
+      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "HeatPerShoot": 0.5,
+      "Spread": 0.5,
+      "CrosshairColor": "0x66FF00",
+      "Projectile": "superbwarfare:projectile",
+      "RPM": 600,
+      "Damage": 9.5,
+      "BypassesArmor": 0.3,
+      "Velocity": 30,
+      "RecoilTime": 0,
+      "RecoilForce": 0,
+      "AmmoType": "Infinity",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0.3, 0.0517, 0.5]],
+        "Directions": ["Barrel"]
+      },
+      "Crosshair": "@VehicleCommonGun",
+      "Name": "superbwarfare.lav_150.gun",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:coax_fire_1p",
+        "Fire3P": "superbwarfare:m_60_fire_3p",
+        "Fire3PFar": "superbwarfare:m_60_far",
+        "Fire3PVeryFar": "superbwarfare:m_60_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 12
+    }
+  },
   "EngineType": "Wheel",
   "EngineInfo": {
     "Buoyancy": 0.052,
