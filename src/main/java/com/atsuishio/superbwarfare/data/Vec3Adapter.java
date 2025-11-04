@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.data;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -14,7 +13,8 @@ public class Vec3Adapter extends TypeAdapter<Vec3> {
     @Override
     public void write(JsonWriter out, Vec3 value) throws IOException {
         if (value == null) {
-            value = Vec3.ZERO;
+            out.nullValue();
+            return;
         }
 
         out.beginArray();
@@ -27,8 +27,7 @@ public class Vec3Adapter extends TypeAdapter<Vec3> {
     @Override
     public Vec3 read(JsonReader in) throws IOException {
         if (in.peek() != JsonToken.BEGIN_ARRAY) {
-            Mod.LOGGER.error("invalid Vec3 value!");
-            return Vec3.ZERO;
+            return null;
         }
 
         in.beginArray();
