@@ -550,11 +550,11 @@ public class ClickHandler {
 
         int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
         if (level > 0) {
-            if (ClientEventHandler.entity == null) {
+            if (ClientEventHandler.lockedEntity == null) {
                 if (data.perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || data.perk.has(ModPerks.BEAST_BULLET.get())) {
-                    ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, 32 + 8 * (level - 1), 20);
+                    ClientEventHandler.lockedEntity = SeekTool.seekEntityThroughWall(player, 32 + 8 * (level - 1), 20);
                 } else {
-                    ClientEventHandler.entity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 20);
+                    ClientEventHandler.lockedEntity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 20);
                 }
             }
         }
@@ -564,7 +564,7 @@ public class ClickHandler {
         NetworkRegistry.PACKET_HANDLER.sendToServer(new ZoomMessage(1));
         ClientEventHandler.zoom = false;
         ClientEventHandler.zoomVehicle = false;
-        ClientEventHandler.entity = null;
+        ClientEventHandler.lockedEntity = null;
         breath = false;
     }
 
