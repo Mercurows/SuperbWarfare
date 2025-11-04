@@ -252,7 +252,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public ResourceLocation getGunIcon(GunData data) {
-        var icon = ResourceLocation.tryParse(data.get(GunProp.GUN_ICON));
+        var icon = ResourceLocation.tryParse(data.get(GunProp.ICON));
         return icon == null ? DEFAULT_ICON : icon;
     }
 

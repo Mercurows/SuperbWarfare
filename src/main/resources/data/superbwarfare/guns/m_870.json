@@ -27,7 +27,7 @@
     "Type": "Shotgun"
   },
   "AmmoType": "@ShotgunAmmo",
-  "GunIcon": "superbwarfare:textures/gun_icon/m_870_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/m_870_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

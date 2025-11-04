@@ -23,9 +23,7 @@
     "ExplodePassengers": false,
     "ExplodeBlocks": false
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/wheel_chair_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/otto.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/wheel_chair_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/otto.png",
   "Type": "Car"
 }

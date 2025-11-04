@@ -14,7 +14,7 @@
   "GunType": "Special",
   "Projectile": "superbwarfare:taser_bullet",
   "AmmoType": "superbwarfare:taser_electrode",
-  "GunIcon": "superbwarfare:textures/gun_icon/taser_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/taser_icon.png",
   "AvailablePerks": [
     "superbwarfare:longer_wire",
     "superbwarfare:regeneration",

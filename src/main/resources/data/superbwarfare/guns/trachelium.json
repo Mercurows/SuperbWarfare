@@ -18,7 +18,7 @@
     "Type": "Rifle"
   },
   "ShootDelay": 2,
-  "GunIcon": "superbwarfare:textures/gun_icon/trachelium_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/trachelium_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

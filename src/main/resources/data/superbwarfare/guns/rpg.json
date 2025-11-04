@@ -27,11 +27,11 @@
         "ExplosionRadius": 5,
         "Velocity": 6,
         "Gravity": 0.015,
-        "GunIcon": "superbwarfare:textures/gun_icon/rpg_standard_icon.png"
+        "Icon": "superbwarfare:textures/gun_icon/rpg_standard_icon.png"
       }
     }
   ],
-  "GunIcon": "superbwarfare:textures/gun_icon/rpg_tbg_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/rpg_tbg_icon.png",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

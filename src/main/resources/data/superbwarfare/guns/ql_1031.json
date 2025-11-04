@@ -80,7 +80,7 @@
   "AmmoType": "FE",
   "AmmoCostPerShoot": 300,
   "MaxEnergy": 100000,
-  "GunIcon": "superbwarfare:textures/gun_icon/ql_1031_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/ql_1031_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

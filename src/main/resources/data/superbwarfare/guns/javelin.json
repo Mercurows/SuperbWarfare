@@ -20,9 +20,7 @@
     "Top"
   ],
   "AmmoType": "superbwarfare:javelin_missile",
-  "Icon": {
-    "GunIcon": "superbwarfare:textures/gun_icon/javelin_icon.png"
-  },
+  "Icon": "superbwarfare:textures/gun_icon/javelin_icon.png",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

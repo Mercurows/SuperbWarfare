@@ -142,7 +142,7 @@
       },
       "SoundRadius": 24,
       "Ammo": "Infinity",
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [
@@ -182,7 +182,7 @@
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 12,
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
     "Missile": {
       "DefaultFireMode": "Auto",
@@ -215,7 +215,7 @@
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 12,
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/missile_9m113.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_9m113.png"
     },
     "MG1": {
       "DefaultFireMode": "Auto",
@@ -242,7 +242,7 @@
         "Positions": [[1.803125, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
       },
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
     "MG2": {
       "DefaultFireMode": "Auto",
@@ -269,7 +269,7 @@
         "Positions": [[-1.803125, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
       },
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
     "MG3": {
       "DefaultFireMode": "Auto",
@@ -296,7 +296,7 @@
         "Positions": [[1.815625, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
       },
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
     "MG4": {
       "DefaultFireMode": "Auto",
@@ -323,7 +323,7 @@
         "Positions": [[-1.815625, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
       },
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
     "MG5": {
       "DefaultFireMode": "Auto",
@@ -350,7 +350,7 @@
         "Positions": [[0.6875, 1.6015625, -4.1]],
         "Directions": ["Passenger"]
       },
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
     "MG6": {
       "DefaultFireMode": "Auto",
@@ -377,7 +377,7 @@
         "Positions": [[-1.50625, 1.9765625, -3.0625]],
         "Directions": ["Passenger"]
       },
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     }
   },
   "HUDColor": "0xFFC700",
@@ -432,9 +432,7 @@
     "ExplosionDamage": 160,
     "ExplosionRadius": 8
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/bmp2_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/bmp2_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "Type": "APC"
 }
