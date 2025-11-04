@@ -43,17 +43,18 @@ public class DroneHudOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_drone_hud";
 
+    private static final ResourceLocation FRAME = Mod.loc("textures/overlay/frame/frame.png");
+    private static final ResourceLocation TV_FRAME = Mod.loc("textures/overlay/vehicle/land/tv_frame.png");
+    private static final ResourceLocation CROSSHAIR = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
+    private static final ResourceLocation DRONE_FOV = Mod.loc("textures/overlay/drone/drone_fov.png");
+    private static final ResourceLocation DRONE_FOV_MOVE = Mod.loc("textures/overlay/drone/drone_fov_move.png");
+
+    private static final ResourceLocation INDICATOR = Mod.loc("textures/overlay/spyglass/indicator.png");
+
     public static int getMaxDistance() {
         var connection = Minecraft.getInstance().getConnection();
         return (connection == null ? 16 : connection.serverSimulationDistance) * 16;
     }
-
-    private static final ResourceLocation FRAME = Mod.loc("textures/screens/frame/frame.png");
-    private static final ResourceLocation TV_FRAME = Mod.loc("textures/screens/land/tv_frame.png");
-    private static final ResourceLocation DRONE = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
-    private static final ResourceLocation DRONE_FOV = Mod.loc("textures/screens/drone_fov.png");
-    private static final ResourceLocation DRONE_FOV_MOVE = Mod.loc("textures/screens/drone_fov_move.png");
-    private static final ResourceLocation INDICATOR = Mod.loc("textures/screens/indicator.png");
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -81,7 +82,7 @@ public class DroneHudOverlay implements IGuiOverlay {
 
         if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
             if (firstPerson) {
-                guiGraphics.blit(DRONE, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
+                guiGraphics.blit(CROSSHAIR, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
                 guiGraphics.blit(DRONE_FOV, screenWidth / 2 + 100, screenHeight / 2 - 64, 0, 0, 64, 129, 64, 129);
                 int addW = (screenWidth / screenHeight) * 48;
                 int addH = (screenWidth / screenHeight) * 27;

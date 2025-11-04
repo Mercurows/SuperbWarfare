@@ -28,7 +28,7 @@ public class RedTriangleOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_red_triangle";
 
-    private static final ResourceLocation TRIANGLE = Mod.loc("textures/screens/red_triangle.png");
+    private static final ResourceLocation TRIANGLE = Mod.loc("textures/overlay/rpg/red_triangle.png");
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -39,14 +39,13 @@ public class RedTriangleOverlay implements IGuiOverlay {
 
         Player player = mc.player;
         if (player == null) return;
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) return;
 
         ItemStack stack = player.getMainHandItem();
         if (stack.is(ModItems.RPG.get()) && GunData.from(stack).selectedAmmoType.get() == 0) {
-            if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
-                return;
-
             Entity idf = SeekTool.seekLivingEntity(player, 128, 6);
             if (idf == null) return;
+
             double distance = idf.position().distanceTo(cameraPos);
             Vec3 pos = new Vec3(Mth.lerp(partialTick, idf.xo, idf.getX()), Mth.lerp(partialTick, idf.yo + idf.getEyeHeight() + 0.5 + 0.07 * distance, idf.getEyeY() + 0.5 + 0.07 * distance), Mth.lerp(partialTick, idf.zo, idf.getZ()));
             Vec3 point = VectorUtil.worldToScreen(pos);
@@ -61,7 +60,6 @@ public class RedTriangleOverlay implements IGuiOverlay {
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
             poseStack.popPose();
-
         }
     }
 }

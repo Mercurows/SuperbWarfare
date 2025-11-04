@@ -37,18 +37,18 @@ public class IFFOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_iff";
 
-    public static final ResourceLocation FRIENDLY_INDICATOR = Mod.loc("textures/screens/teammate/friendly_indicator.png");
-    public static final ResourceLocation FRIENDLY_AIRCRAFT = Mod.loc("textures/screens/teammate/friendly_aircraft.png");
-    public static final ResourceLocation FRIENDLY_TANK = Mod.loc("textures/screens/teammate/friendly_tank.png");
-    public static final ResourceLocation FRIENDLY_APC = Mod.loc("textures/screens/teammate/friendly_apc.png");
-    public static final ResourceLocation FRIENDLY_AA = Mod.loc("textures/screens/teammate/friendly_aa.png");
-    public static final ResourceLocation FRIENDLY_CAR = Mod.loc("textures/screens/teammate/friendly_car.png");
-    public static final ResourceLocation FRIENDLY_ARTILLERY = Mod.loc("textures/screens/teammate/friendly_artillery.png");
-    public static final ResourceLocation FRIENDLY_BOAT = Mod.loc("textures/screens/teammate/friendly_boat.png");
-    public static final ResourceLocation FRIENDLY_DEFENSE = Mod.loc("textures/screens/teammate/friendly_defense.png");
-    public static final ResourceLocation FRIENDLY_DRONE = Mod.loc("textures/screens/teammate/friendly_drone.png");
-    public static final ResourceLocation FRIENDLY_HELICOPTER = Mod.loc("textures/screens/teammate/friendly_helicopter.png");
-    public static final ResourceLocation FRIENDLY_MINE = Mod.loc("textures/screens/teammate/friendly_mine.png");
+    public static final ResourceLocation FRIENDLY_INDICATOR = Mod.loc("textures/overlay/teammate/friendly_indicator.png");
+    public static final ResourceLocation FRIENDLY_AIRCRAFT = Mod.loc("textures/overlay/teammate/friendly_aircraft.png");
+    public static final ResourceLocation FRIENDLY_TANK = Mod.loc("textures/overlay/teammate/friendly_tank.png");
+    public static final ResourceLocation FRIENDLY_APC = Mod.loc("textures/overlay/teammate/friendly_apc.png");
+    public static final ResourceLocation FRIENDLY_AA = Mod.loc("textures/overlay/teammate/friendly_aa.png");
+    public static final ResourceLocation FRIENDLY_CAR = Mod.loc("textures/overlay/teammate/friendly_car.png");
+    public static final ResourceLocation FRIENDLY_ARTILLERY = Mod.loc("textures/overlay/teammate/friendly_artillery.png");
+    public static final ResourceLocation FRIENDLY_BOAT = Mod.loc("textures/overlay/teammate/friendly_boat.png");
+    public static final ResourceLocation FRIENDLY_DEFENSE = Mod.loc("textures/overlay/teammate/friendly_defense.png");
+    public static final ResourceLocation FRIENDLY_DRONE = Mod.loc("textures/overlay/teammate/friendly_drone.png");
+    public static final ResourceLocation FRIENDLY_HELICOPTER = Mod.loc("textures/overlay/teammate/friendly_helicopter.png");
+    public static final ResourceLocation FRIENDLY_MINE = Mod.loc("textures/overlay/teammate/friendly_mine.png");
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {

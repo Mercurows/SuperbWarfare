@@ -23,7 +23,9 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 @OnlyIn(Dist.CLIENT)
 public class TowOverlay implements IGuiOverlay {
     public static final String ID = Mod.MODID + "_tow";
-    private static final ResourceLocation SPYGLASS = Mod.loc("textures/screens/spyglass.png");
+
+    private static final ResourceLocation SPYGLASS = Mod.loc("textures/overlay/spyglass/spyglass.png");
+
     private static float scopeScale = 1;
 
     @Override

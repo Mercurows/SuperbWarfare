@@ -41,15 +41,15 @@ public class HelicopterHudOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_helicopter_hud";
 
-    private static final ResourceLocation HELI_BASE = Mod.loc("textures/screens/helicopter/heli_base.png");
-    private static final ResourceLocation ROLL_IND = Mod.loc("textures/screens/helicopter/roll_ind.png");
-    private static final ResourceLocation HELI_LINE = Mod.loc("textures/screens/helicopter/heli_line.png");
-    private static final ResourceLocation HELI_POWER_RULER = Mod.loc("textures/screens/helicopter/heli_power_ruler.png");
-    private static final ResourceLocation HELI_POWER = Mod.loc("textures/screens/helicopter/heli_power.png");
-    private static final ResourceLocation HELI_VY_MOVE = Mod.loc("textures/screens/helicopter/heli_vy_move.png");
-    private static final ResourceLocation SPEED_FRAME = Mod.loc("textures/screens/helicopter/speed_frame.png");
-    private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/screens/helicopter/crosshair_ind.png");
-    private static final ResourceLocation HELI_DRIVER_ANGLE = Mod.loc("textures/screens/helicopter/heli_driver_angle.png");
+    private static final ResourceLocation HELI_BASE = Mod.loc("textures/overlay/vehicle/helicopter/heli_base.png");
+    private static final ResourceLocation ROLL_IND = Mod.loc("textures/overlay/vehicle/helicopter/roll_ind.png");
+    private static final ResourceLocation HELI_LINE = Mod.loc("textures/overlay/vehicle/helicopter/heli_line.png");
+    private static final ResourceLocation HELI_POWER_RULER = Mod.loc("textures/overlay/vehicle/helicopter/heli_power_ruler.png");
+    private static final ResourceLocation HELI_POWER = Mod.loc("textures/overlay/vehicle/helicopter/heli_power.png");
+    private static final ResourceLocation HELI_VY_MOVE = Mod.loc("textures/overlay/vehicle/helicopter/heli_vy_move.png");
+    private static final ResourceLocation SPEED_FRAME = Mod.loc("textures/overlay/vehicle/helicopter/speed_frame.png");
+    private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/overlay/vehicle/helicopter/crosshair_ind.png");
+    private static final ResourceLocation HELI_DRIVER_ANGLE = Mod.loc("textures/overlay/vehicle/helicopter/heli_driver_angle.png");
 
     private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
     private static final ResourceLocation CROSSHAIR_3P = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");

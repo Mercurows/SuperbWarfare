@@ -19,13 +19,13 @@ public class ArmorPlateOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_armor_plate";
 
-    private static final ResourceLocation ICON = Mod.loc("textures/screens/armor_plate_icon.png");
-    private static final ResourceLocation LEVEL1 = Mod.loc("textures/screens/armor_plate_level1.png");
-    private static final ResourceLocation LEVEL2 = Mod.loc("textures/screens/armor_plate_level2.png");
-    private static final ResourceLocation LEVEL3 = Mod.loc("textures/screens/armor_plate_level3.png");
-    private static final ResourceLocation LEVEL1_FRAME = Mod.loc("textures/screens/armor_plate_level1_frame.png");
-    private static final ResourceLocation LEVEL2_FRAME = Mod.loc("textures/screens/armor_plate_level2_frame.png");
-    private static final ResourceLocation LEVEL3_FRAME = Mod.loc("textures/screens/armor_plate_level3_frame.png");
+    private static final ResourceLocation ICON = Mod.loc("textures/overlay/armor_plate/icon.png");
+    private static final ResourceLocation BAR_1 = Mod.loc("textures/overlay/armor_plate/bar_1.png");
+    private static final ResourceLocation BAR_2 = Mod.loc("textures/overlay/armor_plate/bar_2.png");
+    private static final ResourceLocation BAR_3 = Mod.loc("textures/overlay/armor_plate/bar_3.png");
+    private static final ResourceLocation BAR_FRAME_1 = Mod.loc("textures/overlay/armor_plate/bar_frame_1.png");
+    private static final ResourceLocation BAR_FRAME_2 = Mod.loc("textures/overlay/armor_plate/bar_frame_2.png");
+    private static final ResourceLocation BAR_FRAME_3 = Mod.loc("textures/overlay/armor_plate/bar_frame_3.png");
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -52,14 +52,14 @@ public class ArmorPlateOverlay implements IGuiOverlay {
         double amount = 60 * (stack.getTag().getDouble("ArmorPlate") / max);
 
         ResourceLocation texture = switch (armorLevel) {
-            case 2 -> LEVEL2;
-            case 3 -> LEVEL3;
-            default -> LEVEL1;
+            case 2 -> BAR_2;
+            case 3 -> BAR_3;
+            default -> BAR_1;
         };
         ResourceLocation frame = switch (armorLevel) {
-            case 2 -> LEVEL2_FRAME;
-            case 3 -> LEVEL3_FRAME;
-            default -> LEVEL1_FRAME;
+            case 2 -> BAR_FRAME_2;
+            case 3 -> BAR_FRAME_3;
+            default -> BAR_FRAME_1;
         };
 
         guiGraphics.pose().pushPose();

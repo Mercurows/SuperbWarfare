@@ -77,11 +77,12 @@ public class VehicleHudOverlay implements IGuiOverlay {
             Mod.loc("textures/overlay/vehicle/weapon/frame/frame_9.png")
     };
 
-    private static final ResourceLocation GEAR = Mod.loc("textures/screens/aircraft/gear.png");
+    private static final ResourceLocation GEAR = Mod.loc("textures/overlay/vehicle/aircraft/gear.png");
 
     private static final ResourceLocation FRAME = Mod.loc("textures/overlay/vehicle/land/tv_frame.png");
     private static final ResourceLocation LINE = Mod.loc("textures/overlay/vehicle/land/line.png");
-    private static final ResourceLocation ROLL_IND = Mod.loc("textures/screens/helicopter/roll_ind.png");
+
+    private static final ResourceLocation ROLL_IND = Mod.loc("textures/overlay/vehicle/helicopter/roll_ind.png");
 
     // 地面载具车身显示
     private static final ResourceLocation BARREL = Mod.loc("textures/overlay/vehicle/land/line.png");
@@ -400,7 +401,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         int index = vehicle.getSeatIndex(player);
         if (index == -1) return;
-
 
 
         var weapons = weaponVehicle.getAvailableWeapons(index);
