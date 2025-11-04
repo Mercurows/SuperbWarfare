@@ -11,6 +11,7 @@
     "FishingHookMixin",
     "LevelMixin",
     "LivingEntityMixin",
+    "MobMixin",
     "PlayerMixin",
     "ProjectileUtilMixin",
     "ReloadableServerResourcesMixin",

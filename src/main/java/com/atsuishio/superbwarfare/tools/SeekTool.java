@@ -320,6 +320,12 @@ public class SeekTool {
         return entities.isEmpty();
     };
 
+    public static final BiPredicate<Entity, Double> NOT_IN_SMOKE_WITH_RANGE = (e, range) -> {
+        var box = e.getBoundingBox().inflate(range);
+        var entities = e.level().getEntities(EntityTypeTest.forClass(Entity.class), box, entity -> entity instanceof SmokeDecoyEntity).stream().toList();
+        return entities.isEmpty();
+    };
+
     /**
      * 判断某实体是否是自己的
      */
