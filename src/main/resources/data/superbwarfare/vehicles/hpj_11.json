@@ -4,7 +4,7 @@
   "MaxEnergy": 5000000,
   "Seats": {
     "HidePassenger": true,
-    "Transform" : "VehicleFlat",
+    "Transform": "VehicleFlat",
     "Position": [0, 0, 0],
     "MinPitch": -32.5,
     "MaxPitch": 50
@@ -36,9 +36,7 @@
     "ExplosionDamage": 100,
     "ExplosionRadius": 7
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/hpj_11_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/hpj_11_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
   "Type": "Defense"
 }

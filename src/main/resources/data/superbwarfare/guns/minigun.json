@@ -22,7 +22,7 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
-  "GunIcon": "superbwarfare:textures/gun_icon/minigun_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/minigun_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:fourth_times_charm",

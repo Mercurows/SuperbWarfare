@@ -274,8 +274,8 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public SoundInfo soundInfo = new SoundInfo();
 
     // TODO 能不能挪assets里面去
-    @SerializedName("GunIcon")
-    public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();
+    @SerializedName("Icon")
+    public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();
     /*
      * 准星类型
      * 预制的字段有：

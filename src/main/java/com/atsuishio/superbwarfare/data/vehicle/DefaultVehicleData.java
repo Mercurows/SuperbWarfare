@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;
@@ -105,9 +106,12 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("HasUpgradeSlots")
     public boolean hasUpgradeSlots = false;
 
-    // TODO 能不能挪assets里
-    @SerializedName("Icon")
-    public VehicleIconInfo icon = new VehicleIconInfo(Mod.loc("textures/gun_icon/default_icon.png").toString(), null);
+    @SerializedName("VehicleIcon")
+    public ResourceLocation vehicleIcon = Mod.loc("textures/gun_icon/default_icon.png");
+
+    @SerializedName("ContainerIcon")
+    public ResourceLocation containerIcon = null;
+
     @SerializedName("HUDColor")
     public ModColor hudColor = new ModColor(0x66FF00);
 

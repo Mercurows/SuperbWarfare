@@ -34,7 +34,7 @@
       }
     }
   ],
-  "GunIcon": "superbwarfare:textures/gun_icon/aurelia_sceptre_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/aurelia_sceptre_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

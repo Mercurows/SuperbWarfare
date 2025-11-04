@@ -4,7 +4,7 @@
   "MaxEnergy": 10000000,
   "Seats": {
     "IsEnclosed": true,
-    "Transform" : "Vehicle",
+    "Transform": "Vehicle",
     "Position": [0, 2.125, 3.7],
     "CanRotateHead": false
   },
@@ -44,9 +44,7 @@
     "ExplosionRadius": 16,
     "CrashPassengers": true
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/a10_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/a10_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Airplane"
 }

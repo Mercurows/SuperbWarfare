@@ -2,7 +2,7 @@
   "ID": "superbwarfare:tow",
   "MaxHealth": 60,
   "Seats": {
-    "Transform" : "VehicleFlat",
+    "Transform": "VehicleFlat",
     "Position": [0.3, -0.4, -0.6],
     "MinPitch": -40,
     "MaxPitch": 40
@@ -12,9 +12,7 @@
     "All * 0.75"
   ],
   "VehicleContainerType": "Empty",
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/tow_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/tow_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
   "Type": "Defense"
 }

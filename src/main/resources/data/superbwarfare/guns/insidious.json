@@ -23,7 +23,7 @@
     "Type": "Rifle"
   },
   "AmmoType": "@RifleAmmo",
-  "GunIcon": "superbwarfare:textures/gun_icon/insidious_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/insidious_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

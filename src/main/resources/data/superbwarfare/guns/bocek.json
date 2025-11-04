@@ -15,7 +15,7 @@
     "MinDistance": 100
   },
   "AmmoType": "minecraft:arrow",
-  "GunIcon": "superbwarfare:textures/gun_icon/bocek_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/bocek_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:field_doctor",

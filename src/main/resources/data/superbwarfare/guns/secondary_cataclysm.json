@@ -50,7 +50,7 @@
       }
     }
   ],
-  "GunIcon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

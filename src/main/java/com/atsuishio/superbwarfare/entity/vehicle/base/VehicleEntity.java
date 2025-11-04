@@ -1160,7 +1160,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 if (data == null) return new ProjectileWeapon();
 
                 var sound = data.get(GunProp.SOUND_INFO);
-                var icon = data.get(GunProp.GUN_ICON);
+                var icon = data.get(GunProp.ICON);
                 return new ProjectileWeapon()
                         .zoom(false)
                         .sound(sound.change)
@@ -3031,7 +3031,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public ResourceLocation getVehicleIcon() {
-        return ResourceLocation.tryParse(computed().icon.vehicleIcon());
+        return computed().vehicleIcon;
     }
 
     public boolean allowFreeCam() {
@@ -3310,9 +3310,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @Nullable
     public ResourceLocation getVehicleItemIcon() {
-        String location = computed().icon.containerIcon();
-        if (location == null) return null;
-        return ResourceLocation.tryParse(location);
+        return computed().containerIcon;
     }
 
     /**

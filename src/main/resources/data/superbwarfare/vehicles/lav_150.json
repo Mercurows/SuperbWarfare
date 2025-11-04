@@ -60,7 +60,7 @@
   ],
   "Weapons": {
     "Cannon": {
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
@@ -92,7 +92,7 @@
       "ExplosionRadius": 4
     },
     "MachineGun": {
-      "GunIcon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "HeatPerShoot": 0.5,
@@ -171,9 +171,7 @@
     "ExplosionDamage": 120,
     "ExplosionRadius": 7
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav150_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav150_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "Type": "APC"
 }

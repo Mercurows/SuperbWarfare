@@ -15,7 +15,7 @@
   "RPM": 180,
   "GunType": "CurvedLauncher",
   "AmmoType": "superbwarfare:grenade_40mm",
-  "GunIcon": "superbwarfare:textures/gun_icon/m_79_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/m_79_icon.png",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

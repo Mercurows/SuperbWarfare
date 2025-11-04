@@ -26,7 +26,7 @@
     "Type": "Sniper"
   },
   "AmmoType": "@SniperAmmo",
-  "GunIcon": "superbwarfare:textures/gun_icon/k_98_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/k_98_icon.png",
   "AvailablePerks": [
     "@Ammo",
     "superbwarfare:heal_clip",

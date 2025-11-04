@@ -124,7 +124,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<Double> SEEK_RANGE = new GunProp<>("SeekRange");
 
     // TODO 这几个换到 gun assets里面
-    public static final GunProp<String> GUN_ICON = new GunProp<>("GunIcon");
+    public static final GunProp<String> ICON = new GunProp<>("Icon");
     public static final GunProp<String> CROSSHAIR = new GunProp<>("Crosshair");
     public static final GunProp<ModColor> CROSSHAIR_COLOR = new GunProp<>("CrosshairColor");
     public static final GunProp<String> NAME = new GunProp<>("Name");

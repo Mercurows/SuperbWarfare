@@ -21,8 +21,8 @@ public class DefaultGunResource implements IDBasedData<DefaultGunResource> {
         return this.id;
     }
 
-    @SerializedName("GunIcon")
-    public String gunIcon = Mod.loc("textures/gun_icon/default_icon.png").toString();
+    @SerializedName("Icon")
+    public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();
 
     @SerializedName("Model")
     public ModelResource model = new ModelResource();

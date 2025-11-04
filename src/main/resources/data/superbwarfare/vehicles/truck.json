@@ -75,9 +75,7 @@
     "ExplosionDamage": 120,
     "ExplosionRadius": 7
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
   "Type": "Car"
 }

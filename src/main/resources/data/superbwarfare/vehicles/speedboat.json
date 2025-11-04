@@ -92,9 +92,7 @@
     "ExplosionDamage": 80,
     "ExplosionRadius": 5
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png",
   "Type": "Boat"
 }

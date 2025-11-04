@@ -3,7 +3,7 @@
   "MaxHealth": 350,
   "Seats": {
     "HidePassenger": true,
-    "Transform" : "VehicleFlat",
+    "Transform": "VehicleFlat",
     "Position": [0, 2, 0.5],
     "MinPitch": -2.7,
     "MaxPitch": 30
@@ -36,9 +36,7 @@
     "ExplosionDamage": 160,
     "ExplosionRadius": 9
   },
-  "Icon": {
-    "VehicleIcon": "superbwarfare:textures/vehicle_icon/mle1934_icon.png",
-    "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png"
-  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/mle1934_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
   "Type": "Artillery"
 }

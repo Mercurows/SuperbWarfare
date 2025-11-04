@@ -24,7 +24,7 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
-  "GunIcon": "superbwarfare:textures/gun_icon/ak_12_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/ak_12_icon.png",
   "AmmoType": "@RifleAmmo",
   "AvailablePerks": [
     "@Ammo",
