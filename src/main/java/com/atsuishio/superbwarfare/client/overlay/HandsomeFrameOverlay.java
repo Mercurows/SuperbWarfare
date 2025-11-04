@@ -71,7 +71,7 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
             List<Entity> visibleEntities = SeekTool.seekLivingEntities(player, 32 + 8 * (level - 1), 30);
 
             Entity naerestEntity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 30);
-            Entity targetEntity = ClientEventHandler.entity;
+            Entity targetEntity = ClientEventHandler.lockedEntity;
 
             for (var e : allEntities) {
                 Vec3 pos = new Vec3(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.xo, e.getX()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), e.zo, e.getZ()));

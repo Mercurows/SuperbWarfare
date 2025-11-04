@@ -175,7 +175,9 @@ public class ClientEventHandler {
     public static int lungeDraw;
     public static int gunMelee;
     public static int lungeSprint;
-    public static Entity entity;
+
+    // 智慧芯片锁定的实体
+    public static Entity lockedEntity;
 
     public static int dismountCountdown = 0;
     public static int aimVillagerCountdown = 0;
@@ -976,7 +978,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, entity != null ? Optional.of(entity.getUUID()) : Optional.empty(), Optional.empty()));
+        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, lockedEntity != null ? Optional.of(lockedEntity.getUUID()) : Optional.empty(), Optional.empty()));
         fireRecoilTime = 10;
 
         // 真实后座（
@@ -1889,20 +1891,22 @@ public class ClientEventHandler {
 
             // 智慧芯片
             if (zoom && !notInGame() && drawTime < 0.01 && !isEditing) {
-                if (!player.isShiftKeyDown()) {
+                if (player.isShiftKeyDown()) {
+                    lockedEntity = null;
+                } else {
                     int intelligentChipLevel = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
                     double seekRange = 32 + 8 * (intelligentChipLevel - 1);
 
                     if (intelligentChipLevel > 0) {
-                        if (ClientEventHandler.entity == null || !entity.isAlive()) {
+                        if (ClientEventHandler.lockedEntity == null || !lockedEntity.isAlive()) {
                             if (GunData.from(stack).perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || GunData.from(stack).perk.has(ModPerks.BEAST_BULLET.get())) {
-                                ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, seekRange, 16 / customZoom);
+                                ClientEventHandler.lockedEntity = SeekTool.seekEntityThroughWall(player, seekRange, 16 / customZoom);
                             } else {
-                                ClientEventHandler.entity = SeekTool.seekLivingEntity(player, seekRange, 16 / customZoom);
+                                ClientEventHandler.lockedEntity = SeekTool.seekLivingEntity(player, seekRange, 16 / customZoom);
                             }
                         }
-                        if (entity != null && entity.isAlive()) {
-                            Vec3 targetVec = new Vec3(Mth.lerp(event.getPartialTick(), entity.xo, entity.getX()), Mth.lerp(event.getPartialTick(), entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(event.getPartialTick(), entity.zo, entity.getZ()));
+                        if (lockedEntity != null && lockedEntity.isAlive()) {
+                            Vec3 targetVec = new Vec3(Mth.lerp(event.getPartialTick(), lockedEntity.xo, lockedEntity.getX()), Mth.lerp(event.getPartialTick(), lockedEntity.yo + lockedEntity.getEyeHeight(), lockedEntity.getEyeY()), Mth.lerp(event.getPartialTick(), lockedEntity.zo, lockedEntity.getZ()));
                             Vec3 playerVec = new Vec3(Mth.lerp(event.getPartialTick(), player.xo - 0.1 * player.getViewVector(1).x, player.getX() - 0.1 * player.getViewVector(1).x),
                                     Mth.lerp(event.getPartialTick(), player.yo + player.getEyeHeight() - 0.1 * player.getViewVector(1).y, player.getEyeY() - 0.1 * player.getViewVector(1).y),
                                     Mth.lerp(event.getPartialTick(), player.zo - 0.1 * player.getViewVector(1).z, player.getZ() - 0.1 * player.getViewVector(1).z));
@@ -1916,17 +1920,17 @@ public class ClientEventHandler {
                                 velocity = data.get(GunProp.VELOCITY);
                             }
 
-                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, entity.getDeltaMovement(), velocity, hasGravity ? 0.03 : 0);
+                            Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, lockedEntity.getDeltaMovement(), velocity, hasGravity ? 0.03 : 0);
                             look(player, toVec);
 
-                            if (player.distanceTo(entity) > seekRange) {
-                                entity = null;
+                            if (player.distanceTo(lockedEntity) > seekRange) {
+                                lockedEntity = null;
                             }
                         }
                     }
                 }
             } else {
-                entity = null;
+                lockedEntity = null;
             }
 
             lastX = player.getXRot();
