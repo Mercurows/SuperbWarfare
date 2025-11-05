@@ -278,6 +278,10 @@ public class ClientEventHandler {
             } catch (Exception ignored) {
             }
 
+            if (notInGame()) {
+                burstFireAmount = 0;
+            }
+
             // 切枪时记得重置状态
             if (uuid == null || !uuid.equals(lastOperatingGunUUID)) {
                 resetGunStatus();
@@ -803,7 +807,7 @@ public class ClientEventHandler {
             burstFireAmount = 0;
         }
 
-        if (!gunItem.canShoot(data, player)) {
+        if (!gunItem.canShoot(data, player) && !data.meleeOnly()) {
             holdingFireKey = false;
         }
 
