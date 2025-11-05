@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer;
 
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -38,7 +37,6 @@ public class SimpleGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Cus
         var player = mc.player;
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
-        if (!(itemStack.getItem() instanceof GunItem)) return;
 
         if (GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
@@ -46,7 +44,7 @@ public class SimpleGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Cus
             }
         }
 
-        if (renderingArms) {
+        if (renderingArms && itemStack.getItem() instanceof GunGeoItem) {
             AnimationHelper.renderArms(player, this.renderPerspective, stack, name, bone, buffer, renderType, packedLightIn, GunResource.compute(itemStack).useOldHandRenderer);
         }
         super.renderRecursively(stack, animatable, bone, type, buffer, bufferIn, isReRender, partialTick, packedLightIn, packedOverlayIn, red, green, blue, alpha);

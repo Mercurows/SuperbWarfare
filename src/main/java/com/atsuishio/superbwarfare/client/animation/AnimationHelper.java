@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -93,6 +94,8 @@ public class AnimationHelper {
 
 
     public static void handleShootFlare(String name, PoseStack stack, ItemStack itemStack, GeoBone bone, MultiBufferSource buffer, int packedLightIn) {
+        if (!(itemStack.getItem() instanceof GunItem)) return;
+
         var gunResource = GunResource.from(itemStack).compute();
         if (gunResource.flarePosition != null) {
             handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, gunResource.flarePosition.x, gunResource.flarePosition.y, gunResource.flarePosition.z, gunResource.flareSize);
