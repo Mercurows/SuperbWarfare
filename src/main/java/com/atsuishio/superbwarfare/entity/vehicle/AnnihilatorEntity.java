@@ -520,11 +520,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public int mainGunRpm(LivingEntity living) {
-        return 0;
-    }
-
-    @Override
     public boolean canShoot(LivingEntity living) {
         return true;
     }

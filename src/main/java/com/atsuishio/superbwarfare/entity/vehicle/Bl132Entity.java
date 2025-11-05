@@ -657,11 +657,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public int mainGunRpm(LivingEntity living) {
-        return 0;
-    }
-
-    @Override
     public boolean canShoot(LivingEntity living) {
         return true;
     }

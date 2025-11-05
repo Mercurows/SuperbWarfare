@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -12,14 +11,12 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.*;
 import org.joml.Math;
@@ -28,7 +25,6 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
@@ -69,12 +65,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.05), random.nextFloat() * 0.15f + 1.05f);
-    }
-
-    @Override
     public void baseTick() {
         super.baseTick();
         updateOBB();
@@ -102,7 +92,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         var seats = computed().seats();
         for (int i = 1; i < seats.size(); i++) {
             if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
-                int rpm = 20 / (mainGunRpm(mob) / 60);
+                int rpm = 20 / (vehicleWeaponRpm(mob) / 60);
                 if (tickCount % rpm == 0) {
                     vehicleShoot(mob);
                 }
@@ -184,12 +174,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         return this.cache;
     }
 
-    @Override
-    public int mainGunRpm(LivingEntity living) {
-        var data = getGunData(getSeatIndex(living));
-        if (data == null) return 0;
-        return data.get(GunProp.RPM);
-    }
 
     // client side
     @Override

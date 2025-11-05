@@ -554,11 +554,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public int mainGunRpm(LivingEntity living) {
-        return 0;
-    }
-
-    @Override
     public boolean canShoot(LivingEntity living) {
         return true;
     }

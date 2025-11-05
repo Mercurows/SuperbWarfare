@@ -52,13 +52,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.Math;
@@ -263,12 +261,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.15), random.nextFloat() * 0.15f + 1.05f);
-    }
-
-
-    @Override
     public void baseTick() {
         super.baseTick();
         this.updateOBB();
@@ -326,7 +318,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         }
 
         if (getNthEntity(2) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
-            int rpm = 20 / (mainGunRpm(mob) / 60);
+            int rpm = 20 / (vehicleWeaponRpm(mob) / 60);
             if (tickCount % rpm == 0) {
                 vehicleShoot(mob);
             }
@@ -786,27 +778,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public int mainGunRpm(LivingEntity living) {
-        if (living == getNthEntity(0)) {
-            if (getWeapon(0).mainGun) {
-                return 15;
-            } else if (getWeaponIndex(0) == 4) {
-                return 500;
-            }
-        }
-
-        if (living == getNthEntity(1)) {
-            return 500;
-        }
-
-        if (living == getNthEntity(2)) {
-            return 600;
-        }
-
-        return 15;
     }
 
     @Override

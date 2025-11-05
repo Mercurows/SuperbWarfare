@@ -182,11 +182,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int mainGunRpm(LivingEntity living) {
-        return 60;
-    }
-
-    @Override
     public boolean canShoot(LivingEntity living) {
         return entityData.get(STATE) == 1;
     }

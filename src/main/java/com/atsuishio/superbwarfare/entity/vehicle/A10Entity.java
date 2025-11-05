@@ -38,7 +38,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -173,11 +172,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public boolean shouldSendHitParticles() {
         return false;
-    }
-
-    @Override
-    protected void playStepSound(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.2), random.nextFloat() * 0.1f + 1f);
     }
 
     @Override
@@ -823,17 +817,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     public float shootingPitch() {
         return 0.7f + entityData.get(FIRE_TIME) * 0.05f;
-    }
-
-    @Override
-    public int mainGunRpm(LivingEntity living) {
-        if (getWeaponIndex(0) == 2) {
-            return 600;
-        }
-        if (getWeaponIndex(0) == 3) {
-            return 120;
-        }
-        return 0;
     }
 
     public boolean isFiring() {
