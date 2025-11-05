@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -52,8 +51,7 @@ public record SoundClientMessage(
                 && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle)
         ) return;
 
-        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(message.location());
-        if (sound == null) return;
+        var sound = SoundEvent.createVariableRangeEvent(message.location());
 
         double distance = player.position().distanceTo(new Vec3(message.pos));
         int time = (int) (distance / 17);
