@@ -37,7 +37,7 @@ public class VehicleGun extends GunItem {
                 && !data.charging()
                 && !data.bolt.needed.get()
                 // TODO 能否优化这个判断
-                && (data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get()) > data.get(GunProp.AMMO_COST_PER_SHOOT);
+                && (data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get()) >= data.get(GunProp.AMMO_COST_PER_SHOOT);
     }
 
     @Override
