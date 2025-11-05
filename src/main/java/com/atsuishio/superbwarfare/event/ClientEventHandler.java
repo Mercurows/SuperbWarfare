@@ -274,7 +274,7 @@ public class ClientEventHandler {
 
             UUID uuid = null;
             try {
-                uuid = data.data.getUUID("UUID");
+                uuid = data.gunDataTag.getUUID("UUID");
             } catch (Exception ignored) {
             }
 

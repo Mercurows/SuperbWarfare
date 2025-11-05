@@ -258,7 +258,6 @@ public class GunEventHandler {
         }
 
         data.save();
-        data.update();
     }
 
     private static void startReload(@Nullable Entity shooter, @NotNull GunData data) {
