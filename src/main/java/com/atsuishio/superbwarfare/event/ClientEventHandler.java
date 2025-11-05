@@ -159,6 +159,7 @@ public class ClientEventHandler {
     public static int burstFireAmount = 0;
 
     public static int customRpm = 0;
+    public static int gunMelee;
 
     public static double chamberRot = 0;
     public static double actionMove = 0;
@@ -175,9 +176,10 @@ public class ClientEventHandler {
     public static double shakeAmplitude = 0;
     public static double[] shakePos = {0, 0, 0};
     public static double shakeType = 0;
+
+    public static boolean usingLunge;
     public static int lungeAttack;
     public static int lungeDraw;
-    public static int gunMelee;
     public static int lungeSprint;
 
     // 智慧芯片锁定的实体
@@ -283,6 +285,7 @@ public class ClientEventHandler {
             // 切枪时记得重置状态
             if (uuid == null || !uuid.equals(lastOperatingGunUUID)) {
                 resetGunStatus();
+                resetLungeMineStatus();
             }
             lastOperatingGunUUID = uuid;
 
@@ -727,9 +730,9 @@ public class ClientEventHandler {
     }
 
     public static void handleLungeAttack(Player player, ItemStack stack) {
-        if (stack.is(ModItems.LUNGE_MINE.get()) && lungeAttack == 0 && lungeDraw == 0 && holdingFireKey) {
+        if (stack.is(ModItems.LUNGE_MINE.get()) && lungeAttack == 0 && lungeDraw == 0 && usingLunge) {
             lungeAttack = 18;
-            holdingFireKey = false;
+            usingLunge = false;
             player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
         }
 
@@ -2044,9 +2047,6 @@ public class ClientEventHandler {
         holdingFireKeyTicks = 0;
         holdingFireKeyTicks0 = 0;
         ClickHandler.switchZoom = false;
-        lungeDraw = 30;
-        lungeSprint = 0;
-        lungeAttack = 0;
         burstFireAmount = 0;
         bowPullTimer = 0;
         bowPower = 0;
@@ -2058,6 +2058,13 @@ public class ClientEventHandler {
         lockingPos = null;
         isEditing = false;
         zoomTime = 0;
+    }
+
+    public static void resetLungeMineStatus() {
+        lungeDraw = 30;
+        lungeSprint = 0;
+        lungeAttack = 0;
+        usingLunge = false;
     }
 
     private static void handleWeaponDraw(LivingEntity entity) {
