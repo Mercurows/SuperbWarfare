@@ -62,39 +62,11 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public void changeWeapon(int index, int value, boolean isScroll) {
-        var gunData = getGunData(index);
-        if (gunData == null) return;
-
-        var ammoList = gunData.get(GunProp.AMMO_CONSUMER);
-        var targetIndex = isScroll ? (value + gunData.selectedAmmoType.get()) % ammoList.size() : value;
-        setWeaponIndex(index, targetIndex);
-        var soundInfo = gunData.get(GunProp.SOUND_INFO);
-
-        // TODO 正确播放武器切换音效
-        SoundEvent soundEvent = soundInfo.change;
-
-        if (soundEvent != null) {
-            this.level().playSound(null, this, soundEvent, this.getSoundSource(), 1, 1);
-        }
-
-    }
-
-    @Override
     public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
         var gunData = getGunData(getSeatIndex(passenger));
         if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
 
         return gunData.backupAmmoCount.get();
-    }
-
-    @Override
-    public int getWeaponIndex(int index) {
-        var gunData = getGunData(index);
-        if (gunData == null) return 0;
-
-        var consumersSize = gunData.get(GunProp.AMMO_CONSUMER).size();
-        return Mth.clamp(gunData.selectedAmmoType.get(), 0, consumersSize - 1);
     }
 
     // TODO 移除这个
