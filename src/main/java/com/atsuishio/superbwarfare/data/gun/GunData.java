@@ -816,7 +816,32 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final Perks perk;
 
     public void save() {
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        var keysToRemove = new ArrayList<String>();
+        for (var key : perkTag.getAllKeys()) {
+            if (perkTag.get(key) instanceof CompoundTag compoundTag && compoundTag.isEmpty()) {
+                keysToRemove.add(key);
+            }
+        }
+        keysToRemove.forEach(perkTag::remove);
+
+        if (perkTag.isEmpty()) {
+            tag.remove("Perks");
+        }
+
+        if (attachmentTag.isEmpty()) {
+            tag.remove("Attachments");
+        }
+
+        if (data.isEmpty()) {
+            tag.remove("GunData");
+        }
+
+        if (!tag.isEmpty()) {
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        } else {
+            stack.remove(DataComponents.CUSTOM_DATA);
+        }
+
         update();
     }
 

@@ -1234,8 +1234,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var state = compound.getCompound("WeaponState");
         var gunDataMap = new HashMap<String, GunData>();
         for (var key : state.getAllKeys()) {
-            var tag = state.get(key);
-            assert tag != null;
+            var tag = state.getCompound(key);
+
+            tag = tag.copy();
+            tag.putString("id", "superbwarfare:vehicle_gun");
+            tag.putInt("count", 1);
 
             ItemStack.parse(this.level().registryAccess(), tag)
                     .ifPresent(is -> gunDataMap.put(key, GunData.from(is)));
@@ -1297,9 +1300,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var gunDataMap = entityData.get(GUN_DATA_MAP);
         var tag = new CompoundTag();
         for (var kv : gunDataMap.entrySet()) {
-            tag.put(String.valueOf(kv.getKey()), kv.getValue().stack.save(this.level().registryAccess()));
+            var data = GunData.from(kv.getValue().stack.copy());
+            data.backupAmmoCount.reset();
+            data.save();
+
+            var stackTag = data.stack.save(this.level().registryAccess());
+            if (stackTag instanceof CompoundTag compoundTag) {
+                compoundTag.remove("id");
+                compoundTag.remove("count");
+                if (compoundTag.isEmpty()) continue;
+            }
+
+            tag.put(String.valueOf(kv.getKey()), stackTag);
         }
-        compound.put("WeaponState", tag);
+
+        if (!tag.isEmpty()) {
+            compound.put("WeaponState", tag);
+        }
 
         compound.putFloat("TurretHealth", this.entityData.get(TURRET_HEALTH));
         compound.putFloat("LeftWheelHealth", this.entityData.get(L_WHEEL_HEALTH));
