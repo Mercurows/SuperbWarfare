@@ -71,7 +71,7 @@
       "RecoilTime": 40,
       "RecoilForce": 0.2,
       "Spread": 0.5,
-      "Crosshair": "@VehicleUsAp",
+      "Crosshair": "@VehicleUsApc",
       "CrosshairColor": "0x66FF00",
       "Name": "superbwarfare.lav_150.cannon",
       "SoundInfo": {
@@ -82,7 +82,7 @@
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,
-      "AmmoType": "Infinity",
+      "AmmoType": "superbwarfare:small_shell",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0.0609375, 0.0517, 3.2]],
@@ -105,7 +105,7 @@
       "Velocity": 30,
       "RecoilTime": 0,
       "RecoilForce": 0,
-      "AmmoType": "Infinity",
+      "AmmoType": "superbwarfare:rifle_ammo",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0.3, 0.0517, 0.5]],
