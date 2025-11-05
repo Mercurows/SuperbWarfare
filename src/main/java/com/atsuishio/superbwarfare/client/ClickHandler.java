@@ -289,9 +289,11 @@ public class ClickHandler {
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue() || key == ModKeyMappings.CHANGE_FIRE_MODE_BACKWARD.getKey().getValue()) {
                 PacketDistributor.sendToServer(new FireModeMessage(false));
+                burstFireAmount = 0;
             }
             if (key == ModKeyMappings.CHANGE_FIRE_MODE_FORWARD.getKey().getValue()) {
                 PacketDistributor.sendToServer(new FireModeMessage(true));
+                burstFireAmount = 0;
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 if (stack.getItem() instanceof GunItem) {
@@ -306,12 +308,15 @@ public class ClickHandler {
                 if (key == ModKeyMappings.UNLOAD.getKey().getValue()) {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return;
                     PacketDistributor.sendToServer(UnloadMessage.INSTANCE);
+                    burstFireAmount = 0;
                 }
                 if (data.get(GunProp.AMMO_CONSUMER).size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
                         PacketDistributor.sendToServer(new EditMessage(5, false));
+                        burstFireAmount = 0;
                     } else if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
                         PacketDistributor.sendToServer(new EditMessage(5, true));
+                        burstFireAmount = 0;
                     }
                 }
             }
