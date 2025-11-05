@@ -44,7 +44,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public final ItemStack stack;
     public final GunItem item;
     public final CompoundTag tag;
-    public final CompoundTag data;
+    public final CompoundTag gunDataTag;
     public final CompoundTag perkTag;
     public final CompoundTag attachmentTag;
     public final StringValue propertyOverrideString;
@@ -66,13 +66,13 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         this.tag = stack.getOrCreateTag();
 
-        data = getOrPut("GunData");
+        gunDataTag = getOrPut("GunData");
         perkTag = getOrPut("Perks");
         attachmentTag = getOrPut("Attachments");
-        propertyOverrideString = new StringValue(this.data, "Override");
+        propertyOverrideString = new StringValue(this.gunDataTag, "Override");
 
-        selectedAmmoType = new IntValue(data, "SelectedAmmoType");
-        selectedFireMode = new IntValue(data, "SelectedFireMode", 0);
+        selectedAmmoType = new IntValue(gunDataTag, "SelectedAmmoType");
+        selectedFireMode = new IntValue(gunDataTag, "SelectedFireMode", 0);
 
         // 可持久化属性
         reload = new Reload(this);
@@ -81,28 +81,28 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         attachment = new Attachment(this);
         perk = new Perks(this);
 
-        ammo = new IntValue(data, "Ammo");
-        virtualAmmo = new IntValue(data, "VirtualAmmo");
-        backupAmmoCount = new IntValue(data, "BackupAmmoCount");
-        ammoSlot = new AmmoSlot(data);
-        burstAmount = new IntValue(data, "BurstAmount");
+        ammo = new IntValue(gunDataTag, "Ammo");
+        virtualAmmo = new IntValue(gunDataTag, "VirtualAmmo");
+        backupAmmoCount = new IntValue(gunDataTag, "BackupAmmoCount");
+        ammoSlot = new AmmoSlot(gunDataTag);
+        burstAmount = new IntValue(gunDataTag, "BurstAmount");
 
-        level = new IntValue(data, "Level");
-        exp = new DoubleValue(data, "Exp");
-        upgradePoint = new DoubleValue(data, "UpgradePoint");
+        level = new IntValue(gunDataTag, "Level");
+        exp = new DoubleValue(gunDataTag, "Exp");
+        upgradePoint = new DoubleValue(gunDataTag, "UpgradePoint");
 
-        isEmpty = new BooleanValue(data, "IsEmpty");
-        closeHammer = new BooleanValue(data, "CloseHammer");
-        closeStrike = new BooleanValue(data, "CloseStrike");
-        stopped = new BooleanValue(data, "Stopped");
-        forceStop = new BooleanValue(data, "ForceStop");
-        loadIndex = new IntValue(data, "LoadIndex");
-        holdOpen = new BooleanValue(data, "HoldOpen");
-        hideBulletChain = new BooleanValue(data, "HideBulletChain");
-        sensitivity = new IntValue(data, "Sensitivity");
-        heat = new DoubleValue(data, "Heat");
-        overHeat = new BooleanValue(data, "OverHeat");
-        zooming = new BooleanValue(data, "Zooming");
+        isEmpty = new BooleanValue(gunDataTag, "IsEmpty");
+        closeHammer = new BooleanValue(gunDataTag, "CloseHammer");
+        closeStrike = new BooleanValue(gunDataTag, "CloseStrike");
+        stopped = new BooleanValue(gunDataTag, "Stopped");
+        forceStop = new BooleanValue(gunDataTag, "ForceStop");
+        loadIndex = new IntValue(gunDataTag, "LoadIndex");
+        holdOpen = new BooleanValue(gunDataTag, "HoldOpen");
+        hideBulletChain = new BooleanValue(gunDataTag, "HideBulletChain");
+        sensitivity = new IntValue(gunDataTag, "Sensitivity");
+        heat = new DoubleValue(gunDataTag, "Heat");
+        overHeat = new BooleanValue(gunDataTag, "OverHeat");
+        zooming = new BooleanValue(gunDataTag, "Zooming");
 
         var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
         if (defaultFireMode == null) {
@@ -158,7 +158,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public CompoundTag data() {
-        return data;
+        return gunDataTag;
     }
 
     public CompoundTag perk() {
@@ -829,7 +829,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
             stack.removeTagKey("Attachments");
         }
 
-        if (data.isEmpty()) {
+        if (gunDataTag.isEmpty()) {
             stack.removeTagKey("GunData");
         }
 

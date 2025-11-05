@@ -272,7 +272,7 @@ public class ClientEventHandler {
 
             UUID uuid = null;
             try {
-                uuid = data.data.getUUID("UUID");
+                uuid = data.gunDataTag.getUUID("UUID");
             } catch (Exception ignored) {
             }
 
@@ -1035,7 +1035,7 @@ public class ClientEventHandler {
 
     public static void playGunClientSounds(Player player) {
         ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem gunItem)) {
+        if (!(stack.getItem() instanceof GunItem)) {
             return;
         }
 
