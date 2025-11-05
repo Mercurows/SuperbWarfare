@@ -105,7 +105,7 @@
       "Velocity": 30,
       "RecoilTime": 0,
       "RecoilForce": 0,
-      "AmmoType": "superbwarfare:rifle_ammo",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0.3, 0.0517, 0.5]],
