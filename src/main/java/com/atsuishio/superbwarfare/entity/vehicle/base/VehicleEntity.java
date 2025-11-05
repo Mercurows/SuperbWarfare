@@ -26,7 +26,8 @@ import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
@@ -111,8 +112,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -3379,19 +3380,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return hidePassenger(getSeatIndex(passenger));
     }
 
-    public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
-        if (this instanceof WeaponVehicleEntity weaponVehicle) {
-            var weapons = weaponVehicle.getAvailableWeapons(getSeatIndex(passenger));
-            if (weaponIndex < 0 || weaponIndex >= weapons.size()) return 0;
-
-            var weapon = weapons.get(weaponIndex);
-            if (InventoryTool.hasCreativeAmmoBox(passenger) && !(weapon instanceof LaserWeapon) && !(weapon instanceof SmallRocketWeapon) && !(weapon instanceof SwarmDroneWeapon)) {
-                return -1;
-            }
-
-            return weaponVehicle.getAmmoCount(passenger);
-        }
-        return 0;
+    public int getAmmoCount(LivingEntity living) {
+        var data = getGunData(getSeatIndex(living));
+        if (data == null) return 0;
+        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }
 
     @Override

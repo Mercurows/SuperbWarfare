@@ -23,8 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -59,14 +59,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.375f, 0.78125f, 3.46875f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.15625f, 0.375f, 1.125f), new Quaternionf(), OBB.Part.ENGINE1);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(1.5f, 0.34375f, 1.5f), new Quaternionf(), OBB.Part.TURRET);
-    }
-
-    @Override
-    public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
-        var gunData = getGunData(getSeatIndex(passenger));
-        if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
-
-        return gunData.backupAmmoCount.get();
     }
 
     // TODO 移除这个
@@ -211,14 +203,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     public boolean canShoot(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
         return gunData != null && gunData.canShoot(getAmmoSupplier());
-    }
-
-    // TODO 正确计算AmmoCount
-    @Override
-    public int getAmmoCount(LivingEntity living) {
-        var data = getGunData(getSeatIndex(living));
-        if (data == null) return 0;
-        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }
 
     @Override

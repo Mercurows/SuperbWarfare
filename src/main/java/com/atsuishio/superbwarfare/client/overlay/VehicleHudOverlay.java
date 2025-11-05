@@ -477,7 +477,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 );
 
                 preciseBlit(guiGraphics, SELECTED, w - 95, startY, 100, 0, 0, 8, 8, 8, 8);
-                var ammoCount = vehicle.getAmmoCount(player, i);
+                var ammoCount = vehicle.getAmmoCount(player);
 
                 if (ammoCount == Integer.MAX_VALUE) {
                     preciseBlit(guiGraphics, NUMBER, w - 28 + xOffset, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);

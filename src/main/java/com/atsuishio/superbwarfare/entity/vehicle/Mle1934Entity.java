@@ -616,23 +616,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public int getAmmoCount(LivingEntity living) {
-        int playerAmmo = 0;
-        if (living == getFirstPassenger()) {
-            Item ammo = switch (getWeaponIndex(0))
-            {
-                case 1 -> ModItems.HE_5_INCHES.get();
-                case 2 -> ModItems.CM_5_INCHES.get();
-                case 3 -> ModItems.GS_5_INCHES.get();
-                default -> ModItems.AP_5_INCHES.get();
-            };
-            playerAmmo = InventoryTool.countItem(living, ammo);
-        }
-
-        return playerAmmo + entityData.get(AMMO_COUNT);
-    }
-
-    @Override
     public int zoomFov() {
         return 5;
     }

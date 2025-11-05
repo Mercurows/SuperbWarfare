@@ -129,7 +129,7 @@ public class AircraftOverlay implements IGuiOverlay {
 
                         poseStack.pushPose();
                         poseStack.translate(x, y, 0);
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -11, 1, false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + vehicle.getAmmoCount(player)), 25, -11, 1, false);
                         poseStack.popPose();
 
                         preciseBlit(guiGraphics, BOMB_SCOPE, x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
@@ -202,7 +202,7 @@ public class AircraftOverlay implements IGuiOverlay {
                         int width = Minecraft.getInstance().font.width(name);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
 
-                        String count = InventoryTool.hasCreativeAmmoBox(player) ? "∞" : String.valueOf(armedVehicle.getAmmoCount(player));
+                        String count = InventoryTool.hasCreativeAmmoBox(player) ? "∞" : String.valueOf(vehicle.getAmmoCount(player));
                         int width2 = Minecraft.getInstance().font.width(count);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
                     } else if (weaponVehicle.getWeaponIndex(0) == 1) {
@@ -210,7 +210,7 @@ public class AircraftOverlay implements IGuiOverlay {
                         int width = Minecraft.getInstance().font.width(name);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
 
-                        String count = String.valueOf(armedVehicle.getAmmoCount(player));
+                        String count = String.valueOf(vehicle.getAmmoCount(player));
                         int width2 = Minecraft.getInstance().font.width(count);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
                     } else if (weaponVehicle.getWeaponIndex(0) == 2) {
@@ -218,7 +218,7 @@ public class AircraftOverlay implements IGuiOverlay {
                         int width = Minecraft.getInstance().font.width(name);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
 
-                        String count = String.valueOf(armedVehicle.getAmmoCount(player));
+                        String count = String.valueOf(vehicle.getAmmoCount(player));
                         int width2 = Minecraft.getInstance().font.width(count);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
                     } else if (weaponVehicle.getWeaponIndex(0) == 3) {
@@ -226,7 +226,7 @@ public class AircraftOverlay implements IGuiOverlay {
                         int width = Minecraft.getInstance().font.width(name);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, color, false);
 
-                        String count = String.valueOf(armedVehicle.getAmmoCount(player));
+                        String count = String.valueOf(vehicle.getAmmoCount(player));
                         int width2 = Minecraft.getInstance().font.width(count);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(count), (int) x - width2 / 2, (int) y + 76, color, false);
                     }
@@ -292,15 +292,15 @@ public class AircraftOverlay implements IGuiOverlay {
                     if (vehicle instanceof A10Entity a10Entity) {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
                             double heat = a10Entity.getEntityData().get(HEAT) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : armedVehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : vehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + vehicle.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {
                             cross = BOMB_RING;
                             size = 24;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("MK82 BOMB " + vehicle.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 3) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + armedVehicle.getAmmoCount(player)), 25, -9, -1, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AGM-65 " + vehicle.getAmmoCount(player)), 25, -9, -1, false);
                         }
                     }
 
