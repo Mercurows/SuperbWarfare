@@ -437,7 +437,7 @@ public class ClickHandler {
         }
 
         if (stack.is(ModItems.LUNGE_MINE.get())) {
-            ClientEventHandler.holdingFireKey = true;
+            ClientEventHandler.usingLunge = true;
         }
 
         if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof CannonEntity)
