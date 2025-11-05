@@ -165,6 +165,7 @@ public class GunEventHandler {
             }
 
             data.burstAmount.reset();
+            data.save();
         }
     }
 
@@ -260,7 +261,7 @@ public class GunEventHandler {
             }
         }
 
-        data.update();
+        data.save();
     }
 
     private static void startReload(@Nullable Entity shooter, @NotNull GunData data) {

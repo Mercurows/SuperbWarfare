@@ -68,6 +68,7 @@ public record FireModeMessage(boolean forward) {
             if (stack.getItem() == ModItems.JAVELIN.get()) {
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get());
             }
+            data.save();
         });
         context.setPacketHandled(true);
     }

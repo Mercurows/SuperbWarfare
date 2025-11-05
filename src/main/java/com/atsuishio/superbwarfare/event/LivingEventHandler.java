@@ -233,6 +233,7 @@ public class LivingEventHandler {
         if (!DamageTypeTool.isGunDamage(source)) return;
 
         data.exp.set(data.exp.get() + amount);
+        data.save();
     }
 
     private static void giveKillExpToWeapon(LivingDeathEvent event) {
@@ -272,6 +273,7 @@ public class LivingEventHandler {
             data.level.set(level);
             data.upgradePoint.set(data.upgradePoint.get() + 0.5);
         }
+        data.save();
     }
 
     private static void handleGunLevels(LivingHurtEvent event) {
@@ -296,6 +298,7 @@ public class LivingEventHandler {
             data.level.set(level);
             data.upgradePoint.set(data.upgradePoint.get() + 0.5);
         }
+        data.save();
     }
 
     private static void killIndication(LivingDeathEvent event) {
@@ -400,6 +403,8 @@ public class LivingEventHandler {
                         }
 
                         oldGun.onChangeSlot(oldStack, player);
+
+                        oldData.save();
                     }
 
                     if (newStack.getItem() instanceof GunItem) {
@@ -432,6 +437,8 @@ public class LivingEventHandler {
                                 instance.perk().onChangeSlot(newData, instance, player);
                             }
                         }
+
+                        newData.save();
                     }
                 }
             }

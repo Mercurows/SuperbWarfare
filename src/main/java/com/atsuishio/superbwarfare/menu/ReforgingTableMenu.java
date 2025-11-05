@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public class ReforgingTableMenu extends AbstractContainerMenu {
@@ -219,6 +220,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
 
         if (delta != 0) {
             data.upgradePoint.set(oldPoint + delta);
+            data.save();
         }
     }
 
@@ -259,6 +261,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             }
         });
 
+        data.save();
         handleUpgradePoint(result);
 
         this.ammoPerkLevel.set(0);
@@ -304,6 +307,8 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             inputData.upgradePoint.set(Math.min(MAX_UPGRADE_POINT, level - 1 + inputData.upgradePoint.get()));
             this.upgradePoint.set((int) inputData.upgradePoint.get());
 
+            outputData.save();
+            inputData.save();
             this.container.setItem(INPUT_SLOT, output);
             this.container.setChanged();
         }
@@ -483,13 +488,14 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         }
 
         @Override
+        @ParametersAreNonnullByDefault
         public void onTake(Player pPlayer, ItemStack pStack) {
             onTakePerk(pStack);
             super.onTake(pPlayer, pStack);
         }
 
         @Override
-        public void setByPlayer(ItemStack pStack) {
+        public void setByPlayer(@NotNull ItemStack pStack) {
             onPlacePerk(pStack);
             super.setByPlayer(pStack);
         }
@@ -500,7 +506,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             super(pContainer, pSlot, pX, pY);
         }
 
-        public boolean mayPlace(ItemStack pStack) {
+        public boolean mayPlace(@NotNull ItemStack pStack) {
             return false;
         }
 

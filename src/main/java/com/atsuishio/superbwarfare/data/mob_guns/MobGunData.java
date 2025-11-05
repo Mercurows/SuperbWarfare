@@ -95,6 +95,7 @@ public class MobGunData {
         if (selectedData.override != null) {
             data.propertyOverrideString.set(DataLoader.GSON.toJson(selectedData.override));
         }
+        data.save();
         this.gunData = data;
 
         return data;

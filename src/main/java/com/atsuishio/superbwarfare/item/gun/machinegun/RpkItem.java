@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -142,11 +141,12 @@ public class RpkItem extends GunGeoItem {
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+        var data = GunData.from(stack);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
 
         if (gripType == 3) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Grip", 0);
+            data.attachment.set(AttachmentType.GRIP, 0);
+            data.save();
         }
     }
 

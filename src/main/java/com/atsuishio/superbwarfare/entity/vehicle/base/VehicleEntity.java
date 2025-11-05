@@ -112,8 +112,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -264,7 +264,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
         if (seatIndex >= selectedWeapon.size()) return;
 
-        var weaponIndex = selectedWeapon.get(seatIndex);
+        var weaponIndex = selectedWeapon.getInt(seatIndex);
         if (weaponIndex < 0) return;
 
         var weapons = seat.weapons();
@@ -280,7 +280,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         data = data.copy();
         consumer.accept(data);
-//        data.save();
+        data.save();
         map.put(name, data);
 
         entityData.set(GUN_DATA_MAP, map);
@@ -1259,6 +1259,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         for (var key : state.getAllKeys()) {
             var tag = state.getCompound(key);
 
+            tag = tag.copy();
+            tag.putString("id", "superbwarfare:vehicle_gun");
+            tag.putInt("Count", 1);
+
             gunDataMap.put(key, GunData.from(ItemStack.of(tag)));
         }
         entityData.set(GUN_DATA_MAP, gunDataMap);
@@ -1319,9 +1323,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         var tag = new CompoundTag();
         for (var kv : gunDataMap.entrySet()) {
-            tag.put(String.valueOf(kv.getKey()), kv.getValue().stack.save(new CompoundTag()));
+            var data = GunData.from(kv.getValue().stack.copy());
+            data.backupAmmoCount.reset();
+            data.save();
+
+            var stackTag = data.stack.save(new CompoundTag());
+            stackTag.remove("id");
+            stackTag.remove("Count");
+            if (stackTag.isEmpty()) continue;
+
+            tag.put(String.valueOf(kv.getKey()), stackTag);
         }
-        compound.put("WeaponState", tag);
+
+        if (!tag.isEmpty()) {
+            compound.put("WeaponState", tag);
+        }
 
         compound.putFloat("TurretHealth", this.entityData.get(TURRET_HEALTH));
         compound.putFloat("LeftWheelHealth", this.entityData.get(L_WHEEL_HEALTH));
@@ -3437,7 +3453,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            if (data != null ) {
+            if (data != null) {
                 if (data.aircraftCamera) {
                     return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
                 }
@@ -3464,7 +3480,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            if (data != null ) {
+            if (data != null) {
                 if (zoom || isFirstPerson) {
                     if (zoom) {
                         return zoomPos(player, partialTicks);

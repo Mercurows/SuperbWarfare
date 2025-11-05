@@ -60,6 +60,8 @@ public class FireKeyMessage {
             // 松开开火
             data.item.onFireKeyRelease(data, player, power, zoom);
         }
+
+        data.save();
     }
 
     private static void handleGunBolt(Player player, ItemStack stack) {

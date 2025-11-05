@@ -70,6 +70,7 @@ public class EditMessage {
                 }
                 case 5 -> data.changeAmmoConsumer(data.selectedAmmoType.get() + (message.add ? 1 : -1), player);
             }
+            data.save();
             SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
         });
         context.setPacketHandled(true);

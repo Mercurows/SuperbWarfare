@@ -104,6 +104,7 @@ public class PlayerEventHandler {
                     data.ammo.set(data.get(GunProp.MAGAZINE));
                 }
                 data.holdOpen.set(false);
+                data.save();
             }
         }
     }
@@ -166,9 +167,10 @@ public class PlayerEventHandler {
 
         if (left.getItem() instanceof GunItem && right.getItem() == ModItems.SHORTCUT_PACK.get()) {
             ItemStack output = left.copy();
-            var data = GunData.from(output);
 
+            var data = GunData.from(output);
             data.upgradePoint.set(data.upgradePoint.get() + 1);
+            data.save();
 
             event.setOutput(output);
             event.setCost(10);

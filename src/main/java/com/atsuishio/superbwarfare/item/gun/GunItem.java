@@ -177,6 +177,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         if (isInitialized(data)) return;
 
         data.data.putUUID("UUID", UUID.randomUUID());
+        data.save();
     }
 
     public boolean isInitialized(GunData data) {
@@ -658,6 +659,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
         // 开火后事件
         data.item.afterShoot(parameters);
+
+        data.save();
     }
 
     @Deprecated(forRemoval = true)

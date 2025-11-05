@@ -468,6 +468,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
             var consumed = Math.min(virtualAmmo.get(), count);
             virtualAmmo.add(-consumed);
             count -= consumed;
+            save();
         }
         if (count <= 0 || entity == null) return;
 
@@ -497,6 +498,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
             var consumed = Math.min(virtualAmmo.get(), count);
             virtualAmmo.add(-consumed);
             count -= consumed;
+            save();
         }
         if (count <= 0 || handler == null) return;
 
@@ -808,6 +810,30 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         if (!(obj instanceof GunData otherData)) return false;
 
         return ItemStack.isSameItemSameTags(otherData.stack, this.stack);
+    }
+
+    public void save() {
+        var keysToRemove = new ArrayList<String>();
+        for (var key : perkTag.getAllKeys()) {
+            if (perkTag.get(key) instanceof CompoundTag compoundTag && compoundTag.isEmpty()) {
+                keysToRemove.add(key);
+            }
+        }
+        keysToRemove.forEach(perkTag::remove);
+
+        if (perkTag.isEmpty()) {
+            stack.removeTagKey("Perks");
+        }
+
+        if (attachmentTag.isEmpty()) {
+            stack.removeTagKey("Attachments");
+        }
+
+        if (data.isEmpty()) {
+            stack.removeTagKey("GunData");
+        }
+
+        update();
     }
 
     public GunData copy() {
