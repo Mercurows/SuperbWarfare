@@ -830,26 +830,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public int getAmmoCount(LivingEntity living) {
-        if (living == getNthEntity(0)) {
-            if (getWeapon(0).mainGun) {
-                return this.entityData.get(LOADED_SHELL).equals("null") ? 0 : 1;
-            } else if (getWeaponIndex(0) == 4) {
-                return this.entityData.get(MG_AMMO);
-            }
-        }
-
-        if (living == getNthEntity(1)) {
-            return this.entityData.get(MG_AMMO);
-        }
-
-        if (living == getNthEntity(2)) {
-            return this.entityData.get(LOADED_DRONE);
-        }
-        return 0;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }

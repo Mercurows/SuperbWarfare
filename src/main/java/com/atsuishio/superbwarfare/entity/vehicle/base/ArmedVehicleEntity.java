@@ -38,14 +38,6 @@ public interface ArmedVehicleEntity {
     boolean canShoot(LivingEntity living);
 
     /**
-     * 获取当前选择的主武器的备弹数量
-     *
-     * @param living 玩家
-     * @return 备弹数量
-     */
-    int getAmmoCount(LivingEntity living);
-
-    /**
      * 瞄准时的放大倍率
      *
      * @return 放大倍率

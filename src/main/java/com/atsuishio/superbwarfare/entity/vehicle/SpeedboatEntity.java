@@ -339,11 +339,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     @Override
-    public int getAmmoCount(LivingEntity living) {
-        return this.entityData.get(AMMO);
-    }
-
-    @Override
     public int zoomFov() {
         return 1;
     }

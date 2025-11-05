@@ -187,7 +187,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
         if (!vehicle.amphibiousVehicle()) return;
 
         int heat = weaponVehicle.getWeaponHeat(player);
-        int ammoCount = weaponVehicle.getAmmoCount(player);
+        int ammoCount = vehicle.getAmmoCount(player);
         var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
         guiGraphics.drawString(font, component, (screenWidth - font.width(component)) / 2, screenHeight - 65,
@@ -199,7 +199,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
         float heat = weaponVehicle.getWeaponHeat(player) / 100F;
 
-        int ammoCount = weaponVehicle.getAmmoCount(player);
+        int ammoCount = vehicle.getAmmoCount(player);
         var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
         guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);

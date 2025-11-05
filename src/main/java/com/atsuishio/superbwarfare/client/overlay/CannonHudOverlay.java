@@ -196,9 +196,9 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
 
                     if (player.getVehicle() instanceof Mk42Entity || player.getVehicle() instanceof Mle1934Entity) {
                         if (cannonEntity.getWeaponIndex(0) == 0) {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AP SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannonEntity.getAmmoCount(player))), 30, -9, -1, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("AP SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannon.getAmmoCount(player))), 30, -9, -1, false);
                         } else {
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HE SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannonEntity.getAmmoCount(player))), 30, -9, -1, false);
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HE SHELL " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : cannon.getAmmoCount(player))), 30, -9, -1, false);
                         }
                     }
 

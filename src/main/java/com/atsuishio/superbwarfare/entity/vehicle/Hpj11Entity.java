@@ -516,11 +516,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public int getAmmoCount(LivingEntity living) {
-        return this.entityData.get(AMMO);
-    }
-
-    @Override
     public int zoomFov() {
         return 2;
     }

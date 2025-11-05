@@ -192,11 +192,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int getAmmoCount(LivingEntity living) {
-        return entityData.get(STATE) == 1 ? 1 : 0;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }

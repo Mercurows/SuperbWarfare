@@ -51,14 +51,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(1.5f, 0.34375f, 1.5f), new Quaternionf(), OBB.Part.TURRET);
     }
 
-    @Override
-    public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
-        var gunData = getGunData(getSeatIndex(passenger));
-        if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
-
-        return gunData.backupAmmoCount.get();
-    }
-
     // TODO 移除这个
     @Override
     public VehicleWeapon[][] initWeapons() {
@@ -204,14 +196,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     public boolean canShoot(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
         return gunData != null && gunData.canShoot(getAmmoSupplier());
-    }
-
-    // TODO 正确计算AmmoCount
-    @Override
-    public int getAmmoCount(LivingEntity living) {
-        var data = getGunData(getSeatIndex(living));
-        if (data == null) return 0;
-        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }
 
     @Override

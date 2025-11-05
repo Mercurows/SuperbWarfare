@@ -849,11 +849,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int getAmmoCount(LivingEntity living) {
-        return this.entityData.get(AMMO);
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
     }

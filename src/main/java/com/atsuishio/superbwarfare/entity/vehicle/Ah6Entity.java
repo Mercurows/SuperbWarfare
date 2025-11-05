@@ -52,14 +52,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
-        var gunData = getGunData(passenger, weaponIndex);
-        if (gunData == null || gunData.selectedAmmoType.get() != weaponIndex) return 0;
-
-        return gunData.backupAmmoCount.get();
-    }
-
-    @Override
     public VehicleWeapon[][] initWeapons() {
         return null;
     }
@@ -123,14 +115,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public boolean canShoot(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
         return gunData != null && gunData.canShoot(getAmmoSupplier());
-    }
-
-    // TODO 正确计算AmmoCount
-    @Override
-    public int getAmmoCount(LivingEntity living) {
-        var data = getGunData(getSeatIndex(living));
-        if (data == null) return 0;
-        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }
 
     @Override

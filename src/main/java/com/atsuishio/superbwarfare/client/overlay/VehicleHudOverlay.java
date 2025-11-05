@@ -482,7 +482,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 );
 
                 preciseBlit(guiGraphics, SELECTED, screenWidth - 95, startY, 100, 0, 0, 8, 8, 8, 8);
-                var ammoCount = vehicle.getAmmoCount(player, i);
+                var ammoCount = vehicle.getAmmoCount(player);
 
                 if (ammoCount == Integer.MAX_VALUE) {
                     preciseBlit(guiGraphics, NUMBER, screenWidth - 28 + xOffset, screenHeight - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
