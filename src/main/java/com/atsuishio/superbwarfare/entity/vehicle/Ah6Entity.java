@@ -51,27 +51,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.40625f), new Quaternionf(), OBB.Part.ENGINE2);
     }
 
-    // TODO 切换弹药这块有问题
-
-    @Override
-    public void changeWeapon(int index, int value, boolean isScroll) {
-        var gunData = getGunData(index);
-        if (gunData == null) return;
-
-        var ammoList = gunData.get(GunProp.AMMO_CONSUMER);
-        var targetIndex = isScroll ? (value + gunData.selectedAmmoType.get()) % ammoList.size() : value;
-        setWeaponIndex(index, targetIndex);
-        var soundInfo = gunData.get(GunProp.SOUND_INFO);
-
-        // TODO 正确播放武器切换音效
-        SoundEvent soundEvent = soundInfo.change;
-
-        if (soundEvent != null) {
-            this.level().playSound(null, this, soundEvent, this.getSoundSource(), 1, 1);
-        }
-
-    }
-
     @Override
     public int getAmmoCount(LivingEntity passenger, int weaponIndex) {
         var gunData = getGunData(passenger, weaponIndex);
