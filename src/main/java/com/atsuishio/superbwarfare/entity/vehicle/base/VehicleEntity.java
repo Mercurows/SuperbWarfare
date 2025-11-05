@@ -115,6 +115,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.*;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1198,6 +1199,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return new int[this.getMaxPassengers()];
     }
 
+    /**
+     * 主武器射速
+     *
+     * @return 射速
+     */
+    public int vehicleWeaponRpm(LivingEntity living) {
+        var data = getGunData(getSeatIndex(living));
+        if (data == null) return 0;
+        return data.get(GunProp.RPM);
+    }
+
     public void vehicleShoot(LivingEntity living) {
         var seatIndex = getSeatIndex(living);
 
@@ -1564,6 +1576,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public float getEngineMaxHealth() {
         return 50;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    protected void playStepSound(BlockPos pPos, BlockState pState) {
+        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.1), random.nextFloat() * 0.15f + 1.05f);
     }
 
     @Override
@@ -2177,11 +2195,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             Vec3 targetVec = RangeTool.calculateFiringSolution(getShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             turretAutoAimFormVector(targetVec);
 
-            if (this instanceof WeaponVehicleEntity weaponVehicle) {
-                int rpm = 20 / Mth.clamp((weaponVehicle.mainGunRpm(pLiving) / 60), 1, 2147483647);
-                if (tickCount % rpm == 0) {
-                    aiTurretShoot(pLiving);
-                }
+            int rpm = 20 / Mth.clamp((vehicleWeaponRpm(pLiving) / 60), 1, 2147483647);
+            if (tickCount % rpm == 0) {
+                aiTurretShoot(pLiving);
             }
         }
     }
@@ -2577,11 +2593,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             Vec3 targetVec = RangeTool.calculateFiringSolution(passengerWeaponShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             passengerWeaponAutoAimFormVector(targetVec);
 
-            if (this instanceof WeaponVehicleEntity weaponVehicle) {
-                int rpm = 20 / Mth.clamp((weaponVehicle.mainGunRpm(pLiving) / 60), 1, 2147483647);
-                if (tickCount % rpm == 0) {
-                    aiPassengerWeaponShoot(pLiving);
-                }
+            int rpm = 20 / Mth.clamp((vehicleWeaponRpm(pLiving) / 60), 1, 2147483647);
+            if (tickCount % rpm == 0) {
+                aiPassengerWeaponShoot(pLiving);
             }
         }
     }

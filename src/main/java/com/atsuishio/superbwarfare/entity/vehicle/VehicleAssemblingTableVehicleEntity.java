@@ -26,7 +26,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -69,11 +68,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
         this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), world);
     }
 
-    @Override
-    @ParametersAreNonnullByDefault
-    protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 2), random.nextFloat() * 0.1f + 1f);
-    }
 
     // 变回方块
     @Override

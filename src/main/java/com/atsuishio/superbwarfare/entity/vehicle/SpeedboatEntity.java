@@ -343,11 +343,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     @Override
-    public int mainGunRpm(LivingEntity living) {
-        return 500;
-    }
-
-    @Override
     public boolean canShoot(LivingEntity living) {
         return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living))
                 && !cannotFire;

@@ -44,7 +44,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -60,7 +59,6 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -136,12 +134,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
                 .custom((source, damage) -> getSourceAngle(source, 0.4f) * damage);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.15), random.nextFloat() * 0.15f + 1.05f);
     }
 
     @Override
@@ -457,15 +449,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public int mainGunRpm(LivingEntity living) {
-        if (getWeaponIndex(0) == 0) {
-            return 30;
-        } else {
-            return 1200;
-        }
     }
 
     @Override

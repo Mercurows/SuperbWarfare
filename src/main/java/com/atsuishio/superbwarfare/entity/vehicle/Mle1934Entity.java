@@ -606,11 +606,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public int mainGunRpm(LivingEntity living) {
-        return 0;
-    }
-
-    @Override
     public boolean canShoot(LivingEntity living) {
         return true;
     }

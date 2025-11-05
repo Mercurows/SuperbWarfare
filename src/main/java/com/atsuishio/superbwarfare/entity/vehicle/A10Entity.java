@@ -36,7 +36,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,7 +50,6 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -177,12 +175,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public boolean shouldSendHitParticles() {
         return false;
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.2), random.nextFloat() * 0.1f + 1f);
     }
 
     @Override
@@ -828,17 +820,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     public float shootingPitch() {
         return 0.7f + entityData.get(FIRE_TIME) * 0.05f;
-    }
-
-    @Override
-    public int mainGunRpm(LivingEntity living) {
-        if (getWeaponIndex(0) == 2) {
-            return 600;
-        }
-        if (getWeaponIndex(0) == 3) {
-            return 120;
-        }
-        return 0;
     }
 
     public boolean isFiring() {

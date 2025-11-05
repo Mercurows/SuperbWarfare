@@ -23,13 +23,6 @@ public interface ArmedVehicleEntity {
     }
 
     /**
-     * 主武器射速
-     *
-     * @return 射速
-     */
-    int mainGunRpm(LivingEntity living);
-
-    /**
      * 当前情况载具是否可以开火
      *
      * @param living 玩家
