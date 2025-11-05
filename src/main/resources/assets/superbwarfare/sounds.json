@@ -2830,34 +2830,34 @@
       }
     ]
   },
-  "lav_fire_1p": {
+  "lav_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_fire_1p",
+        "name": "superbwarfare:lav/lav_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "lav_fire_3p": {
+  "lav_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_fire_3p",
+        "name": "superbwarfare:lav/lav_cannon_fire_3p",
         "stream": false
       }
     ]
   },
-  "lav_far": {
+  "lav_cannon_far": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_far",
+        "name": "superbwarfare:lav/lav_cannon_far",
         "stream": false
       }
     ]
   },
-  "lav_veryfar": {
+  "lav_cannon_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_veryfar",
+        "name": "superbwarfare:lav/lav_cannon_veryfar",
         "stream": false
       }
     ]
@@ -2878,18 +2878,18 @@
       }
     ]
   },
-  "bmp_fire_1p": {
+  "bmp_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_fire_1p",
+        "name": "superbwarfare:bmp/bmp_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "bmp_fire_3p": {
+  "bmp_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_fire_3p",
+        "name": "superbwarfare:bmp/bmp_cannon_fire_3p",
         "stream": false
       }
     ]
