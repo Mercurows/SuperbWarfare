@@ -436,8 +436,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     }
 
     @Override
-    public Vec3 zoomPos(Entity entity, float ticks) {
-        Matrix4f transform = getVehicleFlatTransform(ticks);
+    public Vec3 getZoomPos(Entity entity, float partialTicks) {
+        Matrix4f transform = getVehicleFlatTransform(partialTicks);
         Vector4f worldPosition = transformPosition(transform, 0f, 3.56f, 0.5175f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
@@ -587,7 +587,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
             if (zoom) {
-                return new Vec3(this.zoomPos(player, partialTicks).x, this.zoomPos(player, partialTicks).y, this.zoomPos(player, partialTicks).z);
+                return new Vec3(this.getZoomPos(player, partialTicks).x, this.getZoomPos(player, partialTicks).y, this.getZoomPos(player, partialTicks).z);
             } else {
                 return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
             }

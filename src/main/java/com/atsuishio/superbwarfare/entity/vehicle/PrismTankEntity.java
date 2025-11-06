@@ -420,8 +420,8 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public Vec3 zoomPos(Entity entity, float ticks) {
-        Matrix4f transform = getBarrelTransform(ticks);
+    public Vec3 getZoomPos(Entity entity, float partialTicks) {
+        Matrix4f transform = getBarrelTransform(partialTicks);
         Vector4f worldPosition = transformPosition(transform, 0, 0.95f, 0f);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
@@ -502,7 +502,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         if (zoom || isFirstPerson) {
             if (this.getSeatIndex(player) == 0) {
                 if (zoom) {
-                    return new Vec3(this.zoomPos(player, partialTicks).x, this.zoomPos(player, partialTicks).y, this.zoomPos(player, partialTicks).z);
+                    return new Vec3(this.getZoomPos(player, partialTicks).x, this.getZoomPos(player, partialTicks).y, this.getZoomPos(player, partialTicks).z);
                 } else {
                     return new Vec3(this.driverPos(partialTicks).x, this.driverPos(partialTicks).y, this.driverPos(partialTicks).z);
                 }
