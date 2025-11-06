@@ -1257,10 +1257,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     entityData.set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
                 }
 
+                float angle = (float) Mth.wrapDegrees(-getYRotFromVector(getViewVector(1)) + getYRotFromVector(getShootVec(living, 1)));
+
                 Vec3 vo = new Vec3(0, 0, 1);
                 double f = entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / gunData.get(GunProp.RECOIL_TIME));
                 Vec3 v1 = vo.yRot(entityData.get(YAW_WHILE_SHOOT) * Mth.DEG_TO_RAD).scale(f);
-                Vec3 v2 = vo.yRot(getTurretYRot() * Mth.DEG_TO_RAD).scale(gunData.get(GunProp.RECOIL_FORCE));
+                Vec3 v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(gunData.get(GunProp.RECOIL_FORCE));
                 Vec3 v3 = v1.add(v2);
 
                 entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-getYRotFromVector(vo) + getYRotFromVector(v3)));
