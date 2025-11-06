@@ -72,7 +72,7 @@
       "Spread": 0.5,
       "HeatPerShoot": 7,
       "NaturalCooldown": 1,
-      "ShootAnimationTimer": 3,
+      "ShootAnimationTime": 3,
       "Crosshair": "@VehicleUsApc",
       "CrosshairColor": "0x66FF00",
       "Name": "superbwarfare.lav_150.cannon",
@@ -108,7 +108,7 @@
       "RecoilForce": 0,
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
-      "ShootAnimationTimer": 2,
+      "ShootAnimationTime": 2,
       "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Barrel",

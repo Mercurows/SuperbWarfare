@@ -273,8 +273,8 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("SoundInfo")
     public SoundInfo soundInfo = new SoundInfo();
 
-    @SerializedName("ShootAnimationTimer")
-    public int shootAnimationTimer = 3;
+    @SerializedName("ShootAnimationTime")
+    public int shootAnimationTime = 3;
 
     // TODO 能不能挪assets里面去
     @SerializedName("Icon")
