@@ -147,6 +147,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
         this.repairCooldown = Math.max(this.repairCooldown, 0);
         this.maxEnergy = Math.max(this.maxEnergy, 0);
         this.weapons = weapons == null ? Map.of() : weapons;
+
+        this.collisionLevel = this.collisionLevel == null ? new CollisionLevel() : this.collisionLevel;
         this.collisionLevel.level = Mth.clamp(this.collisionLevel.level, 0, 4);
+        this.collisionLevel.powerLimits = this.collisionLevel.powerLimits == null ? List.of() : this.collisionLevel.powerLimits;
     }
 }
