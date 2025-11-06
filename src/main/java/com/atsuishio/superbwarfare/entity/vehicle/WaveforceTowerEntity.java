@@ -272,7 +272,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
 
             Vec3 targetVec = getShootPos(1).vectorTo(target.getEyePosition()).normalize();
             if (this.entityData.get(COOL_DOWN) == 0) {
-                turretAutoAimFormVector(targetVec);
+                turretAutoAimFromVector(targetVec);
             }
 
             boolean canShoot = this.entityData.get(CHARGED_ENERGY) >= maxChargeEnergy;

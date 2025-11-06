@@ -19,15 +19,10 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
-import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
-import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.*;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -1822,17 +1817,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (hasTurret()) {
             if (getNthEntity(mainWeaponControllerIndex()) instanceof Player) {
-                turretAngle();
+                this.adjustTurretAngle();
             } else if (getNthEntity(mainWeaponControllerIndex()) instanceof Mob mob) {
-                turretAutoAimFormUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
+                this.turretAutoAimFromUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
             }
         }
 
         if (turretHasPassengerWeapon()) {
             if (getNthEntity(secondWeaponControllerIndex()) instanceof Player || getNthEntity(secondWeaponControllerIndex()) == null) {
-                gunnerAngle();
+                this.gunnerAngle();
             } else if (getNthEntity(secondWeaponControllerIndex()) instanceof Mob mob) {
-                passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), mob);
+                this.passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), mob);
             }
         }
 
@@ -2085,32 +2080,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    public void turretAngle() {
-        float ySpeed = turretYSpeed();
-        float xSpeed = turretXSpeed();
-        Entity driver = getNthEntity(mainWeaponControllerIndex());
-        if (driver != null) {
-            float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - this.getYRot());
-
-            float diffY = Mth.wrapDegrees(turretAngle - getTurretYRot());
-            float diffX = Mth.wrapDegrees(driver.getXRot() - this.getTurretXRot());
-
-            this.turretTurnSound(diffX, diffY, 0.95f);
-
-            if (entityData.get(TURRET_DAMAGED)) {
-                ySpeed *= 0.2f;
-                xSpeed *= 0.2f;
-            }
-
-            float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
-            float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
-
-            this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed), -89.5f, 89.5f));
-            this.setTurretYRot(this.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
-            turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
-        } else {
-            turretYRotLock = 0;
-        }
+    public void adjustTurretAngle() {
+        VehicleWeaponUtils.adjustTurretAngle(this);
     }
 
     public void aiTurretShoot(LivingEntity living) {
@@ -2125,66 +2096,22 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    /**
-     * 根据方向向量，使炮塔自动瞄准
-     *
-     * @param shootVec 需要让炮塔以这个角度发射的向量
-     */
+    @Deprecated(forRemoval = true, since = "0.8.9")
     public void turretAutoAimFormVector(Vec3 shootVec) {
-        float ySpeed = turretYSpeed();
-        float xSpeed = turretXSpeed();
-        float diffY = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(getBarrelVector(1)));
-        float diffX = (float) Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(getBarrelVector(1)));
-
-        this.turretTurnSound(diffX, diffY, 0.95f);
-
-        if (entityData.get(TURRET_DAMAGED)) {
-            ySpeed *= 0.2f;
-            xSpeed *= 0.2f;
-        }
-
-        float min = -ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
-        float max = ySpeed + (float) (isInWater() && !onGround() ? 2.5 : 6) * entityData.get(DELTA_ROT);
-
-        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -turretMaxPitch(), -turretMinPitch()));
-        this.setTurretYRot(this.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max));
-        turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
-        aiTurretDiff = VectorTool.calculateAngle(shootVec, getBarrelVector(1));
+        this.turretAutoAimFromVector(shootVec);
     }
 
-    /**
-     * 根据UUID，使炮塔自动瞄准
-     *
-     * @param uuid    目标的UUID字符串
-     * @param pLiving 操控载具的实体
-     */
+    public void turretAutoAimFromVector(Vec3 shootVec) {
+        VehicleWeaponUtils.turretAutoAimFromVector(this, shootVec);
+    }
+
+    @Deprecated(forRemoval = true, since = "0.8.9")
     public void turretAutoAimFormUuid(String uuid, LivingEntity pLiving) {
-        Entity target = EntityFindUtil.findEntity(level(), uuid);
-        if (target != null) {
-            if (target.getVehicle() != null) {
-                target = target.getVehicle();
-            }
+        this.turretAutoAimFromUuid(uuid, pLiving);
+    }
 
-            Vec3 targetPos = target.getBoundingBox().getCenter();
-            Vec3 targetVel = target.getDeltaMovement();
-
-            if (target instanceof LivingEntity living) {
-                double gravity = living.getAttributeValue(Attributes.GRAVITY);
-                targetVel = targetVel.add(0, gravity, 0);
-            }
-
-            if (target instanceof Player) {
-                targetVel = targetVel.multiply(2, 1, 2);
-            }
-
-            Vec3 targetVec = RangeTool.calculateFiringSolution(getShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
-            turretAutoAimFormVector(targetVec);
-
-            int rpm = 20 / Mth.clamp((vehicleWeaponRpm(pLiving) / 60), 1, 2147483647);
-            if (tickCount % rpm == 0) {
-                aiTurretShoot(pLiving);
-            }
-        }
+    public void turretAutoAimFromUuid(String uuid, LivingEntity pLiving) {
+        VehicleWeaponUtils.turretAutoAimFromUuid(this, uuid, pLiving);
     }
 
     // TODO 允许数据包配置下面四个数据
@@ -3162,68 +3089,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         );
     }
 
-    //烟雾诱饵
     public void releaseSmokeDecoy(Vec3 vec3) {
-        if (decoyInputDown()) {
-            if (this.entityData.get(DECOY_READY) && this.level() instanceof ServerLevel) {
-                Entity passenger = getFirstPassenger();
-                for (int i = 0; i < 8; i++) {
-                    SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity((LivingEntity) passenger, this.level());
-                    smokeDecoyEntity.setPos(this.getX(), this.getY() + getBbHeight(), this.getZ());
-                    smokeDecoyEntity.decoyShoot(this, vec3.yRot((-78.75f + 22.5F * i) * Mth.DEG_TO_RAD), 4f, 8);
-                    this.level().addFreshEntity(smokeDecoyEntity);
-                }
-                this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 1, 1);
-                decoyReloadCoolDown = 500;
-                this.getEntityData().set(DECOY_READY, false);
-            }
-            setDecoyInputDown(false);
-        }
-        if (!this.entityData.get(DECOY_READY) && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
-            this.entityData.set(DECOY_READY, true);
-            this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
-            decoyReloadCoolDown = 500;
-        }
+        VehicleWeaponUtils.releaseSmokeDecoy(this, vec3);
     }
 
-    //热诱弹诱饵
     public void releaseDecoy() {
-        if (decoyInputDown()) {
-            if (this.entityData.get(DECOY_READY) && this.level() instanceof ServerLevel) {
-                Entity passenger = getFirstPassenger();
-
-                for (int i = 0; i < 48; i += 4) {
-                    Mod.queueServerWork(i, () -> {
-                        Matrix4f transform = getVehicleTransform(1);
-                        Vector4f worldPositionO = transformPosition(transform, 0, 0, 0);
-                        Vector4f worldPosition = transformPosition(transform, 1, -0.2f, 0.6f);
-                        Vector4f worldPosition2 = transformPosition(transform, -1, -0.2f, 0.6f);
-                        Vec3 shootVecO = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
-                        Vec3 shootVec1 = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                        Vec3 shootVec2 = new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z);
-                        shootDecoy((LivingEntity) passenger, shootVecO.vectorTo(shootVec1).normalize());
-                        shootDecoy((LivingEntity) passenger, shootVecO.vectorTo(shootVec2).normalize());
-                    });
-                }
-
-                decoyReloadCoolDown = 40;
-                this.getEntityData().set(DECOY_READY, false);
-            }
-            setDecoyInputDown(false);
-        }
-        if (!this.entityData.get(DECOY_READY) && decoyReloadCoolDown == 0 && this.level() instanceof ServerLevel) {
-            this.entityData.set(DECOY_READY, true);
-            this.level().playSound(null, this, ModSounds.DECOY_RELOAD.get(), this.getSoundSource(), 1, 1);
-            decoyReloadCoolDown = 40;
-        }
+        VehicleWeaponUtils.releaseDecoy(this);
     }
 
-    public void shootDecoy(LivingEntity passenger, Vec3 shootVec) {
-        FlareDecoyEntity flareDecoyEntity = new FlareDecoyEntity(this.level());
-        flareDecoyEntity.setPos(this.getX() + this.getDeltaMovement().x, this.getY() + 0.5 + this.getDeltaMovement().y, this.getZ() + this.getDeltaMovement().z);
-        flareDecoyEntity.decoyShoot(this, shootVec, (float) (getDeltaMovement().length() * 0.3f + 0.7), 8);
-        this.level().addFreshEntity(flareDecoyEntity);
-        this.level().playSound(null, this, ModSounds.DECOY_FIRE.get(), this.getSoundSource(), 2, 1);
+    @Deprecated(forRemoval = true, since = "0.8.9")
+    public void shootDecoy(Vec3 shootVec) {
     }
 
     // 惯性倾斜
