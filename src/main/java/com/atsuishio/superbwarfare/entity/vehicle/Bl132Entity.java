@@ -469,8 +469,8 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public Vec3 zoomPos(Entity entity, float ticks) {
-        Matrix4f transform = getBarrelTransform(ticks);
+    public Vec3 getZoomPos(Entity entity, float partialTicks) {
+        Matrix4f transform = getBarrelTransform(partialTicks);
         Vector4f worldPosition = transformPosition(transform, 0, 0.6f, 0);
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
@@ -689,7 +689,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
             if (zoom) {
-                return new Vec3(this.zoomPos(player, partialTicks).x, this.zoomPos(player, partialTicks).y, this.zoomPos(player, partialTicks).z);
+                return new Vec3(this.getZoomPos(player, partialTicks).x, this.getZoomPos(player, partialTicks).y, this.getZoomPos(player, partialTicks).z);
             } else {
                 return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
             }

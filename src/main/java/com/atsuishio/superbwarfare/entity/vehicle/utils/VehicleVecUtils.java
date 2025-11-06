@@ -384,4 +384,76 @@ public final class VehicleVecUtils {
             return startPos.vectorTo(endPos).normalize();
         }
     }
+
+    /**
+     * 获取载具瞄准的坐标
+     *
+     * @param vehicle      载具
+     * @param entity       乘客
+     * @param partialTicks 客户端ticks
+     * @return 瞄准坐标
+     */
+    public static Vec3 getZoomPos(VehicleEntity vehicle, Entity entity, float partialTicks) {
+        int index = vehicle.getSeatIndex(entity);
+        var seat = vehicle.computed().seats().get(index);
+        if (seat == null) {
+            return VehicleVecUtils.entityEyePos(entity, partialTicks);
+        }
+
+        var data = seat.cameraPos;
+        if (data == null) {
+            return VehicleVecUtils.entityEyePos(entity, partialTicks);
+        }
+
+        var vec3 = data.zoomPosition;
+        if (vec3 != null) {
+            Vector4f worldPosition = vehicle.transformPosition(
+                    vehicle.getTransformFromString(data.transform, partialTicks), (float) vec3.x, (float) vec3.y, (float) vec3.z
+            );
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        } else {
+            return VehicleVecUtils.getCameraPos(vehicle, entity, partialTicks);
+        }
+    }
+
+    /**
+     * 获取载具瞄准的方向
+     *
+     * @param vehicle      载具
+     * @param entity       乘客
+     * @param partialTicks 客户端ticks
+     * @return 瞄准方向
+     */
+    public static Vec3 getZoomDirection(VehicleEntity vehicle, Entity entity, float partialTicks) {
+        int index = vehicle.getSeatIndex(entity);
+        var seat = vehicle.computed().seats().get(index);
+        if (seat == null) {
+            return entity.getViewVector(partialTicks);
+        }
+
+        var data = seat.cameraPos;
+        if (data == null) {
+            return entity.getViewVector(partialTicks);
+        }
+
+        StringOrVec3 stringOrVec3 = data.zoomDirection;
+        if (stringOrVec3 != null) {
+            if (stringOrVec3.isString()) {
+                return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
+            } else {
+                var vec3 = data.zoomPosition;
+                Vector4f worldPosition = vehicle.transformPosition(
+                        vehicle.getTransformFromString(data.transform, partialTicks),
+                        (float) vec3.x + (float) stringOrVec3.vec3.x,
+                        (float) vec3.y + (float) stringOrVec3.vec3.y,
+                        (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+                Vec3 startPos = vehicle.getShootPos(entity, partialTicks);
+                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+                return startPos.vectorTo(endPos).normalize();
+            }
+        } else {
+            return vehicle.cameraDirection(entity, partialTicks);
+        }
+    }
 }

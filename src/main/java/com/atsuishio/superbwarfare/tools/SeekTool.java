@@ -496,7 +496,7 @@ public class SeekTool {
             this.filters.add(e -> {
                         if (this.entity instanceof VehicleEntity vehicle) {
                             return this.entity.level()
-                                    .clip(new ClipContext(vehicle.zoomPos(entity, 1), vehicle.zoomPos(entity, 1), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle))
+                                    .clip(new ClipContext(vehicle.getZoomPos(entity, 1), vehicle.getZoomPos(entity, 1), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle))
                                     .getType() != HitResult.Type.BLOCK;
                         }
                         return false;

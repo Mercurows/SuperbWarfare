@@ -116,7 +116,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                     Vec3 shootPos = player.getEyePosition(partialTick);
 
                     if (!(cannon instanceof AnnihilatorEntity)) {
-                        shootPos = cannon.zoomPos(player, partialTick);
+                        shootPos = cannon.getZoomPos(player, partialTick);
                     }
 
                     Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
