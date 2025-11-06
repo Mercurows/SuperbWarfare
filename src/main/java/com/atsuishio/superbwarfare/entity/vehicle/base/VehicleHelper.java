@@ -33,7 +33,7 @@ import org.joml.Vector4f;
 
 import java.util.List;
 
-public class VehicleHelper {
+public final class VehicleHelper {
 
     /**
      * 判断载具是否两栖
@@ -680,6 +680,86 @@ public class VehicleHelper {
                     (float) vec3.z);
 
             Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+            Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            return startPos.vectorTo(endPos).normalize();
+        }
+    }
+
+    /**
+     * 获取乘客在载具上的摄像机位置
+     *
+     * @param vehicle      载具
+     * @param entity       乘客
+     * @param partialTicks 客户端ticks
+     * @return 摄像机位置
+     */
+    public static Vec3 getCameraPos(VehicleEntity vehicle, Entity entity, float partialTicks) {
+        int index = vehicle.getSeatIndex(entity);
+        var seat = vehicle.computed().seats().get(index);
+        if (seat == null) {
+            return VehicleHelper.entityEyePos(entity, partialTicks);
+        }
+
+        var data = seat.cameraPos;
+        if (data == null) {
+            return VehicleHelper.entityEyePos(entity, partialTicks);
+        }
+
+        if (data.useSimulate3P) {
+            var simulate3PPos = data.simulate3PPos;
+            return VehicleHelper.simulate3P(entity, partialTicks, simulate3PPos.x, simulate3PPos.y);
+        }
+        if (data.useFixedCameraPos) {
+            var vec3 = data.position;
+            Vector4f worldPosition = vehicle.transformPosition(vehicle.getTransformFromString(data.transform, partialTicks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        }
+
+        return VehicleHelper.entityEyePos(entity, partialTicks);
+    }
+
+    /**
+     * 获取乘客在载具上的摄像机方向
+     *
+     * @param vehicle      载具
+     * @param entity       乘客
+     * @param partialTicks 客户端ticks
+     * @return 摄像机方向
+     */
+    public static Vec3 getCameraDirection(VehicleEntity vehicle, Entity entity, float partialTicks) {
+        int index = vehicle.getSeatIndex(entity);
+        var seat = vehicle.computed().seats().get(index);
+        if (seat == null) {
+            return entity.getViewVector(partialTicks);
+        }
+
+        var data = seat.cameraPos;
+
+        if (data == null) {
+            return entity.getViewVector(partialTicks);
+        }
+
+        if (data.useSimulate3P) {
+            return entity.getViewVector(partialTicks);
+        }
+
+        StringOrVec3 stringOrVec3 = data.direction;
+        if (stringOrVec3.isString()) {
+            if (stringOrVec3.string.equals("Default")) {
+                return entity.getViewVector(partialTicks);
+            } else {
+                return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
+            }
+        } else {
+            var vec3 = data.position;
+
+            Vector4f worldPosition = vehicle.transformPosition(
+                    vehicle.getTransformFromString(data.transform, partialTicks),
+                    (float) vec3.x + (float) stringOrVec3.vec3.x,
+                    (float) vec3.y + (float) stringOrVec3.vec3.y,
+                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+            Vec3 startPos = getCameraPos(vehicle, entity, partialTicks);
             Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
             return startPos.vectorTo(endPos).normalize();
         }

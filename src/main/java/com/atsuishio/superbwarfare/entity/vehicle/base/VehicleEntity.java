@@ -2952,64 +2952,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.gunXRot = pGunXRot;
     }
 
-    public Vec3 cameraPos(Entity entity, float ticks) {
-        int index = this.getSeatIndex(entity);
-        var seat = computed().seats().get(index);
-        if (seat != null) {
-            var data = seat.cameraPos;
-
-            if (data != null) {
-                if (data.useSimulate3P) {
-                    var simulate3PPos = data.simulate3PPos;
-                    return VehicleHelper.simulate3P(entity, ticks, simulate3PPos.x, simulate3PPos.y);
-                }
-                if (data.useFixedCameraPos) {
-                    var vec3 = data.position;
-                    Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
-                    return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                }
-            } else {
-                return VehicleHelper.entityEyePos(entity, ticks);
-            }
-        }
-        return VehicleHelper.entityEyePos(entity, ticks);
+    public Vec3 getCameraPos(Entity entity, float partialTicks) {
+        return VehicleHelper.getCameraPos(this, entity, partialTicks);
     }
 
-    public Vec3 cameraDirection(Entity entity, float ticks) {
-        int index = this.getSeatIndex(entity);
-        var seat = computed().seats().get(index);
-        if (seat != null) {
-            var data = seat.cameraPos;
-
-            if (data != null) {
-                if (data.useSimulate3P) {
-                    return entity.getViewVector(ticks);
-                }
-                StringOrVec3 stringOrVec3 = data.direction;
-                if (stringOrVec3.isString()) {
-                    if (stringOrVec3.string.equals("Default")) {
-                        return entity.getViewVector(ticks);
-                    } else {
-                        return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
-                    }
-                } else {
-                    var vec3 = data.position;
-
-                    Vector4f worldPosition = transformPosition(
-                            this.getTransformFromString(data.transform, ticks),
-                            (float) vec3.x + (float) stringOrVec3.vec3.x,
-                            (float) vec3.y + (float) stringOrVec3.vec3.y,
-                            (float) vec3.z + (float) stringOrVec3.vec3.z);
-
-                    Vec3 startPos = cameraPos(entity, ticks);
-                    Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                    return startPos.vectorTo(endPos).normalize();
-                }
-            } else {
-                return entity.getViewVector(ticks);
-            }
-        }
-        return entity.getViewVector(ticks);
+    public Vec3 cameraDirection(Entity entity, float partialTicks) {
+        return VehicleHelper.getCameraDirection(this, entity, partialTicks);
     }
 
     public Vec3 zoomPos(Entity entity, float ticks) {
@@ -3023,7 +2971,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     Vector4f worldPosition = transformPosition(getTransformFromString(data.transform, ticks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
                     return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                 } else {
-                    return cameraPos(entity, ticks);
+                    return getCameraPos(entity, ticks);
                 }
             } else {
                 return VehicleHelper.entityEyePos(entity, ticks);
@@ -3275,7 +3223,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     if (zoom) {
                         return zoomPos(player, partialTicks);
                     } else {
-                        return cameraPos(player, partialTicks);
+                        return getCameraPos(player, partialTicks);
                     }
                 } else if (data.aircraftCamera) {
                     Matrix4f transform = getClientVehicleTransform(partialTicks);
