@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
@@ -901,9 +902,9 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
             if (this.getSeatIndex(player) == 0) {
-                return new Vec2((float) -getYRotFromVector(this.getBarrelVector(partialTicks)), (float) -getXRotFromVector(this.getBarrelVector(partialTicks)));
+                return new Vec2((float) -VehicleHelper.getYRotFromVector(this.getBarrelVector(partialTicks)), (float) -VehicleHelper.getXRotFromVector(this.getBarrelVector(partialTicks)));
             } else if (this.getSeatIndex(player) == 1) {
-                return new Vec2((float) -getYRotFromVector(this.getGunnerVector(partialTicks)), (float) -getXRotFromVector(this.getGunnerVector(partialTicks)));
+                return new Vec2((float) -VehicleHelper.getYRotFromVector(this.getGunnerVector(partialTicks)), (float) -VehicleHelper.getXRotFromVector(this.getGunnerVector(partialTicks)));
             }
         }
         return super.getCameraRotation(partialTicks, player, false, false);

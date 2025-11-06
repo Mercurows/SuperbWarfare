@@ -23,7 +23,7 @@ public interface AutoAimable {
             var condition = target.distanceToSqr(attacker) > minRange * minRange
                     && target.distanceToSqr(attacker) <= seekRange * seekRange
                     && canAim(pos, target, minAngle, maxAngle)
-                    && VehicleEntity.getSubmergedHeight(target) <= target.getBbHeight()
+                    && VehicleHelper.getSubmergedHeight(target) <= target.getBbHeight()
                     && checkNoClip(attacker, target, pos)
                     && !(target instanceof Player player && (player.isSpectator() || player.isCreative()))
                     && ((target instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || isThreateningEntity(attacker, target, size, pos) || basicEnemyFilter(target))
@@ -58,7 +58,7 @@ public interface AutoAimable {
     static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {
         Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
         Vec3 toVec = pos.vectorTo(targetPos).normalize();
-        double targetAngle = VehicleEntity.getXRotFromVector(toVec);
+        double targetAngle = VehicleHelper.getXRotFromVector(toVec);
         return minAngle < targetAngle && targetAngle < maxAngle;
     }
 }

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
@@ -305,11 +306,11 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         super.baseTick();
         updateOBB();
 
-        double fluidFloat = 0.052 * getSubmergedHeight(this);
+        double fluidFloat = 0.052 * VehicleHelper.getSubmergedHeight(this);
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
 
         if (this.onGround()) {
-            float f0 = 0.35f + 0.5f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f0 = 0.35f + 0.5f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
         } else {
@@ -317,7 +318,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         }
 
         if (this.isInWater()) {
-            float f1 = (float) (0.7f - (0.04f * Math.min(getSubmergedHeight(this), this.getBbHeight())) + 0.08f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
+            float f1 = (float) (0.7f - (0.04f * Math.min(VehicleHelper.getSubmergedHeight(this), this.getBbHeight())) + 0.08f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90);
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
         }
@@ -329,8 +330,8 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         interactionTick *= 0.96;
 
         if (level() instanceof ServerLevel) {
-            entityData.set(SHOOT_PITCH, (float) VehicleEntity.getXRotFromVector(getShootVector(1)));
-            entityData.set(SHOOT_YAW, (float) -VehicleEntity.getYRotFromVector(getShootVector(1)));
+            entityData.set(SHOOT_PITCH, (float) VehicleHelper.getXRotFromVector(getShootVector(1)));
+            entityData.set(SHOOT_YAW, (float) -VehicleHelper.getYRotFromVector(getShootVector(1)));
         }
 
         entityData.set(BODY_YAW, entityData.get(BODY_YAW) * 0.8f);

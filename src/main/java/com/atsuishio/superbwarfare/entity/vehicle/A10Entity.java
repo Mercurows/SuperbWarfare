@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
@@ -229,7 +230,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         super.baseTick();
         this.updateOBB();
-        float f = (float) Mth.clamp(Math.max((onGround() ? 0.819f : 0.82f) - 0.005 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        float f = (float) Mth.clamp(Math.max((onGround() ? 0.819f : 0.82f) - 0.005 * getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
         boolean forward = getDeltaMovement().dot(getViewVector(1)) > 0;
         this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.227 : 0.1) * getDeltaMovement().dot(getViewVector(1)))));
@@ -340,8 +341,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             // 后-前
             Vec3 v2 = p4.vectorTo(p1);
 
-            double x = getXRotFromVector(v2);
-            double z = getXRotFromVector(v1);
+            double x = VehicleHelper.getXRotFromVector(v2);
+            double z = VehicleHelper.getXRotFromVector(v1);
 
             float diffX = Math.clamp(-5f, 5f, Mth.wrapDegrees((float) (-2 * x) - getXRot()));
             setXRot(Mth.clamp(getXRot() + 0.05f * diffX, -45f, 45f));
@@ -865,7 +866,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
         if (this.getSeatIndex(player) == 0) {
             if (getWeaponIndex(0) == 2 && zoomVehicle) {
-                return new Vec2((float) (-getYRotFromVector(p2) - freeCameraYaw), (float) (-getXRotFromVector(p2) + freeCameraPitch));
+                return new Vec2((float) (-VehicleHelper.getYRotFromVector(p2) - freeCameraYaw), (float) (-VehicleHelper.getXRotFromVector(p2) + freeCameraPitch));
             }
             return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
         }

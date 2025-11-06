@@ -19,7 +19,6 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
@@ -69,6 +68,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -78,10 +78,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
-import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -89,7 +87,6 @@ import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -104,22 +101,21 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.StreamSupport;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterAutoLandingSystem.findNearestLandingPos;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.HelicopterAutoLandingSystem.updateAutoLanding;
@@ -169,6 +165,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static Consumer<VehicleEntity> inCarMusic = vehicle -> {
     };
 
+    public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
+
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> CANNON_RECOIL_FORCE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
@@ -194,6 +192,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Boolean> SPRINT_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> LANDING_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+
+    public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     // Map SeatIndex -> GunData
     protected static final EntityDataAccessor<Map<String, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
@@ -233,7 +233,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (seatIndex < 0) return null;
         var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
         if (seatIndex >= selectedWeapon.size()) return null;
-        return getGunData(seatIndex, selectedWeapon.get(seatIndex));
+        return getGunData(seatIndex, selectedWeapon.getInt(seatIndex));
     }
 
     public @Nullable GunData getGunData(int seatIndex, int weaponIndex) {
@@ -1033,8 +1033,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return true;
     }
 
-    public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
-
     protected SyncedEntityEnergyStorage energyStorage = null;
     protected LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
 
@@ -1280,7 +1278,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     entityData.set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
                 }
 
-                float angle = (float) Mth.wrapDegrees(-getYRotFromVector(getViewVector(1)) + getYRotFromVector(getShootVec(living, 1)));
+                float angle = (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(getViewVector(1)) + VehicleHelper.getYRotFromVector(getShootVec(living, 1)));
 
                 Vec3 vo = new Vec3(0, 0, 1);
                 double f = entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / gunData.get(GunProp.RECOIL_TIME));
@@ -1288,7 +1286,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 Vec3 v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(gunData.get(GunProp.RECOIL_FORCE));
                 Vec3 v3 = v1.add(v2);
 
-                entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-getYRotFromVector(vo) + getYRotFromVector(v3)));
+                entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(vo) + VehicleHelper.getYRotFromVector(v3)));
                 entityData.set(CANNON_RECOIL_FORCE, (float) v3.length());
             }
 
@@ -1456,7 +1454,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             return InteractionResult.sidedSuccess(player.level().isClientSide);
         }
 
-
         if (player.getVehicle() == this) return InteractionResult.PASS;
 
         ItemStack stack = player.getMainHandItem();
@@ -1522,26 +1519,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     public void setDriverAngle(Player player) {
         if (hasTurret()) {
-            player.xRotO = -(float) getXRotFromVector(getBarrelVector(1));
-            player.setXRot(-(float) getXRotFromVector(getBarrelVector(1)));
-            player.yRotO = -(float) getYRotFromVector(getBarrelVector(1));
-            player.setYRot(-(float) getYRotFromVector(getBarrelVector(1)));
-            player.setYHeadRot(-(float) getYRotFromVector(getBarrelVector(1)));
+            player.xRotO = -(float) VehicleHelper.getXRotFromVector(getBarrelVector(1));
+            player.setXRot(-(float) VehicleHelper.getXRotFromVector(getBarrelVector(1)));
+            player.yRotO = -(float) VehicleHelper.getYRotFromVector(getBarrelVector(1));
+            player.setYRot(-(float) VehicleHelper.getYRotFromVector(getBarrelVector(1)));
+            player.setYHeadRot(-(float) VehicleHelper.getYRotFromVector(getBarrelVector(1)));
         } else {
             player.xRotO = this.getXRot();
             player.setXRot(this.getXRot());
             player.yRotO = this.getYRot();
             player.setYRot(this.getYRot());
         }
-    }
-
-    public static double getYRotFromVector(Vec3 vec3) {
-        return Mth.atan2(vec3.x, vec3.z) * (180F / Math.PI);
-    }
-
-    public static double getXRotFromVector(Vec3 vec3) {
-        double d0 = vec3.horizontalDistance();
-        return Mth.atan2(vec3.y, d0) * (180F / Math.PI);
     }
 
     @Override
@@ -1705,14 +1693,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getMaxPassengers() {
         return computed().seats().size();
-    }
-
-    public static double getSubmergedHeight(Entity entity) {
-        for (FluidType fluidType : ForgeRegistries.FLUID_TYPES.get().getValues()) {
-            if (entity.level().getFluidState(entity.blockPosition()).getFluidType() == fluidType)
-                return entity.getFluidTypeHeight(fluidType);
-        }
-        return 0;
     }
 
     /**
@@ -1923,7 +1903,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // 更新前一时刻的速度
         previousVelocity = currentVelocity;
 
-        double direct = (90 - calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+        double direct = (90 - VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
         setVelocity(Mth.lerp(0.4, getVelocity(), getDeltaMovement().horizontalDistance() * direct * 20));
 
         float deltaT = java.lang.Math.abs(getTurretYRot() - turretYRotO);
@@ -1948,8 +1928,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(CANNON_RECOIL_FORCE, entityData.get(CANNON_RECOIL_FORCE) * 0.96f);
 
         this.preventStacking();
-        this.supportEntities(this.getDeltaMovement());
-        this.crushEntities(this.getDeltaMovement());
+        this.supportEntities();
+        this.crushEntities();
 
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
 
@@ -2205,13 +2185,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void aiTurretShoot(LivingEntity living) {
-        if (this instanceof WeaponVehicleEntity weaponVehicle && aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
+        if (this instanceof WeaponVehicleEntity && aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
             vehicleShoot(living);
         }
     }
 
     public void aiPassengerWeaponShoot(LivingEntity living) {
-        if (this instanceof WeaponVehicleEntity weaponVehicle && aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
+        if (this instanceof WeaponVehicleEntity && aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
             vehicleShoot(living);
         }
     }
@@ -2224,8 +2204,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void turretAutoAimFormVector(Vec3 shootVec) {
         float ySpeed = turretYSpeed();
         float xSpeed = turretXSpeed();
-        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getBarrelVector(1)));
-        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getBarrelVector(1)));
+        float diffY = (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(shootVec) + VehicleHelper.getYRotFromVector(getBarrelVector(1)));
+        float diffX = (float) Mth.wrapDegrees(-VehicleHelper.getXRotFromVector(shootVec) + VehicleHelper.getXRotFromVector(getBarrelVector(1)));
 
         this.turretTurnSound(diffX, diffY, 0.95f);
 
@@ -2684,8 +2664,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void passengerWeaponAutoAimFormVector(Vec3 shootVec) {
         float ySpeed = passengerWeaponYSpeed();
         float xSpeed = passengerWeaponXSpeed();
-        float diffY = (float) Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(getGunnerVector(1)));
-        float diffX = (float) Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(getGunnerVector(1)));
+        float diffY = (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(shootVec) + VehicleHelper.getYRotFromVector(getGunnerVector(1)));
+        float diffX = (float) Mth.wrapDegrees(-VehicleHelper.getXRotFromVector(shootVec) + VehicleHelper.getXRotFromVector(getGunnerVector(1)));
 
         this.turretTurnSound(diffX, diffY, 0.95f);
 
@@ -3010,23 +2990,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return 1;
     }
 
-    public static Quaternionf eulerToQuaternion(float yaw, float pitch, float roll) {
-        double cy = Math.cos(yaw * 0.5 * Mth.DEG_TO_RAD);
-        double sy = Math.sin(yaw * 0.5 * Mth.DEG_TO_RAD);
-        double cp = Math.cos(pitch * 0.5 * Mth.DEG_TO_RAD);
-        double sp = Math.sin(pitch * 0.5 * Mth.DEG_TO_RAD);
-        double cr = Math.cos(roll * 0.5 * Mth.DEG_TO_RAD);
-        double sr = Math.sin(roll * 0.5 * Mth.DEG_TO_RAD);
-
-        Quaternionf q = new Quaternionf();
-        q.w = (float) (cy * cp * cr + sy * sp * sr);
-        q.x = (float) (cy * cp * sr - sy * sp * cr);
-        q.y = (float) (sy * cp * sr + cy * sp * cr);
-        q.z = (float) (sy * cp * cr - cy * sp * sr);
-
-        return q;
-    }
-
     public void handleClientSync() {
         if (isControlledByLocalInstance()) {
             interpolationSteps = 0;
@@ -3056,13 +3019,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         serverYRot = yaw;
         serverXRot = pitch;
         this.interpolationSteps = 10;
-    }
-
-    public static double calculateAngle(Vec3 move, Vec3 view) {
-        move = move.multiply(1, 0, 1).normalize();
-        view = view.multiply(1, 0, 1).normalize();
-
-        return VectorTool.calculateAngle(move, view);
     }
 
     protected Vec3 getDismountOffset(double vehicleWidth, double passengerWidth) {
@@ -3216,7 +3172,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             if (data != null) {
                 if (data.useSimulate3P) {
                     var simulate3PPos = data.simulate3PPos;
-                    return simulate3P(entity, ticks, simulate3PPos.x, simulate3PPos.y);
+                    return VehicleHelper.simulate3P(entity, ticks, simulate3PPos.x, simulate3PPos.y);
                 }
                 if (data.useFixedCameraPos) {
                     var vec3 = data.position;
@@ -3224,10 +3180,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                 }
             } else {
-                return entityEyePos(entity, ticks);
+                return VehicleHelper.entityEyePos(entity, ticks);
             }
         }
-        return entityEyePos(entity, ticks);
+        return VehicleHelper.entityEyePos(entity, ticks);
     }
 
     public Vec3 cameraDirection(Entity entity, float ticks) {
@@ -3281,10 +3237,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     return cameraPos(entity, ticks);
                 }
             } else {
-                return entityEyePos(entity, ticks);
+                return VehicleHelper.entityEyePos(entity, ticks);
             }
         }
-        return entityEyePos(entity, ticks);
+        return VehicleHelper.entityEyePos(entity, ticks);
     }
 
     public Vec3 zoomDirection(Entity entity, float ticks) {
@@ -3318,16 +3274,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
         return entity.getViewVector(ticks);
-    }
-
-    public static Vec3 entityEyePos(Entity entity, float partialTicks) {
-        return new Vec3(Mth.lerp(partialTicks, entity.xo, entity.getX()), Mth.lerp(partialTicks, entity.yo + entity.getEyeHeight(), entity.getEyeY()), Mth.lerp(partialTicks, entity.zo, entity.getZ()));
-    }
-
-    public static Vec3 simulate3P(Entity entity, float partialTicks, double distance, double height) {
-        return new Vec3(Mth.lerp(partialTicks, entity.xo, entity.getX()) - distance * entity.getViewVector(partialTicks).x,
-                Mth.lerp(partialTicks, entity.yo + entity.getEyeHeight() + height, entity.getEyeY() + height) - distance * entity.getViewVector(partialTicks).y,
-                Mth.lerp(partialTicks, entity.zo, entity.getZ()) - distance * entity.getViewVector(partialTicks).z);
     }
 
     public double getMouseSensitivity() {
@@ -3518,7 +3464,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
                 }
                 if (zoom || isFirstPerson) {
-                    return new Vec2((float) -getYRotFromVector(cameraDirection(player, partialTicks)), (float) -getXRotFromVector(cameraDirection(player, partialTicks)));
+                    return new Vec2((float) -VehicleHelper.getYRotFromVector(cameraDirection(player, partialTicks)), (float) -VehicleHelper.getXRotFromVector(cameraDirection(player, partialTicks)));
                 }
             } else {
                 return null;
@@ -3615,8 +3561,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return true;
     }
 
-    public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
-
     public void trackEngine(EngineInfo.Track engineInfo) {
         this.trackEngine(
                 engineInfo.buoyancy,
@@ -3635,16 +3579,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void trackEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
         if (buoyancy != 0) {
-            double fluidFloat = buoyancy * getSubmergedHeight(this);
+            double fluidFloat = buoyancy * VehicleHelper.getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
 
         if (this.onGround()) {
-            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
         } else if (this.isInWater()) {
-            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
         } else {
@@ -3756,16 +3700,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void wheelEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
         if (buoyancy != 0) {
-            double fluidFloat = buoyancy * getSubmergedHeight(this);
+            double fluidFloat = buoyancy * VehicleHelper.getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
 
         if (this.onGround()) {
-            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
         } else if (this.isInWater()) {
-            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
         } else {
@@ -3773,8 +3717,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
-            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
-            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + VehicleHelper.getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + VehicleHelper.getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
         Entity passenger0 = this.getFirstPassenger();
@@ -3878,12 +3822,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
         } else {
             setZRot(getRoll() * (backInputDown() ? 0.9f : 0.99f));
-            float f = (float) Mth.clamp(0.95f - 0.015 * getDeltaMovement().length() + 0.02f * Mth.abs(90 - (float) calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+            float f = (float) Mth.clamp(0.95f - 0.015 * getDeltaMovement().length() + 0.02f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((this.getXRot() < 0 ? -0.035 : (this.getXRot() > 0 ? 0.035 : 0)) * this.getDeltaMovement().length())));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.95, f));
         }
 
-        if (this.isInWater() && this.tickCount % 4 == 0 && getSubmergedHeight(this) > 0.5 * getBbHeight()) {
+        if (this.isInWater() && this.tickCount % 4 == 0 && VehicleHelper.getSubmergedHeight(this) > 0.5 * getBbHeight()) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6, 0.6, 0.6));
             this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), 6 + (float) (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
         }
@@ -4100,12 +4044,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         setXRot(getXRot() - 0.5f * diffX);
     }
 
-    public static List<Entity> getPlayer(Level level) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> e instanceof Player)
-                .toList();
-    }
-
     // 地形适应测试
     public void terrainCompact(float w, float l) {
         if (onGround()) {
@@ -4125,10 +4063,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
             Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
 
-//            if (mainSupportingBlockPos.isPresent()) {
-//                BlockPos blockpos = this.mainSupportingBlockPos.get();
-//            }
-
             // 确定点位是否在墙里来调整点位高度
             float p1y = (float) this.traceBlockY(p1, 3);
             float p2y = (float) this.traceBlockY(p2, 3);
@@ -4139,20 +4073,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             p2 = new Vec3(positionRF.x, p2y, positionRF.z);
             p3 = new Vec3(positionLB.x, p3y, positionLB.z);
             p4 = new Vec3(positionRB.x, p4y, positionRB.z);
-
-            // 测试用粒子效果，用于确定点位位置
-
-//            List<Entity> entities = getPlayer(level());
-//            for (var e : entities) {
-//                if (e instanceof ServerPlayer player) {
-//                    if (player.level() instanceof ServerLevel serverLevel) {
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p1.x, p1.y, p1.z, 1, 0, 0, 0, 0, true);
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p2.x, p2.y, p2.z, 1, 0, 0, 0, 0, true);
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p3.x, p3.y, p3.z, 1, 0, 0, 0, 0, true);
-//                        sendParticle(serverLevel, ParticleTypes.END_ROD, p4.x, p4.y, p4.z, 1, 0, 0, 0, 0, true);
-//                    }
-//                }
-//            }
 
             // 通过点位位置获取角度
 
@@ -4165,10 +4085,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             // 左后-右后
             Vec3 v3 = p3.vectorTo(p4);
 
-            double x1 = getXRotFromVector(v0);
-            double x2 = getXRotFromVector(v1);
-            double z1 = getXRotFromVector(v2);
-            double z2 = getXRotFromVector(v3);
+            double x1 = VehicleHelper.getXRotFromVector(v0);
+            double x2 = VehicleHelper.getXRotFromVector(v1);
+            double z1 = VehicleHelper.getXRotFromVector(v2);
+            double z2 = VehicleHelper.getXRotFromVector(v3);
 
             float diffX = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
             setXRot(Mth.clamp(getXRot() + 0.15f * diffX, -45f, 45f));
@@ -4215,11 +4135,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         Vec3 v2 = p1.vectorTo(p2);
         Vec3 v3 = p3.vectorTo(p4);
 
-        double x1 = getXRotFromVector(v0);
-        double x2 = getXRotFromVector(v1);
+        double x1 = VehicleHelper.getXRotFromVector(v0);
+        double x2 = VehicleHelper.getXRotFromVector(v1);
 
-        double z1 = getXRotFromVector(v2);
-        double z2 = getXRotFromVector(v3);
+        double z1 = VehicleHelper.getXRotFromVector(v2);
+        double z2 = VehicleHelper.getXRotFromVector(v3);
 
         float x = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
         float z = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
@@ -4430,188 +4350,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    /**
-     * 防止载具堆叠
-     */
     public void preventStacking() {
-
-        var entities = level().getEntities(
-                EntityTypeTest.forClass(VehicleEntity.class),
-                getBoundingBox().inflate(6),
-                entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null
-        );
-
-        for (var entity : entities) {
-            if (entity.getBoundingBox().intersects(getBoundingBox())) {
-                Vec3 toVec = this.position().add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(entity.position());
-                Vec3 velAdd = toVec.normalize().scale(Math.max((this.getBbWidth() + 2) - position().distanceTo(entity.position()), 0) * 0.1);
-                double entitySize = entity.getBbWidth() * entity.getBbHeight();
-                double thisSize = this.getBbWidth() * this.getBbHeight();
-                double f = Math.min(entitySize / thisSize, 2);
-                double f1 = Math.min(thisSize / entitySize, 2);
-
-                this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
-                entity.push(f1 * velAdd.x, f1 * velAdd.y, f1 * velAdd.z);
-            }
-        }
+        VehicleHelper.preventStacking(this);
     }
 
     public void pushNew(double pX, double pY, double pZ) {
         this.setDeltaMovement(this.getDeltaMovement().add(pX, pY, pZ));
     }
 
-    public void supportEntities(Vec3 vec3) {
-        if (this.isRemoved()) return;
-        if (!(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
-            return;
-        }
-
-        var frontBox = this.calculateCombinedAABBOptimized().inflate(1);
-        List<Entity> entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                        entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                .stream().filter(entity -> {
-                            if (entity.isAlive() && obbEntity.isInObb(entity, vec3)) {
-                                var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-                                if (type == null) return false;
-                                return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-                            }
-                            return false;
-                        }
-                )
-                .toList();
-
-        entities.forEach(e -> {
-            if (e instanceof Player player && this.level().isClientSide) {
-                this.support(player);
-            } else if (!this.level().isClientSide) {
-                this.support(e);
-            }
-        });
+    public void supportEntities() {
+        VehicleHelper.supportEntities(this);
     }
 
-    /**
-     * 撞击实体并造成伤害
-     *
-     * @param vec3 动量
-     */
-    public void crushEntities(Vec3 vec3) {
-        if (!this.canCrushEntities()) return;
-        if (isRemoved()) return;
+    public RandomSource getRandom() {
+        return this.random;
+    }
 
-        List<Entity> entities;
-        if (this instanceof OBBEntity obbEntity) {
-            var frontBox = getBoundingBox().move(vec3).inflate(6);
-            entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                            entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                    .stream().filter(entity -> {
-                                if (entity.isAlive() && obbEntity.isInObb(entity, vec3)) {
-                                    var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-                                    if (type == null) return false;
-                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-                                }
-                                return false;
-                            }
-                    )
-                    .toList();
-        } else {
-            var frontBox = getBoundingBox().move(vec3);
-            entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
-                            entity -> entity != this && entity != getFirstPassenger() && entity.getVehicle() == null)
-                    .stream().filter(entity -> {
-                                if (entity.isAlive()) {
-                                    var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-                                    if (type == null) return false;
-                                    return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart
-                                            || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator())))
-                                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
-                                }
-                                return false;
-                            }
-                    )
-                    .toList();
-        }
-
-        // TODO 继续优化这个逆天碰撞
-        for (var entity : entities) {
-            double entitySize = entity.getBoundingBox().getSize();
-            double thisSize = this.getBoundingBox().getSize();
-            double f;
-            double f1;
-
-            Vec3 v0 = vec3.subtract(entity.getDeltaMovement());
-            if (VectorTool.calculateAngle(v0, position().vectorTo(entity.position())) > 90) return;
-
-            if (this.getDeltaMovement().lengthSqr() < 0.09) return;
-
-            // TODO 给非载具实体也设置质量
-            if (entity instanceof LivingEntity living && living.hasEffect(ModMobEffects.STRIKE_PROTECTION.get())) {
-                continue;
-            }
-
-            if (entity instanceof VehicleEntity vehicle) {
-                f = Mth.clamp(vehicle.getMass() / getMass(), 0.25, 4);
-                f1 = Mth.clamp(getMass() / vehicle.getMass(), 0.25, 4);
-            } else {
-                f = Mth.clamp(entitySize / thisSize, 0.25, 4);
-                f1 = Mth.clamp(thisSize / entitySize, 0.25, 4);
-            }
-
-            float length = (float) v0.length();
-            var velAdd = v0.normalize().scale(0.8 * length);
-
-            if (length <= 0.3) {
-                continue;
-            }
-
-            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-
-            if (entity instanceof LivingEntity) {
-                DamageHandler.doDamage(entity, ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 80 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)));
-            } else {
-                entity.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (f1 * 60 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)));
-            }
-
-            if (!(entity instanceof TargetEntity)) {
-                this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z);
-            }
-
-            if (entity instanceof VehicleEntity mobileVehicle) {
-                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)));
-
-                if (this instanceof OBBEntity obbEntity) {
-                    if (obbEntity.isInObb(entity, Vec3.ZERO)) {
-                        Vec3 thisPos = this.position();
-                        Vec3 otherPos = entity.position();
-
-                        for (OBB obb : obbEntity.getOBBs()) {
-                            if (entity instanceof OBBEntity obbEntity2) {
-                                var obbList2 = obbEntity2.getOBBs();
-                                for (var obb2 : obbList2) {
-                                    if (OBB.isColliding(obb, obb2)) {
-                                        thisPos = new Vec3(obb.center());
-                                        otherPos = new Vec3(obb2.center());
-                                    }
-                                }
-                            } else {
-                                if (OBB.isColliding(obb, entity.getBoundingBox())) {
-                                    thisPos = new Vec3(obb.center());
-                                }
-                            }
-                        }
-
-                        Vec3 toVec = thisPos.add(new Vec3(1, 1, 1).scale(random.nextFloat() * 0.01f + 1f)).vectorTo(otherPos);
-                        velAdd = toVec.normalize().scale(Math.max(thisPos.distanceTo(otherPos), 0) * 0.01);
-                        this.pushNew(-f * velAdd.x, -f * velAdd.y, -f * velAdd.z);
-                    }
-                }
-
-                Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
-                mobileVehicle.pushNew(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
-            } else {
-                Vec3 vec31 = getDeltaMovement().normalize().scale(velAdd.length());
-                entity.push(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z);
-            }
-        }
+    public void crushEntities() {
+        VehicleHelper.crushEntities(this);
     }
 
     public Vector3f getForwardDirection() {
@@ -4823,14 +4579,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return stack.getItem() instanceof RecordItem || NetMusicCompatHolder.canPlayMusic(stack);
     }
 
-    public boolean amphibiousVehicle() {
-        return getVehicleType() == VehicleType.TANK
-                || getVehicleType() == VehicleType.APC
-                || getVehicleType() == VehicleType.AA
-                || getVehicleType() == VehicleType.CAR
-                || getVehicleType() == VehicleType.BOAT;
-    }
-
     public VehicleType getVehicleType() {
         return computed().type;
     }
@@ -4839,131 +4587,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @author YWZJ Ranpoes
      */
     public void support(Entity entity) {
-        if (!(this instanceof OBBEntity obbEntity)) return;
-        if (entity.noPhysics || this.noPhysics) {
-            return;
-        }
-
-        Vec3 feetPos = entity.position().subtract(new Vec3(0, 0.1f, 0));
-        Vec3 midPos = feetPos.add(0, entity.getEyeHeight() / 2, 0);
-        Vec3 eyePos = feetPos.add(0, entity.getEyeHeight(), 0);
-
-        for (var obb : obbEntity.getOBBs()) {
-            if (obb.contains(feetPos)) {
-                if (!entity.noPhysics && !this.noPhysics) {
-                    double gravity = Math.max(entity.getDeltaMovement().y, 0);
-                    if (gravity == 0) {
-                        entity.setOnGround(true);
-                    }
-                    double depth = obb.getEmbeddingDepth(feetPos);
-                    entity.setDeltaMovement(this.getDeltaMovement().add(0, gravity + depth <= 0.2f ? 0 : depth * 1.1, 0));
-                    entity.fallDistance = 0;
-
-                    continue;
-                }
-            }
-            if (obb.contains(eyePos)) {
-                double dx = entity.getX() - obb.center().x;
-                double dz = entity.getZ() - obb.center().z;
-                double dMax = Mth.absMax(dx, dz);
-                if (dMax >= (double) 0.01F) {
-                    dMax = Math.sqrt(dMax);
-                    dx /= dMax;
-                    dz /= dMax;
-                    double d = 1.0D / dMax;
-                    if (d > 1.0D) {
-                        d = 1.0D;
-                    }
-                    dx *= d;
-                    dz *= d;
-                    dx *= 0.05F;
-                    dz *= 0.05F;
-                    if (entity.isPushable()) {
-                        entity.push(dx, 0.0D, dz);
-                    }
-                    continue;
-                }
-            }
-
-            var aabb = entity.getBoundingBox();
-            if (OBB.isColliding(obb, aabb)) {
-                int face = obb.getEmbeddingFace(midPos);
-                var axes = obb.getAxes();
-                var support = axes[Math.abs(face) - 1];
-                if (face < 0) {
-                    support.negate();
-                }
-                if (entity.isPushable()) {
-                    float force = 0.1f;
-                    if (this.getDeltaMovement().length() > 0.01 && Math.abs(face) != 2) {
-                        force = 0.2f;
-                    }
-                    var vec = new Vec3(support).scale(force);
-                    vec = new Vec3(vec.x, Math.max(0, vec.y), vec.z);
-                    if (entity instanceof Player player && player.onGround() && player.isCrouching()) {
-                        // 推车
-                        setDeltaMovement(getDeltaMovement().add(vec.scale(-1).normalize().scale(player.getDeltaMovement().horizontalDistance() * 3)));
-                        player.setDeltaMovement(player.getDeltaMovement().add(vec.scale(1).normalize().scale(player.getDeltaMovement().horizontalDistance() * 0.5)));
-                    } else {
-                        entity.setPos(entity.position().add(vec));
-                        entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.2, 0.2, 0.2));
-                    }
-
-                    this.hasImpulse = true;
-                }
-            }
-        }
+        VehicleHelper.support(this, entity);
     }
 
-    // TODO 实现正确的AABB包围箱
-    public AABB calculateCombinedAABBOptimized() {
-        if (!(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
-            return this.getBoundingBox();
-        }
-
-        var obbList = obbEntity.getOBBs();
-
-        Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-        Vector3f max = new Vector3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
-
-        for (OBB obb : obbList) {
-            Vector3f[] vertices = getOBBVertices(obb);
-
-            for (Vector3f vertex : vertices) {
-                min.x = Math.min(min.x, vertex.x);
-                min.y = Math.min(min.y, vertex.y);
-                min.z = Math.min(min.z, vertex.z);
-
-                max.x = Math.max(max.x, vertex.x);
-                max.y = Math.max(max.y, vertex.y);
-                max.z = Math.max(max.z, vertex.z);
-            }
-        }
-
-        return new AABB(new Vec3(min), new Vec3(max));
-    }
-
-    private Vector3f[] getOBBVertices(OBB obb) {
-        Vector3f[] vertices = new Vector3f[8];
-
-        Vector3f[] axes = new Vector3f[3];
-        axes[0] = obb.rotation().transform(new Vector3f(1, 0, 0));
-        axes[1] = obb.rotation().transform(new Vector3f(0, 1, 0));
-        axes[2] = obb.rotation().transform(new Vector3f(0, 0, 1));
-
-        for (int i = 0; i < 8; i++) {
-            float signX = ((i & 1) == 0) ? 1.0f : -1.0f;
-            float signY = ((i & 2) == 0) ? 1.0f : -1.0f;
-            float signZ = ((i & 4) == 0) ? 1.0f : -1.0f;
-
-            Vector3f vertex = new Vector3f(obb.center());
-            vertex.add(new Vector3f(axes[0]).mul(obb.extents().x * signX));
-            vertex.add(new Vector3f(axes[1]).mul(obb.extents().y * signY));
-            vertex.add(new Vector3f(axes[2]).mul(obb.extents().z * signZ));
-
-            vertices[i] = vertex;
-        }
-
-        return vertices;
+    public boolean isAmphibious() {
+        return VehicleHelper.isAmphibious(this);
     }
 }

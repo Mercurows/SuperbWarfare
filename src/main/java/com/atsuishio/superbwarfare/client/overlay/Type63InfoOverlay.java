@@ -23,7 +23,7 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.Type63Entity.SHOOT_PITCH;
 import static com.atsuishio.superbwarfare.entity.vehicle.Type63Entity.SHOOT_YAW;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.getXRotFromVector;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper.getXRotFromVector;
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 @OnlyIn(Dist.CLIENT)

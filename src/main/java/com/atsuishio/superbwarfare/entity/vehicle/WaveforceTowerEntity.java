@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectile;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -255,7 +256,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
-            if (VehicleEntity.getSubmergedHeight(target) >= target.getBbHeight()) {
+            if (VehicleHelper.getSubmergedHeight(target) >= target.getBbHeight()) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }

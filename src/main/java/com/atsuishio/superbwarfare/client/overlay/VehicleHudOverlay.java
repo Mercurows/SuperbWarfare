@@ -194,7 +194,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
         assert player != null;
 
         if (player.getVehicle() instanceof VehicleEntity vehicle
-                && vehicle.amphibiousVehicle()
+                && vehicle.isAmphibious()
                 && vehicle instanceof WeaponVehicleEntity weaponVehicle
                 && weaponVehicle.isDriver(player)
                 && !(player.getVehicle() instanceof SpeedboatEntity)

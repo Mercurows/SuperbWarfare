@@ -3,10 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
@@ -276,7 +273,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
             canAim = false;
             component = Component.translatable("tips.superbwarfare.mortar.out_of_range");
         } else {
-            angle = (float) -getXRotFromVector(launchVector);
+            angle = (float) -VehicleHelper.getXRotFromVector(launchVector);
             if (angle < -maxPitch() || angle > -minPitch()) {
                 canAim = false;
                 component = Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName());
@@ -303,7 +300,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         if (launchVector == null) {
             return;
         }
-        float angle = (float) -getXRotFromVector(launchVector);
+        float angle = (float) -VehicleHelper.getXRotFromVector(launchVector);
         if (angle > -maxPitch() && angle < -minPitch()) {
             entityData.set(PITCH, angle);
         }
@@ -384,8 +381,8 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
 
                 Vec3 launchVector = RangeTool.calculateFiringSolution(getEyePosition(), target.getBoundingBox().getCenter(), targetVel, 15, projectileGravity());
 
-                entityData.set(PITCH, (float) -getXRotFromVector(launchVector));
-                entityData.set(YAW, (float) -getYRotFromVector(launchVector));
+                entityData.set(PITCH, (float) -VehicleHelper.getXRotFromVector(launchVector));
+                entityData.set(YAW, (float) -VehicleHelper.getYRotFromVector(launchVector));
 
                 if (VectorTool.calculateAngle(launchVector, getLookAngle()) < 3) {
                     shoot(mob, false);
