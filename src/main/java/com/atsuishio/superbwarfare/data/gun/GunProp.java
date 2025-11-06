@@ -111,6 +111,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Integer> SHOOT_DELAY = new GunProp<>("ShootDelay");
     public static final GunProp<Double> HEAT_PER_SHOOT = new GunProp<>("HeatPerShoot");
+    public static final GunProp<Integer> SHOOT_ANIMATION_TIMER = new GunProp<>("ShootAnimationTimer");
     public static final GunProp<Double> NATURAL_COOLDOWN = new GunProp<>("NaturalCooldown");
     public static final GunProp<Double> IN_WATER_COOLDOWN_RATE = new GunProp<>("InWaterCooldownRate");
     public static final GunProp<Double> IN_SNOW_COOLDOWN_RATE = new GunProp<>("InSnowCooldownRate");

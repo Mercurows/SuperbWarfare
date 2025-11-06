@@ -1218,6 +1218,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
     }
 
+    // TODO 获取几号武器的动画计时
+
+    public int getShootAnimationTimer(int seatIndex, int weaponIndex) {
+        var gunData = getGunData(seatIndex);
+        if (gunData == null) return 0;
+        return gunData.shootAnimationTimer.get();
+    }
+
     public void vehicleShoot(LivingEntity living) {
         var seatIndex = getSeatIndex(living);
 

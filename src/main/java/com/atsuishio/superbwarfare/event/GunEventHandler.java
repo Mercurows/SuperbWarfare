@@ -220,6 +220,7 @@ public class GunEventHandler {
         tickPerk(shooter, data);
         handleCooldown(shooter, data);
         redrawExtraAmmo(shooter, data);
+        data.shootAnimationTimer.set(Math.max(data.shootAnimationTimer.get() - 1, 0));
 
         if (inMainHand) {
             handleGunBolt(data);

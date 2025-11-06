@@ -11,9 +11,11 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -79,6 +81,12 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.terrainCompact(2.7f, 3.61f);
         inertiaRotate(1.25f);
         this.refreshDimensions();
+
+        // test
+
+        if (getFirstPassenger() instanceof Player player) {
+            player.displayClientMessage(Component.literal(getShootAnimationTimer(0, 0) + " " + getShootAnimationTimer(0, 1)), true);
+        }
     }
 
     // 炮塔最大水平旋转速度
@@ -131,13 +139,16 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return new Vec3(0, 2.4003, 0);
     }
 
-    // TODO 正确播放动画
-    private PlayState firePredicate(AnimationState<Lav150Entity> event) {
-        if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
+    private PlayState cannonFirePredicate(AnimationState<Lav150Entity> event) {
+        if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire"));
         }
 
-        if (this.entityData.get(FIRE_ANIM) > 0 && getWeaponIndex(0) == 1) {
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav_150.idle"));
+    }
+
+    private PlayState machineGunFirePredicate(AnimationState<Lav150Entity> event) {
+        if (getShootAnimationTimer(0, 1) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire2"));
         }
 
@@ -146,7 +157,8 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "movement", 0, this::firePredicate));
+        data.add(new AnimationController<>(this, "cannon", 0, this::cannonFirePredicate));
+        data.add(new AnimationController<>(this, "machineGun", 0, this::machineGunFirePredicate));
     }
 
     @Override
