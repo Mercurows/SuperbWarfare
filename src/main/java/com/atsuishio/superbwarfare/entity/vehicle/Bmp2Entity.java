@@ -102,7 +102,7 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         for (int i = 1; i < seats.size(); i++) {
             if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
                 int rpm = 20 / (vehicleWeaponRpm(mob) / 60);
-                if (tickCount %rpm == 0) {
+                if (tickCount % rpm == 0) {
                     vehicleShoot(mob);
                 }
             }
@@ -116,25 +116,23 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     public float turretYSpeed() {
         return 10;
     }
+
     // 炮塔最大俯仰旋转速度
     @Override
     public float turretXSpeed() {
         return 12.5F;
     }
+
     // 炮塔最小俯角
     @Override
     public float turretMinPitch() {
         return -7.5f;
     }
+
     // 炮塔最大仰角
     @Override
     public float turretMaxPitch() {
         return 74;
-    }
-
-    @Override
-    public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
     }
 
     @Override
@@ -157,7 +155,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         return new Vec3(0, 2.25, -0.703125);
     }
 
-
     private PlayState firePredicate(AnimationState<Bmp2Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire"));
@@ -179,7 +176,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
 
     @Override
     public int zoomFov() {

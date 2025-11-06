@@ -448,5 +448,13 @@
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/bmp2_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
-  "Type": "APC"
+  "Type": "APC",
+  "CollisionLevel": {
+    "Level": 3,
+    "PowerLimits": [
+      "0 0 true",
+      "0 0 true",
+      "0.07 0.12 false"
+    ]
+  }
 }

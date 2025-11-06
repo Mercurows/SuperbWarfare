@@ -3305,11 +3305,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleMotionUtils.collideBlocks(this);
     }
 
-    // TODO 换成碰撞等级数据
+    @Deprecated(forRemoval = true, since = "0.8.9")
     public boolean canCollideHardBlock() {
         return false;
     }
 
+    @Deprecated(forRemoval = true, since = "0.8.9")
     public boolean canCollideBlockBeastly() {
         return false;
     }

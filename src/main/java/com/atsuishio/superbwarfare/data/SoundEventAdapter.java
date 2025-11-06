@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundEvent;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-// TODO 添加其他参数的支持
 public class SoundEventAdapter extends TypeAdapter<SoundEvent> {
 
     @Override
