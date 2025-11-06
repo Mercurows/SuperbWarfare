@@ -340,20 +340,33 @@ public final class VehicleMotionUtils {
      * @param vehicle 载具
      */
     public static void collideBlocks(VehicleEntity vehicle) {
-        boolean soft = VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get();
-        boolean normal = VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get();
-        boolean hard = VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get() && vehicle.canCollideHardBlock();
-        boolean beast = VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get() && vehicle.canCollideBlockBeastly();
+        var collisionLevel = vehicle.computed().collisionLevel;
+        var limits = collisionLevel.powerLimits;
+
+        float power = vehicle.getEntityData().get(VehicleEntity.POWER);
+        var motion = vehicle.getDeltaMovement().horizontalDistance();
+
+        boolean[] flags = new boolean[]{
+                VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get() && collisionLevel.level >= 1,
+                VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get() && collisionLevel.level >= 2,
+                VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get() && collisionLevel.level >= 3,
+                VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get() && collisionLevel.level >= 4
+        };
+
+        for (int i = 0; i < flags.length && i < limits.size(); i++) {
+            var limit = limits.get(i);
+            flags[i] &= limit.equals() ? power >= limit.power() || motion >= limit.motion() : power > limit.power() || motion > limit.motion();
+        }
 
         if (vehicle instanceof OBBEntity obbEntity) {
             AABB aabb = vehicle.getBoundingBox().move(vehicle.getDeltaMovement()).inflate(5);
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = vehicle.level().getBlockState(pos);
                 if (obbEntity.isInObb(pos, vehicle.getDeltaMovement())) {
-                    if ((soft && blockstate.is(ModTags.Blocks.SOFT_COLLISION)) ||
-                            (normal && blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) ||
-                            (hard && blockstate.is(ModTags.Blocks.HARD_COLLISION)) ||
-                            (beast && (blockstate.getBlock().defaultDestroyTime() > 0 || blockstate.getBlock().defaultDestroyTime() <= 4))) {
+                    if ((flags[0] && blockstate.is(ModTags.Blocks.SOFT_COLLISION)) ||
+                            (flags[1] && blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) ||
+                            (flags[2] && blockstate.is(ModTags.Blocks.HARD_COLLISION)) ||
+                            (flags[3] && (blockstate.getBlock().defaultDestroyTime() > 0 || blockstate.getBlock().defaultDestroyTime() <= 4))) {
                         vehicle.level().destroyBlock(pos, true);
                     }
                 }
@@ -363,10 +376,10 @@ public final class VehicleMotionUtils {
         AABB aabb = vehicle.getBoundingBox().inflate(0.25, 0, 0.25).move(vehicle.getDeltaMovement()).move(0, 0.5, 0);
         BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
             BlockState blockstate = vehicle.level().getBlockState(pos);
-            if ((soft && blockstate.is(ModTags.Blocks.SOFT_COLLISION)) ||
-                    (normal && blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) ||
-                    (hard && blockstate.is(ModTags.Blocks.HARD_COLLISION)) ||
-                    (beast && (blockstate.getBlock().defaultDestroyTime() > 0 || blockstate.getBlock().defaultDestroyTime() <= 4))) {
+            if ((flags[0] && blockstate.is(ModTags.Blocks.SOFT_COLLISION)) ||
+                    (flags[1] && blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) ||
+                    (flags[2] && blockstate.is(ModTags.Blocks.HARD_COLLISION)) ||
+                    (flags[3] && (blockstate.getBlock().defaultDestroyTime() > 0 || blockstate.getBlock().defaultDestroyTime() <= 4))) {
                 vehicle.level().destroyBlock(pos, true);
             }
         });

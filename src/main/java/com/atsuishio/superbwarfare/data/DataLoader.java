@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.CollisionLevel;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -97,6 +98,7 @@ public class DataLoader {
                 .registerTypeAdapter(SoundEvent.class, new SoundEventAdapter())
                 .registerTypeAdapter(ModColor.class, new ModColor.ModColorAdapter())
                 .registerTypeAdapter(StringOrVec3.class, new StringOrVec3.StringOrVec3Adapter())
+                .registerTypeAdapter(CollisionLevel.Limit.class, new CollisionLevel.LimitAdapter())
                 .registerTypeAdapterFactory(new ObjectToList.AdapterFactory())
                 .registerTypeAdapterFactory(new StringToObject.AdapterFactory());
     }

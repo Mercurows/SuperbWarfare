@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;
@@ -129,11 +130,23 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("Weapons")
     public Map<String, DefaultGunData> weapons = Map.of();
 
+    /**
+     * 碰撞等级，范围是0~4
+     * 0 - 无法撞坏方块
+     * 1 - 允许撞坏软方块
+     * 2 - 允许撞坏普通方块
+     * 3 - 允许撞坏硬方块
+     * 4 - 允许野兽撞击模式
+     */
+    @SerializedName("CollisionLevel")
+    public CollisionLevel collisionLevel = new CollisionLevel();
+
     @Override
     public void limit() {
         this.maxHealth = Math.max(this.maxHealth, 0);
         this.repairCooldown = Math.max(this.repairCooldown, 0);
         this.maxEnergy = Math.max(this.maxEnergy, 0);
         this.weapons = weapons == null ? Map.of() : weapons;
+        this.collisionLevel.level = Mth.clamp(this.collisionLevel.level, 0, 4);
     }
 }

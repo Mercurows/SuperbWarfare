@@ -126,11 +126,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
     @Override
-    public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
-    }
-
-    @Override
     public SoundEvent getEngineSound() {
         return ModSounds.BMP_ENGINE.get();
     }
@@ -149,7 +144,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     public Vec3 getTurretPosition() {
         return new Vec3(0, 2.25, -0.703125);
     }
-
 
     private PlayState firePredicate(AnimationState<Bmp2Entity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
@@ -172,7 +166,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
 
     @Override
     public int zoomFov() {
