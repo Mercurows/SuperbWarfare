@@ -370,7 +370,7 @@ public class LivingEventHandler {
                 if (newStack.getItem() != oldStack.getItem()
                         || newStack.getTag() == null || oldStack.getTag() == null
                         || (newStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
-                        || (oldStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
+                        || (oldStack.getItem() instanceof GunItem && !GunData.from(oldStack).initialized())
                         || (newStack.getItem() instanceof GunItem && oldStack.getItem() instanceof GunItem && !Objects.equals(GunsTool.getGunUUID(newStack), GunsTool.getGunUUID(oldStack)))
                 ) {
                     NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), DrawClientMessage.INSTANCE);
@@ -402,8 +402,8 @@ public class LivingEventHandler {
                             oldData.charge.timer.reset();
                         }
 
-                        oldGun.onChangeSlot(oldStack, player);
-
+                        // TODO 如何保存修改后的数据
+                        oldGun.onChangeSlot(oldData, player);
                         oldData.save();
                     }
 

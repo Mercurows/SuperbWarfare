@@ -198,7 +198,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 注：不会实际消耗枪内弹药
      * @return 成功返还的弹药数量
      */
-    public int withdraw(@NotNull Entity shooter, int count) {
+    public int withdraw(@NotNull Entity ammoSupplier, int count) {
         if (!initialized) init();
         if (type == AmmoConsumeType.INVALID
                 || type == AmmoConsumeType.INFINITE
@@ -210,7 +210,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         }
 
         if (type == AmmoConsumeType.PLAYER_AMMO) {
-            if (shooter instanceof Player player) {
+            if (ammoSupplier instanceof Player player) {
                 if (playerAmmoType != null) {
                     playerAmmoType.add(player, count);
                     return count;
@@ -221,11 +221,11 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
                 Mod.LOGGER.warn("withdraw player ammo failed: invalid shooter");
             }
         } else {
-            if (shooter instanceof Player player) {
+            if (ammoSupplier instanceof Player player) {
                 ItemHandlerHelper.giveItemToPlayer(player, this.stack.copyWithCount(count));
                 return count;
             } else {
-                var itemHandler = shooter.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null);
+                var itemHandler = ammoSupplier.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null);
                 if (itemHandler != null) {
                     return withdraw(itemHandler, count);
                 } else {

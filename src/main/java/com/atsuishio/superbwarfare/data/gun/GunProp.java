@@ -74,6 +74,7 @@ public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
     public static final GunProp<GunType> GUN_TYPE = new GunProp<>("GunType");
 
     public static final GunProp<Boolean> AUTO_RELOAD = new GunProp<>("AutoReload");
+    public static final GunProp<Boolean> WITHDRAW_AMMO_WHEN_CHANGE_SLOT = new GunProp<>("WithdrawAmmoWhenChangeSlot");
 
     public static final GunProp<Boolean> ZOOM_RELOAD = new GunProp<>("ZoomReload");
     public static final GunProp<Boolean> CLEAR_HOLD_PROGRESS_AFTER_SHOOT = new GunProp<>("ClearHoldProgressAfterShoot");

@@ -1069,11 +1069,11 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     /**
      * 在切枪之后触发
-     *
-     * @param stack  被切走的枪
-     * @param player 玩家
      */
-    public void onChangeSlot(ItemStack stack, Player player) {
+    public void onChangeSlot(GunData data, Entity ammoSupplier) {
+        if (data.get(GunProp.WITHDRAW_AMMO_WHEN_CHANGE_SLOT)) {
+            data.withdrawAmmo(ammoSupplier);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
