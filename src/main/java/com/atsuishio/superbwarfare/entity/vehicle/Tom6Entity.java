@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.DestroyInfo;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -125,9 +125,9 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         deltaX = getMouseMoveSpeedY();
         deltaY = getMouseMoveSpeedX();
 
-        float f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+        float f = (float) Mth.clamp(0.69f + 0.101f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
 
-        boolean forward = Mth.abs((float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
+        boolean forward = Mth.abs((float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) < 90;
 
         this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((forward ? 0.24 : -0.24) * this.getDeltaMovement().length())));
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, f, f));
