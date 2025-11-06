@@ -51,6 +51,7 @@ public class HelicopterAutoLandingSystem {
 
         return landingBlocks.get(0).getCenter();
     }
+
     public static void updateAutoLanding(VehicleEntity entity, Vec3 landingTarget) {
         // 计算水平方向上的偏移向量 (忽略Y轴)
         Vec3 currentPos = entity.position();

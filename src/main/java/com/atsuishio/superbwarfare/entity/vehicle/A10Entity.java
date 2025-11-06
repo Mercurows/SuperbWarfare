@@ -665,12 +665,12 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 getShootVec(Entity entity, float tickDelta) {
-        Matrix4f transform = getVehicleTransform(tickDelta);
+    public Vec3 getShootVec(Entity entity, float partialTicks) {
+        Matrix4f transform = getVehicleTransform(partialTicks);
         Vector4f worldPosition;
         Vector4f worldPosition2;
         if (getWeaponIndex(0) == 2) {
-            return deltaMovementO.lerp(getDeltaMovement(), tickDelta).scale(0.75);
+            return deltaMovementO.lerp(getDeltaMovement(), partialTicks).scale(0.75);
         } else if (getWeaponIndex(0) == 3) {
             worldPosition = transformPosition(transform, 0, 0, 0);
             worldPosition2 = transformPosition(transform, 0, 0f, 1);
