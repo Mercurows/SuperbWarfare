@@ -223,11 +223,21 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
                     Mod.LOGGER.warn("withdraw player ammo failed: invalid player ammo type");
                 }
             } else {
-                Mod.LOGGER.warn("withdraw player ammo failed: invalid shooter");
+                var itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY);
+                if (itemHandler != null) {
+                    return withdraw(itemHandler, count);
+                } else {
+                    Mod.LOGGER.warn("withdraw ammo failed: invalid item handler");
+                }
             }
         } else {
             if (ammoSupplier instanceof Player player) {
-                ItemHandlerHelper.giveItemToPlayer(player, this.stack.copyWithCount(count));
+                var limit = this.stack.getMaxStackSize();
+                while (count > 0) {
+                    var toInsert = Math.min(limit, count);
+                    ItemHandlerHelper.giveItemToPlayer(player, this.stack.copyWithCount(toInsert));
+                    count -= toInsert;
+                }
                 return count;
             } else {
                 var itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY);
@@ -252,13 +262,27 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             return 0;
         }
 
-        var copiedStack = this.stack.copyWithCount(count);
-        var result = ItemHandlerHelper.insertItemStacked(handler, copiedStack, false);
-
-        int inserted = count - result.getCount();
-        if (!result.isEmpty()) {
-            Mod.LOGGER.warn("trying to withdraw ammo {} with count {}, but only {} is inserted", copiedStack, count, inserted);
+        ItemStack stackToInsert;
+        if (type == AmmoConsumeType.PLAYER_AMMO) {
+            stackToInsert = getPlayerAmmoType().getItemStack();
+        } else {
+            stackToInsert = this.stack;
         }
+
+        int inserted = 0;
+        while (count > 0) {
+            var limit = stackToInsert.getMaxStackSize();
+            var toInsert = Math.min(limit, count);
+            var result = ItemHandlerHelper.insertItemStacked(handler, stackToInsert.copyWithCount(toInsert), false);
+
+            count -= toInsert - result.getCount();
+            inserted += toInsert - result.getCount();
+
+            if (!result.isEmpty()) {
+                Mod.LOGGER.warn("trying to withdraw ammo {} with count {}, but only {} is inserted", stackToInsert, count, inserted);
+            }
+        }
+
         return inserted;
     }
 

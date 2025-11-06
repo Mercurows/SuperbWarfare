@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 
 import java.util.ArrayList;
@@ -144,13 +145,13 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
         var selectedWeapons = new ArrayList<>(vehicle.getEntityData().get(VehicleEntity.SELECTED_WEAPON));
 
         var oldIndex = selectedWeapons.get(seatIndex);
-        if (oldIndex != selectedWeapon) return;
+        if (oldIndex == selectedWeapon) return;
 
-        var gunData = vehicle.getGunData(seatIndex, oldIndex);
-        if (gunData != null) {
-            gunData.withdrawAmmo(vehicle.getAmmoSupplier());
-            gunData.save();
-        }
+        vehicle.modifyGunData(seatIndex, oldIndex, gunData -> {
+            if (gunData.get(GunProp.WITHDRAW_AMMO_WHEN_CHANGE_SLOT)) {
+                gunData.withdrawAmmo(vehicle.getAmmoSupplier());
+            }
+        });
 
         selectedWeapons.set(seatIndex, selectedWeapon);
         vehicle.getEntityData().set(VehicleEntity.SELECTED_WEAPON, selectedWeapons);
