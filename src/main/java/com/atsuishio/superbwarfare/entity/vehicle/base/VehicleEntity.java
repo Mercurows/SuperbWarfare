@@ -1267,29 +1267,25 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void playShootSound3p(LivingEntity living) {
-        var gunData = getGunData(getSeatIndex(living));
-        if (gunData != null) {
-            Vec3 pos = getShootPos(living, 1);
-            var soundInfo = gunData.get(GunProp.SOUND_INFO);
-            float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
+        if (!(living.level() instanceof ServerLevel serverLevel)) return;
 
-            // TODO 3P音效怎么是滚木
+        var gunData = this.getGunData(getSeatIndex(living));
+        if (gunData == null) return;
 
-            if (living.level() instanceof ServerLevel serverLevel) {
-                if (soundInfo.fire3P != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, living);
-                    if (living instanceof Player player) {
-                        player.displayClientMessage(Component.literal(soundInfo.fire3P.toString()), true);
-                    }
-                }
+        Vec3 pos = getShootPos(living, 1);
+        var soundInfo = gunData.get(GunProp.SOUND_INFO);
+        float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
-                if (soundInfo.fire3PFar != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, living);
-                }
-                if (soundInfo.fire3PVeryFar != null) {
-                    SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, living);
-                }
-            }
+        if (soundInfo.fire3P != null) {
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, living);
+        }
+
+        if (soundInfo.fire3PFar != null) {
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, living);
+        }
+
+        if (soundInfo.fire3PVeryFar != null) {
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, living);
         }
     }
 
