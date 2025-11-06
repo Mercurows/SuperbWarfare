@@ -508,7 +508,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                 entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, cannonShell.velocity, 0.02f);
                 level().addFreshEntity(entityToSpawn);
 
-                this.entityData.set(CANNON_RECOIL_TIME, 40);
                 this.entityData.set(LOADED_SHELL, "null");
 
                 this.consumeEnergy(10000);

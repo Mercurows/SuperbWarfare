@@ -1252,14 +1252,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var gunData = getGunData(getSeatIndex(living));
 
         if (gunData != null) {
-            entityData.set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
-            entityData.set(CANNON_RECOIL_FORCE, gunData.get(GunProp.RECOIL_FORCE));
+            if (gunData.get(GunProp.RECOIL_TIME) > 0) {
+                if (gunData.get(GunProp.RECOIL_TIME) > entityData.get(CANNON_RECOIL_TIME)) {
+                    entityData.set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
+                }
+
+                Vec3 vo = new Vec3(0, 0, 1);
+                double f = entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / gunData.get(GunProp.RECOIL_TIME));
+                Vec3 v1 = vo.yRot(entityData.get(YAW_WHILE_SHOOT) * Mth.DEG_TO_RAD).scale(f);
+                Vec3 v2 = vo.yRot(getTurretYRot() * Mth.DEG_TO_RAD).scale(gunData.get(GunProp.RECOIL_FORCE));
+                Vec3 v3 = v1.add(v2);
+
+                entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-getYRotFromVector(vo) + getYRotFromVector(v3)));
+                entityData.set(CANNON_RECOIL_FORCE, (float) v3.length());
+            }
+
             var list = gunData.get(GunProp.SHOOT_POS).positions;
             currentFirePosIndex = ++currentFirePosIndex % list.size();
         }
-
-        entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
-
         // TODO 数据包化发射震动
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
@@ -1898,7 +1908,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             this.entityData.set(CANNON_RECOIL_TIME, this.entityData.get(CANNON_RECOIL_TIME) - 1);
         }
 
-        this.setRecoilShake(java.lang.Math.pow(entityData.get(CANNON_RECOIL_TIME), 4) * 0.0000007 * java.lang.Math.sin(0.2 * java.lang.Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5)));
+        this.setRecoilShake(Mth.abs(entityData.get(CANNON_RECOIL_FORCE)) * 0.0000007 * java.lang.Math.pow(entityData.get(CANNON_RECOIL_TIME), 4) * java.lang.Math.sin(0.2 * java.lang.Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5)));
+        entityData.set(CANNON_RECOIL_FORCE, entityData.get(CANNON_RECOIL_FORCE) * 0.96f);
 
         this.preventStacking();
         this.supportEntities(this.getDeltaMovement());
