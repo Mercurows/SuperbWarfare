@@ -606,18 +606,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public boolean canShoot(LivingEntity living) {
-        return true;
-    }
-
-    @Override
     public int zoomFov() {
         return 5;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        return 0;
     }
 
     @Override

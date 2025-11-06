@@ -112,8 +112,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -143,7 +143,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> MOUSE_SPEED_X = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> MOUSE_SPEED_Y = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<IntList> SELECTED_WEAPON = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
-    public static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Float> TURRET_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> L_WHEEL_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -177,7 +176,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> YAW_WHILE_SHOOT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Integer> FIRE_ANIM = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> COAX_HEAT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Boolean> DECOY_READY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
@@ -1041,7 +1039,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.define(DELTA_ROT, 0f);
         this.entityData.define(MOUSE_SPEED_X, 0f);
         this.entityData.define(MOUSE_SPEED_Y, 0f);
-        this.entityData.define(HEAT, 0);
 
         this.entityData.define(TURRET_HEALTH, getTurretMaxHealth());
         this.entityData.define(L_WHEEL_HEALTH, getWheelMaxHealth());
@@ -1061,7 +1058,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.define(YAW_WHILE_SHOOT, 0f);
         this.entityData.define(AMMO, 0);
         this.entityData.define(FIRE_ANIM, 0);
-        this.entityData.define(COAX_HEAT, 0);
         this.entityData.define(DECOY_READY, false);
         this.entityData.define(GEAR_ROT, 0);
         this.entityData.define(GEAR_UP, false);
@@ -1200,6 +1196,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     /**
+     * 当前情况载具是否可以开火
+     *
+     * @param living 玩家
+     * @return 是否可以开火
+     */
+    public boolean canShoot(LivingEntity living) {
+        var gunData = getGunData(getSeatIndex(living));
+        return gunData != null && gunData.canShoot(getAmmoSupplier());
+    }
+
+    /**
      * 主武器射速
      *
      * @return 射速
@@ -1208,6 +1215,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var data = getGunData(getSeatIndex(living));
         if (data == null) return 0;
         return data.get(GunProp.RPM);
+    }
+
+    public int getWeaponHeat(LivingEntity living) {
+        var gunData = getGunData(getSeatIndex(living));
+        if (gunData == null) return 0;
+        return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
+    }
+
+    public int getWeaponHeat(int seatIndex) {
+        var gunData = getGunData(seatIndex);
+        if (gunData == null) return 0;
+        return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
     }
 
     public void vehicleShoot(LivingEntity living) {
@@ -1228,14 +1247,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (gunData != null) {
             Vec3 pos = getShootPos(living, 1);
             var soundInfo = gunData.get(GunProp.SOUND_INFO);
-            float pitch = 1;
-            // TODO 正确获取热量
-//            float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
+            float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
+
+            // TODO 3P音效怎么是滚木
 
             if (living.level() instanceof ServerLevel serverLevel) {
                 if (soundInfo.fire3P != null) {
                     SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, living);
+                    if (living instanceof Player player) {
+                        player.displayClientMessage(Component.literal(soundInfo.fire3P.toString()), true);
+                    }
                 }
+
                 if (soundInfo.fire3PFar != null) {
                     SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, living);
                 }
@@ -1729,19 +1752,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             repairCoolDown = maxRepairCoolDown();
         }
 
-        if (this.entityData.get(HEAT) > 0) {
-            this.entityData.set(HEAT, this.entityData.get(HEAT) - 1);
-        }
-
-        if (this.entityData.get(HEAT) < 40) {
-            cannotFire = false;
-        }
-
-        if (this.entityData.get(HEAT) > 100 && !cannotFire) {
-            cannotFire = true;
-            this.level().playSound(null, this.getOnPos(), ModSounds.MINIGUN_OVERHEAT.get(), SoundSource.PLAYERS, 1, 1);
-        }
-
         this.prevRoll = this.getRoll();
 
         float delta = Math.abs(getYRot() - yRotO);
@@ -1860,25 +1870,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             turretYRotO = deltaT + getTurretYRot();
         }
 
-        if (this.entityData.get(COAX_HEAT) > 0) {
-            this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) - 1);
-        }
-
-        if (this.entityData.get(FIRE_ANIM) > 0) {
-            this.entityData.set(FIRE_ANIM, this.entityData.get(FIRE_ANIM) - 1);
-        }
-
-        if (this.entityData.get(COAX_HEAT) < 40) {
-            cannotFireCoax = false;
-        }
-
         if (decoyReloadCoolDown > 0) {
             decoyReloadCoolDown--;
-        }
-
-        if (this.entityData.get(COAX_HEAT) > 100) {
-            cannotFireCoax = true;
-            this.level().playSound(null, this.getOnPos(), ModSounds.MINIGUN_OVERHEAT.get(), SoundSource.PLAYERS, 1, 1);
         }
 
         if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
@@ -2145,13 +2138,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void aiTurretShoot(LivingEntity living) {
-        if (this instanceof WeaponVehicleEntity weaponVehicle && aiTurretDiff < 2 && weaponVehicle.canShoot(living) && living.level() instanceof ServerLevel) {
+        if (this instanceof WeaponVehicleEntity weaponVehicle && aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
             vehicleShoot(living);
         }
     }
 
     public void aiPassengerWeaponShoot(LivingEntity living) {
-        if (this instanceof WeaponVehicleEntity weaponVehicle && aiPassengerDiff < 2 && weaponVehicle.canShoot(living) && living.level() instanceof ServerLevel) {
+        if (this instanceof WeaponVehicleEntity weaponVehicle && aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
             vehicleShoot(living);
         }
     }

@@ -714,8 +714,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             }
 
             ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 12);
-
-            this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
         } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
             var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(living);
 
@@ -827,21 +825,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public boolean canShoot(LivingEntity living) {
-        if (getWeaponIndex(0) == 2 || getWeaponIndex(0) == 3) {
-            return this.entityData.get(AMMO) > 0;
-        }
-        return false;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        return entityData.get(HEAT);
     }
 
     @Override

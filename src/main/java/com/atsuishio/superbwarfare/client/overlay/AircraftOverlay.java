@@ -34,7 +34,6 @@ import org.joml.Math;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HEAT;
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 @OnlyIn(Dist.CLIENT)
@@ -197,7 +196,7 @@ public class AircraftOverlay implements IGuiOverlay {
 
                 if (vehicle instanceof A10Entity a10Entity) {
                     if (weaponVehicle.getWeaponIndex(0) == 0) {
-                        int heat = a10Entity.getEntityData().get(HEAT);
+                        int heat = a10Entity.getWeaponHeat(0);
                         String name = "30MM CANNON";
                         int width = Minecraft.getInstance().font.width(name);
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(name), (int) x - width / 2, (int) y + 67, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
@@ -291,7 +290,7 @@ public class AircraftOverlay implements IGuiOverlay {
 
                     if (vehicle instanceof A10Entity a10Entity) {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            double heat = a10Entity.getEntityData().get(HEAT) / 100.0F;
+                            double heat = a10Entity.getWeaponHeat(0) / 100.0F;
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : vehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + vehicle.getAmmoCount(player)), 25, -9, -1, false);

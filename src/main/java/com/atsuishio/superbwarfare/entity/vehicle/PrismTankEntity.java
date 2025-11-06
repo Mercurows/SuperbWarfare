@@ -253,7 +253,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             }
 
             this.entityData.set(LASER_SCALE, 3f);
-            this.entityData.set(HEAT, entityData.get(HEAT) + 55);
 
         } else if (getWeaponIndex(0) == 1) {
             if (this.cannotFire) return;
@@ -261,11 +260,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             if (!this.canConsume(VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get()) && living instanceof Player player) {
                 player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
                 return;
-            }
-
-            float pitch = entityData.get(HEAT) <= 60 ? 1.1f : (float) (1.1f - 0.011 * Math.abs(60 - entityData.get(HEAT)));
-            if (living instanceof Player player) {
-                SoundTool.playLocalSound(player, ModSounds.PRISM_FIRE_1P_2.get(), 1f, pitch);
             }
 
             if (level() instanceof ServerLevel) {
@@ -282,7 +276,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             }
 
             this.entityData.set(LASER_SCALE, 1f);
-            this.entityData.set(HEAT, entityData.get(HEAT) + 2);
         }
     }
 
@@ -452,15 +445,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public boolean canShoot(LivingEntity living) {
-        if (getWeaponIndex(0) == 0) {
-            return getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_1.get() && !cannotFire;
-        } else {
-            return getEnergy() > VehicleConfig.PRISM_TANK_SHOOT_COST_MODE_2.get() && !cannotFire;
-        }
-    }
-
-    @Override
     public int getAmmoCount(LivingEntity living) {
         return (int) (this.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0) * 100f / (float) this.getMaxEnergy());
     }
@@ -468,11 +452,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public int zoomFov() {
         return 3;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        return entityData.get(HEAT);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -487,8 +466,8 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/common_missile.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
 
         // 武器名称+过热
-        int heat = this.getEntityData().get(HEAT);
-        guiGraphics.drawString(font, Component.literal("LASER   " + (this.getEntityData().get(HEAT) + 25) + " ℃"), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+        int heat = this.getWeaponHeat(0);
+        guiGraphics.drawString(font, Component.literal("LASER   " + (this.getWeaponHeat(0) + 25) + " ℃"), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -496,8 +475,8 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         super.renderThirdPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
 
-        double heat = this.getEntityData().get(HEAT) / 100.0F;
-        guiGraphics.drawString(font, Component.literal("LASER " + (this.getEntityData().get(HEAT) + 25) + " ℃"), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+        double heat = this.getWeaponHeat(0) / 100.0F;
+        guiGraphics.drawString(font, Component.literal("LASER " + (this.getWeaponHeat(0) + 25) + " ℃"), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
     }
 
     @Override

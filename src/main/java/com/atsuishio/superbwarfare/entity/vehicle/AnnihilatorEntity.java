@@ -516,11 +516,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public boolean canShoot(LivingEntity living) {
-        return true;
-    }
-
-    @Override
     public int getAmmoCount(LivingEntity living) {
         return (int) (this.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0) * 100f / (float) this.getMaxEnergy());
     }
@@ -528,11 +523,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     @Override
     public int zoomFov() {
         return 5;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        return 0;
     }
 
     @Override

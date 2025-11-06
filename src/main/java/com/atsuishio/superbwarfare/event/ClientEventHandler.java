@@ -1124,7 +1124,8 @@ public class ClientEventHandler {
             holdFireVehicle = false;
         }
 
-        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player)) && iVehicle.canShoot(player)) {
+        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
+            if (!pVehicle.canShoot(player)) return;
             int rpm = pVehicle.vehicleWeaponRpm(player);
             if (rpm == 0) {
                 rpm = 240;
@@ -1167,9 +1168,8 @@ public class ClientEventHandler {
         var gunData = vehicle.getGunData(vehicle.getSeatIndex(player));
         if (gunData != null) {
             var soundInfo = gunData.get(GunProp.SOUND_INFO);
-            float pitch = 1;
             // TODO 正确获取热量
-//            float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
+            float pitch = vehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - vehicle.getWeaponHeat(player)));
 
             var sound = soundInfo.fire1P;
             if (sound != null) {

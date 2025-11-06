@@ -571,7 +571,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
                             0.25f);
                     this.level().addFreshEntity(projectileRight);
 
-                    this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
                     this.entityData.set(FIRE_ANIM, 2);
 
                     if (!hasCreativeAmmo) {
@@ -604,7 +603,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             this.level().addFreshEntity(projectileEntity);
 
             this.entityData.set(GUN_FIRE_TIME, 2);
-            this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
 
             ShakeClientMessage.sendToNearbyPlayers(this, 4, 6, 4, 6);
 
@@ -792,41 +790,8 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public boolean canShoot(LivingEntity living) {
-        if (living == getNthEntity(0)) {
-            if (getWeapon(0).mainGun) {
-                return !this.entityData.get(LOADED_SHELL).equals("null") && getEnergy() > VehicleConfig.YX_100_SHOOT_COST.get();
-            } else if (getWeaponIndex(0) == 4) {
-                return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living)) && !cannotFireCoax;
-            }
-        }
-
-        if (living == getNthEntity(1)) {
-            return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living)) && !cannotFire;
-        }
-
-        if (living == getNthEntity(2)) {
-            return this.entityData.get(LOADED_DRONE) > 0;
-        }
-        return false;
-    }
-
-    @Override
     public int zoomFov() {
         return 3;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        if (living == getNthEntity(0)) {
-            return entityData.get(COAX_HEAT);
-        }
-
-        if (living == getNthEntity(1)) {
-            return entityData.get(HEAT);
-        }
-
-        return 0;
     }
 
     @Override
@@ -901,7 +866,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         } else if (this.getWeaponIndex(0) == 3) {
             guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 4) {
-            int heat = this.getEntityData().get(COAX_HEAT);
+            int heat = getWeaponHeat(player);
             guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         }
     }
@@ -918,7 +883,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         } else if (this.getWeaponIndex(0) == 3) {
             guiGraphics.drawString(font, Component.literal("GRAPESHOT" + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 4) {
-            double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
+            double heat2 = getWeaponHeat(player) / 100.0F;
             guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
         }
     }

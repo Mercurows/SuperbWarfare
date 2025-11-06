@@ -22,12 +22,6 @@ public interface ArmedVehicleEntity {
         return false;
     }
 
-    /**
-     * 当前情况载具是否可以开火
-     *
-     * @param living 玩家
-     * @return 是否可以开火
-     */
     boolean canShoot(LivingEntity living);
 
     /**
@@ -36,6 +30,4 @@ public interface ArmedVehicleEntity {
      * @return 放大倍率
      */
     int zoomFov();
-
-    int getWeaponHeat(LivingEntity living);
 }

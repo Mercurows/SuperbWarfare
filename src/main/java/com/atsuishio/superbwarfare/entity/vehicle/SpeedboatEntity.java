@@ -209,7 +209,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         this.entityData.set(CANNON_RECOIL_TIME, 30);
         this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
 
-        this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
         this.entityData.set(FIRE_ANIM, 3);
 
         boolean hasCreativeAmmo = false;
@@ -343,20 +342,10 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
     }
 
     @Override
-    public boolean canShoot(LivingEntity living) {
-        return (this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living))
-                && !cannotFire;
-    }
-
-    @Override
     public int zoomFov() {
         return 1;
     }
 
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        return entityData.get(HEAT);
-    }
 
     @OnlyIn(Dist.CLIENT)
     @Override
