@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.CANNON_RECOIL_FORCE;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW_WHILE_SHOOT;
 
 public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoModel<T> {
@@ -150,12 +149,10 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
                         }
                     }
 
-                    float force = 0.4f * (float) Math.sqrt(Mth.abs(vehicle.getEntityData().get(CANNON_RECOIL_FORCE)));
-
-                    bone.setPosX(r2 * recoilShake * 0.5f * force);
-                    bone.setPosZ(r * recoilShake * 1f * force);
-                    bone.setRotX(r * recoilShake * Mth.DEG_TO_RAD * 1f * force);
-                    bone.setRotZ(r2 * recoilShake * Mth.DEG_TO_RAD * 2f * force);
+                    bone.setPosX(r2 * recoilShake * 0.5f);
+                    bone.setPosZ(r * recoilShake * 1f);
+                    bone.setRotX(r * recoilShake * Mth.DEG_TO_RAD);
+                    bone.setRotZ(r2 * recoilShake * Mth.DEG_TO_RAD);
                 };
             }
 

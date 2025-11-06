@@ -191,7 +191,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 5);
 
-        this.entityData.set(CANNON_RECOIL_TIME, 30);
         this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
 
         this.entityData.set(FIRE_ANIM, 3);
