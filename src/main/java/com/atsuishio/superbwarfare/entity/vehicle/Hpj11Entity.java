@@ -432,7 +432,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         level().addFreshEntity(entityToSpawn);
 
         this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
-        this.entityData.set(HEAT, this.entityData.get(HEAT) + 2);
         this.entityData.set(ANIM_TIME, 1);
 
         this.consumeEnergy(VehicleConfig.HPJ11_SHOOT_COST.get());
@@ -505,19 +504,10 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         return this.cache;
     }
 
-    @Override
-    public boolean canShoot(LivingEntity living) {
-        return false;
-    }
 
     @Override
     public int zoomFov() {
         return 2;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        return entityData.get(HEAT);
     }
 
     @Override

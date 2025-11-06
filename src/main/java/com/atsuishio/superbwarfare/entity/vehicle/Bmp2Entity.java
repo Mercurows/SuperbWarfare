@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -175,23 +174,9 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     }
 
 
-    // client side
-    @Override
-    public boolean canShoot(LivingEntity living) {
-        var gunData = getGunData(getSeatIndex(living));
-        return gunData != null && gunData.canShoot(getAmmoSupplier());
-    }
-
     @Override
     public int zoomFov() {
         return 3;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        var gunData = getGunData(getSeatIndex(living));
-        if (gunData == null) return 0;
-        return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
     }
 
     @Override

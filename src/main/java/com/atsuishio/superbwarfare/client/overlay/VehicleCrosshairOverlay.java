@@ -183,10 +183,10 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
     // TODO 正确显示文本和备弹数量，正确判断是否应该显示武器名称
     private static void renderWeaponInfoFirst(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font, int screenWidth, int screenHeight, int color) {
-        if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
+        if (!(vehicle instanceof WeaponVehicleEntity)) return;
         if (!vehicle.amphibiousVehicle()) return;
 
-        int heat = weaponVehicle.getWeaponHeat(player);
+        int heat = vehicle.getWeaponHeat(player);
         int ammoCount = vehicle.getAmmoCount(player);
         var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
@@ -195,9 +195,9 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
     }
 
     private static void renderWeaponInfoThird(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font) {
-        if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
+        if (!(vehicle instanceof WeaponVehicleEntity)) return;
 
-        float heat = weaponVehicle.getWeaponHeat(player) / 100F;
+        float heat = vehicle.getWeaponHeat(player) / 100F;
 
         int ammoCount = vehicle.getAmmoCount(player);
         var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);

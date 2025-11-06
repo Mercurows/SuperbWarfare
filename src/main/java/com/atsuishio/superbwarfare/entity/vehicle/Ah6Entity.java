@@ -102,23 +102,9 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         return this.cache;
     }
 
-    // client side
-    @Override
-    public boolean canShoot(LivingEntity living) {
-        var gunData = getGunData(getSeatIndex(living));
-        return gunData != null && gunData.canShoot(getAmmoSupplier());
-    }
-
     @Override
     public int zoomFov() {
         return 3;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity living) {
-        var gunData = getGunData(getSeatIndex(living));
-        if (gunData == null) return 0;
-        return Math.toIntExact(Math.round(gunData.heat.get()));
     }
 
     @Override
