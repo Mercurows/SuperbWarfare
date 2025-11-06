@@ -444,16 +444,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
-    @Override
-    public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.05 || Mth.abs(this.entityData.get(POWER)) > 0.1;
-    }
-
-    @Override
-    public boolean canCollideBlockBeastly() {
-        return getDeltaMovement().horizontalDistance() > 0.3;
-    }
-
     // TODO 移除这个
     private void handleAmmo() {
         if (getWeapon(0) == null) return;

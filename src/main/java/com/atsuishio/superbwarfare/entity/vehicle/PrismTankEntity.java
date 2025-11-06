@@ -221,11 +221,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.07 || Mth.abs(this.entityData.get(POWER)) > 0.12;
-    }
-
-    @Override
     public void vehicleShoot(LivingEntity living) {
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0, 0.5f, 0);

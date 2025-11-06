@@ -177,5 +177,13 @@
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav150_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
-  "Type": "APC"
+  "Type": "APC",
+  "CollisionLevel": {
+    "Level": 3,
+    "PowerLimits": [
+      "0 0 true",
+      "0 0 true",
+      "0.15 0.09 false"
+    ]
+  }
 }

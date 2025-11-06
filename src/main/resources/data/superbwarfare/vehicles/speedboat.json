@@ -94,5 +94,13 @@
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png",
-  "Type": "Boat"
+  "Type": "Boat",
+  "CollisionLevel": {
+    "Level": 3,
+    "PowerLimits": [
+      "0 0 true",
+      "0 0 true",
+      "1 0.15 false"
+    ]
+  }
 }

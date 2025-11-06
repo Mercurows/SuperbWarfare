@@ -115,12 +115,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return 32.5f;
     }
 
-
-    @Override
-    public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.09 || Mth.abs(this.entityData.get(POWER)) > 0.15;
-    }
-
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.LAV_ENGINE.get();
