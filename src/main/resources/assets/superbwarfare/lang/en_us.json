@@ -744,6 +744,9 @@
 
   "superbwarfare.lav_150.cannon": "20MM CANNON %1$s",
   "superbwarfare.lav_150.gun": "7.62MM COAX %1$s",
+  "superbwarfare.bmp_2.cannon": "30MM 2A42 %1$s",
+  "superbwarfare.bmp_2.gun": "7.62MM COAX %1$s",
+  "superbwarfare.bmp_2.missile": "9M113 %1$s",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",

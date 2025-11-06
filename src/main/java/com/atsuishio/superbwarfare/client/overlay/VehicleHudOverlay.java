@@ -105,6 +105,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
     private static boolean wasRenderingWeapons = false;
     private static int oldWeaponIndex = 0;
     private static int oldRenderWeaponIndex = 0;
+    public static float lerpRecoil;
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -202,8 +203,11 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
             poseStack.pushPose();
 
-            poseStack.translate(0, 0 - 0.3 * ClientEventHandler.shakeTime + 3 * ClientEventHandler.cameraRoll, 0);
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll), screenWidth / 2f, screenHeight / 2f, 0);
+            float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
+            lerpRecoil = Mth.lerp(0.3f * partialTick, lerpRecoil, recoil * (float) (2 * (Math.random() - 0.5f)));
+            poseStack.translate(lerpRecoil * 6, recoil * -3, 0);
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
+
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();

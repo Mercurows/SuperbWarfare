@@ -136,7 +136,7 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
         super.tick();
         largeTrail();
 
-        if (tickCount > 2 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {
+        if (tickCount > 0 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
             Entity shooter = this.getOwner();
 
