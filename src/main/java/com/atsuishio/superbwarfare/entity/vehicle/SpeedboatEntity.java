@@ -158,11 +158,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         return 0.05f;
     }
 
-    @Override
-    public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.15;
-    }
-
     private void handleAmmo() {
         if (!(this.getFirstPassenger() instanceof Player)) return;
 

@@ -134,16 +134,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     }
 
     @Override
-    public boolean canCollideHardBlock() {
-        return getDeltaMovement().horizontalDistance() > 0.09 || Mth.abs(this.entityData.get(POWER)) > 0.15;
-    }
-
-    @Override
-    public boolean canCollideBlockBeastly() {
-        return getDeltaMovement().horizontalDistance() > 0.3;
-    }
-
-    @Override
     public SoundEvent getEngineSound() {
         return ModSounds.TRUCK_ENGINE.get();
     }

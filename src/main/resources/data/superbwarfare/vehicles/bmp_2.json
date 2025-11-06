@@ -454,7 +454,7 @@
     "PowerLimits": [
       "0 0 true",
       "0 0 true",
-      "0.07 0.12 false"
+      "0.12 0.07 false"
     ]
   }
 }

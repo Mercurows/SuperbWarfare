@@ -77,5 +77,14 @@
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
-  "Type": "Car"
+  "Type": "Car",
+  "CollisionLevel": {
+    "Level": 4,
+    "PowerLimits": [
+      "0 0 true",
+      "0 0 true",
+      "0.15 0.09 false",
+      "1 0.3 false"
+    ]
+  }
 }
