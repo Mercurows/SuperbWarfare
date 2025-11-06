@@ -54,7 +54,7 @@
       "Damage": 45,
       "ExplosionDamage": 12,
       "ExplosionRadius": 3.5,
-      "HeatPerShoot": 6,
+      "HeatPerShoot": 5,
       "NaturalCooldown": 1,
       "Spread": 0.25,
       "Name": "superbwarfare.ah_6.cannon",
