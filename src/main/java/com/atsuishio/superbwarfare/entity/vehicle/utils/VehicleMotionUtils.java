@@ -8,22 +8,31 @@ import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.joml.Math;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.List;
+
+import static com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition;
 
 /**
  * 处理载具运动相关方法的工具类
@@ -382,5 +391,175 @@ public final class VehicleMotionUtils {
             vehicle.getEntityData().set(VehicleEntity.POWER, vehicle.getEntityData().get(VehicleEntity.POWER) * 0.8f);
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(-0.1, 0, -0.1));
         }
+    }
+
+    public static void bounceHorizontal(VehicleEntity vehicle, Direction direction) {
+        switch (direction.getAxis()) {
+            case X:
+                vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.8, 0.99, 0.99));
+                break;
+            case Z:
+                vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.99, 0.99, 0.8));
+                break;
+        }
+    }
+
+    public static void bounceVertical(VehicleEntity vehicle, Direction direction) {
+        if (!vehicle.level().isClientSide) {
+            vehicle.level().playSound(null, vehicle, ModSounds.VEHICLE_STRIKE.get(), vehicle.getSoundSource(), 1, 1);
+        }
+        vehicle.collisionCoolDown = 4;
+        vehicle.crash = true;
+        if (direction.getAxis() == Direction.Axis.Y) {
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.9, -0.8, 0.9));
+        }
+    }
+
+    /**
+     * 根据地形调整载具的倾斜度
+     *
+     * @param vehicle 载具
+     * @param width   载具宽度
+     * @param length  载具长度
+     */
+    public static void terrainCompact(VehicleEntity vehicle, float width, float length) {
+        if (vehicle.onGround()) {
+            Matrix4f transform = vehicle.getWheelsTransform(1);
+
+            // 左前
+            Vector4f positionLF = transformPosition(transform, width / 2, 0, length / 2);
+            // 右前
+            Vector4f positionRF = transformPosition(transform, -width / 2, 0, length / 2);
+            // 左后
+            Vector4f positionLB = transformPosition(transform, width / 2, 0, -length / 2);
+            // 右后
+            Vector4f positionRB = transformPosition(transform, -width / 2, 0, -length / 2);
+
+            Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
+            Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
+            Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
+            Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+
+            // 确定点位是否在墙里来调整点位高度
+            float p1y = (float) vehicle.traceBlockY(p1, 3);
+            float p2y = (float) vehicle.traceBlockY(p2, 3);
+            float p3y = (float) vehicle.traceBlockY(p3, 3);
+            float p4y = (float) vehicle.traceBlockY(p4, 3);
+
+            p1 = new Vec3(positionLF.x, p1y, positionLF.z);
+            p2 = new Vec3(positionRF.x, p2y, positionRF.z);
+            p3 = new Vec3(positionLB.x, p3y, positionLB.z);
+            p4 = new Vec3(positionRB.x, p4y, positionRB.z);
+
+            // 通过点位位置获取角度
+
+            // 左后-左前
+            Vec3 v0 = p3.vectorTo(p1);
+            // 右后-右前
+            Vec3 v1 = p4.vectorTo(p2);
+            // 左前-右前
+            Vec3 v2 = p1.vectorTo(p2);
+            // 左后-右后
+            Vec3 v3 = p3.vectorTo(p4);
+
+            double x1 = VehicleVecUtils.getXRotFromVector(v0);
+            double x2 = VehicleVecUtils.getXRotFromVector(v1);
+            double z1 = VehicleVecUtils.getXRotFromVector(v2);
+            double z2 = VehicleVecUtils.getXRotFromVector(v3);
+
+            float diffX = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - vehicle.getXRot()));
+            vehicle.setXRot(Mth.clamp(vehicle.getXRot() + 0.15f * diffX, -45f, 45f));
+
+            float diffZ = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - vehicle.getRoll()));
+            vehicle.setZRot(Mth.clamp(vehicle.getRoll() + 0.15f * diffZ, -45f, 45f));
+        } else if (vehicle.isInWater()) {
+            vehicle.setXRot(vehicle.getXRot() * 0.9f);
+            vehicle.setZRot(vehicle.getRoll() * 0.9f);
+        }
+    }
+
+    /**
+     * 用于履带的地形适应
+     *
+     * @param vehicle 载具
+     * @param width   载具宽度
+     * @param length  载具长度
+     * @return x和z方向的角度
+     */
+    public static float[] terrainCompactTrack(VehicleEntity vehicle, float width, float length) {
+        Matrix4f transform = vehicle.getWheelsTransform(1);
+
+        // 左前
+        Vector4f positionLF = transformPosition(transform, width / 2, 0, length / 2);
+        // 右前
+        Vector4f positionRF = transformPosition(transform, -width / 2, 0, length / 2);
+        // 左后
+        Vector4f positionLB = transformPosition(transform, width / 2, 0, -length / 2);
+        // 右后
+        Vector4f positionRB = transformPosition(transform, -width / 2, 0, -length / 2);
+
+        Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
+        Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
+        Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
+        Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+
+        // 确定点位是否在墙里来调整点位高度
+        float p1y = (float) vehicle.traceBlockY(p1, 3);
+        float p2y = (float) vehicle.traceBlockY(p2, 3);
+        float p3y = (float) vehicle.traceBlockY(p3, 3);
+        float p4y = (float) vehicle.traceBlockY(p4, 3);
+
+        p1 = new Vec3(positionLF.x, p1y, positionLF.z);
+        p2 = new Vec3(positionRF.x, p2y, positionRF.z);
+        p3 = new Vec3(positionLB.x, p3y, positionLB.z);
+        p4 = new Vec3(positionRB.x, p4y, positionRB.z);
+
+        Vec3 v0 = p3.vectorTo(p1);
+        Vec3 v1 = p4.vectorTo(p2);
+        Vec3 v2 = p1.vectorTo(p2);
+        Vec3 v3 = p3.vectorTo(p4);
+
+        double x1 = VehicleVecUtils.getXRotFromVector(v0);
+        double x2 = VehicleVecUtils.getXRotFromVector(v1);
+
+        double z1 = VehicleVecUtils.getXRotFromVector(v2);
+        double z2 = VehicleVecUtils.getXRotFromVector(v3);
+
+        float x = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - vehicle.getXRot()));
+        float z = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - vehicle.getRoll()));
+
+        return new float[]{x, z};
+    }
+
+    public static Matrix4f getWheelsTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4f transform = new Matrix4f();
+        transform.translate(
+                (float) Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
+                (float) Mth.lerp(partialTicks, vehicle.yo, vehicle.getY()),
+                (float) Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
+        );
+        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot())));
+        return transform;
+    }
+
+    public static double traceBlockYPos(VehicleEntity vehicle, Vec3 pos, double length) {
+        var level = vehicle.level();
+        var res = level.clip(new ClipContext(pos, pos.add(0, -length, 0),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle));
+
+        double targetY;
+
+        BlockState state = level.getBlockState(BlockPos.containing(pos));
+        VoxelShape shape = state.getCollisionShape(level, BlockPos.containing(pos));
+        if (!shape.isEmpty()) {
+            targetY = pos.y + shape.max(Direction.Axis.Y);
+        } else if (res.getType() == HitResult.Type.BLOCK && level.noCollision(new AABB(pos, pos))) {
+            targetY = res.getLocation().y;
+        } else {
+            targetY = pos.y - length;
+        }
+
+        double diffY = targetY - pos.y;
+        return pos.y + 0.5f * diffY;
     }
 }

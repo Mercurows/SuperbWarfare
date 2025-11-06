@@ -42,7 +42,6 @@ import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -85,15 +84,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeMod;
@@ -3286,134 +3281,20 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.setXRot(this.getXRot() - 0.5f * (float) (this.getAcceleration() * multiplier));
     }
 
-    // 地形适应测试
-    public void terrainCompact(float w, float l) {
-        if (onGround()) {
-            Matrix4f transform = this.getWheelsTransform(1);
-
-            // 左前
-            Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
-            // 右前
-            Vector4f positionRF = transformPosition(transform, -w / 2, 0, l / 2);
-            // 左后
-            Vector4f positionLB = transformPosition(transform, w / 2, 0, -l / 2);
-            // 右后
-            Vector4f positionRB = transformPosition(transform, -w / 2, 0, -l / 2);
-
-            Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
-            Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
-            Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
-            Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
-
-            // 确定点位是否在墙里来调整点位高度
-            float p1y = (float) this.traceBlockY(p1, 3);
-            float p2y = (float) this.traceBlockY(p2, 3);
-            float p3y = (float) this.traceBlockY(p3, 3);
-            float p4y = (float) this.traceBlockY(p4, 3);
-
-            p1 = new Vec3(positionLF.x, p1y, positionLF.z);
-            p2 = new Vec3(positionRF.x, p2y, positionRF.z);
-            p3 = new Vec3(positionLB.x, p3y, positionLB.z);
-            p4 = new Vec3(positionRB.x, p4y, positionRB.z);
-
-            // 通过点位位置获取角度
-
-            // 左后-左前
-            Vec3 v0 = p3.vectorTo(p1);
-            // 右后-右前
-            Vec3 v1 = p4.vectorTo(p2);
-            // 左前-右前
-            Vec3 v2 = p1.vectorTo(p2);
-            // 左后-右后
-            Vec3 v3 = p3.vectorTo(p4);
-
-            double x1 = VehicleVecUtils.getXRotFromVector(v0);
-            double x2 = VehicleVecUtils.getXRotFromVector(v1);
-            double z1 = VehicleVecUtils.getXRotFromVector(v2);
-            double z2 = VehicleVecUtils.getXRotFromVector(v3);
-
-            float diffX = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
-            setXRot(Mth.clamp(getXRot() + 0.15f * diffX, -45f, 45f));
-
-            float diffZ = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
-            setZRot(Mth.clamp(getRoll() + 0.15f * diffZ, -45f, 45f));
-        } else if (isInWater()) {
-            setXRot(getXRot() * 0.9f);
-            setZRot(getRoll() * 0.9f);
-        }
+    public void terrainCompact(float width, float length) {
+        VehicleMotionUtils.terrainCompact(this, width, length);
     }
 
-    //用于履带的地形适应
-    public float[] terrainCompactTrackValue(float w, float l) {
-        Matrix4f transform = this.getWheelsTransform(1);
-
-        // 左前
-        Vector4f positionLF = transformPosition(transform, w / 2, 0, l / 2);
-        // 右前
-        Vector4f positionRF = transformPosition(transform, -w / 2, 0, l / 2);
-        // 左后
-        Vector4f positionLB = transformPosition(transform, w / 2, 0, -l / 2);
-        // 右后
-        Vector4f positionRB = transformPosition(transform, -w / 2, 0, -l / 2);
-
-        Vec3 p1 = new Vec3(positionLF.x, positionLF.y, positionLF.z);
-        Vec3 p2 = new Vec3(positionRF.x, positionRF.y, positionRF.z);
-        Vec3 p3 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
-        Vec3 p4 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
-
-        // 确定点位是否在墙里来调整点位高度
-        float p1y = (float) this.traceBlockY(p1, 3);
-        float p2y = (float) this.traceBlockY(p2, 3);
-        float p3y = (float) this.traceBlockY(p3, 3);
-        float p4y = (float) this.traceBlockY(p4, 3);
-
-        p1 = new Vec3(positionLF.x, p1y, positionLF.z);
-        p2 = new Vec3(positionRF.x, p2y, positionRF.z);
-        p3 = new Vec3(positionLB.x, p3y, positionLB.z);
-        p4 = new Vec3(positionRB.x, p4y, positionRB.z);
-
-        Vec3 v0 = p3.vectorTo(p1);
-        Vec3 v1 = p4.vectorTo(p2);
-        Vec3 v2 = p1.vectorTo(p2);
-        Vec3 v3 = p3.vectorTo(p4);
-
-        double x1 = VehicleVecUtils.getXRotFromVector(v0);
-        double x2 = VehicleVecUtils.getXRotFromVector(v1);
-
-        double z1 = VehicleVecUtils.getXRotFromVector(v2);
-        double z2 = VehicleVecUtils.getXRotFromVector(v3);
-
-        float x = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
-        float z = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
-
-        return new float[]{x, z};
+    public float[] terrainCompactTrack(float width, float length) {
+        return VehicleMotionUtils.terrainCompactTrack(this, width, length);
     }
 
-    public Matrix4f getWheelsTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        return transform;
+    public Matrix4f getWheelsTransform(float partialTicks) {
+        return VehicleMotionUtils.getWheelsTransform(this, partialTicks);
     }
 
     public double traceBlockY(Vec3 pos, double maxLength) {
-        var res = this.level().clip(new ClipContext(pos, pos.add(0, -maxLength, 0),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-
-        double targetY;
-
-        BlockState state = level().getBlockState(BlockPos.containing(pos));
-        VoxelShape shape = state.getCollisionShape(level(), BlockPos.containing(pos));
-        if (!shape.isEmpty()) {
-            targetY = pos.y + shape.max(Direction.Axis.Y);
-        } else if (res.getType() == HitResult.Type.BLOCK && this.level().noCollision(new AABB(pos, pos))) {
-            targetY = res.getLocation().y;
-        } else {
-            targetY = pos.y - maxLength;
-        }
-
-        double diffY = targetY - pos.y;
-        return pos.y + 0.5f * diffY;
+        return VehicleMotionUtils.traceBlockYPos(this, pos, maxLength);
     }
 
     public void moveOnDragonTeeth() {
@@ -3424,6 +3305,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleMotionUtils.collideBlocks(this);
     }
 
+    // TODO 换成碰撞等级数据
     public boolean canCollideHardBlock() {
         return false;
     }
@@ -3475,25 +3357,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void bounceHorizontal(Direction direction) {
-        switch (direction.getAxis()) {
-            case X:
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.99, 0.99));
-                break;
-            case Z:
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.8));
-                break;
-        }
+        VehicleMotionUtils.bounceHorizontal(this, direction);
     }
 
     public void bounceVertical(Direction direction) {
-        if (!this.level().isClientSide) {
-            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
-        }
-        collisionCoolDown = 4;
-        crash = true;
-        if (direction.getAxis() == Direction.Axis.Y) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.9, -0.8, 0.9));
-        }
+        VehicleMotionUtils.bounceVertical(this, direction);
     }
 
     public void preventStacking() {
