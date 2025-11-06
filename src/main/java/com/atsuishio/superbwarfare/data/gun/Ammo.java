@@ -2,19 +2,22 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
 public enum Ammo {
-    HANDGUN(ChatFormatting.GREEN),
-    RIFLE(ChatFormatting.AQUA),
-    SHOTGUN(ChatFormatting.RED),
-    SNIPER(ChatFormatting.GOLD),
-    HEAVY(ChatFormatting.LIGHT_PURPLE);
+    HANDGUN(ChatFormatting.GREEN, ModItems.HANDGUN_AMMO::get),
+    RIFLE(ChatFormatting.AQUA, ModItems.RIFLE_AMMO::get),
+    SHOTGUN(ChatFormatting.RED, ModItems.SHOTGUN_AMMO::get),
+    SNIPER(ChatFormatting.GOLD, ModItems.SNIPER_AMMO::get),
+    HEAVY(ChatFormatting.LIGHT_PURPLE, ModItems.HEAVY_AMMO::get);
 
     /**
      * 翻译字段名称，如 item.superbwarfare.ammo.rifle
@@ -34,10 +37,16 @@ public enum Ammo {
      */
     public final String displayName;
 
+    /**
+     * 该类型弹药默认的Item
+     */
+    public final Supplier<Item> defaultItemSupplier;
+
     public final ChatFormatting color;
 
-    Ammo(ChatFormatting color) {
+    Ammo(ChatFormatting color, Supplier<Item> defaultItemSupplier) {
         this.color = color;
+        this.defaultItemSupplier = defaultItemSupplier;
 
         var name = name().toLowerCase(Locale.ROOT);
         this.name = name;
@@ -59,6 +68,14 @@ public enum Ammo {
 
         this.displayName = builder + " Ammo";
         this.serializationName = builder + "Ammo";
+    }
+
+    public ItemStack getItemStack() {
+        return getItemStack(1);
+    }
+
+    public ItemStack getItemStack(int count) {
+        return new ItemStack(defaultItemSupplier.get(), count);
     }
 
     public static Ammo getType(String name) {

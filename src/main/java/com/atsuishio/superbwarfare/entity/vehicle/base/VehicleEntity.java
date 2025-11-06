@@ -112,8 +112,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -254,24 +254,48 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getGunDataMap().get(name);
     }
 
-    public void modifyGunData(int seatIndex, @NotNull Consumer<GunData> consumer) {
-        if (seatIndex < 0) return;
+    public @Nullable String getGunName(int seatIndex) {
+        if (seatIndex < 0) return null;
         var seat = getSeat(seatIndex);
-        if (seat == null) return;
+        if (seat == null) return null;
 
         var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
-        if (seatIndex >= selectedWeapon.size()) return;
+        if (seatIndex >= selectedWeapon.size()) return null;
 
         var weaponIndex = selectedWeapon.getInt(seatIndex);
-        if (weaponIndex < 0) return;
+        if (weaponIndex < 0) return null;
 
         var weapons = seat.weapons();
-        if (weaponIndex >= weapons.size()) return;
+        if (weaponIndex >= weapons.size()) return null;
 
-        modifyGunData(weapons.get(weaponIndex), consumer);
+        return getGunName(seatIndex, weaponIndex);
     }
 
-    public void modifyGunData(String name, @NotNull Consumer<GunData> consumer) {
+    public @Nullable String getGunName(int seatIndex, int weaponIndex) {
+        if (seatIndex < 0) return null;
+        var seat = getSeat(seatIndex);
+        if (seat == null) return null;
+
+        var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
+        if (seatIndex >= selectedWeapon.size()) return null;
+
+        var weapons = seat.weapons();
+        if (weaponIndex >= weapons.size()) return null;
+
+        return weapons.get(weaponIndex);
+    }
+
+    public void modifyGunData(int seatIndex, int weaponIndex, @NotNull Consumer<GunData> consumer) {
+        modifyGunData(getGunName(seatIndex, weaponIndex), consumer);
+    }
+
+    public void modifyGunData(int seatIndex, @NotNull Consumer<GunData> consumer) {
+        modifyGunData(getGunName(seatIndex), consumer);
+    }
+
+    public void modifyGunData(@Nullable String name, @NotNull Consumer<GunData> consumer) {
+        if (name == null) return;
+
         var map = getGunDataMap();
         var data = getGunData(name);
         if (data == null) return;
@@ -1726,13 +1750,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
 
-        var newMap = new HashMap<String, GunData>();
-        for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
-            var newData = kv.getValue().copy();
-            newData.tick(this, true);
-            newMap.put(kv.getKey(), newData);
+        // 枪数据处理
+        if (!this.level().isClientSide) {
+            var newMap = new HashMap<String, GunData>();
+            var selectedWeapons = new HashSet<String>();
+            for (int i = 0; i < computed().seats().size(); i++) {
+                var weapon = getGunName(i);
+                if (weapon != null) {
+                    selectedWeapons.add(weapon);
+                }
+            }
+
+            for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
+                var newData = kv.getValue().copy();
+                newData.tick(this, selectedWeapons.contains(kv.getKey()));
+                newMap.put(kv.getKey(), newData);
+            }
+            entityData.set(GUN_DATA_MAP, newMap);
         }
-        entityData.set(GUN_DATA_MAP, newMap);
 
         this.wasEngineRunning = this.engineRunning();
         this.wasHornWorking = this.hornWorking();

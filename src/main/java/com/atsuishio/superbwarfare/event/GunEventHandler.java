@@ -126,8 +126,8 @@ public class GunEventHandler {
         }
     }
 
-    public static void autoReload(@Nullable Entity shooter, GunData data) {
-        if (data.get(GunProp.AUTO_RELOAD) && !data.hasEnoughAmmoToShoot(shooter)) {
+    public static void autoReload(@Nullable Entity shooter, GunData data, boolean inMainHand) {
+        if (inMainHand && data.get(GunProp.AUTO_RELOAD) && !data.hasEnoughAmmoToShoot(shooter)) {
             tryStartReload(shooter, data);
         }
     }
@@ -220,7 +220,7 @@ public class GunEventHandler {
 
     public static void gunTick(@Nullable Entity shooter, @NotNull GunData data, boolean inMainHand) {
         init(shooter, data);
-        autoReload(shooter, data);
+        autoReload(shooter, data, inMainHand);
         tickPerk(shooter, data);
         handleCooldown(shooter, data);
         redrawExtraAmmo(shooter, data);
