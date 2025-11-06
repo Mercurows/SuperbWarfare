@@ -107,6 +107,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static boolean wasRenderingWeapons = false;
     private static int oldWeaponIndex = 0;
     private static int oldRenderWeaponIndex = 0;
+    public static float lerpRecoil;
 
 
     @Override
@@ -196,6 +197,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
         Vec3 viewVec = new Vec3(camera.getLookVector());
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         assert player != null;
 
@@ -209,18 +211,17 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
             poseStack.pushPose();
 
-            poseStack.translate(0, 0 - 0.3 * ClientEventHandler.shakeTime + 3 * ClientEventHandler.cameraRoll, 0);
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll), screenWidth / 2f, screenHeight / 2f, 0);
-            poseStack.translate(0.2 * ClientEventHandler.shakeTime + 5 * ClientEventHandler.cameraRoll, 0 - 0.3 * ClientEventHandler.shakeTime + 5 * ClientEventHandler.cameraRoll, 0);
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.5f * ClientEventHandler.cameraRoll), screenWidth / 2f, screenHeight / 2f, 0);
+            float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
+            lerpRecoil = Mth.lerp(0.3f * partialTick, lerpRecoil, recoil * (float) (2 * (Math.random() - 0.5f)));
+            poseStack.translate(lerpRecoil * 6, recoil * -3, 0);
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
+
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
-
-            float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
 
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 int addW = (screenWidth / screenHeight) * 48;

@@ -126,8 +126,9 @@
       "RPM": 250,
       "Velocity": 20,
       "Damage": 55,
-      "HeatPerShoot": 0.5,
-      "RecoilTime": 40,
+      "HeatPerShoot": 8,
+      "NaturalCooldown": 1,
+      "RecoilTime": 30,
       "RecoilForce": 0.2,
       "Spread": 0.5,
       "Crosshair": "@VehicleRuApc",
@@ -141,7 +142,7 @@
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,
-      "AmmoType": "Infinity",
+      "AmmoType": "superbwarfare:small_shell",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
       "ShootPos": {
         "Transform": "Barrel",
@@ -156,16 +157,17 @@
     "MainMachineGun": {
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
-      "HeatPerShoot": 0.5,
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "CrosshairColor": "0xFFC700",
-      "AmmoType": "Infinity",
+      "AmmoType": "@RifleAmmo",
       "Projectile": "superbwarfare:projectile",
       "RPM": 600,
       "Damage": 9.5,
       "BypassesArmor": 0.3,
       "Velocity": 30,
-      "RecoilTime": 0,
-      "RecoilForce": 0,
+      "RecoilTime": 20,
+      "RecoilForce": 0.08,
       "Spread": 0.5,
       "ShootPos": {
         "Transform": "Barrel",
@@ -190,14 +192,14 @@
       "HeatPerShoot": 0.5,
       "Spread": 0.5,
       "CrosshairColor": "0xFFC700",
-      "Name": "superbwarfare.bmp_2.cannon",
-      "AmmoType": "Infinity",
+      "Name": "superbwarfare.bmp_2.missile",
+      "AmmoType": "superbwarfare:wire_guide_missile",
       "Projectile": "superbwarfare:wg_missile",
       "RPM": 10,
       "Damage": 700,
       "Velocity": 6,
-      "RecoilTime": 0,
-      "RecoilForce": 0,
+      "RecoilTime": 18,
+      "RecoilForce": 0.05,
       "ShootPos": {
         "Transform": "Turret",
         "Positions": [[0, 1.24375, -0.3234]],
@@ -229,6 +231,8 @@
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
       "Name": "",
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
         "Fire3P": "superbwarfare:m_60_fire_3p",
@@ -236,7 +240,7 @@
         "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
       },
       "SoundRadius": 12,
-      "AmmoType": "Infinity",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[1.803125, 1.9765625, -0.8125]],
@@ -256,6 +260,8 @@
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
       "Name": "",
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
         "Fire3P": "superbwarfare:m_60_fire_3p",
@@ -263,7 +269,7 @@
         "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
       },
       "SoundRadius": 12,
-      "AmmoType": "Infinity",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[-1.803125, 1.9765625, -0.8125]],
@@ -283,6 +289,8 @@
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
       "Name": "",
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
         "Fire3P": "superbwarfare:m_60_fire_3p",
@@ -290,7 +298,7 @@
         "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
       },
       "SoundRadius": 12,
-      "AmmoType": "Infinity",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[1.815625, 1.9765625, -0.8125]],
@@ -310,6 +318,8 @@
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
       "Name": "",
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
         "Fire3P": "superbwarfare:m_60_fire_3p",
@@ -317,7 +327,7 @@
         "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
       },
       "SoundRadius": 12,
-      "AmmoType": "Infinity",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[-1.815625, 1.9765625, -0.8125]],
@@ -337,6 +347,8 @@
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
       "Name": "",
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
         "Fire3P": "superbwarfare:m_60_fire_3p",
@@ -344,7 +356,7 @@
         "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
       },
       "SoundRadius": 12,
-      "AmmoType": "Infinity",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[0.6875, 1.6015625, -4.1]],
@@ -364,6 +376,8 @@
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
       "Name": "",
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
         "Fire3P": "superbwarfare:m_60_fire_3p",
@@ -371,7 +385,7 @@
         "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
       },
       "SoundRadius": 12,
-      "AmmoType": "Infinity",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[-1.50625, 1.9765625, -3.0625]],

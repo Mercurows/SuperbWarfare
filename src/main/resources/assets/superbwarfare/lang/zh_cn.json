@@ -742,6 +742,9 @@
   "info.superbwarfare.truck": "泥头车是一种能运载大量货物的民用运输载具",
   "superbwarfare.lav_150.cannon": "20MM CANNON %1$s",
   "superbwarfare.lav_150.gun": "7.62MM COAX %1$s",
+  "superbwarfare.bmp_2.cannon": "30MM 2A42 %1$s",
+  "superbwarfare.bmp_2.gun": "7.62MM COAX %1$s",
+  "superbwarfare.bmp_2.missile": "9M113 %1$s",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

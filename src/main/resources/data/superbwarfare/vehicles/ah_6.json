@@ -54,7 +54,8 @@
       "Damage": 45,
       "ExplosionDamage": 12,
       "ExplosionRadius": 3.5,
-      "HeatPerShoot": 0.5,
+      "HeatPerShoot": 6,
+      "NaturalCooldown": 1,
       "Spread": 0.25,
       "Name": "superbwarfare.ah_6.cannon",
       "SoundInfo": {
@@ -65,7 +66,7 @@
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 24,
-      "AmmoType": "Infinity",
+      "AmmoType": "superbwarfare:small_shell",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]],
@@ -73,7 +74,7 @@
       }
     },
     "Rocket": {
-      "AmmoType": "Infinity",
+      "AmmoType": "superbwarfare:small_rocket",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
