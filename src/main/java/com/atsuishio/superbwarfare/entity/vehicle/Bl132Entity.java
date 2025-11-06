@@ -456,15 +456,15 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public Matrix4f getBarrelTransform(float ticks) {
-        Matrix4f transformT = getVehicleFlatTransform(ticks);
+    public Matrix4f getBarrelTransform(float partialTicks) {
+        Matrix4f transformT = getVehicleFlatTransform(partialTicks);
 
         Matrix4f transform = new Matrix4f();
         Vector4f worldPosition = transformPosition(transform, 0, 2.625f, -0.39375f);
 
         transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
 
-        transformT.rotate(Axis.XP.rotationDegrees(getPitch(ticks)));
+        transformT.rotate(Axis.XP.rotationDegrees(getPitch(partialTicks)));
         return transformT;
     }
 

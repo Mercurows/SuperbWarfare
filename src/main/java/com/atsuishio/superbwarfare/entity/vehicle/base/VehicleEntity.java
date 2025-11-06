@@ -2399,7 +2399,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return gunData.get(GunProp.GRAVITY).floatValue();
     }
 
-
     /**
      * 本方法用于固定式火炮，其他载具应该使用 {@link VehicleEntity#projectileGravity(Entity)}
      *
@@ -2612,158 +2611,70 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    // From Immersive_Aircraft
-    public Matrix4f getVehicleYOffsetTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + rotateOffsetHeight(), getY() + rotateOffsetHeight()), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
-    }
-
     public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transformV = getVehicleYOffsetTransform(ticks);
+        Matrix4f transformV = this.getVehicleYOffsetTransform(ticks);
         Matrix4f transform = new Matrix4f();
         Vector4f worldPosition = transformPosition(transform, 0, -rotateOffsetHeight(), 0);
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
         return transformV;
     }
 
+    // From Immersive_Aircraft
+    public Matrix4f getVehicleYOffsetTransform(float partialTicks) {
+        return VehicleVecUtils.getVehicleYOffsetTransform(this, partialTicks);
+    }
+
     public float rotateOffsetHeight() {
         return computed().rotateOffsetHeight;
     }
 
-    public Matrix4f getVehicleFlatTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo, getY()), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        return transform;
+    public Matrix4f getVehicleFlatTransform(float partialTicks) {
+        return VehicleVecUtils.getVehicleFlatTransform(this, partialTicks);
     }
 
-    public Matrix4f getClientVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + rotateOffsetHeight(), getY() + rotateOffsetHeight()), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(ticks, yRotO, getYRot()) + freeCameraYaw)));
-        transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(ticks, xRotO, getXRot()) + freeCameraPitch)));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
+    public Matrix4f getClientVehicleTransform(float partialTicks) {
+        return VehicleVecUtils.getClientVehicleTransform(this, partialTicks);
     }
 
+    // TODO 用数据包配置以下几个position
     public Vec3 getTurretPosition() {
         return new Vec3(0, 0, 0);
-    }
-
-    public Matrix4f getTurretTransform(float ticks) {
-        Matrix4f transformV = getVehicleTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, (float) getTurretPosition().x, (float) getTurretPosition().y, (float) getTurretPosition().z);
-
-        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, turretYRotO, getTurretYRot())));
-        return transformV;
-    }
-
-    public Vec3 getTurretVector(float pPartialTicks) {
-        Matrix4f transform = getTurretTransform(pPartialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
-        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     public Vec3 getBarrelPosition() {
         return new Vec3(0, 0, 0);
     }
 
-    public Matrix4f getBarrelTransform(float ticks) {
-        Matrix4f transformT = getTurretTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, (float) getBarrelPosition().x, (float) getBarrelPosition().y, (float) getBarrelPosition().z);
-
-        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        float a = getTurretYaw(ticks);
-
-        float r = (Mth.abs(a) - 90f) / 90f;
-
-        float r2;
-
-        if (Mth.abs(a) <= 90f) {
-            r2 = a / 90f;
-        } else {
-            if (a < 0) {
-                r2 = -(180f + a) / 90f;
-            } else {
-                r2 = (180f - a) / 90f;
-            }
-        }
-
-        float x = Mth.lerp(ticks, turretXRotO, getTurretXRot());
-        float xV = Mth.lerp(ticks, xRotO, getXRot());
-        float z = Mth.lerp(ticks, prevRoll, getRoll());
-
-        transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
-        return transformT;
-    }
-
     public Vec3 getGunnerPosition() {
         return new Vec3(0, 0, 0);
-    }
-
-    public Matrix4f getGunTransform(float ticks) {
-        Matrix4f transformT = getTurretTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, (float) getGunnerPosition().x, (float) getGunnerPosition().y, (float) getGunnerPosition().z);
-
-        transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transformT.rotate(Axis.YP.rotationDegrees(Mth.lerp(ticks, gunYRotO, getGunYRot()) - Mth.lerp(ticks, turretYRotO, getTurretYRot())));
-        return transformT;
     }
 
     public Vec3 getGunnerBarrelPosition() {
         return new Vec3(0, 0, 0);
     }
 
-    public Matrix4f getGunnerBarrelTransform(float ticks) {
-        Matrix4f transformG = getGunTransform(ticks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, (float) getGunnerBarrelPosition().x, (float) getGunnerBarrelPosition().y, (float) getGunnerBarrelPosition().z);
-
-        transformG.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        float a = getTurretYaw(ticks);
-
-        float r = (Mth.abs(a) - 90f) / 90f;
-
-        float r2;
-
-        if (Mth.abs(a) <= 90f) {
-            r2 = a / 90f;
-        } else {
-            if (a < 0) {
-                r2 = -(180f + a) / 90f;
-            } else {
-                r2 = (180f - a) / 90f;
-            }
-        }
-
-        float x = Mth.lerp(ticks, gunXRotO, getGunXRot());
-        float xV = Mth.lerp(ticks, xRotO, getXRot());
-        float z = Mth.lerp(ticks, prevRoll, getRoll());
-
-        transformG.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z));
-        return transformG;
+    public Matrix4f getTurretTransform(float partialTicks) {
+        return VehicleVecUtils.getTurretTransform(this, partialTicks);
     }
 
-    public Vec3 getGunnerVector(float pPartialTicks) {
-        Matrix4f transform = getGunnerBarrelTransform(pPartialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
-        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
+    public Vec3 getTurretVector(float pPartialTicks) {
+        return VehicleVecUtils.getTurretVector(this, pPartialTicks);
+    }
+
+    public Matrix4f getBarrelTransform(float partialTicks) {
+        return VehicleVecUtils.getBarrelTransform(this, partialTicks);
+    }
+
+    public Matrix4f getGunTransform(float partialTicks) {
+        return VehicleVecUtils.getGunTransform(this, partialTicks);
+    }
+
+    public Matrix4f getGunnerBarrelTransform(float partialTicks) {
+        return VehicleVecUtils.getGunnerBarrelTransform(this, partialTicks);
+    }
+
+    public Vec3 getGunnerVector(float partialTicks) {
+        return VehicleVecUtils.getGunnerVector(this, partialTicks);
     }
 
     public Vector4f transformPosition(Matrix4f transform, float x, float y, float z) {
