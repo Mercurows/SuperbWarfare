@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +24,7 @@ public interface AutoAimable {
             var condition = target.distanceToSqr(attacker) > minRange * minRange
                     && target.distanceToSqr(attacker) <= seekRange * seekRange
                     && canAim(pos, target, minAngle, maxAngle)
-                    && VehicleHelper.getSubmergedHeight(target) <= target.getBbHeight()
+                    && VehicleVecUtils.getSubmergedHeight(target) <= target.getBbHeight()
                     && checkNoClip(attacker, target, pos)
                     && !(target instanceof Player player && (player.isSpectator() || player.isCreative()))
                     && ((target instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || isThreateningEntity(attacker, target, size, pos) || basicEnemyFilter(target))
@@ -58,7 +59,7 @@ public interface AutoAimable {
     static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {
         Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
         Vec3 toVec = pos.vectorTo(targetPos).normalize();
-        double targetAngle = VehicleHelper.getXRotFromVector(toVec);
+        double targetAngle = VehicleVecUtils.getXRotFromVector(toVec);
         return minAngle < targetAngle && targetAngle < maxAngle;
     }
 }

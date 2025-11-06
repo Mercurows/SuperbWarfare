@@ -25,6 +25,9 @@ import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -1259,7 +1262,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     entityData.set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
                 }
 
-                float angle = (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(getViewVector(1)) + VehicleHelper.getYRotFromVector(getShootVec(living, 1)));
+                float angle = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(getViewVector(1)) + VehicleVecUtils.getYRotFromVector(getShootVec(living, 1)));
 
                 Vec3 vo = new Vec3(0, 0, 1);
                 double f = entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / gunData.get(GunProp.RECOIL_TIME));
@@ -1267,7 +1270,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 Vec3 v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(gunData.get(GunProp.RECOIL_FORCE));
                 Vec3 v3 = v1.add(v2);
 
-                entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(vo) + VehicleHelper.getYRotFromVector(v3)));
+                entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(vo) + VehicleVecUtils.getYRotFromVector(v3)));
                 entityData.set(CANNON_RECOIL_FORCE, (float) v3.length());
             }
 
@@ -1474,13 +1477,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             if (this.getFirstPassenger() == null) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
-                VehicleHelper.setDriverAngle(this, player);
+                VehicleVecUtils.setDriverAngle(this, player);
                 player.setSprinting(false);
                 return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
             } else if (!(this.getFirstPassenger() instanceof Player)) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
                 this.getFirstPassenger().stopRiding();
-                VehicleHelper.setDriverAngle(this, player);
+                VehicleVecUtils.setDriverAngle(this, player);
                 player.setSprinting(false);
                 return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
             }
@@ -1495,7 +1498,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Deprecated(forRemoval = true)
     public void setDriverAngle(Player player) {
-        VehicleHelper.setDriverAngle(this, player);
+        VehicleVecUtils.setDriverAngle(this, player);
     }
 
     @Override
@@ -1562,7 +1565,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public float getSourceAngle(DamageSource source, float multiplier) {
-        return VehicleHelper.getDamageSourceAngle(this, source, multiplier);
+        return VehicleVecUtils.getDamageSourceAngle(this, source, multiplier);
     }
 
     public void heal(float pHealAmount) {
@@ -1860,7 +1863,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // 更新前一时刻的速度
         previousVelocity = currentVelocity;
 
-        double direct = (90 - VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+        double direct = (90 - VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
         setVelocity(Mth.lerp(0.4, getVelocity(), getDeltaMovement().horizontalDistance() * direct * 20));
 
         float deltaT = java.lang.Math.abs(getTurretYRot() - turretYRotO);
@@ -2146,8 +2149,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void turretAutoAimFormVector(Vec3 shootVec) {
         float ySpeed = turretYSpeed();
         float xSpeed = turretXSpeed();
-        float diffY = (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(shootVec) + VehicleHelper.getYRotFromVector(getBarrelVector(1)));
-        float diffX = (float) Mth.wrapDegrees(-VehicleHelper.getXRotFromVector(shootVec) + VehicleHelper.getXRotFromVector(getBarrelVector(1)));
+        float diffY = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(getBarrelVector(1)));
+        float diffX = (float) Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(getBarrelVector(1)));
 
         this.turretTurnSound(diffX, diffY, 0.95f);
 
@@ -2231,19 +2234,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void passengerPitch(Entity entity, float minPitch, float maxPitch, float passengerRot) {
-        VehicleHelper.setPassengerPitch(this, entity, minPitch, maxPitch, passengerRot);
+        VehicleVecUtils.setPassengerPitch(this, entity, minPitch, maxPitch, passengerRot);
     }
 
     public void passengerYaw(Entity entity, float minYaw, float maxYaw, float passengerRot) {
-        VehicleHelper.setPassengerYaw(this, entity, minYaw, maxYaw, passengerRot);
+        VehicleVecUtils.setPassengerYaw(this, entity, minYaw, maxYaw, passengerRot);
     }
 
     public void passengerPitchOnTurret(Entity entity, float turretMinPitch, float turretMaxPitch) {
-        VehicleHelper.setPassengerPitchOnTurret(this, entity, turretMinPitch, turretMaxPitch);
+        VehicleVecUtils.setPassengerPitchOnTurret(this, entity, turretMinPitch, turretMaxPitch);
     }
 
     public void passengerYawOnTurret(Entity entity, float minYaw, float maxYaw, float passengerRot, boolean rotateWithTurret) {
-        VehicleHelper.setPassengerYawOnTurret(this, entity, minYaw, maxYaw, passengerRot, rotateWithTurret);
+        VehicleVecUtils.setPassengerYawOnTurret(this, entity, minYaw, maxYaw, passengerRot, rotateWithTurret);
     }
 
     @Override
@@ -2376,11 +2379,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 getShootVec(Entity entity, float partialTicks) {
-        return VehicleHelper.getShootVec(this, entity, partialTicks);
+        return VehicleVecUtils.getShootVec(this, entity, partialTicks);
     }
 
     public Vec3 getViewVec(Entity entity, float partialTicks) {
-        return VehicleHelper.getViewVec(this, entity, partialTicks);
+        return VehicleVecUtils.getViewVec(this, entity, partialTicks);
     }
 
     /**
@@ -2460,8 +2463,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void passengerWeaponAutoAimFormVector(Vec3 shootVec) {
         float ySpeed = passengerWeaponYSpeed();
         float xSpeed = passengerWeaponXSpeed();
-        float diffY = (float) Mth.wrapDegrees(-VehicleHelper.getYRotFromVector(shootVec) + VehicleHelper.getYRotFromVector(getGunnerVector(1)));
-        float diffX = (float) Mth.wrapDegrees(-VehicleHelper.getXRotFromVector(shootVec) + VehicleHelper.getXRotFromVector(getGunnerVector(1)));
+        float diffY = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(getGunnerVector(1)));
+        float diffX = (float) Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(getGunnerVector(1)));
 
         this.turretTurnSound(diffX, diffY, 0.95f);
 
@@ -2961,11 +2964,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 getCameraPos(Entity entity, float partialTicks) {
-        return VehicleHelper.getCameraPos(this, entity, partialTicks);
+        return VehicleVecUtils.getCameraPos(this, entity, partialTicks);
     }
 
     public Vec3 cameraDirection(Entity entity, float partialTicks) {
-        return VehicleHelper.getCameraDirection(this, entity, partialTicks);
+        return VehicleVecUtils.getCameraDirection(this, entity, partialTicks);
     }
 
     public Vec3 zoomPos(Entity entity, float ticks) {
@@ -2982,10 +2985,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     return getCameraPos(entity, ticks);
                 }
             } else {
-                return VehicleHelper.entityEyePos(entity, ticks);
+                return VehicleVecUtils.entityEyePos(entity, ticks);
             }
         }
-        return VehicleHelper.entityEyePos(entity, ticks);
+        return VehicleVecUtils.entityEyePos(entity, ticks);
     }
 
     public Vec3 zoomDirection(Entity entity, float ticks) {
@@ -3209,7 +3212,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
                 }
                 if (zoom || isFirstPerson) {
-                    return new Vec2((float) -VehicleHelper.getYRotFromVector(cameraDirection(player, partialTicks)), (float) -VehicleHelper.getXRotFromVector(cameraDirection(player, partialTicks)));
+                    return new Vec2((float) -VehicleVecUtils.getYRotFromVector(cameraDirection(player, partialTicks)), (float) -VehicleVecUtils.getXRotFromVector(cameraDirection(player, partialTicks)));
                 }
             } else {
                 return null;
@@ -3324,16 +3327,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void trackEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
         if (buoyancy != 0) {
-            double fluidFloat = buoyancy * VehicleHelper.getSubmergedHeight(this);
+            double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
 
         if (this.onGround()) {
-            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
         } else if (this.isInWater()) {
-            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
         } else {
@@ -3445,16 +3448,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void wheelEngine(double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
         if (buoyancy != 0) {
-            double fluidFloat = buoyancy * VehicleHelper.getSubmergedHeight(this);
+            double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this);
             this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
         }
 
         if (this.onGround()) {
-            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.05 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f0, 0.99, f0));
         } else if (this.isInWater()) {
-            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
+            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).normalize().scale(0.04 * getDeltaMovement().dot(getViewVector(1)))));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f1, 0.85, f1));
         } else {
@@ -3462,8 +3465,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (this.level() instanceof ServerLevel serverLevel && this.isInWater() && this.getDeltaMovement().length() > 0.1) {
-            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + VehicleHelper.getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
-            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + VehicleHelper.getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.CLOUD, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + VehicleVecUtils.getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 4 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + VehicleVecUtils.getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
         Entity passenger0 = this.getFirstPassenger();
@@ -3567,12 +3570,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
         } else {
             setZRot(getRoll() * (backInputDown() ? 0.9f : 0.99f));
-            float f = (float) Mth.clamp(0.95f - 0.015 * getDeltaMovement().length() + 0.02f * Mth.abs(90 - (float) VehicleHelper.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
+            float f = (float) Mth.clamp(0.95f - 0.015 * getDeltaMovement().length() + 0.02f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
             this.setDeltaMovement(this.getDeltaMovement().add(this.getViewVector(1).scale((this.getXRot() < 0 ? -0.035 : (this.getXRot() > 0 ? 0.035 : 0)) * this.getDeltaMovement().length())));
             this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.95, f));
         }
 
-        if (this.isInWater() && this.tickCount % 4 == 0 && VehicleHelper.getSubmergedHeight(this) > 0.5 * getBbHeight()) {
+        if (this.isInWater() && this.tickCount % 4 == 0 && VehicleVecUtils.getSubmergedHeight(this) > 0.5 * getBbHeight()) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6, 0.6, 0.6));
             this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), 6 + (float) (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
         }
@@ -3830,10 +3833,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             // 左后-右后
             Vec3 v3 = p3.vectorTo(p4);
 
-            double x1 = VehicleHelper.getXRotFromVector(v0);
-            double x2 = VehicleHelper.getXRotFromVector(v1);
-            double z1 = VehicleHelper.getXRotFromVector(v2);
-            double z2 = VehicleHelper.getXRotFromVector(v3);
+            double x1 = VehicleVecUtils.getXRotFromVector(v0);
+            double x2 = VehicleVecUtils.getXRotFromVector(v1);
+            double z1 = VehicleVecUtils.getXRotFromVector(v2);
+            double z2 = VehicleVecUtils.getXRotFromVector(v3);
 
             float diffX = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
             setXRot(Mth.clamp(getXRot() + 0.15f * diffX, -45f, 45f));
@@ -3880,11 +3883,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         Vec3 v2 = p1.vectorTo(p2);
         Vec3 v3 = p3.vectorTo(p4);
 
-        double x1 = VehicleHelper.getXRotFromVector(v0);
-        double x2 = VehicleHelper.getXRotFromVector(v1);
+        double x1 = VehicleVecUtils.getXRotFromVector(v0);
+        double x2 = VehicleVecUtils.getXRotFromVector(v1);
 
-        double z1 = VehicleHelper.getXRotFromVector(v2);
-        double z2 = VehicleHelper.getXRotFromVector(v3);
+        double z1 = VehicleVecUtils.getXRotFromVector(v2);
+        double z2 = VehicleVecUtils.getXRotFromVector(v3);
 
         float x = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(x1 + x2)) - getXRot()));
         float z = Math.clamp(-15f, 15f, Mth.wrapDegrees((float) (-(z1 + z2)) - getRoll()));
@@ -3920,11 +3923,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void moveOnDragonTeeth() {
-        VehicleHelper.handleVehicleMoveOnDragonTeeth(this);
+        VehicleMotionUtils.handleVehicleMoveOnDragonTeeth(this);
     }
 
     public void collideBlocks() {
-        VehicleHelper.collideBlocks(this);
+        VehicleMotionUtils.collideBlocks(this);
     }
 
     public boolean canCollideHardBlock() {
@@ -4000,7 +4003,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void preventStacking() {
-        VehicleHelper.preventStacking(this);
+        VehicleMotionUtils.preventStacking(this);
     }
 
     public void pushNew(double pX, double pY, double pZ) {
@@ -4008,7 +4011,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void supportEntities() {
-        VehicleHelper.supportEntities(this);
+        VehicleMotionUtils.supportEntities(this);
     }
 
     public RandomSource getRandom() {
@@ -4016,7 +4019,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void crushEntities() {
-        VehicleHelper.crushEntities(this);
+        VehicleMotionUtils.crushEntities(this);
     }
 
     public Vector3f getForwardDirection() {
@@ -4235,10 +4238,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @author YWZJ Ranpoes
      */
     public void support(Entity entity) {
-        VehicleHelper.support(this, entity);
+        VehicleMotionUtils.support(this, entity);
     }
 
     public boolean isAmphibious() {
-        return VehicleHelper.isAmphibious(this);
+        return VehicleMiscUtils.isAmphibious(this);
     }
 }

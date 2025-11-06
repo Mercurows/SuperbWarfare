@@ -6,9 +6,9 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -490,7 +490,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         if (zoom || isFirstPerson) {
             if (this.getSeatIndex(player) == 0) {
-                return new Vec2((float) -VehicleHelper.getYRotFromVector(this.getBarrelVector(partialTicks)), (float) -VehicleHelper.getXRotFromVector(this.getBarrelVector(partialTicks)));
+                return new Vec2((float) -VehicleVecUtils.getYRotFromVector(this.getBarrelVector(partialTicks)), (float) -VehicleVecUtils.getXRotFromVector(this.getBarrelVector(partialTicks)));
             }
         }
         return super.getCameraRotation(partialTicks, player, false, false);
