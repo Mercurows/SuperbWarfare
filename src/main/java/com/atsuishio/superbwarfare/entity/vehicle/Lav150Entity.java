@@ -12,11 +12,9 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
@@ -91,12 +89,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.terrainCompact(2.7f, 3.61f);
         inertiaRotate(1.25f);
         this.refreshDimensions();
-
-        // test
-
-        if (getFirstPassenger() instanceof Player player) {
-            player.displayClientMessage(Component.literal(getShootAnimationTimer(0, 0) + " " + getShootAnimationTimer(0, 1)), true);
-        }
     }
 
     // 炮塔最大水平旋转速度
@@ -162,7 +154,7 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire2"));
         }
 
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav_150.idle"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav_150.idle2"));
     }
 
     @Override

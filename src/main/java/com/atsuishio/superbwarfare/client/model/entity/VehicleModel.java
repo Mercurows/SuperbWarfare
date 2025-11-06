@@ -230,11 +230,6 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
                     );
                 };
             }
-
-            // flare
-            case "flare" -> {
-                return (bone, vehicle, state) -> bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
-            }
         }
 
         // track(Mov|Rot)[RL]\d+

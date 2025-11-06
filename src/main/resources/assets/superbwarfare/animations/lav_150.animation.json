@@ -6,7 +6,12 @@
 			"bones": {
 				"flare": {
 					"scale": 0
-				},
+				}
+			}
+		},
+		"animation.lav_150.idle2": {
+			"animation_length": 0.25,
+			"bones": {
 				"flare2": {
 					"scale": 0
 				}
@@ -40,18 +45,12 @@
 						"0.0917": [0, 0, 0],
 						"0.15": [0, 0, 0]
 					}
-				},
-				"flare2": {
-					"scale": 0
 				}
 			}
 		},
 		"animation.lav_150.fire2": {
 			"animation_length": 0.4,
 			"bones": {
-				"flare": {
-					"scale": 0
-				},
 				"flare2": {
 					"scale": {
 						"0.0": [0, 0, 0],
