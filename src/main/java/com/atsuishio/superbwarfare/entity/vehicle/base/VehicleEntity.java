@@ -40,8 +40,6 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -509,22 +507,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void setSprintInputDown(boolean set) {
         entityData.set(SPRINT_INPUT_DOWN, set);
     }
-
-//    @Override
-//    public void playerTouch(Player pPlayer) {
-//        if (pPlayer.isCrouching()
-//                && !this.level().isClientSide
-//                && pPlayer.getY() < this.getY() + this.getBbHeight()
-//                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
-//        ) {
-//            double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
-//            double thisSize = this.getBbWidth() * this.getBbHeight();
-//            double f = Math.min(entitySize / thisSize, 2);
-//            double f1 = Math.min(thisSize / entitySize, 4);
-//            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.15 * f * pPlayer.getDeltaMovement().length())));
-//            pPlayer.setDeltaMovement(pPlayer.getDeltaMovement().add(new Vec3(this.position().vectorTo(pPlayer.position()).toVector3f()).scale(0.1 * f1 * pPlayer.getDeltaMovement().length())));
-//        }
-//    }
 
     public void mouseInput(double x, double y) {
         entityData.set(MOUSE_SPEED_X, (float) x);
@@ -1485,13 +1467,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             if (this.getFirstPassenger() == null) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
-                setDriverAngle(player);
+                VehicleHelper.setDriverAngle(this, player);
                 player.setSprinting(false);
                 return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
             } else if (!(this.getFirstPassenger() instanceof Player)) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
                 this.getFirstPassenger().stopRiding();
-                setDriverAngle(player);
+                VehicleHelper.setDriverAngle(this, player);
                 player.setSprinting(false);
                 return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
             }
@@ -1504,24 +1486,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return InteractionResult.PASS;
     }
 
-    /**
-     * 将有炮塔的载具驾驶员的面朝方向设置为炮塔角度
-     *
-     * @param player 载具驾驶员
-     */
+    @Deprecated(forRemoval = true)
     public void setDriverAngle(Player player) {
-        if (hasTurret()) {
-            player.xRotO = -(float) VehicleHelper.getXRotFromVector(getBarrelVector(1));
-            player.setXRot(-(float) VehicleHelper.getXRotFromVector(getBarrelVector(1)));
-            player.yRotO = -(float) VehicleHelper.getYRotFromVector(getBarrelVector(1));
-            player.setYRot(-(float) VehicleHelper.getYRotFromVector(getBarrelVector(1)));
-            player.setYHeadRot(-(float) VehicleHelper.getYRotFromVector(getBarrelVector(1)));
-        } else {
-            player.xRotO = this.getXRot();
-            player.setXRot(this.getXRot());
-            player.yRotO = this.getYRot();
-            player.setYRot(this.getYRot());
-        }
+        VehicleHelper.setDriverAngle(this, player);
     }
 
     @Override
@@ -1587,17 +1554,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return data().damageModifier();
     }
 
-    public float getSourceAngle(DamageSource source, float multiply) {
-        Entity attacker = source.getDirectEntity();
-        if (attacker == null) {
-            attacker = source.getEntity();
-        }
-
-        if (attacker != null) {
-            Vec3 toVec = new Vec3(getX(), getY() + getBbHeight() / 2, getZ()).vectorTo(attacker.position()).normalize();
-            return (float) Math.max(1f - multiply * toVec.dot(getViewVector(1)), 0.5f);
-        }
-        return 1;
+    public float getSourceAngle(DamageSource source, float multiplier) {
+        return VehicleHelper.getDamageSourceAngle(this, source, multiplier);
     }
 
     public void heal(float pHealAmount) {
@@ -1926,18 +1884,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
 
         this.move(MoverType.SELF, this.getDeltaMovement());
-        collideSoftBlock();
-        if (canCollideHardBlock()) {
-            collideHardBlock();
-        }
 
-        if (canCollideBlockBeastly()) {
-            collideBlockBeastly();
-        }
-
-        collideNormalBlock();
-
-        moveOnDragonTeeth();
+        this.collideBlocks();
+        this.moveOnDragonTeeth();
 
         if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
             for (var stack : this.getItemStacks()) {
@@ -2098,14 +2047,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void clearArrow() {
-        List<Entity> list = this.level().getEntities(this, this.getBoundingBox().inflate(0F, 0.5F, 0F));
-        if (!list.isEmpty()) {
-            for (Entity entity : list) {
-                if (entity instanceof AbstractArrow) {
-                    entity.discard();
-                }
-            }
-        }
+        List<Entity> list = this.level().getEntities(this, this.getBoundingBox().inflate(0F, 0.5F, 0F), e -> e instanceof AbstractArrow);
+        list.forEach(Entity::discard);
     }
 
     public void lowHealthWarning() {
@@ -2249,6 +2192,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    // TODO 允许数据包配置下面四个数据
+
     /**
      * @return 炮塔最大水平旋转速度
      */
@@ -2278,109 +2223,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void passengerPitch(Entity entity, float minPitch, float maxPitch, float passengerRot) {
-        if (passengerRot != 180) {
-            float a = -passengerRot;
-            float r = (Mth.abs(a) - 90f) / 90f;
-
-            float r2;
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            float min = -maxPitch - r * getXRot() - r2 * getRoll();
-            float max = -minPitch - r * getXRot() - r2 * getRoll();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-        } else {
-            float min = minPitch + getXRot();
-            float max = maxPitch + getXRot();
-
-            float f = Mth.wrapDegrees(entity.getXRot());
-            float f1 = Mth.clamp(f, min, max);
-            entity.xRotO += f1 - f;
-            entity.setXRot(entity.getXRot() + f1 - f);
-        }
+        VehicleHelper.setPassengerPitch(this, entity, minPitch, maxPitch, passengerRot);
     }
 
     public void passengerYaw(Entity entity, float minYaw, float maxYaw, float passengerRot) {
-        float f2;
-        if (passengerRot != 180) {
-            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, passengerRot + minYaw, passengerRot + maxYaw);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-        } else {
-            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot() + passengerRot);
-            float f3 = Mth.clamp(f2, minYaw, maxYaw);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-        }
-        entity.setYBodyRot(this.getYRot() + passengerRot);
+        VehicleHelper.setPassengerYaw(this, entity, minYaw, maxYaw, passengerRot);
     }
 
     public void passengerPitchOnTurret(Entity entity, float turretMinPitch, float turretMaxPitch) {
-        float a = getTurretYaw(1);
-        float r = (Mth.abs(a) - 90f) / 90f;
-
-        float r2;
-
-        if (Mth.abs(a) <= 90f) {
-            r2 = a / 90f;
-        } else {
-            if (a < 0) {
-                r2 = -(180f + a) / 90f;
-            } else {
-                r2 = (180f - a) / 90f;
-            }
-        }
-
-        float min = -turretMaxPitch - r * getXRot() - r2 * getRoll();
-        float max = -turretMinPitch - r * getXRot() - r2 * getRoll();
-
-        float f = Mth.wrapDegrees(entity.getXRot());
-        float f1 = Mth.clamp(f, min, max);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
+        VehicleHelper.setPassengerPitchOnTurret(this, entity, turretMinPitch, turretMaxPitch);
     }
 
     public void passengerYawOnTurret(Entity entity, float minYaw, float maxYaw, float passengerRot, boolean rotateWithTurret) {
-        float f2;
-        if (passengerRot != 180) {
-            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-            float f3 = Mth.clamp(f2, passengerRot + minYaw, passengerRot + maxYaw);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-        } else {
-            f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot() + 180);
-            float f3 = Mth.clamp(f2, minYaw, maxYaw);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-        }
-
-        if (rotateWithTurret) {
-            entity.setYBodyRot(getBarrelYRot(1) + passengerRot);
-        }
-
-        clampZoomYaw(entity);
-    }
-
-    public void clampZoomYaw(Entity entity) {
-        if (entity.level().isClientSide && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && mainWeaponControllerIndex() == getSeatIndex(entity)) {
-            float f2 = Mth.wrapDegrees(entity.getYRot() - this.getBarrelYRot(1));
-            float f3 = Mth.clamp(f2, -20.0F, 20.0F);
-            entity.yRotO += f3 - f2;
-            entity.setYRot(entity.getYRot() + f3 - f2);
-        }
+        VehicleHelper.setPassengerYawOnTurret(this, entity, minYaw, maxYaw, passengerRot, rotateWithTurret);
     }
 
     @Override
@@ -2512,70 +2367,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getShootVec(getNthEntity(seatIndex), ticks);
     }
 
-    public Vec3 getShootVec(Entity entity, float ticks) {
-        var data = getGunData(getSeatIndex(entity));
-        if (data != null) {
-
-            var list = data.get(GunProp.SHOOT_POS).directions;
-            var stringOrVec3 = list.get(this.currentFirePosIndex % list.size());
-
-            if (stringOrVec3.isString()) {
-                return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
-            } else {
-
-                var listP = data.get(GunProp.SHOOT_POS).positions;
-                var vec3 = listP.get(this.currentFirePosIndex % list.size());
-
-                Vector4f worldPosition = transformPosition(
-                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
-                        (float) vec3.x + (float) stringOrVec3.vec3.x,
-                        (float) vec3.y + (float) stringOrVec3.vec3.y,
-                        (float) vec3.z + (float) stringOrVec3.vec3.z);
-
-                Vector4f worldPositionO = transformPosition(
-                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
-                        (float) vec3.x,
-                        (float) vec3.y,
-                        (float) vec3.z);
-
-                Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
-                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                return startPos.vectorTo(endPos).normalize();
-            }
-        }
-        return this.getViewVector(ticks);
+    public Vec3 getShootVec(Entity entity, float partialTicks) {
+        return VehicleHelper.getShootVec(this, entity, partialTicks);
     }
 
-    public Vec3 getViewVec(Entity entity, float ticks) {
-        var data = getGunData(getSeatIndex(entity));
-        if (data != null) {
-
-            StringOrVec3 stringOrVec3 = data.get(GunProp.SHOOT_POS).viewDirection;
-
-            if (stringOrVec3 == null) {
-                return getShootVec(entity, ticks);
-            } else if (stringOrVec3.isString()) {
-                return getVectorFromString(stringOrVec3.string, ticks, getSeatIndex(entity));
-            } else {
-                var vec3 = stringOrVec3.vec3;
-                Vector4f worldPosition = transformPosition(
-                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
-                        (float) vec3.x + (float) stringOrVec3.vec3.x,
-                        (float) vec3.y + (float) stringOrVec3.vec3.y,
-                        (float) vec3.z + (float) stringOrVec3.vec3.z);
-
-                Vector4f worldPositionO = transformPosition(
-                        this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
-                        (float) vec3.x,
-                        (float) vec3.y,
-                        (float) vec3.z);
-
-                Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
-                Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-                return startPos.vectorTo(endPos).normalize();
-            }
-        }
-        return this.getViewVector(ticks);
+    public Vec3 getViewVec(Entity entity, float partialTicks) {
+        return VehicleHelper.getViewVec(this, entity, partialTicks);
     }
 
     /**
@@ -3007,8 +2804,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.x = x;
         this.y = y;
         this.z = z;
-        serverYRot = yRot;
-        serverXRot = xRot;
+        this.serverYRot = yRot;
+        this.serverXRot = xRot;
         this.interpolationSteps = 10;
     }
 
@@ -3070,6 +2867,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return new Vec3(0, 0, 0);
     }
 
+    // TODO 允许数据包配置能否弹射
     public boolean allowEjection() {
         return false;
     }
@@ -4124,107 +3922,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void moveOnDragonTeeth() {
-        AABB aabb = this.getBoundingBox();
-        AABB aabb1 = new AABB(aabb.minX, aabb.minY - 1.0E-6D, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ);
-        Optional<BlockPos> optional = this.level().findSupportingBlock(this, aabb1);
-        if (optional.isPresent()) {
-            BlockState state = level().getBlockState(optional.get());
-            if (state.is(ModBlocks.DRAGON_TEETH.get())) {
-                entityData.set(POWER, entityData.get(POWER) * 0.8f);
-                setDeltaMovement(getDeltaMovement().multiply(-0.1, 0, -0.1));
-            }
-        }
+        VehicleHelper.handleVehicleMoveOnDragonTeeth(this);
     }
 
-    public void collideSoftBlock() {
-        if (!VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get()) return;
-
-        if (this instanceof OBBEntity obbEntity) {
-            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(ModTags.Blocks.SOFT_COLLISION) && obbEntity.isInObb(pos, getDeltaMovement())) {
-                    this.level().destroyBlock(pos, true);
-                }
-            });
-        }
-        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
-        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-            BlockState blockstate = this.level().getBlockState(pos);
-            if (blockstate.is(ModTags.Blocks.SOFT_COLLISION)) {
-                this.level().destroyBlock(pos, true);
-            }
-        });
-    }
-
-    public void collideNormalBlock() {
-        if (!VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()) return;
-        if (this instanceof OBBEntity obbEntity) {
-            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                BlockState blockstate = this.level().getBlockState(pos);
-                if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION) && obbEntity.isInObb(pos, getDeltaMovement())) {
-                    this.level().destroyBlock(pos, true);
-                }
-            });
-        }
-
-        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
-        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-            BlockState blockstate = this.level().getBlockState(pos);
-            if (blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) {
-                this.level().destroyBlock(pos, true);
-            }
-        });
-
-    }
-
-    public void collideHardBlock() {
-        if (!VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()) return;
-        if (this instanceof OBBEntity obbEntity) {
-            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).inflate(5);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                BlockState blockstate = this.level().getBlockState(pos);
-
-                if (blockstate.is(ModTags.Blocks.HARD_COLLISION) && obbEntity.isInObb(pos, getDeltaMovement())) {
-                    this.level().destroyBlock(pos, true);
-                    this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
-                }
-            });
-        }
-
-        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
-        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-            BlockState blockstate = this.level().getBlockState(pos);
-            if (blockstate.is(ModTags.Blocks.HARD_COLLISION)) {
-                this.level().destroyBlock(pos, true);
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
-            }
-        });
-    }
-
-    public void collideBlockBeastly() {
-        if (!VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return;
-
-        if (this instanceof OBBEntity obbEntity) {
-            AABB aabb = getBoundingBox().move(this.getDeltaMovement()).move(0, 0.5, 0).inflate(5);
-            BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-                BlockState blockstate = this.level().getBlockState(pos);
-                float hardness = blockstate.getBlock().defaultDestroyTime();
-                if (hardness > 0 && hardness <= 4 && obbEntity.isInObb(pos, getDeltaMovement())) {
-                    this.level().destroyBlock(pos, true);
-                }
-            });
-        }
-
-        AABB aabb = getBoundingBox().inflate(0.25, 0, 0.25).move(this.getDeltaMovement()).move(0, 0.5, 0);
-        BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
-            BlockState blockstate = this.level().getBlockState(pos);
-            float hardness = blockstate.getBlock().defaultDestroyTime();
-            if (hardness > 0 && hardness <= 4) {
-                this.level().destroyBlock(pos, true);
-            }
-        });
+    public void collideBlocks() {
+        VehicleHelper.collideBlocks(this);
     }
 
     public boolean canCollideHardBlock() {
@@ -4467,7 +4169,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.flap3Rot = pFlap3Rot;
     }
 
-    // TODO 用数据包定义
     public boolean hasDecoy() {
         return computed().hasDecoy;
     }
