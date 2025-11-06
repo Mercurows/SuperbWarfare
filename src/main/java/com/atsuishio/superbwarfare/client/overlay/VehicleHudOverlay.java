@@ -202,7 +202,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         assert player != null;
 
         if (player.getVehicle() instanceof VehicleEntity vehicle
-                && vehicle.amphibiousVehicle()
+                && vehicle.isAmphibious()
                 && vehicle instanceof WeaponVehicleEntity weaponVehicle
                 && weaponVehicle.isDriver(player)
                 && !(player.getVehicle() instanceof SpeedboatEntity)

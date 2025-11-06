@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleHelper;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -279,8 +280,8 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
             canAim = false;
             component = Component.translatable("tips.superbwarfare.mortar.out_of_range");
         } else {
-            angle = (float) -getXRotFromVector(launchVector);
-            float angle2 = (float) -getXRotFromVector(launchVector2);
+            angle = (float) -VehicleHelper.getXRotFromVector(launchVector);
+            float angle2 = (float) -VehicleHelper.getXRotFromVector(launchVector2);
             if (angle < -maxPitch() || angle > -minPitch()) {
                 if (angle2 > -maxPitch() && angle2 < -minPitch()) {
                     component = Component.translatable("tips.superbwarfare.ballistics.warn2");
@@ -317,7 +318,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
         if (launchVector == null) {
             return;
         }
-        float angle = (float) -getXRotFromVector(launchVector);
+        float angle = (float) -VehicleHelper.getXRotFromVector(launchVector);
         if (angle > -maxPitch() && angle < -minPitch()) {
             entityData.set(PITCH, angle);
         }
