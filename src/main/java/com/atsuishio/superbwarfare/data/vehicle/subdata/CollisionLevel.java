@@ -1,15 +1,14 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class CollisionLevel {
 
@@ -30,22 +29,25 @@ public class CollisionLevel {
     public record Limit(float power, float motion, boolean equals) {
 
         @Override
-        public String toString() {
-            return power + " " + motion + " " + equals;
+        public @NotNull String toString() {
+            return "[" + power + ", " + motion + ", " + equals + "]";
         }
     }
 
     public static class LimitAdapter extends TypeAdapter<Limit> {
 
-        private static final Pattern PATTERN = Pattern.compile("^(?<power>\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)\\s+(?<motion>\\d+\\.\\d+|\\d+\\.|\\.\\d+|\\d+)\\s+(?<equals>true|false)$", Pattern.CASE_INSENSITIVE);
-
         @Override
         public void write(JsonWriter out, Limit value) throws IOException {
             if (value == null) {
-                value = new Limit(0, 0, false);
+                out.nullValue();
+                return;
             }
 
-            out.value(value.toString());
+            out.beginArray();
+            out.value(value.power);
+            out.value(value.motion);
+            out.value(value.equals);
+            out.endArray();
         }
 
         @Override
@@ -55,50 +57,11 @@ public class CollisionLevel {
                 return null;
             }
 
-            if (in.peek() != JsonToken.STRING) {
-                throw new IllegalStateException("excepted PowerLimit to be String but was " + in.peek());
-            }
+            in.beginArray();
+            var obj = new CollisionLevel.Limit((float) in.nextDouble(), (float) in.nextDouble(), in.nextBoolean());
+            in.endArray();
 
-            var str = in.nextString().trim();
-            var matcher = PATTERN.matcher(str);
-
-            if (!matcher.matches()) {
-                Mod.LOGGER.error("invalid PowerLimit {}!", str);
-                return null;
-            }
-
-            var power = matcher.group("power");
-            if (power == null) {
-                Mod.LOGGER.error("invalid value for PowerLimit {}!", str);
-                return null;
-            }
-
-            var motion = matcher.group("motion");
-            if (motion == null) {
-                try {
-                    return new Limit(Float.parseFloat(power), 0, false);
-                } catch (NumberFormatException e) {
-                    Mod.LOGGER.error("invalid value for PowerLimit {}!", str);
-                    return new Limit(0, 0, false);
-                }
-            }
-
-            var equals = matcher.group("equals");
-            if (equals == null) {
-                try {
-                    return new Limit(Float.parseFloat(power), Float.parseFloat(motion), false);
-                } catch (NumberFormatException e) {
-                    Mod.LOGGER.error("invalid value for PowerLimit {}!", str);
-                    return new Limit(0, 0, false);
-                }
-            }
-
-            try {
-                return new Limit(Float.parseFloat(power), Float.parseFloat(motion), Boolean.parseBoolean(equals));
-            } catch (NumberFormatException e) {
-                Mod.LOGGER.error("invalid value for PowerLimit {}!", str);
-                return new Limit(0, 0, false);
-            }
+            return obj;
         }
     }
 }

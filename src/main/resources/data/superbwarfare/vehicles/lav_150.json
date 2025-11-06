@@ -181,9 +181,9 @@
   "CollisionLevel": {
     "Level": 3,
     "PowerLimits": [
-      "0 0 true",
-      "0 0 true",
-      "0.15 0.09 false"
+      [0, 0, true],
+      [0, 0, true],
+      [0.15, 0.09, false]
     ]
   }
 }

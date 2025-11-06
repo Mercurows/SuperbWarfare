@@ -81,10 +81,10 @@
   "CollisionLevel": {
     "Level": 4,
     "PowerLimits": [
-      "0 0 true",
-      "0 0 true",
-      "0.15 0.09 false",
-      "1 0.3 false"
+      [0, 0, true],
+      [0, 0, true],
+      [0.15, 0.09, false],
+      [1, 0.3, false]
     ]
   }
 }
