@@ -1218,10 +1218,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
     }
 
-    // TODO 获取几号武器的动画计时
+    public int getWeaponHeat(int seatIndex, int weaponIndex) {
+        var gunData = getGunData(seatIndex, weaponIndex);
+        if (gunData == null) return 0;
+        return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
+    }
 
     public int getShootAnimationTimer(int seatIndex, int weaponIndex) {
-        var gunData = getGunData(seatIndex);
+        var gunData = getGunData(seatIndex, weaponIndex);
         if (gunData == null) return 0;
         return gunData.shootAnimationTimer.get();
     }
@@ -1234,9 +1238,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
         });
 
+        var gunData = getGunData(getSeatIndex(living));
+
+        if (gunData != null) {
+            entityData.set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
+            entityData.set(CANNON_RECOIL_FORCE, gunData.get(GunProp.RECOIL_FORCE));
+            var list = gunData.get(GunProp.SHOOT_POS).positions;
+            currentFirePosIndex = ++currentFirePosIndex % list.size();
+        }
+
+        entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
+
         // TODO 数据包化发射震动
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
+        playShootSound3p(living);
     }
 
     public void playShootSound3p(LivingEntity living) {

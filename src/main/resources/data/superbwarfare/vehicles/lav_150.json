@@ -70,7 +70,8 @@
       "RecoilTime": 40,
       "RecoilForce": 0.2,
       "Spread": 0.5,
-      "HeatPerShoot": 5,
+      "HeatPerShoot": 7,
+      "NaturalCooldown": 1,
       "ShootAnimationTimer": 3,
       "Crosshair": "@VehicleUsApc",
       "CrosshairColor": "0x66FF00",
@@ -86,7 +87,7 @@
       "AmmoType": "superbwarfare:small_shell",
       "ShootPos": {
         "Transform": "Barrel",
-        "Positions": [[0.0609375, 0.0517, 3.2]],
+        "Positions": [[0.02, 0.0517, 3.2]],
         "Directions": ["Barrel"]
       },
       "ExplosionDamage": 12,
@@ -105,7 +106,8 @@
       "Velocity": 30,
       "RecoilTime": 0,
       "RecoilForce": 0,
-      "HeatPerShoot": 3,
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
       "ShootAnimationTimer": 2,
       "AmmoType": "@RifleAmmo",
       "ShootPos": {

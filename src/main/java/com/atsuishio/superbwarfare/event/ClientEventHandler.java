@@ -1123,7 +1123,10 @@ public class ClientEventHandler {
         }
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
-            if (!pVehicle.canShoot(player)) return;
+            if (!pVehicle.canShoot(player)) {
+                holdFireVehicle = false;
+                return;
+            }
             int rpm = pVehicle.vehicleWeaponRpm(player);
             if (rpm == 0) {
                 rpm = 240;
