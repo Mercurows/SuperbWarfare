@@ -127,7 +127,7 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, ControllableVehicle, HasCustomInventoryScreen, ContainerEntity {
+public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity {
 
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
@@ -398,7 +398,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         data().update();
     }
 
-    @Override
     public void processInput(short keys) {
         setLeftInputDown((keys & 0b000000001) > 0);
         setRightInputDown((keys & 0b000000010) > 0);
