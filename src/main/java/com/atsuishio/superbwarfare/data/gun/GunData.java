@@ -627,14 +627,14 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     /**
      * 返还弹匣内弹药，在换弹和切换弹匣配件时调用
      */
-    public void withdrawAmmo(@NotNull Entity shooter) {
+    public void withdrawAmmo(@NotNull Entity ammoSupplier) {
         var amount = this.virtualAmmo.get() + this.ammo.get();
         this.virtualAmmo.reset();
         this.ammo.reset();
 
         // 直接丢弃余数（恼）
         var itemAmount = amount / selectedAmmoConsumer().loadAmount;
-        selectedAmmoConsumer().withdraw(shooter, itemAmount);
+        selectedAmmoConsumer().withdraw(ammoSupplier, itemAmount);
     }
 
     /**

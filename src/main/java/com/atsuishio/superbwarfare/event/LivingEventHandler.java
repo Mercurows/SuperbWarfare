@@ -355,7 +355,7 @@ public class LivingEventHandler {
 
                 if (newStack.getItem() != oldStack.getItem()
                         || (newStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
-                        || (oldStack.getItem() instanceof GunItem && !GunData.from(newStack).initialized())
+                        || (oldStack.getItem() instanceof GunItem && !GunData.from(oldStack).initialized())
                         || (newStack.getItem() instanceof GunItem && oldStack.getItem() instanceof GunItem && !Objects.equals(GunsTool.getGunUUID(NBTTool.getTag(newStack)), GunsTool.getGunUUID(NBTTool.getTag(oldStack))))
                 ) {
                     PacketDistributor.sendToPlayer(serverPlayer, DrawClientMessage.INSTANCE);
@@ -387,8 +387,8 @@ public class LivingEventHandler {
                             oldData.charge.timer.reset();
                         }
 
-                        oldGun.onChangeSlot(oldStack, player);
-
+                        // TODO 如何保存修改后的数据
+                        oldGun.onChangeSlot(oldData, player);
                         oldData.save();
                     }
 

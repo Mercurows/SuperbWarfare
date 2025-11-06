@@ -24,8 +24,9 @@ public enum UnloadMessage implements CustomPacketPayload {
 
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
-        GunData data = GunData.from(stack);
+        var data = GunData.from(stack);
         data.withdrawAmmo(player);
+        data.save();
         SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
     }
 

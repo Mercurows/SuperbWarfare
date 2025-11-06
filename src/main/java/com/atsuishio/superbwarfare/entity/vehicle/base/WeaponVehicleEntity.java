@@ -135,14 +135,24 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
     /**
      * 设置该槽位当前的武器编号
      *
-     * @param index 武器槽位
-     * @param type  武器类型
+     * @param seatIndex 武器槽位
+     * @param selectedWeapon  武器类型
      */
-    default void setWeaponIndex(int index, int type) {
+    default void setWeaponIndex(int seatIndex, int selectedWeapon) {
         if (!(this instanceof VehicleEntity vehicle)) return;
 
         var selectedWeapons = new ArrayList<>(vehicle.getEntityData().get(VehicleEntity.SELECTED_WEAPON));
-        selectedWeapons.set(index, type);
+
+        var oldIndex = selectedWeapons.get(seatIndex);
+        if (oldIndex != selectedWeapon) return;
+
+        var gunData = vehicle.getGunData(seatIndex, oldIndex);
+        if (gunData != null) {
+            gunData.withdrawAmmo(vehicle.getAmmoSupplier());
+            gunData.save();
+        }
+
+        selectedWeapons.set(seatIndex, selectedWeapon);
         vehicle.getEntityData().set(VehicleEntity.SELECTED_WEAPON, selectedWeapons);
     }
 }
