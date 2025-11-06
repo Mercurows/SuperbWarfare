@@ -475,14 +475,14 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         return 0.03f;
     }
 
-    public Matrix4f getBarrelTransform(float ticks) {
-        Matrix4f transformV = getVehicleFlatTransform(ticks);
+    public Matrix4f getBarrelTransform(float partialTicks) {
+        Matrix4f transformV = getVehicleFlatTransform(partialTicks);
 
         Matrix4f transform = new Matrix4f();
         Vector4f worldPosition = transformPosition(transform, 0, 1.375f, 0.25f);
 
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transformV.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
+        transformV.rotate(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, xRotO, getXRot())));
         return transformV;
     }
 
