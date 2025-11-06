@@ -18,6 +18,8 @@ public class VehicleGun extends GunItem {
 
     public VehicleGun() {
         super(new Properties());
+
+        setProperty(GunProp.AUTO_RELOAD, v -> true);
     }
 
     @Override
