@@ -78,6 +78,8 @@
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
+      "Magazine": 15,
+      "AutoIterativeReloadTime": 20,
       "Projectile": "superbwarfare:small_rocket",
       "HeatPerShoot": 0.5,
       "Spread": 0.25,

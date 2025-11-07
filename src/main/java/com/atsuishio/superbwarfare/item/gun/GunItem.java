@@ -586,6 +586,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         } else {
             data.fireIndex.reset();
         }
+
+        data.autoIterativeReloadTimer.set(data.get(GunProp.AUTO_ITERATIVE_RELOAD_TIME));
     }
 
     @Deprecated(forRemoval = true)

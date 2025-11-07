@@ -112,6 +112,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("AutoReload")
     public boolean autoReload = false;
 
+    // 每隔指定tick自动进行一次单发装填
+    @SerializedName("AutoIterativeReloadTime")
+    public int autoIterativeReloadTime = 0;
+
     @SerializedName("WithdrawAmmoWhenChangeSlot")
     public boolean withdrawAmmoWhenChangeSlot = false;
 
