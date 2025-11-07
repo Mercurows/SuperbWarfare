@@ -63,7 +63,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public DefaultVehicleData compute(VehicleData vehicleData, DefaultVehicleData rawData) {
+    public DefaultVehicleData computeProperties(VehicleData vehicleData, DefaultVehicleData rawData) {
         if (this.entityData.get(MELON)) {
             rawData.destroyInfo = new DestroyInfo(
                     rawData.destroyInfo.crashPassengers,
@@ -74,7 +74,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
                     ParticleTool.ParticleType.HUGE
             );
         }
-        return rawData;
+        return super.computeProperties(vehicleData, rawData);
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.model.item.Ql1031ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -62,12 +61,12 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
                 var energy = cap != null ? cap.getEnergyStored() : 0;
 
                 if (name.equals("energy2_illuminated") || name.equals("energy3_illuminated") || name.equals("energy4_illuminated")) {
-                    bone.setScaleX((float) energy / data.get(GunProp.MAX_ENERGY));
+                    bone.setScaleX((float) energy / data.compute().maxEnergy);
                     bone.setHidden(ClientEventHandler.zoomPos < 0.7);
                 }
 
                 if (name.equals("energy_illuminated")) {
-                    bone.setScaleX((float) energy / data.get(GunProp.MAX_ENERGY));
+                    bone.setScaleX((float) energy / data.compute().maxEnergy);
                 }
 
                 if (name.equals("kuang_illuminated") || name.equals("kuang2_illuminated") || name.equals("kuang3_illuminated")) {

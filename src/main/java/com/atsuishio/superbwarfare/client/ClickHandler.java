@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
@@ -310,7 +309,7 @@ public class ClickHandler {
                     PacketDistributor.sendToServer(UnloadMessage.INSTANCE);
                     burstFireAmount = 0;
                 }
-                if (data.get(GunProp.AMMO_CONSUMER).size() > 1) {
+                if (data.compute().getAmmoConsumers().size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
                         PacketDistributor.sendToServer(new EditMessage(5, false));
                         burstFireAmount = 0;
@@ -494,7 +493,7 @@ public class ClickHandler {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             noSprintTicks = 8;
                             player.setSprinting(false);
-                            ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT);
+                            ClientEventHandler.burstFireAmount = data.compute().burstAmount;
                         }
                     } else if (fireMode == FireMode.SEMI) {
                         if (ClientEventHandler.burstFireAmount == 0) {

@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
@@ -132,7 +131,8 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             ResourceLocation fireMode = getFireMode(data);
 
             var selectedFireMode = data.selectedFireMode.get();
-            var fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES);
+            var computed = data.compute();
+            var fireModes = computed.availableFireModes();
 
             // 如果开火模式种类大于3，渲染开火模式信息
             if (DisplayConfig.ADVANCED_AMMO_HUD.get() && fireModes.size() > 3) {
@@ -150,7 +150,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
                 // 渲染加特林射速
                 guiGraphics.drawString(
                         font,
-                        data.get(GunProp.RPM) + " RPM",
+                        computed.rpm + " RPM",
                         x - 111f,
                         y - 20,
                         0xFFFFFF,
@@ -188,7 +188,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
             }
 
             // 如果弹药种类大于1，渲染弹种信息
-            int size = data.get(GunProp.AMMO_CONSUMER).size();
+            int size = computed.getAmmoConsumers().size();
             if (DisplayConfig.ADVANCED_AMMO_HUD.get()
                     && (size > 1 || size == 1 && data.selectedAmmoConsumer().type != AmmoConsumer.AmmoConsumeType.PLAYER_AMMO)
             ) {

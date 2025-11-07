@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
@@ -13,7 +13,14 @@ public class MagnificentHowl extends Perk {
 
     public MagnificentHowl() {
         super("magnificent_howl", Perk.Type.DAMAGE);
-        appendModification(GunProp.DAMAGE, (data, damage) -> data.perk.getTag(this).getInt("MagnificentHowlDamageCount") > 0 ? damage * 1.5 : damage);
+    }
+
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        if (gunData.perk.getTag(this).getInt("MagnificentHowlDamageCount") > 0) {
+            rawData.damage *= 1.5;
+        }
+        return super.computeProperties(gunData, rawData);
     }
 
     @Override

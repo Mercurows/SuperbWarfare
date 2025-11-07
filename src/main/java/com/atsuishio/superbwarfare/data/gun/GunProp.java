@@ -7,6 +7,8 @@ import net.minecraft.util.Mth;
 import java.util.List;
 import java.util.Set;
 
+@Deprecated
+@SuppressWarnings("unused")
 public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability")

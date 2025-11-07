@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
@@ -13,12 +13,14 @@ public class Desperado extends Perk {
 
     public Desperado() {
         super("desperado", Perk.Type.DAMAGE);
-        appendModification(GunProp.RPM, (data, rpm) -> {
-            if (data.perk.getTag(this).getInt("DesperadoTimePost") > 0) {
-                return (int) (rpm * (1.285 + 0.015 * data.perk.getLevel(this)));
-            }
-            return rpm;
-        });
+    }
+
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        if (gunData.perk.getTag(this).getInt("DesperadoTimePost") > 0) {
+            rawData.rpm = (int) (rawData.rpm * (1.285 + 0.015 * gunData.perk.getLevel(this)));
+        }
+        return super.computeProperties(gunData, rawData);
     }
 
     @Override

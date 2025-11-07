@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -104,7 +103,7 @@ public class IglaHudOverlay implements LayeredDraw.Layer {
 
             Entity targetEntity = ClientEventHandler.lockOn ? ClientEventHandler.lockingEntity : ClientEventHandler.seekingEntity;
             int seekingTime = ClientEventHandler.seekingTime;
-            lerpSeeking = Mth.lerp(deltaFrame, lerpSeeking, Mth.clamp(data.get(GunProp.SEEK_TIME) - seekingTime, 0, data.get(GunProp.SEEK_TIME)) * 0.6f);
+            lerpSeeking = Mth.lerp(deltaFrame, lerpSeeking, Mth.clamp(data.compute().seekTime - seekingTime, 0, data.compute().seekTime) * 0.6f);
 
             if (targetEntity != null) {
                 Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, deltaFrame);
@@ -124,7 +123,7 @@ public class IglaHudOverlay implements LayeredDraw.Layer {
                 RenderHelper.preciseBlit(guiGraphics, PART_4, -12 + lerpSeeking, -12 + lerpSeeking, 0, 0, 0, 24, 24, 24, 24);
 
                 //状态
-                if (seekingTime >= data.get(GunProp.SEEK_TIME) && data.ammo.get() > 0) {
+                if (seekingTime >= data.compute().seekTime && data.ammo.get() > 0) {
                     RenderHelper.preciseBlit(guiGraphics, SHOOT, -12, -26, 0, 0, 0, 24, 24, 24, 24);
                 } else {
                     RenderHelper.preciseBlit(guiGraphics, HOLD, -12, -26, 0, 0, 0, 24, 24, 24, 24);

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import net.minecraft.world.entity.Entity;
@@ -12,12 +12,14 @@ public class OneTwoPunch extends Perk {
 
     public OneTwoPunch() {
         super("one_two_punch", Perk.Type.DAMAGE);
-        appendModification(GunProp.MELEE_DAMAGE, (data, damage) -> {
-            if (data.perk.getTag(this).getInt("OneTwoPunchTime") > 0) {
-                return damage * (1.5 + 0.75 * (data.perk.getLevel(this) - 1));
-            }
-            return damage;
-        });
+    }
+
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        if (gunData.perk.getTag(this).getInt("OneTwoPunchTime") > 0) {
+            rawData.meleeDamage *= 1.5 + 0.75 * (gunData.perk.getLevel(this) - 1);
+        }
+        return super.computeProperties(gunData, rawData);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class OneTwoPunch extends Perk {
         data.perk.getTag(this).putInt("OneTwoPunchCount", data.perk.getTag(this).getInt("OneTwoPunchCount") + 1);
         data.perk.getTag(this).putInt("OneTwoPunchCountTime", 2);
 
-        double needCount = Math.floor(data.get(GunProp.PROJECTILE_AMOUNT) * (1 - 0.05 * (instance.level() - 1)));
+        double needCount = Math.floor(data.compute().projectileAmount * (1 - 0.05 * (instance.level() - 1)));
 
         if (data.perk.getTag(this).getInt("OneTwoPunchCount") >= needCount) {
             data.perk.getTag(this).putInt("OneTwoPunchTime", 60);

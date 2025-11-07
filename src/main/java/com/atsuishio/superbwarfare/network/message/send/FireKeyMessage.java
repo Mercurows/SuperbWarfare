@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import io.netty.buffer.ByteBuf;
@@ -58,7 +57,7 @@ public record FireKeyMessage(int msgType, double power, boolean zoom) implements
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        if (data.get(GunProp.BOLT_ACTION_TIME) > 0
+        if (data.compute().boltActionTime > 0
                 && data.hasEnoughAmmoToShoot(player)
                 && data.bolt.actionTimer.get() == 0
                 && !data.reloading()

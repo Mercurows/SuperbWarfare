@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -111,7 +110,7 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
 
             Entity targetEntity = ClientEventHandler.lockingEntity;
-            List<Entity> entities = SeekTool.seekLivingEntities(player, data.get(GunProp.SEEK_RANGE), data.get(GunProp.SEEK_ANGLE) * fovAdjust);
+            List<Entity> entities = SeekTool.seekLivingEntities(player, data.compute().seekRange, data.compute().seekAngle * fovAdjust);
             Entity naerestEntity = ClientEventHandler.naerestEntity;
 
             if (ClientEventHandler.guideType == 0) {

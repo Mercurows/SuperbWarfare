@@ -4,16 +4,13 @@ import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.JsonObject;
 
 // TODO 取代StringPropModifier
-public class JsonPropModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA> implements NewPropModifier<DATA, DEFAULT_DATA> {
+public class JsonPropertyModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA> implements PropertyModifier<DATA, DEFAULT_DATA> {
     private JsonObject obj;
     private String str;
 
     public void update(JsonObject object) {
-        try {
-            this.obj = object.getAsJsonObject();
-        } catch (Exception exception) {
-            Mod.LOGGER.error("Failed to parse string prop modifier: {}", object, exception);
-        }
+        this.obj = object;
+        this.str = null;
     }
 
     public void update(String string) {
@@ -21,7 +18,7 @@ public class JsonPropModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DE
         this.str = string;
 
         try {
-            update(DataLoader.GSON.toJsonTree(string).getAsJsonObject());
+            update(DataLoader.GSON.fromJson(string, JsonObject.class));
         } catch (Exception exception) {
             Mod.LOGGER.error("Failed to parse string prop modifier: {}", string, exception);
         }
@@ -29,7 +26,7 @@ public class JsonPropModifier<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DE
 
     @SuppressWarnings("unchecked")
     @Override
-    public DEFAULT_DATA compute(DATA data, DEFAULT_DATA rawData) {
+    public DEFAULT_DATA computeProperties(DATA data, DEFAULT_DATA rawData) {
         if (obj == null || obj.isEmpty()) return rawData;
 
         var dataJson = DataLoader.GSON.toJsonTree(rawData).getAsJsonObject();

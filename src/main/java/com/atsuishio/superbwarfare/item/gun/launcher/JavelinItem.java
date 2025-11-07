@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.client.renderer.gun.JavelinItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.init.ModEnumExtensions;
@@ -96,9 +95,9 @@ public class JavelinItem extends GunGeoItem {
             int guideType = targetEntity == null ? 1 : 0;
 
             JavelinMissileEntity missileEntity = new JavelinMissileEntity(shooter, level,
-                    data.get(GunProp.DAMAGE).floatValue(),
-                    data.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
-                    data.get(GunProp.EXPLOSION_RADIUS).floatValue(),
+                    (float) data.compute().damage,
+                    (float) data.compute().explosionDamage,
+                    (float) data.compute().explosionRadius,
                     guideType,
                     targetPos);
 
@@ -132,7 +131,7 @@ public class JavelinItem extends GunGeoItem {
             SoundTool.playDistantSound(serverLevel, ModSounds.JAVELIN_FAR.get(), shooter.position(), 10, 1, shooter);
         }
 
-        data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
+        data.ammo.set(data.ammo.get() - data.compute().ammoCostPerShoot);
         data.save();
     }
 }

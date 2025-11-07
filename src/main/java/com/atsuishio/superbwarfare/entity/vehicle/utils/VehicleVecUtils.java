@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils;
 
 import com.atsuishio.superbwarfare.data.StringOrVec3;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.VectorTool;
@@ -245,7 +244,7 @@ public final class VehicleVecUtils {
             return vehicle.getViewVector(partialTicks);
         }
 
-        StringOrVec3 stringOrVec3 = data.get(GunProp.SHOOT_POS).viewDirection;
+        StringOrVec3 stringOrVec3 = data.compute().shootPos.viewDirection;
 
         if (stringOrVec3 == null) {
             return vehicle.getShootVec(entity, partialTicks);
@@ -254,13 +253,13 @@ public final class VehicleVecUtils {
         } else {
             var vec3 = stringOrVec3.vec3;
             Vector4f worldPosition = transformPosition(
-                    vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
                     (float) vec3.x + (float) stringOrVec3.vec3.x,
                     (float) vec3.y + (float) stringOrVec3.vec3.y,
                     (float) vec3.z + (float) stringOrVec3.vec3.z);
 
             Vector4f worldPositionO = transformPosition(
-                    vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
                     (float) vec3.x,
                     (float) vec3.y,
                     (float) vec3.z);
@@ -293,13 +292,13 @@ public final class VehicleVecUtils {
             var vec3 = data.firePosition();
 
             var worldPosition = transformPosition(
-                    vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
                     (float) vec3.x + (float) stringOrVec3.vec3.x,
                     (float) vec3.y + (float) stringOrVec3.vec3.y,
                     (float) vec3.z + (float) stringOrVec3.vec3.z);
 
             var worldPositionO = transformPosition(
-                    vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
                     (float) vec3.x,
                     (float) vec3.y,
                     (float) vec3.z);

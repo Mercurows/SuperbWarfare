@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.tooltip;
 
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -18,12 +17,13 @@ public class ClientSentinelImageTooltip extends ClientGunImageTooltip {
         var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
 
         if (cap != null && cap.getEnergyStored() > 0) {
-            double damage = data.get(GunProp.DAMAGE);
-            double explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE);
+            var computed = data.compute();
+            double damage = computed.damage;
+            double explosionDamage = computed.explosionDamage;
 
             String dmgStr = FormatTool.format1D(damage);
-            if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
-                dmgStr = dmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
+            if (computed.projectileAmount > 1) {
+                dmgStr = dmgStr + " * " + computed.projectileAmount;
             }
 
             var component = Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
@@ -32,8 +32,8 @@ public class ClientSentinelImageTooltip extends ClientGunImageTooltip {
 
             if (explosionDamage > 0) {
                 String expDmgStr = FormatTool.format1D(explosionDamage);
-                if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
-                    expDmgStr = expDmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
+                if (computed.projectileAmount > 1) {
+                    expDmgStr = expDmgStr + " * " + computed.projectileAmount;
                 }
                 component = component
                         .append(Component.empty().withStyle(ChatFormatting.RESET))

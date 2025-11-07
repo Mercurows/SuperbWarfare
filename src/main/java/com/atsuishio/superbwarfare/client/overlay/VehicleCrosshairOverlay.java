@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
@@ -88,8 +87,8 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
         PoseStack poseStack = guiGraphics.pose();
 
-        String crosshairPath = data.get(GunProp.CROSSHAIR);
-        int color = data.get(GunProp.CROSSHAIR_COLOR).get();
+        String crosshairPath = data.compute().crosshair;
+        int color = data.compute().crosshairColor.get();
 
         poseStack.pushPose();
 
@@ -189,7 +188,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
         int heat = vehicle.getWeaponHeat(player);
         int ammoCount = vehicle.getAmmoCount(player);
-        var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
+        var component = Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
         guiGraphics.drawString(font, component, (screenWidth - font.width(component)) / 2, screenHeight - 65,
                 MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
@@ -201,7 +200,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
         float heat = vehicle.getWeaponHeat(player) / 100F;
 
         int ammoCount = vehicle.getAmmoCount(player);
-        var component = Component.translatable(data.get(GunProp.NAME), ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
+        var component = Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
         guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
     }
