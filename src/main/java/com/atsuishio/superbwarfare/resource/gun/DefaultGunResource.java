@@ -43,21 +43,6 @@ public class DefaultGunResource implements IDBasedData<DefaultGunResource> {
     @SerializedName("FlareSize")
     public float flareSize = 1;
 
-    /*
-     * 准星类型
-     * 预制的字段有：
-     * @Custom - 自定义
-     * @GunDefault - 默认枪械准星
-     * @VehicleDefault - 默认载具准星
-     */
-    // TODO 支持override之后把二次灾变的霰弹模式的普通准星加上
-    @SerializedName("Crosshair")
-    public String crosshair = "@GunDefault";
-    @SerializedName("CrosshairColor")
-    public ModColor crosshairColor = new ModColor();
-
-    @SerializedName("Name")
-    public String name = "superbwarfare.gun.default";
     @SerializedName("HideCrosshairWhenZoom")
     public boolean hideCrosshairWhenZoom = true;
 

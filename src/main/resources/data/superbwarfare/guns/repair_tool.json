@@ -29,5 +29,6 @@
   "SoundInfo": {
     "Fire1P": "superbwarfare:repair_tool_fire_1p",
     "Fire3P": "superbwarfare:repair_tool_fire_3p"
-  }
+  },
+  "Crosshair": "@GunRepairTool"
 }
