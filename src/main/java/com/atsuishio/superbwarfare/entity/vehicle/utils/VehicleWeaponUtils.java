@@ -138,7 +138,7 @@ public final class VehicleWeaponUtils {
                     vehicle.level().addFreshEntity(smokeDecoyEntity);
                 }
 
-                vehicle.level().playSound(null, vehicle, ModSounds.DECOY_FIRE.get(), vehicle.getSoundSource(), 1, 1);
+                vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELEASE.get(), vehicle.getSoundSource(), 1, 1);
                 vehicle.decoyReloadCoolDown = 500;
                 vehicle.getEntityData().set(DECOY_READY, false);
             }
@@ -196,6 +196,6 @@ public final class VehicleWeaponUtils {
         flareDecoyEntity.decoyShoot(vehicle, shootVec, (float) (vehicle.getDeltaMovement().length() * 0.3f + 0.7), 8);
 
         vehicle.level().addFreshEntity(flareDecoyEntity);
-        vehicle.level().playSound(null, vehicle, ModSounds.DECOY_FIRE.get(), vehicle.getSoundSource(), 2, 1);
+        vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELEASE.get(), vehicle.getSoundSource(), 2, 1);
     }
 }

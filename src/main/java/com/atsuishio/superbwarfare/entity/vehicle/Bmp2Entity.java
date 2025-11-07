@@ -7,11 +7,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -98,11 +96,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         }
 
         this.refreshDimensions();
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.BMP_ENGINE.get();
     }
 
     @Override

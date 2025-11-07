@@ -2641,7 +2641,7 @@
   "small_rocket_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/small_rocket_fire_1p",
+        "name": "superbwarfare:vehicle/common/small_rocket_fire_1p",
         "stream": false
       }
     ]
@@ -2649,7 +2649,7 @@
   "small_rocket_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/small_rocket_fire_3p",
+        "name": "superbwarfare:vehicle/common/small_rocket_fire_3p",
         "stream": false
       }
     ]
@@ -2721,15 +2721,15 @@
   "decoy_reload": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/decoy_reload",
+        "name": "superbwarfare:vehicle/common/decoy_reload",
         "stream": false
       }
     ]
   },
-  "decoy_fire": {
+  "decoy_release": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/decoy_fire",
+        "name": "superbwarfare:vehicle/common/decoy_release",
         "stream": false
       }
     ]
@@ -2830,99 +2830,99 @@
       }
     ]
   },
-  "lav_cannon_fire_1p": {
+  "lav_150_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_cannon_fire_1p",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "lav_cannon_fire_3p": {
+  "lav_150_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_cannon_fire_3p",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_fire_3p",
         "stream": false
       }
     ]
   },
-  "lav_cannon_far": {
+  "lav_150_cannon_far": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_cannon_far",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_far",
         "stream": false
       }
     ]
   },
-  "lav_cannon_veryfar": {
+  "lav_150_cannon_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_cannon_veryfar",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_veryfar",
         "stream": false
       }
     ]
   },
-  "lav_engine": {
+  "lav_150_engine": {
     "sounds": [
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:lav/lav_engine"
+        "name": "superbwarfare:vehicle/lav_150/lav_150_engine"
       }
     ]
   },
   "coax_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/coax_fire_1p"
+        "name": "superbwarfare:vehicle/common/coax_fire_1p"
       }
     ]
   },
-  "bmp_cannon_fire_1p": {
+  "bmp_2_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_cannon_fire_1p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "bmp_cannon_fire_3p": {
+  "bmp_2_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_cannon_fire_3p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_cannon_fire_3p",
         "stream": false
       }
     ]
   },
-  "bmp_engine": {
+  "bmp_2_engine": {
     "sounds": [
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:bmp/bmp_engine"
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_engine"
       }
     ]
   },
-  "bmp_missile_fire_1p": {
+  "bmp_2_missile_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_missile_fire_1p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_missile_fire_1p",
         "stream": false
       }
     ]
   },
-  "bmp_missile_fire_3p": {
+  "bmp_2_missile_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_missile_fire_3p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_missile_fire_3p",
         "stream": false
       }
     ]
   },
-  "bmp_missile_reload": {
+  "medium_missile_reload": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_missile_reload",
+        "name": "superbwarfare:vehicle/common/medium_missile_reload",
         "stream": false
       }
     ]
@@ -3628,13 +3628,16 @@
       {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_1",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_2",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_3",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_4",
         "stream": false
       }

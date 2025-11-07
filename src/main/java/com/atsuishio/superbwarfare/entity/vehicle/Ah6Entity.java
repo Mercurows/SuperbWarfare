@@ -6,11 +6,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -81,11 +79,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.terrainCompact(2.7f, 2.7f);
 
         this.refreshDimensions();
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.HELICOPTER_ENGINE.get();
     }
 
     @Override

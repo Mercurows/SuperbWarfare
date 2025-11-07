@@ -135,10 +135,10 @@
       "CrosshairColor": "0xFFC700",
       "Name": "superbwarfare.bmp_2.cannon",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:bmp_cannon_fire_1p",
-        "Fire3P": "superbwarfare:bmp_cannon_fire_3p",
-        "Fire3PFar": "superbwarfare:lav_cannon_far",
-        "Fire3PVeryFar": "superbwarfare:lav_cannon_veryfar",
+        "Fire1P": "superbwarfare:bmp_2_cannon_fire_1p",
+        "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
+        "Fire3PFar": "superbwarfare:lav_150_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:lav_150_cannon_veryfar",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,
@@ -211,11 +211,11 @@
       "ExplosionRadius": 6,
       "Crosshair": "@VehicleCommonMissile",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:bmp_missile_fire_1p",
-        "Fire3P": "superbwarfare:bmp_missile_fire_3p",
+        "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
+        "Fire3P": "superbwarfare:bmp_2_missile_fire_3p",
         "Fire3PFar": "null",
         "Fire3PVeryFar": "null",
-        "ReloadEnd": "superbwarfare:bmp_missile_reload",
+        "ReloadEnd": "superbwarfare:medium_missile_reload",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 12,
@@ -452,7 +452,7 @@
     "ExplosionDamage": 160,
     "ExplosionRadius": 8
   },
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/bmp2_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/bmp_2_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "Type": "APC",
   "CollisionLevel": {
@@ -462,5 +462,6 @@
       [0, 0, true],
       [0.12, 0.07, false]
     ]
-  }
+  },
+  "EngineSound": "superbwarfare:bmp_2_engine"
 }

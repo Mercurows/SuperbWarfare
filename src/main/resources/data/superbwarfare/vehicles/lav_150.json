@@ -77,10 +77,10 @@
       "CrosshairColor": "0x66FF00",
       "Name": "superbwarfare.lav_150.cannon",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:lav_cannon_fire_1p",
-        "Fire3P": "superbwarfare:lav_cannon_fire_3p",
-        "Fire3PFar": "superbwarfare:lav_cannon_far",
-        "Fire3PVeryFar": "superbwarfare:lav_cannon_veryfar",
+        "Fire1P": "superbwarfare:lav_150_cannon_fire_1p",
+        "Fire3P": "superbwarfare:lav_150_cannon_fire_3p",
+        "Fire3PFar": "superbwarfare:lav_150_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:lav_150_cannon_veryfar",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,
@@ -180,7 +180,7 @@
     "ExplosionDamage": 120,
     "ExplosionRadius": 7
   },
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav150_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav_150_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "Type": "APC",
   "CollisionLevel": {
@@ -190,5 +190,6 @@
       [0, 0, true],
       [0.15, 0.09, false]
     ]
-  }
+  },
+  "EngineSound": "superbwarfare:lav_150_engine"
 }
