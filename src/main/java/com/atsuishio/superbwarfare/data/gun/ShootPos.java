@@ -20,6 +20,9 @@ public class ShootPos {
     @SerializedName("Directions")
     public List<StringOrVec3> directions = List.of(new StringOrVec3("Default"));
 
+    @SerializedName("BoundUpWithAmmoAmount")
+    public boolean boundUpWithAmmoAmount = false;
+
     @SerializedName("ViewDirection")
     public StringOrVec3 viewDirection = null;
 }

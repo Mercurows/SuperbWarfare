@@ -44,6 +44,7 @@
         0.07,
         -0.5696875
       ],
+      "Weapons": ["SwarmDrone"],
       "CanRotateBody": true,
       "MinPitch": -25,
       "MaxPitch": 90
@@ -148,6 +149,50 @@
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 16
+    },
+    "SwarmDrone": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/swarm_drone.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Spread": 0.3,
+      "Magazine": 14,
+      "AutoIterativeReloadTime": 30,
+      "CrosshairColor": "0x00FFF6",
+      "Projectile": "superbwarfare:swarm_drone",
+      "RPM": 600,
+      "ExplosionDamage": 150,
+      "ExplosionRadius": 5,
+      "Velocity": 2,
+      "AmmoType": "superbwarfare:swarm_drone",
+      "ShootPos": {
+        "Transform": "Turret",
+        "Positions": [
+          [-1.6290875, 0.75536875, -1.76616875],
+          [1.6290875, 0.75536875, -1.76616875],
+          [-1.7822125, 0.75536875, -1.9193],
+          [1.7822125, 0.75536875, -1.9193],
+          [-1.6290875, 0.75536875, -2.07241875],
+          [1.6290875, 0.75536875, -2.07241875],
+          [-1.7822125, 0.75536875, -2.22555],
+          [1.7822125, 0.75536875, -2.22555],
+          [-1.6290875, 0.75536875, -2.37866875],
+          [1.6290875, 0.75536875, -2.37866875],
+          [-1.7822125, 0.75536875, -2.5318],
+          [1.7822125, 0.75536875, -2.5318],
+          [-1.6290875, 0.75536875, -2.68491875],
+          [1.6290875, 0.75536875, -2.68491875]
+        ],
+        "BoundUpWithAmmoAmount": true,
+        "Directions": [[0, 1, 0]]
+      },
+      "Crosshair": "@VehicleCommonMissile",
+      "Name": "",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:decoy_fire",
+        "Fire3P": "superbwarfare:decoy_fire",
+        "ReloadEnd": "superbwarfare:missile_reload"
+      },
+      "SoundRadius": 4
     }
   },
   "HUDColor": "0x00FFF6",
