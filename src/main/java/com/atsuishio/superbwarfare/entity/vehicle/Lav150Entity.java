@@ -8,11 +8,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -88,11 +86,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.terrainCompact(2.7f, 3.61f);
         inertiaRotate(1.25f);
         this.refreshDimensions();
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.LAV_ENGINE.get();
     }
 
     @Override
