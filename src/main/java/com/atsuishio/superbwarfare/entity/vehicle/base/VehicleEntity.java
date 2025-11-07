@@ -385,8 +385,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int holdPowerTick;
     public float destroyRot;
 
-    public int currentFirePosIndex;
-
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.isInitialized = true;
@@ -1251,9 +1249,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(vo) + VehicleVecUtils.getYRotFromVector(v3)));
                 entityData.set(CANNON_RECOIL_FORCE, (float) v3.length());
             }
-
-            var list = gunData.get(GunProp.SHOOT_POS).positions;
-            currentFirePosIndex = ++currentFirePosIndex % list.size();
         }
         // TODO 数据包化发射震动
 
@@ -2273,10 +2268,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 getShootPos(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            var list = data.get(GunProp.SHOOT_POS).positions;
-            var vec3 = list.get(this.currentFirePosIndex % list.size());
+            var vec3 = data.firePosition();
 
-            Vector4f worldPosition = transformPosition(
+            var worldPosition = transformPosition(
                     this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
                     (float) vec3.x, (float) vec3.y, (float) vec3.z);
 

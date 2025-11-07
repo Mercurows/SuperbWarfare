@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
-import com.atsuishio.superbwarfare.data.Prop;
-import com.atsuishio.superbwarfare.data.PropModifier;
-import com.atsuishio.superbwarfare.data.StringPropModifier;
+import com.atsuishio.superbwarfare.data.*;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
@@ -78,6 +75,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         selectedAmmoType = new IntValue(gunDataTag, "SelectedAmmoType");
         selectedFireMode = new IntValue(gunDataTag, "SelectedFireMode", 0);
+        fireIndex = new IntValue(gunDataTag, "FireIndex", 0);
 
         // 可持久化属性
         reload = new Reload(this);
@@ -369,6 +367,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         this.item.whenNoAmmo(this);
         this.closeHammer.set(false);
+        this.fireIndex.reset();
     }
 
     public FireModeInfo selectedFireModeInfo(List<FireModeInfo> fireModes) {
@@ -578,6 +577,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         this.ammo.set(ammo + ammoToAdd);
 
         reload.setState(ReloadState.NOT_RELOADING);
+        this.fireIndex.reset();
     }
 
     /**
@@ -752,6 +752,26 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return get(GunProp.PROJECTILE_AMOUNT) > 1;
     }
 
+    public Vec3 firePosition() {
+        var list = this.get(GunProp.SHOOT_POS).positions;
+        var size = list.size();
+        if (size == 0) {
+            return Vec3.ZERO;
+        }
+
+        return list.get(this.fireIndex.get() % size);
+    }
+
+    public StringOrVec3 fireDirection() {
+        var list = this.get(GunProp.SHOOT_POS).directions;
+        var size = list.size();
+        if (size == 0) {
+            return new StringOrVec3("Default");
+        }
+
+        return list.get(this.fireIndex.get() % size);
+    }
+
     // 可持久化属性开始
 
     public final IntValue selectedAmmoType;
@@ -766,6 +786,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public final IntValue burstAmount;
     public final IntValue selectedFireMode;
+    public final IntValue fireIndex;
+
     public final IntValue level;
     public final DoubleValue exp;
     public final DoubleValue upgradePoint;
