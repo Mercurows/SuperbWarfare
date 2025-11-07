@@ -1,64 +1,22 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.RenderHelper;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
-import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.tools.*;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.ChatFormatting;
+import com.atsuishio.superbwarfare.tools.OBB;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -69,14 +27,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
-
-    public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<String> LOADED_SHELL = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<Integer> SELECTED_AMMO_TYPE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> GUN_FIRE_TIME = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> LOADED_DRONE = SynchedEntityData.defineId(Yx100Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public int droneReloadCoolDown;
 
     public OBB obb;
     public OBB obb2;
@@ -99,119 +50,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
 
     @Override
     public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        // AP
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.YX_100_AP_CANNON_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.YX_100_AP_CANNON_EXPLOSION_RADIUS.get().floatValue())
-                                .explosionDamage(VehicleConfig.YX_100_AP_CANNON_EXPLOSION_DAMAGE.get())
-                                .fireProbability(0)
-                                .fireTime(0)
-                                .durability(100)
-                                .velocity(40)
-                                .gravity(0.1f)
-                                .sound(ModSounds.INTO_MISSILE.get())
-                                .ammo(ModItems.AP_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png"))
-                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
-                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
-                                .sound3pFar(ModSounds.YX_100_FAR.get())
-                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
-                                .mainGun(true),
-                        // HE
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.YX_100_HE_CANNON_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_RADIUS.get().floatValue())
-                                .explosionDamage(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_DAMAGE.get())
-                                .fireProbability(0.18F)
-                                .fireTime(2)
-                                .durability(1)
-                                .velocity(25)
-                                .gravity(0.1f)
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .ammo(ModItems.HE_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png"))
-                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
-                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
-                                .sound3pFar(ModSounds.YX_100_FAR.get())
-                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
-                                .mainGun(true),
-                        // CM
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.YX_100_HE_CANNON_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_RADIUS.get().floatValue())
-                                .explosionDamage(VehicleConfig.YX_100_HE_CANNON_EXPLOSION_DAMAGE.get())
-                                .fireProbability(0.18F)
-                                .fireTime(2)
-                                .durability(1)
-                                .velocity(25)
-                                .gravity(0.1f)
-                                .type(CannonShellEntity.Type.CM)
-                                .spreadAmount(15)
-                                .spreadTime(4)
-                                .spreadAngle(5)
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .ammo(ModItems.CM_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png"))
-                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
-                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
-                                .sound3pFar(ModSounds.YX_100_FAR.get())
-                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
-                                .mainGun(true),
-                        // GRAPESHOT
-                        new CannonShellWeapon()
-                                .hitDamage(1000)
-                                .explosionRadius(VehicleConfig.YX_100_AP_CANNON_EXPLOSION_RADIUS.get().floatValue())
-                                .explosionDamage(VehicleConfig.YX_100_AP_CANNON_EXPLOSION_DAMAGE.get())
-                                .velocity(30)
-                                .type(CannonShellEntity.Type.GRAPE)
-                                .spreadAmount(40)
-                                .spreadAngle(3)
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .ammo(ModItems.GS_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/grape_shell.png"))
-                                .sound1p(ModSounds.YX_100_FIRE_1P.get())
-                                .sound3p(ModSounds.YX_100_FIRE_3P.get())
-                                .sound3pFar(ModSounds.YX_100_FAR.get())
-                                .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get())
-                                .mainGun(true),
-                        // 同轴重机枪
-                        new ProjectileWeapon()
-                                .damage(VehicleConfig.HEAVY_MACHINE_GUN_DAMAGE.get())
-                                .headShot(2)
-                                .zoom(false)
-                                .bypassArmorRate(0.4f)
-                                .ammo(ModItems.HEAVY_AMMO.get())
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
-                                .sound1p(ModSounds.M_2_HB_FIRE_1P.get())
-                                .sound3p(ModSounds.M_2_HB_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_2_HB_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_2_HB_VERYFAR.get()),
-                },
-                new VehicleWeapon[]{
-                        // 机枪
-                        new ProjectileWeapon()
-                                .damage(VehicleConfig.HEAVY_MACHINE_GUN_DAMAGE.get())
-                                .headShot(2)
-                                .zoom(false)
-                                .bypassArmorRate(0.4f)
-                                .ammo(ModItems.HEAVY_AMMO.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
-                                .sound1p(ModSounds.M_2_HB_FIRE_1P.get())
-                                .sound3p(ModSounds.M_2_HB_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_2_HB_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_2_HB_VERYFAR.get()),
-                },
-                new VehicleWeapon[]{
-                        // 蜂群无人机
-                        new SwarmDroneWeapon()
-                                .explosionDamage(VehicleConfig.YX_100_SWARM_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.YX_100_SWARM_EXPLOSION_RADIUS.get().floatValue())
-                                .sound(ModSounds.INTO_MISSILE.get()),
-                }
-        };
+        return null;
     }
 
     @Override
@@ -221,38 +60,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             case 1 -> new ThirdPersonCameraPosition(-1 + 0.5 * ClientMouseHandler.custom3pDistanceLerp, 0.5, 0);
             default -> null;
         };
-    }
-
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(MG_AMMO, 0)
-                .define(LOADED_SHELL, "null")
-                .define(LOADED_DRONE, 0)
-                .define(SELECTED_AMMO_TYPE, 0)
-                .define(GUN_FIRE_TIME, 0);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("LoadedShell", this.entityData.get(LOADED_SHELL));
-        compound.putInt("LoadedDrone", this.entityData.get(LOADED_DRONE));
-        compound.putInt("SelectedAmmoType", this.entityData.get(SELECTED_AMMO_TYPE));
-        compound.putInt("WeaponType", getWeaponIndex(0));
-        compound.putInt("PassengerWeaponType", getWeaponIndex(1));
-        compound.putInt("ThirdPassengerWeaponType", getWeaponIndex(2));
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.entityData.set(LOADED_SHELL, compound.getString("LoadedShell"));
-        this.entityData.set(LOADED_DRONE, compound.getInt("LoadedDrone"));
-        this.entityData.set(SELECTED_AMMO_TYPE, compound.getInt("SelectedAmmoType"));
-        setWeaponIndex(0, compound.getInt("WeaponType"));
-        setWeaponIndex(1, compound.getInt("PassengerWeaponType"));
-        setWeaponIndex(2, compound.getInt("ThirdPassengerWeaponType"));
     }
 
     @Override
@@ -282,49 +89,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
             setRightTrack(0);
         }
 
-        if (this.entityData.get(GUN_FIRE_TIME) > 0) {
-            this.entityData.set(GUN_FIRE_TIME, this.entityData.get(GUN_FIRE_TIME) - 1);
-        }
-
-        if (reloadCoolDown == 70 && this.getFirstPassenger() instanceof Player player) {
-            SoundTool.playLocalSound(player, ModSounds.YX_100_RELOAD.get());
-        }
-
-        if (this.level() instanceof ServerLevel) {
-            boolean hasCreativeAmmo = false;
-            for (int i = 0; i < getMaxPassengers(); i++) {
-                if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
-                    hasCreativeAmmo = true;
-                }
-            }
-
-            if (reloadCoolDown > 0 && getWeapon(0).mainGun && (hasCreativeAmmo || countItem(getWeapon(0).ammo) > 0)) {
-                reloadCoolDown--;
-            }
-
-            if (droneReloadCoolDown > 0) {
-                droneReloadCoolDown--;
-            }
-
-            if ((hasItem(ModItems.SWARM_DRONE.get()) || hasCreativeAmmo) && droneReloadCoolDown == 0 && this.getEntityData().get(LOADED_DRONE) < 14) {
-                this.entityData.set(LOADED_DRONE, this.getEntityData().get(LOADED_DRONE) + 1);
-                droneReloadCoolDown = 20;
-                if (!hasCreativeAmmo) {
-                    this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SWARM_DRONE.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                }
-                this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 1, 1);
-            }
-
-            this.handleAmmo();
-        }
-
-        if (getNthEntity(2) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
-            int rpm = 20 / (vehicleWeaponRpm(mob) / 60);
-            if (tickCount % rpm == 0) {
-                vehicleShoot(mob);
-            }
-        }
-
         lowHealthWarning();
         terrainCompact(4.375f, 6.3125f);
         inertiaRotate(1.2f);
@@ -332,50 +96,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         this.refreshDimensions();
     }
 
-    // 炮弹发射位置
-    @Override
-    public Vec3 getShootPos(int seatIndex, float ticks) {
-        Vector4f worldPosition;
-        if (seatIndex == 0) {
-            Matrix4f transform = getBarrelTransform(ticks);
-            if (getWeapon(0).mainGun) {
-                worldPosition = transformPosition(transform, 0, 0, 0);
-            } else {
-                worldPosition = transformPosition(transform, -0.12f, 0.15f, 0f);
-            }
-        } else {
-            Matrix4f transform = getGunTransform(1);
-            worldPosition = transformPosition(transform, 0, -0.25f, 0);
-        }
-
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    // 炮弹发射速度
-    @Override
-    public float projectileVelocity(Entity entity) {
-        if (entity == getNthEntity(0)) {
-            if (getWeapon(0).mainGun) {
-                var cannonShell = (CannonShellWeapon) getWeapon(0);
-                return cannonShell.velocity;
-            } else {
-                return 20f;
-            }
-        } else {
-            return 20f;
-        }
-    }
-
-    // 炮弹重力
-    @Override
-    public float projectileGravity(Entity entity) {
-        if (getWeapon(0).mainGun && entity == getNthEntity(0)) {
-            var cannonShell = (CannonShellWeapon) getWeapon(0);
-            return cannonShell.gravity;
-        } else {
-            return 0.05f;
-        }
-    }
 
     // 乘客武器站最大水平旋转速度
     @Override
@@ -409,270 +129,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
-    // TODO 移除这个
-    private void handleAmmo() {
-        if (getWeapon(0) == null) return;
-        
-        if (getWeapon(0).mainGun) {
-            entityData.set(SELECTED_AMMO_TYPE, getWeaponIndex(0));
-        }
-
-        boolean hasCreativeAmmo = false;
-        for (int i = 0; i < getMaxPassengers(); i++) {
-            if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
-                hasCreativeAmmo = true;
-            }
-        }
-
-        if (hasCreativeAmmo) {
-            this.entityData.set(AMMO, 9999);
-            this.entityData.set(MG_AMMO, 9999);
-        } else {
-            this.entityData.set(AMMO, countItem(getWeapon(0).ammo));
-            this.entityData.set(MG_AMMO, countItem(getWeapon(1).ammo));
-        }
-
-        if (this.getEntityData().get(LOADED_SHELL).equals("null") && reloadCoolDown <= 0 && (hasCreativeAmmo || hasItem(getWeapon(0).ammo))) {
-            this.entityData.set(LOADED_SHELL, String.valueOf(BuiltInRegistries.ITEM.getKey(getWeapon(0).ammo)));
-            if (!hasCreativeAmmo) {
-                consumeItem(getWeapon(0).ammo, 1);
-            }
-        }
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity living) {
-        int type = 114514;
-        boolean hasCreativeAmmo = false;
-        for (int i = 0; i < getMaxPassengers() - 1; i++) {
-            if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
-                hasCreativeAmmo = true;
-            }
-        }
-        if (type == 0) {
-            if (reloadCoolDown == 0 && getWeapon(0).mainGun) {
-                if (!this.canConsume(VehicleConfig.YX_100_SHOOT_COST.get()) && living instanceof Player player) {
-                    player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
-                    return;
-                }
-
-                var cannonShell = (CannonShellWeapon) getWeapon(0);
-                var entityToSpawn = cannonShell.create(living);
-
-                entityToSpawn.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
-                entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, cannonShell.velocity, 0.02f);
-                level().addFreshEntity(entityToSpawn);
-
-                this.entityData.set(LOADED_SHELL, "null");
-
-                this.consumeEnergy(10000);
-                this.entityData.set(YAW_WHILE_SHOOT, getTurretYRot());
-
-                reloadCoolDown = 80;
-
-                if (this.level() instanceof ServerLevel server) {
-                    server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                            this.getX() + 5 * getBarrelVector(1).x,
-                            this.getY() + 0.1,
-                            this.getZ() + 5 * getBarrelVector(1).z,
-                            300, 6, 0.02, 6, 0.005);
-
-                    double x = getShootPos(living, 1).x + 9 * getBarrelVector(1).x;
-                    double y = getShootPos(living, 1).y + 9 * getBarrelVector(1).y;
-                    double z = getShootPos(living, 1).z + 9 * getBarrelVector(1).z;
-
-                    server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-                    server.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.4, 0.4, 0.4, 0.0075);
-
-                    int count = 6;
-
-                    for (float i = 9.5f; i < 23; i += .5f) {
-                        server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                                getShootPos(living, 1).x + i * getBarrelVector(1).x,
-                                getShootPos(living, 1).y + i * getBarrelVector(1).y,
-                                getShootPos(living, 1).z + i * getBarrelVector(1).z,
-                                Mth.clamp(count--, 1, 5), 0.15, 0.15, 0.15, 0.0025);
-                    }
-
-                    Matrix4f transform = getBarrelTransform(1);
-                    Vector4f worldPositionL = transformPosition(transform, -0.35f, 0, 0);
-                    Vector4f worldPositionR = transformPosition(transform, 0.35f, 0, 0);
-
-                    for (float i = 3f; i < 6; i += .5f) {
-                        server.sendParticles(ParticleTypes.CLOUD,
-                                worldPositionL.x + i * getBarrelVector(1).x,
-                                worldPositionL.y + i * getBarrelVector(1).y,
-                                worldPositionL.z + i * getBarrelVector(1).z,
-                                1, 0.025, 0.025, 0.025, 0.0015);
-
-                        server.sendParticles(ParticleTypes.CLOUD,
-                                worldPositionR.x + i * getBarrelVector(1).x,
-                                worldPositionR.y + i * getBarrelVector(1).y,
-                                worldPositionR.z + i * getBarrelVector(1).z,
-                                1, 0.025, 0.025, 0.025, 0.0015);
-                    }
-                }
-
-                ShakeClientMessage.sendToNearbyPlayers(this, 8, 10, 8, 60);
-            } else if (getWeaponIndex(0) == 4) {
-                if (this.cannotFireCoax) return;
-
-                if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
-                    var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId() + ".1");
-
-                    projectileRight.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
-                    projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 20,
-                            0.25f);
-                    this.level().addFreshEntity(projectileRight);
-
-                    this.entityData.set(FIRE_ANIM, 2);
-
-                    if (!hasCreativeAmmo) {
-                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                            if (stack.is(ModItems.AMMO_BOX.get())) {
-                                return Ammo.HEAVY.get(stack) > 0;
-                            }
-                            return false;
-                        }).findFirst().orElse(ItemStack.EMPTY);
-
-                        if (!ammoBox.isEmpty()) {
-                            Ammo.HEAVY.add(ammoBox, -1);
-                        } else {
-                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                        }
-                    }
-                }
-            }
-        }
-
-        if (type == 1) {
-            if (!canShoot(living)) return;
-
-            var projectile = (ProjectileWeapon) getWeapon(1);
-            var projectileEntity = projectile.create(living).setGunItemId(this.getType().getDescriptionId() + ".2");
-
-            projectileEntity.setPos(passengerWeaponShootPos(living, 1).x, passengerWeaponShootPos(living, 1).y, passengerWeaponShootPos(living, 1).z);
-            projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y, getGunnerVector(1).z, 20, 0.3f);
-
-            this.level().addFreshEntity(projectileEntity);
-
-            this.entityData.set(GUN_FIRE_TIME, 2);
-
-            ShakeClientMessage.sendToNearbyPlayers(this, 4, 6, 4, 6);
-
-            if (hasCreativeAmmo) return;
-
-            ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                if (stack.is(ModItems.AMMO_BOX.get())) {
-                    return Ammo.HEAVY.get(stack) > 0;
-                }
-                return false;
-            }).findFirst().orElse(ItemStack.EMPTY);
-
-            if (!ammoBox.isEmpty()) {
-                Ammo.HEAVY.add(ammoBox, -1);
-            } else {
-                consumeItem(getWeapon(1).ammo, 1);
-            }
-        }
-
-        if (type == 2) {
-            Matrix4f transformT = getTurretTransform(1);
-            Vector4f worldPosition = new Vector4f();
-
-            int ammo = this.getEntityData().get(LOADED_DRONE);
-
-            if (ammo == 1) {
-                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -1.76616875f);
-            }
-            if (ammo == 2) {
-                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -1.76616875f);
-            }
-            if (ammo == 3) {
-                worldPosition = transformPosition(transformT, -1.7822125f, 0.75536875f, -1.9193f);
-            }
-            if (ammo == 4) {
-                worldPosition = transformPosition(transformT, 1.7822125f, 0.75536875f, -1.9193f);
-            }
-            if (ammo == 5) {
-                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -2.07241875f);
-            }
-            if (ammo == 6) {
-                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -2.07241875f);
-            }
-            if (ammo == 7) {
-                worldPosition = transformPosition(transformT, -1.7822125f, 0.75536875f, -2.22555f);
-            }
-            if (ammo == 8) {
-                worldPosition = transformPosition(transformT, 1.7822125f, 0.75536875f, -2.22555f);
-            }
-            if (ammo == 9) {
-                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -2.37866875f);
-            }
-            if (ammo == 10) {
-                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -2.37866875f);
-            }
-            if (ammo == 11) {
-                worldPosition = transformPosition(transformT, -1.7822125f, 0.75536875f, -2.5318f);
-            }
-            if (ammo == 12) {
-                worldPosition = transformPosition(transformT, 1.7822125f, 0.75536875f, -2.5318f);
-            }
-            if (ammo == 13) {
-                worldPosition = transformPosition(transformT, -1.6290875f, 0.75536875f, -2.68491875f);
-            }
-            if (ammo == 14) {
-                worldPosition = transformPosition(transformT, 1.6290875f, 0.75536875f, -2.68491875f);
-            }
-
-            Vec3 lookVec = living.getViewVector(1);
-            Entity lookingEntity = SeekTool.seekLivingEntity(living, 384, 6);
-
-            var swarmDroneEntity = ((SwarmDroneWeapon) getWeapon(2)).create(living);
-
-            Vector4f shootPosition1 = transformPosition(transformT, 0, 0, 0);
-            Vector4f shootPosition2 = transformPosition(transformT, 0, 1, 0);
-            Vec3 direct = new Vec3(shootPosition1.x, shootPosition1.y, shootPosition1.z).vectorTo(new Vec3(shootPosition2.x, shootPosition2.y, shootPosition2.z));
-
-            swarmDroneEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            swarmDroneEntity.shoot(direct.x, direct.y, direct.z, 1.2f, 10);
-            swarmDroneEntity.setRotate(getBarrelVector(1));
-
-            if (living instanceof Mob mob && mob.getTarget() != null) {
-                Entity target = mob.getTarget();
-                if (target.getVehicle() != null) {
-                    target = target.getVehicle();
-                }
-
-                swarmDroneEntity.setGuideType(0);
-                swarmDroneEntity.setTargetUuid(target.getStringUUID());
-                swarmDroneEntity.setTargetVec(target.getBoundingBox().getCenter());
-
-            } else if (living instanceof Player) {
-                if (lookingEntity != null && !(lookingEntity instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() == living)) {
-                    swarmDroneEntity.setGuideType(0);
-                    swarmDroneEntity.setTargetUuid(lookingEntity.getStringUUID());
-                    swarmDroneEntity.setTargetVec(lookingEntity.getEyePosition());
-                } else {
-                    swarmDroneEntity.setGuideType(1);
-                    BlockHitResult result = level().clip(new ClipContext(living.getEyePosition(), living.getEyePosition().add(lookVec.scale(384)),
-                            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-                    Vec3 hitPos = result.getLocation();
-                    swarmDroneEntity.setTargetVec(hitPos);
-                }
-            }
-
-
-            living.level().addFreshEntity(swarmDroneEntity);
-
-            this.level().playSound(null, BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)), ModSounds.DECOY_FIRE.get(), SoundSource.PLAYERS, 1, random.nextFloat() * 0.05f + 1);
-
-            this.entityData.set(LOADED_DRONE, this.getEntityData().get(LOADED_DRONE) - 1);
-            droneReloadCoolDown = 100;
-        }
-
-    }
-
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.YX_100_ENGINE.get();
@@ -684,49 +140,30 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public Vec3 getZoomPos(Entity entity, float partialTicks) {
-        Matrix4f transform = getTurretTransform(partialTicks);
-        Vector4f worldPosition = transformPosition(transform, 0, 1f, 0.6076875f);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
     public Vec3 getGunnerPosition() {
         return new Vec3(-0.75805625f, 1.1446375, -0.57275625);
     }
 
-    @Override
-    public Vec3 getGunnerBarrelPosition() {
-        return new Vec3(0f, 0.35984375f, 0.0551625f);
+    private PlayState cannonFirePredicate(AnimationState<Yx100Entity> event) {
+        if (getShootAnimationTimer(0, 0) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle"));
     }
 
-    private PlayState cannonShootPredicate(AnimationState<Yx100Entity> event) {
-        if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire"));
+    private PlayState machineGunFirePredicate(AnimationState<Yx100Entity> event) {
+        if (getShootAnimationTimer(0, 1) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire_coax"));
         }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx100.idle"));
-    }
 
-    private PlayState coaxShootPredicate(AnimationState<Yx100Entity> event) {
-        if (this.entityData.get(FIRE_ANIM) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire_coax"));
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx100.idle_coax"));
-    }
-
-
-    private PlayState gunShootPredicate(AnimationState<Yx100Entity> event) {
-        if (this.entityData.get(GUN_FIRE_TIME) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.yx100.fire2"));
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx100.idle2"));
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle_coax"));
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "cannon", 0, this::cannonShootPredicate));
-        data.add(new AnimationController<>(this, "coax", 0, this::coaxShootPredicate));
-        data.add(new AnimationController<>(this, "gun", 0, this::gunShootPredicate));
+        data.add(new AnimationController<>(this, "cannon", 0, this::cannonFirePredicate));
+        data.add(new AnimationController<>(this, "machineGun", 0, this::machineGunFirePredicate));
     }
 
     @Override
@@ -740,132 +177,12 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public void changeWeapon(int index, int value, boolean isScroll) {
-        if (index != 0) return;
-
-        var weapons = getAvailableWeapons(index);
-        if (weapons.isEmpty()) return;
-        var count = weapons.size();
-
-        var typeIndex = isScroll ? (value + getWeaponIndex(index) + count) % count : value;
-
-        if (typeIndex == 0 || typeIndex == 1 || typeIndex == 2 || typeIndex == 3) {
-            boolean hasCreativeAmmo = false;
-            for (int i = 0; i < getMaxPassengers(); i++) {
-                if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
-                    hasCreativeAmmo = true;
-                }
-            }
-
-            if (typeIndex != entityData.get(SELECTED_AMMO_TYPE)) {
-                this.reloadCoolDown = 80;
-                Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(entityData.get(LOADED_SHELL)));
-                if (!this.entityData.get(LOADED_SHELL).equals("null") && !hasCreativeAmmo) {
-                    this.insertItem(new ItemStack(item).getItem(), 1);
-                }
-                entityData.set(LOADED_SHELL, "null");
-            }
-
-            if (this.getFirstPassenger() instanceof ServerPlayer player) {
-                var clientboundstopsoundpacket = new ClientboundStopSoundPacket(ModSounds.YX_100_RELOAD.get().getLocation(), SoundSource.PLAYERS);
-                player.connection.send(clientboundstopsoundpacket);
-            }
-        }
-
-        WeaponVehicleEntity.super.changeWeapon(index, value, isScroll);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
-        float minWH = (float) Math.min(screenWidth, screenHeight);
-        float scaledMinWH = Mth.floor(minWH * scale);
-        float centerW = ((screenWidth - scaledMinWH) / 2);
-        float centerH = ((screenHeight - scaledMinWH) / 2);
-
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-
-        // 准心
-        if (this.getWeapon(0).mainGun) {
-            RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/land/us_tank.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-        } else {
-            RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/land/common_gun.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-        }
-
-        // 武器名称
-        if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("AP SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
-        } else if (this.getWeaponIndex(0) == 1) {
-            guiGraphics.drawString(font, Component.literal("HE SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
-        } else if (this.getWeaponIndex(0) == 2) {
-            guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
-        } else if (this.getWeaponIndex(0) == 3) {
-            guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
-        } else if (this.getWeaponIndex(0) == 4) {
-            int heat = getWeaponHeat(player);
-            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
-        if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("AP SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
-        } else if (this.getWeaponIndex(0) == 1) {
-            guiGraphics.drawString(font, Component.literal("HE SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
-        } else if (this.getWeaponIndex(0) == 2) {
-            guiGraphics.drawString(font, Component.literal("CM SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
-        } else if (this.getWeaponIndex(0) == 3) {
-            guiGraphics.drawString(font, Component.literal("GRAPESHOT" + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
-        } else if (this.getWeaponIndex(0) == 4) {
-            double heat2 = getWeaponHeat(player) / 100.0F;
-            guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
-        }
-    }
-
-    @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         if (seatIndex == 0) {
             return zoom ? 0.17 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.22 : 0.35;
         } else if (seatIndex == 1) {
             return zoom ? 0.25 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.35 : 0.4;
         } else return original;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (zoom || isFirstPerson) {
-            if (this.getSeatIndex(player) == 0) {
-                return new Vec2((float) -VehicleVecUtils.getYRotFromVector(this.getBarrelVector(partialTicks)), (float) -VehicleVecUtils.getXRotFromVector(this.getBarrelVector(partialTicks)));
-            } else if (this.getSeatIndex(player) == 1) {
-                return new Vec2((float) -VehicleVecUtils.getYRotFromVector(this.getGunnerVector(partialTicks)), (float) -VehicleVecUtils.getXRotFromVector(this.getGunnerVector(partialTicks)));
-            }
-        }
-        return super.getCameraRotation(partialTicks, player, false, false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (zoom || isFirstPerson) {
-            if (this.getSeatIndex(player) == 0) {
-                if (zoom) {
-                    return new Vec3(this.getZoomPos(player, partialTicks).x, this.getZoomPos(player, partialTicks).y, this.getZoomPos(player, partialTicks).z);
-                } else {
-                    return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
-                }
-            } else if (this.getSeatIndex(player) == 1) {
-                return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
-            }
-        }
-        return super.getCameraPosition(partialTicks, player, false, false);
     }
 
     @Override

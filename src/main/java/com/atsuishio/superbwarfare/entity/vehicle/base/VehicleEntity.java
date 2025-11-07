@@ -1861,7 +1861,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         this.setRecoilShake(Mth.abs(entityData.get(CANNON_RECOIL_FORCE)) * 0.0000007 * java.lang.Math.pow(entityData.get(CANNON_RECOIL_TIME), 4) * java.lang.Math.sin(0.2 * java.lang.Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5)));
-        entityData.set(CANNON_RECOIL_FORCE, entityData.get(CANNON_RECOIL_FORCE) * 0.96f);
+        entityData.set(CANNON_RECOIL_FORCE, entityData.get(CANNON_RECOIL_FORCE) * 0.93f);
 
         this.preventStacking();
         this.supportEntities();
