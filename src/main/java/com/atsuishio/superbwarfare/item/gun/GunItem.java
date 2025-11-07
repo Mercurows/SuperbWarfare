@@ -657,7 +657,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         if (data.heat.get() >= 100 && !data.overHeat.get()) {
             data.overHeat.set(true);
             if (shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.MINIGUN_OVERHEAT.get(), 2f, 1f);
+                SoundTool.playLocalSound(serverPlayer, ModSounds.OVERHEAT.get(), 2f, 1f);
             }
         }
 
