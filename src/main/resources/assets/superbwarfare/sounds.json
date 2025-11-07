@@ -274,7 +274,7 @@
   "ak_47_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_1p",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_1p",
         "stream": false
       }
     ]
@@ -282,7 +282,7 @@
   "ak_47_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_1p_s",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_1p_s",
         "stream": false
       }
     ]
@@ -290,7 +290,7 @@
   "ak_47_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_3p",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_3p",
         "stream": false
       }
     ]
@@ -298,7 +298,7 @@
   "ak_47_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_3p_s",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_3p_s",
         "stream": false
       }
     ]
@@ -306,7 +306,7 @@
   "ak_47_far": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_far",
+        "name": "superbwarfare:gun/ak_47/ak_47_far",
         "stream": false
       }
     ]
@@ -314,7 +314,7 @@
   "ak_47_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_veryfar",
+        "name": "superbwarfare:gun/ak_47/ak_47_veryfar",
         "stream": false
       }
     ]
@@ -322,7 +322,7 @@
   "ak_47_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_reload_normal",
+        "name": "superbwarfare:gun/ak_47/ak_47_reload_normal",
         "stream": false
       }
     ]
@@ -330,7 +330,7 @@
   "ak_47_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_reload_empty",
+        "name": "superbwarfare:gun/ak_47/ak_47_reload_empty",
         "stream": false
       }
     ]
@@ -338,7 +338,7 @@
   "devotion_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_fire_1p",
+        "name": "superbwarfare:gun/devotion/devotion_fire_1p",
         "stream": false
       }
     ]
@@ -346,7 +346,7 @@
   "devotion_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_fire_3p",
+        "name": "superbwarfare:gun/devotion/devotion_fire_3p",
         "stream": false
       }
     ]
@@ -354,7 +354,7 @@
   "devotion_far": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_far",
+        "name": "superbwarfare:gun/devotion/devotion_far",
         "stream": false
       }
     ]
@@ -362,7 +362,7 @@
   "devotion_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_veryfar",
+        "name": "superbwarfare:gun/devotion/devotion_veryfar",
         "stream": false
       }
     ]
@@ -370,7 +370,7 @@
   "devotion_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_reload_normal",
+        "name": "superbwarfare:gun/devotion/devotion_reload_normal",
         "stream": false
       }
     ]
@@ -378,7 +378,7 @@
   "devotion_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_reload_empty",
+        "name": "superbwarfare:gun/devotion/devotion_reload_empty",
         "stream": false
       }
     ]
@@ -538,7 +538,7 @@
   "bocek_zoom_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_zoom_fire_1p",
+        "name": "superbwarfare:gun/bocek/bocek_zoom_fire_1p",
         "stream": false
       }
     ]
@@ -546,7 +546,7 @@
   "bocek_zoom_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_zoom_fire_3p",
+        "name": "superbwarfare:gun/bocek/bocek_zoom_fire_3p",
         "stream": false
       }
     ]
@@ -554,7 +554,7 @@
   "bocek_shatter_cap_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_shatter_cap_fire_1p",
+        "name": "superbwarfare:gun/bocek/bocek_shatter_cap_fire_1p",
         "stream": false
       }
     ]
@@ -562,7 +562,7 @@
   "bocek_shatter_cap_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_shatter_cap_fire_3p",
+        "name": "superbwarfare:gun/bocek/bocek_shatter_cap_fire_3p",
         "stream": false
       }
     ]
@@ -570,7 +570,7 @@
   "bocek_pull_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_pull_1p",
+        "name": "superbwarfare:gun/bocek/bocek_pull_1p",
         "stream": false
       }
     ]
@@ -578,7 +578,7 @@
   "bocek_pull_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_pull_3p",
+        "name": "superbwarfare:gun/bocek/bocek_pull_3p",
         "stream": false
       }
     ]
@@ -698,7 +698,7 @@
   "rpk_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_reload_normal",
+        "name": "superbwarfare:gun/ak_47/ak_47_reload_normal",
         "stream": false
       }
     ]
@@ -706,7 +706,7 @@
   "rpk_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_reload_empty",
+        "name": "superbwarfare:gun/ak_47/ak_47_reload_empty",
         "stream": false
       }
     ]
@@ -1370,7 +1370,7 @@
   "glock_17_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_fire_1p",
+        "name": "superbwarfare:gun/glock_17/glock_17_fire_1p",
         "stream": false
       }
     ]
@@ -1378,7 +1378,7 @@
   "glock_17_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_fire_3p",
+        "name": "superbwarfare:gun/glock_17/glock_17_fire_3p",
         "stream": false
       }
     ]
@@ -1386,7 +1386,7 @@
   "glock_17_far": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_far",
+        "name": "superbwarfare:gun/glock_17/glock_17_far",
         "stream": false
       }
     ]
@@ -1394,7 +1394,7 @@
   "glock_17_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_veryfar",
+        "name": "superbwarfare:gun/glock_17/glock_17_veryfar",
         "stream": false
       }
     ]
@@ -1402,7 +1402,7 @@
   "glock_17_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_reload_normal",
+        "name": "superbwarfare:gun/glock_17/glock_17_reload_normal",
         "stream": false
       }
     ]
@@ -1410,7 +1410,7 @@
   "glock_17_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_reload_empty",
+        "name": "superbwarfare:gun/glock_17/glock_17_reload_empty",
         "stream": false
       }
     ]
@@ -3270,7 +3270,7 @@
   "aurelia_sceptre_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:aurelia_sceptre/aurelia_sceptre_fire_1p",
+        "name": "superbwarfare:gun/aurelia_sceptre/aurelia_sceptre_fire_1p",
         "stream": false
       }
     ]
@@ -3278,7 +3278,7 @@
   "aurelia_sceptre_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:aurelia_sceptre/aurelia_sceptre_fire_3p",
+        "name": "superbwarfare:gun/aurelia_sceptre/aurelia_sceptre_fire_3p",
         "stream": false
       }
     ]
@@ -3546,7 +3546,7 @@
   "awm_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_1p",
+        "name": "superbwarfare:gun/awm/awm_fire_1p",
         "stream": false
       }
     ]
@@ -3554,7 +3554,7 @@
   "awm_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_3p",
+        "name": "superbwarfare:gun/awm/awm_fire_3p",
         "stream": false
       }
     ]
@@ -3562,7 +3562,7 @@
   "awm_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_1p_s",
+        "name": "superbwarfare:gun/awm/awm_fire_1p_s",
         "stream": false
       }
     ]
@@ -3570,7 +3570,7 @@
   "awm_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_3p_s",
+        "name": "superbwarfare:gun/awm/awm_fire_3p_s",
         "stream": false
       }
     ]
@@ -3578,7 +3578,7 @@
   "awm_far": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_far",
+        "name": "superbwarfare:gun/awm/awm_far",
         "stream": false
       }
     ]
@@ -3586,7 +3586,7 @@
   "awm_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_veryfar",
+        "name": "superbwarfare:gun/awm/awm_veryfar",
         "stream": false
       }
     ]
@@ -3594,7 +3594,7 @@
   "awm_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_reload_normal",
+        "name": "superbwarfare:gun/awm/awm_reload_normal",
         "stream": false
       }
     ]
@@ -3602,7 +3602,7 @@
   "awm_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_reload_empty",
+        "name": "superbwarfare:gun/awm/awm_reload_empty",
         "stream": false
       }
     ]
@@ -3610,7 +3610,7 @@
   "awm_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_bolt",
+        "name": "superbwarfare:gun/awm/awm_bolt",
         "stream": false
       }
     ]
