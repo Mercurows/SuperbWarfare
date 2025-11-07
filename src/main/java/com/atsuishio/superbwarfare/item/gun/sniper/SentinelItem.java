@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item.gun.sniper;
 import com.atsuishio.superbwarfare.client.renderer.gun.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
@@ -127,7 +126,7 @@ public class SentinelItem extends GunGeoItem {
         var cap = data.stack.getCapability(ForgeCapabilities.ENERGY);
 
         if (cap.map(c -> c.getEnergyStored() > 0).orElse(false)) {
-            float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
+            float soundRadius = (float) data.compute().soundRadius;
 
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);

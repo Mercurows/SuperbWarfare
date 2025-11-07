@@ -2,12 +2,10 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DeserializeFromString;
-import com.atsuishio.superbwarfare.data.Prop;
+import com.atsuishio.superbwarfare.data.JsonPropertyModifier;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.nbt.CompoundTag;
@@ -26,9 +24,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier {
@@ -64,14 +60,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
     public boolean initialized() {
         return this.initialized;
-    }
-
-    private transient final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> modifiers = new HashMap<>();
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public @NotNull Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> getPropModifiers() {
-        return this.modifiers;
     }
 
     // TODO 整合弹药处理
@@ -282,36 +270,25 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     private static final Pattern AMMO_PATTERN = Pattern.compile("^(?<count>(\\d+)?)\\s*(?<prefix>[@#]?)(?<id>\\w+(:\\w+)?)\\s*(?<data>(\\{.*})?)$");
-    private static final Gson GSON = DataLoader.GSON;
 
-    @SuppressWarnings("unchecked")
-    private void parseOverrideValues() {
-        if (override != null) {
-            for (var element : override.entrySet()) {
-                var key = element.getKey();
-                var prop = GunProp.getByName(key);
-                if (prop == null) {
-                    Mod.LOGGER.warn("invalid override key: {}", key);
-                    continue;
-                }
+    private final transient JsonPropertyModifier<GunData, DefaultGunData> jsonPropModifier = new JsonPropertyModifier<>();
 
-                try {
-                    var parsedValue = GSON.fromJson(element.getValue().toString(), prop.getFieldType());
-                    this.setProperty((GunProp<Object>) prop, value -> parsedValue);
-                } catch (Exception exception) {
-                    Mod.LOGGER.error("invalid override value for key {}: {}", key, element.getValue());
-                }
-            }
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        if (this.projectile != null) {
+            rawData.projectile = projectile;
         }
+
+        if (override != null) {
+            jsonPropModifier.update(override);
+            rawData = jsonPropModifier.computeProperties(gunData, rawData);
+        }
+
+        return rawData;
     }
 
     @SuppressWarnings("invalid")
     public void init() {
-        parseOverrideValues();
-
-        if (this.projectile != null) {
-            this.setProperty(GunProp.PROJECTILE, value -> projectile.value);
-        }
 
         if (ammo == null) return;
 

@@ -1,10 +1,11 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.*;
+import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
+import com.atsuishio.superbwarfare.data.JsonPropertyModifier;
+import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
-import com.atsuishio.superbwarfare.data.gun.value.Timer;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -26,7 +27,11 @@ import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class GunData implements DefaultDataSupplier<DefaultGunData> {
@@ -105,12 +110,12 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         overHeat = new BooleanValue(gunDataTag, "OverHeat");
         zooming = new BooleanValue(gunDataTag, "Zooming");
 
-        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE);
+        var defaultFireMode = compute(false).defaultFireMode;
         if (defaultFireMode == null) {
             defaultFireMode = FireMode.SEMI.name;
         }
 
-        var fireModes = get(GunProp.AVAILABLE_FIRE_MODES);
+        var fireModes = compute(false).availableFireModes();
         for (int i = 0; i < fireModes.size(); i++) {
             if (fireModes.get(i).name.equals(defaultFireMode)) {
                 selectedFireMode.defaultValue = i;
@@ -196,79 +201,41 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return id;
     }
 
-    private final Map<GunProp<?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>> tempModifications = new HashMap<>();
-
-    @SuppressWarnings("unchecked")
-    public <T> void appendTempModification(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, DefaultGunData, T> modifier) {
-        if (modifier == null) return;
-
-        var current = (Prop.PropModifyContext<GunData, DefaultGunData, T>) tempModifications.get(prop);
-
-        if (current == null) {
-            setTempProperty(prop, modifier);
-        } else {
-            tempModifications.put(prop, (p, data, v) -> {
-                var value = current.apply((PropModifier<GunData, DefaultGunData, T>) p, data, (T) v);
-                return modifier.apply((PropModifier<GunData, DefaultGunData, T>) p, data, value);
-            });
-        }
-    }
-
-    public <T> void setTempProperty(GunProp<T> prop, @Nullable Prop.PropModifyContext<GunData, DefaultGunData, T> modifier) {
-        if (modifier == null) return;
-
-        tempModifications.put(prop, modifier);
-    }
-
     public void clearTempModifications() {
-        tempModifications.clear();
+        tempModifications = null;
     }
 
-    private final Set<GunProp<?>> operatingProps = new HashSet<>();
-
-    private final StringPropModifier<GunData, DefaultGunData> stringPropModifier = new StringPropModifier<>();
+    private final JsonPropertyModifier<GunData, DefaultGunData> jsonPropModifier = new JsonPropertyModifier<>();
 
     private DefaultGunData cache = null;
 
+    public static DefaultGunData compute(ItemStack stack) {
+        return GunData.from(stack).compute();
+    }
+
+    public Function<DefaultGunData, DefaultGunData> tempModifications = null;
+
     public DefaultGunData compute() {
-        if (cache != null) return cache;
-
-        var defaultData = getDefault().copy();
-        // TODO 正确实现计算
-
-        defaultData.limit();
-        cache = defaultData;
-
-        return defaultData;
+        return compute(true);
     }
 
-    public void update() {
-        this.cache = null;
-    }
+    public DefaultGunData compute(boolean useCache) {
+        if (cache != null && useCache) return cache;
 
-    // TODO 替换get
-    @SuppressWarnings("unchecked")
-    public <T> T get(GunProp<T> prop) {
-        var modifier = prop.asModifier(this);
-
-        if (operatingProps.contains(prop)) {
-            Mod.LOGGER.warn("recursive computation for property {}", prop.name);
-            return modifier.compute();
-        }
-        operatingProps.add(prop);
+        var rawData = getDefault().copy();
 
         // property override tag
-        stringPropModifier.modifyPropertyByString(propertyOverrideString.get(), prop);
-        modifier.apply(stringPropModifier);
+        jsonPropModifier.update(propertyOverrideString.get());
+        rawData = jsonPropModifier.computeProperties(this, rawData);
 
         // gun modifiers
-        modifier.apply(this.item);
+        rawData = item.computeProperties(this, rawData);
 
         // FireMode
-        modifier.apply(selectedFireModeInfo(modifier.get(GunProp.AVAILABLE_FIRE_MODES)));
+        rawData = selectedFireModeInfo(rawData.availableFireModes()).computeProperties(this, rawData);
 
         // AmmoConsumer
-        modifier.apply(selectedAmmoConsumer(modifier.get(GunProp.AMMO_CONSUMER)));
+        rawData = selectedAmmoConsumer(rawData.getAmmoConsumers()).computeProperties(this, rawData);
 
         // perk
         if (perk != null) {
@@ -276,16 +243,67 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
                 var instance = perk.get(type);
                 if (instance == null) continue;
 
-                modifier.apply(instance);
+                rawData = instance.computeProperties(this, rawData);
             }
         }
 
         // 临时属性修改
-        // md什么傻逼类型😅
-        modifier.applyMap((Map<Prop<GunData, DefaultGunData, ?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>>) (Object) tempModifications);
+        if (tempModifications != null) {
+            rawData = tempModifications.apply(rawData);
+        }
 
-        operatingProps.remove(prop);
-        return modifier.compute();
+        rawData.limit();
+        if (useCache) {
+            cache = rawData;
+        }
+
+        return rawData;
+    }
+
+    public void update() {
+        this.cache = null;
+    }
+
+    @Deprecated
+    public <T> T get(GunProp<T> prop) {
+        var computed = compute();
+        var modifier = prop.asModifier(this);
+
+//        if (operatingProps.contains(prop)) {
+//            Mod.LOGGER.warn("recursive computation for property {}", prop.name);
+//            return modifier.compute(computed);
+//        }
+//        operatingProps.add(prop);
+
+        // property override tag
+//        stringPropModifier.modifyPropertyByString(propertyOverrideString.get(), prop);
+//        modifier.apply(stringPropModifier);
+
+        // gun modifiers
+//        modifier.apply(this.item);
+
+        // FireMode
+//        modifier.apply(selectedFireModeInfo(modifier.compute().availableFireModes()));
+
+        // AmmoConsumer
+//        modifier.apply(selectedAmmoConsumer(modifier.compute().getAmmoConsumers()));
+
+        // perk
+//        if (perk != null) {
+//            for (var type : Perk.Type.values()) {
+//                var instance = perk.get(type);
+//                if (instance == null) continue;
+//
+//                modifier.apply(instance);
+//            }
+//        }
+
+        // 临时属性修改
+        // md什么傻逼类型😅
+//        modifier.applyMap((Map<Prop<GunData, DefaultGunData, ?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>>) (Object) tempModifications);
+
+//        operatingProps.remove(prop);
+        return modifier.compute(computed);
     }
 
     public boolean hasInfiniteBackupAmmo(@Nullable Entity shooter) {
@@ -299,7 +317,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      * 武器是否直接使用背包内弹药
      */
     public boolean useBackpackAmmo() {
-        return get(GunProp.MAGAZINE) <= 0;
+        return compute().magazine <= 0;
     }
 
     public double minZoom() {
@@ -313,8 +331,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public double zoom() {
-        if (minZoom() >= maxZoom()) return get(GunProp.DEFAULT_ZOOM);
-        return Mth.clamp(get(GunProp.DEFAULT_ZOOM), minZoom(), maxZoom());
+        if (minZoom() >= maxZoom()) return compute().defaultZoom;
+        return Mth.clamp(compute().defaultZoom, minZoom(), maxZoom());
     }
 
     public AmmoConsumer selectedAmmoConsumer(List<AmmoConsumer> consumers) {
@@ -325,11 +343,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public AmmoConsumer selectedAmmoConsumer() {
-        return selectedAmmoConsumer(get(GunProp.AMMO_CONSUMER));
+        return selectedAmmoConsumer(compute().getAmmoConsumers());
     }
 
     public void changeAmmoConsumer(int index, @Nullable Entity ammoSupplier) {
-        var consumers = this.get(GunProp.AMMO_CONSUMER);
+        var consumers = this.compute().getAmmoConsumers();
         var targetIndex = Mth.clamp(index, 0, consumers.size() - 1);
         if (targetIndex == selectedAmmoType.get()) return;
 
@@ -359,7 +377,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         this.selectedAmmoType.set(targetIndex);
 
         if (ammoSupplier instanceof Player player && player.isCreative()) {
-            this.ammo.set(this.get(GunProp.MAGAZINE));
+            this.ammo.set(this.compute().magazine);
         }
 
         this.item.whenNoAmmo(this);
@@ -375,7 +393,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public FireModeInfo selectedFireModeInfo() {
-        return selectedFireModeInfo(get(GunProp.AVAILABLE_FIRE_MODES));
+        return selectedFireModeInfo(compute().availableFireModes());
     }
 
     // 开火相关流程开始
@@ -420,7 +438,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      * 开始拉栓流程，换弹将在tick内被执行
      */
     public void startBolt() {
-        this.bolt.actionTimer.set(this.get(GunProp.BOLT_ACTION_TIME) + 1);
+        this.bolt.actionTimer.set(this.compute().boltActionTime + 1);
     }
 
     /**
@@ -525,7 +543,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      * 当前状态在换弹前的可用射击次数
      */
     public int currentAvailableShots(@Nullable Entity entity) {
-        var ammoCost = get(GunProp.AMMO_COST_PER_SHOOT);
+        var ammoCost = compute().ammoCostPerShoot;
         if (ammoCost <= 0) return Integer.MAX_VALUE;
 
         return currentAvailableAmmo(entity) / ammoCost;
@@ -542,7 +560,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      * 当前状态枪内是否拥有足够的弹药进行开火
      */
     public boolean hasEnoughAmmoToShoot(@Nullable Entity entity) {
-        return get(GunProp.AMMO_COST_PER_SHOOT) <= currentAvailableAmmo(entity);
+        return compute().ammoCostPerShoot <= currentAvailableAmmo(entity);
     }
 
     /**
@@ -558,12 +576,12 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     public void reloadAmmo(@Nullable Entity entity, boolean extraOne) {
         if (useBackpackAmmo()) return;
 
-        int mag = get(GunProp.MAGAZINE);
+        int mag = compute().magazine;
         int ammo = this.ammo.get();
         int ammoNeeded = mag - ammo + (extraOne ? 1 : 0);
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && get(GunProp.BOLT_ACTION_TIME) > 0) {
+        if (ammo == 0 && compute().boltActionTime > 0) {
             bolt.needed.set(false);
         }
 
@@ -657,7 +675,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public List<Perk> availablePerks() {
         List<Perk> availablePerks = new ArrayList<>();
-        var perkNames = get(GunProp.AVAILABLE_PERKS);
+        var perkNames = compute().availablePerks();
         if (perkNames == null || perkNames.isEmpty()) return availablePerks;
 
         List<String> sortedNames = new ArrayList<>(perkNames);
@@ -737,15 +755,15 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public boolean meleeOnly() {
-        return get(GunProp.PROJECTILE_AMOUNT) <= 0 && get(GunProp.MELEE_DAMAGE) > 0;
+        return compute().projectileAmount <= 0 && compute().meleeDamage > 0;
     }
 
     public boolean isShotgun() {
-        return get(GunProp.PROJECTILE_AMOUNT) > 1;
+        return compute().projectileAmount > 1;
     }
 
     public Vec3 firePosition() {
-        var list = this.get(GunProp.SHOOT_POS).positions;
+        var list = this.compute().shootPos.positions;
         var size = list.size();
         if (size == 0) {
             return Vec3.ZERO;
@@ -755,7 +773,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public StringOrVec3 fireDirection() {
-        var list = this.get(GunProp.SHOOT_POS).directions;
+        var list = this.compute().shootPos.directions;
         var size = list.size();
         if (size == 0) {
             return new StringOrVec3("Default");

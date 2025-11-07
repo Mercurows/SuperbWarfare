@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -179,7 +178,7 @@ public class CrossHairOverlay implements IGuiOverlay {
 
         preciseBlit(guiGraphics, POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 0, 0, 16, 16, 16, 16);
         if (!player.isSprinting() || ClientEventHandler.noSprintTicks > 0) {
-            if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
+            if (data.compute().projectileAmount > 1) {
                 shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength);
             } else {
                 normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY);
@@ -188,7 +187,7 @@ public class CrossHairOverlay implements IGuiOverlay {
     }
 
     public static void renderRepairToolCrosshair(GuiGraphics guiGraphics, GunData data, Player player, int screenWidth, int screenHeight, float moveX, float moveY) {
-        int range = data.get(GunProp.RANGE);
+        int range = data.compute().range;
         Entity lookingEntity = TraceTool.findLookingEntity(player, range);
 
         float health = 0;

@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
@@ -1154,8 +1153,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 var data = getGunData(name);
                 if (data == null) return new ProjectileWeapon();
 
-                var sound = data.get(GunProp.SOUND_INFO);
-                var icon = data.get(GunProp.ICON);
+                var sound = data.compute().soundInfo;
+                var icon = data.compute().icon;
                 return new ProjectileWeapon()
                         .zoom(false)
                         .sound(sound.change)
@@ -1204,7 +1203,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int vehicleWeaponRpm(LivingEntity living) {
         var data = getGunData(getSeatIndex(living));
         if (data == null) return 0;
-        return data.get(GunProp.RPM);
+        return data.compute().rpm;
     }
 
     public int getWeaponHeat(LivingEntity living) {
@@ -1236,23 +1235,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         modifyGunData(seatIndex, data -> {
             if (!data.canShoot(getAmmoSupplier())) return;
-            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.get(GunProp.SPREAD), true, null, null));
+            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.compute().spread, true, null, null));
         });
 
         var gunData = getGunData(getSeatIndex(living));
 
         if (gunData != null) {
-            if (gunData.get(GunProp.RECOIL_TIME) > 0) {
-                if (gunData.get(GunProp.RECOIL_TIME) > entityData.get(CANNON_RECOIL_TIME)) {
-                    entityData.set(CANNON_RECOIL_TIME, gunData.get(GunProp.RECOIL_TIME));
+            var computedGunData = gunData.compute();
+            if (computedGunData.recoilTime > 0) {
+                if (computedGunData.recoilTime > entityData.get(CANNON_RECOIL_TIME)) {
+                    entityData.set(CANNON_RECOIL_TIME, computedGunData.recoilTime);
                 }
 
                 float angle = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(getViewVector(1)) + VehicleVecUtils.getYRotFromVector(getShootVec(living, 1)));
 
                 Vec3 vo = new Vec3(0, 0, 1);
-                double f = entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / gunData.get(GunProp.RECOIL_TIME));
+                double f = entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / computedGunData.recoilTime);
                 Vec3 v1 = vo.yRot(entityData.get(YAW_WHILE_SHOOT) * Mth.DEG_TO_RAD).scale(f);
-                Vec3 v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(gunData.get(GunProp.RECOIL_FORCE));
+                Vec3 v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(computedGunData.recoilForce);
                 Vec3 v3 = v1.add(v2);
 
                 entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(vo) + VehicleVecUtils.getYRotFromVector(v3)));
@@ -1271,20 +1271,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var gunData = this.getGunData(getSeatIndex(living));
         if (gunData == null) return;
 
-        Vec3 pos = getShootPos(living, 1);
-        var soundInfo = gunData.get(GunProp.SOUND_INFO);
+        var pos = getShootPos(living, 1);
+        var computedGunData = gunData.compute();
+        var soundInfo = computedGunData.soundInfo;
         float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
         if (soundInfo.fire3P != null) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.4f, pitch, living);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, (float) (computedGunData.soundRadius * 0.4f), pitch, living);
         }
 
         if (soundInfo.fire3PFar != null) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue() * 0.7f, pitch, living);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, (float) (computedGunData.soundRadius * 0.7f), pitch, living);
         }
 
         if (soundInfo.fire3PVeryFar != null) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, gunData.get(GunProp.SOUND_RADIUS).floatValue(), pitch, living);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, (float) computedGunData.soundRadius, pitch, living);
         }
     }
 
@@ -2279,7 +2280,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             var vec3 = data.firePosition();
 
             var worldPosition = transformPosition(
-                    this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
+                    this.getTransformFromString(data.compute().shootPos.transform, ticks),
                     (float) vec3.x, (float) vec3.y, (float) vec3.z);
 
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -2308,7 +2309,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData == null) return 25;
 
-        return gunData.get(GunProp.VELOCITY).floatValue();
+        return (float) gunData.compute().velocity;
     }
 
     /**
@@ -2320,7 +2321,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData == null) return 0;
 
-        return gunData.get(GunProp.GRAVITY).floatValue();
+        return (float) gunData.compute().gravity;
     }
 
     /**
@@ -3246,7 +3247,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleMotionUtils.supportEntities(this);
     }
 
-    public RandomSource getRandom() {
+    public @NotNull RandomSource getRandom() {
         return this.random;
     }
 

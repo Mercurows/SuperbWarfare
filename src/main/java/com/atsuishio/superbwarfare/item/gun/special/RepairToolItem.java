@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.item.gun.special;
 
 import com.atsuishio.superbwarfare.client.renderer.gun.RepairToolItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -169,7 +168,7 @@ public class RepairToolItem extends GunGeoItem {
                 ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
                 iCustomKnockback.superbWarfare$setKnockbackStrength(0);
 
-                float damage = data.get(GunProp.DAMAGE).floatValue();
+                float damage = (float) data.compute().damage;
                 DamageHandler.doDamage(living, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), damage);
                 target.invulnerableTime = 0;
 

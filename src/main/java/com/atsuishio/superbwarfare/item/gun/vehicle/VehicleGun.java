@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -30,14 +29,14 @@ public class VehicleGun extends GunItem {
     }
 
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
-        return data.get(GunProp.PROJECTILE_AMOUNT) > 0
+        return data.compute().projectileAmount > 0
                 && !data.overHeat.get()
-                && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
+                && data.compute().heatPerShoot <= (100 + data.compute().heatPerShoot - data.heat.get())
                 && !data.reloading()
                 && !data.charging()
                 && !data.bolt.needed.get()
                 // TODO 能否优化这个判断
-                && (data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get()) >= data.get(GunProp.AMMO_COST_PER_SHOOT);
+                && (data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get()) >= data.compute().ammoCostPerShoot;
     }
 
     @Override

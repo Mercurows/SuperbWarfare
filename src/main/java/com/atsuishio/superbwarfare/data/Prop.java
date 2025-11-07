@@ -6,15 +6,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@Deprecated
 public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
     public static final List<Prop<?, ?, ?>> props = new ArrayList<>();
 
@@ -51,10 +50,6 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
     public Function<DEFAULT_DATA, FIELD> specialSupplier;
     public PropModifyContext<DATA, DEFAULT_DATA, FIELD> limiter;
 
-    public Type getFieldType() {
-        return this.field.getGenericType();
-    }
-
     @SuppressWarnings("unchecked")
     protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withSupplier(Function<DEFAULT_DATA, FIELD> supplier) {
         this.specialSupplier = supplier;
@@ -79,10 +74,6 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         return withLimiter((prop, data, value) -> limiter.apply(value));
     }
 
-    protected <T extends Prop<DATA, DEFAULT_DATA, FIELD>> T withLimiter(BiFunction<DATA, FIELD, FIELD> limiter) {
-        return withLimiter((prop, data, value) -> limiter.apply(data, value));
-    }
-
     @SuppressWarnings("unchecked")
     public FIELD getDefault(DEFAULT_DATA data) {
         if (this.specialSupplier != null) {
@@ -97,19 +88,14 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         }
     }
 
-    public PropModifier<DATA, DEFAULT_DATA, FIELD> asModifier(DATA data) {
-        return new PropModifier<>(this, data, limiter);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Prop<?, ?, ?>> @Nullable T getByName(String name) {
-        return (T) props.stream().filter(p -> p.name.equals(name)).findFirst().orElse(null);
+    public DeprecatedPropModifier<DATA, DEFAULT_DATA, FIELD> asModifier(DATA data) {
+        return new DeprecatedPropModifier<>(this, data);
     }
 
 
     @FunctionalInterface
     public interface PropModifyContext<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
-        FIELD apply(@NotNull PropModifier<DATA, DEFAULT_DATA, FIELD> modifier, @NotNull DATA data, @Nullable FIELD value);
+        FIELD apply(@NotNull DeprecatedPropModifier<DATA, DEFAULT_DATA, FIELD> modifier, @NotNull DATA data, @Nullable FIELD value);
     }
 
 }

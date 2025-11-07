@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -148,7 +147,7 @@ public interface WeaponVehicleEntity extends ArmedVehicleEntity {
         if (oldIndex == selectedWeapon) return;
 
         vehicle.modifyGunData(seatIndex, oldIndex, gunData -> {
-            if (gunData.get(GunProp.WITHDRAW_AMMO_WHEN_CHANGE_SLOT)) {
+            if (gunData.compute().withdrawAmmoWhenChangeSlot) {
                 gunData.withdrawAmmo(vehicle.getAmmoSupplier());
             }
         });

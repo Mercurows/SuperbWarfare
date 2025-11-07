@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
@@ -13,7 +13,12 @@ public class KillingTally extends Perk {
 
     public KillingTally() {
         super("killing_tally", Perk.Type.DAMAGE);
-        appendModification(GunProp.DAMAGE, (data, damage) -> damage * (1 + (0.1 * data.perk.getLevel(this)) * data.perk.getTag(this).getInt("KillingTally")));
+    }
+
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        rawData.damage *= 1 + (0.1 * gunData.perk.getLevel(this)) * gunData.perk.getTag(this).getInt("KillingTally");
+        return super.computeProperties(gunData, rawData);
     }
 
     @Override

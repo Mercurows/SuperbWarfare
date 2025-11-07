@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.item.gun.special;
 import com.atsuishio.superbwarfare.client.renderer.gun.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -174,7 +173,7 @@ public class BocekItem extends GunGeoItem {
                 }
             }
 
-            data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
+            data.ammo.set(data.ammo.get() - data.compute().ammoCostPerShoot);
             data.save();
         }
     }
@@ -182,14 +181,15 @@ public class BocekItem extends GunGeoItem {
     public void spawnBullet(GunData data, Player player, double power, boolean zoom) {
         ItemStack stack = data.stack;
 
-        float headshot = data.get(GunProp.HEADSHOT).floatValue();
-        float velocity = (float) (data.get(GunProp.VELOCITY) * power);
-        float bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR).floatValue();
-        float explosionRadius = data.get(GunProp.EXPLOSION_RADIUS).floatValue();
-        float explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE).floatValue();
-        int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
+        var computed = data.compute();
+        float headshot = (float) computed.headshot;
+        float velocity = (float) (computed.velocity * power);
+        float bypassArmorRate = (float) computed.bypassesArmor;
+        float explosionRadius = (float) computed.explosionRadius;
+        float explosionDamage = (float) computed.explosionDamage;
+        int projectileAmount = computed.projectileAmount;
 
-        double damage = data.get(GunProp.DAMAGE) * power;
+        double damage = computed.damage * power;
         float spread = 0.01f;
 
         if (!zoom) {

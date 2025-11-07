@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.perk.functional;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -27,7 +26,7 @@ public class FourthTimesCharm extends Perk {
             tag.remove("FourthTimesCharmTick");
             tag.remove("FourthTimesCharmCount");
 
-            int mag = data.get(GunProp.MAGAZINE);
+            int mag = data.compute().magazine;
             if (mag > 0) {
                 data.ammo.set(Math.min(mag, data.ammo.get() + 2));
             } else {

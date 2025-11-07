@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.util.Mth;
 
 import java.util.List;
 import java.util.Set;
@@ -82,7 +83,11 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
 
     @ServerOnly
     @SerializedName("Projectile")
-    public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
+    protected StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
+
+    public ProjectileInfo projectile() {
+        return projectile.value;
+    }
 
     @ServerOnly
     @SerializedName("ShootPos")
@@ -99,6 +104,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public String defaultFireMode = FireMode.SEMI.name;
     @SerializedName("AvailableFireModes")
     public ObjectToList<StringToObject<FireModeInfo>> availableFireModes = new ObjectToList<>(new StringToObject<>(new FireModeInfo()));
+
+    public List<FireModeInfo> availableFireModes() {
+        return availableFireModes.list.stream().map(m -> m.value).toList();
+    }
 
     @SerializedName("ReloadTypes")
     public Set<ReloadType> reloadTypes = Set.of(ReloadType.MAGAZINE);
@@ -123,7 +132,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public boolean zoomReload = true;
 
     @SerializedName("ClearHoldProgressAfterShoot")
-    public boolean ClearHoldProgressAfterShoot = false;
+    public boolean clearHoldProgressAfterShoot = false;
 
     @SerializedName("BurstAmount")
     public int burstAmount;
@@ -229,7 +238,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public double heatPerShoot = 0;
 
     @SerializedName("AvailablePerks")
-    public ObjectToList<String> availablePerks = new ObjectToList<>(
+    protected ObjectToList<String> availablePerks = new ObjectToList<>(
             "@Ammo",
             "superbwarfare:field_doctor",
             "superbwarfare:powerful_attraction",
@@ -240,6 +249,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
             "!superbwarfare:longer_wire",
             "!superbwarfare:cupid_arrow"
     );
+
+    public List<String> availablePerks() {
+        return availablePerks.list;
+    }
 
     @ServerOnly
     @SerializedName("DamageReduce")
@@ -299,4 +312,45 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public ModColor crosshairColor = new ModColor();
     @SerializedName("Name")
     public String name = "superbwarfare.gun.default";
+
+    @Override
+    public void limit() {
+        maxDurability = Math.max(0, maxDurability);
+        durabilityPerShoot = Math.max(0, durabilityPerShoot);
+        maxEnergy = Math.max(0, maxEnergy);
+
+        var temp = Mth.clamp(maxReceiveEnergy, -1, maxEnergy);
+        maxReceiveEnergy = temp < 0 ? maxEnergy : temp;
+
+        temp = Mth.clamp(maxExtractEnergy, -1, maxEnergy);
+        maxExtractEnergy = temp < 0 ? maxEnergy : temp;
+
+        meleeDuration = Math.max(1, meleeDuration);
+        zoomSpreadRate = Mth.clamp(zoomSpreadRate, 0, 1);
+        range = Math.max(1, range);
+
+        meleeDamageTime = Math.min(meleeDuration - 1, meleeDamageTime);
+
+        ammoCostPerShoot = Math.max(0, ammoCostPerShoot);
+        projectileAmount = Math.max(0, projectileAmount);
+        weight = Math.max(1, weight);
+
+        if (projectileAmount == 0 && meleeDamage > 0) {
+            magazine = 0;
+        } else {
+            magazine = Math.max(0, magazine);
+        }
+
+        if (reloadTypes == null) {
+            reloadTypes = Set.of();
+        }
+
+        if (seekType == null) {
+            seekType = SeekType.NONE;
+        }
+
+        autoIterativeReloadTime = Math.max(0, autoIterativeReloadTime);
+        burstAmount = Math.max(0, burstAmount);
+        rpm = Mth.clamp(rpm, 1, 114514);
+    }
 }
