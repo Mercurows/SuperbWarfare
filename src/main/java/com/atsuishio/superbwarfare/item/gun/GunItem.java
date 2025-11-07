@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.projectile.*;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -24,10 +25,7 @@ import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
-import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.RangeTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -44,10 +42,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -584,7 +579,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         data.clearTempModifications();
 
         int size = computed.shootPos.positions.size();
-        if (size > 0) {
+        if (size > 0 && !computed.shootPos.boundUpWithAmmoAmount) {
             data.fireIndex.set((data.fireIndex.get() + 1) % size);
         } else {
             data.fireIndex.reset();
@@ -827,6 +822,37 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
             if (entity instanceof WgMissileEntity wgMissileEntity && shooter != null && shooter.getVehicle() != null) {
                 wgMissileEntity.setLauncherVehicle(shooter.getVehicle().getUUID());
+            }
+
+            if (entity instanceof SwarmDroneEntity swarmDrone && shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle) {
+                Vec3 lookVec = shooter.getViewVector(1);
+                Entity lookingEntity = SeekTool.seekLivingEntity(shooter, 384, 6);
+
+                swarmDrone.setRotate(vehicle.getTurretVector(1));
+
+                if (shooter instanceof Mob mob && mob.getTarget() != null) {
+                    Entity target = mob.getTarget();
+                    if (target.getVehicle() != null) {
+                        target = target.getVehicle();
+                    }
+
+                    swarmDrone.setGuideType(0);
+                    swarmDrone.setTargetUuid(target.getStringUUID());
+                    swarmDrone.setTargetVec(target.getBoundingBox().getCenter());
+
+                } else if (shooter instanceof Player) {
+                    if (lookingEntity != null && !(lookingEntity instanceof SwarmDroneEntity swarm && swarm.getOwner() == shooter)) {
+                        swarmDrone.setGuideType(0);
+                        swarmDrone.setTargetUuid(lookingEntity.getStringUUID());
+                        swarmDrone.setTargetVec(lookingEntity.getEyePosition());
+                    } else {
+                        swarmDrone.setGuideType(1);
+                        BlockHitResult result = shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(lookVec.scale(384)),
+                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
+                        Vec3 hitPos = result.getLocation();
+                        swarmDrone.setTargetVec(hitPos);
+                    }
+                }
             }
 
             // 填充其他自定义NBT数据

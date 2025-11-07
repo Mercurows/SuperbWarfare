@@ -29,7 +29,6 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
     public static final String ID = Mod.MODID + "_yx100_swarm_drone_hud";
 
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
-    private static final ResourceLocation CROSSHAIR = Mod.loc("textures/overlay/vehicle/crosshair/common_missile.png");
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -57,15 +56,12 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
 
         if (player.getVehicle() instanceof Yx100Entity yx100 && yx100.banHand(player)) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                int color = yx100.getHudColor();
 
-                RenderHelper.blit(poseStack, CROSSHAIR, centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                 Entity naerestEntity = SeekTool.seekLivingEntity(player,384, 6);
 
                 if (naerestEntity != null) {
                     Vec3 pos = new Vec3(Mth.lerp(partialTick, naerestEntity.xo, naerestEntity.getX()), Mth.lerp(partialTick, naerestEntity.yo + naerestEntity.getEyeHeight(), naerestEntity.getEyeY()), Mth.lerp(partialTick, naerestEntity.zo, naerestEntity.getZ()));
-
                     Vec3 point = VectorUtil.worldToScreen(pos);
 
                     poseStack.pushPose();

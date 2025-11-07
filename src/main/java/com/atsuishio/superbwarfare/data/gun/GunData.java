@@ -769,7 +769,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
             return Vec3.ZERO;
         }
 
-        return list.get(this.fireIndex.get() % size);
+        if (this.compute().shootPos.boundUpWithAmmoAmount) {
+            return list.get(Mth.clamp(this.ammo.get() - 1, 0, size));
+        } else {
+            return list.get(this.fireIndex.get() % size);
+        }
     }
 
     public StringOrVec3 fireDirection() {
