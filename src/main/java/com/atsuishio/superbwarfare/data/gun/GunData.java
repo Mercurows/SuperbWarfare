@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.*;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
+import com.atsuishio.superbwarfare.data.gun.value.Timer;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -82,6 +83,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         ammo = new IntValue(gunDataTag, "Ammo");
         virtualAmmo = new IntValue(gunDataTag, "VirtualAmmo");
         backupAmmoCount = new IntValue(gunDataTag, "BackupAmmoCount");
+        autoIterativeReloadTimer = new Timer(gunDataTag, "AutoIterativeReload");
         ammoSlot = new AmmoSlot(gunDataTag);
         burstAmount = new IntValue(gunDataTag, "BurstAmount");
 
@@ -771,6 +773,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     // backup ammo count override
     public final IntValue backupAmmoCount;
+
+    public final Timer autoIterativeReloadTimer;
 
     public final AmmoSlot ammoSlot;
 

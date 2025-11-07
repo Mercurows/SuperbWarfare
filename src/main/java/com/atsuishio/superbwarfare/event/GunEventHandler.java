@@ -218,12 +218,29 @@ public class GunEventHandler {
         }
     }
 
+    // 自动单发装填
+    public static void autoIterativeReload(@Nullable Entity ammoSupplier, @NotNull GunData data) {
+        var autoIterativeReloadTime = data.get(GunProp.AUTO_ITERATIVE_RELOAD_TIME);
+        if (autoIterativeReloadTime <= 0) {
+            data.autoIterativeReloadTimer.reset();
+            return;
+        }
+
+        data.autoIterativeReloadTimer.reduce();
+        if (data.autoIterativeReloadTimer.get() == 0) {
+            iterativeLoad(ammoSupplier, data);
+
+            data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
+        }
+    }
+
     public static void gunTick(@Nullable Entity shooter, @NotNull GunData data, boolean inMainHand) {
         init(shooter, data);
         autoReload(shooter, data, inMainHand);
         tickPerk(shooter, data);
         handleCooldown(shooter, data);
         redrawExtraAmmo(shooter, data);
+        autoIterativeReload(shooter, data);
         data.shootAnimationTimer.set(Math.max(data.shootAnimationTimer.get() - 1, 0));
 
         if (inMainHand) {
