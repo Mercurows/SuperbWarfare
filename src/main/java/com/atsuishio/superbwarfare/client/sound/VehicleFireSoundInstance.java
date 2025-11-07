@@ -64,7 +64,7 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
     public static class A10FireSound extends VehicleSoundInstance {
 
         public A10FireSound(VehicleEntity mobileVehicle) {
-            super(ModSounds.A_10_FIRE.get(), Minecraft.getInstance(), mobileVehicle);
+            super(ModSounds.A_10A_FIRE.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override

@@ -2568,24 +2568,28 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int getPassengerWeaponStationControllerIndex() {
         return computed().passengerWeaponStationControllerIndex;
     }
+
     /**
      * @return 乘客武器站最大偏航速度
      */
     public float passengerWeaponYSpeed() {
         return computed().passengerWeaponStationTurnSpeed.y;
     }
+
     /**
      * @return 乘客武器站最大俯仰速度
      */
     public float passengerWeaponXSpeed() {
         return computed().passengerWeaponStationTurnSpeed.x;
     }
+
     /**
      * @return 乘客武器站最小仰角
      */
     public float passengerWeaponMinPitch() {
         return computed().passengerWeaponStationPitchClamp.x;
     }
+
     /**
      * @return 乘客武器站最大仰角
      */
@@ -2666,13 +2670,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.interpolationSteps = 10;
     }
 
+    @Deprecated(forRemoval = true, since = "0.8.9")
     protected Vec3 getDismountOffset(double vehicleWidth, double passengerWidth) {
-        double offset = (vehicleWidth + passengerWidth + (double) 1.0E-5f) / 1.75;
-        float yaw = getYRot() + 90.0f;
-        float x = -Mth.sin(yaw * ((float) Math.PI / 180));
-        float z = Mth.cos(yaw * ((float) Math.PI / 180));
-        float n = Math.max(Math.abs(x), Math.abs(z));
-        return new Vec3((double) x * offset / (double) n, 0.0, (double) z * offset / (double) n);
+        return VehicleMiscUtils.getDismountOffset(this, vehicleWidth, passengerWidth);
     }
 
     @Override
@@ -2693,7 +2693,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 下车的位置
      */
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
-        Vec3 vec3d = getDismountOffset(getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
+        Vec3 vec3d = VehicleMiscUtils.getDismountOffset(this, getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
         double ox = getX() - vec3d.x;
         double oz = getZ() + vec3d.z;
         BlockPos exitPos = new BlockPos((int) ox, (int) getY(), (int) oz);
@@ -3022,7 +3022,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     @OnlyIn(Dist.CLIENT)
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-
         int index = this.getSeatIndex(player);
         var seat = computed().seats().get(index);
         if (seat != null) {
@@ -3135,16 +3134,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void helicopterEngine(EngineInfo.Helicopter engineInfo) {
-        VehicleEngineUtils.helicopterEngine(
-                this,
-                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
-                engineInfo.increment,
-                engineInfo.decrement,
-                engineInfo.pitchSpeed,
-                engineInfo.yawSpeed,
-                engineInfo.rollSpeed,
-                engineInfo.liftSpeed
-        );
+        VehicleEngineUtils.helicopterEngine(this, engineInfo);
     }
 
     public void releaseSmokeDecoy(Vec3 vec3) {
@@ -3285,7 +3275,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public SoundEvent getEngineSound() {
-        return SoundEvents.EMPTY;
+        return this.computed().engineSound;
     }
 
     public float getEngineSoundVolume() {

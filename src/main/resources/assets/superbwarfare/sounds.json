@@ -2590,50 +2590,50 @@
       }
     ]
   },
-  "helicopter_engine_start": {
+  "ah_6_engine_start": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_engine_start"
+        "name": "superbwarfare:vehicle/ah_6/ah_6_engine_start"
       }
     ]
   },
-  "helicopter_engine": {
+  "ah_6_engine": {
     "sounds": [
       {
         "attenuation_distance": 160,
         "stream": true,
-        "name": "superbwarfare:helicopter/heli_engine"
+        "name": "superbwarfare:vehicle/ah_6/ah_6_engine"
       }
     ]
   },
-  "heli_cannon_fire_1p": {
+  "ah_6_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_fire_1p",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "heli_cannon_fire_3p": {
+  "ah_6_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_fire_3p",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_fire_3p",
         "stream": false
       }
     ]
   },
-  "heli_cannon_far": {
+  "ah_6_cannon_far": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_far",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_far",
         "stream": false
       }
     ]
   },
-  "heli_cannon_veryfar": {
+  "ah_6_cannon_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_veryfar",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_veryfar",
         "stream": false
       }
     ]
@@ -3175,21 +3175,21 @@
       }
     ]
   },
-  "a10_engine": {
+  "a_10a_engine": {
     "sounds": [
       {
         "attenuation_distance": 256,
         "stream": true,
-        "name": "superbwarfare:a10/a10_engine"
+        "name": "superbwarfare:vehicle/a_10a/a_10a_engine"
       }
     ]
   },
-  "a10_fire": {
+  "a_10a_fire": {
     "sounds": [
       {
         "attenuation_distance": 256,
         "stream": true,
-        "name": "superbwarfare:a10/a10_fire"
+        "name": "superbwarfare:vehicle/a_10a/a_10a_fire"
       }
     ]
   },
@@ -3218,18 +3218,18 @@
       }
     ]
   },
-  "jet_lock": {
+  "missile_locking": {
     "sounds": [
       {
-        "name": "superbwarfare:a10/jet_lock",
+        "name": "superbwarfare:vehicle/common/missile_locking",
         "stream": false
       }
     ]
   },
-  "jet_lockon": {
+  "missile_locked": {
     "sounds": [
       {
-        "name": "superbwarfare:a10/jet_lockon",
+        "name": "superbwarfare:vehicle/common/missile_locked",
         "stream": false
       }
     ]

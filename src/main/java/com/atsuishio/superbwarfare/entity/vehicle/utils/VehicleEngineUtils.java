@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils;
 
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -234,7 +234,15 @@ public final class VehicleEngineUtils {
         }
     }
 
-    public static void helicopterEngine(VehicleEntity vehicle, int energyCost, float powerAdd, float powerReduce, float pitchSpeed, float yawSpeed, float rollSpeed, float lift) {
+    public static void helicopterEngine(VehicleEntity vehicle, EngineInfo.Helicopter engineInfo) {
+        int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
+        float powerAdd = engineInfo.increment;
+        float powerReduce = engineInfo.decrement;
+        float pitchSpeed = engineInfo.pitchSpeed;
+        float yawSpeed = engineInfo.yawSpeed;
+        float rollSpeed = engineInfo.rollSpeed;
+        float lift = engineInfo.liftSpeed;
+
         if (vehicle.onGround()) {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.8, 1, 0.8));
         } else {
@@ -307,7 +315,7 @@ public final class VehicleEngineUtils {
 
                 if (!vehicle.engineStart && up) {
                     vehicle.engineStart = true;
-                    vehicle.level().playSound(null, vehicle, ModSounds.HELICOPTER_ENGINE_START.get(), vehicle.getSoundSource(), 3, 1);
+                    vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
                 }
 
                 if (up && vehicle.engineStartOver) {
