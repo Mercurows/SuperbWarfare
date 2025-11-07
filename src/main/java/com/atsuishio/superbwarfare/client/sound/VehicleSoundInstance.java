@@ -105,7 +105,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
     public static class TrackSound extends VehicleSoundInstance {
 
         public TrackSound(VehicleEntity mobileVehicle) {
-            super(ModSounds.TRACK_MOVE.get(), Minecraft.getInstance(), mobileVehicle);
+            super(ModSounds.TRACK_VEHICLE_STEP.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override
