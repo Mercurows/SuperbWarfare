@@ -339,26 +339,6 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
     }
 
     @Override
-    public float turretYSpeed() {
-        return 8;
-    }
-
-    @Override
-    public float turretXSpeed() {
-        return 12;
-    }
-
-    @Override
-    public float turretMinPitch() {
-        return -45;
-    }
-
-    @Override
-    public float turretMaxPitch() {
-        return 40;
-    }
-
-    @Override
     public boolean basicEnemyFilter(Entity pEntity) {
         if (pEntity instanceof Projectile) return false;
         if (this.getOwner() == null) return false;
@@ -374,16 +354,6 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         return (projectile.getOwner() != null && !projectile.getOwner().isAlliedTo(this.getOwner()))
                 || (projectile.getOwner() != null && projectile.getOwner().getTeam() != null && TDMSavedData.enabledTDM(projectile.getOwner()))
                 || projectile.getOwner() == null;
-    }
-
-    @Override
-    public Vec3 getTurretPosition() {
-        return new Vec3(0, 2, -0.05843125);
-    }
-
-    @Override
-    public Vec3 getBarrelPosition() {
-        return new Vec3(0, 0.41615625, -0.02555);
     }
 
     public Vec3 getShootPos(float pPartialTicks) {

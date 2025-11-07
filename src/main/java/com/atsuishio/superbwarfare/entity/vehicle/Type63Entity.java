@@ -166,12 +166,12 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
             if (OBB.getLookingObb(player, player.entityInteractionRange()) == yawController) {
                 interactEvent(new Vec3(yawController.center()));
-                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -15, 15));
+                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -turretMaxYaw(), -turretMinYaw()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.entityInteractionRange()) == pitchController) {
                 interactEvent(new Vec3(pitchController.center()));
-                entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -60, 5));
+                entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -turretMaxPitch(), -turretMinPitch()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
 
@@ -354,16 +354,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
         this.setLeftWheelRot((float) (this.getLeftWheelRot() - 1.167 * s0));
         this.setRightWheelRot((float) (this.getRightWheelRot() - 1.167 * s0));
-    }
-
-    @Override
-    public Vec3 getTurretPosition() {
-        return new Vec3(0, 0.45703125, -0.1625);
-    }
-
-    @Override
-    public Vec3 getBarrelPosition() {
-        return new Vec3(0, 0.65, -0.203125);
     }
 
     public Vec3 getShootVector(float pPartialTicks) {

@@ -114,30 +114,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         this.refreshDimensions();
     }
 
-    // 炮塔最大水平旋转速度
-    @Override
-    public float turretYSpeed() {
-        return 25;
-    }
-
-    // 炮塔最大俯仰旋转速度
-    @Override
-    public float turretXSpeed() {
-        return 25F;
-    }
-
-    // 炮塔最小俯角
-    @Override
-    public float turretMinPitch() {
-        return -25f;
-    }
-
-    // 炮塔最大仰角
-    @Override
-    public float turretMaxPitch() {
-        return 50f;
-    }
-
     // 炮弹发射位置
     @Override
     public Vec3 getShootPos(int seatIndex, float ticks) {
@@ -293,16 +269,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
-    @Override
-    public Vec3 getBarrelPosition() {
-        return new Vec3(0, 0.5088375, 0.04173125);
-    }
-
-    @Override
-    public Vec3 getTurretPosition() {
-        return new Vec3(0, 2.5616625, -0.565625);
-    }
-
     private PlayState firePredicate(AnimationState<SpeedboatEntity> event) {
         if (this.entityData.get(FIRE_ANIM) > 1) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.speedboat.fire"));
@@ -366,10 +332,5 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         Vector4f worldPosition2 = transformPosition(transform, 0, 2.0625f, -0.71875f);
         this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.obb2.setRotation(VectorTool.combineRotations(1, this));
-    }
-
-    @Override
-    public boolean hasTurret() {
-        return true;
     }
 }

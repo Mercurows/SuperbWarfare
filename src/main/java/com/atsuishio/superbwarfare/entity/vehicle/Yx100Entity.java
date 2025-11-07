@@ -332,30 +332,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         this.refreshDimensions();
     }
 
-    // 炮塔最大水平旋转速度
-    @Override
-    public float turretYSpeed() {
-        return 5;
-    }
-
-    // 炮塔最大俯仰旋转速度
-    @Override
-    public float turretXSpeed() {
-        return 5F;
-    }
-
-    // 炮塔最小俯角
-    @Override
-    public float turretMinPitch() {
-        return -10f;
-    }
-
-    // 炮塔最大仰角
-    @Override
-    public float turretMaxPitch() {
-        return 30f;
-    }
-
     // 炮弹发射位置
     @Override
     public Vec3 getShootPos(int seatIndex, float ticks) {
@@ -715,16 +691,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     }
 
     @Override
-    public Vec3 getBarrelPosition() {
-        return new Vec3(0f, 0.56345, 0.6477125);
-    }
-
-    @Override
-    public Vec3 getTurretPosition() {
-        return new Vec3(0, 2.1059375, -0.43125);
-    }
-
-    @Override
     public Vec3 getGunnerPosition() {
         return new Vec3(-0.75805625f, 1.1446375, -0.57275625);
     }
@@ -955,15 +921,5 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         Vector4f worldPositionT2 = transformPosition(transformT, 0, 0.40625f, 1.65625f);
         this.obbTurret2.center().set(new Vector3f(worldPositionT2.x, worldPositionT2.y, worldPositionT2.z));
         this.obbTurret2.setRotation(VectorTool.combineRotationsTurret(1, this));
-    }
-
-    @Override
-    public boolean turretHasPassengerWeapon() {
-        return true;
-    }
-
-    @Override
-    public boolean hasTurret() {
-        return true;
     }
 }

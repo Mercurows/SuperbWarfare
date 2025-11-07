@@ -15,7 +15,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -81,30 +80,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         this.refreshDimensions();
     }
 
-    // 炮塔最大水平旋转速度
-    @Override
-    public float turretYSpeed() {
-        return 10;
-    }
-
-    // 炮塔最大俯仰旋转速度
-    @Override
-    public float turretXSpeed() {
-        return 12.5F;
-    }
-
-    // 炮塔最小俯角
-    @Override
-    public float turretMinPitch() {
-        return -15f;
-    }
-
-    // 炮塔最大仰角
-    @Override
-    public float turretMaxPitch() {
-        return 32.5f;
-    }
-
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.LAV_ENGINE.get();
@@ -113,16 +88,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public float getEngineSoundVolume() {
         return Mth.abs(entityData.get(POWER)) * 0.4f;
-    }
-
-    @Override
-    public Vec3 getBarrelPosition() {
-        return new Vec3(0.0234375, 0.33795, 0.825);
-    }
-
-    @Override
-    public Vec3 getTurretPosition() {
-        return new Vec3(0, 2.4003, 0);
     }
 
     private PlayState cannonFirePredicate(AnimationState<Lav150Entity> event) {
@@ -208,10 +173,5 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         Vector4f worldPositionT = transformPosition(transformT, 0, 0.3625f, 0f);
         this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
         this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
-    }
-
-    @Override
-    public boolean hasTurret() {
-        return true;
     }
 }

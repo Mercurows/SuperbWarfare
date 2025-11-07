@@ -14,6 +14,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;
@@ -140,6 +142,30 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
      */
     @SerializedName("CollisionLevel")
     public CollisionLevel collisionLevel = new CollisionLevel();
+
+    @ServerOnly
+    @SerializedName("TurretPos")
+    public Vec3 turretPos = null;
+
+    @ServerOnly
+    @SerializedName("TurretTurnSpeed")
+    public Vec2 turretTurnSpeed = new Vec2(5, 5);
+
+    @ServerOnly
+    @SerializedName("TurretYawClamp")
+    public Vec2 turretYawClamp = new Vec2(-514, 514);
+
+    @ServerOnly
+    @SerializedName("TurretPitchClamp")
+    public Vec2 turretPitchClamp = new Vec2(-10, 30);
+
+    @ServerOnly
+    @SerializedName("TurretControllerIndex")
+    public int turretControllerIndex = 0;
+
+    @ServerOnly
+    @SerializedName("BarrelPos")
+    public Vec3 barrelPos = Vec3.ZERO;
 
     @Override
     public void limit() {
