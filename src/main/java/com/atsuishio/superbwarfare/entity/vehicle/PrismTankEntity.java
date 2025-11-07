@@ -34,7 +34,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -100,12 +99,12 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
                 new VehicleWeapon[]{
                         new LaserWeapon()
                                 .sound(ModSounds.INTO_MISSILE.get())
-                                .sound1p(ModSounds.PRISM_FIRE_1P.get())
-                                .sound3p(ModSounds.PRISM_FIRE_3P.get()),
+                                .sound1p(ModSounds.PRISM_TANK_FIRE_HIGH_1P.get())
+                                .sound3p(ModSounds.PRISM_TANK_FIRE_HIGH_3P.get()),
                         new LaserWeapon()
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .sound1p(ModSounds.PRISM_FIRE_1P_2.get())
-                                .sound3p(ModSounds.PRISM_FIRE_3P_2.get()),
+                                .sound1p(ModSounds.PRISM_TANK_FIRE_LOW_1P.get())
+                                .sound3p(ModSounds.PRISM_TANK_FIRE_LOW_3P.get()),
                 }
         };
     }
@@ -374,11 +373,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         Vec3 vec31 = this.getBarrelVector(1);
         Vec3 vec32 = pos.add(vec31.x * pHitDistance, vec31.y * pHitDistance, vec31.z * pHitDistance);
         return this.level().clip(new ClipContext(pos, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.PRISM_ENGINE.get();
     }
 
     @Override

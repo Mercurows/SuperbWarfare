@@ -44,7 +44,7 @@
     "ExplosionRadius": 16,
     "CrashPassengers": true
   },
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/a10_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/a_10a_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Airplane",
   "EngineSound": "superbwarfare:a_10a_engine"
