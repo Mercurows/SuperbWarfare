@@ -20,7 +20,6 @@ import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -244,11 +243,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         }
 
         this.setZRot(this.roll * 0.85f);
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.BOAT_ENGINE.get();
     }
 
     @Override

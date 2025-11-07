@@ -130,6 +130,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     // 引擎音效
     @SerializedName("EngineSound")
     public SoundEvent engineSound = SoundEvents.EMPTY;
+    // 喇叭音效
+    @SerializedName("HornSound")
+    public SoundEvent hornSound = SoundEvents.EMPTY;
 
     @SerializedName("RotateOffsetHeight")
     public float rotateOffsetHeight = 0;

@@ -86,5 +86,7 @@
       [0.15, 0.09, false],
       [1, 0.3, false]
     ]
-  }
+  },
+  "EngineSound": "superbwarfare:truck_engine",
+  "HornSound": "superbwarfare:truck_horn"
 }

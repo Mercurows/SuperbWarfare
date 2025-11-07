@@ -202,8 +202,8 @@
       "Crosshair": "@VehicleCommonMissile",
       "Name": "",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:decoy_fire",
-        "Fire3P": "superbwarfare:decoy_fire",
+        "Fire1P": "superbwarfare:decoy_release",
+        "Fire3P": "superbwarfare:decoy_release",
         "ReloadEnd": "superbwarfare:missile_reload"
       },
       "SoundRadius": 4
@@ -280,5 +280,6 @@
       [0.1, 0.05, false],
       [1, 0.3, false]
     ]
-  }
+  },
+  "EngineSound": "superbwarfare:vehicle/yx_100/yx_100_engine"
 }

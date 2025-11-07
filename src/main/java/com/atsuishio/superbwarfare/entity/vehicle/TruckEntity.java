@@ -5,14 +5,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -126,16 +124,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         }
 
         this.refreshDimensions();
-    }
-
-    @Override
-    public @NotNull SoundEvent getHornSound() {
-        return ModSounds.TRUCK_HORN.get();
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.TRUCK_ENGINE.get();
     }
 
     @Override

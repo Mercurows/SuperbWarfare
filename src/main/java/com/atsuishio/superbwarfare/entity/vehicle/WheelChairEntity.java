@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -204,11 +203,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         this.handBusyTime = 4;
         setForwardInputDown(false);
         setBackInputDown(false);
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.WHEEL_CHAIR_ENGINE.get();
     }
 
     @Override
