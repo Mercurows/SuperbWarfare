@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CameraTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +18,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -235,11 +233,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
     @Override
     public boolean engineRunning() {
         return (getFirstPassenger() != null && Math.abs(getDeltaMovement().length()) > 0);
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.FLY_LOOP.get();
     }
 
     @Override

@@ -106,5 +106,6 @@
       [0, 0, true],
       [1, 0.15, false]
     ]
-  }
+  },
+  "EngineSound": "superbwarfare:speedboat_engine"
 }

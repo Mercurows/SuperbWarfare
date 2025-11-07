@@ -2488,12 +2488,12 @@
       }
     ]
   },
-  "boat_engine": {
+  "speedboat_engine": {
     "sounds": [
       {
         "attenuation_distance": 48,
         "stream": false,
-        "name": "superbwarfare:speedboat/engine"
+        "name": "superbwarfare:vehicle/speedboat/speedboat_engine"
       }
     ]
   },
@@ -2557,14 +2557,14 @@
     "sounds": [
       {
         "stream": true,
-        "name": "superbwarfare:wheel_chair/wheel_chair_engine"
+        "name": "superbwarfare:vehicle/wheel_chair/wheel_chair_engine"
       }
     ]
   },
   "wheel_chair_jump": {
     "sounds": [
       {
-        "name": "superbwarfare:wheel_chair/wheel_chair_jump",
+        "name": "superbwarfare:vehicle/wheel_chair/wheel_chair_jump",
         "stream": false
       }
     ]
@@ -2946,7 +2946,7 @@
   "yx_100_reload": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_reload",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_reload",
         "stream": false
       }
     ]
@@ -2954,7 +2954,7 @@
   "yx_100_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_fire_1p",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_fire_1p",
         "stream": false
       }
     ]
@@ -2962,7 +2962,7 @@
   "yx_100_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_fire_3p",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_fire_3p",
         "stream": false
       }
     ]
@@ -2970,7 +2970,7 @@
   "yx_100_far": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_far",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_far",
         "stream": false
       }
     ]
@@ -2978,7 +2978,7 @@
   "yx_100_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_veryfar",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_veryfar",
         "stream": false
       }
     ]
@@ -2988,7 +2988,7 @@
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:yx100/yx100_engine"
+        "name": "superbwarfare:vehicle/yx_100/yx_100_engine"
       }
     ]
   },
@@ -3283,10 +3283,10 @@
       }
     ]
   },
-  "fly_loop": {
+  "tom_6_engine": {
     "sounds": [
       {
-        "name": "superbwarfare:fly_loop",
+        "name": "superbwarfare:vehicle/tom_6/tom_6_engine",
         "stream": false
       }
     ]
@@ -3720,7 +3720,7 @@
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:truck/truck_engine"
+        "name": "superbwarfare:vehicle/truck/truck_engine"
       }
     ]
   },
@@ -3729,7 +3729,7 @@
       {
         "attenuation_distance": 128,
         "stream": true,
-        "name": "superbwarfare:truck/truck_horn"
+        "name": "superbwarfare:vehicle/truck/truck_horn"
       }
     ]
   },

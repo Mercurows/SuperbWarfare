@@ -8,11 +8,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -102,11 +100,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         inertiaRotate(1.2f);
 
         this.refreshDimensions();
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.YX_100_ENGINE.get();
     }
 
     @Override

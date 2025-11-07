@@ -3435,7 +3435,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @NotNull
     public SoundEvent getHornSound() {
-        return SoundEvents.EMPTY;
+        return this.computed().hornSound;
     }
 
     @NotNull
