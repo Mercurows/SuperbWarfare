@@ -6,7 +6,7 @@ import net.minecraft.util.Mth;
 public class Yx100Model extends VehicleModel<Yx100Entity> {
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 

@@ -41,7 +41,7 @@ public class Bl132Model extends VehicleModel<Bl132Entity> {
     }
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 }

@@ -29,7 +29,7 @@ public class Mle1934Model extends VehicleModel<Mle1934Entity> {
     }
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 }

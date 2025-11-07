@@ -28,7 +28,7 @@ public class PrismTankModel extends VehicleModel<PrismTankEntity> {
     }
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 

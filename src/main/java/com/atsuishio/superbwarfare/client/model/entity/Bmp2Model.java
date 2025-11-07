@@ -91,7 +91,7 @@ public class Bmp2Model extends VehicleModel<Bmp2Entity> {
     }
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 }

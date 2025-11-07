@@ -35,7 +35,7 @@ public final class VehicleWeaponUtils {
         float ySpeed = vehicle.turretYSpeed();
         float xSpeed = vehicle.turretXSpeed();
 
-        Entity driver = vehicle.getNthEntity(vehicle.turretControllerIndex());
+        Entity driver = vehicle.getNthEntity(vehicle.getTurretControllerIndex());
         if (driver == null) {
             vehicle.turretYRotLock = 0;
         } else {
