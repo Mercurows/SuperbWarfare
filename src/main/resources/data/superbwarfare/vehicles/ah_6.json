@@ -97,8 +97,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:small_rocket_fire_1p",
         "Fire3P": "superbwarfare:small_rocket_fire_3p",
-        "Fire3PFar": "null",
-        "Fire3PVeryFar": "null",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
         "ReloadEnd": "superbwarfare:missile_reload",
         "Change": "superbwarfare:into_missile"
       },

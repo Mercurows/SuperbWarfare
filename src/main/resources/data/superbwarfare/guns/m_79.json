@@ -32,5 +32,6 @@
     "CancellableSounds": [
       "superbwarfare:m_79_reload_empty"
     ]
-  }
+  },
+  "Crosshair": "@GunGrenade"
 }

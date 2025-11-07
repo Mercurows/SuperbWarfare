@@ -15,6 +15,7 @@
     "MinDistance": 100
   },
   "AmmoType": "minecraft:arrow",
+  "Crosshair": "@GunBocek",
   "Icon": "superbwarfare:textures/gun_icon/bocek_icon.png",
   "AvailablePerks": [
     "@Ammo",

@@ -10,6 +10,5 @@
     "Fire": "animation.repair_tool.fire"
   },
   "EnergyBarColor": "0xFFFF00",
-  "CanZoom": false,
-  "Crosshair": "@GunRepairTool"
+  "CanZoom": false
 }

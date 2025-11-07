@@ -296,7 +296,6 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("ShootAnimationTime")
     public int shootAnimationTime = 3;
 
-    // TODO 能不能挪assets里面去
     @SerializedName("Icon")
     public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();
     /*
