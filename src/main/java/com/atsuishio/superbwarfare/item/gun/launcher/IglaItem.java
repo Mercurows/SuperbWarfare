@@ -122,17 +122,16 @@ public class IglaItem extends GunGeoItem {
                     shooter.getZ() + 1.8 * shooter.getLookAngle().z,
                     30, 0.4, 0.4, 0.4, 0.005, true);
 
-
             if (shooter instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.JAVELIN_FIRE_1P.get(), 2, 1);
+                SoundTool.playLocalSound(serverPlayer, ModSounds.IGLA_FIRE_1P.get(), 2, 1);
                 NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
             }
 
-            SoundTool.playDistantSound(serverLevel, ModSounds.JAVELIN_FIRE_3P.get(), shooter.position(), 4, 1, shooter);
-            SoundTool.playDistantSound(serverLevel, ModSounds.JAVELIN_FAR.get(), shooter.position(), 10, 1, shooter);
-
+            SoundTool.playDistantSound(serverLevel, ModSounds.IGLA_FIRE_3P.get(), shooter.position(), 4, 1, shooter);
+            SoundTool.playDistantSound(serverLevel, ModSounds.IGLA_FAR.get(), shooter.position(), 10, 1, shooter);
         }
 
         data.ammo.set(data.ammo.get() - data.compute().ammoCostPerShoot);
+        data.save();
     }
 }

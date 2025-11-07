@@ -11,27 +11,9 @@ public class ModSounds {
 
     public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Mod.MODID);
 
-    public static final RegistryObject<SoundEvent> REPAIR_TOOL_FIRE_1P = REGISTRY.register("repair_tool_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repair_tool_fire_1p")));
-    public static final RegistryObject<SoundEvent> REPAIR_TOOL_FIRE_3P = REGISTRY.register("repair_tool_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repair_tool_fire_3p")));
-    public static final RegistryObject<SoundEvent> REPAIRING = REGISTRY.register("repairing", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repairing")));
-
-    public static final RegistryObject<SoundEvent> TASER_FIRE_1P = REGISTRY.register("taser_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_fire_1p")));
-    public static final RegistryObject<SoundEvent> TASER_FIRE_3P = REGISTRY.register("taser_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_fire_3p")));
-    public static final RegistryObject<SoundEvent> TASER_RELOAD_EMPTY = REGISTRY.register("taser_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_reload_empty")));
-
     public static final RegistryObject<SoundEvent> SHOCK = REGISTRY.register("shock", () -> SoundEvent.createVariableRangeEvent(Mod.loc("shock")));
     public static final RegistryObject<SoundEvent> ELECTRIC = REGISTRY.register("electric", () -> SoundEvent.createVariableRangeEvent(Mod.loc("electric")));
     public static final RegistryObject<SoundEvent> MELEE_HIT = REGISTRY.register("melee_hit", () -> SoundEvent.createVariableRangeEvent(Mod.loc("melee_hit")));
-
-    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_1P = REGISTRY.register("trachelium_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_1p")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_3P = REGISTRY.register("trachelium_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_3p")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_FAR = REGISTRY.register("trachelium_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_far")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_VERYFAR = REGISTRY.register("trachelium_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_veryfar")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_1P_S = REGISTRY.register("trachelium_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_1p_s")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_3P_S = REGISTRY.register("trachelium_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_3p_s")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_FAR_S = REGISTRY.register("trachelium_far_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_far_s")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_RELOAD_EMPTY = REGISTRY.register("trachelium_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_reload_empty")));
-    public static final RegistryObject<SoundEvent> TRACHELIUM_BOLT = REGISTRY.register("trachelium_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_bolt")));
 
     public static final RegistryObject<SoundEvent> TRIGGER_CLICK = REGISTRY.register("trigger_click", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trigger_click")));
     public static final RegistryObject<SoundEvent> HIT = REGISTRY.register("hit", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hit")));
@@ -56,120 +38,15 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> IDLE = REGISTRY.register("idle", () -> SoundEvent.createVariableRangeEvent(Mod.loc("idle")));
     public static final RegistryObject<SoundEvent> HENG = REGISTRY.register("heng", () -> SoundEvent.createVariableRangeEvent(Mod.loc("heng")));
 
-    public static final RegistryObject<SoundEvent> SKS_FIRE_1P = REGISTRY.register("sks_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_fire_1p")));
-    public static final RegistryObject<SoundEvent> SKS_FIRE_3P = REGISTRY.register("sks_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_fire_3p")));
-    public static final RegistryObject<SoundEvent> SKS_RELOAD_NORMAL = REGISTRY.register("sks_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_reload_normal")));
-    public static final RegistryObject<SoundEvent> SKS_RELOAD_EMPTY = REGISTRY.register("sks_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_reload_empty")));
-    public static final RegistryObject<SoundEvent> SKS_FAR = REGISTRY.register("sks_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_far")));
-    public static final RegistryObject<SoundEvent> SKS_VERYFAR = REGISTRY.register("sks_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_veryfar")));
-
     public static final RegistryObject<SoundEvent> LAND = REGISTRY.register("land", () -> SoundEvent.createVariableRangeEvent(Mod.loc("land")));
     public static final RegistryObject<SoundEvent> HIT_WATER = REGISTRY.register("hit_water", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hit_water")));
     public static final RegistryObject<SoundEvent> HEADSHOT = REGISTRY.register("headshot", () -> SoundEvent.createVariableRangeEvent(Mod.loc("headshot")));
-
-    public static final RegistryObject<SoundEvent> RPG_FIRE_1P = REGISTRY.register("rpg_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_fire_1p")));
-    public static final RegistryObject<SoundEvent> RPG_FIRE_3P = REGISTRY.register("rpg_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_fire_3p")));
-    public static final RegistryObject<SoundEvent> RPG_FAR = REGISTRY.register("rpg_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_far")));
-    public static final RegistryObject<SoundEvent> RPG_VERYFAR = REGISTRY.register("rpg_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_veryfar")));
-    public static final RegistryObject<SoundEvent> RPG_RELOAD_EMPTY = REGISTRY.register("rpg_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_reload_empty")));
 
     public static final RegistryObject<SoundEvent> MORTAR_FIRE = REGISTRY.register("mortar_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mortar_fire")));
     public static final RegistryObject<SoundEvent> MORTAR_LOAD = REGISTRY.register("mortar_load", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mortar_load")));
     public static final RegistryObject<SoundEvent> MORTAR_DISTANT = REGISTRY.register("mortar_distant", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mortar_distant")));
 
     public static final RegistryObject<SoundEvent> FIRE_RATE = REGISTRY.register("firerate", () -> SoundEvent.createVariableRangeEvent(Mod.loc("firerate")));
-
-    public static final RegistryObject<SoundEvent> RPK_FIRE_1P = REGISTRY.register("rpk_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_1p")));
-    public static final RegistryObject<SoundEvent> RPK_FIRE_3P = REGISTRY.register("rpk_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_3p")));
-    public static final RegistryObject<SoundEvent> RPK_FIRE_1P_S = REGISTRY.register("rpk_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_1p_s")));
-    public static final RegistryObject<SoundEvent> RPK_FIRE_3P_S = REGISTRY.register("rpk_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_3p_s")));
-    public static final RegistryObject<SoundEvent> RPK_FAR = REGISTRY.register("rpk_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_far")));
-    public static final RegistryObject<SoundEvent> RPK_VERYFAR = REGISTRY.register("rpk_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_veryfar")));
-    public static final RegistryObject<SoundEvent> RPK_RELOAD_NORMAL = REGISTRY.register("rpk_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_reload_normal")));
-    public static final RegistryObject<SoundEvent> RPK_RELOAD_EMPTY = REGISTRY.register("rpk_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_reload_empty")));
-
-    public static final RegistryObject<SoundEvent> NTW_20_FIRE_1P = REGISTRY.register("ntw_20_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_fire_1p")));
-    public static final RegistryObject<SoundEvent> NTW_20_FIRE_3P = REGISTRY.register("ntw_20_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_fire_3p")));
-    public static final RegistryObject<SoundEvent> NTW_20_FAR = REGISTRY.register("ntw_20_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_far")));
-    public static final RegistryObject<SoundEvent> NTW_20_VERYFAR = REGISTRY.register("ntw_20_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_veryfar")));
-    public static final RegistryObject<SoundEvent> NTW_20_RELOAD_NORMAL = REGISTRY.register("ntw_20_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_reload_normal")));
-    public static final RegistryObject<SoundEvent> NTW_20_RELOAD_EMPTY = REGISTRY.register("ntw_20_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_reload_empty")));
-    public static final RegistryObject<SoundEvent> NTW_20_BOLT = REGISTRY.register("ntw_20_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_bolt")));
-
-    public static final RegistryObject<SoundEvent> VECTOR_FIRE_1P = REGISTRY.register("vector_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_1p")));
-    public static final RegistryObject<SoundEvent> VECTOR_FIRE_3P = REGISTRY.register("vector_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_3p")));
-    public static final RegistryObject<SoundEvent> VECTOR_FAR = REGISTRY.register("vector_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_far")));
-    public static final RegistryObject<SoundEvent> VECTOR_VERYFAR = REGISTRY.register("vector_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_veryfar")));
-    public static final RegistryObject<SoundEvent> VECTOR_FIRE_1P_S = REGISTRY.register("vector_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_1p_s")));
-    public static final RegistryObject<SoundEvent> VECTOR_FIRE_3P_S = REGISTRY.register("vector_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_3p_s")));
-    public static final RegistryObject<SoundEvent> VECTOR_FAR_S = REGISTRY.register("vector_far_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_far_s")));
-    public static final RegistryObject<SoundEvent> VECTOR_RELOAD_NORMAL = REGISTRY.register("vector_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_reload_normal")));
-    public static final RegistryObject<SoundEvent> VECTOR_RELOAD_EMPTY = REGISTRY.register("vector_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_reload_empty")));
-
-    public static final RegistryObject<SoundEvent> SENTINEL_FIRE_1P = REGISTRY.register("sentinel_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_fire_1p")));
-    public static final RegistryObject<SoundEvent> SENTINEL_FIRE_3P = REGISTRY.register("sentinel_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_fire_3p")));
-    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_FIRE_1P = REGISTRY.register("sentinel_charge_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_fire_1p")));
-    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_FIRE_3P = REGISTRY.register("sentinel_charge_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_fire_3p")));
-    public static final RegistryObject<SoundEvent> SENTINEL_FAR = REGISTRY.register("sentinel_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_far")));
-    public static final RegistryObject<SoundEvent> SENTINEL_VERYFAR = REGISTRY.register("sentinel_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_veryfar")));
-    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_FAR = REGISTRY.register("sentinel_charge_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_far")));
-    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_VERYFAR = REGISTRY.register("sentinel_charge_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_veryfar")));
-    public static final RegistryObject<SoundEvent> SENTINEL_RELOAD_NORMAL = REGISTRY.register("sentinel_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_reload_normal")));
-    public static final RegistryObject<SoundEvent> SENTINEL_RELOAD_EMPTY = REGISTRY.register("sentinel_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_reload_empty")));
-    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE = REGISTRY.register("sentinel_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge")));
-    public static final RegistryObject<SoundEvent> SENTINEL_BOLT = REGISTRY.register("sentinel_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_bolt")));
-
-    public static final RegistryObject<SoundEvent> SVD_FIRE_1P = REGISTRY.register("svd_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_1p")));
-    public static final RegistryObject<SoundEvent> SVD_FIRE_3P = REGISTRY.register("svd_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_3p")));
-    public static final RegistryObject<SoundEvent> SVD_FAR = REGISTRY.register("svd_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_far")));
-    public static final RegistryObject<SoundEvent> SVD_VERYFAR = REGISTRY.register("svd_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_veryfar")));
-    public static final RegistryObject<SoundEvent> SVD_FIRE_1P_S = REGISTRY.register("svd_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_1p_s")));
-    public static final RegistryObject<SoundEvent> SVD_FIRE_3P_S = REGISTRY.register("svd_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_3p_s")));
-    public static final RegistryObject<SoundEvent> SVD_FAR_S = REGISTRY.register("svd_far_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_far_s")));
-    public static final RegistryObject<SoundEvent> SVD_RELOAD_NORMAL = REGISTRY.register("svd_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_reload_normal")));
-    public static final RegistryObject<SoundEvent> SVD_RELOAD_EMPTY = REGISTRY.register("svd_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_reload_empty")));
-
-    public static final RegistryObject<SoundEvent> MP_443_FIRE_1P = REGISTRY.register("mp_443_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_443_fire_1p")));
-    public static final RegistryObject<SoundEvent> MP_443_FIRE_3P = REGISTRY.register("mp_443_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_443_fire_3p")));
-
-    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_1P = REGISTRY.register("qbz_95_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_1p")));
-    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_3P = REGISTRY.register("qbz_95_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_3p")));
-    public static final RegistryObject<SoundEvent> QBZ_95_FAR = REGISTRY.register("qbz_95_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_far")));
-    public static final RegistryObject<SoundEvent> QBZ_95_VERYFAR = REGISTRY.register("qbz_95_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_veryfar")));
-    public static final RegistryObject<SoundEvent> QBZ_95_RELOAD_NORMAL = REGISTRY.register("qbz_95_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_reload_normal")));
-    public static final RegistryObject<SoundEvent> QBZ_95_RELOAD_EMPTY = REGISTRY.register("qbz_95_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_reload_empty")));
-    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_1P_S = REGISTRY.register("qbz_95_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_1p_s")));
-    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_3P_S = REGISTRY.register("qbz_95_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_3p_s")));
-
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_1P = REGISTRY.register("secondary_cataclysm_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_1p")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_3P = REGISTRY.register("secondary_cataclysm_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_3p")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FAR = REGISTRY.register("secondary_cataclysm_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_far")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_VERYFAR = REGISTRY.register("secondary_cataclysm_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_veryfar")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_1P_CHARGE = REGISTRY.register("secondary_cataclysm_fire_1p_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_1p_charge")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_3P_CHARGE = REGISTRY.register("secondary_cataclysm_fire_3p_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_3p_charge")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FAR_CHARGE = REGISTRY.register("secondary_cataclysm_far_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_far_charge")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_VERYFAR_CHARGE = REGISTRY.register("secondary_cataclysm_veryfar_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_veryfar_charge")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_PREPARE_LOAD = REGISTRY.register("secondary_cataclysm_prepare_load", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_prepare_load")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_LOOP = REGISTRY.register("secondary_cataclysm_loop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_loop")));
-    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_END = REGISTRY.register("secondary_cataclysm_end", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_end")));
-
-    public static final RegistryObject<SoundEvent> MP_5_FIRE_1P = REGISTRY.register("mp_5_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_1p")));
-    public static final RegistryObject<SoundEvent> MP_5_FIRE_3P = REGISTRY.register("mp_5_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_3p")));
-    public static final RegistryObject<SoundEvent> MP_5_FAR = REGISTRY.register("mp_5_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_far")));
-    public static final RegistryObject<SoundEvent> MP_5_VERYFAR = REGISTRY.register("mp_5_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_veryfar")));
-    public static final RegistryObject<SoundEvent> MP_5_RELOAD_NORMAL = REGISTRY.register("mp_5_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_reload_normal")));
-    public static final RegistryObject<SoundEvent> MP_5_RELOAD_EMPTY = REGISTRY.register("mp_5_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_reload_empty")));
-    public static final RegistryObject<SoundEvent> MP_5_FIRE_1P_S = REGISTRY.register("mp_5_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_1p_s")));
-    public static final RegistryObject<SoundEvent> MP_5_FIRE_3P_S = REGISTRY.register("mp_5_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_3p_s")));
-
-    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_1P = REGISTRY.register("qbz_191_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_1p")));
-    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_3P = REGISTRY.register("qbz_191_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_3p")));
-    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_1P_S = REGISTRY.register("qbz_191_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_1p_s")));
-    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_3P_S = REGISTRY.register("qbz_191_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_3p_s")));
-    public static final RegistryObject<SoundEvent> QBZ_191_FAR = REGISTRY.register("qbz_191_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_far")));
-    public static final RegistryObject<SoundEvent> QBZ_191_VERYFAR = REGISTRY.register("qbz_191_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_veryfar")));
-    public static final RegistryObject<SoundEvent> QBZ_191_RELOAD_NORMAL = REGISTRY.register("qbz_191_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_reload_normal")));
-    public static final RegistryObject<SoundEvent> QBZ_191_RELOAD_EMPTY = REGISTRY.register("qbz_191_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_reload_empty")));
 
     public static final RegistryObject<SoundEvent> MK_42_FIRE_1P = REGISTRY.register("mk_42_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mk_42_fire_1p")));
     public static final RegistryObject<SoundEvent> MK_42_FIRE_3P = REGISTRY.register("mk_42_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mk_42_fire_3p")));
@@ -335,9 +212,9 @@ public class ModSounds {
 //    public static final RegistryObject<SoundEvent> HUNTING_RIFLE_VERYFAR = REGISTRY.register("hunting_rifle_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hunting_rifle_veryfar")));
 //    public static final RegistryObject<SoundEvent> HUNTING_RIFLE_RELOAD_EMPTY = REGISTRY.register("hunting_rifle_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("hunting_rifle_reload_empty")));
 
-//    public static final RegistryObject<SoundEvent> IGLA_FIRE_1P = REGISTRY.register("igla_9k38_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_fire_1p")));
-//    public static final RegistryObject<SoundEvent> IGLA_FIRE_3P = REGISTRY.register("igla_9k38_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_fire_3p")));
-//    public static final RegistryObject<SoundEvent> IGLA_FAR = REGISTRY.register("igla_9k38_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_far")));
+    public static final RegistryObject<SoundEvent> IGLA_FIRE_1P = REGISTRY.register("igla_9k38_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_fire_1p")));
+    public static final RegistryObject<SoundEvent> IGLA_FIRE_3P = REGISTRY.register("igla_9k38_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_fire_3p")));
+    public static final RegistryObject<SoundEvent> IGLA_FAR = REGISTRY.register("igla_9k38_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_far")));
 //    public static final RegistryObject<SoundEvent> IGLA_RELOAD_EMPTY = REGISTRY.register("igla_9k38_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_reload_empty")));
 //    public static final RegistryObject<SoundEvent> IGLA_LOCK = REGISTRY.register("igla_9k38_lock", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_lock")));
 //    public static final RegistryObject<SoundEvent> IGLA_LOCKON = REGISTRY.register("igla_9k38_lockon", () -> SoundEvent.createVariableRangeEvent(Mod.loc("igla_9k38_lockon")));
@@ -348,9 +225,9 @@ public class ModSounds {
 //    public static final RegistryObject<SoundEvent> INSIDIOUS_VERYFAR = REGISTRY.register("insidious_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_veryfar")));
 //    public static final RegistryObject<SoundEvent> INSIDIOUS_RELOAD_EMPTY = REGISTRY.register("insidious_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_reload_empty")));
 
-//    public static final RegistryObject<SoundEvent> JAVELIN_FIRE_1P = REGISTRY.register("javelin_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_fire_1p")));
-//    public static final RegistryObject<SoundEvent> JAVELIN_FIRE_3P = REGISTRY.register("javelin_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_fire_3p")));
-//    public static final RegistryObject<SoundEvent> JAVELIN_FAR = REGISTRY.register("javelin_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_far")));
+    public static final RegistryObject<SoundEvent> JAVELIN_FIRE_1P = REGISTRY.register("javelin_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_fire_1p")));
+    public static final RegistryObject<SoundEvent> JAVELIN_FIRE_3P = REGISTRY.register("javelin_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_fire_3p")));
+    public static final RegistryObject<SoundEvent> JAVELIN_FAR = REGISTRY.register("javelin_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_far")));
 //    public static final RegistryObject<SoundEvent> JAVELIN_RELOAD_EMPTY = REGISTRY.register("javelin_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_reload_empty")));
 //    public static final RegistryObject<SoundEvent> JAVELIN_LOCK = REGISTRY.register("javelin_lock", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_lock")));
 //    public static final RegistryObject<SoundEvent> JAVELIN_LOCKON = REGISTRY.register("javelin_lockon", () -> SoundEvent.createVariableRangeEvent(Mod.loc("javelin_lockon")));
@@ -425,7 +302,7 @@ public class ModSounds {
 //    public static final RegistryObject<SoundEvent> MARLIN_LOOP = REGISTRY.register("marlin_loop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("marlin_loop")));
 //    public static final RegistryObject<SoundEvent> MARLIN_BOLT = REGISTRY.register("marlin_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("marlin_bolt")));
 
-//    public static final RegistryObject<SoundEvent> MINIGUN_FIRE_1P = REGISTRY.register("minigun_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("minigun_fire_1p")));
+    //    public static final RegistryObject<SoundEvent> MINIGUN_FIRE_1P = REGISTRY.register("minigun_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("minigun_fire_1p")));
 //    public static final RegistryObject<SoundEvent> MINIGUN_FIRE_3P = REGISTRY.register("minigun_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("minigun_fire_3p")));
 //    public static final RegistryObject<SoundEvent> MINIGUN_FAR = REGISTRY.register("minigun_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("minigun_far")));
 //    public static final RegistryObject<SoundEvent> MINIGUN_VERYFAR = REGISTRY.register("minigun_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("minigun_veryfar")));
@@ -445,6 +322,154 @@ public class ModSounds {
 //    public static final RegistryObject<SoundEvent> MOSIN_NAGANT_FIRE_3P = REGISTRY.register("mosin_nagant_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mosin_nagant_fire_3p")));
 //    public static final RegistryObject<SoundEvent> MOSIN_NAGANT_FAR = REGISTRY.register("mosin_nagant_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mosin_nagant_far")));
 //    public static final RegistryObject<SoundEvent> MOSIN_NAGANT_VERYFAR = REGISTRY.register("mosin_nagant_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mosin_nagant_veryfar")));
+
+//    public static final RegistryObject<SoundEvent> MP_5_FIRE_1P = REGISTRY.register("mp_5_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_1p")));
+//    public static final RegistryObject<SoundEvent> MP_5_FIRE_3P = REGISTRY.register("mp_5_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_3p")));
+//    public static final RegistryObject<SoundEvent> MP_5_FAR = REGISTRY.register("mp_5_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_far")));
+//    public static final RegistryObject<SoundEvent> MP_5_VERYFAR = REGISTRY.register("mp_5_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_veryfar")));
+//    public static final RegistryObject<SoundEvent> MP_5_RELOAD_NORMAL = REGISTRY.register("mp_5_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_reload_normal")));
+//    public static final RegistryObject<SoundEvent> MP_5_RELOAD_EMPTY = REGISTRY.register("mp_5_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_reload_empty")));
+//    public static final RegistryObject<SoundEvent> MP_5_FIRE_1P_S = REGISTRY.register("mp_5_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_1p_s")));
+//    public static final RegistryObject<SoundEvent> MP_5_FIRE_3P_S = REGISTRY.register("mp_5_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_5_fire_3p_s")));
+
+//    public static final RegistryObject<SoundEvent> MP_443_FIRE_1P = REGISTRY.register("mp_443_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_443_fire_1p")));
+//    public static final RegistryObject<SoundEvent> MP_443_FIRE_3P = REGISTRY.register("mp_443_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mp_443_fire_3p")));
+
+//    public static final RegistryObject<SoundEvent> NTW_20_FIRE_1P = REGISTRY.register("ntw_20_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_fire_1p")));
+//    public static final RegistryObject<SoundEvent> NTW_20_FIRE_3P = REGISTRY.register("ntw_20_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_fire_3p")));
+//    public static final RegistryObject<SoundEvent> NTW_20_FAR = REGISTRY.register("ntw_20_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_far")));
+//    public static final RegistryObject<SoundEvent> NTW_20_VERYFAR = REGISTRY.register("ntw_20_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_veryfar")));
+//    public static final RegistryObject<SoundEvent> NTW_20_RELOAD_NORMAL = REGISTRY.register("ntw_20_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_reload_normal")));
+//    public static final RegistryObject<SoundEvent> NTW_20_RELOAD_EMPTY = REGISTRY.register("ntw_20_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_reload_empty")));
+//    public static final RegistryObject<SoundEvent> NTW_20_BOLT = REGISTRY.register("ntw_20_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ntw_20_bolt")));
+
+//    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_1P = REGISTRY.register("qbz_95_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_1p")));
+//    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_3P = REGISTRY.register("qbz_95_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_3p")));
+//    public static final RegistryObject<SoundEvent> QBZ_95_FAR = REGISTRY.register("qbz_95_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_far")));
+//    public static final RegistryObject<SoundEvent> QBZ_95_VERYFAR = REGISTRY.register("qbz_95_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_veryfar")));
+//    public static final RegistryObject<SoundEvent> QBZ_95_RELOAD_NORMAL = REGISTRY.register("qbz_95_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_reload_normal")));
+//    public static final RegistryObject<SoundEvent> QBZ_95_RELOAD_EMPTY = REGISTRY.register("qbz_95_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_reload_empty")));
+//    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_1P_S = REGISTRY.register("qbz_95_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_1p_s")));
+//    public static final RegistryObject<SoundEvent> QBZ_95_FIRE_3P_S = REGISTRY.register("qbz_95_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_95_fire_3p_s")));
+
+//    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_1P = REGISTRY.register("qbz_191_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_1p")));
+//    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_3P = REGISTRY.register("qbz_191_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_3p")));
+//    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_1P_S = REGISTRY.register("qbz_191_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_1p_s")));
+//    public static final RegistryObject<SoundEvent> QBZ_191_FIRE_3P_S = REGISTRY.register("qbz_191_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_fire_3p_s")));
+//    public static final RegistryObject<SoundEvent> QBZ_191_FAR = REGISTRY.register("qbz_191_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_far")));
+//    public static final RegistryObject<SoundEvent> QBZ_191_VERYFAR = REGISTRY.register("qbz_191_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_veryfar")));
+//    public static final RegistryObject<SoundEvent> QBZ_191_RELOAD_NORMAL = REGISTRY.register("qbz_191_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_reload_normal")));
+//    public static final RegistryObject<SoundEvent> QBZ_191_RELOAD_EMPTY = REGISTRY.register("qbz_191_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("qbz_191_reload_empty")));
+
+    //    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_HOLD = REGISTRY.register("ql_1031_fire_1p_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_hold")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_HOLD = REGISTRY.register("ql_1031_fire_3p_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_hold")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_S_HOLD = REGISTRY.register("ql_1031_fire_1p_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_hold")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_S_HOLD = REGISTRY.register("ql_1031_fire_3p_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_hold")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FAR_HOLD = REGISTRY.register("ql_1031_far_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_hold")));
+//    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_HOLD = REGISTRY.register("ql_1031_veryfar_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_hold")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FAR_S_HOLD = REGISTRY.register("ql_1031_far_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_hold")));
+//    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_S_HOLD = REGISTRY.register("ql_1031_veryfar_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_hold")));
+    public static final RegistryObject<SoundEvent> QL_1031_CHARGE = REGISTRY.register("ql_1031_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_charge")));
+//    public static final RegistryObject<SoundEvent> QL_1031_DISCHARGE = REGISTRY.register("ql_1031_discharge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_discharge")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_SEMI = REGISTRY.register("ql_1031_fire_1p_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_SEMI = REGISTRY.register("ql_1031_fire_3p_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_S_SEMI = REGISTRY.register("ql_1031_fire_1p_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_S_SEMI = REGISTRY.register("ql_1031_fire_3p_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FAR_SEMI = REGISTRY.register("ql_1031_far_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_SEMI = REGISTRY.register("ql_1031_veryfar_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FAR_S_SEMI = REGISTRY.register("ql_1031_far_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_S_SEMI = REGISTRY.register("ql_1031_veryfar_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_semi")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_AUTO = REGISTRY.register("ql_1031_fire_1p_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_auto")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_AUTO = REGISTRY.register("ql_1031_fire_3p_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_auto")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_S_AUTO = REGISTRY.register("ql_1031_fire_1p_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_auto")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_S_AUTO = REGISTRY.register("ql_1031_fire_3p_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_auto")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FAR_AUTO = REGISTRY.register("ql_1031_far_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_auto")));
+//    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_AUTO = REGISTRY.register("ql_1031_veryfar_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_auto")));
+//    public static final RegistryObject<SoundEvent> QL_1031_FAR_S_AUTO = REGISTRY.register("ql_1031_far_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_auto")));
+//    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_S_AUTO = REGISTRY.register("ql_1031_veryfar_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_auto")));
+
+    //    public static final RegistryObject<SoundEvent> REPAIR_TOOL_FIRE_1P = REGISTRY.register("repair_tool_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repair_tool_fire_1p")));
+//    public static final RegistryObject<SoundEvent> REPAIR_TOOL_FIRE_3P = REGISTRY.register("repair_tool_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repair_tool_fire_3p")));
+    public static final RegistryObject<SoundEvent> REPAIRING = REGISTRY.register("repairing", () -> SoundEvent.createVariableRangeEvent(Mod.loc("repairing")));
+
+    //    public static final RegistryObject<SoundEvent> RPG_FIRE_1P = REGISTRY.register("rpg_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_fire_1p")));
+    public static final RegistryObject<SoundEvent> RPG_FIRE_3P = REGISTRY.register("rpg_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_fire_3p")));
+//    public static final RegistryObject<SoundEvent> RPG_FAR = REGISTRY.register("rpg_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_far")));
+//    public static final RegistryObject<SoundEvent> RPG_VERYFAR = REGISTRY.register("rpg_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_veryfar")));
+//    public static final RegistryObject<SoundEvent> RPG_RELOAD_EMPTY = REGISTRY.register("rpg_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpg_reload_empty")));
+
+//    public static final RegistryObject<SoundEvent> RPK_FIRE_1P = REGISTRY.register("rpk_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_1p")));
+//    public static final RegistryObject<SoundEvent> RPK_FIRE_3P = REGISTRY.register("rpk_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_3p")));
+//    public static final RegistryObject<SoundEvent> RPK_FIRE_1P_S = REGISTRY.register("rpk_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_1p_s")));
+//    public static final RegistryObject<SoundEvent> RPK_FIRE_3P_S = REGISTRY.register("rpk_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_fire_3p_s")));
+//    public static final RegistryObject<SoundEvent> RPK_FAR = REGISTRY.register("rpk_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_far")));
+//    public static final RegistryObject<SoundEvent> RPK_VERYFAR = REGISTRY.register("rpk_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("rpk_veryfar")));
+
+    //    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_1P = REGISTRY.register("secondary_cataclysm_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_1p")));
+//    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_3P = REGISTRY.register("secondary_cataclysm_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_3p")));
+//    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FAR = REGISTRY.register("secondary_cataclysm_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_far")));
+//    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_VERYFAR = REGISTRY.register("secondary_cataclysm_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_veryfar")));
+    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_1P_CHARGE = REGISTRY.register("secondary_cataclysm_fire_1p_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_1p_charge")));
+    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FIRE_3P_CHARGE = REGISTRY.register("secondary_cataclysm_fire_3p_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_fire_3p_charge")));
+    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_FAR_CHARGE = REGISTRY.register("secondary_cataclysm_far_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_far_charge")));
+    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_VERYFAR_CHARGE = REGISTRY.register("secondary_cataclysm_veryfar_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_veryfar_charge")));
+//    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_PREPARE_LOAD = REGISTRY.register("secondary_cataclysm_prepare_load", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_prepare_load")));
+//    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_LOOP = REGISTRY.register("secondary_cataclysm_loop", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_loop")));
+//    public static final RegistryObject<SoundEvent> SECONDARY_CATACLYSM_END = REGISTRY.register("secondary_cataclysm_end", () -> SoundEvent.createVariableRangeEvent(Mod.loc("secondary_cataclysm_end")));
+
+    //    public static final RegistryObject<SoundEvent> SENTINEL_FIRE_1P = REGISTRY.register("sentinel_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_fire_1p")));
+//    public static final RegistryObject<SoundEvent> SENTINEL_FIRE_3P = REGISTRY.register("sentinel_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_fire_3p")));
+//    public static final RegistryObject<SoundEvent> SENTINEL_FAR = REGISTRY.register("sentinel_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_far")));
+//    public static final RegistryObject<SoundEvent> SENTINEL_VERYFAR = REGISTRY.register("sentinel_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_veryfar")));
+    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_FIRE_1P = REGISTRY.register("sentinel_charge_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_fire_1p")));
+    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_FIRE_3P = REGISTRY.register("sentinel_charge_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_fire_3p")));
+    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_FAR = REGISTRY.register("sentinel_charge_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_far")));
+    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE_VERYFAR = REGISTRY.register("sentinel_charge_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_veryfar")));
+    public static final RegistryObject<SoundEvent> SENTINEL_CHARGE = REGISTRY.register("sentinel_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge")));
+    //    public static final RegistryObject<SoundEvent> SENTINEL_RELOAD_NORMAL = REGISTRY.register("sentinel_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_reload_normal")));
+//    public static final RegistryObject<SoundEvent> SENTINEL_RELOAD_EMPTY = REGISTRY.register("sentinel_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_reload_empty")));
+//    public static final RegistryObject<SoundEvent> SENTINEL_BOLT = REGISTRY.register("sentinel_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_bolt")));
+
+//    public static final RegistryObject<SoundEvent> SKS_FIRE_1P = REGISTRY.register("sks_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_fire_1p")));
+//    public static final RegistryObject<SoundEvent> SKS_FIRE_3P = REGISTRY.register("sks_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_fire_3p")));
+//    public static final RegistryObject<SoundEvent> SKS_RELOAD_NORMAL = REGISTRY.register("sks_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_reload_normal")));
+//    public static final RegistryObject<SoundEvent> SKS_RELOAD_EMPTY = REGISTRY.register("sks_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_reload_empty")));
+//    public static final RegistryObject<SoundEvent> SKS_FAR = REGISTRY.register("sks_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_far")));
+//    public static final RegistryObject<SoundEvent> SKS_VERYFAR = REGISTRY.register("sks_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sks_veryfar")));
+
+//    public static final RegistryObject<SoundEvent> SVD_FIRE_1P = REGISTRY.register("svd_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_1p")));
+//    public static final RegistryObject<SoundEvent> SVD_FIRE_3P = REGISTRY.register("svd_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_3p")));
+//    public static final RegistryObject<SoundEvent> SVD_FAR = REGISTRY.register("svd_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_far")));
+//    public static final RegistryObject<SoundEvent> SVD_VERYFAR = REGISTRY.register("svd_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_veryfar")));
+//    public static final RegistryObject<SoundEvent> SVD_FIRE_1P_S = REGISTRY.register("svd_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_1p_s")));
+//    public static final RegistryObject<SoundEvent> SVD_FIRE_3P_S = REGISTRY.register("svd_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_fire_3p_s")));
+//    public static final RegistryObject<SoundEvent> SVD_FAR_S = REGISTRY.register("svd_far_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_far_s")));
+//    public static final RegistryObject<SoundEvent> SVD_RELOAD_NORMAL = REGISTRY.register("svd_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_reload_normal")));
+//    public static final RegistryObject<SoundEvent> SVD_RELOAD_EMPTY = REGISTRY.register("svd_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("svd_reload_empty")));
+
+//    public static final RegistryObject<SoundEvent> TASER_FIRE_1P = REGISTRY.register("taser_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_fire_1p")));
+//    public static final RegistryObject<SoundEvent> TASER_FIRE_3P = REGISTRY.register("taser_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_fire_3p")));
+//    public static final RegistryObject<SoundEvent> TASER_RELOAD_EMPTY = REGISTRY.register("taser_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("taser_reload_empty")));
+
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_1P = REGISTRY.register("trachelium_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_1p")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_3P = REGISTRY.register("trachelium_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_3p")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_FAR = REGISTRY.register("trachelium_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_far")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_VERYFAR = REGISTRY.register("trachelium_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_veryfar")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_1P_S = REGISTRY.register("trachelium_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_1p_s")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_FIRE_3P_S = REGISTRY.register("trachelium_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_fire_3p_s")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_FAR_S = REGISTRY.register("trachelium_far_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_far_s")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_RELOAD_EMPTY = REGISTRY.register("trachelium_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_reload_empty")));
+//    public static final RegistryObject<SoundEvent> TRACHELIUM_BOLT = REGISTRY.register("trachelium_bolt", () -> SoundEvent.createVariableRangeEvent(Mod.loc("trachelium_bolt")));
+
+//    public static final RegistryObject<SoundEvent> VECTOR_FIRE_1P = REGISTRY.register("vector_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_1p")));
+//    public static final RegistryObject<SoundEvent> VECTOR_FIRE_3P = REGISTRY.register("vector_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_3p")));
+//    public static final RegistryObject<SoundEvent> VECTOR_FAR = REGISTRY.register("vector_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_far")));
+//    public static final RegistryObject<SoundEvent> VECTOR_VERYFAR = REGISTRY.register("vector_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_veryfar")));
+//    public static final RegistryObject<SoundEvent> VECTOR_FIRE_1P_S = REGISTRY.register("vector_fire_1p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_1p_s")));
+//    public static final RegistryObject<SoundEvent> VECTOR_FIRE_3P_S = REGISTRY.register("vector_fire_3p_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_fire_3p_s")));
+//    public static final RegistryObject<SoundEvent> VECTOR_FAR_S = REGISTRY.register("vector_far_s", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_far_s")));
+//    public static final RegistryObject<SoundEvent> VECTOR_RELOAD_NORMAL = REGISTRY.register("vector_reload_normal", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_reload_normal")));
+//    public static final RegistryObject<SoundEvent> VECTOR_RELOAD_EMPTY = REGISTRY.register("vector_reload_empty", () -> SoundEvent.createVariableRangeEvent(Mod.loc("vector_reload_empty")));
 
 
     // Vehicles
@@ -546,32 +571,6 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> WAVEFORCE_TOWER_FIRE = REGISTRY.register("waveforce_tower_fire", () -> SoundEvent.createVariableRangeEvent(Mod.loc("waveforce_tower_fire")));
 
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_HOLD = REGISTRY.register("ql_1031_fire_1p_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_HOLD = REGISTRY.register("ql_1031_fire_3p_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_S_HOLD = REGISTRY.register("ql_1031_fire_1p_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_S_HOLD = REGISTRY.register("ql_1031_fire_3p_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_FAR_HOLD = REGISTRY.register("ql_1031_far_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_HOLD = REGISTRY.register("ql_1031_veryfar_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_FAR_S_HOLD = REGISTRY.register("ql_1031_far_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_S_HOLD = REGISTRY.register("ql_1031_veryfar_s_hold", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_hold")));
-    public static final RegistryObject<SoundEvent> QL_1031_CHARGE = REGISTRY.register("ql_1031_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_charge")));
-    public static final RegistryObject<SoundEvent> QL_1031_DISCHARGE = REGISTRY.register("ql_1031_discharge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_discharge")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_SEMI = REGISTRY.register("ql_1031_fire_1p_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_SEMI = REGISTRY.register("ql_1031_fire_3p_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_S_SEMI = REGISTRY.register("ql_1031_fire_1p_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_S_SEMI = REGISTRY.register("ql_1031_fire_3p_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_FAR_SEMI = REGISTRY.register("ql_1031_far_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_SEMI = REGISTRY.register("ql_1031_veryfar_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_FAR_S_SEMI = REGISTRY.register("ql_1031_far_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_S_SEMI = REGISTRY.register("ql_1031_veryfar_s_semi", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_semi")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_AUTO = REGISTRY.register("ql_1031_fire_1p_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_auto")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_AUTO = REGISTRY.register("ql_1031_fire_3p_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_auto")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_1P_S_AUTO = REGISTRY.register("ql_1031_fire_1p_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_1p_s_auto")));
-    public static final RegistryObject<SoundEvent> QL_1031_FIRE_3P_S_AUTO = REGISTRY.register("ql_1031_fire_3p_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_fire_3p_s_auto")));
-    public static final RegistryObject<SoundEvent> QL_1031_FAR_AUTO = REGISTRY.register("ql_1031_far_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_auto")));
-    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_AUTO = REGISTRY.register("ql_1031_veryfar_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_auto")));
-    public static final RegistryObject<SoundEvent> QL_1031_FAR_S_AUTO = REGISTRY.register("ql_1031_far_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_far_s_auto")));
-    public static final RegistryObject<SoundEvent> QL_1031_VERYFAR_S_AUTO = REGISTRY.register("ql_1031_veryfar_s_auto", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ql_1031_veryfar_s_auto")));
 
 }
 

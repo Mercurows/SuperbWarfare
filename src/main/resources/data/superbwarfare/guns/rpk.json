@@ -50,11 +50,11 @@
     "Fire3PVeryFar": "superbwarfare:rpk_veryfar",
     "Fire1PSilent": "superbwarfare:rpk_fire_1p_s",
     "Fire3PSilent": "superbwarfare:rpk_fire_3p_s",
-    "ReloadNormal": "superbwarfare:rpk_reload_normal",
-    "ReloadEmpty": "superbwarfare:rpk_reload_empty",
+    "ReloadNormal": "superbwarfare:ak_47_reload_normal",
+    "ReloadEmpty": "superbwarfare:ak_47_reload_empty",
     "CancellableSounds": [
-      "superbwarfare:rpk_reload_normal",
-      "superbwarfare:rpk_reload_empty"
+      "superbwarfare:ak_47_reload_normal",
+      "superbwarfare:ak_47_reload_empty"
     ]
   }
 }
