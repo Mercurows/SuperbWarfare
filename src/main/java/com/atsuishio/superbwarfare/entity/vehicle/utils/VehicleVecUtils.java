@@ -284,29 +284,27 @@ public final class VehicleVecUtils {
             return vehicle.getViewVector(partialTicks);
         }
 
-        var list = data.get(GunProp.SHOOT_POS).directions;
-        var stringOrVec3 = list.get(vehicle.currentFirePosIndex % list.size());
+        var stringOrVec3 = data.fireDirection();
 
         if (stringOrVec3.isString()) {
             return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
         } else {
-            var positions = data.get(GunProp.SHOOT_POS).positions;
-            var vec3 = positions.get(vehicle.currentFirePosIndex % list.size());
+            var vec3 = data.firePosition();
 
-            Vector4f worldPosition = transformPosition(
+            var worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                     (float) vec3.x + (float) stringOrVec3.vec3.x,
                     (float) vec3.y + (float) stringOrVec3.vec3.y,
                     (float) vec3.z + (float) stringOrVec3.vec3.z);
 
-            Vector4f worldPositionO = transformPosition(
+            var worldPositionO = transformPosition(
                     vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                     (float) vec3.x,
                     (float) vec3.y,
                     (float) vec3.z);
 
-            Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
-            Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            var startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+            var endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
             return startPos.vectorTo(endPos).normalize();
         }
     }

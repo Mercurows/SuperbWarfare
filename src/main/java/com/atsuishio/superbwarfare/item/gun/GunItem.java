@@ -583,6 +583,13 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
 
         data.clearTempModifications();
+
+        int size = data.get(GunProp.SHOOT_POS).positions.size();
+        if (size > 0) {
+            data.fireIndex.set((data.fireIndex.get() + 1) % size);
+        } else {
+            data.fireIndex.reset();
+        }
     }
 
     @Deprecated(forRemoval = true)
