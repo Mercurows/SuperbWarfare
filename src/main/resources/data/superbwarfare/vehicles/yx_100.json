@@ -48,6 +48,20 @@
       "CanRotateBody": true,
       "MinPitch": -25,
       "MaxPitch": 90
+    },
+    {
+      "BanHand": true,
+      "Transform": "Vehicle",
+      "Position": [1.125, 0.8, -5],
+      "MinYaw": -95,
+      "MaxYaw": 95
+    },
+    {
+      "BanHand": true,
+      "Transform": "Vehicle",
+      "Position": [-1.125, 0.8, -5],
+      "MinYaw": -95,
+      "MaxYaw": 95
     }
   ],
   "Weapons": {
