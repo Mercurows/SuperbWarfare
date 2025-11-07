@@ -1599,7 +1599,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @Override
     @ParametersAreNonnullByDefault
     protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 0.1), random.nextFloat() * 0.15f + 1.05f);
+        this.playSound(ModSounds.WHEEL_VEHICLE_STEP.get(), (float) (getDeltaMovement().length() * 0.1), random.nextFloat() * 0.15f + 1.05f);
     }
 
     @Override

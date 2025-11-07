@@ -145,7 +145,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
                         if (cooldown == 0) {
                             cooldown = 6;
                             Vec3 vec3 = new Vec3(hoe1.center());
-                            serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
+                            serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_VEHICLE_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
                         }
                     }
                     player.swing(InteractionHand.MAIN_HAND);
@@ -157,7 +157,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
                         if (cooldown == 0) {
                             cooldown = 6;
                             Vec3 vec3 = new Vec3(hoe1.center());
-                            serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
+                            serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_VEHICLE_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
                         }
                     }
                     player.swing(InteractionHand.MAIN_HAND);

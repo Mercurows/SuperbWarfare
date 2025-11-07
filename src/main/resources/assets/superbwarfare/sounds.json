@@ -2500,7 +2500,7 @@
   "vehicle_strike": {
     "sounds": [
       {
-        "name": "superbwarfare:vehicle_strike",
+        "name": "superbwarfare:vehicle/common/vehicle_strike",
         "stream": false
       }
     ]
@@ -2927,10 +2927,10 @@
       }
     ]
   },
-  "wheel_step": {
+  "wheel_vehicle_step": {
     "sounds": [
       {
-        "name": "superbwarfare:wheel_step",
+        "name": "superbwarfare:vehicle/common/wheel_vehicle_step",
         "stream": false
       }
     ]
@@ -3130,12 +3130,12 @@
       }
     ]
   },
-  "track_move": {
+  "track_vehicle_step": {
     "sounds": [
       {
         "attenuation_distance": 32,
         "stream": true,
-        "name": "superbwarfare:track_move"
+        "name": "superbwarfare:vehicle/common/track_vehicle_step"
       }
     ]
   },
@@ -3171,7 +3171,7 @@
       {
         "attenuation_distance": 48,
         "stream": true,
-        "name": "superbwarfare:vehicle_swim"
+        "name": "superbwarfare:vehicle/common/vehicle_swim"
       }
     ]
   },
