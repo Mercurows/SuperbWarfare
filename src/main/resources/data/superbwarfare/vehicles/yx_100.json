@@ -54,6 +54,10 @@
     "Decrement": 0.01,
     "SteeringSpeed": 0.1
   },
+  "TurretPos": [0, 2.1059375, -0.43125],
+  "TurretTurnSpeed": [7, 6],
+  "TurretPitchClamp": [-10, 30],
+  "BarrelPos": [0, 0.56345, 0.6477125],
   "HasDecoy": true,
   "UpStep": 2.25,
   "RotateOffsetHeight": 3.5,

@@ -127,6 +127,7 @@
       "SoundRadius": 12
     }
   },
+
   "EngineType": "Wheel",
   "EngineInfo": {
     "Buoyancy": 0.052,
@@ -139,6 +140,10 @@
     "Decrement": 0.02,
     "SteeringSpeed": 0.07
   },
+  "TurretPos": [0, 2.4003, 0],
+  "TurretTurnSpeed": [12.5, 10],
+  "TurretPitchClamp": [-15, 32.5],
+  "BarrelPos": [0.0234375, 0.33795, 0.825],
   "HasDecoy": true,
   "UpStep": 1.5,
   "RotateOffsetHeight": 2.2,

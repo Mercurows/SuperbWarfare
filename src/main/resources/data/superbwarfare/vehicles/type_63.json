@@ -2,6 +2,10 @@
   "ID": "superbwarfare:type_63",
   "MaxHealth": 100,
   "Mass": 0.45,
+  "TurretPos": [0, 0.45703125, -0.1625],
+  "TurretYawClamp": [-15, 15],
+  "TurretPitchClamp": [-5, 60],
+  "BarrelPos": [0, 0.65, -0.203125],
   "DamageModifiers": [
     "minecraft:arrow * 0.1",
     "minecraft:trident * 0.2",

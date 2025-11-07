@@ -176,30 +176,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         this.refreshDimensions();
     }
 
-    // 炮塔最大水平旋转速度
-    @Override
-    public float turretYSpeed() {
-        return 15;
-    }
-
-    // 炮塔最大俯仰旋转速度
-    @Override
-    public float turretXSpeed() {
-        return 15F;
-    }
-
-    // 炮塔最小俯角
-    @Override
-    public float turretMinPitch() {
-        return -15f;
-    }
-
-    // 炮塔最大仰角
-    @Override
-    public float turretMaxPitch() {
-        return 32.5f;
-    }
-
     // 炮弹发射位置
     @Override
     public Vec3 getShootPos(int seatIndex, float ticks) {
@@ -422,16 +398,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    public Vec3 getBarrelPosition() {
-        return new Vec3(0, 1.484375, -0.2375);
-    }
-
-    @Override
-    public Vec3 getTurretPosition() {
-        return new Vec3(0, 2.14375, 0.7375);
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
@@ -559,10 +525,5 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         Vector4f worldPositionT = transformPosition(transformT, 0, 1.59375f, -0.390625f);
         this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
         this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
-    }
-
-    @Override
-    public boolean hasTurret() {
-        return true;
     }
 }

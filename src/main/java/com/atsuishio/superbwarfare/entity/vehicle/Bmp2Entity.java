@@ -17,7 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.joml.Math;
 import org.joml.*;
@@ -111,30 +110,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         this.refreshDimensions();
     }
 
-    // 炮塔最大水平旋转速度
-    @Override
-    public float turretYSpeed() {
-        return 10;
-    }
-
-    // 炮塔最大俯仰旋转速度
-    @Override
-    public float turretXSpeed() {
-        return 12.5F;
-    }
-
-    // 炮塔最小俯角
-    @Override
-    public float turretMinPitch() {
-        return -7.5f;
-    }
-
-    // 炮塔最大仰角
-    @Override
-    public float turretMaxPitch() {
-        return 74;
-    }
-
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.BMP_ENGINE.get();
@@ -143,16 +118,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     @Override
     public float getEngineSoundVolume() {
         return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
-    }
-
-    @Override
-    public Vec3 getBarrelPosition() {
-        return new Vec3(0.3625f, 0.293125, 1.18095);
-    }
-
-    @Override
-    public Vec3 getTurretPosition() {
-        return new Vec3(0, 2.25, -0.703125);
     }
 
     private PlayState firePredicate(AnimationState<Bmp2Entity> event) {
@@ -221,10 +186,5 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         Vector4f worldPositionT = transformPosition(transformT, 0, 0.46875f, 0f);
         this.obbTurret.center().set(new Vector3f(worldPositionT.x, worldPositionT.y, worldPositionT.z));
         this.obbTurret.setRotation(VectorTool.combineRotationsTurret(1, this));
-    }
-
-    @Override
-    public boolean hasTurret() {
-        return true;
     }
 }

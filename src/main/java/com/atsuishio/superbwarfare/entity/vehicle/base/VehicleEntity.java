@@ -1819,9 +1819,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(MOUSE_SPEED_Y, getMouseMoveSpeedY() * 0.95f);
 
         if (hasTurret()) {
-            if (getNthEntity(mainWeaponControllerIndex()) instanceof Player) {
+            if (getNthEntity(turretControllerIndex()) instanceof Player) {
                 this.adjustTurretAngle();
-            } else if (getNthEntity(mainWeaponControllerIndex()) instanceof Mob mob) {
+            } else if (getNthEntity(turretControllerIndex()) instanceof Mob mob) {
                 this.turretAutoAimFromUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
             }
         }
@@ -2118,36 +2118,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleWeaponUtils.turretAutoAimFromUuid(this, uuid, pLiving);
     }
 
-    // TODO 允许数据包配置下面四个数据
-
-    /**
-     * @return 炮塔最大水平旋转速度
-     */
-    public float turretYSpeed() {
-        return 5;
-    }
-
-    /**
-     * @return 炮塔最大俯仰旋转速度
-     */
-    public float turretXSpeed() {
-        return 5;
-    }
-
-    /**
-     * @return 炮塔最小俯角
-     */
-    public float turretMinPitch() {
-        return -10;
-    }
-
-    /**
-     * @return 炮塔最大仰角
-     */
-    public float turretMaxPitch() {
-        return 30;
-    }
-
     public void passengerPitch(Entity entity, float minPitch, float maxPitch, float passengerRot) {
         VehicleVecUtils.setPassengerPitch(this, entity, minPitch, maxPitch, passengerRot);
     }
@@ -2183,7 +2153,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation);
             }
 
-            if (hasTurret() && index == mainWeaponControllerIndex()) {
+            if (hasTurret() && index == turretControllerIndex()) {
                 passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch);
                 passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, true);
             } else {
@@ -2561,13 +2531,62 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return VehicleVecUtils.getClientVehicleTransform(this, partialTicks);
     }
 
-    // TODO 用数据包配置以下几个position
+    public boolean hasTurret() {
+        return getTurretPosition() != null;
+    }
+
     public Vec3 getTurretPosition() {
-        return new Vec3(0, 0, 0);
+        return computed().turretPos;
+    }
+
+    public int turretControllerIndex() {
+        return computed().turretControllerIndex;
+    }
+
+    /**
+     * @return 炮塔最大水平旋转速度
+     */
+    public float turretYSpeed() {
+        return computed().turretTurnSpeed.y;
+    }
+
+    /**
+     * @return 炮塔最大俯仰旋转速度
+     */
+    public float turretXSpeed() {
+        return computed().turretTurnSpeed.x;
+    }
+
+    /**
+     * @return 炮塔最小偏航
+     */
+    public float turretMinYaw() {
+        return computed().turretYawClamp.x;
+    }
+
+    /**
+     * @return 炮塔最大偏航
+     */
+    public float turretMaxYaw() {
+        return computed().turretYawClamp.y;
+    }
+
+    /**
+     * @return 炮塔最小俯角
+     */
+    public float turretMinPitch() {
+        return computed().turretPitchClamp.x;
+    }
+
+    /**
+     * @return 炮塔最大仰角
+     */
+    public float turretMaxPitch() {
+        return computed().turretPitchClamp.y;
     }
 
     public Vec3 getBarrelPosition() {
-        return new Vec3(0, 0, 0);
+        return computed().barrelPos;
     }
 
     public Vec3 getGunnerPosition() {
@@ -2604,10 +2623,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vector4f transformPosition(Matrix4f transform, float x, float y, float z) {
         return transform.transform(new Vector4f(x, y, z, 1));
-    }
-
-    public int mainWeaponControllerIndex() {
-        return 0;
     }
 
     public int secondWeaponControllerIndex() {
@@ -2814,10 +2829,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public double getMouseSpeedY() {
         return 0.4;
-    }
-
-    public boolean hasTurret() {
-        return false;
     }
 
     public boolean turretHasPassengerWeapon() {

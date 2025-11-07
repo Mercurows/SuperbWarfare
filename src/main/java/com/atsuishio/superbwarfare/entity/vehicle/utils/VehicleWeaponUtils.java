@@ -35,7 +35,7 @@ public final class VehicleWeaponUtils {
         float ySpeed = vehicle.turretYSpeed();
         float xSpeed = vehicle.turretXSpeed();
 
-        Entity driver = vehicle.getNthEntity(vehicle.mainWeaponControllerIndex());
+        Entity driver = vehicle.getNthEntity(vehicle.turretControllerIndex());
         if (driver == null) {
             vehicle.turretYRotLock = 0;
         } else {
@@ -82,7 +82,7 @@ public final class VehicleWeaponUtils {
         float max = ySpeed + (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
 
         vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.turretMaxPitch(), -vehicle.turretMinPitch()));
-        vehicle.setTurretYRot(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max));
+        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.turretMaxYaw(), -vehicle.turretMinYaw()));
         vehicle.turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
         vehicle.aiTurretDiff = VectorTool.calculateAngle(shootVec, vehicle.getBarrelVector(1));
     }
