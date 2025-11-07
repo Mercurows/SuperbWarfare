@@ -298,7 +298,7 @@ public class ClientEventHandler {
                 // 加特林特有的旋转音效
                 if (stack.is(ModItems.MINIGUN.get())) {
                     float rpm = (float) computed.rpm / 3600;
-                    player.playSound(ModSounds.MINIGUN_ROT.get(), 1, 0.7f + rpm);
+                    player.playSound(ModSounds.MINIGUN_ROTATE.get(), 1, 0.7f + rpm);
                 }
 
                 // QL特有的樱花特效

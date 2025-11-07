@@ -48,17 +48,17 @@
     "Fire3P": "superbwarfare:mosin_nagant_fire_3p",
     "Fire3PFar": "superbwarfare:mosin_nagant_far",
     "Fire3PVeryFar": "superbwarfare:mosin_nagant_veryfar",
-    "ReloadPrepare": "superbwarfare:mosin_nagant_prepare",
-    "ReloadPrepareEmpty": "superbwarfare:mosin_nagant_prepare_empty",
-    "ReloadLoop": "superbwarfare:mosin_nagant_loop",
-    "ReloadEnd": "superbwarfare:mosin_nagant_end",
-    "Bolt": "superbwarfare:mosin_nagant_bolt",
+    "ReloadPrepare": "superbwarfare:k_98_prepare",
+    "ReloadPrepareEmpty": "superbwarfare:k_98_prepare_empty",
+    "ReloadLoop": "superbwarfare:k_98_loop",
+    "ReloadEnd": "superbwarfare:k_98_end",
+    "Bolt": "superbwarfare:k_98_bolt",
     "CancellableSounds": [
-      "superbwarfare:mosin_nagant_prepare",
-      "superbwarfare:mosin_nagant_prepare_empty",
-      "superbwarfare:mosin_nagant_loop",
-      "superbwarfare:mosin_nagant_end",
-      "superbwarfare:mosin_nagant_bolt"
+      "superbwarfare:k_98_prepare",
+      "superbwarfare:k_98_prepare_empty",
+      "superbwarfare:k_98_loop",
+      "superbwarfare:k_98_end",
+      "superbwarfare:k_98_bolt"
     ]
   }
 }
