@@ -747,6 +747,8 @@
   "superbwarfare.bmp_2.cannon": "30MM 2A42 %1$s",
   "superbwarfare.bmp_2.gun": "7.62MM COAX %1$s",
   "superbwarfare.bmp_2.missile": "9M113 %1$s",
+  "superbwarfare.yx_100.cannon_ap": "AP SHELL %1$s",
+  "superbwarfare.yx_100.gun": ".50 CAL HMG %1$s",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

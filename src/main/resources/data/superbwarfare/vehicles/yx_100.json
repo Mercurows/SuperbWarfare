@@ -5,12 +5,15 @@
   "Seats": [
     {
       "HidePassenger": true,
+      "CameraPos": {
+        "Transform": "Barrel",
+        "ZoomPosition": [0, 0.15, 0.6076875],
+        "Direction": "Barrel"
+      },
       "Transform": "Turret",
-      "Position": [
-        0.6669625,
-        0.07,
-        0.4776875
+      "Position": [0.6669625, 0.07, 0.4776875
       ],
+      "Weapons": ["Cannon", "MachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
       "MaxPitch": 30
@@ -39,6 +42,74 @@
       "MaxPitch": 90
     }
   ],
+  "Weapons": {
+    "Cannon": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Projectile": "superbwarfare:cannon_shell",
+      "Magazine": 1,
+      "AutoIterativeReloadTime": 80,
+      "Velocity": 40,
+      "Damage": 500,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 4,
+      "RecoilTime": 50,
+      "RecoilForce": 1.25,
+      "Spread": 0.02,
+      "ShootAnimationTime": 10,
+      "Crosshair": "@VehicleUsTank",
+      "CrosshairColor": "0x00FFF6",
+      "Name": "superbwarfare.yx_100.cannon_ap",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:yx_100_fire_1p",
+        "Fire3P": "superbwarfare:yx_100_fire_3p",
+        "Fire3PFar": "superbwarfare:yx_100_far",
+        "Fire3PVeryFar": "superbwarfare:yx_100_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 32,
+      "AmmoType": "superbwarfare:ap_5_inches",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0, 5]],
+        "Directions": ["Barrel"]
+      }
+    },
+    "MachineGun": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_12_7mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Spread": 0.25,
+      "CrosshairColor": "0x00FFF6",
+      "Projectile": "superbwarfare:projectile",
+      "RPM": 450,
+      "Damage": 40,
+      "BypassesArmor": 0.2,
+      "Velocity": 25,
+      "RecoilTime": 16,
+      "RecoilForce": 0.05,
+      "HeatPerShoot": 6,
+      "NaturalCooldown": 1,
+      "ShootAnimationTime": 2,
+      "AmmoType": "@HeavyAmmo",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[-0.12, 0.15, 0]],
+        "Directions": ["Barrel"]
+      },
+      "Crosshair": "@VehicleCommonGun",
+      "Name": "superbwarfare.yx_100.gun",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:m_2_hb_fire_1p",
+        "Fire3P": "superbwarfare:m_2_hb_fire_3p",
+        "Fire3PFar": "superbwarfare:m_2_hb_far",
+        "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 16
+    }
+  },
   "HUDColor": "0x00FFF6",
   "EngineType": "Track",
   "EngineInfo": {

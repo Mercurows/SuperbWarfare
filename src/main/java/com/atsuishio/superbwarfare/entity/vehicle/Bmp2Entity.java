@@ -120,21 +120,26 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
     }
 
-    private PlayState firePredicate(AnimationState<Bmp2Entity> event) {
-        if (this.entityData.get(FIRE_ANIM) > 1 && getWeaponIndex(0) == 0) {
+    private PlayState cannonFirePredicate(AnimationState<Bmp2Entity> event) {
+        if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire"));
-        }
-
-        if (this.entityData.get(FIRE_ANIM) > 0 && getWeaponIndex(0) == 1) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire2"));
         }
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav_150.idle"));
     }
 
+    private PlayState machineGunFirePredicate(AnimationState<Bmp2Entity> event) {
+        if (getShootAnimationTimer(0, 1) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire2"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.lav_150.idle2"));
+    }
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "movement", 0, this::firePredicate));
+        data.add(new AnimationController<>(this, "cannon", 0, this::cannonFirePredicate));
+        data.add(new AnimationController<>(this, "machineGun", 0, this::machineGunFirePredicate));
     }
 
     @Override
