@@ -1,55 +1,15 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-      "animation.yx100.idle2": {
+		"animation.yx_100.idle": {
 			"loop": true,
-			"animation_length": 0.5,
 			"bones": {
-              "flare": {
-                "scale": 0
-              }
-            }
-      },
-      "animation.yx100.fire2": {
-        "loop": "hold_on_last_frame",
-        "animation_length": 0.5,
-        "bones": {
 				"glow": {
-					"scale": 0
-				},
-				"flare": {
-                  "scale": {
-                    "0.0": [0, 0, 0],
-                    "0.0083": [8, 8, 8],
-                    "0.05": [11, 11, 11],
-                    "0.075": [1, 1, 1],
-                    "0.0917": [0, 0, 0],
-                    "0.15": [0, 0, 0]
-                  }
-                },
-          "action": {
-            "position": {
-              "0.0": [0, 0, 0],
-              "0.0417": {
-                "pre": [0, 0, 4.1],
-                "post": [0, 0, 6.1],
-                "lerp_mode": "catmullrom"
-              },
-              "0.1167": [0, 0, 0]
-            }
-          }
-        }
-      },
-      "animation.yx_100.idle": {
-        "loop": true,
-        "animation_length": 0.5,
-        "bones": {
-          "glow": {
 					"scale": 0
 				}
 			}
 		},
-      "animation.yx_100.fire": {
+		"animation.yx_100.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"bones": {
@@ -125,46 +85,44 @@
 						"0.9917": [0, 0, 0],
 						"2.0": [0, 0, 0]
 					}
-                }
-            }
-      },
-      "animation.yx_100.fire_coax": {
-        "loop": "hold_on_last_frame",
-        "animation_length": 0.5,
-        "bones": {
-          "flare2": {
-            "scale": {
-              "0.0": [0, 0, 0],
-              "0.0083": [8, 8, 8],
-              "0.05": [11, 11, 11],
-              "0.075": [1, 1, 1],
-              "0.0917": [0, 0, 0],
-              "0.15": [0, 0, 0]
-            }
-          }
-        }
-      },
-      "animation.yx_100.idle_coax": {
-        "loop": true,
-        "animation_length": 0.5,
-        "bones": {
-          "flare2": {
+				}
+			}
+		},
+		"animation.yx_100.fire_coax": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 0.15,
+			"bones": {
+				"flare2": {
+					"scale": {
+						"0.0": [0, 0, 0],
+						"0.0083": [8, 8, 8],
+						"0.05": [11, 11, 11],
+						"0.075": [1, 1, 1],
+						"0.0917": [0, 0, 0],
+						"0.15": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.yx_100.idle_coax": {
+			"loop": true,
+			"bones": {
+				"flare2": {
 					"scale": 0
 				}
 			}
 		},
-      "animation.yx_100.idle_weapon_station": {
+		"animation.yx_100.idle_weapon_station": {
 			"loop": true,
-			"animation_length": 0.5,
 			"bones": {
 				"flare": {
 					"scale": 0
 				}
 			}
 		},
-      "animation.yx_100.fire_weapon_station": {
+		"animation.yx_100.fire_weapon_station": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 0.5,
+			"animation_length": 0.15,
 			"bones": {
 				"flare": {
 					"scale": {

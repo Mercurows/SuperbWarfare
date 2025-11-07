@@ -222,7 +222,7 @@ public final class VehicleVecUtils {
         if (!entity.level().isClientSide) return;
         if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) return;
 
-        if (vehicle.turretControllerIndex() == vehicle.getSeatIndex(entity)) {
+        if (vehicle.getTurretControllerIndex() == vehicle.getSeatIndex(entity)) {
             float f2 = Mth.wrapDegrees(entity.getYRot() - vehicle.getBarrelYRot(1));
             float f3 = Mth.clamp(f2, -20.0F, 20.0F);
             entity.yRotO += f3 - f2;
@@ -578,7 +578,7 @@ public final class VehicleVecUtils {
         Matrix4f transformT = getTurretTransform(vehicle, partialTicks);
 
         Matrix4f transform = new Matrix4f();
-        var pos = vehicle.getGunnerPosition();
+        var pos = vehicle.getPassengerWeaponStationPosition();
         Vector4f worldPosition = transformPosition(
                 transform,
                 (float) pos.x,
@@ -591,11 +591,11 @@ public final class VehicleVecUtils {
         return transformT;
     }
 
-    public static Matrix4f getGunnerBarrelTransform(VehicleEntity vehicle, float partialTicks) {
+    public static Matrix4f getPassengerWeaponStationBarrelTransform(VehicleEntity vehicle, float partialTicks) {
         Matrix4f transformG = getGunTransform(vehicle, partialTicks);
 
         Matrix4f transform = new Matrix4f();
-        var pos = vehicle.getGunnerBarrelPosition();
+        var pos = vehicle.getPassengerWeaponStationBarrelPosition();
         Vector4f worldPosition = transformPosition(
                 transform,
                 (float) pos.x,
@@ -627,8 +627,8 @@ public final class VehicleVecUtils {
         return transformG;
     }
 
-    public static Vec3 getGunnerVector(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transform = getGunnerBarrelTransform(vehicle, partialTicks);
+    public static Vec3 getPassengerWeaponStationVector(VehicleEntity vehicle, float partialTicks) {
+        Matrix4f transform = getPassengerWeaponStationBarrelTransform(vehicle, partialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
         Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));

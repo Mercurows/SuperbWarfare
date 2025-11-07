@@ -22,7 +22,7 @@ public class Mk42Model extends VehicleModel<Mk42Entity> {
     }
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 }

@@ -36,7 +36,8 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
     protected float turretXRot;
     protected float turretYaw;
     protected float recoilShake;
-    protected boolean hideFor1stPassengerWhileZooming;
+    protected boolean hideForTurretControllerWhileZooming;
+    protected boolean hideForPassengerWeaponStationControllerWhileZooming;
 
     private final ResourceOnceLogger LOGGER = new ResourceOnceLogger();
 
@@ -126,8 +127,13 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
     @Nullable
     public TransformContext<T> collectTransform(String boneName) {
         // 瞄准时隐藏车体
-        if (boneName.equals("root") && hideFor1stPassengerWhileZooming()) {
-            return (bone, vehicle, state) -> bone.setHidden(hideFor1stPassengerWhileZooming);
+        if (boneName.equals("root") && hideForTurretControllerWhileZooming()) {
+            return (bone, vehicle, state) -> bone.setHidden(hideForTurretControllerWhileZooming);
+        }
+
+        // 瞄准时隐藏乘客武器站
+        if (boneName.equals("passengerWeaponStation") && hideForTurretControllerWhileZooming()) {
+            return (bone, vehicle, state) -> bone.setHidden(hideForPassengerWeaponStationControllerWhileZooming);
         }
 
         //射击时带来的车体摇晃视觉效果
@@ -159,7 +165,7 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             // turret
             case "turret" -> {
                 return (bone, vehicle, state) -> {
-                    bone.setHidden(hideFor1stPassengerWhileZooming);
+                    bone.setHidden(hideForTurretControllerWhileZooming);
                     bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
 
                     var turretLaser = getAnimationProcessor().getBone("turretLaser");
@@ -319,8 +325,8 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
 
         recoilShake = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
 
-        hideFor1stPassengerWhileZooming = ClientEventHandler.zoomVehicle && vehicle.getFirstPassenger() == Minecraft.getInstance().player;
-
+        hideForTurretControllerWhileZooming = ClientEventHandler.zoomVehicle && vehicle.getNthEntity(vehicle.getTurretControllerIndex()) == Minecraft.getInstance().player;
+        hideForPassengerWeaponStationControllerWhileZooming = ClientEventHandler.zoomVehicle && vehicle.getNthEntity(vehicle.getPassengerWeaponStationControllerIndex()) == Minecraft.getInstance().player;
 
         TRANSFORMS.forEach(pair -> {
             var name = pair.getA();
@@ -334,7 +340,7 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
 
     }
 
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return false;
     }
 

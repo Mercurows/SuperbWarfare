@@ -38,7 +38,7 @@ public class Hpj11Model extends VehicleModel<Hpj11Entity> {
     }
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 }

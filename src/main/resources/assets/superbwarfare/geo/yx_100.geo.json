@@ -7593,8 +7593,13 @@
 					]
 				},
 				{
-					"name": "passengerWeaponStationYaw",
+					"name": "passengerWeaponStation",
 					"parent": "turret",
+					"pivot": [-12.12891, 52.00922, 16.06406]
+				},
+				{
+					"name": "passengerWeaponStationYaw",
+					"parent": "passengerWeaponStation",
 					"pivot": [-12.12891, 52.00922, 16.06406],
 					"cubes": [
 						{

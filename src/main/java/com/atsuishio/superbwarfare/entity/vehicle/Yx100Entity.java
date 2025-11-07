@@ -13,10 +13,8 @@ import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.joml.*;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -96,39 +94,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         this.refreshDimensions();
     }
 
-
-    // 乘客武器站最大水平旋转速度
-    @Override
-    public float passengerWeaponYSpeed() {
-        return 15;
-    }
-
-    // 乘客武器站最大俯仰旋转速度
-    @Override
-    public float passengerWeaponXSpeed() {
-        return 15;
-    }
-
-    // 乘客武器站最小俯角
-    @Override
-    public float passengerWeaponMinPitch() {
-        return -10;
-    }
-
-    // 乘客武器站最大仰角
-    @Override
-    public float passengerWeaponMaxPitch() {
-        return 60;
-    }
-
-    // 乘客武器站弹药发射位置
-    @Override
-    public Vec3 passengerWeaponShootPos(Entity entity, float ticks) {
-        Matrix4f transform = getGunTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0, -0.25f, 0);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
     @Override
     public SoundEvent getEngineSound() {
         return ModSounds.YX_100_ENGINE.get();
@@ -139,11 +104,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
     }
 
-    @Override
-    public Vec3 getGunnerPosition() {
-        return new Vec3(-0.75805625f, 1.1446375, -0.57275625);
-    }
-
     private PlayState cannonFirePredicate(AnimationState<Yx100Entity> event) {
         if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire"));
@@ -152,7 +112,7 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle"));
     }
 
-    private PlayState machineGunFirePredicate(AnimationState<Yx100Entity> event) {
+    private PlayState coaxFirePredicate(AnimationState<Yx100Entity> event) {
         if (getShootAnimationTimer(0, 1) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire_coax"));
         }
@@ -160,10 +120,19 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle_coax"));
     }
 
+    private PlayState passengerWeaponStationFirePredicate(AnimationState<Yx100Entity> event) {
+        if (getShootAnimationTimer(1, 0) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire_weapon_station"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle_weapon_station"));
+    }
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "cannon", 0, this::cannonFirePredicate));
-        data.add(new AnimationController<>(this, "machineGun", 0, this::machineGunFirePredicate));
+        data.add(new AnimationController<>(this, "coax", 0, this::coaxFirePredicate));
+        data.add(new AnimationController<>(this, "passengerWeaponStation", 0, this::passengerWeaponStationFirePredicate));
     }
 
     @Override

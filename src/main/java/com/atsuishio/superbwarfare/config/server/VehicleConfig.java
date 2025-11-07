@@ -73,17 +73,6 @@ public class VehicleConfig {
     public static ModConfigSpec.IntValue BMP_2_CANNON_EXPLOSION_DAMAGE;
     public static ModConfigSpec.DoubleValue BMP_2_CANNON_EXPLOSION_RADIUS;
 
-    public static ModConfigSpec.IntValue YX_100_SHOOT_COST;
-    public static ModConfigSpec.IntValue YX_100_ENERGY_COST;
-    public static ModConfigSpec.IntValue YX_100_AP_CANNON_DAMAGE;
-    public static ModConfigSpec.IntValue YX_100_AP_CANNON_EXPLOSION_DAMAGE;
-    public static ModConfigSpec.DoubleValue YX_100_AP_CANNON_EXPLOSION_RADIUS;
-    public static ModConfigSpec.IntValue YX_100_HE_CANNON_DAMAGE;
-    public static ModConfigSpec.IntValue YX_100_HE_CANNON_EXPLOSION_DAMAGE;
-    public static ModConfigSpec.DoubleValue YX_100_HE_CANNON_EXPLOSION_RADIUS;
-    public static ModConfigSpec.IntValue YX_100_SWARM_EXPLOSION_DAMAGE;
-    public static ModConfigSpec.DoubleValue YX_100_SWARM_EXPLOSION_RADIUS;
-
     public static ModConfigSpec.IntValue PRISM_TANK_ENERGY_COST;
     public static ModConfigSpec.IntValue PRISM_TANK_DAMAGE_MODE_1;
     public static ModConfigSpec.IntValue PRISM_TANK_SHOOT_COST_MODE_1;
@@ -307,40 +296,6 @@ public class VehicleConfig {
 
         builder.comment("The cannon explosion radius of BMP-2");
         BMP_2_CANNON_EXPLOSION_RADIUS = builder.defineInRange("bmp_2_cannon_explosion_radius", 4d, 1d, 10000000d);
-
-        builder.pop();
-
-        builder.push("YX-100");
-
-        builder.comment("The energy cost of YX-100 per tick");
-        YX_100_ENERGY_COST = builder.defineInRange("yx_100_energy_cost", 128, 0, 2147483647);
-
-        builder.comment("The energy cost of YX-100 per shoot");
-        YX_100_SHOOT_COST = builder.defineInRange("yx_100_shoot_cost", 24000, 0, 2147483647);
-
-        builder.comment("The cannon damage of YX-100");
-        YX_100_AP_CANNON_DAMAGE = builder.defineInRange("yx_100_ap_cannon_damage", 500, 1, 10000000);
-
-        builder.comment("The cannon explosion damage of YX-100");
-        YX_100_AP_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("yx_100_ap_cannon_explosion_damage", 100, 1, 10000000);
-
-        builder.comment("The cannon explosion radius of YX-100");
-        YX_100_AP_CANNON_EXPLOSION_RADIUS = builder.defineInRange("yx_100_ap_cannon_explosion_radius", 4d, 1d, 10000000d);
-
-        builder.comment("The cannon damage of YX-100");
-        YX_100_HE_CANNON_DAMAGE = builder.defineInRange("yx_100_he_cannon_damage", 150, 1, 10000000);
-
-        builder.comment("The cannon explosion damage of YX-100");
-        YX_100_HE_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("yx_100_he_cannon_explosion_damage", 150, 1, 10000000);
-
-        builder.comment("The cannon explosion radius of YX-100");
-        YX_100_HE_CANNON_EXPLOSION_RADIUS = builder.defineInRange("yx_100_he_cannon_explosion_radius", 10d, 1d, 10000000d);
-
-        builder.comment("The swarm drone explosion damage of YX-100");
-        YX_100_SWARM_EXPLOSION_DAMAGE = builder.defineInRange("yx_100_swarm_drone_explosion_damage", 80, 1, 10000000);
-
-        builder.comment("The swarm drone explosion radius of YX-100");
-        YX_100_SWARM_EXPLOSION_RADIUS = builder.defineInRange("yx_100_swarm_drone_explosion_radius", 5d, 1d, 10000000d);
 
         builder.pop();
 

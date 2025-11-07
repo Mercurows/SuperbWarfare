@@ -167,6 +167,30 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("BarrelPos")
     public Vec3 barrelPos = Vec3.ZERO;
 
+    @ServerOnly
+    @SerializedName("PassengerWeaponStationPos")
+    public Vec3 passengerWeaponStationPos = null;
+
+    @ServerOnly
+    @SerializedName("PassengerWeaponStationBarrelPos")
+    public Vec3 passengerWeaponStationBarrelPos = Vec3.ZERO;
+
+    @ServerOnly
+    @SerializedName("PassengerWeaponStationTurnSpeed")
+    public Vec2 passengerWeaponStationTurnSpeed = new Vec2(5, 5);
+
+    @ServerOnly
+    @SerializedName("PassengerWeaponStationYawClamp")
+    public Vec2 passengerWeaponStationYawClamp = new Vec2(-514, 514);
+
+    @ServerOnly
+    @SerializedName("PassengerWeaponStationPitchClamp")
+    public Vec2 passengerWeaponStationPitchClamp = new Vec2(-10, 30);
+
+    @ServerOnly
+    @SerializedName("PassengerWeaponStationControllerIndex")
+    public int passengerWeaponStationControllerIndex = 1;
+
     @Override
     public void limit() {
         this.maxHealth = Math.max(this.maxHealth, 0);

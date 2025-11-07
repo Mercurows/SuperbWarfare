@@ -22,11 +22,17 @@
     {
       "HidePassenger": true,
       "Transform": "Turret",
+      "CameraPos": {
+        "Transform": "WeaponStationBarrel",
+        "ZoomPosition": [0, 0.1, 0],
+        "Direction": "WeaponStationBarrel"
+      },
       "Position": [
         -0.75805625,
         0.3,
         -0.57275625
       ],
+      "Weapons": ["PassengerMachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
       "MaxPitch": 60
@@ -56,7 +62,7 @@
       "ExplosionDamage": 100,
       "ExplosionRadius": 4,
       "RecoilTime": 50,
-      "RecoilForce": 1.25,
+      "RecoilForce": 1.0,
       "Spread": 0.02,
       "ShootAnimationTime": 10,
       "Crosshair": "@VehicleUsTank",
@@ -90,9 +96,9 @@
       "Velocity": 25,
       "RecoilTime": 16,
       "RecoilForce": 0.05,
-      "HeatPerShoot": 6,
+      "HeatPerShoot": 5,
       "NaturalCooldown": 1,
-      "ShootAnimationTime": 2,
+      "ShootAnimationTime": 1,
       "AmmoType": "@HeavyAmmo",
       "ShootPos": {
         "Transform": "Barrel",
@@ -101,6 +107,39 @@
       },
       "Crosshair": "@VehicleCommonGun",
       "Name": "superbwarfare.yx_100.gun",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:m_2_hb_fire_1p",
+        "Fire3P": "superbwarfare:m_2_hb_fire_3p",
+        "Fire3PFar": "superbwarfare:m_2_hb_far",
+        "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 16
+    },
+    "PassengerMachineGun": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_12_7mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Spread": 0.25,
+      "CrosshairColor": "0x00FFF6",
+      "Projectile": "superbwarfare:projectile",
+      "RPM": 450,
+      "Damage": 40,
+      "BypassesArmor": 0.2,
+      "Velocity": 25,
+      "RecoilTime": 16,
+      "RecoilForce": 0.05,
+      "HeatPerShoot": 5,
+      "NaturalCooldown": 1,
+      "ShootAnimationTime": 1,
+      "AmmoType": "@HeavyAmmo",
+      "ShootPos": {
+        "Transform": "WeaponStationBarrel",
+        "Positions": [[0, 0.01, 1.8]],
+        "Directions": ["WeaponStationBarrel"]
+      },
+      "Crosshair": "@VehicleCommonGun",
+      "Name": "",
       "SoundInfo": {
         "Fire1P": "superbwarfare:m_2_hb_fire_1p",
         "Fire3P": "superbwarfare:m_2_hb_fire_3p",
@@ -127,9 +166,13 @@
     "SteeringSpeed": 0.1
   },
   "TurretPos": [0, 2.1059375, -0.43125],
+  "BarrelPos": [0, 0.56345, 0.6477125],
   "TurretTurnSpeed": [7, 6],
   "TurretPitchClamp": [-10, 30],
-  "BarrelPos": [0, 0.56345, 0.6477125],
+  "PassengerWeaponStationPos": [-0.75805625, 1.1446375, -0.57275625],
+  "PassengerWeaponStationBarrelPos": [0, 0.35984375, 0.0551625],
+  "PassengerWeaponStationTurnSpeed": [15, 15],
+  "PassengerWeaponStationPitchClamp": [-10, 60],
   "HasDecoy": true,
   "UpStep": 2.25,
   "RotateOffsetHeight": 3.5,

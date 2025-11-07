@@ -14,7 +14,7 @@ public class A10Model extends VehicleModel<A10Entity> {
     public @Nullable TransformContext<A10Entity> collectTransform(String boneName) {
         return switch (boneName) {
             case "root" -> (bone, vehicle, state) ->
-                    bone.setHidden(hideFor1stPassengerWhileZooming && vehicle.getWeaponIndex(0) == 2);
+                    bone.setHidden(hideForTurretControllerWhileZooming && vehicle.getWeaponIndex(0) == 2);
 
             case "wingRR" -> (bone, vehicle, state) ->
                     bone.setRotX(1.5f * Mth.lerp(state.getPartialTick(), vehicle.flap1RRotO, vehicle.getFlap1RRot()) * Mth.DEG_TO_RAD);

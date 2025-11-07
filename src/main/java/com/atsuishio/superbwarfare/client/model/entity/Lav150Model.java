@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.Lav150Entity;
 public class Lav150Model extends VehicleModel<Lav150Entity> {
 
     @Override
-    public boolean hideFor1stPassengerWhileZooming() {
+    public boolean hideForTurretControllerWhileZooming() {
         return true;
     }
 }
