@@ -217,8 +217,13 @@ public class GunEventHandler {
     // 自动单发装填
     public static void autoIterativeReload(@Nullable Entity ammoSupplier, @NotNull GunData data) {
         var autoIterativeReloadTime = data.get(GunProp.AUTO_ITERATIVE_RELOAD_TIME);
-        if (autoIterativeReloadTime <= 0) {
-            data.autoIterativeReloadTimer.reset();
+        if (autoIterativeReloadTime <= 0
+                || data.bolt.needed.get()
+                || data.reloading()
+                || data.charging()
+                || data.ammo.get() >= data.get(GunProp.MAGAZINE)
+        ) {
+            data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
             return;
         }
 
