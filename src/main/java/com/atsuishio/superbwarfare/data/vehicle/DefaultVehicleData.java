@@ -13,6 +13,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -125,6 +127,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public EngineType engineType = EngineType.EMPTY;
     @SerializedName("EngineInfo")
     public JsonObject engineInfo = new JsonObject();
+    // 引擎音效
+    @SerializedName("EngineSound")
+    public SoundEvent engineSound = SoundEvents.EMPTY;
 
     @SerializedName("RotateOffsetHeight")
     public float rotateOffsetHeight = 0;

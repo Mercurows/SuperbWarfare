@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 
 public class EngineInfo {
 
@@ -49,5 +51,9 @@ public class EngineInfo {
         public float rollSpeed = 0;
         @SerializedName("LiftSpeed")
         public float liftSpeed = 0;
+
+        // 引擎启动音效
+        @SerializedName("EngineStartSound")
+        public SoundEvent engineStartSound = SoundEvents.EMPTY;
     }
 }
