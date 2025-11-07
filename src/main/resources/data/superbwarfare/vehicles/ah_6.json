@@ -76,10 +76,10 @@
     "Rocket": {
       "AmmoType": "superbwarfare:small_rocket",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Magazine": 15,
-      "AutoIterativeReloadTime": 20,
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Magazine": 14,
+      "AutoIterativeReloadTime": 30,
       "Projectile": "superbwarfare:small_rocket",
       "HeatPerShoot": 0.5,
       "Spread": 0.25,
@@ -99,6 +99,7 @@
         "Fire3P": "superbwarfare:small_rocket_fire_3p",
         "Fire3PFar": "null",
         "Fire3PVeryFar": "null",
+        "ReloadEnd": "superbwarfare:missile_reload",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 12

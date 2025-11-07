@@ -290,7 +290,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 - heal)), screenWidth / 2 - 165, screenHeight / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
 
                 // 诱饵
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getEntityData().get(DECOY_READY)), screenWidth / 2 - 165, screenHeight / 2 - 36, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), screenWidth / 2 - 165, screenHeight / 2 - 36, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
 
                 renderKillIndicator(guiGraphics, screenWidth, screenHeight);
             }
@@ -446,12 +446,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         pose.pushPose();
 
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+
 
         int frameIndex = 0;
 
@@ -494,6 +489,35 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
             preciseBlit(guiGraphics, frame, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
             preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+
+            var data = vehicle.getGunData(vehicle.getSeatIndex(player), i);
+
+            if (data != null && data.compute().autoIterativeReloadTime > 0) {
+                var time = data.compute().autoIterativeReloadTime;
+                var timer = data.autoIterativeReloadTimer.get();
+                float reloadProgress = (float) (time - timer) / time;
+                float alpha = Mth.lerp(progress, 0.4f, 1);
+
+                if (timer > 0 && timer < time) {
+                    RenderHelper.renderCircularRing(
+                            guiGraphics,
+                            w - 102 + xOffset, h - frameIndex * 18 - 12,
+                            0.014f, 0.010f,
+                            new float[]{0f, 0f, 0f, 0.4f * alpha},
+                            new float[]{1f, 1f, 1f, alpha},
+                            reloadProgress,
+                            true
+                    );
+                }
+            }
+
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+
 
             pose.popPose();
 

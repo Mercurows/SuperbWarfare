@@ -187,15 +187,16 @@
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
     "Missile": {
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
       "HeatPerShoot": 0.5,
       "Spread": 0.5,
       "CrosshairColor": "0xFFC700",
       "Name": "superbwarfare.bmp_2.missile",
       "AmmoType": "superbwarfare:wire_guide_missile",
       "Projectile": "superbwarfare:wg_missile",
-      "RPM": 10,
+      "Magazine": 1,
+      "AutoIterativeReloadTime": 120,
       "Damage": 700,
       "Velocity": 6,
       "RecoilTime": 18,
@@ -214,6 +215,7 @@
         "Fire3P": "superbwarfare:bmp_missile_fire_3p",
         "Fire3PFar": "null",
         "Fire3PVeryFar": "null",
+        "ReloadEnd": "superbwarfare:bmp_missile_reload",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 12,

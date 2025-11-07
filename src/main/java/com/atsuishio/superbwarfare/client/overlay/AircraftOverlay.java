@@ -191,7 +191,7 @@ public class AircraftOverlay implements IGuiOverlay {
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG)), (int) x - 96, (int) y + 78, color, false);
 
                 // 热诱弹
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyState()), (int) x + 72, (int) y, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyState()), (int) x + 72, (int) y, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TGT"), (int) x + 76, (int) y + 78, color, false);
 
                 if (vehicle instanceof A10Entity a10Entity) {
@@ -303,7 +303,7 @@ public class AircraftOverlay implements IGuiOverlay {
                         }
                     }
 
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyState()), 25, 1, -1, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("IR FLARES " + vehicle.getDecoyState()), 25, 1, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
                     poseStack.popPose();
                     preciseBlit(guiGraphics, cross, x - 0.5f * size, y - 0.5f * size, 0, 0, size, size, size, size);
                     renderKillIndicator(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));

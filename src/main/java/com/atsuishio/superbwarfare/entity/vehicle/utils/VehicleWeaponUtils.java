@@ -177,7 +177,7 @@ public final class VehicleWeaponUtils {
                     });
                 }
 
-                vehicle.decoyReloadCoolDown = 40;
+                vehicle.decoyReloadCoolDown = 400;
                 vehicle.getEntityData().set(DECOY_READY, false);
             }
             vehicle.setDecoyInputDown(false);
@@ -185,7 +185,7 @@ public final class VehicleWeaponUtils {
         if (!vehicle.getEntityData().get(DECOY_READY) && vehicle.decoyReloadCoolDown == 0 && vehicle.level() instanceof ServerLevel) {
             vehicle.getEntityData().set(DECOY_READY, true);
             vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELOAD.get(), vehicle.getSoundSource(), 1, 1);
-            vehicle.decoyReloadCoolDown = 40;
+            vehicle.decoyReloadCoolDown = 400;
         }
     }
 
