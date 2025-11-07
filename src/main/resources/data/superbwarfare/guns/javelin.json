@@ -32,12 +32,12 @@
     "Fire3P": "superbwarfare:javelin_fire_3p",
     "Fire3PFar": "superbwarfare:javelin_far",
     "ReloadEmpty": "superbwarfare:javelin_reload_empty",
-    "Locking": "superbwarfare:javelin_lock",
-    "Locked": "superbwarfare:javelin_lockon",
+    "Locking": "superbwarfare:javelin_locking",
+    "Locked": "superbwarfare:javelin_locked",
     "CancellableSounds": [
       "superbwarfare:javelin_reload_empty",
-      "superbwarfare:javelin_lock",
-      "superbwarfare:javelin_lockon"
+      "superbwarfare:javelin_locking",
+      "superbwarfare:javelin_locked"
     ]
   }
 }

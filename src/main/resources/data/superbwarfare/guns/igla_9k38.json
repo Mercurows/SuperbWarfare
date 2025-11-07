@@ -28,12 +28,12 @@
     "Fire3P": "superbwarfare:igla_9k38_fire_3p",
     "Fire3PFar": "superbwarfare:igla_9k38_far",
     "ReloadEmpty": "superbwarfare:igla_9k38_reload_empty",
-    "Locking": "superbwarfare:igla_9k38_lock",
-    "Locked": "superbwarfare:igla_9k38_lockon",
+    "Locking": "superbwarfare:igla_9k38_locking",
+    "Locked": "superbwarfare:igla_9k38_locked",
     "CancellableSounds": [
       "superbwarfare:igla_9k38_reload_empty",
-      "superbwarfare:igla_9k38_lock",
-      "superbwarfare:igla_9k38_lockon"
+      "superbwarfare:igla_9k38_locking",
+      "superbwarfare:igla_9k38_locked"
     ]
   }
 }
