@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -115,6 +116,15 @@ public class PlayerModelMixin<T extends LivingEntity> {
 
                 model.rightArm.z = -5;
                 model.rightSleeve.z = -5;
+            }
+
+            // 坦克挂票
+            if (player.getVehicle() instanceof Yx100Entity yx100Entity && (yx100Entity.getNthEntity(3) == player || yx100Entity.getNthEntity(4) == player)) {
+                model.leftArm.xRot = -112.5f * Mth.DEG_TO_RAD;
+                model.leftSleeve.xRot = -112.5f * Mth.DEG_TO_RAD;
+
+                model.rightArm.xRot = -112.5f * Mth.DEG_TO_RAD;
+                model.rightSleeve.xRot = -112.5f * Mth.DEG_TO_RAD;
             }
 
             // 趴下持枪
