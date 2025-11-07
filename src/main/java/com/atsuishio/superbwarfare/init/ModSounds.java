@@ -433,13 +433,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> C4_FINAL = REGISTRY.register("c4_final", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_final")));
     public static final RegistryObject<SoundEvent> C4_THROW = REGISTRY.register("c4_throw", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_throw")));
     public static final RegistryObject<SoundEvent> C4_DETONATOR_CLICK = REGISTRY.register("c4_detonator_click", () -> SoundEvent.createVariableRangeEvent(Mod.loc("c4_detonator_click")));
-
-    public static final RegistryObject<SoundEvent> PRISM_FIRE_1P = REGISTRY.register("prism_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_1p")));
-    public static final RegistryObject<SoundEvent> PRISM_FIRE_3P = REGISTRY.register("prism_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_3p")));
-    public static final RegistryObject<SoundEvent> PRISM_FIRE_1P_2 = REGISTRY.register("prism_fire_1p_2", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_1p_2")));
-    public static final RegistryObject<SoundEvent> PRISM_FIRE_3P_2 = REGISTRY.register("prism_fire_3p_2", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_fire_3p_2")));
-    public static final RegistryObject<SoundEvent> PRISM_ENGINE = REGISTRY.register("prism_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_engine")));
-
+    
     public static final RegistryObject<SoundEvent> INSIDIOUS_FIRE_1P = REGISTRY.register("insidious_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_fire_1p")));
     public static final RegistryObject<SoundEvent> INSIDIOUS_FIRE_3P = REGISTRY.register("insidious_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_fire_3p")));
     public static final RegistryObject<SoundEvent> INSIDIOUS_FAR = REGISTRY.register("insidious_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("insidious_far")));
@@ -497,7 +491,15 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> LAV_150_CANNON_FAR = REGISTRY.register("lav_150_cannon_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("lav_150_cannon_far")));
     public static final RegistryObject<SoundEvent> LAV_150_CANNON_VERYFAR = REGISTRY.register("lav_150_cannon_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("lav_150_cannon_veryfar")));
     public static final RegistryObject<SoundEvent> LAV_150_ENGINE = REGISTRY.register("lav_150_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("lav_150_engine")));
-
+    
+    
+    // prism tank
+    public static final RegistryObject<SoundEvent> PRISM_TANK_FIRE_HIGH_1P = REGISTRY.register("prism_tank_fire_high_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_tank_fire_high_1p")));
+    public static final RegistryObject<SoundEvent> PRISM_TANK_FIRE_HIGH_3P = REGISTRY.register("prism_tank_fire_high_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_tank_fire_high_3p")));
+    public static final RegistryObject<SoundEvent> PRISM_TANK_FIRE_LOW_1P = REGISTRY.register("prism_tank_fire_low_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_tank_fire_low_1p")));
+    public static final RegistryObject<SoundEvent> PRISM_TANK_FIRE_LOW_3P = REGISTRY.register("prism_tank_fire_low_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_tank_fire_low_3p")));
+    public static final RegistryObject<SoundEvent> PRISM_TANK_ENGINE = REGISTRY.register("prism_tank_engine", () -> SoundEvent.createVariableRangeEvent(Mod.loc("prism_tank_engine")));
+    
 
     public static final RegistryObject<SoundEvent> AURELIA_SCEPTRE_FIRE_1P = REGISTRY.register("aurelia_sceptre_fire_1p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("aurelia_sceptre_fire_1p")));
     public static final RegistryObject<SoundEvent> AURELIA_SCEPTRE_FIRE_3P = REGISTRY.register("aurelia_sceptre_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("aurelia_sceptre_fire_3p")));

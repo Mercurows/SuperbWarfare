@@ -3032,44 +3032,44 @@
       }
     ]
   },
-  "prism_fire_1p": {
+  "prism_tank_fire_high_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_1p",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_high_1p",
         "stream": false
       }
     ]
   },
-  "prism_fire_3p": {
+  "prism_tank_fire_high_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_3p",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_high_3p",
         "stream": false
       }
     ]
   },
-  "prism_fire_1p_2": {
+  "prism_tank_fire_low_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_1p_2",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_low_1p",
         "stream": false
       }
     ]
   },
-  "prism_fire_3p_2": {
+  "prism_tank_fire_low_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_3p_2",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_low_3p",
         "stream": false
       }
     ]
   },
-  "prism_engine": {
+  "prism_tank_engine": {
     "sounds": [
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:prism/prism_engine"
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_engine"
       }
     ]
   },
