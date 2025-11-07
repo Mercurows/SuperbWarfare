@@ -8,6 +8,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +35,7 @@ public class VehicleAssemblingTableBlockEntity extends BlockEntity implements Me
     @Override
     @ParametersAreNonnullByDefault
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return new VehicleAssemblingMenu(pContainerId, pPlayerInventory);
+        return new VehicleAssemblingMenu(pContainerId, pPlayerInventory, ContainerLevelAccess.create(pPlayer.level(), this.worldPosition));
     }
 
     @Override

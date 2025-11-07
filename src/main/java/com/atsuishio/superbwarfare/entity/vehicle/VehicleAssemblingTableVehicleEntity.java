@@ -24,6 +24,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
@@ -296,6 +297,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     @Override
     @ParametersAreNonnullByDefault
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new VehicleAssemblingMenu(i, inventory, true);
+        return new VehicleAssemblingMenu(i, inventory, ContainerLevelAccess.NULL, true);
     }
 }
