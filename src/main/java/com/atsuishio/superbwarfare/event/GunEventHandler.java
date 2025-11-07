@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -218,6 +219,15 @@ public class GunEventHandler {
     // 自动单发装填
     public static void autoIterativeReload(@Nullable Entity ammoSupplier, @NotNull GunData data) {
         var autoIterativeReloadTime = data.compute().autoIterativeReloadTime;
+
+        if (data.autoIterativeReloadTimer.get() == autoIterativeReloadTime - 1) {
+            var soundInfo = data.compute().soundInfo;
+            var sound = soundInfo.reloadPrepare;
+            if (sound != null && ammoSupplier != null) {
+                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 0.6f, 1);
+            }
+        }
+
         if (autoIterativeReloadTime <= 0
                 || data.bolt.needed.get()
                 || data.reloading()
@@ -228,11 +238,18 @@ public class GunEventHandler {
             return;
         }
 
-        data.autoIterativeReloadTimer.reduce();
+        if (data.countBackupAmmo(ammoSupplier) > 0) {
+            data.autoIterativeReloadTimer.reduce();
+        }
+
         if (data.autoIterativeReloadTimer.get() == 0) {
             iterativeLoad(ammoSupplier, data);
-
             data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
+            var soundInfo = data.compute().soundInfo;
+            var sound = soundInfo.reloadEnd;
+            if (sound != null && ammoSupplier != null) {
+                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 0.6f, 1);
+            }
         }
     }
 

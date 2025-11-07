@@ -167,7 +167,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                         FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
 
                 if (vehicle.hasDecoy()) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), 30, 11, -1, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), 30, 11, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
                 }
 
                 poseStack.popPose();
