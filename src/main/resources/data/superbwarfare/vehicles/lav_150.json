@@ -140,9 +140,9 @@
     "Decrement": 0.02,
     "SteeringSpeed": 0.07
   },
-  "TurretPos": [0, 2.4003, 0],
-  "TurretTurnSpeed": [12.5, 10],
-  "TurretPitchClamp": [-15, 32.5],
+  "MainWeaponPos": [0, 2.4003, 0],
+  "MainWeaponTurnSpeed": [12.5, 10],
+  "MainWeaponPitchRange": [-15, 32.5],
   "BarrelPos": [0.0234375, 0.33795, 0.825],
   "HasDecoy": true,
   "UpStep": 1.5,
@@ -192,5 +192,5 @@
     ]
   },
   "EngineSound": "superbwarfare:lav_150_engine",
-  "WeaponHudType": "@Land"
+  "MainWeaponHudType": "@Land"
 }

@@ -23,12 +23,12 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 /**
- * 控制载具武器的玩家显示的HUD
+ * 控制载具主武器的玩家显示的HUD
  */
 @OnlyIn(Dist.CLIENT)
-public class VehicleWeaponHudOverlay implements IGuiOverlay {
+public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
 
-    public static final String ID = Mod.MODID + "_vehicle_weapon_hud";
+    public static final String ID = Mod.MODID + "_vehicle_main_weapon_hud";
     public static final String EMPTY = "@Empty";
 
     @Override
@@ -38,10 +38,10 @@ public class VehicleWeaponHudOverlay implements IGuiOverlay {
         if (!(player.getVehicle() instanceof VehicleEntity vehicle)) return;
         if (ClientEventHandler.isEditing) return;
 
-        var type = vehicle.computed().weaponHudType;
+        var type = vehicle.computed().mainWeaponHudType;
         if (type.equals(EMPTY)) return;
 
-        if (vehicle.getSeatIndex(player) != vehicle.computed().turretControllerIndex) return;
+        if (vehicle.getSeatIndex(player) != vehicle.computed().mainWeaponControllerIndex) return;
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();

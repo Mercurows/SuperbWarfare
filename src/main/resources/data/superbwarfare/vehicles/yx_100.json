@@ -223,10 +223,10 @@
     "Decrement": 0.01,
     "SteeringSpeed": 0.1
   },
-  "TurretPos": [0, 2.1059375, -0.43125],
+  "MainWeaponPos": [0, 2.1059375, -0.43125],
   "BarrelPos": [0, 0.56345, 0.6477125],
-  "TurretTurnSpeed": [7, 6],
-  "TurretPitchClamp": [-10, 30],
+  "MainWeaponTurnSpeed": [7, 6],
+  "MainWeaponPitchRange": [-10, 30],
   "PassengerWeaponStationPos": [-0.75805625, 1.1446375, -0.57275625],
   "PassengerWeaponStationBarrelPos": [0, 0.35984375, 0.0551625],
   "PassengerWeaponStationTurnSpeed": [15, 15],
@@ -281,5 +281,5 @@
     ]
   },
   "EngineSound": "superbwarfare:vehicle/yx_100/yx_100_engine",
-  "WeaponHudType": "@Land"
+  "MainWeaponHudType": "@Land"
 }

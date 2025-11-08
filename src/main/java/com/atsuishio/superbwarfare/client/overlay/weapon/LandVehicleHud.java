@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
-import com.atsuishio.superbwarfare.client.overlay.VehicleWeaponHudOverlay;
+import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -109,7 +109,7 @@ public class LandVehicleHud {
                     screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
 
             // 低电量警告
-            VehicleWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
+            VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
 
             // 测距
             boolean lookAtEntity = false;

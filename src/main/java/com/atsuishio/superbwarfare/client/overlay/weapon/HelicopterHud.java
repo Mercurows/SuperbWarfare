@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
-import com.atsuishio.superbwarfare.client.overlay.VehicleWeaponHudOverlay;
+import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -139,7 +139,7 @@ public class HelicopterHud {
                         screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
             }
 
-            VehicleWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
+            VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
 
             RenderHelper.blit(poseStack, CROSSHAIR_IND, x - 8, y - 8, 0, 0, 16, 16, 16, 16, color);
             VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
@@ -154,7 +154,7 @@ public class HelicopterHud {
             poseStack.translate(x, y, 0);
             poseStack.scale(0.75f, 0.75f, 1);
 
-            VehicleWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
+            VehicleMainWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
 
             if (vehicle.hasDecoy()) {
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), 30, 1, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);

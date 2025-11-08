@@ -155,20 +155,23 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("CollisionLevel")
     public CollisionLevel collisionLevel = new CollisionLevel();
 
+    // 主武器位
     @ServerOnly
-    @SerializedName("TurretPos")
-    public Vec3 turretPos = null;
+    @SerializedName("MainWeaponPos")
+    public Vec3 mainWeaponPos = null;
     @ServerOnly
-    @SerializedName("TurretTurnSpeed")
-    public Vec2 turretTurnSpeed = new Vec2(5, 5);
+    @SerializedName("MainWeaponTurnSpeed")
+    public Vec2 mainWeaponTurnSpeed = new Vec2(5, 5);
     @ServerOnly
-    @SerializedName("TurretYawClamp")
-    public Vec2 turretYawClamp = new Vec2(-514, 514);
+    @SerializedName("MainWeaponYawRange")
+    public Vec2 mainWeaponYawRange = new Vec2(-514, 514);
     @ServerOnly
-    @SerializedName("TurretPitchClamp")
-    public Vec2 turretPitchClamp = new Vec2(-10, 30);
-    @SerializedName("TurretControllerIndex")
-    public int turretControllerIndex = 0;
+    @SerializedName("MainWeaponPitchRange")
+    public Vec2 mainWeaponPitchRange = new Vec2(-10, 30);
+    @SerializedName("MainWeaponControllerIndex")
+    public int mainWeaponControllerIndex = 0;
+    @SerializedName("MainWeaponHudType")
+    public String mainWeaponHudType = "@Empty";
 
     @ServerOnly
     @SerializedName("BarrelPos")
@@ -195,9 +198,6 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
 
     @SerializedName("Gravity")
     public double gravity = 0.06;
-
-    @SerializedName("WeaponHudType")
-    public String weaponHudType = "@Empty";
 
     @Override
     public void limit() {

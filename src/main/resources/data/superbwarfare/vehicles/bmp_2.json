@@ -411,9 +411,9 @@
     "Decrement": 0.015,
     "SteeringSpeed": 0.1
   },
-  "TurretPos": [0, 2.25, -0.703125],
-  "TurretTurnSpeed": [12.5, 10],
-  "TurretPitchClamp": [-7.5, 74],
+  "MainWeaponPos": [0, 2.25, -0.703125],
+  "MainWeaponTurnSpeed": [12.5, 10],
+  "MainWeaponPitchRange": [-7.5, 74],
   "BarrelPos": [0.3625, 0.293125, 1.18095],
   "HasDecoy": true,
   "UpStep": 2.25,
@@ -464,5 +464,5 @@
     ]
   },
   "EngineSound": "superbwarfare:bmp_2_engine",
-  "WeaponHudType": "@Land"
+  "MainWeaponHudType": "@Land"
 }
