@@ -2,8 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -11,7 +9,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -99,72 +96,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MK42_AP_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MK42_AP_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(60)
-                                .gravity(projectileGravity())
-                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
-                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MK42_HE_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MK42_HE_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MK42_HE_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(1)
-                                .fireProbability(0.18F)
-                                .fireTime(2)
-                                .gravity(projectileGravity())
-                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
-                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MK42_HE_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MK42_HE_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MK42_HE_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(1)
-                                .gravity(projectileGravity())
-                                .type(CannonShellEntity.Type.CM)
-                                .spreadAmount(30)
-                                .spreadTime(7)
-                                .spreadAngle(15)
-                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
-                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
-                        // GRAPESHOT
-                        new CannonShellWeapon()
-                                .hitDamage(700)
-                                .explosionDamage(VehicleConfig.MK42_AP_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MK42_AP_EXPLOSION_RADIUS.get().floatValue())
-                                .velocity(30)
-                                .type(CannonShellEntity.Type.GRAPE)
-                                .spreadAmount(30)
-                                .spreadAngle(3)
-                                .sound1p(ModSounds.BL_132_FIRE_1P.get())
-                                .sound3p(ModSounds.BL_132_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .ammo(ModItems.GS_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/grape_shell.png"))
-                }
-        };
-    }
-
-    @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(8 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
     }
@@ -213,6 +144,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
             if (this.items.getFirst().getItem() instanceof CannonShellItem) {
                 ItemStack item = this.getItem(0);
 
+                // TODO 修改实现方式
                 int type = 0;
                 if (item.is(ModItems.HE_5_INCHES.get())) {
                     type = 1;
@@ -506,7 +438,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
         if (this.entityData.get(COOL_DOWN) > 0) return;
         if (getFirstPassenger() != null && getFirstPassenger() != living) return;
 
-        if (living.level() instanceof ServerLevel serverLevel) {
+        if (living.level() instanceof ServerLevel) {
             if (getAmmoCount(living) == 0 && !InventoryTool.hasCreativeAmmoBox(getFirstPassenger())) return;
             Matrix4f transform = getBarrelTransform(1);
 

@@ -46,6 +46,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
@@ -1133,14 +1134,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     // energy end
 
     // TODO 正确实现武器信息
-    public List<VehicleWeapon> getAvailableWeapons(int index) {
+    public List<VehicleWeapon> getAvailableWeapons(int seatIndex) {
         var weapons = getAllWeapons();
-        if (index < 0 || index >= weapons.length) return List.of();
+        if (seatIndex < 0 || seatIndex >= weapons.length) return List.of();
 
-        return List.of(weapons[index]);
+        return List.of(weapons[seatIndex]);
     }
 
-    public VehicleWeapon[][] getAllWeapons() {
+    protected VehicleWeapon[][] getAllWeapons() {
         return computed().seats().stream().map(seat -> {
             if (seat == null || seat.weapons().isEmpty()) return new ProjectileWeapon[0];
 
@@ -1156,23 +1157,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                         .icon(ResourceLocation.tryParse(icon));
             }).toArray(VehicleWeapon[]::new);
         }).toArray(VehicleWeapon[][]::new);
-    }
-
-    /**
-     * 初始化武器数组
-     *
-     * @param weaponVehicle 待初始化的载具
-     * @return 武器数组
-     */
-    private int[] initSelectedWeaponArray(WeaponVehicleEntity weaponVehicle) {
-        weaponVehicle.getAllWeapons();
-
-        var selected = new int[this.getMaxPassengers()];
-        for (int i = 0; i < this.getMaxPassengers(); i++) {
-            selected[i] = weaponVehicle.hasWeapon(i) ? 0 : -1;
-        }
-
-        return selected;
     }
 
     /**
@@ -1326,12 +1310,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.set(GEAR_UP, compound.getBoolean("GearUp"));
         this.entityData.set(PROPELLER_ROT, compound.getFloat("PropellerRot"));
 
-        if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
-            var selected = compound.getIntArray("SelectedWeapon");
-
+        var selectedWeaponTag = compound.get("SelectedWeapon");
+        if (selectedWeaponTag instanceof IntArrayTag arrayTag) {
+            var selected = arrayTag.getAsIntArray();
             if (selected.length != this.getMaxPassengers()) {
                 // 数量不符时（可能是更新或遇到损坏数据），重新初始化已选择武器
-                this.entityData.set(SELECTED_WEAPON, IntList.of(initSelectedWeaponArray(weaponVehicle)));
+                this.entityData.set(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
             } else {
                 this.entityData.set(SELECTED_WEAPON, IntList.of(selected));
             }
@@ -1393,7 +1377,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putBoolean("GearUp", this.entityData.get(GEAR_UP));
         compound.putFloat("PropellerRot", this.entityData.get(PROPELLER_ROT));
 
-        if (this instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.getAllWeapons().length > 0) {
+        if (this.getMaxPassengers() > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON));
         }
 
