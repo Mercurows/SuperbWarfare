@@ -203,6 +203,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("PassengerWeaponStationControllerIndex")
     public int passengerWeaponStationControllerIndex = 1;
 
+    @SerializedName("Gravity")
+    public double gravity = 0.06;
+
     @Override
     public void limit() {
         this.maxHealth = Math.max(this.maxHealth, 0);
