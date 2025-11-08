@@ -56,55 +56,55 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("State", this.entityData.get(STATE));
-
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(STATE, compound.getInt("State"));
-
     }
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         var gunData = getGunData(0);
-        if (gunData != null) {
-            ItemStack stack = player.getMainHandItem();
-            if (entityData.get(STATE) == 1) {
+        if (gunData == null) return InteractionResult.SUCCESS;
+
+        var stack = player.getMainHandItem();
+        if (entityData.get(STATE) == 1) return super.interact(player, hand);
+
+        if (entityData.get(STATE) == 0) {
+            if (!gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
                 return super.interact(player, hand);
-            } else if (entityData.get(STATE) == 0) {
-                // TODO 把写死的物品换成data里的AmmoType
-                if (stack.is(ModItems.TOW_MISSILE.get())) {
-                    if (level() instanceof ServerLevel) {
-                        gunData.ammo.set(1);
-                    }
-                    entityData.set(STATE, 1);
-                    if (!player.isCreative()) {
-                        stack.shrink(1);
-                    }
-                    level().playSound(null, getOnPos(), ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
-                    return InteractionResult.SUCCESS;
-                } else {
-                    return super.interact(player, hand);
+            }
+
+            if (level() instanceof ServerLevel serverLevel) {
+                modifyGunData(0, data -> data.ammo.set(1));
+                entityData.set(STATE, 1);
+
+                if (!player.isCreative()) {
+                    stack.shrink(1);
                 }
-            } else {
-                entityData.set(STATE, 0);
-                return InteractionResult.SUCCESS;
+                serverLevel.playSound(null, getOnPos(), ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
             }
         } else {
-            return InteractionResult.SUCCESS;
+            entityData.set(STATE, 0);
         }
+        return InteractionResult.SUCCESS;
     }
 
     @Override
     public @NotNull List<ItemStack> getRetrieveItems() {
         var list = new ArrayList<ItemStack>();
         list.add(new ItemStack(ModItems.TOW_DEPLOYER.get()));
-        if (entityData.get(STATE) == 1) {
-            // TODO 把写死的物品换成data里的AmmoType
-            list.add(new ItemStack(ModItems.TOW_MISSILE.get()));
+
+        var data = getGunData(0);
+        if (entityData.get(STATE) == 1 && data != null) {
+            var stack = data.selectedAmmoConsumer().stack();
+            if (!stack.isEmpty()) {
+                list.add(stack.copy());
+            }
         }
+
         return list;
     }
 

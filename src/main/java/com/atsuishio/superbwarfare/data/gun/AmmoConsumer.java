@@ -73,6 +73,10 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         ENERGY,
     }
 
+    public boolean isAmmoItem(ItemStack stack) {
+        return ItemStack.isSameItemSameComponents(stack, this.stack);
+    }
+
     /**
      * 消耗指定弹药数量（原始数量，不包括虚拟弹药，不考虑count）
      */
@@ -144,7 +148,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             }
             return energyStorage.extractEnergy(count, false);
         } else {
-            return InventoryTool.consumeItem(handler, stack -> ItemStack.isSameItemSameComponents(stack, this.stack), count);
+            return InventoryTool.consumeItem(handler, this::isAmmoItem, count);
         }
     }
 
@@ -173,7 +177,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         if (handler == null || type == AmmoConsumeType.EMPTY) return 0;
 
         if (type == AmmoConsumeType.ITEM) {
-            return InventoryTool.countItem(handler, stack -> ItemStack.isSameItemSameComponents(stack, this.stack));
+            return InventoryTool.countItem(handler, this::isAmmoItem);
         } else if (type == AmmoConsumeType.ENERGY) {
             var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
             if (energyStorage == null) {
