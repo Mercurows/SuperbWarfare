@@ -9,6 +9,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
@@ -116,7 +117,7 @@ public class LaserEntity extends AbstractLaserEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
         if (this.caster == null) {
             discard();
         }

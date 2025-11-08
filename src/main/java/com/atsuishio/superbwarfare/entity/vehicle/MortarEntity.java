@@ -98,11 +98,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     }
 
     @Override
-    public boolean canBeCollidedWith() {
-        return false;
-    }
-
-    @Override
     protected float getEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
         return 0.2F;
     }

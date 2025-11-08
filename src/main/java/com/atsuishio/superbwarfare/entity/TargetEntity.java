@@ -68,11 +68,6 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
     }
 
     @Override
-    public @NotNull MobType getMobType() {
-        return super.getMobType();
-    }
-
-    @Override
     public @NotNull Iterable<ItemStack> getArmorSlots() {
         return NonNullList.withSize(1, ItemStack.EMPTY);
     }

@@ -32,6 +32,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -40,6 +41,8 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class SenpaiEntity extends Monster implements GeoEntity {
@@ -64,24 +67,25 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Runner", this.entityData.get(RUNNER));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(RUNNER, compound.getBoolean("Runner"));
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return 1.75F;
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -90,7 +94,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
         super.registerGoals();
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.4, false) {
             @Override
-            protected double getAttackReachSqr(LivingEntity entity) {
+            protected double getAttackReachSqr(@NotNull LivingEntity entity) {
                 return this.mob.getBbWidth() * this.mob.getBbWidth() + entity.getBbWidth();
             }
         });
@@ -102,11 +106,11 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public MobType getMobType() {
+    public @NotNull MobType getMobType() {
         return MobType.ILLAGER;
     }
 
-    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+    protected void dropCustomDeathLoot(@NotNull DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropCustomDeathLoot(source, looting, recentlyHitIn);
 
         double random = Math.random();
@@ -125,17 +129,18 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void playStepSound(BlockPos pos, BlockState blockIn) {
         this.playSound(ModSounds.STEP.get(), 0.25f, 1);
     }
 
     @Override
-    public SoundEvent getHurtSound(DamageSource ds) {
+    public @NotNull SoundEvent getHurtSound(@NotNull DamageSource ds) {
         return ModSounds.OUCH.get();
     }
 
     @Override
-    public SoundEvent getDeathSound() {
+    public @NotNull SoundEvent getDeathSound() {
         return ModSounds.GROWL.get();
     }
 
@@ -143,11 +148,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     public void baseTick() {
         super.baseTick();
         this.refreshDimensions();
-    }
-
-    @Override
-    public EntityDimensions getDimensions(Pose p_33597_) {
-        return super.getDimensions(p_33597_).scale((float) 1);
     }
 
     @Override
@@ -184,7 +184,7 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public void die(DamageSource source) {
+    public void die(@NotNull DamageSource source) {
         super.die(source);
     }
 

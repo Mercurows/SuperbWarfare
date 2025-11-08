@@ -130,11 +130,6 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
     }
 
     @Override
-    public ParticleTool.ParticleType explosionParticleType() {
-        return super.explosionParticleType();
-    }
-
-    @Override
     public void tick() {
         super.tick();
 
