@@ -44,6 +44,8 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class CrossHairOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("cross_hair");
+
+    public static final String CROSSHAIR_EMPTY = "@Empty";
     public static final String CROSSHAIR_CUSTOM = "@Custom";
     public static final String CROSSHAIR_GUN_DEFAULT = "@GunDefault";
     public static final String CROSSHAIR_GUN_REPAIR_TOOL = "@GunRepairTool";

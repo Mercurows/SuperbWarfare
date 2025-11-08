@@ -65,6 +65,7 @@
         "Fire3PVeryFar": "superbwarfare:ah_6_cannon_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
+      "Crosshair": "@Empty",
       "SoundRadius": 24,
       "AmmoType": "superbwarfare:small_shell",
       "ShootPos": {
@@ -102,6 +103,7 @@
         "ReloadEnd": "superbwarfare:missile_reload",
         "Change": "superbwarfare:into_missile"
       },
+      "Crosshair": "@Empty",
       "SoundRadius": 12
     }
   },
