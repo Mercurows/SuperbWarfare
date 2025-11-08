@@ -22,7 +22,19 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 // TODO 等一个优化方案
 public final class VehicleEngineUtils {
 
-    public static void trackEngine(VehicleEntity vehicle, double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
+    public static void trackEngine(VehicleEntity vehicle, EngineInfo.Track engineInfo) {
+        double buoyancy = engineInfo.buoyancy;
+        int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
+        double wheelRotSpeed = engineInfo.wheelRotSpeed;
+        double wheelDifferential = engineInfo.wheelDifferential;
+        double trackSpeed = engineInfo.trackRotSpeed;
+        double trackDifferential = engineInfo.trackDifferential;
+        float maxForwardSpeedRate = engineInfo.maxForwardSpeedRate;
+        float maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate;
+        float powerAdd = engineInfo.increment;
+        float powerReduce = engineInfo.decrement;
+        float steeringSpeed = engineInfo.steeringSpeed;
+
         if (buoyancy != 0) {
             double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, fluidFloat, 0));
@@ -128,7 +140,17 @@ public final class VehicleEngineUtils {
         }
     }
 
-    public static void wheelEngine(VehicleEntity vehicle, double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
+    public static void wheelEngine(VehicleEntity vehicle, EngineInfo.Wheel engineInfo) {
+        double buoyancy = engineInfo.buoyancy;
+        int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
+        double wheelRotSpeed = engineInfo.wheelRotSpeed;
+        double wheelDifferential = engineInfo.wheelDifferential;
+        float maxForwardSpeedRate = engineInfo.maxForwardSpeedRate;
+        float maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate;
+        float powerAdd = engineInfo.increment;
+        float powerReduce = engineInfo.decrement;
+        float steeringSpeed = engineInfo.steeringSpeed;
+
         if (buoyancy != 0) {
             double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, fluidFloat, 0));
@@ -234,7 +256,17 @@ public final class VehicleEngineUtils {
         }
     }
 
-    public static void shipEngine(VehicleEntity vehicle, double buoyancy, int energyCost, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed, double bodyPitchRate, double bodyRollRate) {
+    public static void shipEngine(VehicleEntity vehicle, EngineInfo.Ship engineInfo) {
+        double buoyancy = engineInfo.buoyancy;
+        int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
+        float maxForwardSpeedRate = engineInfo.maxForwardSpeedRate;
+        float maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate;
+        float powerAdd = engineInfo.increment;
+        float powerReduce = engineInfo.decrement;
+        float steeringSpeed = engineInfo.steeringSpeed;
+        double bodyPitchRate = engineInfo.bodyPitchRate;
+        double bodyRollRate = engineInfo.bodyRollRate;
+
         if (buoyancy != 0) {
             double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, fluidFloat, 0));
