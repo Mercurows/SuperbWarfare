@@ -81,7 +81,7 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
         if (this.onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, -0.9, 1.0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1, -0.9, 1));
         }
 
         if (this.tickCount >= 10) {

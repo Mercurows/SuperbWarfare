@@ -213,7 +213,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
         if (this.onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, -0.9, 1.0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1, -0.9, 1));
         }
 
         if (this.entityData.get(HEALTH) <= 0) {

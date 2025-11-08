@@ -223,7 +223,7 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
 
         // Slab算法参数
         double tEnter = 0;      // 进入时间
-        double tExit = 1.0;       // 离开时间
+        double tExit = 1;       // 离开时间
 
         // 在三个轴上执行Slab算法
         for (int i = 0; i < 3; i++) {

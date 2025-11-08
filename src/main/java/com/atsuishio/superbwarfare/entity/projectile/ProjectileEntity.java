@@ -445,7 +445,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             v = Math.max(y, z);
         }
 
-        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0, 1.0)));
+        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0, 1)));
     }
 
     public void recordHitScore(@NotNull Direction direction, @NotNull Vec3 hitVec) {

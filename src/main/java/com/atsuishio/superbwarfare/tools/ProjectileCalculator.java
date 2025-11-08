@@ -127,7 +127,7 @@ public class ProjectileCalculator {
             );
 
             // 创建粒子效果显示轨迹
-            for (double d = 0; d < 1.0; d += 0.1) {
+            for (double d = 0; d < 1; d += 0.1) {
                 Vec3 point = currentPos.add(nextPos.subtract(currentPos).scale(d));
                 level.addParticle(ParticleTypes.ELECTRIC_SPARK,
                         point.x, point.y, point.z,

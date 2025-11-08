@@ -276,7 +276,7 @@ public class TraceTool {
         double tMax = maxDist;
 
         // 分别检查X轴
-        double invDx = 1.0 / dir.x;
+        double invDx = 1 / dir.x;
         double t0x = (box.minX - start.x) * invDx;
         double t1x = (box.maxX - start.x) * invDx;
 
@@ -294,7 +294,7 @@ public class TraceTool {
         }
 
         // 检查Y轴
-        double invDy = 1.0 / dir.y;
+        double invDy = 1 / dir.y;
         double t0y = (box.minY - start.y) * invDy;
         double t1y = (box.maxY - start.y) * invDy;
 
@@ -312,7 +312,7 @@ public class TraceTool {
         }
 
         // 检查Z轴
-        double invDz = 1.0 / dir.z;
+        double invDz = 1 / dir.z;
         double t0z = (box.minZ - start.z) * invDz;
         double t1z = (box.maxZ - start.z) * invDz;
 
