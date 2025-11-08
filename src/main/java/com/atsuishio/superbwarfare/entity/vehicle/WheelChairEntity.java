@@ -67,17 +67,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-    }
-
-    @Override
-    public boolean shouldSendHitParticles() {
-        return false;
-    }
-
-
-    @Override
     public void baseTick() {
         if (jumpCoolDown > 0 && onGround()) {
             jumpCoolDown--;

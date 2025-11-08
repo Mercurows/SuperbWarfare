@@ -991,7 +991,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * 受击时是否出现粒子效果
      */
     public boolean shouldSendHitParticles() {
-        return true;
+        return computed().sendHitParticles;
     }
 
     /**
@@ -3145,6 +3145,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleWeaponUtils.releaseDecoy(this);
     }
 
+    @SuppressWarnings("unused")
     @Deprecated(forRemoval = true, since = "0.8.9")
     public void shootDecoy(Vec3 shootVec) {
     }

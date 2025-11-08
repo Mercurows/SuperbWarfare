@@ -43,8 +43,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -170,11 +170,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.entityData.set(LOADED_ROCKET, compound.getInt("LoadedRocket"));
         this.entityData.set(LOADED_BOMB, compound.getInt("LoadedBomb"));
         this.entityData.set(LOADED_MISSILE, compound.getInt("LoadedMissile"));
-    }
-
-    @Override
-    public boolean shouldSendHitParticles() {
-        return false;
     }
 
     @Override

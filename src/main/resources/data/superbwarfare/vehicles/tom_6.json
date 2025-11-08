@@ -15,6 +15,7 @@
   "Mass": 0.02,
   "RotateOffsetHeight": 0.5,
   "AllowFreeCam": true,
+  "SendHitParticles": false,
   "DamageModifiers": [
     "superbwarfare:vehicle_strike * 2",
     "superbwarfare:grapeshot_hit * 0.5"

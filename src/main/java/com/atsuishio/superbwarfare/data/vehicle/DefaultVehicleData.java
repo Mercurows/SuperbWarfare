@@ -94,6 +94,10 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public boolean applyDefaultDamageModifiers = true;
 
     @ServerOnly
+    @SerializedName("SendHitParticles")
+    public boolean sendHitParticles = true;
+
+    @ServerOnly
     @SerializedName("DamageModifiers")
     public ObjectToList<StringToObject<DamageModify>> damageModifiers = new ObjectToList<>();
 

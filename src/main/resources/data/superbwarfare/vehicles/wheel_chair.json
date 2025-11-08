@@ -3,7 +3,7 @@
   "MaxHealth": 30,
   "MaxEnergy": 24000,
   "Seats": {
-    "Transform" : "Vehicle",
+    "Transform": "Vehicle",
     "Position": [0, 0.35, 0],
     "MinYaw": -90,
     "MaxYaw": 90
@@ -11,6 +11,7 @@
   "UpStep": 1.1,
   "RotateOffsetHeight": 0.4,
   "Mass": 0.03,
+  "SendHitParticles": false,
   "DamageModifiers": [
     "superbwarfare:vehicle_strike * 2",
     "superbwarfare:grapeshot_hit * 0.75"
