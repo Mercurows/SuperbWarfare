@@ -1311,14 +1311,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.set(PROPELLER_ROT, compound.getFloat("PropellerRot"));
 
         var selectedWeaponTag = compound.get("SelectedWeapon");
+        int[] selected;
         if (selectedWeaponTag instanceof IntArrayTag arrayTag) {
-            var selected = arrayTag.getAsIntArray();
-            if (selected.length != this.getMaxPassengers()) {
-                // 数量不符时（可能是更新或遇到损坏数据），重新初始化已选择武器
-                this.entityData.set(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
-            } else {
-                this.entityData.set(SELECTED_WEAPON, IntList.of(selected));
-            }
+            selected = arrayTag.getAsIntArray();
+        } else {
+            selected = new int[this.getMaxPassengers()];
+        }
+
+        if (selected.length != this.getMaxPassengers()) {
+            // 数量不符时（可能是更新或遇到损坏数据），重新初始化已选择武器
+            this.entityData.set(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]));
+        } else {
+            this.entityData.set(SELECTED_WEAPON, IntList.of(selected));
         }
 
         if (this.hasEnergyStorage() && compound.get("Energy") instanceof IntTag energyNBT) {
