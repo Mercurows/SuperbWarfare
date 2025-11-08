@@ -48,7 +48,7 @@ public class VehicleAssemblingMenu extends AbstractContainerMenu {
     public boolean stillValid(Player pPlayer) {
         return (pPlayer.isAlive() && !this.isVehicleMenu &&
                 this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get())
-                        && pPlayer.distanceToSqr((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64.0D, true))
+                        && pPlayer.distanceToSqr((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64, true))
                 || (this.isVehicleMenu && pPlayer.getVehicle() instanceof VehicleAssemblingTableVehicleEntity);
     }
 

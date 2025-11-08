@@ -225,7 +225,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
 
     @Override
     public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) pInaccuracy)).scale((double) pVelocity);
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale((double) pVelocity);
         this.setDeltaMovement(vec3);
     }
 }

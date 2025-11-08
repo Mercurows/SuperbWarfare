@@ -79,16 +79,16 @@ public class ProjectileUtilMixin {
                     obb = obb.inflate(entity.getPickRadius() * 2);
                     Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
                     if (obb.contains(pStartVec)) {
-                        if (pDistance >= 0D) {
+                        if (pDistance >= 0) {
                             cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.orElse(pStartVec.toVector3f()))));
                             return;
                         }
                     } else if (optional.isPresent()) {
                         var vec = new Vec3(optional.get());
                         double d1 = pStartVec.distanceToSqr(vec);
-                        if (d1 < pDistance || pDistance == 0.0D) {
+                        if (d1 < pDistance || pDistance == 0) {
                             if (entity.getRootVehicle() == pShooter.getRootVehicle() && !entity.canRiderInteract()) {
-                                if (pDistance == 0.0D) {
+                                if (pDistance == 0) {
                                     cir.setReturnValue(new EntityHitResult(entity, vec));
                                     return;
                                 }

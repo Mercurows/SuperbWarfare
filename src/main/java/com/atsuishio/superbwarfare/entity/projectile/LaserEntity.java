@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 public class LaserEntity extends AbstractLaserEntity {
 
-    public static final double RADIUS = 512D;
+    public static final double RADIUS = 512;
 
     public LaserEntity(EntityType<? extends LaserEntity> type, Level level) {
         super(type, level, 1);

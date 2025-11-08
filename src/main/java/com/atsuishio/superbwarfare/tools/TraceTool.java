@@ -230,7 +230,7 @@ public class TraceTool {
         Vec3 end = start.add(normalizedDirection.scale(maxDistance));
 
         // 2. 创建一个从起点到终点的AABB进行粗筛，减少需要精确检测的实体数量
-        AABB rayBoundingBox = new AABB(start, end).inflate(1.0D); // 适当扩大边界框
+        AABB rayBoundingBox = new AABB(start, end).inflate(1); // 适当扩大边界框
 
         // 3. 获取在这个粗筛AABB内的所有实体。
         List<Entity> entitiesInWorld = world.getEntities((Entity) null, rayBoundingBox, filterPredicate);

@@ -34,7 +34,7 @@ public class ItemRendererFixOverlay implements LayeredDraw.Layer {
         if (!(stack.getItem() instanceof GunItem)) return;
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(-1145.0D, 0.0D, 0.0D);
+        guiGraphics.pose().translate(-1145, 0, 0);
         mc.gameRenderer.itemInHandRenderer.renderItem(player, stack,
                 ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, false, guiGraphics.pose(), guiGraphics.bufferSource(), 0);
         guiGraphics.pose().popPose();

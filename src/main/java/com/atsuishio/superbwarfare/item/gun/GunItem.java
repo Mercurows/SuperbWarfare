@@ -1090,7 +1090,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     protected Vec3 randomVec(Vec3 vec3, double spread) {
-        return vec3.normalize().add(random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread));
+        return vec3.normalize().add(random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread));
     }
 
     public boolean canEditAttachments(GunData data) {

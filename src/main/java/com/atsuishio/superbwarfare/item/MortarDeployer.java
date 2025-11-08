@@ -62,9 +62,9 @@ public class MortarDeployer extends Item {
             }
 
             MortarEntity mortarEntity = new MortarEntity(level, player.getYRot());
-            mortarEntity.setPos((double) pos.getX() + 0.5D, pos.getY() + 1, (double) pos.getZ() + 0.5D);
+            mortarEntity.setPos((double) pos.getX() + 0.5, pos.getY() + 1, (double) pos.getZ() + 0.5);
             double yOffset = this.getYOffset(level, pos, !Objects.equals(clickedPos, pos) && direction == Direction.UP, mortarEntity.getBoundingBox());
-            mortarEntity.moveTo((double) pos.getX() + 0.5D, pos.getY() + yOffset, (double) pos.getZ() + 0.5D);
+            mortarEntity.moveTo((double) pos.getX() + 0.5, pos.getY() + yOffset, (double) pos.getZ() + 0.5);
             level.addFreshEntity(mortarEntity);
 
             if (!player.getAbilities().instabuild) {
@@ -79,11 +79,11 @@ public class MortarDeployer extends Item {
     public double getYOffset(LevelReader pLevel, BlockPos pPos, boolean pShouldOffsetYMore, AABB pBox) {
         AABB aabb = new AABB(pPos);
         if (pShouldOffsetYMore) {
-            aabb = aabb.expandTowards(0.0D, -1.0D, 0.0D);
+            aabb = aabb.expandTowards(0, -1, 0);
         }
 
         Iterable<VoxelShape> iterable = pLevel.getCollisions(null, aabb);
-        return 1.0D + Shapes.collide(Direction.Axis.Y, pBox, iterable, pShouldOffsetYMore ? -2.0D : -1.0D);
+        return 1 + Shapes.collide(Direction.Axis.Y, pBox, iterable, pShouldOffsetYMore ? -2 : -1);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MortarDeployer extends Item {
                 return InteractionResultHolder.pass(itemstack);
             } else if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(blockpos, blockhitresult.getDirection(), itemstack)) {
                 MortarEntity mortarEntity = new MortarEntity(pLevel, pPlayer.getYRot());
-                mortarEntity.setPos((double) blockpos.getX() + 0.5D, blockpos.getY(), (double) blockpos.getZ() + 0.5D);
+                mortarEntity.setPos((double) blockpos.getX() + 0.5, blockpos.getY(), (double) blockpos.getZ() + 0.5);
                 pLevel.addFreshEntity(mortarEntity);
 
                 if (!pPlayer.getAbilities().instabuild) {

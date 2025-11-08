@@ -647,7 +647,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public boolean stillValid(@NotNull Player pPlayer) {
-        return this.hasContainer() && !this.isRemoved() && this.position().closerThan(pPlayer.position(), 8.0D);
+        return this.hasContainer() && !this.isRemoved() && this.position().closerThan(pPlayer.position(), 8);
     }
 
     @Override

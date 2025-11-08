@@ -14,10 +14,10 @@ public class VectorTool {
     public static double calculateAngle(Vec3 start, Vec3 end) {
         double startLength = start.length();
         double endLength = end.length();
-        if (startLength > 0.0D && endLength > 0.0D) {
+        if (startLength > 0 && endLength > 0) {
             return Math.toDegrees(Math.acos(Mth.clamp(start.dot(end) / (startLength * endLength), -1, 1)));
         } else {
-            return 0.0D;
+            return 0;
         }
     }
 

@@ -148,7 +148,7 @@ public class FuMO25Menu extends EnergyMenu {
     @Override
     public boolean stillValid(@NotNull Player pPlayer) {
         return this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.FUMO_25.get())
-                && pPlayer.distanceToSqr((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64.0D, true);
+                && pPlayer.distanceToSqr((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64, true);
     }
 
     @Override

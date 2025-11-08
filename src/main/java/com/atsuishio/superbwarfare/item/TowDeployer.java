@@ -58,9 +58,9 @@ public class TowDeployer extends Item {
             }
 
             TowEntity towEntity = new TowEntity(ModEntities.TOW.get(), level);
-            towEntity.setPos((double) pos.getX() + 0.5D, pos.getY() + 1, (double) pos.getZ() + 0.5D);
+            towEntity.setPos((double) pos.getX() + 0.5, pos.getY() + 1, (double) pos.getZ() + 0.5);
             double yOffset = this.getYOffset(level, pos, !Objects.equals(clickedPos, pos) && direction == Direction.UP, towEntity.getBoundingBox());
-            towEntity.moveTo((double) pos.getX() + 0.5D, pos.getY() + yOffset, (double) pos.getZ() + 0.5D);
+            towEntity.moveTo((double) pos.getX() + 0.5, pos.getY() + yOffset, (double) pos.getZ() + 0.5);
             level.addFreshEntity(towEntity);
 
             if (!player.getAbilities().instabuild) {
@@ -75,11 +75,11 @@ public class TowDeployer extends Item {
     public double getYOffset(LevelReader pLevel, BlockPos pPos, boolean pShouldOffsetYMore, AABB pBox) {
         AABB aabb = new AABB(pPos);
         if (pShouldOffsetYMore) {
-            aabb = aabb.expandTowards(0.0D, -1.0D, 0.0D);
+            aabb = aabb.expandTowards(0, -1, 0);
         }
 
         Iterable<VoxelShape> iterable = pLevel.getCollisions(null, aabb);
-        return 1.0D + Shapes.collide(Direction.Axis.Y, pBox, iterable, pShouldOffsetYMore ? -2.0D : -1.0D);
+        return 1 + Shapes.collide(Direction.Axis.Y, pBox, iterable, pShouldOffsetYMore ? -2 : -1);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class TowDeployer extends Item {
                 return InteractionResultHolder.pass(itemstack);
             } else if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(blockpos, blockhitresult.getDirection(), itemstack)) {
                 TowEntity towEntity = new TowEntity(ModEntities.TOW.get(), pLevel);
-                towEntity.setPos((double) blockpos.getX() + 0.5D, blockpos.getY(), (double) blockpos.getZ() + 0.5D);
+                towEntity.setPos((double) blockpos.getX() + 0.5, blockpos.getY(), (double) blockpos.getZ() + 0.5);
                 pLevel.addFreshEntity(towEntity);
 
                 if (!pPlayer.getAbilities().instabuild) {

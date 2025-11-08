@@ -53,10 +53,10 @@ public class CupidArrow extends AmmoPerk {
             }
 
             if (entity.level() instanceof ServerLevel serverLevel) {
-                double d0 = serverLevel.random.nextGaussian() * 0.02D;
-                double d1 = serverLevel.random.nextGaussian() * 0.02D;
-                double d2 = serverLevel.random.nextGaussian() * 0.02D;
-                ParticleTool.sendParticle(serverLevel, ParticleTypes.HEART, entity.getRandomX(1.0D), entity.getRandomY() + 0.5D, entity.getRandomZ(1.0D),
+                double d0 = serverLevel.random.nextGaussian() * 0.02;
+                double d1 = serverLevel.random.nextGaussian() * 0.02;
+                double d2 = serverLevel.random.nextGaussian() * 0.02;
+                ParticleTool.sendParticle(serverLevel, ParticleTypes.HEART, entity.getRandomX(1), entity.getRandomY() + 0.5, entity.getRandomZ(1),
                         5, d0, d1, d2, 0.1, false);
             }
         }
