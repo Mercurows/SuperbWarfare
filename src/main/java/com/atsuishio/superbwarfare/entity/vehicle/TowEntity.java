@@ -74,6 +74,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             if (entityData.get(STATE) == 1) {
                 return super.interact(player, hand);
             } else if (entityData.get(STATE) == 0) {
+                // TODO 把写死的物品换成data里的AmmoType
                 if (stack.is(ModItems.TOW_MISSILE.get())) {
                     if (level() instanceof ServerLevel) {
                         gunData.ammo.set(1);
@@ -101,6 +102,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         var list = new ArrayList<ItemStack>();
         list.add(new ItemStack(ModItems.TOW_DEPLOYER.get()));
         if (entityData.get(STATE) == 1) {
+            // TODO 把写死的物品换成data里的AmmoType
             list.add(new ItemStack(ModItems.TOW_MISSILE.get()));
         }
         return list;
