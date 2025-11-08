@@ -132,21 +132,21 @@ public class AnimationHelper {
             RenderUtil.translateAwayFromPivotPoint(stack, bone);
             PoseStack.Pose pose = stack.last();
             VertexConsumer vertexConsumer = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(Mod.loc("textures/particle/flare.png")));
-            vertex(vertexConsumer, pose, packedLightIn, 0.0F, 0, 0, 1);
-            vertex(vertexConsumer, pose, packedLightIn, 1.0F, 0, 1, 1);
-            vertex(vertexConsumer, pose, packedLightIn, 1.0F, 1, 1, 0);
-            vertex(vertexConsumer, pose, packedLightIn, 0.0F, 1, 0, 0);
+            vertex(vertexConsumer, pose, packedLightIn, 0, 0, 0, 1);
+            vertex(vertexConsumer, pose, packedLightIn, 1, 0, 1, 1);
+            vertex(vertexConsumer, pose, packedLightIn, 1, 1, 1, 0);
+            vertex(vertexConsumer, pose, packedLightIn, 0, 1, 0, 0);
             stack.popPose();
         }
     }
 
     private static void vertex(VertexConsumer pConsumer, PoseStack.Pose pPose, int pLightmapUV, float pX, float pY, int pU, int pV) {
-        pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.5F, 0.0F)
+        pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.5F, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv((float) pU, (float) pV)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(pLightmapUV)
-                .setNormal(pPose, 0.0F, 1.0F, 0.0F);
+                .setNormal(pPose, 0, 1, 0);
     }
 
     public static void handleZoomCrossHair(MultiBufferSource currentBuffer, RenderType renderType, String boneName, PoseStack stack, GeoBone bone, MultiBufferSource buffer, double x, double y, double z, float size, int r, int g, int b, int a, String name, boolean hasBlackPart) {
@@ -168,16 +168,16 @@ public class AnimationHelper {
             int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
             VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
-            vertexRGB(blackPart, $$7, pose, 255, 0.0F, 0, 0, 1, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, pose, 255, 0, 0, 0, 1, r, g, b, alpha, size);
             vertexRGB(blackPart, $$7, pose, 255, size, 0, 1, 1, r, g, b, alpha, size);
             vertexRGB(blackPart, $$7, pose, 255, size, size, 1, 0, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, pose, 255, 0.0F, size, 0, 0, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, pose, 255, 0, size, 0, 0, r, g, b, alpha, size);
 
             VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(tex));
-            vertexRGB($$9, $$7, pose, 255, 0.0F, 0, 0, 1, r, g, b, a, size);
+            vertexRGB($$9, $$7, pose, 255, 0, 0, 0, 1, r, g, b, a, size);
             vertexRGB($$9, $$7, pose, 255, size, 0, 1, 1, r, g, b, a, size);
             vertexRGB($$9, $$7, pose, 255, size, size, 1, 0, r, g, b, a, size);
-            vertexRGB($$9, $$7, pose, 255, 0.0F, size, 0, 0, r, g, b, a, size);
+            vertexRGB($$9, $$7, pose, 255, 0, size, 0, 0, r, g, b, a, size);
 
             stack.popPose();
         }
@@ -185,12 +185,12 @@ public class AnimationHelper {
     }
 
     private static void vertexRGB(VertexConsumer pConsumer, Matrix4f pPose, PoseStack.Pose pNormal, int pLightmapUV, float pX, float pY, int pU, int pV, int r, int g, int b, int a, float size) {
-        pConsumer.addVertex(pPose, pX - 0.5F * size, pY - 0.5F * size, 0.0F)
+        pConsumer.addVertex(pPose, pX - 0.5F * size, pY - 0.5F * size, 0)
                 .setColor(r, g, b, a)
                 .setUv((float) pU, (float) pV)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(pLightmapUV)
-                .setNormal(pNormal, 0.0F, 1.0F, 0.0F);
+                .setNormal(pNormal, 0, 1, 0);
     }
 
     public static final float SCALE_RECIPROCAL = 1 / 16.0f;

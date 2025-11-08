@@ -32,7 +32,7 @@ public class TraceTool {
                 hitResult = BlockHitResult.miss(pos, Direction.getNearest(eyePos.x, eyePos.y, eyePos.z), BlockPos.containing(pos));
             }
         }
-        Vec3 viewVec = entity.getViewVector(1.0F);
+        Vec3 viewVec = entity.getViewVector(1);
         Vec3 toVec = eyePos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = entity.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(entity, eyePos, toVec, aabb,
@@ -57,7 +57,7 @@ public class TraceTool {
         Vec3 eyePos = entity.getEyePosition(1.0f);
         HitResult hitResult = entity.pick(entityReach, 1.0f, false);
 
-        Vec3 viewVec = entity.getViewVector(1.0F);
+        Vec3 viewVec = entity.getViewVector(1);
         Vec3 toVec = eyePos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
         AABB aabb = entity.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(entity, eyePos, toVec, aabb, p -> !p.isSpectator() && entity.getVehicle() != p && p.isAlive(), distance);

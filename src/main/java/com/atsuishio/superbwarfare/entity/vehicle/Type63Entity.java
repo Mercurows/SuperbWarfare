@@ -271,7 +271,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
         MediumRocketEntity entityToSpawn = rocketItem.createProjectile(level(), shootPos);
         entityToSpawn.setOwner(player);
-        entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, (float) 0.75);
+        entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, 0.75F);
         level().addFreshEntity(entityToSpawn);
         level().playSound(null, shootPos.x, shootPos.y, shootPos.z, ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, random.nextFloat() * 0.1f + 0.95f);
 

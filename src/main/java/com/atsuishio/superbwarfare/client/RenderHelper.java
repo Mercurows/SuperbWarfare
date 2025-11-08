@@ -159,9 +159,9 @@ public class RenderHelper {
                 x, x + width,
                 y, y + height,
                 blitOffset,
-                (uOffset + 0.0F) / textureWidth,
+                uOffset / textureWidth,
                 (uOffset + width) / textureWidth,
-                (vOffset + 0.0F) / textureHeight,
+                vOffset / textureHeight,
                 (vOffset + height) / textureHeight,
                 color
         );
@@ -199,9 +199,9 @@ public class RenderHelper {
                 x1, x2,
                 y1, y2,
                 blitOffset,
-                (uOffset + 0.0F) / textureWidth,
+                uOffset / textureWidth,
                 (uOffset + uWidth) / textureWidth,
-                (vOffset + 0.0F) / textureHeight,
+                vOffset / textureHeight,
                 (vOffset + vHeight) / textureHeight
         );
     }

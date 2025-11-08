@@ -226,27 +226,27 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 int addW = (screenWidth / screenHeight) * 48;
                 int addH = (screenWidth / screenHeight) * 27;
-                preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
-                RenderHelper.preciseBlitWithColor(guiGraphics, LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0.0F, 128, 1, 128, 1, color);
+                preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
+                RenderHelper.preciseBlitWithColor(guiGraphics, LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0, 128, 1, 128, 1, color);
 
                 // 指南针
-                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, (float) screenWidth / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
-                RenderHelper.preciseBlitWithColor(guiGraphics, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0.0F, 16, 16, 16, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, (float) screenWidth / 2 - 128, 10F, 128 + (64F / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0, 16, 16, 16, 16, color);
 
                 int turretHeal = (int) (100 - (100 * vehicle.getEntityData().get(TURRET_HEALTH) / vehicle.getTurretMaxHealth()));
-                RenderHelper.preciseBlitWithColor(guiGraphics, BARREL, screenWidth / 2f + 112, screenHeight - 71, 0, 0.0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, BARREL, screenWidth / 2f + 112, screenHeight - 71, 0, 0, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
 
                 // 车身方向
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
                 int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
-                RenderHelper.preciseBlitWithColor(guiGraphics, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
                 int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
-                RenderHelper.preciseBlitWithColor(guiGraphics, LEFT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, LEFT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
                 int rightWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(R_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
-                RenderHelper.preciseBlitWithColor(guiGraphics, RIGHT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, RIGHT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
                 int engineHeal = (int) (100 - (100 * vehicle.getEntityData().get(ENGINE_HEALTH) / vehicle.getEngineMaxHealth()));
-                RenderHelper.preciseBlitWithColor(guiGraphics, ENGINE, screenWidth / 2f + 96, screenHeight - 72, 0, 0.0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
+                RenderHelper.preciseBlitWithColor(guiGraphics, ENGINE, screenWidth / 2f + 96, screenHeight - 72, 0, 0, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
                 poseStack.popPose();
 
                 // 时速

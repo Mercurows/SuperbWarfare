@@ -67,7 +67,7 @@ public class CustomCloudParticle extends TextureSheetParticle {
         if (!this.removed) {
             this.setSprite(this.spriteSet.get(Math.min((this.age / 8) + 1, 8), 8));
         }
-        if (this.age++ < this.lifetime && !(this.alpha <= 0.0F)) {
+        if (this.age++ < this.lifetime && !(this.alpha <= 0)) {
             alpha = 1 - ((float) age / lifetime);
         } else {
             this.remove();

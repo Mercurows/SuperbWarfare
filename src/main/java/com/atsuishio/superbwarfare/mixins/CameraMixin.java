@@ -95,9 +95,9 @@ public abstract class CameraMixin implements ICustomCamera {
 //                    this.xRot = quat.x;
 //                    this.yRot = quat.y;
 //
-//                    this.forwards.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
-//                    this.up.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
-//                    this.left.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
+//                    this.forwards.set(0, 0, 1F).rotate(this.rotation);
+//                    this.up.set(0, 1F, 0).rotate(this.rotation);
+//                    this.left.set(1F, 0, 0).rotate(this.rotation);
 //
 //                    info.cancel();
 //                }

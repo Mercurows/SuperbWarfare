@@ -35,6 +35,6 @@ public class MediumRocketRenderer extends GeoEntityRenderer<MediumRocketEntity> 
 
     @Override
     protected float getDeathMaxRotation(MediumRocketEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

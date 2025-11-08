@@ -93,13 +93,13 @@ public class SmokeDyeRecipe extends CustomRecipe {
             itemstack = pStack.copyWithCount(1);
             int color = grenade.getColor(pStack);
             if (color != 0xFFFFFF) {
-                float r = (float) (color >> 16 & 255) / 255.0F;
-                float g = (float) (color >> 8 & 255) / 255.0F;
-                float b = (float) (color & 255) / 255.0F;
-                i += (int) (Math.max(r, Math.max(g, b)) * 255.0F);
-                colors[0] += (int) (r * 255.0F);
-                colors[1] += (int) (g * 255.0F);
-                colors[2] += (int) (b * 255.0F);
+                float r = (float) (color >> 16 & 255) / 255F;
+                float g = (float) (color >> 8 & 255) / 255F;
+                float b = (float) (color & 255) / 255F;
+                i += (int) (Math.max(r, Math.max(g, b)) * 255F);
+                colors[0] += (int) (r * 255F);
+                colors[1] += (int) (g * 255F);
+                colors[2] += (int) (b * 255F);
                 ++j;
             }
 

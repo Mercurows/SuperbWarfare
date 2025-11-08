@@ -135,7 +135,7 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
         int c = 255 - (int) (progress * 12.75);
         for (int i = 0; i < (9f / 2) * progress; i += 3) {
             stack.pushPose();
-            stack.rotateAround(Axis.ZP.rotationDegrees(-i), (float) 0, (float) y, 0);
+            stack.rotateAround(Axis.ZP.rotationDegrees(-i), 0F, (float) y, 0);
             AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, x, y, z, size, 255, c, c, 255, "ql_hold_progress", false);
             stack.popPose();
         }

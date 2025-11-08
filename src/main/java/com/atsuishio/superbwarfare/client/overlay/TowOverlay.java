@@ -57,7 +57,7 @@ public class TowOverlay implements LayeredDraw.Layer {
             float k = ((screenWidth - i) / 2);
             float l = ((screenHeight - j) / 2);
             float w = i * 21 / 9;
-            preciseBlit(guiGraphics, SPYGLASS, k - (2 * w / 7), l, 0, 0.0F, w, j, w, j);
+            preciseBlit(guiGraphics, SPYGLASS, k - (2 * w / 7), l, 0, 0, w, j, w, j);
             poseStack.popPose();
         } else {
             scopeScale = 1;

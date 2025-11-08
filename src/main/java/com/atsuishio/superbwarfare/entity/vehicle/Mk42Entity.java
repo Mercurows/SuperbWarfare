@@ -265,7 +265,7 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, CannonEntity
         Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         double d0 = pTarget.x - shootPos.x;
         double d2 = pTarget.z - shootPos.z;
-        entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
+        entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F));
     }
 
     @Override

@@ -134,9 +134,7 @@ public class LaserEntity extends AbstractLaserEntity {
         double radians = Math.toRadians(this.caster.yHeadRot + 90);
         this.setYaw((float) radians);
         this.setPitch((float) ((double) (-this.caster.getXRot()) * Math.PI / 180.0));
-        double offsetX = Math.cos(radians) * (float) 0.0;
-        double offsetZ = Math.sin(radians) * (float) 0.0;
-        this.setPos(this.caster.getX() + offsetX, this.caster.getY((float) 0.75), this.caster.getZ() + offsetZ);
+        this.setPos(this.caster.getX(), this.caster.getY(0.75F), this.caster.getZ());
     }
 
 }

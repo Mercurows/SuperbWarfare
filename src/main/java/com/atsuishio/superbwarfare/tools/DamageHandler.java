@@ -64,7 +64,7 @@ public class DamageHandler {
                     boolean flag = false;
 
                     if (source.is(DamageTypeTags.IS_FREEZING) && living.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
-                        damage *= 5.0F;
+                        damage *= 5F;
                     }
 
                     if (source.is(DamageTypeTags.DAMAGES_HELMET) && !living.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
@@ -75,7 +75,7 @@ public class DamageHandler {
                     damageAccess.superbwarfare$getDamageContainers().peek().setNewDamage(damage);
                     living.walkAnimation.setSpeed(1.5F);
                     boolean flag1 = true;
-                    if ((float) living.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
+                    if ((float) living.invulnerableTime > 10F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
                         if (damage <= living.lastHurt) {
                             damageAccess.superbwarfare$getDamageContainers().pop();
                             return false;

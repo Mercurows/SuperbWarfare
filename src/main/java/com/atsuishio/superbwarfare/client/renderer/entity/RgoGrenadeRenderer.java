@@ -33,6 +33,6 @@ public class RgoGrenadeRenderer extends GeoEntityRenderer<RgoGrenadeEntity> {
 
     @Override
     protected float getDeathMaxRotation(RgoGrenadeEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

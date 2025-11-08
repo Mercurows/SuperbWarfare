@@ -47,7 +47,7 @@ public class SuperbItemInterfaceBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
 
     public SuperbItemInterfaceBlock() {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3.0F, 4.8F).sound(SoundType.METAL));
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(3F, 4.8F).sound(SoundType.METAL));
         this.registerDefaultState(this.stateDefinition.any().setValue(ENABLED, true).setValue(FACING, Direction.DOWN));
     }
 

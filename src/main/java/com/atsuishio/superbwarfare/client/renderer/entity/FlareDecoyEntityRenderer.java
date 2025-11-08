@@ -28,27 +28,27 @@ public class FlareDecoyEntityRenderer extends EntityRenderer<FlareDecoyEntity> {
 
     public void render(@NotNull FlareDecoyEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         pMatrixStack.pushPose();
-        pMatrixStack.scale(1.0F, 1.0F, 1.0F);
+        pMatrixStack.scale(1F, 1F, 1F);
         pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180F));
         PoseStack.Pose pose = pMatrixStack.last();
         Matrix4f matrix = pose.pose();
         Matrix3f normal = pose.normal();
         VertexConsumer consumer = pBuffer.getBuffer(RenderType.entityCutoutNoCull(texture(pEntity)));
-        vertex(consumer, matrix, pose, normal, pPackedLight, 0.0F, 0, 0, 1);
-        vertex(consumer, matrix, pose, normal, pPackedLight, 1.0F, 0, 1, 1);
-        vertex(consumer, matrix, pose, normal, pPackedLight, 1.0F, 1, 1, 0);
-        vertex(consumer, matrix, pose, normal, pPackedLight, 0.0F, 1, 0, 0);
+        vertex(consumer, matrix, pose, normal, pPackedLight, 0, 0, 0, 1);
+        vertex(consumer, matrix, pose, normal, pPackedLight, 1F, 0, 1, 1);
+        vertex(consumer, matrix, pose, normal, pPackedLight, 1F, 1, 1, 0);
+        vertex(consumer, matrix, pose, normal, pPackedLight, 0, 1, 0, 0);
         pMatrixStack.popPose();
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
     private static void vertex(VertexConsumer consumer, Matrix4f matrix, PoseStack.Pose pose, Matrix3f normal, int lightmapUV, float pX, float pY, int pU, int pV) {
-        consumer.addVertex(matrix, pX - 0.5F, pY - 0.25F, 0.0F)
+        consumer.addVertex(matrix, pX - 0.5F, pY - 0.25F, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv((float) pU, (float) pV)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setNormal(pose, 0.0F, 1.0F, 0.0F)
+                .setNormal(pose, 0, 1F, 0)
                 .setLight(lightmapUV);
     }
 

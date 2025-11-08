@@ -70,7 +70,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.add(ModBlocks.CONTAINER.get(), LootTable.lootTable().withPool(this.applyExplosionCondition(
                 ModBlocks.CONTAINER.get(),
                 LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(1.0F))
+                        .setRolls(ConstantValue.exactly(1F))
                         .add(LootItem.lootTableItem(ModBlocks.CONTAINER.get()))
                         .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
                                 .include(DataComponents.BLOCK_ENTITY_DATA)
@@ -79,14 +79,14 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.add(ModBlocks.SMALL_CONTAINER.get(), LootTable.lootTable().withPool(this.applyExplosionCondition(
                 ModBlocks.SMALL_CONTAINER.get(),
                 LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(1.0F))
+                        .setRolls(ConstantValue.exactly(1F))
                         .add(LootItem.lootTableItem(ModBlocks.SMALL_CONTAINER.get()))
                         .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
                                 .include(DataComponents.CONTAINER_LOOT)
                         )
         )));
         this.add(ModBlocks.LUCKY_CONTAINER.get(), LootTable.lootTable().withPool(this.applyExplosionCondition(ModBlocks.LUCKY_CONTAINER.get(),
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(ModBlocks.LUCKY_CONTAINER.get()))
+                LootPool.lootPool().setRolls(ConstantValue.exactly(1F)).add(LootItem.lootTableItem(ModBlocks.LUCKY_CONTAINER.get()))
                         .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(DataComponents.BLOCK_ENTITY_DATA)))));
     }
 
@@ -96,7 +96,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
     }
 
     public LootTable.Builder createCopyComponentsDrops(Block pBlock, List<DataComponentType<?>> components) {
-        var pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(pBlock));
+        var pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1F)).add(LootItem.lootTableItem(pBlock));
         if (!components.isEmpty()) {
             var copy = CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY);
             for (var type : components) {

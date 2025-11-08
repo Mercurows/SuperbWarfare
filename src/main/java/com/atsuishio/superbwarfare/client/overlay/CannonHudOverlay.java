@@ -82,14 +82,14 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            preciseBlit(guiGraphics, COMPASS, (float) w / 2 - 128, (float) 10, 128 + ((float) 64 / 45 * (Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()))), 0, 256, 16, 512, 16);
-            preciseBlit(guiGraphics, ROLL_IND_WHITE, (float) w / 2 - 4, 27, 0, 0.0F, 8, 8, 8, 8);
+            preciseBlit(guiGraphics, COMPASS, (float) w / 2 - 128, 10F, 128 + (64F / 45 * (Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()))), 0, 256, 16, 512, 16);
+            preciseBlit(guiGraphics, ROLL_IND_WHITE, (float) w / 2 - 4, 27, 0, 0, 8, 8, 8, 8);
 
             String angle = FormatTool.DECIMAL_FORMAT_1ZZ.format(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
             int width = Minecraft.getInstance().font.width(angle);
             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(angle), w / 2 - width / 2, 40, -1, false);
 
-            preciseBlit(guiGraphics, CANNON_PITCH, (float) w / 2 + 166, (float) h / 2 - 64, 0, 0.0F, 8, 128, 8, 128);
+            preciseBlit(guiGraphics, CANNON_PITCH, (float) w / 2 + 166, (float) h / 2 - 64, 0, 0, 8, 128, 8, 128);
 
             String pitch = FormatTool.DECIMAL_FORMAT_1ZZ.format(-Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.xRotO, cannon.getXRot()));
             int widthP = Minecraft.getInstance().font.width(pitch);
@@ -97,12 +97,12 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
             poseStack.pushPose();
 
             guiGraphics.pose().translate(0, Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.xRotO, cannon.getXRot()) * 0.7, 0);
-            preciseBlit(guiGraphics, CANNON_PITCH_IND, (float) w / 2 + 158, (float) h / 2 - 4, 0, 0.0F, 8, 8, 8, 8);
+            preciseBlit(guiGraphics, CANNON_PITCH_IND, (float) w / 2 + 158, (float) h / 2 - 4, 0, 0, 8, 8, 8, 8);
             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(pitch), w / 2 + 157 - widthP, h / 2 - 4, -1, false);
             poseStack.popPose();
 
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
-                float fovAdjust = (float) 70 / Minecraft.getInstance().options.fov().get();
+                float fovAdjust = 70F / Minecraft.getInstance().options.fov().get();
 
                 float f = (float) Math.min(w, h);
                 float f1 = Math.min((float) w / f, (float) h / f) * fovAdjust;
@@ -150,22 +150,22 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
 
                     if (!(cannon instanceof Hpj11Entity)) {
                         if (cannon instanceof AnnihilatorEntity) {
-                            preciseBlit(guiGraphics, LASER_CANNON_CROSSHAIR, k, l, 0, 0.0F, i, j, i, j);
+                            preciseBlit(guiGraphics, LASER_CANNON_CROSSHAIR, k, l, 0, 0, i, j, i, j);
                         } else {
-                            preciseBlit(guiGraphics, CANNON_CROSSHAIR, k, l, 0, 0.0F, i, j, i, j);
+                            preciseBlit(guiGraphics, CANNON_CROSSHAIR, k, l, 0, 0, i, j, i, j);
                         }
                         float diffY = -Mth.wrapDegrees(Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), player.yHeadRotO, player.getYHeadRot())
                                 - Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true), cannon.yRotO, cannon.getYRot()));
 
-                        preciseBlit(guiGraphics, INDICATOR, (float) w / 2 - 4.3f + 0.45f * diffY, (float) h / 2 - 10, 0, 0.0F, 8, 8, 8, 8);
+                        preciseBlit(guiGraphics, INDICATOR, (float) w / 2 - 4.3f + 0.45f * diffY, (float) h / 2 - 10, 0, 0, 8, 8, 8, 8);
                     } else {
-                        preciseBlit(guiGraphics, HPJ_CROSSHAIR, k, l, 0, 0.0F, i, j, i, j);
+                        preciseBlit(guiGraphics, HPJ_CROSSHAIR, k, l, 0, 0, i, j, i, j);
                     }
                 } else {
                     if (!(cannon instanceof Hpj11Entity)) {
-                        preciseBlit(guiGraphics, CANNON_CROSSHAIR_NOTZOOM, k, l, 0, 0.0F, i, j, i, j);
+                        preciseBlit(guiGraphics, CANNON_CROSSHAIR_NOTZOOM, k, l, 0, 0, i, j, i, j);
                     } else {
-                        preciseBlit(guiGraphics, HPJ_CROSSHAIR_NOTZOOM, k, l, 0, 0.0F, i, j, i, j);
+                        preciseBlit(guiGraphics, HPJ_CROSSHAIR_NOTZOOM, k, l, 0, 0, i, j, i, j);
                     }
                 }
 
@@ -210,7 +210,7 @@ public class CannonHudOverlay implements LayeredDraw.Layer {
                     double heal = 1 - cannon.getHealth() / cannon.getMaxHealth();
 
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                            FormatTool.format0D(100 * cannon.getHealth() / cannon.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1.0F), false);
+                            FormatTool.format0D(100 * cannon.getHealth() / cannon.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) heal, 1F), false);
 
                     poseStack.popPose();
                 }

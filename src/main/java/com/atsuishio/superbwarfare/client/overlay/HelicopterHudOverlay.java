@@ -99,10 +99,10 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
             float l = ((screenHeight - j) / 2);
 
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
-                RenderHelper.preciseBlitWithColor(guiGraphics, HELI_BASE, k, l, 0, 0.0F, i, j, i, j, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, HELI_BASE, k, l, 0, 0, i, j, i, j, color);
                 renderDriverAngle(guiGraphics, player, vehicle, k, l, i, j, partialTick, color, poseStack);
 
-                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, (float) screenWidth / 2 - 128, (float) 6, 128 + ((float) 64 / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, (float) screenWidth / 2 - 128, 6F, 128 + (64F / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
 
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), screenWidth / 2f, screenHeight / 2f, 0);
@@ -189,8 +189,8 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
 
                 if (vehicle instanceof Ah6Entity ah6Entity) {
                     if (weaponVehicle.getWeaponIndex(0) == 0) {
-                        double heat = ah6Entity.getWeaponHeat(0) / 100.0F;
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : vehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+                        double heat = ah6Entity.getWeaponHeat(0) / 100F;
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("20MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : vehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1F), false);
                     } else {
                         guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + vehicle.getAmmoCount(player)), 25, -9, -1, false);
                     }
@@ -219,7 +219,7 @@ public class HelicopterHudOverlay implements LayeredDraw.Layer {
         float diffY = Mth.wrapDegrees(Mth.lerp(ticks, player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(ticks, heli.yRotO, heli.getYRot())) * 0.35f;
         float diffX = Mth.wrapDegrees(Mth.lerp(ticks, player.xRotO, player.getXRot()) - Mth.lerp(ticks, heli.xRotO, heli.getXRot())) * 0.072f;
 
-        RenderHelper.preciseBlitWithColor(guiGraphics, HELI_DRIVER_ANGLE, k + diffY, l + diffX, 0, 0.0F, i, j, i, j, color);
+        RenderHelper.preciseBlitWithColor(guiGraphics, HELI_DRIVER_ANGLE, k + diffY, l + diffX, 0, 0, i, j, i, j, color);
     }
 
     public static double length(double x, double y, double z) {

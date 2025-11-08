@@ -23,7 +23,7 @@ public class TargetRenderer extends GeoEntityRenderer<TargetEntity> {
 
     @Override
     protected float getDeathMaxRotation(TargetEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 
     @Override

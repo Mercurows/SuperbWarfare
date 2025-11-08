@@ -20,26 +20,25 @@ public class GrapeshotRenderer extends EntityRenderer<GrapeshotEntity> {
 
     public void render(@NotNull GrapeshotEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         pMatrixStack.pushPose();
-        pMatrixStack.scale(1.0F, 1.0F, 1.0F);
         pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180F));
         PoseStack.Pose $$6 = pMatrixStack.last();
         VertexConsumer $$9 = pBuffer.getBuffer(RenderType.entityTranslucent(texture()));
-        vertex($$9, $$6, pPackedLight, 0.0F, 0, 0, 1);
-        vertex($$9, $$6, pPackedLight, 1.0F, 0, 1, 1);
-        vertex($$9, $$6, pPackedLight, 1.0F, 1, 1, 0);
-        vertex($$9, $$6, pPackedLight, 0.0F, 1, 0, 0);
+        vertex($$9, $$6, pPackedLight, 0, 0, 0, 1);
+        vertex($$9, $$6, pPackedLight, 1, 0, 1, 1);
+        vertex($$9, $$6, pPackedLight, 1, 1, 1, 0);
+        vertex($$9, $$6, pPackedLight, 0, 1, 0, 0);
         pMatrixStack.popPose();
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
     private static void vertex(VertexConsumer pConsumer, PoseStack.Pose pPose, int pLightmapUV, float pX, float pY, int pU, int pV) {
-        pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.25F, 0.0F)
+        pConsumer.addVertex(pPose, pX - 0.5F, pY - 0.25F, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv((float) pU, (float) pV)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
                 .setLight(pLightmapUV)
-                .setNormal(pPose, 0.0F, 1.0F, 0.0F);
+                .setNormal(pPose, 0, 1, 0);
     }
 
     private static ResourceLocation texture() {

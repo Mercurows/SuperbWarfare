@@ -32,7 +32,7 @@ public class ChargingStationBlockItem extends BlockItem {
     @Override
     public int getBarWidth(ItemStack stack) {
         int energy = stack.getOrDefault(ModDataComponents.ENERGY.get(), 0);
-        return Math.round((float) energy * 13.0F / MAX_ENERGY);
+        return Math.round(energy * 13F / MAX_ENERGY);
     }
 
     @Override

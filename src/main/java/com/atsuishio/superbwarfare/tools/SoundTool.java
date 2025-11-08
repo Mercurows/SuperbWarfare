@@ -19,7 +19,7 @@ import java.util.UUID;
 public class SoundTool {
 
     public static void playLocalSound(Player player, SoundEvent sound) {
-        playLocalSound(player, sound, 1.0F, 1.0F);
+        playLocalSound(player, sound, 1F, 1F);
     }
 
     public static void playLocalSound(Player player, SoundEvent sound, float volume, float pitch) {
@@ -29,7 +29,7 @@ public class SoundTool {
     }
 
     public static void playLocalSound(ServerPlayer player, SoundEvent sound) {
-        playLocalSound(player, sound, 1.0F, 1.0F);
+        playLocalSound(player, sound, 1F, 1F);
     }
 
     public static void playLocalSound(ServerPlayer player, SoundEvent sound, float volume, float pitch) {

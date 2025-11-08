@@ -1565,7 +1565,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void setHealth(float pHealth) {
-        this.entityData.set(HEALTH, Mth.clamp(pHealth, 0.0F, this.getMaxHealth()));
+        this.entityData.set(HEALTH, Mth.clamp(pHealth, 0, this.getMaxHealth()));
     }
 
     public float getMaxHealth() {
@@ -3237,7 +3237,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public float getEngineSoundVolume() {
-        return (float) Mth.lerp(Mth.clamp(getDeltaMovement().length(), 0F, 0.5F), 0.0F, 0.7F);
+        return (float) Mth.lerp(Mth.clamp(getDeltaMovement().length(), 0F, 0.5F), 0, 0.7F);
     }
 
     public double getVelocity() {

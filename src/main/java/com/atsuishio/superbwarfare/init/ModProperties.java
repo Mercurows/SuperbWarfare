@@ -14,8 +14,8 @@ public class ModProperties {
     @SubscribeEvent
     public static void propertyOverrideRegistry(FMLClientSetupEvent event) {
         event.enqueueWork(() -> ItemProperties.register(ModItems.MONITOR.get(), Mod.loc("monitor_linked"),
-                (itemStack, clientWorld, livingEntity, seed) -> NBTTool.getTag(itemStack).getBoolean("Linked") ? 1.0F : 0.0F));
+                (itemStack, clientWorld, livingEntity, seed) -> NBTTool.getTag(itemStack).getBoolean("Linked") ? 1F : 0));
         event.enqueueWork(() -> ItemProperties.register(ModItems.ARMOR_PLATE.get(), Mod.loc("armor_plate_infinite"),
-                (itemStack, clientWorld, livingEntity, seed) -> NBTTool.getTag(itemStack).getBoolean("Infinite") ? 1.0F : 0.0F));
+                (itemStack, clientWorld, livingEntity, seed) -> NBTTool.getTag(itemStack).getBoolean("Infinite") ? 1F : 0));
     }
 }

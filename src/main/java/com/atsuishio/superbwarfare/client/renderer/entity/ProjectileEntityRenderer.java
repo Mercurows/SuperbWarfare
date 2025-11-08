@@ -51,6 +51,6 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
 
     @Override
     protected float getDeathMaxRotation(ProjectileEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

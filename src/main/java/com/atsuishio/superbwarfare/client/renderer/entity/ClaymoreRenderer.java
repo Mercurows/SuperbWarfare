@@ -43,7 +43,7 @@ public class ClaymoreRenderer extends GeoEntityRenderer<ClaymoreEntity> {
 
     @Override
     protected float getDeathMaxRotation(ClaymoreEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class BatteryItem extends Item implements EnergyStorageItem {
             energy = cap.getEnergyStored();
         }
 
-        return Math.round((float) energy * 13.0F / maxEnergy);
+        return Math.round(energy * 13F / maxEnergy);
     }
 
     @Override

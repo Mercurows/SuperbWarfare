@@ -48,7 +48,7 @@ public class BulletDecalParticle extends TextureSheetParticle {
         this.pos = pos;
         this.lifetime = 200;
         this.hasPhysics = false;
-        this.gravity = 0.0F;
+        this.gravity = 0;
         this.quadSize = 0.05F;
 
         if (shouldRemove()) {
@@ -67,7 +67,7 @@ public class BulletDecalParticle extends TextureSheetParticle {
         super.setSprite(sprite);
         this.uOffset = this.random.nextInt(16);
         this.vOffset = this.random.nextInt(16);
-        this.textureDensity = (sprite.getU1() - sprite.getU0()) / 16.0F;
+        this.textureDensity = (sprite.getU1() - sprite.getU0()) / 16F;
     }
 
     private TextureAtlasSprite getSprite(BlockPos pos) {
@@ -117,10 +117,10 @@ public class BulletDecalParticle extends TextureSheetParticle {
         Quaternionf quaternion = this.direction.getRotation();
         Vector3f[] points = new Vector3f[]{
                 // Y 值稍微大一点点，防止 z-fight
-                new Vector3f(-1.0F, 0.01F, -1.0F),
-                new Vector3f(-1.0F, 0.01F, 1.0F),
-                new Vector3f(1.0F, 0.01F, 1.0F),
-                new Vector3f(1.0F, 0.01F, -1.0F)
+                new Vector3f(-1, 0.01F, -1),
+                new Vector3f(-1, 0.01F, 1),
+                new Vector3f(1, 0.01F, 1),
+                new Vector3f(1, 0.01F, -1)
         };
         float scale = this.getQuadSize(partialTicks);
 

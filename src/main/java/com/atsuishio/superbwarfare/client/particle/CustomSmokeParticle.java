@@ -52,7 +52,7 @@ public class CustomSmokeParticle extends TextureSheetParticle {
         if (!this.removed) {
             this.setSprite(this.spriteSet.get(Math.min((this.age / 8) + 1, 8), 8));
         }
-        if (this.age++ < this.lifetime && !(this.alpha <= 0.0F)) {
+        if (this.age++ < this.lifetime && !(this.alpha <= 0)) {
             if (this.age >= this.lifetime - 60 && this.alpha > 0.01F) {
                 this.alpha -= 0.015F;
             }

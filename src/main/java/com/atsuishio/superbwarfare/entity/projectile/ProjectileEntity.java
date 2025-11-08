@@ -392,7 +392,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             BlockPos resultPos = blockHitResult.getBlockPos();
             BlockState state = this.level().getBlockState(resultPos);
             SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
-            this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
+            this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1F, 1F);
             Vec3 hitVec = result.getLocation();
 
             this.onHitBlock(hitVec, blockHitResult);
@@ -497,7 +497,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     }
 
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
-                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1F, 1F);
 
                     // 水下路径气泡
                     double l = getDeltaMovement().length();
@@ -518,7 +518,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     }
                     ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, location.x, location.y, location.z,
                             4, 0, 0, 0, 0.6, true);
-                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1F, 1F);
                     this.discard();
                 }
             }
@@ -554,7 +554,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
                 this.discard();
             }
-            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1F, 1F);
         }
     }
 

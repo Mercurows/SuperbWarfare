@@ -23,7 +23,7 @@ public class DPSGeneratorRenderer extends GeoEntityRenderer<DPSGeneratorEntity> 
 
     @Override
     protected float getDeathMaxRotation(DPSGeneratorEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 
     @Override

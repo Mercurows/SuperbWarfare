@@ -21,6 +21,6 @@ public class SenpaiRenderer extends GeoEntityRenderer<SenpaiEntity> {
 
     @Override
     protected float getDeathMaxRotation(SenpaiEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

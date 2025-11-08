@@ -174,7 +174,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         double d1 = pTarget.y - vec3.y;
         double d2 = pTarget.z - vec3.z;
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
+        entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F));
         entityData.set(PITCH, Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
     }
 
@@ -333,7 +333,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
                     hitResult = BlockHitResult.miss(posB, Direction.getNearest(pos.x, pos.y, pos.z), BlockPos.containing(posB));
                 }
             }
-            Vec3 viewVec = cannon.getViewVector(1.0F);
+            Vec3 viewVec = cannon.getViewVector(1);
             Vec3 toVec = pos.add(viewVec.x * 512, viewVec.y * 512, viewVec.z * 512);
             AABB aabb = cannon.getBoundingBox().expandTowards(viewVec.scale(512)).inflate(1.0D, 1.0D, 1.0D);
             EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(cannon, pos, toVec, aabb, p -> !p.isSpectator(), distance);
@@ -350,10 +350,10 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
                     Entity target = ((EntityHitResult) hitResult).getEntity();
 
                     if (passenger != null) {
-                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) 200);
+                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), 200F);
                     } else {
                         Entity shooter = EntityFindUtil.findEntity(this.level(), this.entityData.get(SHOOTER_UUID));
-                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) 200);
+                        DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), 200F);
 
                     }
 
@@ -479,7 +479,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
         double d2 = targetVec.z;
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         this.setXRot(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
-        float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+        float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F);
 
         float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
 

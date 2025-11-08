@@ -405,7 +405,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         float centerH = ((screenHeight - scaledMinWH) / 2);
 
         // 准心
-        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/land/common_missile.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+        RenderHelper.preciseBlitWithColor(guiGraphics, Mod.loc("textures/screens/land/common_missile.png"), centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
 
         // 武器名称+过热
         int heat = this.getWeaponHeat(0);
@@ -417,8 +417,8 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         super.renderThirdPersonOverlay(guiGraphics, font, player, screenWidth, screenHeight, scale);
 
-        double heat = this.getWeaponHeat(0) / 100.0F;
-        guiGraphics.drawString(font, Component.literal("LASER " + (this.getWeaponHeat(0) + 25) + " ℃"), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+        double heat = this.getWeaponHeat(0) / 100F;
+        guiGraphics.drawString(font, Component.literal("LASER " + (this.getWeaponHeat(0) + 25) + " ℃"), 30, -9, Mth.hsvToRgb(0F, (float) heat, 1F), false);
     }
 
     @Override

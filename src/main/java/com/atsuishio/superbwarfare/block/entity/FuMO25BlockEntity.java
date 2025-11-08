@@ -128,7 +128,7 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
         if (energy < energyCost) {
             if (pState.getValue(FuMO25Block.POWERED)) {
                 pLevel.setBlockAndUpdate(pPos, pState.setValue(FuMO25Block.POWERED, false));
-                pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_END.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_END.get(), SoundSource.BLOCKS, 1F, 1F);
                 blockEntity.powered = false;
                 setChanged(pLevel, pPos, pState);
             }
@@ -140,14 +140,14 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
             if (!pState.getValue(FuMO25Block.POWERED)) {
                 if (energy >= DEFAULT_MIN_ENERGY) {
                     pLevel.setBlockAndUpdate(pPos, pState.setValue(FuMO25Block.POWERED, true));
-                    pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_START.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_START.get(), SoundSource.BLOCKS, 1F, 1F);
                     blockEntity.powered = true;
                     setChanged(pLevel, pPos, pState);
                 }
             } else {
                 energyStorage.extractEnergy(energyCost, false);
                 if (blockEntity.tick == 200) {
-                    pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_IDLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_IDLE.get(), SoundSource.BLOCKS, 1F, 1F);
                 }
 
                 if (blockEntity.time > 0) {

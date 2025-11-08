@@ -41,7 +41,7 @@ public class MediumAerialBombItem extends Item implements ProjectileItem {
 
         @Override
         protected void playSound(BlockSource blockSource) {
-            blockSource.level().playSound(null, blockSource.pos(), ModSounds.BOMB_RELEASE.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+            blockSource.level().playSound(null, blockSource.pos(), ModSounds.BOMB_RELEASE.get(), SoundSource.BLOCKS, 2F, 1F);
         }
     }
 
