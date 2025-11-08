@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
+import com.atsuishio.superbwarfare.client.overlay.VehicleWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -16,22 +17,25 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.joml.Math;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
-public class LandWeaponHud {
+@OnlyIn(Dist.CLIENT)
+public class LandVehicleHud {
 
     public static final String ID = "@Land";
 
@@ -49,7 +53,7 @@ public class LandWeaponHud {
 
     public static float lerpRecoil;
 
-    public static void renderLandArmorHud(VehicleEntity vehicle, LocalPlayer player, ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+    public static void render(VehicleEntity vehicle, Player player, ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = gui.getMinecraft();
 
         PoseStack poseStack = guiGraphics.pose();
@@ -105,15 +109,7 @@ public class LandWeaponHud {
                     screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
 
             // 低电量警告
-            if (vehicle.hasEnergyStorage()) {
-                if (vehicle.getEnergy() < 0.02 * vehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
-                } else if (vehicle.getEnergy() < 0.2 * vehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
-                }
-            }
+            VehicleWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
 
             // 测距
             boolean lookAtEntity = false;
