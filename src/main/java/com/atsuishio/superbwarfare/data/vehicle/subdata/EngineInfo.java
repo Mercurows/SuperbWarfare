@@ -42,11 +42,20 @@ public class EngineInfo {
         public double trackDifferential = 0;
     }
 
-    public static class Ship extends Wheel {
+    public static class Ship extends EngineInfo {
         @SerializedName("BodyPitchRate")
         public double bodyPitchRate = 1;
         @SerializedName("BodyRollRate")
         public double bodyRollRate = 1;
+        // 转向速度
+        @SerializedName("SteeringSpeed")
+        public float steeringSpeed = 0.1f;
+        // 最大前进速度系数
+        @SerializedName("MaxForwardSpeedRate")
+        public float maxForwardSpeedRate = 0.2f;
+        // 最大后退速度系数
+        @SerializedName("MaxBackwardSpeedRate")
+        public float maxBackwardSpeedRate = -0.1f;
     }
 
     public static class Helicopter extends EngineInfo {

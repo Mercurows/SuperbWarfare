@@ -3047,35 +3047,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void trackEngine(EngineInfo.Track engineInfo) {
-        VehicleEngineUtils.trackEngine(
-                this,
-                engineInfo.buoyancy,
-                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
-                engineInfo.wheelRotSpeed,
-                engineInfo.wheelDifferential,
-                engineInfo.trackRotSpeed,
-                engineInfo.trackDifferential,
-                engineInfo.maxForwardSpeedRate,
-                engineInfo.maxBackwardSpeedRate,
-                engineInfo.increment,
-                engineInfo.decrement,
-                engineInfo.steeringSpeed
-        );
+        VehicleEngineUtils.trackEngine(this, engineInfo);
     }
 
     public void wheelEngine(EngineInfo.Wheel engineInfo) {
-        VehicleEngineUtils.wheelEngine(
-                this,
-                engineInfo.buoyancy,
-                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
-                engineInfo.wheelRotSpeed,
-                engineInfo.wheelDifferential,
-                engineInfo.maxForwardSpeedRate,
-                engineInfo.maxBackwardSpeedRate,
-                engineInfo.increment,
-                engineInfo.decrement,
-                engineInfo.steeringSpeed
-        );
+        VehicleEngineUtils.wheelEngine(this, engineInfo);
     }
 
     public void helicopterEngine(EngineInfo.Helicopter engineInfo) {
@@ -3083,18 +3059,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void shipEngine(EngineInfo.Ship engineInfo) {
-        VehicleEngineUtils.shipEngine(
-                this,
-                engineInfo.buoyancy,
-                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
-                engineInfo.maxForwardSpeedRate,
-                engineInfo.maxBackwardSpeedRate,
-                engineInfo.increment,
-                engineInfo.decrement,
-                engineInfo.steeringSpeed,
-                engineInfo.bodyPitchRate,
-                engineInfo.bodyRollRate
-        );
+        VehicleEngineUtils.shipEngine(this, engineInfo);
     }
 
     public void releaseSmokeDecoy(Vec3 vec3) {
