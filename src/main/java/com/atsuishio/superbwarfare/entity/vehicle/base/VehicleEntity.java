@@ -2435,6 +2435,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var engineInfo = computed.engineInfo;
         try {
             switch (engineType) {
+                case FIXED -> this.fixedEngine();
                 case WHEEL -> {
                     var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Wheel.class);
                     this.wheelEngine(info);
@@ -3044,6 +3045,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public boolean canCrushEntities() {
         return true;
+    }
+
+    public void fixedEngine() {
+        this.move(MoverType.SELF, this.getDeltaMovement());
+        if (this.onGround()) {
+            this.setDeltaMovement(Vec3.ZERO);
+        } else {
+            // TODO 重力配置？
+            var motion = this.getDeltaMovement().add(0.0, -0.06, 0.0);
+            this.setDeltaMovement(new Vec3(0, motion.y, 0));
+        }
     }
 
     public void trackEngine(EngineInfo.Track engineInfo) {
