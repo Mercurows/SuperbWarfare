@@ -30,7 +30,7 @@ public class EngineInfo {
         // 最大前进速度系数
         @SerializedName("MaxForwardSpeedRate")
         public float maxForwardSpeedRate = 0.2f;
-        // 最大后腿速度系数
+        // 最大后退速度系数
         @SerializedName("MaxBackwardSpeedRate")
         public float maxBackwardSpeedRate = -0.1f;
     }
@@ -40,6 +40,13 @@ public class EngineInfo {
         public double trackRotSpeed = 0;
         @SerializedName("TrackDifferential")
         public double trackDifferential = 0;
+    }
+
+    public static class Ship extends Wheel {
+        @SerializedName("BodyPitchRate")
+        public double bodyPitchRate = 1;
+        @SerializedName("BodyRollRate")
+        public double bodyRollRate = 1;
     }
 
     public static class Helicopter extends EngineInfo {

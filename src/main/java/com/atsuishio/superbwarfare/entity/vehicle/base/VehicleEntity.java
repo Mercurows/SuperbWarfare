@@ -1250,7 +1250,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 float angle = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(getViewVector(1)) + VehicleVecUtils.getYRotFromVector(getShootVec(living, 1)));
 
                 Vec3 vo = new Vec3(0, 0, 1);
-                double f = entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / computedGunData.recoilTime);
+                double f = 0.3 * entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / computedGunData.recoilTime);
                 Vec3 v1 = vo.yRot(entityData.get(YAW_WHILE_SHOOT) * Mth.DEG_TO_RAD).scale(f);
                 Vec3 v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(computedGunData.recoilForce);
                 Vec3 v3 = v1.add(v2);
@@ -2154,8 +2154,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
 
             if (hasTurret() && index == getTurretControllerIndex()) {
-                passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch);
-                passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, true);
+                if (seat.transform.equals("Vehicle") || seat.transform.equals("VehicleFlat")) {
+                    float diffY = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
+                    passengerPitch(entity, seat.minPitch, seat.maxPitch, diffY);
+                } else {
+                    passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch);
+                    passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, true);
+                }
             } else {
                 float diffY = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
                 passengerPitch(entity, seat.minPitch, seat.maxPitch, diffY);
@@ -2463,6 +2468,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 case HELICOPTER -> {
                     var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Helicopter.class);
                     this.helicopterEngine(info);
+                }
+                case SHIP -> {
+                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Ship.class);
+                    this.shipEngine(info);
                 }
             }
         } catch (Exception e) {
@@ -3135,6 +3144,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void helicopterEngine(EngineInfo.Helicopter engineInfo) {
         VehicleEngineUtils.helicopterEngine(this, engineInfo);
+    }
+
+    public void shipEngine(EngineInfo.Ship engineInfo) {
+        VehicleEngineUtils.shipEngine(
+                this,
+                engineInfo.buoyancy,
+                (int) (engineInfo.energyCostRate * Mth.abs(this.entityData.get(POWER))),
+                engineInfo.maxForwardSpeedRate,
+                engineInfo.maxBackwardSpeedRate,
+                engineInfo.increment,
+                engineInfo.decrement,
+                engineInfo.steeringSpeed,
+                engineInfo.bodyPitchRate,
+                engineInfo.bodyRollRate
+        );
     }
 
     public void releaseSmokeDecoy(Vec3 vec3) {
