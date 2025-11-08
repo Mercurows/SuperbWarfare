@@ -38,8 +38,8 @@ import java.util.List;
 
 public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
 
-    // 0：无弹无筒，1：有弹有筒，2：无弹有筒（发射后）
-    public static final EntityDataAccessor<Integer> STATE = SynchedEntityData.defineId(TowEntity.class, EntityDataSerializers.INT);
+    // 是否已装填弹药
+    public static final EntityDataAccessor<Boolean> LOADED = SynchedEntityData.defineId(TowEntity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public TowEntity(EntityType<TowEntity> type, Level world) {
@@ -49,19 +49,19 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(STATE, 0);
+        builder.define(LOADED, false);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("State", this.entityData.get(STATE));
+        compound.putBoolean("State", this.entityData.get(LOADED));
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(STATE, compound.getInt("State"));
+        this.entityData.set(LOADED, compound.getBoolean("State"));
     }
 
     @Override
@@ -70,26 +70,31 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (gunData == null) return InteractionResult.SUCCESS;
 
         var stack = player.getMainHandItem();
-        if (entityData.get(STATE) == 1) return super.interact(player, hand);
+        if (gunData.hasEnoughAmmoToShoot(player)) {
+            entityData.set(LOADED, true);
+            return super.interact(player, hand);
+        }
 
-        if (entityData.get(STATE) == 0) {
+        if (!entityData.get(LOADED)) {
             if (!gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
                 return super.interact(player, hand);
             }
 
             if (level() instanceof ServerLevel serverLevel) {
-                modifyGunData(0, data -> data.ammo.set(1));
-                entityData.set(STATE, 1);
+                modifyGunData(0, data -> data.reloadAmmo(player));
+                entityData.set(LOADED, true);
 
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
                 serverLevel.playSound(null, getOnPos(), ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
             }
         } else {
-            entityData.set(STATE, 0);
+            entityData.set(LOADED, false);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected Entity getAmmoSupplier() {
+        return getFirstPassenger();
     }
 
     @Override
@@ -98,8 +103,8 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         list.add(new ItemStack(ModItems.TOW_DEPLOYER.get()));
 
         var data = getGunData(0);
-        if (entityData.get(STATE) == 1 && data != null) {
-            var stack = data.selectedAmmoConsumer().stack();
+        if (entityData.get(LOADED) && data != null) {
+            var stack = data.selectedAmmoConsumer().stack().copyWithCount(data.withdrawAmmoCount());
             if (!stack.isEmpty()) {
                 list.add(stack.copy());
             }
@@ -130,6 +135,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         Vec3 pos = getShootPos(living, 1).add(getBarrelVector(1).scale(-0.5));
         AABB ab = new AABB(pos, pos).inflate(0.75).move(getBarrelVector(1).scale(-2)).expandTowards(getBarrelVector(1).scale(-5));
 
+        // 尾焰伤害
         for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
                 target -> target != this && target != getFirstPassenger() && target.getVehicle() == null)
         ) {
@@ -138,6 +144,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             entity.push(-force * getBarrelVector(1).x, -force * getBarrelVector(1).y, -force * getBarrelVector(1).z);
         }
 
+        // 粒子效果
         if (level() instanceof ServerLevel serverLevel) {
             ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), pos, serverLevel, this);
             ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1), pos, serverLevel, this);
@@ -145,7 +152,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getBarrelVector(1), getShootPos(living, 1).add(getBarrelVector(1).scale(1))));
             }
         }
-        this.entityData.set(STATE, 2);
     }
 
     @Override

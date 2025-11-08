@@ -1903,6 +1903,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    /**
+     * 获取开火用AmmoSupplier实体
+     */
     protected Entity getAmmoSupplier() {
         return this;
     }
