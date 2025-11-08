@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.overlay.weapon.ArtilleryHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -66,6 +67,8 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
                     LandVehicleHud.render(vehicle, player, guiGraphics, partialTick, screenWidth, screenHeight);
             case HelicopterHud.ID ->
                     HelicopterHud.render(vehicle, player, guiGraphics, partialTick, screenWidth, screenHeight);
+            case ArtilleryHud.ID ->
+                    ArtilleryHud.render(vehicle, player, guiGraphics, partialTick, screenWidth, screenHeight);
         }
 
         poseStack.popPose();

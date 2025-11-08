@@ -301,12 +301,16 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     /*
      * 准星类型
      * 预制的字段有：
+     * @Empty - 空
      * @Custom - 自定义
      * @GunDefault - 默认枪械准星
      * @VehicleDefault - 默认载具准星
      */
     @SerializedName("Crosshair")
     public String crosshair = "@GunDefault";
+    // 瞄准时的准星，默认为空，仅用于部分载具
+    @SerializedName("CrosshairZooming")
+    public String crosshairZooming = "@Empty";
     @SerializedName("CrosshairColor")
     public ModColor crosshairColor = new ModColor();
     @SerializedName("Name")

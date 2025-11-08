@@ -38,5 +38,6 @@
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/mk_42_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
-  "Type": "Artillery"
+  "Type": "Artillery",
+  "MainWeaponHudType": "@Artillery"
 }

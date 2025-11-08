@@ -90,7 +90,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         var data = GunData.from(stack);
 
         var crosshair = data.compute().crosshair;
-        if (crosshair.equals(CROSSHAIR_CUSTOM)) return;
+        if (crosshair.equals(CROSSHAIR_EMPTY) || crosshair.equals(CROSSHAIR_CUSTOM)) return;
 
         double spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos;
         float deltaFrame = deltaTracker.getGameTimeDeltaPartialTick(true);
