@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.WgMissileWeapon;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -14,7 +13,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -27,15 +25,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -76,22 +68,30 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getMainHandItem();
-        if (entityData.get(STATE) == 1) {
-            return super.interact(player, hand);
-        } else if (entityData.get(STATE) == 0) {
-            if (stack.is(ModItems.TOW_MISSILE.get())) {
-                entityData.set(STATE, 1);
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                level().playSound(null, getOnPos(), ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
-                return InteractionResult.SUCCESS;
-            } else {
+        var gunData = getGunData(0);
+        if (gunData != null) {
+            ItemStack stack = player.getMainHandItem();
+            if (entityData.get(STATE) == 1) {
                 return super.interact(player, hand);
+            } else if (entityData.get(STATE) == 0) {
+                if (stack.is(ModItems.TOW_MISSILE.get())) {
+                    if (level() instanceof ServerLevel) {
+                        gunData.ammo.set(1);
+                    }
+                    entityData.set(STATE, 1);
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
+                    }
+                    level().playSound(null, getOnPos(), ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+                    return InteractionResult.SUCCESS;
+                } else {
+                    return super.interact(player, hand);
+                }
+            } else {
+                entityData.set(STATE, 0);
+                return InteractionResult.SUCCESS;
             }
         } else {
-            entityData.set(STATE, 0);
             return InteractionResult.SUCCESS;
         }
     }
@@ -100,6 +100,9 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public @NotNull List<ItemStack> getRetrieveItems() {
         var list = new ArrayList<ItemStack>();
         list.add(new ItemStack(ModItems.TOW_DEPLOYER.get()));
+        if (entityData.get(STATE) == 1) {
+            list.add(new ItemStack(ModItems.TOW_MISSILE.get()));
+        }
         return list;
     }
 
@@ -115,22 +118,14 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (this.onGround()) {
             this.setDeltaMovement(Vec3.ZERO);
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
         }
     }
 
     @Override
     public void vehicleShoot(LivingEntity living) {
-        if (entityData.get(STATE) != 1) return;
-        var wgMissileEntity = ((WgMissileWeapon) getWeapon(0)).create(living);
-
-        wgMissileEntity.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
-        wgMissileEntity.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, 2, 0f);
-        wgMissileEntity.setLauncherVehicle(this.uuid);
-        living.level().addFreshEntity(wgMissileEntity);
-
+        super.vehicleShoot(living);
         Vec3 pos = getShootPos(living, 1).add(getBarrelVector(1).scale(-0.5));
-
         AABB ab = new AABB(pos, pos).inflate(0.75).move(getBarrelVector(1).scale(-2)).expandTowards(getBarrelVector(1).scale(-5));
 
         for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
@@ -148,22 +143,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
                 Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getBarrelVector(1), getShootPos(living, 1).add(getBarrelVector(1).scale(1))));
             }
         }
-
-        this.entityData.set(STATE, this.getEntityData().get(STATE) + 1);
-    }
-
-
-    @Override
-    public void travel() {
-        Entity passenger = this.getFirstPassenger();
-        if (passenger != null) {
-
-            float diffY = Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot());
-            float diffX = Mth.wrapDegrees(passenger.getXRot() - this.getXRot());
-
-            this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -90f, 90f));
-            this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.9f * diffX, -90f, 90f), -40, 40));
-        }
+        this.entityData.set(STATE, 2);
     }
 
     @Override
@@ -178,23 +158,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public int zoomFov() {
         return 3;
-    }
-
-    @Override
-    public Vec3 getBarrelVector(float pPartialTicks) {
-        return getViewVector(pPartialTicks);
-    }
-
-    @Override
-    public Vec3 getZoomPos(Entity entity, float partialTicks) {
-        Matrix4f transform = getVehicleFlatTransform(partialTicks);
-        Vector4f worldPosition = transformPosition(transform, 0.2535875f, 1.33235625f, 0.121875f);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public Vec3 getShootPos(int seatIndex, float ticks) {
-        return new Vec3(getX(), getY() + 1.174775f, getZ());
     }
 
     @Override
@@ -214,34 +177,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             level.addFreshEntity(mortar);
         }
         super.destroy();
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.2 : 0.27;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (isFirstPerson || zoom) {
-            return new Vec2(Mth.lerp(partialTicks, yRotO, getYRot()), Mth.lerp(partialTicks, xRotO, getXRot()));
-        }
-        return super.getCameraRotation(partialTicks, player, false, false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (isFirstPerson || zoom) {
-            return getZoomPos(player, partialTicks);
-        }
-        return super.getCameraPosition(partialTicks, player, false, false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public boolean useFixedCameraPos(Entity entity) {
-        return true;
     }
 
     @Override

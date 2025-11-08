@@ -1,11 +1,52 @@
 {
   "ID": "superbwarfare:tow",
   "MaxHealth": 60,
+  "TurretPos": [0, 0.9689, 0],
+  "TurretTurnSpeed": [10, 10],
+  "TurretPitchClamp": [-40, 40],
+  "BarrelPos": [0, 0.206, 0],
   "Seats": {
-    "Transform": "VehicleFlat",
-    "Position": [0.3, -0.4, -0.6],
+    "Transform": "Turret",
+    "Position": [0.3, -1.3689, -0.6],
     "MinPitch": -40,
-    "MaxPitch": 40
+    "MaxPitch": 40,
+    "CameraPos": {
+      "Transform": "Turret",
+      "UseFixedCameraPos": true,
+      "Position": [
+        0.2535875, 0.36360625, 0.121875
+      ],
+      "Direction": "Barrel"
+    },
+    "Weapons": ["Missile"]
+  },
+  "Weapons": {
+    "Missile": {
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Name": "superbwarfare.bmp_2.missile",
+      "AmmoType": "superbwarfare:wire_guide_missile",
+      "Projectile": "superbwarfare:wg_missile",
+      "Magazine": 1,
+      "AutoIterativeReloadTime": 1,
+      "Damage": 500,
+      "Velocity": 3,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.035, 0]],
+        "Directions": ["Barrel"]
+      },
+      "ExplosionDamage": 60,
+      "ExplosionRadius": 6,
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
+        "Fire3P": "superbwarfare:bmp_2_missile_fire_3p",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null
+      },
+      "SoundRadius": 12,
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_tow.png"
+    }
   },
   "Mass": 0.05,
   "DamageModifiers": [
