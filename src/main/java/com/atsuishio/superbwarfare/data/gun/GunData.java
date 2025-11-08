@@ -129,14 +129,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     private CompoundTag getOrPut(String name) {
-        CompoundTag tag;
         if (!this.tag.contains(name)) {
-            tag = new CompoundTag();
-            this.tag.put(name, tag);
-        } else {
-            tag = this.tag.getCompound(name);
+            this.tag.put(name, new CompoundTag());
         }
-        return tag;
+        return this.tag.getCompound(name);
     }
 
     public boolean initialized() {
@@ -844,20 +840,22 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         }
         keysToRemove.forEach(perkTag::remove);
 
+        var cleanedTag = tag.copy();
+
         if (perkTag.isEmpty()) {
-            tag.remove("Perks");
+            cleanedTag.remove("Perks");
         }
 
         if (attachmentTag.isEmpty()) {
-            tag.remove("Attachments");
+            cleanedTag.remove("Attachments");
         }
 
         if (gunDataTag.isEmpty()) {
-            tag.remove("GunData");
+            cleanedTag.remove("GunData");
         }
 
         if (!tag.isEmpty()) {
-            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+            stack.set(DataComponents.CUSTOM_DATA, CustomData.of(cleanedTag));
         } else {
             stack.remove(DataComponents.CUSTOM_DATA);
         }

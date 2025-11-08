@@ -167,7 +167,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         if (isInitialized(data)) return;
 
         data.gunDataTag.putUUID("UUID", UUID.randomUUID());
-        data.save();
     }
 
     public boolean isInitialized(GunData data) {

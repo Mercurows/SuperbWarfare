@@ -914,8 +914,6 @@ public class ClientEventHandler {
         if (GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) {
             customRpm = 0;
         }
-
-        data.save();
     }
 
     private static float getDelta() {
