@@ -834,25 +834,26 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public void save() {
-        var keysToRemove = new ArrayList<String>();
-        for (var key : perkTag.getAllKeys()) {
-            if (perkTag.get(key) instanceof CompoundTag compoundTag && compoundTag.isEmpty()) {
-                keysToRemove.add(key);
-            }
-        }
-        keysToRemove.forEach(perkTag::remove);
-
-        if (perkTag.isEmpty()) {
-            stack.removeTagKey("Perks");
-        }
-
-        if (attachmentTag.isEmpty()) {
-            stack.removeTagKey("Attachments");
-        }
-
-        if (gunDataTag.isEmpty()) {
-            stack.removeTagKey("GunData");
-        }
+        // TODO 实现正确的清理空tag的方式
+//        var keysToRemove = new ArrayList<String>();
+//        for (var key : perkTag.getAllKeys()) {
+//            if (perkTag.get(key) instanceof CompoundTag compoundTag && compoundTag.isEmpty()) {
+//                keysToRemove.add(key);
+//            }
+//        }
+//        keysToRemove.forEach(perkTag::remove);
+//
+//        if (perkTag.isEmpty()) {
+//            stack.removeTagKey("Perks");
+//        }
+//
+//        if (attachmentTag.isEmpty()) {
+//            stack.removeTagKey("Attachments");
+//        }
+//
+//        if (gunDataTag.isEmpty()) {
+//            stack.removeTagKey("GunData");
+//        }
 
         update();
     }
