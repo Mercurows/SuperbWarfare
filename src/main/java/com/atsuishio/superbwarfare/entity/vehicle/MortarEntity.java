@@ -453,9 +453,4 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
     }
-
-    @Override
-    public boolean hasEnergyStorage() {
-        return false;
-    }
 }

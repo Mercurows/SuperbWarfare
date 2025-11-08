@@ -474,9 +474,4 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         }
         this.entityData.set(LOADED_AMMO, list);
     }
-
-    @Override
-    public boolean hasEnergyStorage() {
-        return false;
-    }
 }

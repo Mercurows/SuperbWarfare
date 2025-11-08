@@ -54,7 +54,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() <= energyCost) return;
+        if (vehicle.getEnergy() < energyCost) return;
 
         if (passenger0 == null) {
             vehicle.setLeftInputDown(false);
@@ -175,7 +175,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() <= energyCost) return;
+        if (vehicle.getEnergy() < energyCost) return;
 
         if (passenger0 == null) {
             vehicle.setLeftInputDown(false);
@@ -291,7 +291,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() >= energyCost) {
+        if (vehicle.getEnergy() > energyCost) {
             if (passenger0 == null) {
                 vehicle.setLeftInputDown(false);
                 vehicle.setRightInputDown(false);
@@ -430,7 +430,7 @@ public final class VehicleEngineUtils {
                 }
             }
 
-            if (vehicle.getEnergy() >= energyCost) {
+            if (vehicle.getEnergy() > energyCost) {
                 boolean up = vehicle.upInputDown() || vehicle.forwardInputDown();
                 boolean down = vehicle.downInputDown();
 

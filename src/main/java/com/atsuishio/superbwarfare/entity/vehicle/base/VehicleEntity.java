@@ -1128,7 +1128,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public boolean hasEnergyStorage() {
-        return true;
+        return this.computed().maxEnergy > 0;
     }
 
     // energy end
