@@ -95,11 +95,6 @@ public abstract class AbstractLaserEntity extends Entity implements TraceableEnt
     }
 
     @Override
-    public boolean isPickable() {
-        return super.isPickable();
-    }
-
-    @Override
     public void push(@NotNull Entity entityIn) {
     }
 

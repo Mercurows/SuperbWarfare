@@ -10,10 +10,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -107,12 +105,12 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public SoundEvent getHurtSound(@NotNull DamageSource ds) {
+    public @NotNull SoundEvent getHurtSound(@NotNull DamageSource ds) {
         return ModSounds.OUCH.get();
     }
 
     @Override
-    public SoundEvent getDeathSound() {
+    public @NotNull SoundEvent getDeathSound() {
         return ModSounds.GROWL.get();
     }
 
@@ -120,11 +118,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
     public void baseTick() {
         super.baseTick();
         this.refreshDimensions();
-    }
-
-    @Override
-    protected @NotNull EntityDimensions getDefaultDimensions(@NotNull Pose pose) {
-        return super.getDefaultDimensions(pose);
     }
 
     @Override

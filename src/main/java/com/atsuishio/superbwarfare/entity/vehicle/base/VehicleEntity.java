@@ -1596,11 +1596,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     @Override
-    public boolean isPushable() {
-        return super.isPushable();
-    }
-
-    @Override
     public boolean isPickable() {
         return !this.isRemoved();
     }

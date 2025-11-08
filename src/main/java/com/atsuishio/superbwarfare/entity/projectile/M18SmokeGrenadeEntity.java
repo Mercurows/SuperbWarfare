@@ -95,11 +95,6 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
     }
 
     @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return super.shouldRenderAtSqrDistance(pDistance);
-    }
-
-    @Override
     protected void onHit(HitResult result) {
         switch (result.getType()) {
             case BLOCK:

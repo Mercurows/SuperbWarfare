@@ -131,9 +131,5 @@ public class ChargingStationMenu extends EnergyMenu {
             super(pContainer, pSlot, pX, pY);
         }
 
-        @Override
-        public boolean mayPlace(@NotNull ItemStack pStack) {
-            return super.mayPlace(pStack);
-        }
     }
 }

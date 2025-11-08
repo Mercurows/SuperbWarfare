@@ -249,11 +249,6 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     @Override
-    public boolean isPushable() {
-        return super.isPushable();
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 

@@ -105,11 +105,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public double getMouseSpeedX() {
-        return super.getMouseSpeedX();
-    }
-
-    @Override
     public double getMouseSpeedY() {
         return 0.25;
     }

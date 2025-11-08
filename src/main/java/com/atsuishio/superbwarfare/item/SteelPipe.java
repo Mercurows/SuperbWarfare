@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tiers.ModItemTier;
 import net.minecraft.core.Holder;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,11 +44,6 @@ public class SteelPipe extends SwordItem {
         if (stack.isEmpty()) {
             attacker.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Holder.direct(Items.STICK), 1, stack.getComponentsPatch()));
         }
-    }
-
-    @Override
-    public @NotNull SoundEvent getBreakingSound() {
-        return super.getBreakingSound();
     }
 
     @SubscribeEvent
