@@ -290,11 +290,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     }
 
     @Override
-    public boolean hasEnergyStorage() {
-        return false;
-    }
-
-    @Override
     public void openCustomInventoryScreen(@NotNull Player player) {
         player.openMenu(this);
     }

@@ -165,11 +165,6 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean hasEnergyStorage() {
-        return false;
-    }
-
-    @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Linked"))

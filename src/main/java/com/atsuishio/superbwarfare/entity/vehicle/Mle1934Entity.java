@@ -600,9 +600,4 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(COOL_DOWN) == 0 && stack.getItem() instanceof CannonShellItem;
     }
-
-    @Override
-    public boolean hasEnergyStorage() {
-        return false;
-    }
 }
