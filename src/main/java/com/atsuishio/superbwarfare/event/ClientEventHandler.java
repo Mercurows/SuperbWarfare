@@ -1863,8 +1863,8 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         final var tag = NBTTool.getTag(stack);
 
-        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && zoomVehicle) {
-            event.setFOV(event.getFOV() / iVehicle.zoomFov());
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && player.getVehicle() instanceof WeaponVehicleEntity && zoomVehicle) {
+            event.setFOV(event.getFOV() / vehicle.getZoomRate());
             fov = event.getFOV();
             return;
         }

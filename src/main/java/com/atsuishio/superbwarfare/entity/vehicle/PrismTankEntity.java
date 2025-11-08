@@ -391,11 +391,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         return (int) (cap.getEnergyStored() * 100f / this.getMaxEnergy());
     }
 
-    @Override
-    public int zoomFov() {
-        return 3;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {

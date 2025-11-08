@@ -489,12 +489,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         return this.cache;
     }
 
-
-    @Override
-    public int zoomFov() {
-        return 2;
-    }
-
     @Override
     public Vec3 getBarrelVector(float pPartialTicks) {
         return getViewVector(pPartialTicks);

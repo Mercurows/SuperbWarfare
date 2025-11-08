@@ -9,5 +9,6 @@
     ],
     "Texture": "superbwarfare:textures/entity/mk_42.png"
   },
-  "LODDistance": [32, 64]
+  "LODDistance": [32, 64],
+  "ZoomRate": 5
 }

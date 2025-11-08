@@ -24,4 +24,7 @@ public class DefaultVehicleResource implements IDBasedData<DefaultVehicleResourc
 
     @SerializedName("LODDistance")
     public ObjectToList<Double> lodDistance = new ObjectToList<>(48.0, 96.0);
+
+    @SerializedName("ZoomRate")
+    public int zoomRate = 1;
 }

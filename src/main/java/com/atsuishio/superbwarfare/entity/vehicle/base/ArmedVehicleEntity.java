@@ -29,5 +29,8 @@ public interface ArmedVehicleEntity {
      *
      * @return 放大倍率
      */
-    int zoomFov();
+    @Deprecated
+    default int zoomFov() {
+        return 1;
+    }
 }

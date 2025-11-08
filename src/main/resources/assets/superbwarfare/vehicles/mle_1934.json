@@ -6,5 +6,6 @@
     "LODModel": "superbwarfare:geo/vehicle_lod/mle_1934_lod1.geo.json",
     "Texture": "superbwarfare:textures/entity/mle_1934.png"
   },
-  "LODDistance": 32
+  "LODDistance": 32,
+  "ZoomRate": 5
 }
