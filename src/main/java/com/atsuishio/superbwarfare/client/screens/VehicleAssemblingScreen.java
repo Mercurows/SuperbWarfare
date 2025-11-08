@@ -508,7 +508,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         var yOffset = modelPosAnimator.lerp(oldVec.y, newVec.y, System.currentTimeMillis());
         posestack.translate(this.leftPos + xOffset, this.topPos + yOffset - 20, 200F);
         posestack.translate(8.0f, 8.0f, 0.0f);
-        posestack.scale(1F, -1F, 1F);
+        posestack.scale(1, -1, 1);
         var currentScale = scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis());
         posestack.scale(currentScale, currentScale, currentScale);
 

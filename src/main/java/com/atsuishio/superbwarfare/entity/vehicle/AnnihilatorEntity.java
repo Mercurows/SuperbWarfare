@@ -335,7 +335,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             }
             Vec3 viewVec = cannon.getViewVector(1);
             Vec3 toVec = pos.add(viewVec.x * 512, viewVec.y * 512, viewVec.z * 512);
-            AABB aabb = cannon.getBoundingBox().expandTowards(viewVec.scale(512)).inflate(1.0D, 1.0D, 1.0D);
+            AABB aabb = cannon.getBoundingBox().expandTowards(viewVec.scale(512)).inflate(1);
             EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(cannon, pos, toVec, aabb, p -> !p.isSpectator(), distance);
             if (entityhitresult != null) {
                 Vec3 targetPos = entityhitresult.getLocation();

@@ -984,7 +984,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
         Vec3 viewVec = shooter.getViewVector(1);
         Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
-        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
+        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1);
         EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
 
         Vec3 hitPos = null;

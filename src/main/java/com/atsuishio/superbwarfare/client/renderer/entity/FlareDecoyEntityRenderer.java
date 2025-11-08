@@ -28,7 +28,6 @@ public class FlareDecoyEntityRenderer extends EntityRenderer<FlareDecoyEntity> {
 
     public void render(@NotNull FlareDecoyEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         pMatrixStack.pushPose();
-        pMatrixStack.scale(1F, 1F, 1F);
         pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
         pMatrixStack.mulPose(Axis.YP.rotationDegrees(180F));
         PoseStack.Pose pose = pMatrixStack.last();
