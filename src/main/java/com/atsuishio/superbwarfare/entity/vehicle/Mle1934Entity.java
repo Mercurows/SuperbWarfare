@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -10,7 +8,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -90,74 +87,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MLE1934_AP_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MLE1934_AP_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MLE1934_AP_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(70)
-                                .gravity(projectileGravity())
-                                .type(CannonShellEntity.Type.AP)
-                                .sound1p(ModSounds.MK_42_FIRE_1P.get())
-                                .sound3p(ModSounds.MK_42_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/ap_shell.png")),
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MLE1934_HE_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MLE1934_HE_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MLE1934_HE_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(1)
-                                .fireProbability(0.24F)
-                                .fireTime(5)
-                                .gravity(projectileGravity())
-                                .type(CannonShellEntity.Type.HE)
-                                .sound1p(ModSounds.MK_42_FIRE_1P.get())
-                                .sound3p(ModSounds.MK_42_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/he_shell.png")),
-                        new CannonShellWeapon()
-                                .hitDamage(VehicleConfig.MLE1934_HE_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.MLE1934_HE_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MLE1934_HE_EXPLOSION_RADIUS.get().floatValue())
-                                .durability(1)
-                                .gravity(projectileGravity())
-                                .type(CannonShellEntity.Type.CM)
-                                .spreadAmount(30)
-                                .spreadTime(7)
-                                .spreadAngle(15)
-                                .sound1p(ModSounds.MK_42_FIRE_1P.get())
-                                .sound3p(ModSounds.MK_42_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.CANNON_RELOAD.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cm_shell.png")),
-                        // GRAPESHOT
-                        new CannonShellWeapon()
-                                .hitDamage(800)
-                                .explosionDamage(VehicleConfig.MLE1934_AP_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.MLE1934_AP_EXPLOSION_RADIUS.get().floatValue())
-                                .velocity(30)
-                                .type(CannonShellEntity.Type.GRAPE)
-                                .spreadAmount(30)
-                                .spreadAngle(3)
-                                .sound1p(ModSounds.MK_42_FIRE_1P.get())
-                                .sound3p(ModSounds.MK_42_FIRE_3P.get())
-                                .sound3pFar(ModSounds.MK_42_FAR.get())
-                                .sound3pVeryFar(ModSounds.MK_42_VERYFAR.get())
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .ammo(ModItems.GS_5_INCHES.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/grape_shell.png"))
-                }
-        };
-    }
-
-    @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(10 + 1.25 * ClientMouseHandler.custom3pDistanceLerp, 1.3, 0);
     }
@@ -217,6 +146,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     public void remoteFire(@Nullable Player player) {
         ItemStack stack = this.getItem(0);
 
+        // TODO 修改实现方式
         int type = 0;
         if (stack.is(ModItems.HE_5_INCHES.get())) {
             type = 1;

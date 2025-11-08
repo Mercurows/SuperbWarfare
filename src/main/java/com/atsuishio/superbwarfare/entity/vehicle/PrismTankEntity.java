@@ -9,8 +9,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -52,8 +50,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -99,22 +97,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public int getContainerSize() {
         return 102;
-    }
-
-    @Override
-    public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        new LaserWeapon()
-                                .sound(ModSounds.INTO_MISSILE.get())
-                                .sound1p(ModSounds.PRISM_TANK_FIRE_HIGH_1P.get())
-                                .sound3p(ModSounds.PRISM_TANK_FIRE_HIGH_3P.get()),
-                        new LaserWeapon()
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .sound1p(ModSounds.PRISM_TANK_FIRE_LOW_1P.get())
-                                .sound3p(ModSounds.PRISM_TANK_FIRE_LOW_3P.get()),
-                }
-        };
     }
 
     @Override

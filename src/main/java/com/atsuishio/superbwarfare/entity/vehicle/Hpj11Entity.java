@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -97,21 +96,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         this.entityData.define(OWNER_UUID, Optional.empty());
         this.entityData.define(ACTIVE, false);
         this.entityData.define(FIRE_TIME, 0);
-    }
-
-    @Override
-    public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        new SmallCannonShellWeapon()
-                                .damage(VehicleConfig.HPJ11_DAMAGE.get().floatValue())
-                                .explosionDamage(VehicleConfig.HPJ11_EXPLOSION_DAMAGE.get().floatValue())
-                                .explosionRadius(VehicleConfig.HPJ11_EXPLOSION_RADIUS.get().floatValue())
-                                .aa(true)
-                                .aaProjectileWeapon(true)
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png"))
-                }
-        };
     }
 
     @Override

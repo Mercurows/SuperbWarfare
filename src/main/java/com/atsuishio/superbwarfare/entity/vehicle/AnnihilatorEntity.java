@@ -7,8 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
@@ -44,8 +42,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -96,19 +94,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
 
         entityData.set(YAW, getYRot());
         entityData.set(PITCH, getXRot());
-    }
-
-    @Override
-    public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        new LaserWeapon()
-                                .sound1p(ModSounds.ANNIHILATOR_FIRE_1P.get())
-                                .sound3p(ModSounds.ANNIHILATOR_FIRE_3P.get())
-                                .sound3pFar(ModSounds.ANNIHILATOR_FAR.get())
-                                .sound3pVeryFar(ModSounds.ANNIHILATOR_VERYFAR.get())
-                }
-        };
     }
 
     @Override

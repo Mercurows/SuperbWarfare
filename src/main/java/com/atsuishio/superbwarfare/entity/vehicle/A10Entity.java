@@ -9,7 +9,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.*;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.Agm65Weapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.Mk82Weapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
@@ -117,29 +120,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public int getContainerSize() {
         return 102;
-    }
-
-    @Override
-    public VehicleWeapon[][] initWeapons() {
-        return new VehicleWeapon[][]{
-                new VehicleWeapon[]{
-                        new SmallCannonShellWeapon()
-                                .damage(VehicleConfig.A_10_CANNON_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.A_10_CANNON_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.A_10_CANNON_EXPLOSION_RADIUS.get().floatValue())
-                                .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/cannon_30mm.png")),
-                        new SmallRocketWeapon()
-                                .damage(VehicleConfig.A_10_ROCKET_DAMAGE.get())
-                                .explosionDamage(VehicleConfig.A_10_ROCKET_EXPLOSION_DAMAGE.get())
-                                .explosionRadius(VehicleConfig.A_10_ROCKET_EXPLOSION_RADIUS.get().floatValue())
-                                .sound(ModSounds.INTO_MISSILE.get()),
-                        new Mk82Weapon()
-                                .sound(ModSounds.INTO_MISSILE.get()),
-                        new Agm65Weapon()
-                                .sound(ModSounds.INTO_MISSILE.get()),
-                }
-        };
     }
 
     @Override

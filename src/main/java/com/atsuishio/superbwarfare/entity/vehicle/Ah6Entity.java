@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -52,11 +51,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1f, 0.25f, 0.21875f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.84375f), new Quaternionf(), OBB.Part.ENGINE1);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.3125f, 0.40625f, 0.40625f), new Quaternionf(), OBB.Part.ENGINE2);
-    }
-
-    @Override
-    public VehicleWeapon[][] initWeapons() {
-        return null;
     }
 
     @Override
