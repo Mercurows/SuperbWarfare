@@ -152,11 +152,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int zoomFov() {
-        return 3;
-    }
-
-    @Override
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         return new Vec3(passenger.getX(), getY(), passenger.getZ());
     }

@@ -46,8 +46,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -792,11 +792,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     public boolean isFiring() {
         return this.entityData.get(FIRE_TIME) > 0;
-    }
-
-    @Override
-    public int zoomFov() {
-        return 3;
     }
 
     @Override

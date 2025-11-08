@@ -113,12 +113,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         return this.cache;
     }
 
-
-    @Override
-    public int zoomFov() {
-        return 3;
-    }
-
     @Override
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
         return zoom ? 0.23 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.3 : 0.4;

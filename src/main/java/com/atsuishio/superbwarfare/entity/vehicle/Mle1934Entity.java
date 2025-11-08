@@ -537,11 +537,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public int zoomFov() {
-        return 5;
-    }
-
-    @Override
     public Vec3 getBarrelVector(float pPartialTicks) {
         if (getFirstPassenger() != null) {
             return getFirstPassenger().getViewVector(pPartialTicks);

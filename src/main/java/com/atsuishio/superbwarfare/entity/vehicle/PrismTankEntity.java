@@ -50,8 +50,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -385,11 +385,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public int getAmmoCount(LivingEntity living) {
         return (int) (this.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0) * 100f / (float) this.getMaxEnergy());
-    }
-
-    @Override
-    public int zoomFov() {
-        return 3;
     }
 
     @OnlyIn(Dist.CLIENT)

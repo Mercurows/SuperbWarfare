@@ -42,8 +42,8 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -503,11 +503,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     @Override
     public int getAmmoCount(LivingEntity living) {
         return (int) (this.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0) * 100f / (float) this.getMaxEnergy());
-    }
-
-    @Override
-    public int zoomFov() {
-        return 5;
     }
 
     @Override
