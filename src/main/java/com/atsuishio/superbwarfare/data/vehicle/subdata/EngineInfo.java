@@ -42,6 +42,13 @@ public class EngineInfo {
         public double trackDifferential = 0;
     }
 
+    public static class Ship extends Wheel {
+        @SerializedName("BodyPitchRate")
+        public double bodyPitchRate = 1;
+        @SerializedName("BodyRollRate")
+        public double bodyRollRate = 1;
+    }
+
     public static class Helicopter extends EngineInfo {
         @SerializedName("PitchSpeed")
         public float pitchSpeed = 0;

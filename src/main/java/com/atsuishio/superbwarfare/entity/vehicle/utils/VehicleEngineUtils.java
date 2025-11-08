@@ -234,6 +234,95 @@ public final class VehicleEngineUtils {
         }
     }
 
+    public static void shipEngine(VehicleEntity vehicle, double buoyancy, int energyCost, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed, double bodyPitchRate, double bodyRollRate) {
+        if (buoyancy != 0) {
+            double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+        }
+
+        if (vehicle.onGround()) {
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.2, 0.99, 0.2));
+        } else if (vehicle.isInWater()) {
+            float f = (float) (0.75f - (0.04f * java.lang.Math.min(VehicleVecUtils.getSubmergedHeight(vehicle), vehicle.getBbHeight())) + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90);
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.04 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f, 0.85, f));
+        } else {
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.99, 0.99, 0.99));
+        }
+
+        if (vehicle.level() instanceof ServerLevel serverLevel && vehicle.isInWater() && vehicle.getDeltaMovement().length() > 0.1) {
+            double y = vehicle.getY() + VehicleVecUtils.getSubmergedHeight(vehicle) - 0.2;
+            sendParticle(serverLevel, ParticleTypes.CLOUD, vehicle.getX() + 0.5 * vehicle.getDeltaMovement().x, y, vehicle.getZ() + 0.5 * vehicle.getDeltaMovement().z, (int) (2 + 4 * vehicle.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, vehicle.getX() + 0.5 * vehicle.getDeltaMovement().x, y, vehicle.getZ() + 0.5 * vehicle.getDeltaMovement().z, (int) (2 + 10 * vehicle.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
+            sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, vehicle.getX() - 4.5 * vehicle.getLookAngle().x, vehicle.getY() - 0.25, vehicle.getZ() - 4.5 * vehicle.getLookAngle().z, (int) (40 * Mth.abs(vehicle.getEntityData().get(POWER))), 0.15, 0.15, 0.15, 0.02, true);
+        }
+
+        Entity passenger0 = vehicle.getFirstPassenger();
+
+        if (vehicle.getEnergy() > 0) {
+            if (passenger0 == null) {
+                vehicle.setLeftInputDown(false);
+                vehicle.setRightInputDown(false);
+                vehicle.setForwardInputDown(false);
+                vehicle.setBackInputDown(false);
+            }
+
+            if (vehicle.forwardInputDown()) {
+                vehicle.getEntityData().set(POWER, Math.min(vehicle.getEntityData().get(POWER) + (vehicle.getEntityData().get(POWER) < 0 ? powerAdd * 2f : powerAdd), 1));
+            }
+
+            if (vehicle.backInputDown()) {
+                vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - (vehicle.getEntityData().get(POWER) > 0 ? powerReduce * 2f : powerReduce), -1));
+            }
+
+            if (vehicle.getEntityData().get(POWER) > 0) {
+                vehicle.targetSpeed = maxForwardSpeedRate;
+            } else {
+                vehicle.targetSpeed = maxBackwardSpeedRate;
+            }
+
+            if (!vehicle.forwardInputDown() && !vehicle.backInputDown()) {
+                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.97f);
+            }
+
+            if (vehicle.rightInputDown() || vehicle.leftInputDown()) {
+                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.98f);
+            }
+
+            if (vehicle.getEntityData().get(ENGINE1_DAMAGED)) {
+                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.875f);
+            }
+
+            if (vehicle.level() instanceof ServerLevel) {
+                vehicle.consumeEnergy(energyCost);
+            }
+
+            if (vehicle.rightInputDown()) {
+                vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) - steeringSpeed);
+            } else if (vehicle.leftInputDown()) {
+                vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) + steeringSpeed);
+            }
+
+            vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) * (float) Math.max(0.78f - 0.25f * vehicle.getDeltaMovement().horizontalDistance(), 0.1));
+
+            vehicle.setPropellerRot(vehicle.getPropellerRot() + 2 * vehicle.getEntityData().get(POWER));
+            vehicle.setRudderRot(Mth.clamp(vehicle.getRudderRot() - vehicle.getEntityData().get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
+
+            if (vehicle.isInWater() || vehicle.isUnderWater()) {
+                vehicle.setXRot(vehicle.getXRot() * 0.85f);
+                float direct = (90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
+                vehicle.setXRot((float) (vehicle.getXRot() - direct * (vehicle.onGround() ? 0 : 1) * bodyPitchRate * vehicle.getDeltaMovement().horizontalDistance()));
+                vehicle.setYRot((float) (vehicle.getYRot() - 20 * vehicle.getDeltaMovement().horizontalDistance() * vehicle.getEntityData().get(DELTA_ROT) * (vehicle.getEntityData().get(POWER) > 0 ? 1 : -1)));
+                vehicle.setZRot((float) (vehicle.getRoll() - direct * vehicle.getEntityData().get(DELTA_ROT) * (vehicle.onGround() ? 0 : 1) * bodyRollRate * 10 * vehicle.getDeltaMovement().horizontalDistance()));
+                vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.15 * vehicle.targetSpeed * vehicle.getEntityData().get(POWER))));
+            } else {
+                vehicle.setXRot(vehicle.getXRot() * 0.99f);
+            }
+        }
+
+        vehicle.setZRot(vehicle.roll * 0.85f);
+    }
+
     public static void helicopterEngine(VehicleEntity vehicle, EngineInfo.Helicopter engineInfo) {
         int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
         float powerAdd = engineInfo.increment;

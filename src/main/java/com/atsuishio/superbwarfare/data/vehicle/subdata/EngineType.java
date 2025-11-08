@@ -6,5 +6,6 @@ public enum EngineType {
     @SerializedName("Empty") EMPTY,
     @SerializedName("Wheel") WHEEL,
     @SerializedName("Track") TRACK,
-    @SerializedName("Helicopter") HELICOPTER
+    @SerializedName("Helicopter") HELICOPTER,
+    @SerializedName("Ship") SHIP
 }

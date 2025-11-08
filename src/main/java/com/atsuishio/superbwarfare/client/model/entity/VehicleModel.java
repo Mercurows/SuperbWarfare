@@ -165,7 +165,6 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             // turret
             case "turret" -> {
                 return (bone, vehicle, state) -> {
-                    bone.setHidden(hideForTurretControllerWhileZooming);
                     bone.setRotY(turretYRot * Mth.DEG_TO_RAD);
 
                     var turretLaser = getAnimationProcessor().getBone("turretLaser");
