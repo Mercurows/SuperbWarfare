@@ -652,7 +652,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public boolean stillValid(@NotNull Player pPlayer) {
-        return this.hasContainer() && !this.isRemoved() && this.position().closerThan(pPlayer.position(), 8.0D);
+        return this.hasContainer() && !this.isRemoved() && this.position().closerThan(pPlayer.position(), 8);
     }
 
     @Override
@@ -1853,7 +1853,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.supportEntities();
         this.crushEntities();
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.06, 0));
 
         this.move(MoverType.SELF, this.getDeltaMovement());
 

@@ -173,10 +173,10 @@ public class RenderHelper {
         int borderWidth = pMaxX - pMinX;
         if (width > borderWidth) {
             int l = width - borderWidth;
-            double rate = (double) Util.getMillis() / 1000.0D;
-            double d1 = Math.max((double) l * 0.5D, 3.0D);
-            double d2 = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * rate / d1)) / 2.0D + 0.5D;
-            double d3 = Mth.lerp(d2, 0.0D, l);
+            double rate = (double) Util.getMillis() / 1000;
+            double d1 = Math.max((double) l * 0.5, 3);
+            double d2 = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * rate / d1)) / 2 + 0.5;
+            double d3 = Mth.lerp(d2, 0, l);
             pGuiGraphics.enableScissor((int) (pMinX * scale), (int) (pMinY * scale), (int) (pMaxX * scale), (int) (pMaxY * scale));
             pGuiGraphics.drawString(pFont, pText, pMinX - (int) d3, pMinY, pColor);
             pGuiGraphics.disableScissor();

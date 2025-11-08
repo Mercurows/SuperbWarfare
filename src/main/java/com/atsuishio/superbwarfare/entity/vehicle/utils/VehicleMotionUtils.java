@@ -137,16 +137,16 @@ public final class VehicleMotionUtils {
                     dMax = Math.sqrt(dMax);
                     dx /= dMax;
                     dz /= dMax;
-                    double d = 1.0D / dMax;
-                    if (d > 1.0D) {
-                        d = 1.0D;
+                    double d = 1 / dMax;
+                    if (d > 1) {
+                        d = 1;
                     }
                     dx *= d;
                     dz *= d;
                     dx *= 0.05F;
                     dz *= 0.05F;
                     if (entity.isPushable()) {
-                        entity.push(dx, 0.0D, dz);
+                        entity.push(dx, 0, dz);
                     }
                     continue;
                 }

@@ -140,12 +140,12 @@ public class CustomExplosion extends Explosion {
         this.getToBlow().addAll(set);
 
         float diameter = this.radius * 2;
-        int x0 = Mth.floor(this.x - (double) diameter - 1.0D);
-        int x1 = Mth.floor(this.x + (double) diameter + 1.0D);
-        int y0 = Mth.floor(this.y - (double) diameter - 1.0D);
-        int y1 = Mth.floor(this.y + (double) diameter + 1.0D);
-        int z0 = Mth.floor(this.z - (double) diameter - 1.0D);
-        int z1 = Mth.floor(this.z + (double) diameter + 1.0D);
+        int x0 = Mth.floor(this.x - (double) diameter - 1);
+        int x1 = Mth.floor(this.x + (double) diameter + 1);
+        int y0 = Mth.floor(this.y - (double) diameter - 1);
+        int y1 = Mth.floor(this.y + (double) diameter + 1);
+        int z0 = Mth.floor(this.z - (double) diameter - 1);
+        int z1 = Mth.floor(this.z + (double) diameter + 1);
         List<Entity> list = this.level.getEntities(this.source, new AABB(x0, y0, z0, x1, y1, z1));
         net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.level, this, list, diameter);
         Vec3 position = new Vec3(this.x, this.y, this.z);
@@ -155,16 +155,16 @@ public class CustomExplosion extends Explosion {
         for (Entity entity : list) {
             if (!entity.ignoreExplosion()) {
                 double distanceRate = Math.sqrt(entity.distanceToSqr(position)) / (double) diameter;
-                if (distanceRate <= 1.0D) {
+                if (distanceRate <= 1) {
                     double xDistance = entity.getX() - this.x;
                     double yDistance = (entity instanceof PrimedTnt ? entity.getY() : entity.getEyeY()) - this.y;
                     double zDistance = entity.getZ() - this.z;
                     double distance = Math.sqrt(xDistance * xDistance + yDistance * yDistance + zDistance * zDistance);
 
-                    if (distance != 0.0D) {
+                    if (distance != 0) {
                         double seenPercent = Mth.clamp(getSeenPercent(position, entity), 0.01 * ExplosionConfig.EXPLOSION_PENETRATION_RATIO.get(), Double.POSITIVE_INFINITY);
-                        double damagePercent = (1.0D - distanceRate) * seenPercent;
-                        double damageFinal = (damagePercent * damagePercent + damagePercent) / 2.0D * damage;
+                        double damagePercent = (1 - distanceRate) * seenPercent;
+                        double damageFinal = (damagePercent * damagePercent + damagePercent) / 2 * damage;
 
                         if (entity instanceof Monster monster) {
                             DamageHandler.doDamage(monster, this.damageSource, (float) damageFinal * (1 + 0.2f * this.damageMultiplier));

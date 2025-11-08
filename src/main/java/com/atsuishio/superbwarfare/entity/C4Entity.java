@@ -271,7 +271,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
             float f = 0.99F;
             if (this.isInWater()) {
                 for (int j = 0; j < 4; ++j) {
-                    this.level().addParticle(ParticleTypes.BUBBLE, nX - pX * 0.25D, nY - pY * 0.25D, nZ - pZ * 0.25D, pX, pY, pZ);
+                    this.level().addParticle(ParticleTypes.BUBBLE, nX - pX * 0.25, nY - pY * 0.25, nZ - pZ * 0.25, pX, pY, pZ);
                 }
 
                 f = this.getWaterInertia();
@@ -298,7 +298,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     private boolean shouldFall() {
-        return this.inGround && this.level().noCollision((new AABB(this.position(), this.position())).inflate(0.06D));
+        return this.inGround && this.level().noCollision((new AABB(this.position(), this.position())).inflate(0.06));
     }
 
     private void startFalling() {
@@ -349,7 +349,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
 
     @Nullable
     protected EntityHitResult findHitEntity(Vec3 pStartVec, Vec3 pEndVec) {
-        return ProjectileUtil.getEntityHitResult(this.level(), this, pStartVec, pEndVec, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D),
+        return ProjectileUtil.getEntityHitResult(this.level(), this, pStartVec, pEndVec, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1),
                 this::canHitEntity);
     }
 

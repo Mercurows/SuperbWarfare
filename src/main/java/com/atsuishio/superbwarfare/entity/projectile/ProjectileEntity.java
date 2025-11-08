@@ -208,7 +208,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
      */
     @Nullable
     private EntityResult getHitResult(Entity entity, Vec3 startVec, Vec3 endVec) {
-        double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
+        double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0;
 
         Vec3 hitPos = null;
         if (entity instanceof OBBEntity obbEntity) {
@@ -445,7 +445,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             v = Math.max(y, z);
         }
 
-        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0.0, 1.0)));
+        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0, 1.0)));
     }
 
     public void recordHitScore(@NotNull Direction direction, @NotNull Vec3 hitVec) {
@@ -595,7 +595,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     }
 
     public Vec3 randomVec(Vec3 vec3, double spread) {
-        return vec3.normalize().add(this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread));
+        return vec3.normalize().add(this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread));
     }
 
     protected void onHitEntity(Entity entity, ExtendedEntityRayTraceResult result) {
@@ -662,7 +662,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     public void performOnHit(Entity entity, float damage, boolean headshot, double knockback) {
         if (entity instanceof LivingEntity living) {
             if (this.forceKnockback) {
-                Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize();
+                Vec3 vec3 = this.getDeltaMovement().multiply(1, 0, 1).normalize();
                 living.addDeltaMovement(vec3.scale(knockback));
                 performDamage(entity, damage, headshot);
             } else {
@@ -695,7 +695,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public void shoot(LivingEntity living, double vecX, double vecY, double vecZ, float velocity, float spread) {
         Vec3 vec3 = (new Vec3(vecX, vecY, vecZ)).normalize().
-                add(this.random.triangle(0.0D, 0.0172275D * (double) spread), this.random.triangle(0.0D, 0.0172275D * (double) spread), this.random.triangle(0.0D, 0.0172275D * (double) spread)).
+                add(this.random.triangle(0, 0.0172275 * (double) spread), this.random.triangle(0, 0.0172275 * (double) spread), this.random.triangle(0, 0.0172275 * (double) spread)).
                 scale(velocity);
         this.setDeltaMovement(vec3);
         double d0 = vec3.horizontalDistance();
@@ -754,11 +754,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             double d9 = signX == 0 ? Double.MAX_VALUE : (double) signX / deltaX;
             double d10 = signY == 0 ? Double.MAX_VALUE : (double) signY / deltaY;
             double d11 = signZ == 0 ? Double.MAX_VALUE : (double) signZ / deltaZ;
-            double d12 = d9 * (signX > 0 ? 1.0D - Mth.frac(endX) : Mth.frac(endX));
-            double d13 = d10 * (signY > 0 ? 1.0D - Mth.frac(endY) : Mth.frac(endY));
-            double d14 = d11 * (signZ > 0 ? 1.0D - Mth.frac(endZ) : Mth.frac(endZ));
+            double d12 = d9 * (signX > 0 ? 1 - Mth.frac(endX) : Mth.frac(endX));
+            double d13 = d10 * (signY > 0 ? 1 - Mth.frac(endY) : Mth.frac(endY));
+            double d14 = d11 * (signZ > 0 ? 1 - Mth.frac(endZ) : Mth.frac(endZ));
 
-            while (d12 <= 1.0D || d13 <= 1.0D || d14 <= 1.0D) {
+            while (d12 <= 1 || d13 <= 1 || d14 <= 1) {
                 if (d12 < d13) {
                     if (d12 < d14) {
                         blockX += signX;

@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 
 public class FlareDecoyEntity extends Entity {
 
@@ -29,16 +30,16 @@ public class FlareDecoyEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+    protected void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
     }
 
     @Override
@@ -48,7 +49,7 @@ public class FlareDecoyEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.02, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.02, 0));
         this.move(MoverType.SELF, this.getDeltaMovement());
 
         if (level().isClientSide()) {
@@ -61,7 +62,7 @@ public class FlareDecoyEntity extends Entity {
     }
 
     public void decoyShoot(Entity entity, Vec3 shootVec, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = shootVec.normalize().add(this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy)).scale((double) pVelocity);
+        Vec3 vec3 = shootVec.normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale((double) pVelocity);
         this.setDeltaMovement(entity.getDeltaMovement().scale(0.75).add(vec3));
         double d0 = vec3.horizontalDistance();
         this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 57.2957763671875));

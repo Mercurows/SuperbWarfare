@@ -177,7 +177,7 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity {
             touchEntity();
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.03, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.03, 0));
 
         if (!this.level().noCollision(this.getBoundingBox())) {
             this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
@@ -258,7 +258,7 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
         this.setDeltaMovement(vec3);
     }
 }

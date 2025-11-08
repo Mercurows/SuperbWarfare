@@ -104,7 +104,7 @@ public class AmmoPerk extends Perk {
 
         String descriptionId;
         Type type;
-        double bypassArmorRate = 0.0;
+        double bypassArmorRate = 0;
         double damageRate = 1.0;
         double speedRate = 1.0;
         boolean slug = false;

@@ -41,17 +41,17 @@ public class ExplosionMixin {
             if (obj instanceof VehicleEntity vehicle) {
                 if (!vehicle.ignoreExplosion()) {
                     double d12 = Math.sqrt(vehicle.distanceToSqr(vec3)) / (double) f2;
-                    if (d12 <= 1.0D) {
+                    if (d12 <= 1) {
                         double d5 = vehicle.getX() - this.x;
                         double d7 = vehicle.getEyeY() - this.y;
                         double d9 = vehicle.getZ() - this.z;
                         double d13 = Math.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
-                        if (d13 != 0.0D) {
+                        if (d13 != 0) {
                             d5 /= d13;
                             d7 /= d13;
                             d9 /= d13;
                             double d14 = Explosion.getSeenPercent(vec3, vehicle);
-                            double d10 = (1.0D - d12) * d14;
+                            double d10 = (1 - d12) * d14;
 
                             d5 *= d10;
                             d7 *= d10;

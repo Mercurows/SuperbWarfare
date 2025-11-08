@@ -27,8 +27,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +41,7 @@ public class MortarDeployer extends Item {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext pContext) {
+    public @NotNull InteractionResult useOn(UseOnContext pContext) {
         Level level = pContext.getLevel();
         if (!(level instanceof ServerLevel)) {
             return InteractionResult.SUCCESS;
@@ -61,9 +63,9 @@ public class MortarDeployer extends Item {
             }
 
             MortarEntity mortarEntity = new MortarEntity(level, player.getYRot());
-            mortarEntity.setPos((double) pos.getX() + 0.5D, pos.getY() + 1, (double) pos.getZ() + 0.5D);
+            mortarEntity.setPos((double) pos.getX() + 0.5, pos.getY() + 1, (double) pos.getZ() + 0.5);
             double yOffset = this.getYOffset(level, pos, !Objects.equals(clickedPos, pos) && direction == Direction.UP, mortarEntity.getBoundingBox());
-            mortarEntity.moveTo((double) pos.getX() + 0.5D, pos.getY() + yOffset, (double) pos.getZ() + 0.5D);
+            mortarEntity.moveTo((double) pos.getX() + 0.5, pos.getY() + yOffset, (double) pos.getZ() + 0.5);
             level.addFreshEntity(mortarEntity);
 
             if (!player.getAbilities().instabuild) {
@@ -78,15 +80,16 @@ public class MortarDeployer extends Item {
     public double getYOffset(LevelReader pLevel, BlockPos pPos, boolean pShouldOffsetYMore, AABB pBox) {
         AABB aabb = new AABB(pPos);
         if (pShouldOffsetYMore) {
-            aabb = aabb.expandTowards(0.0D, -1.0D, 0.0D);
+            aabb = aabb.expandTowards(0, -1, 0);
         }
 
         Iterable<VoxelShape> iterable = pLevel.getCollisions(null, aabb);
-        return 1.0D + Shapes.collide(Direction.Axis.Y, pBox, iterable, pShouldOffsetYMore ? -2.0D : -1.0D);
+        return 1 + Shapes.collide(Direction.Axis.Y, pBox, iterable, pShouldOffsetYMore ? -2 : -1);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
+    @ParametersAreNonnullByDefault
+    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         BlockHitResult blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, ClipContext.Fluid.SOURCE_ONLY);
         if (blockhitresult.getType() != HitResult.Type.BLOCK) {
@@ -99,7 +102,7 @@ public class MortarDeployer extends Item {
                 return InteractionResultHolder.pass(itemstack);
             } else if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(blockpos, blockhitresult.getDirection(), itemstack)) {
                 MortarEntity mortarEntity = new MortarEntity(pLevel, pPlayer.getYRot());
-                mortarEntity.setPos((double) blockpos.getX() + 0.5D, blockpos.getY(), (double) blockpos.getZ() + 0.5D);
+                mortarEntity.setPos((double) blockpos.getX() + 0.5, blockpos.getY(), (double) blockpos.getZ() + 0.5);
                 pLevel.addFreshEntity(mortarEntity);
 
                 if (!pPlayer.getAbilities().instabuild) {
@@ -116,6 +119,7 @@ public class MortarDeployer extends Item {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         pTooltipComponents.add(Component.translatable("des.superbwarfare.mortar_deployer").withStyle(ChatFormatting.GRAY));
     }

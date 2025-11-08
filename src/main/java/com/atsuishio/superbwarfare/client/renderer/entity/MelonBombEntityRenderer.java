@@ -26,7 +26,7 @@ public class MelonBombEntityRenderer extends EntityRenderer<MelonBombEntity> {
     @Override
     public void render(@NotNull MelonBombEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, @NotNull MultiBufferSource buffer, int packedLight) {
         matrixStack.pushPose();
-        matrixStack.translate(0.0, 0.5, 0.0);
+        matrixStack.translate(0, 0.5, 0);
         matrixStack.mulPose(Axis.YP.rotationDegrees(-90.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
         matrixStack.mulPose(Axis.YP.rotationDegrees(90.0f));

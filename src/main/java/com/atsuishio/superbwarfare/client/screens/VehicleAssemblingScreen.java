@@ -508,7 +508,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         var xOffset = modelPosAnimator.lerp(oldVec.x, newVec.x, System.currentTimeMillis());
         var yOffset = modelPosAnimator.lerp(oldVec.y, newVec.y, System.currentTimeMillis());
         posestack.translate(this.leftPos + xOffset, this.topPos + yOffset - 20, 200F);
-        posestack.translate(8.0, 8.0, 0.0);
+        posestack.translate(8.0, 8.0, 0);
         posestack.scale(1, -1, 1);
         var currentScale = scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis());
         posestack.scale(currentScale, currentScale, currentScale);
@@ -554,7 +554,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         var newVec = modelPosAnimator.newValue();
         var xOffset = modelPosAnimator.lerp(oldVec.x, newVec.x, System.currentTimeMillis());
         var yOffset = modelPosAnimator.lerp(oldVec.y, newVec.y, System.currentTimeMillis());
-        posestack.translate(this.leftPos + xOffset, this.topPos + yOffset, 50.0D);
+        posestack.translate(this.leftPos + xOffset, this.topPos + yOffset, 50);
         var currentScale = scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis());
         posestack.scale(currentScale, currentScale, -currentScale);
 
@@ -573,7 +573,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         posestack.mulPose(Axis.YP.rotationDegrees(rot));
 
         entityrenderdispatcher.setRenderShadow(false);
-        entityrenderdispatcher.render(renderEntity, 0.0D, 0.0D, 0.0D, 0F, 1F, posestack, guiGraphics.bufferSource(), 15728880);
+        entityrenderdispatcher.render(renderEntity, 0, 0, 0, 0F, 1F, posestack, guiGraphics.bufferSource(), 15728880);
         guiGraphics.flush();
         entityrenderdispatcher.setRenderShadow(true);
         posestack.popPose();

@@ -307,7 +307,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         updateOBB();
 
         double fluidFloat = 0.052 * VehicleVecUtils.getSubmergedHeight(this);
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, fluidFloat, 0));
 
         if (this.onGround()) {
             float f0 = 0.35f + 0.5f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;

@@ -63,7 +63,7 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.05, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
 
         if (!this.level().noCollision(this.getBoundingBox())) {
             this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());

@@ -186,7 +186,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
     public void tick() {
         super.tick();
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
 
         if (!this.level().noCollision(this.getBoundingBox())) {
             this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());

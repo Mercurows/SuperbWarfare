@@ -14,10 +14,10 @@ public class VectorTool {
     public static double calculateAngle(Vec3 start, Vec3 end) {
         double startLength = start.length();
         double endLength = end.length();
-        if (startLength > 0.0D && endLength > 0.0D) {
+        if (startLength > 0 && endLength > 0) {
             return Math.toDegrees(Math.acos(Mth.clamp(start.dot(end) / (startLength * endLength), -1, 1)));
         } else {
-            return 0.0D;
+            return 0;
         }
     }
 
@@ -81,7 +81,7 @@ public class VectorTool {
 
         // 检查流体是否有效且位置低于流体表面
         if (!fluidState.isEmpty()) {
-            // 获取流体在方块中的高度（0.0 - 1.0）
+            // 获取流体在方块中的高度（0 - 1.0）
             float fluidHeight = fluidState.getHeight(level, blockPos);
             // 计算位置相对于当前方块底部的偏移量
             double yOffset = position.y - blockPos.getY();

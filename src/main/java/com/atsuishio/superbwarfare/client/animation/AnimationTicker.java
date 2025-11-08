@@ -63,7 +63,7 @@ public class AnimationTicker {
     }
 
     public void decreaseTimer(int time) {
-        if (this.tick - time > 0.0D) {
+        if (this.tick - time > 0) {
             this.tick -= time;
         } else {
             this.tick = 0;
