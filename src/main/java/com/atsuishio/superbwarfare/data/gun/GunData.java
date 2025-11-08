@@ -531,14 +531,14 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     /**
-     * 换弹完成后装填弹药，请确保在换弹完成后再调用
+     * 换弹完成后装填弹药，在换弹流程完成后调用
      */
     public void reloadAmmo(@Nullable Entity entity) {
         reloadAmmo(entity, false);
     }
 
     /**
-     * 换弹完成后装填弹药，请确保在换弹完成后再调用
+     * 换弹完成后装填弹药，在换弹流程完成后调用
      */
     public void reloadAmmo(@Nullable Entity entity, boolean extraOne) {
         if (useBackpackAmmo()) return;
@@ -610,23 +610,28 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
      * 返还弹匣内弹药，在换弹和切换弹匣配件时调用
      */
     public void withdrawAmmo(@NotNull Entity ammoSupplier) {
-        var amount = this.virtualAmmo.get() + this.ammo.get();
+        var itemAmount = withdrawAmmoCount();
+
         this.virtualAmmo.reset();
         this.ammo.reset();
 
-        // 直接丢弃余数（恼）
-        var itemAmount = amount / selectedAmmoConsumer().loadAmount;
         selectedAmmoConsumer().withdraw(ammoSupplier, itemAmount);
+    }
+
+    public int withdrawAmmoCount() {
+        return (this.virtualAmmo.get() + this.ammo.get()) / selectedAmmoConsumer().loadAmount;
     }
 
     /**
      * 返还弹匣内弹药，在换弹和切换弹匣配件时调用
      */
     public void withdrawAmmo(@NotNull IItemHandler handler) {
-        var amount = this.virtualAmmo.get() + this.ammo.get();
+        var itemAmount = withdrawAmmoCount();
+
+        this.virtualAmmo.reset();
+        this.ammo.reset();
 
         // 直接丢弃余数（恼）
-        var itemAmount = amount / selectedAmmoConsumer().loadAmount;
         selectedAmmoConsumer().withdraw(handler, itemAmount);
     }
 

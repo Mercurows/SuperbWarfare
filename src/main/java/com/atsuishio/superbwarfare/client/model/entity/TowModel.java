@@ -14,8 +14,7 @@ public class TowModel extends VehicleModel<TowEntity> {
                 var player = Minecraft.getInstance().player;
                 bone.setHidden(vehicle.getFirstPassenger() == player && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle));
             };
-            case "missile" ->
-                    (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(TowEntity.STATE) == 0);
+            case "missile" -> (bone, vehicle, state) -> bone.setHidden(!vehicle.getEntityData().get(TowEntity.LOADED));
             default -> super.collectTransform(boneName);
         };
     }
