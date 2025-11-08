@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.overlay;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -66,8 +65,6 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             return;
         }
 
-        if (vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER) return;
-
         int index = vehicle.getSeatIndex(player);
         var data = vehicle.getGunData(index);
         if (data == null) {
@@ -78,6 +75,11 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
         PoseStack poseStack = guiGraphics.pose();
 
         String crosshairPath = data.compute().crosshair;
+        if (crosshairPath.equals(CrossHairOverlay.CROSSHAIR_EMPTY)) {
+            resetScale();
+            return;
+        }
+
         int color = data.compute().crosshairColor.get();
 
         poseStack.pushPose();

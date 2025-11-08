@@ -38,6 +38,8 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class CrossHairOverlay implements IGuiOverlay {
 
     public static final String ID = Mod.MODID + "_cross_hair";
+
+    public static final String CROSSHAIR_EMPTY = "@Empty";
     public static final String CROSSHAIR_CUSTOM = "@Custom";
     public static final String CROSSHAIR_GUN_DEFAULT = "@GunDefault";
     public static final String CROSSHAIR_GUN_REPAIR_TOOL = "@GunRepairTool";
