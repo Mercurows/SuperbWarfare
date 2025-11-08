@@ -87,7 +87,7 @@ public final class VehicleVecUtils {
      * @param player 载具驾驶员
      */
     public static void setDriverAngle(VehicleEntity vehicle, Player player) {
-        if (vehicle.hasTurret()) {
+        if (vehicle.hasMainWeapon()) {
             player.xRotO = -(float) getXRotFromVector(vehicle.getBarrelVector(1));
             player.setXRot(-(float) getXRotFromVector(vehicle.getBarrelVector(1)));
             player.yRotO = -(float) getYRotFromVector(vehicle.getBarrelVector(1));
@@ -222,7 +222,7 @@ public final class VehicleVecUtils {
         if (!entity.level().isClientSide) return;
         if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) return;
 
-        if (vehicle.getTurretControllerIndex() == vehicle.getSeatIndex(entity)) {
+        if (vehicle.getMainWeaponControllerIndex() == vehicle.getSeatIndex(entity)) {
             float f2 = Mth.wrapDegrees(entity.getYRot() - vehicle.getBarrelYRot(1));
             float f3 = Mth.clamp(f2, -20F, 20F);
             entity.yRotO += f3 - f2;
@@ -510,7 +510,7 @@ public final class VehicleVecUtils {
         Matrix4f transformV = vehicle.getVehicleTransform(partialTicks);
 
         Matrix4f transform = new Matrix4f();
-        var pos = vehicle.getTurretPosition();
+        var pos = vehicle.getMainWeaponPos();
         if (pos == null) return transformV;
         Vector4f worldPosition = transformPosition(
                 transform,

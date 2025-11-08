@@ -26,12 +26,12 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 控制载具武器的玩家显示的HUD
+ * 控制载具主武器的玩家显示的HUD
  */
 @OnlyIn(Dist.CLIENT)
-public class VehicleWeaponHudOverlay implements LayeredDraw.Layer {
+public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
 
-    public static final ResourceLocation ID = Mod.loc("vehicle_weapon_hud");
+    public static final ResourceLocation ID = Mod.loc("vehicle_main_weapon_hud");
     public static final String EMPTY = "@Empty";
 
     @Override
@@ -42,10 +42,10 @@ public class VehicleWeaponHudOverlay implements LayeredDraw.Layer {
         if (!(player.getVehicle() instanceof VehicleEntity vehicle)) return;
         if (ClientEventHandler.isEditing) return;
 
-        var type = vehicle.computed().weaponHudType;
+        var type = vehicle.computed().mainWeaponHudType;
         if (type.equals(EMPTY)) return;
 
-        if (vehicle.getSeatIndex(player) != vehicle.computed().turretControllerIndex) return;
+        if (vehicle.getSeatIndex(player) != vehicle.computed().mainWeaponControllerIndex) return;
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();

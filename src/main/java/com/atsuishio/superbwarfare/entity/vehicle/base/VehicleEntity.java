@@ -1795,10 +1795,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(MOUSE_SPEED_X, getMouseMoveSpeedX() * 0.95f);
         entityData.set(MOUSE_SPEED_Y, getMouseMoveSpeedY() * 0.95f);
 
-        if (hasTurret()) {
-            if (getNthEntity(getTurretControllerIndex()) instanceof Player) {
+        if (hasMainWeapon()) {
+            if (getNthEntity(getMainWeaponControllerIndex()) instanceof Player) {
                 this.adjustTurretAngle();
-            } else if (getNthEntity(getTurretControllerIndex()) instanceof Mob mob) {
+            } else if (getNthEntity(getMainWeaponControllerIndex()) instanceof Mob mob) {
                 this.turretAutoAimFromUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
             }
         }
@@ -2132,7 +2132,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation);
             }
 
-            if (hasTurret() && index == getTurretControllerIndex()) {
+            if (hasMainWeapon() && index == getMainWeaponControllerIndex()) {
                 if (seat.transform.equals("Vehicle") || seat.transform.equals("VehicleFlat")) {
                     float diffY = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
                     passengerPitch(entity, seat.minPitch, seat.maxPitch, diffY);
@@ -2484,58 +2484,58 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return VehicleVecUtils.getClientVehicleTransform(this, partialTicks);
     }
 
-    public boolean hasTurret() {
-        return getTurretPosition() != null;
+    public boolean hasMainWeapon() {
+        return getMainWeaponPos() != null;
     }
 
-    public Vec3 getTurretPosition() {
-        return computed().turretPos;
+    public Vec3 getMainWeaponPos() {
+        return computed().mainWeaponPos;
     }
 
-    public int getTurretControllerIndex() {
-        return computed().turretControllerIndex;
-    }
-
-    /**
-     * @return 炮塔最大偏航速度
-     */
-    public float turretYSpeed() {
-        return computed().turretTurnSpeed.y;
+    public int getMainWeaponControllerIndex() {
+        return computed().mainWeaponControllerIndex;
     }
 
     /**
      * @return 炮塔最大俯仰速度
      */
-    public float turretXSpeed() {
-        return computed().turretTurnSpeed.x;
+    public float getMainWeaponTurnXSpeed() {
+        return computed().mainWeaponTurnSpeed.x;
+    }
+
+    /**
+     * @return 炮塔最大偏航速度
+     */
+    public float getMainWeaponTurnYSpeed() {
+        return computed().mainWeaponTurnSpeed.y;
     }
 
     /**
      * @return 炮塔最小偏航
      */
-    public float turretMinYaw() {
-        return computed().turretYawClamp.x;
+    public float getMainWeaponMinYaw() {
+        return computed().mainWeaponYawRange.x;
     }
 
     /**
      * @return 炮塔最大偏航
      */
-    public float turretMaxYaw() {
-        return computed().turretYawClamp.y;
+    public float getMainWeaponMaxYaw() {
+        return computed().mainWeaponYawRange.y;
     }
 
     /**
      * @return 炮塔最小俯角
      */
-    public float turretMinPitch() {
-        return computed().turretPitchClamp.x;
+    public float getMainWeaponMinPitch() {
+        return computed().mainWeaponPitchRange.x;
     }
 
     /**
      * @return 炮塔最大仰角
      */
-    public float turretMaxPitch() {
-        return computed().turretPitchClamp.y;
+    public float getMainWeaponMaxPitch() {
+        return computed().mainWeaponPitchRange.y;
     }
 
     public Vec3 getBarrelPosition() {

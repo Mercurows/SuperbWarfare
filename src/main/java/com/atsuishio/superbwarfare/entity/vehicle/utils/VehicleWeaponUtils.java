@@ -32,10 +32,10 @@ public final class VehicleWeaponUtils {
      * @param vehicle 载具
      */
     public static void adjustTurretAngle(VehicleEntity vehicle) {
-        float ySpeed = vehicle.turretYSpeed();
-        float xSpeed = vehicle.turretXSpeed();
+        float ySpeed = vehicle.getMainWeaponTurnYSpeed();
+        float xSpeed = vehicle.getMainWeaponTurnXSpeed();
 
-        Entity driver = vehicle.getNthEntity(vehicle.getTurretControllerIndex());
+        Entity driver = vehicle.getNthEntity(vehicle.getMainWeaponControllerIndex());
         if (driver == null) {
             vehicle.turretYRotLock = 0;
         } else {
@@ -66,8 +66,8 @@ public final class VehicleWeaponUtils {
      * @param shootVec 需要让炮塔以这个角度发射的向量
      */
     public static void turretAutoAimFromVector(VehicleEntity vehicle, Vec3 shootVec) {
-        float ySpeed = vehicle.turretYSpeed();
-        float xSpeed = vehicle.turretXSpeed();
+        float ySpeed = vehicle.getMainWeaponTurnYSpeed();
+        float xSpeed = vehicle.getMainWeaponTurnXSpeed();
         float diffY = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(vehicle.getBarrelVector(1)));
         float diffX = (float) Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(vehicle.getBarrelVector(1)));
 
@@ -81,8 +81,8 @@ public final class VehicleWeaponUtils {
         float min = -ySpeed + (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
         float max = ySpeed + (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
 
-        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.turretMaxPitch(), -vehicle.turretMinPitch()));
-        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.turretMaxYaw(), -vehicle.turretMinYaw()));
+        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.getMainWeaponMaxPitch(), -vehicle.getMainWeaponMinPitch()));
+        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.getMainWeaponMaxYaw(), -vehicle.getMainWeaponMinYaw()));
         vehicle.turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
         vehicle.aiTurretDiff = VectorTool.calculateAngle(shootVec, vehicle.getBarrelVector(1));
     }

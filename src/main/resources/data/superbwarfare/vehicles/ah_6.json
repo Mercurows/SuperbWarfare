@@ -157,5 +157,5 @@
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Helicopter",
   "EngineSound": "superbwarfare:ah_6_engine",
-  "WeaponHudType": "@Helicopter"
+  "MainWeaponHudType": "@Helicopter"
 }

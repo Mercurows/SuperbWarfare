@@ -1,9 +1,9 @@
 {
   "ID": "superbwarfare:tow",
   "MaxHealth": 60,
-  "TurretPos": [0, 0.9689, 0],
-  "TurretTurnSpeed": [10, 10],
-  "TurretPitchClamp": [-40, 40],
+  "MainWeaponPos": [0, 0.9689, 0],
+  "MainWeaponTurnSpeed": [10, 10],
+  "MainWeaponPitchRange": [-40, 40],
   "BarrelPos": [0, 0.206, 0],
   "Seats": {
     "Transform": "Turret",

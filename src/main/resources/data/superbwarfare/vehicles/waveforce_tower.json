@@ -2,9 +2,9 @@
   "ID": "superbwarfare:waveforce_tower",
   "MaxHealth": 400,
   "MaxEnergy": 10000000,
-  "TurretPos": [0, 2, -0.05843125],
-  "TurretTurnSpeed": [12, 8],
-  "TurretPitchClamp": [-45, 50],
+  "MainWeaponPos": [0, 2, -0.05843125],
+  "MainWeaponTurnSpeed": [12, 8],
+  "MainWeaponPitchRange": [-45, 50],
   "BarrelPos": [0, 0.41615625, -0.02555],
   "Mass": 10,
   "DamageModifiers": [

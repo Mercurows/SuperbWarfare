@@ -97,10 +97,9 @@
       "SoundRadius": 16
     }
   },
-
-  "TurretPos": [0, 2.5616625, -0.565625],
-  "TurretTurnSpeed": [25, 25],
-  "TurretPitchClamp": [-25, 50],
+  "MainWeaponPos": [0, 2.5616625, -0.565625],
+  "MainWeaponTurnSpeed": [25, 25],
+  "MainWeaponPitchRange": [-25, 50],
   "BarrelPos": [0, 0.5088375, 0.04173125],
   "HasDecoy": true,
   "Mass": 0.7,

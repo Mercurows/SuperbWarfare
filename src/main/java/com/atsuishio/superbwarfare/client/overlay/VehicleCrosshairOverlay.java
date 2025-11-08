@@ -133,7 +133,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
             poseStack.pushPose();
 
-            VehicleWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, data, mc.font, screenWidth, screenHeight, color);
+            VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, data, mc.font, screenWidth, screenHeight, color);
 
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
@@ -156,7 +156,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                 // 载具自定义第三人称渲染
                 vehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, screenWidth, screenHeight, scale);
 
-                VehicleWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
+                VehicleMainWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
 
                 double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
