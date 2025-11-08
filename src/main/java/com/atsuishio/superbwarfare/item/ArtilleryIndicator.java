@@ -41,6 +41,7 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         TooltipTool.addScreenProviderText(pTooltipComponents);
         if (pStack.getTag() != null && pStack.getTag().contains(TAG_TYPE)) {
@@ -71,20 +72,22 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
         if (pHand == InteractionHand.OFF_HAND) {
             return InteractionResultHolder.fail(pPlayer.getItemInHand(pHand));
         }
-        pPlayer.playSound(SoundEvents.SPYGLASS_USE, 1.0F, 1.0F);
+        pPlayer.playSound(SoundEvents.SPYGLASS_USE, 1, 1);
         pPlayer.startUsingItem(pHand);
         return InteractionResultHolder.consume(pPlayer.getItemInHand(pHand));
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
-        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+    @ParametersAreNonnullByDefault
+    public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
+        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1, 1);
         return pStack;
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
-        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1, 1);
     }
 
     public boolean checkFull(ItemStack stack) {

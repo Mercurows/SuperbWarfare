@@ -163,7 +163,7 @@ public class AircraftOverlay implements IGuiOverlay {
                 }
 
                 //指南针
-                RenderHelper.blit(poseStack, COMPASS, x - 128, y - 122, 128 + ((float) 64 / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
+                RenderHelper.blit(poseStack, COMPASS, x - 128, y - 122, 128 + (64F / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
                 RenderHelper.blit(poseStack, COMPASS_IND, x - 4, y - 130, 0, 0, 8, 8, 8, 8, color);
 
                 //滚转指示
@@ -290,8 +290,8 @@ public class AircraftOverlay implements IGuiOverlay {
 
                     if (vehicle instanceof A10Entity a10Entity) {
                         if (weaponVehicle.getWeaponIndex(0) == 0) {
-                            double heat = a10Entity.getWeaponHeat(0) / 100.0F;
-                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : vehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1.0F), false);
+                            double heat = a10Entity.getWeaponHeat(0) / 100F;
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("30MM CANNON " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : vehicle.getAmmoCount(player))), 25, -9, Mth.hsvToRgb(0F, (float) heat, 1F), false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 1) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("70MM ROCKET " + vehicle.getAmmoCount(player)), 25, -9, -1, false);
                         } else if (weaponVehicle.getWeaponIndex(0) == 2) {

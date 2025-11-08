@@ -120,7 +120,7 @@ public class Beast extends SwordItem {
             target.gameEvent(GameEvent.ENTITY_DIE);
         }
 
-        target.level().playSound(target, new BlockPos((int) target.getX(), (int) target.getY(), (int) target.getZ()), ModSounds.OUCH.get(), SoundSource.PLAYERS, 2.0F, 1.0F);
+        target.level().playSound(target, new BlockPos((int) target.getX(), (int) target.getY(), (int) target.getZ()), ModSounds.OUCH.get(), SoundSource.PLAYERS, 2, 1);
     }
 
     @Override

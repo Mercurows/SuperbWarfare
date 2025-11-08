@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -50,7 +51,7 @@ public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity 
 
             if (blockEntity.tick == 18) {
                 ParticleTool.sendParticle((ServerLevel) pLevel, ParticleTypes.EXPLOSION, pPos.getX(), pPos.getY() + 1, pPos.getZ(), 40, 1.5, 1.5, 1.5, 1, false);
-                pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.2F) * 0.7F);
+                pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4, (1 + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.2F) * 0.7F);
             }
         } else {
             var direction = pState.getValue(ContainerBlock.FACING);
@@ -88,7 +89,7 @@ public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
 
     @Override
-    public void load(CompoundTag compound) {
+    public void load(@NotNull CompoundTag compound) {
         super.load(compound);
         if (compound.contains("EntityType")) {
             this.entityType = EntityType.byString(compound.getString("EntityType")).orElse(null);
@@ -100,7 +101,7 @@ public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    public void saveAdditional(@NotNull CompoundTag compound) {
         super.saveAdditional(compound);
         if (this.entityTag != null) {
             compound.put("Entity", this.entityTag);
@@ -117,12 +118,12 @@ public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         return this.saveWithFullMetadata();
     }
 
     @Override
-    public void saveToItem(ItemStack pStack) {
+    public void saveToItem(@NotNull ItemStack pStack) {
         CompoundTag tag = new CompoundTag();
         if (this.entityType != null) {
             tag.putString("EntityType", EntityType.getKey(this.entityType).toString());

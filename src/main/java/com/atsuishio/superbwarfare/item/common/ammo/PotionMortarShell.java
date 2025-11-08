@@ -67,8 +67,8 @@ public class PotionMortarShell extends MortarShell implements DispenserLaunchabl
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MORTAR_FIRE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            protected void playSound(@NotNull BlockSource pSource) {
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MORTAR_FIRE.get(), SoundSource.BLOCKS, 1, 1);
             }
         };
     }

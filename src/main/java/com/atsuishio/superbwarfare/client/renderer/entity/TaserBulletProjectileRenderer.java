@@ -33,6 +33,6 @@ public class TaserBulletProjectileRenderer extends GeoEntityRenderer<TaserBullet
 
     @Override
     protected float getDeathMaxRotation(TaserBulletEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

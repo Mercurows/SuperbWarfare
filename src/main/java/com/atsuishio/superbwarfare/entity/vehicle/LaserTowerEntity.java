@@ -268,7 +268,7 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
             double d2 = targetVec.z;
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
             this.setXRot(Mth.clamp(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))), -90, 40));
-            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F);
 
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
 

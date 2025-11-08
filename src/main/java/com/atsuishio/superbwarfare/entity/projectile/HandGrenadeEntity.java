@@ -27,6 +27,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -68,7 +69,7 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    protected Item getDefaultItem() {
+    protected @NotNull Item getDefaultItem() {
         return ModItems.HAND_GRENADE.get();
     }
 
@@ -82,7 +83,7 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
                 SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
                 double speed = this.getDeltaMovement().length();
                 if (speed > 0.1) {
-                    this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
+                    this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1, 1);
                 }
                 this.bounce(blockResult.getDirection());
 

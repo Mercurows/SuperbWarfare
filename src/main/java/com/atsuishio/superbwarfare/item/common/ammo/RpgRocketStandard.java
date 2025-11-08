@@ -115,8 +115,8 @@ public class RpgRocketStandard extends Item implements GeoItem, DispenserLauncha
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            protected void playSound(@NotNull BlockSource pSource) {
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.BLOCKS, 1F, 1F);
             }
         };
     }

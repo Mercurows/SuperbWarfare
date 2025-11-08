@@ -4,6 +4,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomCloudParticle extends TextureSheetParticle {
@@ -19,7 +20,7 @@ public class CustomCloudParticle extends TextureSheetParticle {
             this.spriteSet = spriteSet;
         }
 
-        public Particle createParticle(CustomCloudOption pType, ClientLevel pLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(CustomCloudOption pType, @NotNull ClientLevel pLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             return new CustomCloudParticle(pLevel, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet, pType.getRed(), pType.getGreen(), pType.getBlue(), pType.getLife(), pType.getSize(), pType.getGravity(), pType.getCooldown(), pType.getLight());
         }
     }
@@ -51,7 +52,7 @@ public class CustomCloudParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
+    public @NotNull ParticleRenderType getRenderType() {
         return light ? ParticleRenderType.PARTICLE_SHEET_LIT : ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
@@ -66,7 +67,7 @@ public class CustomCloudParticle extends TextureSheetParticle {
         if (!this.removed) {
             this.setSprite(this.spriteSet.get(Math.min((this.age / 8) + 1, 8), 8));
         }
-        if (this.age++ < this.lifetime && !(this.alpha <= 0.0F)) {
+        if (this.age++ < this.lifetime && !(this.alpha <= 0)) {
             alpha = 1 - ((float) age / lifetime);
         } else {
             this.remove();

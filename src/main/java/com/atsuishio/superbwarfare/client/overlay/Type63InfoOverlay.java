@@ -116,7 +116,7 @@ public class Type63InfoOverlay implements IGuiOverlay {
             Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(lookingEntity);
             double d0 = (targetPos.x - vec3.x) * 0.2;
             double d2 = (targetPos.z - vec3.z) * 0.2;
-            double targetYaw = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+            double targetYaw = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F);
 
             float angle;
 

@@ -84,11 +84,11 @@ public class JavelinHudOverlay implements IGuiOverlay {
             float l = ((screenHeight - j) / 2) + moveY;
             float i1 = k + i;
             float j1 = l + j;
-            preciseBlit(guiGraphics, JAVELIN_HUD, k, l, 0, 0.0F, i, j, i, j);
-            preciseBlit(guiGraphics, data.selectedFireModeInfo().name.equals("Top") ? TOP : DIR, k, l, 0, 0.0F, i, j, i, j);
-            preciseBlit(guiGraphics, data.hasEnoughAmmoToShoot(player) ? MISSILE_GREEN : MISSILE_RED, k, l, 0, 0.0F, i, j, i, j);
+            preciseBlit(guiGraphics, JAVELIN_HUD, k, l, 0, 0, i, j, i, j);
+            preciseBlit(guiGraphics, data.selectedFireModeInfo().name.equals("Top") ? TOP : DIR, k, l, 0, 0F, i, j, i, j);
+            preciseBlit(guiGraphics, data.hasEnoughAmmoToShoot(player) ? MISSILE_GREEN : MISSILE_RED, k, l, 0, 0F, i, j, i, j);
             if (stack.getOrCreateTag().getInt("SeekTime") > 1 && stack.getOrCreateTag().getInt("SeekTime") < 20) {
-                preciseBlit(guiGraphics, SEEK, k, l, 0, 0.0F, i, j, i, j);
+                preciseBlit(guiGraphics, SEEK, k, l, 0, 0, i, j, i, j);
             }
 
             guiGraphics.fill(RenderType.guiOverlay(), 0, (int) l, (int) k + 3, (int) j1, -90, -16777216);

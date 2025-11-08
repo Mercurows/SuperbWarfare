@@ -115,8 +115,8 @@ public class RpgRocketTBG extends Item implements GeoItem, DispenserLaunchable {
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            protected void playSound(@NotNull BlockSource pSource) {
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.BLOCKS, 1F, 1F);
             }
         };
     }

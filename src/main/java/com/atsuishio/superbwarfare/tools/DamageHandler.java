@@ -54,7 +54,7 @@ public class DamageHandler {
                 living.walkAnimation.setSpeed(1.5F);
 
                 boolean flag1 = true;
-                if (living.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
+                if (living.invulnerableTime > 10 && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
                     if (damage <= living.lastHurt) {
                         return false;
                     }

@@ -274,7 +274,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 var pose = guiGraphics.pose();
 
                 pose.pushPose();
-                pose.scale(0.8F, 0.8F, 1.0F);
+                pose.scale(0.8F, 0.8F, 1F);
                 guiGraphics.renderFakeItem(itemStack, (int) (posX * 1.25f), (int) (posY * 1.25f));
                 pose.popPose();
 
@@ -283,8 +283,8 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
                 }
 
                 pose.pushPose();
-                pose.scale(0.5F, 0.5F, 1.0F);
-                pose.translate(0.0F, 0.0F, 200.0F);
+                pose.scale(0.5F, 0.5F, 1F);
+                pose.translate(0F, 0F, 200F);
 
                 int count = input.getCount();
                 if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
@@ -482,10 +482,10 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
 
     @SuppressWarnings("deprecation")
     private void renderDefaultItemModel(ItemStack stack) {
-        float rotationPeriod = 8.0F;
+        float rotationPeriod = 8F;
         int width = 240;
         int height = 99;
-        float rotPitch = 15.0F;
+        float rotPitch = 15F;
 
         Window window = Minecraft.getInstance().getWindow();
         double windowGuiScale = window.getGuiScale();
@@ -499,7 +499,7 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
 
         PoseStack posestack = RenderSystem.getModelViewStack();
         posestack.pushPose();
@@ -507,13 +507,13 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         var newVec = modelPosAnimator.newValue();
         var xOffset = modelPosAnimator.lerp(oldVec.x, newVec.x, System.currentTimeMillis());
         var yOffset = modelPosAnimator.lerp(oldVec.y, newVec.y, System.currentTimeMillis());
-        posestack.translate(this.leftPos + xOffset, this.topPos + yOffset - 20, 200.0F);
+        posestack.translate(this.leftPos + xOffset, this.topPos + yOffset - 20, 200F);
         posestack.translate(8.0, 8.0, 0.0);
-        posestack.scale(1.0F, -1.0F, 1.0F);
+        posestack.scale(1, -1, 1);
         var currentScale = scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis());
         posestack.scale(currentScale, currentScale, currentScale);
 
-        float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
+        float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000F))) * (360F / (rotationPeriod * 1000F));
 
         posestack.mulPose(Axis.XP.rotationDegrees(rotPitch));
         posestack.mulPose(Axis.YP.rotationDegrees(rot));
@@ -565,15 +565,15 @@ public class VehicleAssemblingScreen extends AbstractContainerScreen<VehicleAsse
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
 
-        float rotationPeriod = 12.0F;
+        float rotationPeriod = 12F;
         float rotPitch = 195F;
-        float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000.0F))) * (360.0F / (rotationPeriod * 1000.0F));
+        float rot = (float) (System.currentTimeMillis() % (long) ((int) (rotationPeriod * 1000F))) * (360F / (rotationPeriod * 1000F));
 
         posestack.mulPose(Axis.XP.rotationDegrees(rotPitch));
         posestack.mulPose(Axis.YP.rotationDegrees(rot));
 
         entityrenderdispatcher.setRenderShadow(false);
-        entityrenderdispatcher.render(renderEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, posestack, guiGraphics.bufferSource(), 15728880);
+        entityrenderdispatcher.render(renderEntity, 0.0D, 0.0D, 0.0D, 0F, 1F, posestack, guiGraphics.bufferSource(), 15728880);
         guiGraphics.flush();
         entityrenderdispatcher.setRenderShadow(true);
         posestack.popPose();

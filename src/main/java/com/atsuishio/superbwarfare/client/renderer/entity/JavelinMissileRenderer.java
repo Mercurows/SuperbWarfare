@@ -35,6 +35,6 @@ public class JavelinMissileRenderer extends GeoEntityRenderer<JavelinMissileEnti
 
     @Override
     protected float getDeathMaxRotation(JavelinMissileEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

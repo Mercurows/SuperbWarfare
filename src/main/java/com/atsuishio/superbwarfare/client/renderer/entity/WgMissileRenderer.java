@@ -35,6 +35,6 @@ public class WgMissileRenderer extends GeoEntityRenderer<WgMissileEntity> {
 
     @Override
     protected float getDeathMaxRotation(WgMissileEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

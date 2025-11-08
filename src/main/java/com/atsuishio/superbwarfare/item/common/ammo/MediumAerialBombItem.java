@@ -34,7 +34,8 @@ public class MediumAerialBombItem extends Item implements DispenserLaunchable {
         return new AbstractProjectileDispenseBehavior() {
 
             @Override
-            public ItemStack execute(BlockSource pSource, ItemStack pStack) {
+            @ParametersAreNonnullByDefault
+            public @NotNull ItemStack execute(BlockSource pSource, ItemStack pStack) {
                 Level $$2 = pSource.getLevel();
                 Position $$3 = DispenserBlock.getDispensePosition(pSource);
                 Direction $$4 = pSource.getBlockState().getValue(DispenserBlock.FACING);
@@ -63,14 +64,14 @@ public class MediumAerialBombItem extends Item implements DispenserLaunchable {
 
             @Override
             protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.BOMB_RELEASE.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.BOMB_RELEASE.get(), SoundSource.BLOCKS, 2, 1);
             }
         };
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         pTooltipComponents.add(Component.translatable("des.superbwarfare.medium_aerial_bomb").withStyle(ChatFormatting.GRAY));
     }
 }

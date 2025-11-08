@@ -31,7 +31,7 @@ public class ShockMobEffect extends MobEffect {
 
     public ShockMobEffect() {
         super(MobEffectCategory.HARMFUL, -256);
-        addAttributeModifier(Attributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -10.0F, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -10F, AttributeModifier.Operation.ADDITION);
     }
 
     @Override

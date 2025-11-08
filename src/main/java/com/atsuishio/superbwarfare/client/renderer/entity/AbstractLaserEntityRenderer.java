@@ -15,9 +15,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Code based on @BobMowzie's MowziesMobs and @EEEAB's EEEABsMobs
@@ -37,9 +40,10 @@ public abstract class AbstractLaserEntityRenderer<T extends AbstractLaserEntity>
     }
 
     @Override
-    public abstract ResourceLocation getTextureLocation(T entity);
+    public abstract @NotNull ResourceLocation getTextureLocation(@NotNull T entity);
 
     @Override
+    @ParametersAreNonnullByDefault
     public void render(T beam, float entityYaw, float delta, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         double collidePosX = beam.prevCollidePosX + (beam.collidePosX - beam.prevCollidePosX) * delta;
         double collidePosY = beam.prevCollidePosY + (beam.collidePosY - beam.prevCollidePosY) * delta;
@@ -156,7 +160,7 @@ public abstract class AbstractLaserEntityRenderer<T extends AbstractLaserEntity>
     }
 
     protected void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY, int packedLightIn) {
-        vertexBuilder.vertex(matrix, offsetX, offsetY, offsetZ).color(1F, 1F, 1F, 1F).uv(textureX, textureY).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(normals, 0.0F, 1.0F, 0.0F).endVertex();
+        vertexBuilder.vertex(matrix, offsetX, offsetY, offsetZ).color(1, 1, 1, 1).uv(textureX, textureY).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(normals, 0F, 1F, 0F).endVertex();
     }
 
 }

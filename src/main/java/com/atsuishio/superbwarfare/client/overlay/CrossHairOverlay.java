@@ -164,7 +164,7 @@ public class CrossHairOverlay implements IGuiOverlay {
      * 渲染圆形准星
      */
     public static void shotgunCrossHair(GuiGraphics guiGraphics, float finPosX, float finPosY, float finLength) {
-        preciseBlit(guiGraphics, SHOTGUN, finPosX, finPosY, 0, 0.0F, finLength, finLength, finLength, finLength);
+        preciseBlit(guiGraphics, SHOTGUN, finPosX, finPosY, 0, 0, finLength, finLength, finLength, finLength);
     }
 
     public static void renderGunDefaultCrosshair(GuiGraphics guiGraphics, ItemStack stack, Player player, int screenWidth, int screenHeight,

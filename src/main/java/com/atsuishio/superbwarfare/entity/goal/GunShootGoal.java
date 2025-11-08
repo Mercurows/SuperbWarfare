@@ -68,8 +68,8 @@ public class GunShootGoal<T extends Mob> extends Goal {
             }
         }
 
-        this.mob.lookAt(target, 30.0F, 30.0F);
-//            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+        this.mob.lookAt(target, 30F, 30F);
+//            this.mob.getLookControl().setLookAt(target, 30F, 30F);
 
         if (distance > data.shootDistance()) {
             this.mob.getNavigation().moveTo(target, 1);

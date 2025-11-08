@@ -59,7 +59,7 @@ public class MediumRocketItem extends Item implements DispenserLaunchable {
 
             @Override
             protected void playSound(@NotNull BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.BLOCKS, 4.0F, 1.0F);
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.BLOCKS, 4, 1);
             }
         };
     }

@@ -249,7 +249,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
 
     @Override
     public @NotNull EntityDimensions getDimensions(@NotNull Pose p_33597_) {
-        return super.getDimensions(p_33597_).scale((float) 0.5);
+        return super.getDimensions(p_33597_).scale(0.5F);
     }
 
     @Override

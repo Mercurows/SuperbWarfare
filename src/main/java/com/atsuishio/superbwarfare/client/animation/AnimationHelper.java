@@ -127,16 +127,16 @@ public class AnimationHelper {
             Matrix4f $$7 = $$6.pose();
             Matrix3f $$8 = $$6.normal();
             VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(Mod.loc("textures/particle/flare.png")));
-            vertex($$9, $$7, $$8, packedLightIn, 0.0F, 0, 0, 1);
-            vertex($$9, $$7, $$8, packedLightIn, 1.0F, 0, 1, 1);
-            vertex($$9, $$7, $$8, packedLightIn, 1.0F, 1, 1, 0);
-            vertex($$9, $$7, $$8, packedLightIn, 0.0F, 1, 0, 0);
+            vertex($$9, $$7, $$8, packedLightIn, 0, 0, 0, 1);
+            vertex($$9, $$7, $$8, packedLightIn, 1, 0, 1, 1);
+            vertex($$9, $$7, $$8, packedLightIn, 1, 1, 1, 0);
+            vertex($$9, $$7, $$8, packedLightIn, 0, 1, 0, 0);
             stack.popPose();
         }
     }
 
     private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
-        pConsumer.vertex(pPose, pX - 0.5F, pY - 0.5F, 0.0F).color(255, 255, 255, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
+        pConsumer.vertex(pPose, pX - 0.5F, pY - 0.5F, 0).color(255, 255, 255, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
     }
 
     public static void handleZoomCrossHair(MultiBufferSource currentBuffer, RenderType renderType, String boneName, PoseStack stack, GeoBone bone, MultiBufferSource buffer, double x, double y, double z, float size, int r, int g, int b, int a, String name, boolean hasBlackPart) {
@@ -158,16 +158,16 @@ public class AnimationHelper {
             int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
             VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
-            vertexRGB(blackPart, $$7, $$8, 255, 0.0F, 0, 0, 1, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, $$8, 255, 0, 0, 0, 1, r, g, b, alpha, size);
             vertexRGB(blackPart, $$7, $$8, 255, size, 0, 1, 1, r, g, b, alpha, size);
             vertexRGB(blackPart, $$7, $$8, 255, size, size, 1, 0, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, $$8, 255, 0.0F, size, 0, 0, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, $$8, 255, 0, size, 0, 0, r, g, b, alpha, size);
 
             VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(tex));
-            vertexRGB($$9, $$7, $$8, 255, 0.0F, 0, 0, 1, r, g, b, a, size);
+            vertexRGB($$9, $$7, $$8, 255, 0, 0, 0, 1, r, g, b, a, size);
             vertexRGB($$9, $$7, $$8, 255, size, 0, 1, 1, r, g, b, a, size);
             vertexRGB($$9, $$7, $$8, 255, size, size, 1, 0, r, g, b, a, size);
-            vertexRGB($$9, $$7, $$8, 255, 0.0F, size, 0, 0, r, g, b, a, size);
+            vertexRGB($$9, $$7, $$8, 255, 0, size, 0, 0, r, g, b, a, size);
 
             stack.popPose();
         }
@@ -175,7 +175,7 @@ public class AnimationHelper {
     }
 
     private static void vertexRGB(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV, int r, int g, int b, int a, float size) {
-        pConsumer.vertex(pPose, pX - 0.5F * size, pY - 0.5F * size, 0.0F).color(r, g, b, a).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
+        pConsumer.vertex(pPose, pX - 0.5F * size, pY - 0.5F * size, 0).color(r, g, b, a).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
     }
 
     public static void renderArms(LocalPlayer localPlayer, ItemDisplayContext transformType, PoseStack stack, String name, GeoBone bone,

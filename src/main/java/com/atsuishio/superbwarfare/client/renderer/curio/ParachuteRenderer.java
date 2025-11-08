@@ -50,7 +50,7 @@ public class ParachuteRenderer implements ICurioRenderer {
 
             VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.armorCutoutNoCull(TEXTURE), false, stack.hasFoil());
 
-            model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
         }
 
         matrixStack.popPose();
@@ -79,7 +79,7 @@ public class ParachuteRenderer implements ICurioRenderer {
 
             firstPersonModel.prepareMobModel(player, 0, 0, event.getPartialTick());
             firstPersonModel.setupAnim(player, 0, 0, player.tickCount, 0, 0);
-            firstPersonModel.renderToBuffer(stack, buffers.bufferSource().getBuffer(RenderType.armorCutoutNoCull(TEXTURE)), 0xFFFFFF, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            firstPersonModel.renderToBuffer(stack, buffers.bufferSource().getBuffer(RenderType.armorCutoutNoCull(TEXTURE)), 0xFFFFFF, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
 
             stack.popPose();
         }

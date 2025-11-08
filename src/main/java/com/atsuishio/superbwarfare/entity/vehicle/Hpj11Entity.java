@@ -315,7 +315,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
             double d2 = targetVec.z;
             double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 
-            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F);
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
 
             turretTurnSound(0, diffY, 1.1f);

@@ -321,7 +321,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
         Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(this);
         double d0 = (pTarget.x - vec3.x) * 0.2;
         double d2 = (pTarget.z - vec3.z) * 0.2;
-        entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F));
+        entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F));
     }
 
     @Override
@@ -342,7 +342,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
             if (level instanceof ServerLevel server) {
                 MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0));
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, (float) shootVelocity(), (float) 0.1);
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, (float) shootVelocity(), 0.1F);
                 level.addFreshEntity(entityToSpawn);
 
                 ParticleTool.spawnMediumCannonMuzzleParticles(getLookAngle(), new Vec3(this.getX(), this.getEyeY(), this.getZ()).add(getLookAngle().scale(1.5)), server, this);

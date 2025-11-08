@@ -62,7 +62,7 @@ public class RenderHelper {
     }
 
     public static void blit(PoseStack pose, ResourceLocation pAtlasLocation, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pUWidth, float pVHeight, float pUOffset, float pVOffset, float pTextureWidth, float pTextureHeight, int color) {
-        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0.0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0.0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, color);
+        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, color);
     }
 
     public static void blit(PoseStack pose, ResourceLocation pAtlasLocation, float pX, float pY, float pUOffset, float pVOffset, float pWidth, float pHeight, float pTextureWidth, float pTextureHeight, float alpha, boolean opposite) {
@@ -78,7 +78,7 @@ public class RenderHelper {
     }
 
     public static void blit(PoseStack pose, ResourceLocation pAtlasLocation, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pUWidth, float pVHeight, float pUOffset, float pVOffset, float pTextureWidth, float pTextureHeight, float alpha, boolean opposite) {
-        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0.0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0.0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, alpha, opposite);
+        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, alpha, opposite);
     }
 
     private static void innerBlit(PoseStack pose, ResourceLocation pAtlasLocation, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pMinU, float pMaxU, float pMinV, float pMaxV, int color) {
@@ -120,9 +120,9 @@ public class RenderHelper {
     }
 
     private static void vertexC(float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pMinU, float pMaxU, float pMinV, float pMaxV, int color, Matrix4f matrix4f, BufferBuilder bufferBuilder) {
-        float r = (color >> 16 & 255) / 255.0F;
-        float g = (color >> 8 & 255) / 255.0F;
-        float b = (color & 255) / 255.0F;
+        float r = (color >> 16 & 255) / 255F;
+        float g = (color >> 8 & 255) / 255F;
+        float b = (color & 255) / 255F;
 
         bufferBuilder.vertex(matrix4f, pX1, pY1, pBlitOffset).color(r, g, b, 1f).uv(pMinU, pMinV).endVertex();
         bufferBuilder.vertex(matrix4f, pX1, pY2, pBlitOffset).color(r, g, b, 1f).uv(pMinU, pMaxV).endVertex();
@@ -156,10 +156,10 @@ public class RenderHelper {
             pMaxY = j;
         }
 
-        float f3 = (float) FastColor.ARGB32.alpha(pColor) / 255.0F;
-        float f = (float) FastColor.ARGB32.red(pColor) / 255.0F;
-        float f1 = (float) FastColor.ARGB32.green(pColor) / 255.0F;
-        float f2 = (float) FastColor.ARGB32.blue(pColor) / 255.0F;
+        float f3 = (float) FastColor.ARGB32.alpha(pColor) / 255F;
+        float f = (float) FastColor.ARGB32.red(pColor) / 255F;
+        float f1 = (float) FastColor.ARGB32.green(pColor) / 255F;
+        float f2 = (float) FastColor.ARGB32.blue(pColor) / 255F;
         VertexConsumer vertexconsumer = guiGraphics.bufferSource().getBuffer(pRenderType);
         vertexconsumer.vertex(matrix4f, pMinX, pMinY, pZ).color(f, f1, f2, f3).endVertex();
         vertexconsumer.vertex(matrix4f, pMinX, pMaxY, pZ).color(f, f1, f2, f3).endVertex();

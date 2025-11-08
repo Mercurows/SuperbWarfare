@@ -117,7 +117,7 @@ public class RgoGrenade extends Item implements DispenserLaunchable {
 
             @Override
             protected void playSound(@NotNull BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.GRENADE_THROW.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.GRENADE_THROW.get(), SoundSource.BLOCKS, 1F, 1F);
             }
         };
     }

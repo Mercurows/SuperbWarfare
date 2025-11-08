@@ -146,7 +146,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             var energy = stack.getCapability(ForgeCapabilities.ENERGY)
                     .map(IEnergyStorage::getEnergyStored)
                     .orElse(0);
-            return Math.round((float) energy * 13.0F / GunData.compute(stack).maxEnergy);
+            return Math.round(energy * 13F / GunData.compute(stack).maxEnergy);
         }
 
         return super.getBarWidth(stack);
@@ -931,8 +931,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             entity.setDeltaMovement(vec3);
             entity.hasImpulse = true;
             double d0 = vec3.horizontalDistance();
-            entity.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 180.0F / (float) Math.PI));
-            entity.setXRot((float) (Mth.atan2(vec3.y, d0) * 180.0F / (float) Math.PI));
+            entity.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 180F / (float) Math.PI));
+            entity.setXRot((float) (Mth.atan2(vec3.y, d0) * 180F / (float) Math.PI));
             entity.yRotO = entity.getYRot();
             entity.xRotO = entity.getXRot();
         }
@@ -986,7 +986,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             pos = blockHitResult.getLocation();
         }
 
-        Vec3 viewVec = shooter.getViewVector(1.0F);
+        Vec3 viewVec = shooter.getViewVector(1);
         Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
         AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1.0D, 1.0D, 1.0D);
         EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);

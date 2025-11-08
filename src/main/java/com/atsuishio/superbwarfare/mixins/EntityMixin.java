@@ -89,13 +89,13 @@ public abstract class EntityMixin implements OBBHitter {
             player.setYRot(player.getYRot() + f1);
             Vec3 forward = new Vec3(player.getLookAngle().x, 0, player.getLookAngle().z).normalize();
             if (player.level().getBlockState(BlockPos.containing(player.getX() + 0.25 * forward.x, player.getY() - 0.1, player.getZ() + 0.25 * forward.z)).canOcclude()) {
-                player.setXRot(Mth.clamp(player.getXRot(), -45.0F, 30.0F));
+                player.setXRot(Mth.clamp(player.getXRot(), -45F, 30F));
             } else {
-                player.setXRot(Mth.clamp(player.getXRot(), -45.0F, 89.0F));
+                player.setXRot(Mth.clamp(player.getXRot(), -45F, 89F));
             }
             player.xRotO += f;
             player.yRotO += f1;
-            player.xRotO = Mth.clamp(player.xRotO, -90.0F, 90.0F);
+            player.xRotO = Mth.clamp(player.xRotO, -90F, 90F);
 
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(player.getYHeadRot() - player.yBodyRot));
             player.setYBodyRot(player.yBodyRot + 0.5f * diffY);

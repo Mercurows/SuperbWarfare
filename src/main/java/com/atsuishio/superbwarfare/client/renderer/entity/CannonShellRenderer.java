@@ -36,6 +36,6 @@ public class CannonShellRenderer extends GeoEntityRenderer<CannonShellEntity> {
 
     @Override
     protected float getDeathMaxRotation(CannonShellEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

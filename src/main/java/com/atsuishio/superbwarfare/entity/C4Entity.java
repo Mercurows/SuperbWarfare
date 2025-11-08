@@ -198,7 +198,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         }
 
         Vec3 motion = this.getDeltaMovement();
-        if (this.xRotO == 0.0F && this.yRotO == 0.0F && !this.inGround) {
+        if (this.xRotO == 0 && this.yRotO == 0 && !this.inGround) {
             double d0 = motion.horizontalDistance();
             this.setYRot((float) (Mth.atan2(motion.x, motion.z) * (double) (180F / (float) Math.PI)));
             this.setXRot((float) (Mth.atan2(motion.y, d0) * (double) (180F / (float) Math.PI)));
@@ -336,12 +336,12 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     protected static float lerpRotation(float pCurrentRotation, float pTargetRotation) {
-        while (pTargetRotation - pCurrentRotation < -180.0F) {
-            pCurrentRotation -= 360.0F;
+        while (pTargetRotation - pCurrentRotation < -180F) {
+            pCurrentRotation -= 360F;
         }
 
-        while (pTargetRotation - pCurrentRotation >= 180.0F) {
-            pCurrentRotation += 360.0F;
+        while (pTargetRotation - pCurrentRotation >= 180F) {
+            pCurrentRotation += 360F;
         }
 
         return Mth.lerp(0.2F, pCurrentRotation, pTargetRotation);
@@ -400,7 +400,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
         double speed = this.getDeltaMovement().length();
         if (speed > 0.1) {
-            this.level().playSound(null, pResult.getLocation().x, pResult.getLocation().y, pResult.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
+            this.level().playSound(null, pResult.getLocation().x, pResult.getLocation().y, pResult.getLocation().z, event, SoundSource.AMBIENT, 1, 1);
         }
         this.inGround = true;
     }
@@ -438,7 +438,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
 
     @Override
     public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
-        return super.getDimensions(pPose).scale((float) 0.5);
+        return super.getDimensions(pPose).scale(0.5F);
     }
 
     @Override

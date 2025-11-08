@@ -91,7 +91,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
         BlockState state = this.level().getBlockState(resultPos);
 
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
-        this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
+        this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1, 1);
         Vec3 hitVec = result.getLocation();
 
         this.hitBlock(hitVec, result);
@@ -111,7 +111,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
             summonVectorParticle(serverLevel, state, location, dir);
 
             this.discard();
-            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1, 1);
         }
     }
 
@@ -173,7 +173,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
                     }
 
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
-                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1, 1);
                     this.discard();
                 }
             } else if (state.getBlock() == Blocks.LAVA) {
@@ -185,7 +185,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
                     }
                     ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, location.x, location.y, location.z,
                             4, 0, 0, 0, 0.6, true);
-                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1, 1);
                     this.discard();
                 }
             }

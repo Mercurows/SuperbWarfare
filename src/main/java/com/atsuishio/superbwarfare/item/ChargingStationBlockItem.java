@@ -20,17 +20,17 @@ public class ChargingStationBlockItem extends BlockItem {
     }
 
     @Override
-    public boolean isBarVisible(ItemStack pStack) {
+    public boolean isBarVisible(@NotNull ItemStack pStack) {
         CompoundTag tag = BlockItem.getBlockEntityData(pStack);
         int energy = tag == null ? 0 : tag.getInt("Energy");
         return energy != MAX_ENERGY && energy != 0;
     }
 
     @Override
-    public int getBarWidth(ItemStack pStack) {
+    public int getBarWidth(@NotNull ItemStack pStack) {
         CompoundTag tag = BlockItem.getBlockEntityData(pStack);
         int energy = tag == null ? 0 : tag.getInt("Energy");
-        return Math.round((float) energy * 13.0F / MAX_ENERGY);
+        return Math.round(energy * 13F / MAX_ENERGY);
     }
 
     @Override

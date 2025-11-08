@@ -17,8 +17,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -92,9 +92,9 @@ public abstract class CameraMixin implements ICustomCamera {
 //                    this.xRot = quat.x;
 //                    this.yRot = quat.y;
 //
-//                    this.forwards.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
-//                    this.up.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
-//                    this.left.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
+//                    this.forwards.set(0, 0, 1).rotate(this.rotation);
+//                    this.up.set(0, 1, 0).rotate(this.rotation);
+//                    this.left.set(1, 0, 0).rotate(this.rotation);
 //
 //                    info.cancel();
 //                }

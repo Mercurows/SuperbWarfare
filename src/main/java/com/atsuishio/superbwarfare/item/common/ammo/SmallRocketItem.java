@@ -29,7 +29,8 @@ public class SmallRocketItem extends Item implements DispenserLaunchable {
         return new AbstractProjectileDispenseBehavior() {
 
             @Override
-            public ItemStack execute(BlockSource pSource, ItemStack pStack) {
+            @ParametersAreNonnullByDefault
+            public @NotNull ItemStack execute(BlockSource pSource, ItemStack pStack) {
                 Level $$2 = pSource.getLevel();
                 Position $$3 = DispenserBlock.getDispensePosition(pSource);
                 Direction $$4 = pSource.getBlockState().getValue(DispenserBlock.FACING);
@@ -57,8 +58,8 @@ public class SmallRocketItem extends Item implements DispenserLaunchable {
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.SMALL_ROCKET_FIRE_3P.get(), SoundSource.BLOCKS, 2.0F, 1.0F);
+            protected void playSound(@NotNull BlockSource pSource) {
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.SMALL_ROCKET_FIRE_3P.get(), SoundSource.BLOCKS, 2F, 1F);
             }
         };
     }

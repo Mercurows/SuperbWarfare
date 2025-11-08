@@ -223,7 +223,7 @@ public final class VehicleVecUtils {
 
         if (vehicle.getTurretControllerIndex() == vehicle.getSeatIndex(entity)) {
             float f2 = Mth.wrapDegrees(entity.getYRot() - vehicle.getBarrelYRot(1));
-            float f3 = Mth.clamp(f2, -20.0F, 20.0F);
+            float f3 = Mth.clamp(f2, -20F, 20F);
             entity.yRotO += f3 - f2;
             entity.setYRot(entity.getYRot() + f3 - f2);
         }

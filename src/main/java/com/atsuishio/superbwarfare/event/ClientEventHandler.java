@@ -1975,7 +1975,7 @@ public class ClientEventHandler {
         float fromX = lastX;
         float fromY = Mth.wrapDegrees(lastY);
         float toX = (float) Mth.wrapDegrees(-(Mth.atan2(d1, d3) * 57.2957763671875));
-        float toY = (float) Mth.wrapDegrees((Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F);
+        float toY = (float) Mth.wrapDegrees((Mth.atan2(d2, d0) * 57.2957763671875) - 90F);
 
         var diffY = Mth.wrapDegrees(toY - fromY);
         var finalY = Mth.wrapDegrees(fromY + diffY * 0.2F);

@@ -303,7 +303,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
         Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(this);
         double d0 = (pTarget.x - vec3.x) * 0.2;
         double d2 = (pTarget.z - vec3.z) * 0.2;
-        float diffY = Mth.wrapDegrees(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F) - this.getYRot());
+        float diffY = Mth.wrapDegrees(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F) - this.getYRot());
         this.setYRot(getYRot() + 0.5f * diffY);
     }
 

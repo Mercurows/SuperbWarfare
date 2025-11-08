@@ -38,7 +38,7 @@ public class BatteryItem extends Item {
                 .map(IEnergyStorage::getEnergyStored)
                 .orElse(0);
 
-        return Math.round((float) energy * 13.0F / maxEnergy);
+        return Math.round(energy * 13F / maxEnergy);
     }
 
     @Override

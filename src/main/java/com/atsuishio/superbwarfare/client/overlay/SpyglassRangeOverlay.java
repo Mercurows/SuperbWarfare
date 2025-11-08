@@ -75,7 +75,7 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                 float k = ((screenWidth - i) / 2);
                 float l = ((screenHeight - j) / 2);
                 float w = i * 21 / 9;
-                preciseBlit(guiGraphics, SPYGLASS, k - (2 * w / 7), l, 0, 0.0F, w, j, w, j);
+                preciseBlit(guiGraphics, SPYGLASS, k - (2 * w / 7), l, 0, 0, w, j, w, j);
 
                 double targetX = stack.getOrCreateTag().getDouble("TargetX");
                 double targetY = stack.getOrCreateTag().getDouble("TargetY");

@@ -158,7 +158,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
 
                 double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                        FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1.0F), false);
+                        FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1F), false);
 
                 if (vehicle.hasDecoy()) {
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), 30, 11, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
@@ -196,6 +196,6 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
         int ammoCount = vehicle.getAmmoCount(player);
         var component = Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
-        guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1.0F), false);
+        guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1F), false);
     }
 }

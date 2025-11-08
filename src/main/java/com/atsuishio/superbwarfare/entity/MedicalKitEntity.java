@@ -109,11 +109,11 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag pCompound) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag pCompound) {
+    protected void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
     }
 
     protected void updateRotation() {
@@ -126,12 +126,12 @@ public class MedicalKitEntity extends Entity implements GeoEntity {
     }
 
     protected static float lerpRotation(float pCurrentRotation, float pTargetRotation) {
-        while (pTargetRotation - pCurrentRotation < -180.0F) {
-            pCurrentRotation -= 360.0F;
+        while (pTargetRotation - pCurrentRotation < -180F) {
+            pCurrentRotation -= 360F;
         }
 
-        while (pTargetRotation - pCurrentRotation >= 180.0F) {
-            pCurrentRotation += 360.0F;
+        while (pTargetRotation - pCurrentRotation >= 180F) {
+            pCurrentRotation += 360F;
         }
 
         return Mth.lerp(0.2F, pCurrentRotation, pTargetRotation);

@@ -86,7 +86,7 @@ public class DroneHudOverlay implements IGuiOverlay {
                 guiGraphics.blit(DRONE_FOV, screenWidth / 2 + 100, screenHeight / 2 - 64, 0, 0, 64, 129, 64, 129);
                 int addW = (screenWidth / screenHeight) * 48;
                 int addH = (screenWidth / screenHeight) * 27;
-                preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0.0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
+                preciseBlit(guiGraphics, TV_FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
 
                 preciseBlit(guiGraphics, DRONE_FOV_MOVE, (float) screenWidth / 2 + 100, (float) (screenHeight / 2f - 64 - ((ClientEventHandler.droneFovLerp - 1) * 23.8)), 0, 0, 64, 129, 64, 129);
                 guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(ClientEventHandler.droneFovLerp, "x")),
