@@ -128,7 +128,7 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
                     entity.hurt(entity.damageSources().thrown(this, this.getOwner()), 1);
                 }
                 this.bounce(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.25, 1.0, 0.25));
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.25, 1, 0.25));
                 break;
             default:
                 break;

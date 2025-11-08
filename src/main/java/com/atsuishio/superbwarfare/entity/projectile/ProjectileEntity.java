@@ -199,7 +199,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
      */
     @Nullable
     private EntityResult getHitResult(Entity entity, Vec3 startVec, Vec3 endVec) {
-        double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
+        double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0;
 
         Vec3 hitPos = null;
         if (entity instanceof OBBEntity obbEntity) {
@@ -436,7 +436,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             v = Math.max(y, z);
         }
 
-        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0.0, 1.0)));
+        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0, 1)));
     }
 
     public void recordHitScore(@NotNull Direction direction, @NotNull Vec3 hitVec) {

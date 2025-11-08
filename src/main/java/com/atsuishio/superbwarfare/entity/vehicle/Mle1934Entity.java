@@ -325,7 +325,7 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
         if (this.onGround()) {
             this.setDeltaMovement(Vec3.ZERO);
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
+            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
         }
 
         if (getFirstPassenger() instanceof Mob mob) {

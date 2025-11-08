@@ -31,7 +31,7 @@ public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
                 var pCamera = minecraft.levelRenderer.getFrustum();
 
                 var aabb = vehicle.getBoundingBoxForCulling().inflate(0.5);
-                if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+                if (aabb.hasNaN() || aabb.getSize() == 0) {
                     aabb = new AABB(vehicle.getX() - 6.0, vehicle.getY() - 4.0, vehicle.getZ() - 6.0, vehicle.getX() + 6.0, vehicle.getY() + 4.0, vehicle.getZ() + 6.0);
                 }
 

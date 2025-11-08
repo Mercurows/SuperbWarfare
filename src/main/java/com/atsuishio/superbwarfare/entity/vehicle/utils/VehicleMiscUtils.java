@@ -40,6 +40,6 @@ public final class VehicleMiscUtils {
         float x = -Mth.sin(yaw * ((float) Math.PI / 180));
         float z = Mth.cos(yaw * ((float) Math.PI / 180));
         float n = Math.max(Math.abs(x), Math.abs(z));
-        return new Vec3((double) x * offset / (double) n, 0.0, (double) z * offset / (double) n);
+        return new Vec3((double) x * offset / (double) n, 0, (double) z * offset / (double) n);
     }
 }

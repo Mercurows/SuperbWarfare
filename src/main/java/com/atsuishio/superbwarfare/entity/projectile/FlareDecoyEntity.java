@@ -37,7 +37,7 @@ public class FlareDecoyEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.02, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.02, 0));
         this.move(MoverType.SELF, this.getDeltaMovement());
 
         if (level().isClientSide()) {
@@ -50,7 +50,7 @@ public class FlareDecoyEntity extends Entity {
     }
 
     public void decoyShoot(Entity entity, Vec3 shootVec, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = shootVec.normalize().add(this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
+        Vec3 vec3 = shootVec.normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
         this.setDeltaMovement(entity.getDeltaMovement().scale(0.75).add(vec3));
         double d0 = vec3.horizontalDistance();
         this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 57.2957763671875));

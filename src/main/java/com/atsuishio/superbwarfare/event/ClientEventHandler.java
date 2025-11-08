@@ -1902,9 +1902,9 @@ public class ClientEventHandler {
             customZoom = Mth.lerp(0.6 * times, customZoom, data.zoom() + (breath ? 0.75 : 0));
 
             if (mc.options.getCameraType().isFirstPerson()) {
-                event.setFOV(event.getFOV() / (1.0 + p * (customZoom - 1)));
+                event.setFOV(event.getFOV() / (1 + p * (customZoom - 1)));
             } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK)
-                event.setFOV(event.getFOV() / (1.0 + p * 0.01));
+                event.setFOV(event.getFOV() / (1 + p * 0.01));
             fov = event.getFOV();
 
             // 智慧芯片

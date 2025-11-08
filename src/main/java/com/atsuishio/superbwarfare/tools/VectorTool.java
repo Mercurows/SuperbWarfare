@@ -81,7 +81,7 @@ public class VectorTool {
 
         // 检查流体是否有效且位置低于流体表面
         if (!fluidState.isEmpty()) {
-            // 获取流体在方块中的高度（0.0 - 1.0）
+            // 获取流体在方块中的高度（0 - 1）
             float fluidHeight = fluidState.getHeight(level, blockPos);
             // 计算位置相对于当前方块底部的偏移量
             double yOffset = position.y - blockPos.getY();

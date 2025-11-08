@@ -1850,7 +1850,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.supportEntities();
         this.crushEntities();
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.06, 0));
 
         this.move(MoverType.SELF, this.getDeltaMovement());
 

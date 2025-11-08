@@ -202,7 +202,7 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
         if (this.onGround()) {
             this.setDeltaMovement(Vec3.ZERO);
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
+            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
         }
         this.autoAim();
     }

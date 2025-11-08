@@ -918,9 +918,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             Vec3 vec3 = new Vec3(x, y, z)
                     .normalize()
                     .add(
-                            entity.getRandom().triangle(0.0, 0.0172275 * spread),
-                            entity.getRandom().triangle(0.0, 0.0172275 * spread),
-                            entity.getRandom().triangle(0.0, 0.0172275 * spread)
+                            entity.getRandom().triangle(0, 0.0172275 * spread),
+                            entity.getRandom().triangle(0, 0.0172275 * spread),
+                            entity.getRandom().triangle(0, 0.0172275 * spread)
                     )
                     .scale(velocity);
 

@@ -124,7 +124,7 @@ public class RangeTool {
 
         // 检查解的有效性
         if (t > 0) {
-            double invT = 1.0 / t;
+            double invT = 1 / t;
             // 计算速度分量
             double vx = d0.x * invT + targetVel.x;
             double vz = d0.z * invT + targetVel.z;

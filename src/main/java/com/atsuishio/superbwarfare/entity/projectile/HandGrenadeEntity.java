@@ -102,7 +102,7 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
                     entity.hurt(entity.damageSources().thrown(this, this.getOwner()), this.damage);
                 }
                 this.bounce(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.25, 1.0, 0.25));
+                this.setDeltaMovement(this.getDeltaMovement().multiply(0.25, 1, 0.25));
                 break;
             default:
                 break;

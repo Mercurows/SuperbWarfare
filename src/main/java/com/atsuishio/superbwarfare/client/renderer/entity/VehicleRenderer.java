@@ -62,7 +62,7 @@ public abstract class VehicleRenderer<T extends VehicleEntity & GeoAnimatable> e
             return true;
         } else {
             AABB aabb = vehicle.getBoundingBoxForCulling().inflate(3);
-            if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+            if (aabb.hasNaN() || aabb.getSize() == 0) {
                 aabb = new AABB(vehicle.getX() - 5.0, vehicle.getY() - 4.0, vehicle.getZ() - 5.0, vehicle.getX() + 5.0, vehicle.getY() + 4.0, vehicle.getZ() + 5.0);
             }
 

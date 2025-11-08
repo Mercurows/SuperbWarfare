@@ -6,8 +6,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.Optional;
 
@@ -222,8 +222,8 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         Vector3f dir = new Vector3f(localTo).sub(localFrom);
 
         // Slab算法参数
-        double tEnter = 0.0;      // 进入时间
-        double tExit = 1.0;       // 离开时间
+        double tEnter = 0;      // 进入时间
+        double tExit = 1;       // 离开时间
 
         // 在三个轴上执行Slab算法
         for (int i = 0; i < 3; i++) {

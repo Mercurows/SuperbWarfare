@@ -272,15 +272,15 @@ public class TraceTool {
      * @return 如果相交，返回相交的最近距离值t；否则返回null
      */
     private static Double rayIntersectsAABB(Vec3 start, Vec3 dir, AABB box, double maxDist) {
-        double tMin = 0.0;
+        double tMin = 0;
         double tMax = maxDist;
 
         // 分别检查X轴
-        double invDx = 1.0 / dir.x;
+        double invDx = 1 / dir.x;
         double t0x = (box.minX - start.x) * invDx;
         double t1x = (box.maxX - start.x) * invDx;
 
-        if (invDx < 0.0) {
+        if (invDx < 0) {
             double temp = t0x;
             t0x = t1x;
             t1x = temp;
@@ -294,11 +294,11 @@ public class TraceTool {
         }
 
         // 检查Y轴
-        double invDy = 1.0 / dir.y;
+        double invDy = 1 / dir.y;
         double t0y = (box.minY - start.y) * invDy;
         double t1y = (box.maxY - start.y) * invDy;
 
-        if (invDy < 0.0) {
+        if (invDy < 0) {
             double temp = t0y;
             t0y = t1y;
             t1y = temp;
@@ -312,11 +312,11 @@ public class TraceTool {
         }
 
         // 检查Z轴
-        double invDz = 1.0 / dir.z;
+        double invDz = 1 / dir.z;
         double t0z = (box.minZ - start.z) * invDz;
         double t1z = (box.maxZ - start.z) * invDz;
 
-        if (invDz < 0.0) {
+        if (invDz < 0) {
             double temp = t0z;
             t0z = t1z;
             t1z = temp;

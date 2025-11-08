@@ -25,7 +25,7 @@ public final class VehicleEngineUtils {
     public static void trackEngine(VehicleEntity vehicle, double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, double trackSpeed, double trackDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
         if (buoyancy != 0) {
             double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
-            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, fluidFloat, 0));
         }
 
         if (vehicle.onGround()) {
@@ -131,7 +131,7 @@ public final class VehicleEngineUtils {
     public static void wheelEngine(VehicleEntity vehicle, double buoyancy, int energyCost, double wheelRotSpeed, double wheelDifferential, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed) {
         if (buoyancy != 0) {
             double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
-            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, fluidFloat, 0));
         }
 
         if (vehicle.onGround()) {
@@ -237,7 +237,7 @@ public final class VehicleEngineUtils {
     public static void shipEngine(VehicleEntity vehicle, double buoyancy, int energyCost, float maxForwardSpeedRate, float maxBackwardSpeedRate, float powerAdd, float powerReduce, float steeringSpeed, double bodyPitchRate, double bodyRollRate) {
         if (buoyancy != 0) {
             double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
-            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0.0, fluidFloat, 0.0));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, fluidFloat, 0));
         }
 
         if (vehicle.onGround()) {

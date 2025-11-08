@@ -125,8 +125,8 @@ public class DamageHandler {
                         }
 
                         if (!source.is(DamageTypeTags.NO_KNOCKBACK)) {
-                            double d0 = 0.0;
-                            double d1 = 0.0;
+                            double d0 = 0;
+                            double d1 = 0;
                             Entity var14 = source.getDirectEntity();
                             if (var14 instanceof Projectile projectile) {
                                 DoubleDoubleImmutablePair doubledoubleimmutablepair = projectile.calculateHorizontalHurtKnockbackDirection(living, source);
