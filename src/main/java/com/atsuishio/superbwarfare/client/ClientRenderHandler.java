@@ -54,7 +54,8 @@ public class ClientRenderHandler {
         event.registerBelow(Mod.loc(JavelinHudOverlay.ID), IglaHudOverlay.ID, new IglaHudOverlay());
         event.registerBelow(Mod.loc(IglaHudOverlay.ID), AACalculatorOverlay.ID, new AACalculatorOverlay());
         event.registerBelow(Mod.loc(AACalculatorOverlay.ID), VehicleHudOverlay.ID, new VehicleHudOverlay());
-        event.registerBelow(Mod.loc(VehicleHudOverlay.ID), VehicleCrosshairOverlay.ID, new VehicleCrosshairOverlay());
+        event.registerBelow(Mod.loc(VehicleHudOverlay.ID), VehicleWeaponHudOverlay.ID, new VehicleWeaponHudOverlay());
+        event.registerBelow(Mod.loc(VehicleWeaponHudOverlay.ID), VehicleCrosshairOverlay.ID, new VehicleCrosshairOverlay());
         event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
         event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());

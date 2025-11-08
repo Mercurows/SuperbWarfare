@@ -6,35 +6,23 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
-import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.MathTool;
-import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.Camera;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
@@ -46,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay.*;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleHudOverlay implements IGuiOverlay {
@@ -58,7 +45,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
     private static final ResourceLocation ENERGY = Mod.loc("textures/overlay/vehicle/base/energy.png");
     private static final ResourceLocation VALUE_BAR = Mod.loc("textures/overlay/vehicle/base/value_bar.png");
     private static final ResourceLocation VALUE_FRAME = Mod.loc("textures/overlay/vehicle/base/value_frame.png");
-    private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
+
     private static final ResourceLocation DRIVER = Mod.loc("textures/overlay/vehicle/base/driver.png");
     private static final ResourceLocation PASSENGER = Mod.loc("textures/overlay/vehicle/base/passenger.png");
 
@@ -79,18 +66,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
     private static final ResourceLocation GEAR = Mod.loc("textures/overlay/vehicle/aircraft/gear.png");
 
-    private static final ResourceLocation FRAME = Mod.loc("textures/overlay/vehicle/land/tv_frame.png");
-    private static final ResourceLocation LINE = Mod.loc("textures/overlay/vehicle/land/line.png");
-
-    private static final ResourceLocation ROLL_IND = Mod.loc("textures/overlay/vehicle/helicopter/roll_ind.png");
-
-    // 地面载具车身显示
-    private static final ResourceLocation BARREL = Mod.loc("textures/overlay/vehicle/land/line.png");
-    private static final ResourceLocation BODY = Mod.loc("textures/overlay/vehicle/land/body.png");
-    private static final ResourceLocation LEFT_WHEEL = Mod.loc("textures/overlay/vehicle/land/left_wheel.png");
-    private static final ResourceLocation RIGHT_WHEEL = Mod.loc("textures/overlay/vehicle/land/right_wheel.png");
-    private static final ResourceLocation ENGINE = Mod.loc("textures/overlay/vehicle/land/engine.png");
-
     private static final ResourceLocation HIT_MARKER = Mod.loc("textures/overlay/crosshair/hit_marker.png");
     private static final ResourceLocation HIT_MARKER_VEHICLE = Mod.loc("textures/overlay/crosshair/hit_marker_vehicle.png");
     private static final ResourceLocation HEADSHOT_MARKER = Mod.loc("textures/overlay/crosshair/headshot_marker.png");
@@ -105,7 +80,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
     private static boolean wasRenderingWeapons = false;
     private static int oldWeaponIndex = 0;
     private static int oldRenderWeaponIndex = 0;
-    public static float lerpRecoil;
 
     @Override
     public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
@@ -121,9 +95,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
-
-        // 渲染地面武装HUD
-        renderLandArmorHud(gui, guiGraphics, partialTick, screenWidth, screenHeight);
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
@@ -181,121 +152,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
         if (stack.getTag() == null || !stack.getTag().contains("ArmorPlate")) return 0;
         if (!DisplayConfig.ARMOR_PLATE_HUD.get()) return 0;
         return 9;
-    }
-
-    public static void renderLandArmorHud(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
-        Minecraft mc = gui.getMinecraft();
-        var player = mc.player;
-        PoseStack poseStack = guiGraphics.pose();
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
-        Vec3 viewVec = new Vec3(camera.getLookVector());
-
-        assert player != null;
-
-        if (player.getVehicle() instanceof VehicleEntity vehicle
-                && vehicle.isAmphibious()
-                && vehicle instanceof WeaponVehicleEntity weaponVehicle
-                && weaponVehicle.isDriver(player)
-                && !(player.getVehicle() instanceof SpeedboatEntity)
-                && !(player.getVehicle() instanceof CannonEntity)) {
-            int color = vehicle.getHudColor();
-
-            poseStack.pushPose();
-
-            float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
-            lerpRecoil = Mth.lerp(0.1f * partialTick, lerpRecoil, recoil * (float) (2 * (Math.random() - 0.5f)));
-            poseStack.translate(lerpRecoil * 6, recoil * -3, 0);
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 2.5f * lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
-
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.enableBlend();
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-
-            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
-                int addW = (screenWidth / screenHeight) * 48;
-                int addH = (screenWidth / screenHeight) * 27;
-                preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
-                RenderHelper.blit(poseStack, LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0F, 128, 1, 128, 1, color);
-
-                // 指南针
-                RenderHelper.blit(poseStack, COMPASS, (float) screenWidth / 2 - 128, 10F, 128 + (64F / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
-                RenderHelper.blit(poseStack, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0F, 16, 16, 16, 16, color);
-
-                int turretHeal = (int) (100 - (100 * vehicle.getEntityData().get(TURRET_HEALTH) / vehicle.getTurretMaxHealth()));
-                RenderHelper.blit(poseStack, BARREL, screenWidth / 2f + 112, screenHeight - 71, 0, 0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
-
-                // 车身方向
-                poseStack.pushPose();
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
-                int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
-                RenderHelper.blit(poseStack, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
-                int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
-                RenderHelper.blit(poseStack, LEFT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
-                int rightWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(R_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
-                RenderHelper.blit(poseStack, RIGHT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
-                int engineHeal = (int) (100 - (100 * vehicle.getEntityData().get(ENGINE_HEALTH) / vehicle.getEngineMaxHealth()));
-                RenderHelper.blit(poseStack, ENGINE, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
-                poseStack.popPose();
-
-                // 时速
-                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
-                        screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
-
-                // 低电量警告
-                if (vehicle.hasEnergyStorage()) {
-                    if (vehicle.getEnergy() < 0.02 * vehicle.getMaxEnergy()) {
-                        guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
-                                screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
-                    } else if (vehicle.getEnergy() < 0.2 * vehicle.getMaxEnergy()) {
-                        guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
-                                screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
-                    }
-                }
-
-                // 测距
-                boolean lookAtEntity = false;
-
-                BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-                Vec3 hitPos = result.getLocation();
-
-                double blockRange = player.getEyePosition(1).distanceTo(hitPos);
-                double entityRange = 0;
-
-                Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512);
-                if (lookingEntity != null) {
-                    lookAtEntity = true;
-                    entityRange = player.distanceTo(lookingEntity);
-                }
-
-                // 测距
-                if (lookAtEntity) {
-                    guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(entityRange, "m")),
-                            screenWidth / 2 - 6, screenHeight - 53, color, false);
-                } else {
-                    if (blockRange > 500) {
-                        guiGraphics.drawString(mc.font, Component.literal("---m"), screenWidth / 2 - 6, screenHeight - 53, color, false);
-                    } else {
-                        guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(blockRange, "m")),
-                                screenWidth / 2 - 6, screenHeight - 53, color, false);
-                    }
-                }
-
-                // 血量
-                int heal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 - heal)), screenWidth / 2 - 165, screenHeight / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
-
-                // 诱饵
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), screenWidth / 2 - 165, screenHeight / 2 - 36, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
-
-                renderKillIndicator(guiGraphics, screenWidth, screenHeight);
-            }
-            poseStack.popPose();
-        }
     }
 
     public static void renderKillIndicator(GuiGraphics guiGraphics, float w, float h) {
@@ -406,7 +262,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
         int index = vehicle.getSeatIndex(player);
         if (index == -1) return;
 
-
         var weapons = weaponVehicle.getAvailableWeapons(index);
         if (weapons.isEmpty()) return;
 
@@ -445,8 +300,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
         var pose = guiGraphics.pose();
 
         pose.pushPose();
-
-
 
         int frameIndex = 0;
 

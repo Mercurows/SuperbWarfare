@@ -191,5 +191,6 @@
       [0.15, 0.09, false]
     ]
   },
-  "EngineSound": "superbwarfare:lav_150_engine"
+  "EngineSound": "superbwarfare:lav_150_engine",
+  "WeaponHudType": "@Land"
 }

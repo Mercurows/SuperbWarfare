@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.client.overlay.weapon.LandWeaponHud;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -87,8 +88,8 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
         poseStack.pushPose();
 
         float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
-        poseStack.translate(VehicleHudOverlay.lerpRecoil * 6, recoil * -3, 0);
-        poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * VehicleHudOverlay.lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
+        poseStack.translate(LandWeaponHud.lerpRecoil * 6, recoil * -3, 0);
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * LandWeaponHud.lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);

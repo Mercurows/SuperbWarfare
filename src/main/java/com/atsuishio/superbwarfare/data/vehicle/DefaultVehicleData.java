@@ -158,20 +158,15 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @ServerOnly
     @SerializedName("TurretPos")
     public Vec3 turretPos = null;
-
     @ServerOnly
     @SerializedName("TurretTurnSpeed")
     public Vec2 turretTurnSpeed = new Vec2(5, 5);
-
     @ServerOnly
     @SerializedName("TurretYawClamp")
     public Vec2 turretYawClamp = new Vec2(-514, 514);
-
     @ServerOnly
     @SerializedName("TurretPitchClamp")
     public Vec2 turretPitchClamp = new Vec2(-10, 30);
-
-    @ServerOnly
     @SerializedName("TurretControllerIndex")
     public int turretControllerIndex = 0;
 
@@ -182,29 +177,27 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @ServerOnly
     @SerializedName("PassengerWeaponStationPos")
     public Vec3 passengerWeaponStationPos = null;
-
     @ServerOnly
     @SerializedName("PassengerWeaponStationBarrelPos")
     public Vec3 passengerWeaponStationBarrelPos = Vec3.ZERO;
-
     @ServerOnly
     @SerializedName("PassengerWeaponStationTurnSpeed")
     public Vec2 passengerWeaponStationTurnSpeed = new Vec2(5, 5);
-
     @ServerOnly
     @SerializedName("PassengerWeaponStationYawClamp")
     public Vec2 passengerWeaponStationYawClamp = new Vec2(-514, 514);
-
     @ServerOnly
     @SerializedName("PassengerWeaponStationPitchClamp")
     public Vec2 passengerWeaponStationPitchClamp = new Vec2(-10, 30);
-
     @ServerOnly
     @SerializedName("PassengerWeaponStationControllerIndex")
     public int passengerWeaponStationControllerIndex = 1;
 
     @SerializedName("Gravity")
     public double gravity = 0.06;
+
+    @SerializedName("WeaponHudType")
+    public String weaponHudType = "@Empty";
 
     @Override
     public void limit() {
