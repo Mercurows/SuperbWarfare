@@ -1853,7 +1853,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.supportEntities();
         this.crushEntities();
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.06, 0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -this.computed().gravity, 0));
 
         this.move(MoverType.SELF, this.getDeltaMovement());
 
@@ -3098,9 +3098,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (this.onGround()) {
             this.setDeltaMovement(Vec3.ZERO);
         } else {
-            // TODO 重力配置？
-            var motion = this.getDeltaMovement().add(0.0, -0.06, 0.0);
-            this.setDeltaMovement(new Vec3(0, motion.y, 0));
+            this.setDeltaMovement(new Vec3(0, this.getDeltaMovement().y, 0));
         }
     }
 
