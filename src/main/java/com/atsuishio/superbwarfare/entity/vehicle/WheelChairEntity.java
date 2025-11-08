@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -60,22 +59,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(0.5 * ClientMouseHandler.custom3pDistanceLerp, 0, 0);
     }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-    }
-
-    @Override
-    public boolean shouldSendHitParticles() {
-        return false;
-    }
-
 
     @Override
     public void baseTick() {

@@ -3,5 +3,6 @@
   "MaxHealth": 5,
   "Mass": 0.0005,
   "VehicleContainerType": "Empty",
+  "SendHitParticles": false,
   "Type": "Drone"
 }

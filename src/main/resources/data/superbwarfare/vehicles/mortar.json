@@ -3,5 +3,6 @@
   "MaxHealth": 40,
   "Mass": 0.05,
   "VehicleContainerType": "One",
+  "SendHitParticles": false,
   "Type": "Artillery"
 }

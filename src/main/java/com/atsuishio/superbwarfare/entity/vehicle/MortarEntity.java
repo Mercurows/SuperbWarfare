@@ -80,11 +80,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity, RemoteCont
     }
 
     @Override
-    public boolean shouldSendHitParticles() {
-        return false;
-    }
-
-    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(FIRE_TIME, 0)

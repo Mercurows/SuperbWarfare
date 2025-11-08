@@ -99,11 +99,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean shouldSendHitParticles() {
-        return false;
-    }
-
-    @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         if (player.getMainHandItem().is(Items.MELON) && !entityData.get(MELON)) {
             entityData.set(MELON, true);

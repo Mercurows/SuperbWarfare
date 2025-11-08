@@ -133,11 +133,6 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean shouldSendHitParticles() {
-        return false;
-    }
-
-    @Override
     public boolean shouldSendHitSounds() {
         return false;
     }
