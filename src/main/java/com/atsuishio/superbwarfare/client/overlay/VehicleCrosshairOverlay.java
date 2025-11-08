@@ -2,14 +2,11 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
-import com.atsuishio.superbwarfare.client.overlay.weapon.LandWeaponHud;
-import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -19,14 +16,12 @@ import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -94,8 +89,8 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
         poseStack.pushPose();
 
         float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
-        poseStack.translate(LandWeaponHud.lerpRecoil * 6, recoil * -3, 0);
-        poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * LandWeaponHud.lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
+        poseStack.translate(LandVehicleHud.lerpRecoil * 6, recoil * -3, 0);
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * LandVehicleHud.lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
@@ -138,7 +133,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
             poseStack.pushPose();
 
-            renderWeaponInfoFirst(guiGraphics, vehicle, player, data, mc.font, screenWidth, screenHeight, color);
+            VehicleWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, data, mc.font, screenWidth, screenHeight, color);
 
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
@@ -161,7 +156,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                 // 载具自定义第三人称渲染
                 vehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, screenWidth, screenHeight, scale);
 
-                renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
+                VehicleWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
 
                 double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
@@ -180,29 +175,5 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
     private static void resetScale() {
         scopeScale = 0.7f;
-    }
-
-    // TODO 正确显示文本和备弹数量，正确判断是否应该显示武器名称
-    private static void renderWeaponInfoFirst(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font, int screenWidth, int screenHeight, int color) {
-        if (!(vehicle instanceof WeaponVehicleEntity)) return;
-        if (!vehicle.isAmphibious()) return;
-
-        int heat = vehicle.getWeaponHeat(player);
-        int ammoCount = vehicle.getAmmoCount(player);
-        var component = Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
-
-        guiGraphics.drawString(font, component, (screenWidth - font.width(component)) / 2, screenHeight - 65,
-                MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-    }
-
-    private static void renderWeaponInfoThird(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font) {
-        if (!(vehicle instanceof WeaponVehicleEntity)) return;
-
-        float heat = vehicle.getWeaponHeat(player) / 100F;
-
-        int ammoCount = vehicle.getAmmoCount(player);
-        var component = Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
-
-        guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1F), false);
     }
 }

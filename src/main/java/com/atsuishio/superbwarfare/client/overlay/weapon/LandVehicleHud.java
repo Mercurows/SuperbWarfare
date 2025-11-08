@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
+import com.atsuishio.superbwarfare.client.overlay.VehicleWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -25,12 +26,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Math;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
-public class LandWeaponHud {
+@OnlyIn(Dist.CLIENT)
+public class LandVehicleHud {
 
     public static final String ID = "@Land";
 
@@ -48,10 +52,10 @@ public class LandWeaponHud {
 
     public static float lerpRecoil;
 
-    public static void renderLandArmorHud(VehicleEntity vehicle, LocalPlayer player, GuiGraphics gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+    public static void render(VehicleEntity vehicle, LocalPlayer player, GuiGraphics gui, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getInstance();
 
-        PoseStack poseStack = guiGraphics.pose();
+        PoseStack poseStack = gui.pose();
 
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
@@ -76,7 +80,7 @@ public class LandWeaponHud {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
             int addW = (screenWidth / screenHeight) * 48;
             int addH = (screenWidth / screenHeight) * 27;
-            preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
+            preciseBlit(gui, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
             RenderHelper.preciseBlitWithColor(gui, LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0F, 128, 1, 128, 1, color);
 
             // 指南针
@@ -100,19 +104,11 @@ public class LandWeaponHud {
             poseStack.popPose();
 
             // 时速
-            guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
+            gui.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
                     screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
 
             // 低电量警告
-            if (vehicle.hasEnergyStorage()) {
-                if (vehicle.getEnergy() < 0.02 * vehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("NO POWER!"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, -65536, false);
-                } else if (vehicle.getEnergy() < 0.2 * vehicle.getMaxEnergy()) {
-                    guiGraphics.drawString(mc.font, Component.literal("LOW POWER"),
-                            screenWidth / 2 - 144, screenHeight / 2 + 14, 0xFF6B00, false);
-                }
-            }
+            VehicleWeaponHudOverlay.renderEnergyInfo(vehicle, gui, screenWidth, screenHeight, mc.font);
 
             // 测距
             boolean lookAtEntity = false;
@@ -132,25 +128,25 @@ public class LandWeaponHud {
 
             // 测距
             if (lookAtEntity) {
-                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(entityRange, "m")),
+                gui.drawString(mc.font, Component.literal(FormatTool.format1D(entityRange, "m")),
                         screenWidth / 2 - 6, screenHeight - 53, color, false);
             } else {
                 if (blockRange > 500) {
-                    guiGraphics.drawString(mc.font, Component.literal("---m"), screenWidth / 2 - 6, screenHeight - 53, color, false);
+                    gui.drawString(mc.font, Component.literal("---m"), screenWidth / 2 - 6, screenHeight - 53, color, false);
                 } else {
-                    guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(blockRange, "m")),
+                    gui.drawString(mc.font, Component.literal(FormatTool.format1D(blockRange, "m")),
                             screenWidth / 2 - 6, screenHeight - 53, color, false);
                 }
             }
 
             // 血量
             int heal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
-            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 - heal)), screenWidth / 2 - 165, screenHeight / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
+            gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 - heal)), screenWidth / 2 - 165, screenHeight / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
 
             // 诱饵
-            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), screenWidth / 2 - 165, screenHeight / 2 - 36, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
+            gui.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), screenWidth / 2 - 165, screenHeight / 2 - 36, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
 
-            VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
+            VehicleHudOverlay.renderKillIndicator(gui, screenWidth, screenHeight);
         }
         poseStack.popPose();
     }
