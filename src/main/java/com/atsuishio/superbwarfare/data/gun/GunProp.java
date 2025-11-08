@@ -1,15 +1,14 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.data.ModColor;
-import com.atsuishio.superbwarfare.data.Prop;
 import net.minecraft.util.Mth;
 
 import java.util.List;
 import java.util.Set;
 
-@Deprecated
-@SuppressWarnings("unused")
-public final class GunProp<T> extends Prop<GunData, DefaultGunData, T> {
+@Deprecated(forRemoval = true)
+@SuppressWarnings({"unused", "removal"})
+public final class GunProp<T> extends com.atsuishio.superbwarfare.data.Prop<GunData, DefaultGunData, T> {
 
     public static final GunProp<Integer> MAX_DURABILITY = new GunProp<Integer>("MaxDurability")
             .withLimiter(v -> Math.max(0, v));

@@ -13,7 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@Deprecated
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
     public static final List<Prop<?, ?, ?>> props = new ArrayList<>();
 
@@ -88,14 +89,14 @@ public abstract class Prop<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAU
         }
     }
 
-    public DeprecatedPropModifier<DATA, DEFAULT_DATA, FIELD> asModifier(DATA data) {
-        return new DeprecatedPropModifier<>(this, data);
+    public PropModifier<DATA, DEFAULT_DATA, FIELD> asModifier(DATA data) {
+        return new PropModifier<>(this, data);
     }
 
 
     @FunctionalInterface
     public interface PropModifyContext<DATA extends DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD> {
-        FIELD apply(@NotNull DeprecatedPropModifier<DATA, DEFAULT_DATA, FIELD> modifier, @NotNull DATA data, @Nullable FIELD value);
+        FIELD apply(@NotNull PropModifier<DATA, DEFAULT_DATA, FIELD> modifier, @NotNull DATA data, @Nullable FIELD value);
     }
 
 }

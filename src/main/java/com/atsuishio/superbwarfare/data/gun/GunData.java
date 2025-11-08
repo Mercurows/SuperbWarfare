@@ -268,46 +268,13 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         this.cache = null;
     }
 
-    @Deprecated
+    /**
+     * use compute() instead
+     */
+    @SuppressWarnings("removal")
+    @Deprecated(forRemoval = true)
     public <T> T get(GunProp<T> prop) {
-        var computed = compute();
-        var modifier = prop.asModifier(this);
-
-//        if (operatingProps.contains(prop)) {
-//            Mod.LOGGER.warn("recursive computation for property {}", prop.name);
-//            return modifier.compute(computed);
-//        }
-//        operatingProps.add(prop);
-
-        // property override tag
-//        stringPropModifier.modifyPropertyByString(propertyOverrideString.get(), prop);
-//        modifier.apply(stringPropModifier);
-
-        // gun modifiers
-//        modifier.apply(this.item);
-
-        // FireMode
-//        modifier.apply(selectedFireModeInfo(modifier.compute().availableFireModes()));
-
-        // AmmoConsumer
-//        modifier.apply(selectedAmmoConsumer(modifier.compute().getAmmoConsumers()));
-
-        // perk
-//        if (perk != null) {
-//            for (var type : Perk.Type.values()) {
-//                var instance = perk.get(type);
-//                if (instance == null) continue;
-//
-//                modifier.apply(instance);
-//            }
-//        }
-
-        // 临时属性修改
-        // md什么傻逼类型😅
-//        modifier.applyMap((Map<Prop<GunData, DefaultGunData, ?>, Prop.PropModifyContext<GunData, DefaultGunData, ?>>) (Object) tempModifications);
-
-//        operatingProps.remove(prop);
-        return modifier.compute(computed);
+        return prop.asModifier(this).compute(compute());
     }
 
     public boolean hasInfiniteBackupAmmo(@Nullable Entity shooter) {
