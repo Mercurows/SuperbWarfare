@@ -19,7 +19,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +28,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -117,22 +115,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         }
 
         return list;
-    }
-
-    @Override
-    public @NotNull Vec3 getDeltaMovement() {
-        return new Vec3(0, Math.min(super.getDeltaMovement().y, 0), 0);
-    }
-
-    @Override
-    public void baseTick() {
-        super.baseTick();
-        this.move(MoverType.SELF, this.getDeltaMovement());
-        if (this.onGround()) {
-            this.setDeltaMovement(Vec3.ZERO);
-        } else {
-            this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.06, 0.0));
-        }
     }
 
     @Override
