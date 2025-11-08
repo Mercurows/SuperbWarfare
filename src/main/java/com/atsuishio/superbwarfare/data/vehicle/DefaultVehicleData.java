@@ -187,11 +187,11 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("PassengerWeaponStationTurnSpeed")
     public Vec2 passengerWeaponStationTurnSpeed = new Vec2(5, 5);
     @ServerOnly
-    @SerializedName("PassengerWeaponStationYawClamp")
-    public Vec2 passengerWeaponStationYawClamp = new Vec2(-514, 514);
+    @SerializedName("PassengerWeaponStationYawRange")
+    public Vec2 passengerWeaponStationYawRange = new Vec2(-514, 514);
     @ServerOnly
-    @SerializedName("PassengerWeaponStationPitchClamp")
-    public Vec2 passengerWeaponStationPitchClamp = new Vec2(-10, 30);
+    @SerializedName("PassengerWeaponStationPitchRange")
+    public Vec2 passengerWeaponStationPitchRange = new Vec2(-10, 30);
     @ServerOnly
     @SerializedName("PassengerWeaponStationControllerIndex")
     public int passengerWeaponStationControllerIndex = 1;

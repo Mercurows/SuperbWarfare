@@ -230,7 +230,7 @@
   "PassengerWeaponStationPos": [-0.75805625, 1.1446375, -0.57275625],
   "PassengerWeaponStationBarrelPos": [0, 0.35984375, 0.0551625],
   "PassengerWeaponStationTurnSpeed": [15, 15],
-  "PassengerWeaponStationPitchClamp": [-10, 60],
+  "PassengerWeaponStationPitchRange": [-10, 60],
   "HasDecoy": true,
   "UpStep": 2.25,
   "RotateOffsetHeight": 3.5,
