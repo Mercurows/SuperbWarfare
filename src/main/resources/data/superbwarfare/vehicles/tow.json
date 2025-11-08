@@ -24,7 +24,7 @@
     "Missile": {
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
-      "Name": "superbwarfare.bmp_2.missile",
+      "Name": "",
       "AmmoType": "superbwarfare:wire_guide_missile",
       "Projectile": "superbwarfare:wg_missile",
       "Magazine": 1,
