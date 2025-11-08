@@ -2576,28 +2576,28 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 乘客武器站最小仰角
      */
     public float passengerWeaponMinPitch() {
-        return computed().passengerWeaponStationPitchClamp.x;
+        return computed().passengerWeaponStationPitchRange.x;
     }
 
     /**
      * @return 乘客武器站最大仰角
      */
     public float passengerWeaponMaxPitch() {
-        return computed().passengerWeaponStationPitchClamp.y;
+        return computed().passengerWeaponStationPitchRange.y;
     }
 
     /**
      * @return 炮塔最小偏航
      */
     public float passengerWeaponMinYaw() {
-        return computed().passengerWeaponStationYawClamp.x;
+        return computed().passengerWeaponStationYawRange.x;
     }
 
     /**
      * @return 炮塔最大偏航
      */
     public float passengerWeaponMaxYaw() {
-        return computed().passengerWeaponStationYawClamp.y;
+        return computed().passengerWeaponStationYawRange.y;
     }
 
     public Matrix4f getTurretTransform(float partialTicks) {
