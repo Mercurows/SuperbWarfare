@@ -129,7 +129,7 @@ public final class VehicleEngineUtils {
             i = 0;
         }
 
-        if (vehicle.getEntityData().get(ENGINE1_DAMAGED)) {
+        if (vehicle.getEntityData().get(MAIN_ENGINE_DAMAGED)) {
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.96f);
         }
 
@@ -229,7 +229,7 @@ public final class VehicleEngineUtils {
             i = 0;
         }
 
-        if (vehicle.getEntityData().get(ENGINE1_DAMAGED)) {
+        if (vehicle.getEntityData().get(MAIN_ENGINE_DAMAGED)) {
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.875f);
         }
 
@@ -321,7 +321,7 @@ public final class VehicleEngineUtils {
                 vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.98f);
             }
 
-            if (vehicle.getEntityData().get(ENGINE1_DAMAGED)) {
+            if (vehicle.getEntityData().get(MAIN_ENGINE_DAMAGED)) {
                 vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.875f);
             }
 
@@ -420,7 +420,7 @@ public final class VehicleEngineUtils {
                     vehicle.setZRot(vehicle.getRoll() - rollSpeed * (vehicle.getEntityData().get(DELTA_ROT) + (vehicle.onGround() ? 0 : 0.25f) * vehicle.getMouseMoveSpeedX() * vehicle.getEntityData().get(PROPELLER_ROT)));
                 }
 
-                vehicle.setYRot(vehicle.getYRot() + yawSpeed * Mth.clamp((vehicle.onGround() ? 0.1f : 2f) * vehicle.getMouseMoveSpeedX() * vehicle.getEntityData().get(PROPELLER_ROT) + (vehicle.getEntityData().get(ENGINE2_DAMAGED) ? 25 : 0) * vehicle.getEntityData().get(PROPELLER_ROT), -10f, 10f));
+                vehicle.setYRot(vehicle.getYRot() + yawSpeed * Mth.clamp((vehicle.onGround() ? 0.1f : 2f) * vehicle.getMouseMoveSpeedX() * vehicle.getEntityData().get(PROPELLER_ROT) + (vehicle.getEntityData().get(SUB_ENGINE_DAMAGED) ? 25 : 0) * vehicle.getEntityData().get(PROPELLER_ROT), -10f, 10f));
                 if (landingPos != null && !vehicle.onGround() && vehicle.landingInputDown()) {
                     updateAutoLanding(vehicle, landingPos);
                 }
@@ -486,7 +486,7 @@ public final class VehicleEngineUtils {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, -vehicle.destroyRot * 0.004, 0));
         }
 
-        if (vehicle.getEntityData().get(ENGINE1_DAMAGED)) {
+        if (vehicle.getEntityData().get(MAIN_ENGINE_DAMAGED)) {
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.98f);
         }
 

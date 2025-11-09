@@ -99,7 +99,7 @@ public class LandVehicleHud {
             RenderHelper.preciseBlitWithColor(gui, LEFT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
             int rightWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(R_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
             RenderHelper.preciseBlitWithColor(gui, RIGHT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
-            int engineHeal = (int) (100 - (100 * vehicle.getEntityData().get(ENGINE_HEALTH) / vehicle.getEngineMaxHealth()));
+            int engineHeal = (int) (100 - (100 * vehicle.getEntityData().get(MAIN_ENGINE_HEALTH) / vehicle.getEngineMaxHealth()));
             RenderHelper.preciseBlitWithColor(gui, ENGINE, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
             poseStack.popPose();
 

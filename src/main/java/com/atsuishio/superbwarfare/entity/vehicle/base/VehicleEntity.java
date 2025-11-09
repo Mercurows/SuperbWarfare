@@ -126,14 +126,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> TURRET_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> L_WHEEL_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> R_WHEEL_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> ENGINE_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> L_ENGINE_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> MAIN_ENGINE_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> SUB_ENGINE_HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Boolean> TURRET_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> L_WHEEL_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> R_WHEEL_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> ENGINE1_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> ENGINE2_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> MAIN_ENGINE_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> SUB_ENGINE_DAMAGED = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
     public static final EntityDataAccessor<Float> HORN_VOLUME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
@@ -1026,14 +1026,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(TURRET_HEALTH, getTurretMaxHealth())
                 .define(L_WHEEL_HEALTH, getWheelMaxHealth())
                 .define(R_WHEEL_HEALTH, getWheelMaxHealth())
-                .define(ENGINE_HEALTH, getEngineMaxHealth())
-                .define(L_ENGINE_HEALTH, getEngineMaxHealth())
+                .define(MAIN_ENGINE_HEALTH, getEngineMaxHealth())
+                .define(SUB_ENGINE_HEALTH, getEngineMaxHealth())
 
                 .define(TURRET_DAMAGED, false)
                 .define(L_WHEEL_DAMAGED, false)
                 .define(R_WHEEL_DAMAGED, false)
-                .define(ENGINE1_DAMAGED, false)
-                .define(ENGINE2_DAMAGED, false)
+                .define(MAIN_ENGINE_DAMAGED, false)
+                .define(SUB_ENGINE_DAMAGED, false)
 
                 .define(CANNON_RECOIL_TIME, 0)
                 .define(CANNON_RECOIL_FORCE, 0f)
@@ -1295,14 +1295,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.set(TURRET_HEALTH, compound.getFloat("TurretHealth"));
         this.entityData.set(L_WHEEL_HEALTH, compound.getFloat("LeftWheelHealth"));
         this.entityData.set(R_WHEEL_HEALTH, compound.getFloat("RightWheelHealth"));
-        this.entityData.set(ENGINE_HEALTH, compound.getFloat("EngineHealth"));
-        this.entityData.set(L_ENGINE_HEALTH, compound.getFloat("LeftEngineHealth"));
+        this.entityData.set(MAIN_ENGINE_HEALTH, compound.getFloat("MainEngineHealth"));
+        this.entityData.set(SUB_ENGINE_HEALTH, compound.getFloat("SubEngineHealth"));
 
         this.entityData.set(TURRET_DAMAGED, compound.getBoolean("TurretDamaged"));
-        this.entityData.set(L_WHEEL_DAMAGED, compound.getBoolean("LeftDamaged"));
-        this.entityData.set(R_WHEEL_DAMAGED, compound.getBoolean("RightDamaged"));
-        this.entityData.set(ENGINE1_DAMAGED, compound.getBoolean("Engine1Damaged"));
-        this.entityData.set(ENGINE2_DAMAGED, compound.getBoolean("Engine2Damaged"));
+        this.entityData.set(L_WHEEL_DAMAGED, compound.getBoolean("LeftWheelDamaged"));
+        this.entityData.set(R_WHEEL_DAMAGED, compound.getBoolean("RightWheelDamaged"));
+        this.entityData.set(MAIN_ENGINE_DAMAGED, compound.getBoolean("MainEngineDamaged"));
+        this.entityData.set(SUB_ENGINE_DAMAGED, compound.getBoolean("SubEngineDamaged"));
 
         this.entityData.set(POWER, compound.getFloat("Power"));
         this.entityData.set(DECOY_READY, compound.getBoolean("DecoyReady"));
@@ -1366,14 +1366,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putFloat("TurretHealth", this.entityData.get(TURRET_HEALTH));
         compound.putFloat("LeftWheelHealth", this.entityData.get(L_WHEEL_HEALTH));
         compound.putFloat("RightWheelHealth", this.entityData.get(R_WHEEL_HEALTH));
-        compound.putFloat("EngineHealth", this.entityData.get(ENGINE_HEALTH));
-        compound.putFloat("LeftEngineHealth", this.entityData.get(L_ENGINE_HEALTH));
+        compound.putFloat("MainEngineHealth", this.entityData.get(MAIN_ENGINE_HEALTH));
+        compound.putFloat("SubEngineHealth", this.entityData.get(SUB_ENGINE_HEALTH));
 
         compound.putBoolean("TurretDamaged", this.entityData.get(TURRET_DAMAGED));
         compound.putBoolean("LeftWheelDamaged", this.entityData.get(L_WHEEL_DAMAGED));
         compound.putBoolean("RightWheelDamaged", this.entityData.get(R_WHEEL_DAMAGED));
-        compound.putBoolean("Engine1Damaged", this.entityData.get(ENGINE1_DAMAGED));
-        compound.putBoolean("Engine2Damaged", this.entityData.get(ENGINE2_DAMAGED));
+        compound.putBoolean("MainEngineDamaged", this.entityData.get(MAIN_ENGINE_DAMAGED));
+        compound.putBoolean("SubEngineDamaged", this.entityData.get(SUB_ENGINE_DAMAGED));
 
         compound.putFloat("Power", this.entityData.get(POWER));
         compound.putBoolean("DecoyReady", this.entityData.get(DECOY_READY));
@@ -1509,8 +1509,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     case TURRET -> entityData.set(TURRET_HEALTH, entityData.get(TURRET_HEALTH) - computedAmount);
                     case WHEEL_LEFT -> entityData.set(L_WHEEL_HEALTH, entityData.get(L_WHEEL_HEALTH) - computedAmount);
                     case WHEEL_RIGHT -> entityData.set(R_WHEEL_HEALTH, entityData.get(R_WHEEL_HEALTH) - computedAmount);
-                    case ENGINE1 -> entityData.set(ENGINE_HEALTH, entityData.get(ENGINE_HEALTH) - computedAmount);
-                    case ENGINE2 -> entityData.set(L_ENGINE_HEALTH, entityData.get(L_ENGINE_HEALTH) - computedAmount);
+                    case MAIN_ENGINE ->
+                            entityData.set(MAIN_ENGINE_HEALTH, entityData.get(MAIN_ENGINE_HEALTH) - computedAmount);
+                    case SUB_ENGINE ->
+                            entityData.set(SUB_ENGINE_HEALTH, entityData.get(SUB_ENGINE_HEALTH) - computedAmount);
                 }
             }
         }
@@ -1930,13 +1932,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                         this.onRightWheelDamaged(pos);
                     }
                 }
-                case ENGINE1 -> {
-                    if (entityData.get(ENGINE1_DAMAGED)) {
+                case MAIN_ENGINE -> {
+                    if (entityData.get(MAIN_ENGINE_DAMAGED)) {
                         this.onEngine1Damaged(pos);
                     }
                 }
-                case ENGINE2 -> {
-                    if (entityData.get(ENGINE2_DAMAGED)) {
+                case SUB_ENGINE -> {
+                    if (entityData.get(SUB_ENGINE_DAMAGED)) {
                         this.onEngine2Damaged(pos);
                     }
                 }
@@ -1963,23 +1965,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             entityData.set(R_WHEEL_DAMAGED, false);
         }
 
-        if (entityData.get(ENGINE_HEALTH) < 0) {
-            entityData.set(ENGINE1_DAMAGED, true);
-        } else if (entityData.get(ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
-            entityData.set(ENGINE1_DAMAGED, false);
+        if (entityData.get(MAIN_ENGINE_HEALTH) < 0) {
+            entityData.set(MAIN_ENGINE_DAMAGED, true);
+        } else if (entityData.get(MAIN_ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
+            entityData.set(MAIN_ENGINE_DAMAGED, false);
         }
 
-        if (entityData.get(L_ENGINE_HEALTH) < 0) {
-            entityData.set(ENGINE2_DAMAGED, true);
-        } else if (entityData.get(L_ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
-            entityData.set(ENGINE2_DAMAGED, false);
+        if (entityData.get(SUB_ENGINE_HEALTH) < 0) {
+            entityData.set(SUB_ENGINE_DAMAGED, true);
+        } else if (entityData.get(SUB_ENGINE_HEALTH) > 0.95 * getEngineMaxHealth()) {
+            entityData.set(SUB_ENGINE_DAMAGED, false);
         }
 
         entityData.set(TURRET_HEALTH, Math.min(entityData.get(TURRET_HEALTH) + 0.0025f * getTurretMaxHealth(), getTurretMaxHealth()));
         entityData.set(L_WHEEL_HEALTH, Math.min(entityData.get(L_WHEEL_HEALTH) + 0.0025f * getWheelMaxHealth(), getWheelMaxHealth()));
         entityData.set(R_WHEEL_HEALTH, Math.min(entityData.get(R_WHEEL_HEALTH) + 0.0025f * getWheelMaxHealth(), getWheelMaxHealth()));
-        entityData.set(ENGINE_HEALTH, Math.min(entityData.get(ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
-        entityData.set(L_ENGINE_HEALTH, Math.min(entityData.get(L_ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
+        entityData.set(MAIN_ENGINE_HEALTH, Math.min(entityData.get(MAIN_ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
+        entityData.set(SUB_ENGINE_HEALTH, Math.min(entityData.get(SUB_ENGINE_HEALTH) + 0.0025f * getEngineMaxHealth(), getEngineMaxHealth()));
     }
 
     public void addRandomParticle(ParticleOptions particleOptions, Vec3 pos, float randomPos, Level level, float speed, int count) {

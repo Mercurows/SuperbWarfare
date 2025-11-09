@@ -427,8 +427,8 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         WHEEL_LEFT,
         WHEEL_RIGHT,
         TURRET,
-        ENGINE1,
-        ENGINE2,
+        MAIN_ENGINE,
+        SUB_ENGINE,
         BODY,
         INTERACTIVE
     }
