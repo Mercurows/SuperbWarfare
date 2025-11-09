@@ -80,7 +80,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         }
 
         lowHealthWarning();
-        inertiaRotate(1.2f);
     }
 
     @Override

@@ -200,6 +200,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public double gravity = 0.06;
     @SerializedName("TerrainCompat")
     public Vec2 terrainCompat = Vec2.ZERO;
+    // 受惯性影响的旋转幅度
+    @SerializedName("InertiaRotateRate")
+    public float inertiaRotateRate = 0f;
 
     @Override
     public void limit() {

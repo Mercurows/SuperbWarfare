@@ -151,7 +151,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             this.entityData.set(LASER_LENGTH, 0f);
         }
 
-        inertiaRotate(1);
         lowHealthWarning();
     }
 

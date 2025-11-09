@@ -66,7 +66,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         super.baseTick();
         updateOBB();
         lowHealthWarning();
-        inertiaRotate(1.25f);
     }
 
     @Override

@@ -287,5 +287,6 @@
   },
   "EngineSound": "superbwarfare:yx_100_engine",
   "MainWeaponHudType": "@Land",
-  "TerrainCompat": [4.375, 6.3125]
+  "TerrainCompat": [4.375, 6.3125],
+  "InertiaRotateRate": 1.2
 }
