@@ -28,5 +28,6 @@
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/otto.png",
   "Type": "Car",
   "EngineSound": "superbwarfare:wheel_chair_engine",
-  "TerrainCompat": [0.9, 1.2]
+  "TerrainCompat": [0.9, 1.2],
+  "InertiaRotateRate": 10
 }

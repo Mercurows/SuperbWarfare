@@ -89,5 +89,6 @@
   },
   "EngineSound": "superbwarfare:truck_engine",
   "HornSound": "superbwarfare:truck_horn",
-  "TerrainCompat": [2.7, 7.5]
+  "TerrainCompat": [2.7, 7.5],
+  "InertiaRotateRate": 0.5
 }

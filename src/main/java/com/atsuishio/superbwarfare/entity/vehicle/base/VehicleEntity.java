@@ -1898,6 +1898,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (terrainCompat.x > 0 && terrainCompat.y > 0) {
             this.terrainCompact(terrainCompat.x, terrainCompat.y);
         }
+        this.inertiaRotate(this.computed().inertiaRotateRate);
 
         this.refreshDimensions();
     }

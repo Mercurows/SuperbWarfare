@@ -94,5 +94,6 @@
   },
   "EngineSound": "superbwarfare:prism_tank_engine",
   "MainWeaponHudType": "@Land",
-  "TerrainCompat": [4.6375, 5.171875]
+  "TerrainCompat": [4.6375, 5.171875],
+  "InertiaRotateRate": 1
 }

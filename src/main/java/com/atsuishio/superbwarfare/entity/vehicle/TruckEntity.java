@@ -122,7 +122,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         updateOBB();
 
         lowHealthWarning();
-        inertiaRotate(0.5f);
 
         if (decoyInputDown()) {
             horn();

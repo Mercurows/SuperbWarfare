@@ -83,7 +83,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             setRightTrack(0);
         }
 
-        inertiaRotate(1);
         lowHealthWarning();
 
         var seats = computed().seats();

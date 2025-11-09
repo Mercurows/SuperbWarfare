@@ -474,5 +474,6 @@
   },
   "EngineSound": "superbwarfare:bmp_2_engine",
   "MainWeaponHudType": "@Land",
-  "TerrainCompat": [4, 5]
+  "TerrainCompat": [4, 5],
+  "InertiaRotateRate": 1
 }
