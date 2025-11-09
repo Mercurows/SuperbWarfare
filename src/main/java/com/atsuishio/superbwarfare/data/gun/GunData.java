@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.subdata.*;
 import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -14,6 +15,7 @@ import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -863,14 +865,16 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         update();
     }
 
-    public static StreamCodec<RegistryFriendlyByteBuf, GunData> STREAM_CODEC = new StreamCodec<>() {
+    public static StreamCodec<RegistryFriendlyByteBuf, GunData> VEHICLE_GUN_STREAM_CODEC = new StreamCodec<>() {
 
         public @NotNull GunData decode(@NotNull RegistryFriendlyByteBuf buf) {
-            return GunData.from(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
+            return GunData.from(new ItemStack(ModItems.VEHICLE_GUN, 1, DataComponentPatch.STREAM_CODEC.decode(buf)));
         }
 
         public void encode(@NotNull RegistryFriendlyByteBuf buf, GunData data) {
-            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, data.stack);
+            var newData = data.copy();
+            newData.save();
+            DataComponentPatch.STREAM_CODEC.encode(buf, newData.stack.getComponentsPatch());
         }
     };
 

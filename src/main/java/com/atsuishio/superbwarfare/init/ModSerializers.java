@@ -26,16 +26,16 @@ public class ModSerializers {
             () -> EntityDataSerializer.forValueType(ByteBufCodecs.FLOAT.apply(ByteBufCodecs.list()))
     );
 
-    public static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<Map<String, GunData>>> GUN_DATA_MAP_SERIALIZER = REGISTRY.register("gun_data_map_serializer",
+    public static final DeferredHolder<EntityDataSerializer<?>, EntityDataSerializer<Map<String, GunData>>> VEHICLE_GUN_DATA_MAP_SERIALIZER = REGISTRY.register("vehicle_gun_data_map_serializer",
             () -> new EntityDataSerializer<>() {
                 @Override
                 public @NotNull StreamCodec<? super RegistryFriendlyByteBuf, Map<String, GunData>> codec() {
-                    return ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, GunData.STREAM_CODEC);
+                    return ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, GunData.VEHICLE_GUN_STREAM_CODEC);
                 }
 
                 public @NotNull Map<String, GunData> copy(@NotNull Map<String, GunData> map) {
                     var newMap = new HashMap<String, GunData>();
-                    map.forEach((key, value) -> newMap.put(key, GunData.from(value.stack.copy())));
+                    map.forEach((key, value) -> newMap.put(key, value.copy()));
                     return newMap;
                 }
             });
