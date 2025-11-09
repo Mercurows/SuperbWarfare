@@ -1,6 +1,6 @@
 {
   "ID": "superbwarfare:devotion",
-  "DefaultZoom": 2,
+  "ZoomFactor": 2,
   "Spread": 5,
   "RecoilX": 0.0018,
   "RecoilY": 0.01,

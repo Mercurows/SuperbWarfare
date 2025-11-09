@@ -49,6 +49,7 @@
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+      "ZoomFactor": 2,
       "RPM": 500,
       "Velocity": 30,
       "Damage": 45,
@@ -77,6 +78,7 @@
     "Rocket": {
       "AmmoType": "superbwarfare:small_rocket",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
+      "ZoomFactor": 2,
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Magazine": 14,

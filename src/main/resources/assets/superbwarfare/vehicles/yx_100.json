@@ -4,6 +4,5 @@
     "Animation": "superbwarfare:animations/yx_100.animation.json",
     "Model": "superbwarfare:geo/yx_100.geo.json",
     "Texture": "superbwarfare:textures/entity/yx_100.png"
-  },
-  "ZoomRate": 3
+  }
 }
