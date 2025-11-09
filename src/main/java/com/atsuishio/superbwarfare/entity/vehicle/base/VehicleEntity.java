@@ -1512,8 +1512,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     case TURRET -> entityData.set(TURRET_HEALTH, entityData.get(TURRET_HEALTH) - computedAmount);
                     case WHEEL_LEFT -> entityData.set(L_WHEEL_HEALTH, entityData.get(L_WHEEL_HEALTH) - computedAmount);
                     case WHEEL_RIGHT -> entityData.set(R_WHEEL_HEALTH, entityData.get(R_WHEEL_HEALTH) - computedAmount);
-                    case MAIN_ENGINE -> entityData.set(MAIN_ENGINE_HEALTH, entityData.get(MAIN_ENGINE_HEALTH) - computedAmount);
-                    case SUB_ENGINE -> entityData.set(SUB_ENGINE_HEALTH, entityData.get(SUB_ENGINE_HEALTH) - computedAmount);
+                    case MAIN_ENGINE ->
+                            entityData.set(MAIN_ENGINE_HEALTH, entityData.get(MAIN_ENGINE_HEALTH) - computedAmount);
+                    case SUB_ENGINE ->
+                            entityData.set(SUB_ENGINE_HEALTH, entityData.get(SUB_ENGINE_HEALTH) - computedAmount);
                 }
             }
         }
@@ -1890,6 +1892,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             } else {
                 releaseSmokeDecoy(getTurretVector(1));
             }
+        }
+
+        var terrainCompat = this.computed().terrainCompat;
+        if (terrainCompat.x > 0 && terrainCompat.y > 0) {
+            this.terrainCompact(terrainCompat.x, terrainCompat.y);
         }
 
         this.refreshDimensions();

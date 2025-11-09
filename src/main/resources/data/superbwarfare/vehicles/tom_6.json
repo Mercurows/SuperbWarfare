@@ -30,5 +30,6 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/tom_6_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Airplane",
-  "EngineSound": "superbwarfare:tom_6_engine"
+  "EngineSound": "superbwarfare:tom_6_engine",
+  "TerrainCompat": [1, 1.2]
 }

@@ -149,12 +149,8 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
             this.entityData.set(LASER_LENGTH, 0f);
         }
 
-        this.terrainCompact(4.6375f, 5.171875f);
         inertiaRotate(1);
-
-
         lowHealthWarning();
-        this.refreshDimensions();
     }
 
     // 炮弹发射位置

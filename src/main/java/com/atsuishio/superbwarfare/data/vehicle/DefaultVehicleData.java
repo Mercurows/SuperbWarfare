@@ -198,6 +198,8 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
 
     @SerializedName("Gravity")
     public double gravity = 0.06;
+    @SerializedName("TerrainCompat")
+    public Vec2 terrainCompat = Vec2.ZERO;
 
     @Override
     public void limit() {

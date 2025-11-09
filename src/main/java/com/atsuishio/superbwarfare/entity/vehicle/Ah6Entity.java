@@ -76,9 +76,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         super.baseTick();
         updateOBB();
         lowHealthWarning();
-        this.terrainCompact(2.7f, 2.7f);
-
-        this.refreshDimensions();
     }
 
     @Override

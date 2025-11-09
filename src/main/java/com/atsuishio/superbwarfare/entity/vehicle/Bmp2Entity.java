@@ -83,8 +83,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             setRightTrack(0);
         }
 
-
-        this.terrainCompact(4f, 5f);
         inertiaRotate(1);
         lowHealthWarning();
 
@@ -97,8 +95,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                 }
             }
         }
-
-        this.refreshDimensions();
     }
 
     @Override

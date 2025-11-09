@@ -88,5 +88,6 @@
     ]
   },
   "EngineSound": "superbwarfare:truck_engine",
-  "HornSound": "superbwarfare:truck_horn"
+  "HornSound": "superbwarfare:truck_horn",
+  "TerrainCompat": [2.7, 7.5]
 }
