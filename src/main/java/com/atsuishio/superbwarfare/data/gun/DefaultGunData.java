@@ -53,12 +53,12 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("RecoilForce")
     public float recoilForce = 0f;
 
-    @SerializedName("DefaultZoom")
-    public double defaultZoom = 1.25;
+    @SerializedName("ZoomFactor")
+    public double zoomFactor = 1.25;
     @SerializedName("MinZoom")
-    public double minZoom = defaultZoom;
+    public double minZoom = zoomFactor;
     @SerializedName("MaxZoom")
-    public double maxZoom = defaultZoom;
+    public double maxZoom = zoomFactor;
 
     @SerializedName("Spread")
     public double spread;

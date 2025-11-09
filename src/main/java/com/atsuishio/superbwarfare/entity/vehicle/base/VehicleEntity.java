@@ -31,7 +31,6 @@ import com.atsuishio.superbwarfare.menu.VehicleMenu;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
-import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
@@ -3095,8 +3094,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      *
      * @return 放大倍率
      */
-    public int getZoomRate() {
-        return VehicleResource.compute(this).zoomRate;
+    public double getZoomFactor(Entity entity) {
+        var gunData = getGunData(getSeatIndex(entity));
+        if (gunData != null) {
+            return gunData.compute().zoomFactor;
+        } else {
+            return 1;
+        }
     }
 
     public boolean canCrushEntities() {

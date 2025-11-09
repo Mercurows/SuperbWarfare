@@ -23,14 +23,4 @@ public interface ArmedVehicleEntity {
     }
 
     boolean canShoot(LivingEntity living);
-
-    /**
-     * 瞄准时的放大倍率
-     *
-     * @return 放大倍率
-     */
-    @Deprecated
-    default int zoomFov() {
-        return 1;
-    }
 }

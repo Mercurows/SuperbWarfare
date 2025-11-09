@@ -13,7 +13,7 @@
   // REALISTIC recoil, will knockback shooters when shooting
   "Recoil": 0,
   // Default zoom when aiming
-  "DefaultZoom": 1.25,
+  "ZoomFactor": 1.25,
   // Minimum zoom
   "MinZoom": 1.25,
   // Maximum zoom

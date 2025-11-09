@@ -1,6 +1,6 @@
 {
   "ID": "superbwarfare:javelin",
-  "DefaultZoom": 3,
+  "ZoomFactor": 3,
   "Spread": 5,
   "Magazine": 1,
   "Weight": 10,

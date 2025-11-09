@@ -1867,7 +1867,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
 
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && player.getVehicle() instanceof WeaponVehicleEntity && zoomVehicle) {
-            event.setFOV(event.getFOV() / vehicle.getZoomRate());
+            event.setFOV(event.getFOV() / vehicle.getZoomFactor(player));
             fov = event.getFOV();
             return;
         }

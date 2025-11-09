@@ -6,6 +6,5 @@
     "LODModel": "superbwarfare:geo/vehicle_lod/annihilator_lod1.geo.json",
     "Texture": "superbwarfare:textures/entity/annihilator.png"
   },
-  "LODDistance": 64,
-  "ZoomRate": 5
+  "LODDistance": 64
 }
