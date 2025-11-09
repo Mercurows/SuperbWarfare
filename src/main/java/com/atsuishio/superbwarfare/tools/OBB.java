@@ -6,8 +6,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import java.util.Optional;
 
@@ -427,8 +427,8 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         WHEEL_LEFT,
         WHEEL_RIGHT,
         TURRET,
-        ENGINE1,
-        ENGINE2,
+        MAIN_ENGINE,
+        SUB_ENGINE,
         BODY,
         INTERACTIVE
     }

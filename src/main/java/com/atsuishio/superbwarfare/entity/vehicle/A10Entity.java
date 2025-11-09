@@ -111,8 +111,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(0.0625f, 1.09375f, 0.84375f), new Quaternionf(), OBB.Part.BODY);
         this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.625f, 0.78125f, 1.09375f), new Quaternionf(), OBB.Part.BODY);
         this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.6875f, 0.75f, 2.9375f), new Quaternionf(), OBB.Part.BODY);
-        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE1);
-        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.ENGINE2);
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.MAIN_ENGINE);
+        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.SUB_ENGINE);
         this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
         this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
     }
@@ -561,11 +561,11 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.85f);
         this.entityData.set(PLANE_BREAK, this.entityData.get(PLANE_BREAK) * 0.8f);
 
-        if (entityData.get(ENGINE1_DAMAGED)) {
+        if (entityData.get(MAIN_ENGINE_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
         }
 
-        if (entityData.get(ENGINE2_DAMAGED)) {
+        if (entityData.get(SUB_ENGINE_DAMAGED)) {
             this.entityData.set(POWER, this.entityData.get(POWER) * 0.96f);
         }
 
