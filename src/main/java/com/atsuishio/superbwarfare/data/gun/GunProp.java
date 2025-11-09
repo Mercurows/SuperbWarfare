@@ -82,7 +82,7 @@ public final class GunProp<T> extends com.atsuishio.superbwarfare.data.Prop<GunD
     public static final GunProp<Boolean> ZOOM_RELOAD = new GunProp<>("ZoomReload");
     public static final GunProp<Boolean> CLEAR_HOLD_PROGRESS_AFTER_SHOOT = new GunProp<>("ClearHoldProgressAfterShoot");
 
-    public static final GunProp<Double> ZOOM_FACTOR = new GunProp<>("ZoomFactor");
+    public static final GunProp<Double> DEFAULT_ZOOM = new GunProp<>("ZoomFactor");
 
     public static final GunProp<Integer> BURST_AMOUNT = new GunProp<Integer>("BurstAmount")
             .withLimiter(v -> Math.max(0, v));
