@@ -116,14 +116,11 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         updateOBB();
 
         lowHealthWarning();
-        this.terrainCompact(2.7f, 7.5f);
         inertiaRotate(0.5f);
 
         if (decoyInputDown()) {
             horn();
         }
-
-        this.refreshDimensions();
     }
 
     @Override

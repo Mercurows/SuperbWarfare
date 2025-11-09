@@ -1890,6 +1890,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
 
+        var terrainCompat = this.computed().terrainCompat;
+        if (terrainCompat.x > 0 && terrainCompat.y > 0) {
+            this.terrainCompact(terrainCompat.x, terrainCompat.y);
+        }
+
         this.refreshDimensions();
     }
 

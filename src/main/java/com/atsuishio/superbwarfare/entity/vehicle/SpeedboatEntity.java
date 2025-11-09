@@ -46,8 +46,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         this.updateOBB();
         this.lowHealthWarning();
         this.inertiaRotate(2);
-        this.terrainCompact(2f, 3f);
-        this.refreshDimensions();
     }
 
     @Override

@@ -131,9 +131,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
                 this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
             }
         }
-
-        this.terrainCompact(1f, 1.2f);
-        this.refreshDimensions();
     }
 
     @Override

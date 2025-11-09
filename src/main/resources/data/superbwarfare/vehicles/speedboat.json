@@ -157,5 +157,6 @@
       [1, 0.15, false]
     ]
   },
-  "EngineSound": "superbwarfare:speedboat_engine"
+  "EngineSound": "superbwarfare:speedboat_engine",
+  "TerrainCompat": [2, 3]
 }

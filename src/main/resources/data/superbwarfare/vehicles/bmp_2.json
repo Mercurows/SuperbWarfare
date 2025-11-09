@@ -473,5 +473,6 @@
     ]
   },
   "EngineSound": "superbwarfare:bmp_2_engine",
-  "MainWeaponHudType": "@Land"
+  "MainWeaponHudType": "@Land",
+  "TerrainCompat": [4, 5]
 }

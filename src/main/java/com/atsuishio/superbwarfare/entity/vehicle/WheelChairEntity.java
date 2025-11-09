@@ -79,10 +79,7 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         }
         this.setSprinting(this.getDeltaMovement().horizontalDistance() > 0.15);
         attractEntity();
-        this.terrainCompact(0.9f, 1.2f);
         inertiaRotate(10f);
-
-        this.refreshDimensions();
     }
 
     public boolean hasEnoughSpaceFor(Entity pEntity) {
