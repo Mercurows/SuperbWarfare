@@ -2,6 +2,9 @@ package com.atsuishio.superbwarfare.data;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.CollisionLevel;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,7 +28,14 @@ import java.util.stream.Collectors;
 public class DataLoader {
 
     public static final Gson GSON = createCommonBuilder().create();
-    public static final WeakHashMap<Object, JsonObject> JSON_OBJECT_CACHE = new WeakHashMap<>();
+
+    public static final LoadingCache<Object, JsonObject> JSON_OBJECT_CACHE = CacheBuilder.newBuilder()
+            .weakKeys()
+            .build(new CacheLoader<>() {
+                public @NotNull JsonObject load(@NotNull Object object) {
+                    return DataLoader.GSON.toJsonTree(object).getAsJsonObject();
+                }
+            });
 
     private static final Map<ResourceLocation, GeneralData<?>> LOADED_DATA = new HashMap<>();
     private static final Map<ResourceLocation, GeneralData<?>> LOADED_RESOURCE = new HashMap<>();

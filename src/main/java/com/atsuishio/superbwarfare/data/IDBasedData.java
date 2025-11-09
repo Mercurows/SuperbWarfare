@@ -8,14 +8,7 @@ public interface IDBasedData<T extends IDBasedData<T>> extends Serializable {
     String getId();
 
     default JsonObject toJson() {
-        var cacheObj = DataLoader.JSON_OBJECT_CACHE.get(this);
-        if (cacheObj != null) {
-            return cacheObj;
-        }
-
-        var obj = DataLoader.GSON.toJsonTree(this).getAsJsonObject();
-        DataLoader.JSON_OBJECT_CACHE.put(this, obj);
-        return obj;
+        return DataLoader.JSON_OBJECT_CACHE.getUnchecked(this);
     }
 
     @SuppressWarnings("unchecked")
