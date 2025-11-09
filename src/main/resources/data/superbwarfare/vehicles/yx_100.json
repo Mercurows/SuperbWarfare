@@ -284,6 +284,6 @@
       [1, 0.3, false]
     ]
   },
-  "EngineSound": "superbwarfare:vehicle/yx_100/yx_100_engine",
+  "EngineSound": "superbwarfare:yx_100_engine",
   "MainWeaponHudType": "@Land"
 }
