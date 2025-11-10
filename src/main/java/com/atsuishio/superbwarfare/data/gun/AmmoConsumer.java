@@ -110,7 +110,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
         if (type == AmmoConsumeType.ENERGY) {
             int finalCount = count;
-            return data.stack.getCapability(ForgeCapabilities.ENERGY)
+            return data.getEnergyProvider(shooter)
                     .map(cap -> cap.extractEnergy(finalCount, false))
                     .orElse(0);
         }
@@ -160,6 +160,10 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         int playerAmmoCount = 0;
         if (type == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
             playerAmmoCount = playerAmmoType.get(player);
+        } else if (type == AmmoConsumeType.ENERGY) {
+            return data.getEnergyProvider(entity)
+                    .map(IEnergyStorage::getEnergyStored)
+                    .orElse(0);
         }
 
         return playerAmmoCount + count(data, entity.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null));

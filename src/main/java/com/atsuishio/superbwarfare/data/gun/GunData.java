@@ -22,6 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
@@ -760,6 +762,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         }
 
         return list.get(this.fireIndex.get() % size);
+    }
+
+    public LazyOptional<IEnergyStorage> getEnergyProvider(@Nullable Entity ammoSupplier) {
+        return this.item.getEnergyProvider(this, ammoSupplier);
     }
 
     // 可持久化属性开始

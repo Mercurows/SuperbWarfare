@@ -1122,4 +1122,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     public DefaultGunData getDefaultData(GunData data) {
         return GunData.getDefault(data.id);
     }
+
+    public LazyOptional<IEnergyStorage> getEnergyProvider(@NotNull GunData data, @Nullable Entity ammoSupplier) {
+        return data.stack.getCapability(ForgeCapabilities.ENERGY);
+    }
 }

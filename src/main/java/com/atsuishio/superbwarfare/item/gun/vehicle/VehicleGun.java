@@ -8,6 +8,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,8 +38,16 @@ public class VehicleGun extends GunItem {
                 && !data.reloading()
                 && !data.charging()
                 && !data.bolt.needed.get()
-                // TODO 能否优化这个判断
                 && (data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get()) >= data.compute().ammoCostPerShoot;
+    }
+
+    @Override
+    public LazyOptional<IEnergyStorage> getEnergyProvider(@NotNull GunData data, @Nullable Entity ammoSupplier) {
+        if (ammoSupplier != null) {
+            return ammoSupplier.getCapability(ForgeCapabilities.ENERGY, null);
+        }
+
+        return super.getEnergyProvider(data, null);
     }
 
     @Override
