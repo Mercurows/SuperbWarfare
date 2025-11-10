@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -36,18 +37,18 @@ public class ModSerializers {
             }));
 
 
-    public static final RegistryObject<EntityDataSerializer<Map<String, GunData>>> GUN_DATA_MAP_SERIALIZER = REGISTRY.register("gun_data_map_serializer",
+    public static final RegistryObject<EntityDataSerializer<Map<String, GunData>>> VEHICLE_GUN_DATA_MAP_SERIALIZER = REGISTRY.register("vehicle_gun_data_map_serializer",
             () -> EntityDataSerializer.simple((buf, map) -> {
                 buf.writeVarInt(map.size());
                 for (var kv : map.entrySet()) {
                     buf.writeUtf(kv.getKey());
-                    buf.writeItem(kv.getValue().stack);
+                    buf.writeNbt(kv.getValue().stack.getShareTag());
                 }
             }, buf -> {
                 var length = buf.readVarInt();
                 var map = new HashMap<String, GunData>();
                 for (int i = 0; i < length; i++) {
-                    map.put(buf.readUtf(), GunData.from(buf.readItem()));
+                    map.put(buf.readUtf(), GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get(), 1, buf.readNbt())));
                 }
 
                 return map;

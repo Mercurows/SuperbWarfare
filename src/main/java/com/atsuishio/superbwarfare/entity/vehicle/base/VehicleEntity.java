@@ -184,7 +184,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     // Map SeatIndex -> GunData
-    protected static final EntityDataAccessor<Map<String, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.GUN_DATA_MAP_SERIALIZER.get());
+    protected static final EntityDataAccessor<Map<String, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.VEHICLE_GUN_DATA_MAP_SERIALIZER.get());
 
     public Map<String, GunData> getGunDataMap() {
         var rawMap = entityData.get(GUN_DATA_MAP);
