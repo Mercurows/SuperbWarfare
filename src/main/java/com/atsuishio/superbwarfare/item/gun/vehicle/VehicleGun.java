@@ -7,6 +7,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -34,8 +37,16 @@ public class VehicleGun extends GunItem {
                 && !data.reloading()
                 && !data.charging()
                 && !data.bolt.needed.get()
-                // TODO 能否优化这个判断
                 && (data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get()) >= data.compute().ammoCostPerShoot;
+    }
+
+    @Override
+    public IEnergyStorage getEnergyProvider(@NotNull GunData data, @Nullable Entity ammoSupplier) {
+        if (ammoSupplier != null) {
+            return ammoSupplier.getCapability(Capabilities.EnergyStorage.ENTITY, null);
+        }
+
+        return super.getEnergyProvider(data, null);
     }
 
     @Override

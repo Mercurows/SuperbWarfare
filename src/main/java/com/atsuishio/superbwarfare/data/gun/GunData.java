@@ -28,6 +28,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
@@ -763,6 +764,10 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         }
 
         return list.get(this.fireIndex.get() % size);
+    }
+
+    public IEnergyStorage getEnergyProvider(@Nullable Entity ammoSupplier) {
+        return this.item.getEnergyProvider(this, ammoSupplier);
     }
 
     // 可持久化属性开始

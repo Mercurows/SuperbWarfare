@@ -61,6 +61,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1116,5 +1117,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     public DefaultGunData getDefaultData(GunData data) {
         return GunData.getDefault(data.id);
+    }
+
+    public IEnergyStorage getEnergyProvider(@NotNull GunData data, @Nullable Entity ammoSupplier) {
+        return data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
     }
 }

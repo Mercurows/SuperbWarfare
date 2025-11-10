@@ -109,7 +109,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         }
 
         if (type == AmmoConsumeType.ENERGY) {
-            var energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
+            var energyStorage = data.getEnergyProvider(shooter);
             if (energyStorage == null) {
                 return 0;
             }
@@ -163,6 +163,12 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         int playerAmmoCount = 0;
         if (type == AmmoConsumeType.PLAYER_AMMO && entity instanceof Player player) {
             playerAmmoCount = playerAmmoType.get(player);
+        } else if (type == AmmoConsumeType.ENERGY) {
+            var energyStorage = data.getEnergyProvider(entity);
+            if (energyStorage == null) {
+                return 0;
+            }
+            return energyStorage.getEnergyStored();
         }
 
         return playerAmmoCount + count(data, entity.getCapability(Capabilities.ItemHandler.ENTITY));
