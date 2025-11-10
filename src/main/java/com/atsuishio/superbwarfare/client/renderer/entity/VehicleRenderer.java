@@ -15,7 +15,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -31,16 +30,13 @@ public abstract class VehicleRenderer<T extends VehicleEntity & GeoAnimatable> e
     }
 
     @Override
-    public void preRender(PoseStack poseStack, T vehicle, BakedGeoModel model, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
-        super.preRender(poseStack, vehicle, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
-    }
-
-    @Override
-    public void render(@NotNull T entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+    public void defaultRender(PoseStack poseStack, T animatable, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTick, int packedLight) {
         poseStack.pushPose();
-        vehicleAxis(entityIn, poseStack, entityYaw, partialTicks);
-        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-        renderCustomPart(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+
+        vehicleAxis(animatable, poseStack, yaw, partialTick);
+        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
+        renderCustomPart(animatable, yaw, partialTick, poseStack, bufferSource, packedLight);
+
         poseStack.popPose();
     }
 

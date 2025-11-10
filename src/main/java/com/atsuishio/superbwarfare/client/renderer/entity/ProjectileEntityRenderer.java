@@ -12,10 +12,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity> {
     public ProjectileEntityRenderer(EntityRendererProvider.Context renderManager) {
@@ -38,13 +37,14 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
     }
 
     @Override
-    @ParametersAreNonnullByDefault
-    public void render(ProjectileEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void defaultRender(PoseStack poseStack, ProjectileEntity entityIn, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTick, int packedLight) {
         if (entityIn.tickCount > 1 && !entityIn.isInWater() && entityIn.getDeltaMovement().lengthSqr() > 25) {
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
-            super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entityIn.yRotO, entityIn.getYRot()) - 90));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTick, entityIn.xRotO, entityIn.getXRot())));
+
+            super.defaultRender(poseStack, entityIn, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
             poseStack.popPose();
         }
     }

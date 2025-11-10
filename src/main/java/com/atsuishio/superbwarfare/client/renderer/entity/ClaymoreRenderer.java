@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -34,10 +36,12 @@ public class ClaymoreRenderer extends GeoEntityRenderer<ClaymoreEntity> {
     }
 
     @Override
-    public void render(ClaymoreEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void defaultRender(PoseStack poseStack, ClaymoreEntity animatable, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTick, int packedLight) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
-        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot())));
+        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
+
         poseStack.popPose();
     }
 
@@ -47,7 +51,7 @@ public class ClaymoreRenderer extends GeoEntityRenderer<ClaymoreEntity> {
     }
 
     @Override
-    public boolean shouldShowName(ClaymoreEntity animatable) {
+    public boolean shouldShowName(@NotNull ClaymoreEntity animatable) {
         return false;
     }
 }

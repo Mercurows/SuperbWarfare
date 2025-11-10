@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -19,7 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
@@ -38,12 +39,12 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
     }
 
     @Override
-    public void render(DroneEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+    public void defaultRender(PoseStack poseStack, DroneEntity animatable, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTick, int packedLight) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entityIn.getYaw(partialTicks)));
-        poseStack.mulPose(Axis.XP.rotationDegrees(entityIn.getBodyPitch(partialTicks)));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(entityIn.getRoll(partialTicks)));
-        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-animatable.getYaw(partialTick)));
+        poseStack.mulPose(Axis.XP.rotationDegrees(animatable.getBodyPitch(partialTick)));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(animatable.getRoll(partialTick)));
+        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
 
         Player player = Minecraft.getInstance().player;
         if (player != null) {
@@ -53,8 +54,8 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
             boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
 
-            if (!(stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked") && drone != null && drone.getUUID() == entityIn.getUUID()) || !firstPerson) {
-                renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+            if (!(stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked") && drone != null && drone.getUUID() == animatable.getUUID()) || !firstPerson) {
+                renderAttachments(animatable, yaw, partialTick, poseStack, bufferSource, packedLight);
             }
         }
 
