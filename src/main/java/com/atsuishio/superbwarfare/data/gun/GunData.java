@@ -290,19 +290,20 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return compute().magazine <= 0;
     }
 
+    // TODO 这什么b scope判断
     public double minZoom() {
         int scopeType = this.attachment.get(AttachmentType.SCOPE);
         return scopeType == 3 ? Math.max(getDefault().minZoom, 1.25) : 1.25;
     }
 
+    // TODO 这什么b scope判断
     public double maxZoom() {
         int scopeType = this.attachment.get(AttachmentType.SCOPE);
         return scopeType == 3 ? getDefault().maxZoom : 114514;
     }
 
     public double zoom() {
-        if (minZoom() >= maxZoom()) return compute().zoomFactor;
-        return Mth.clamp(compute().zoomFactor, minZoom(), maxZoom());
+        return compute().zoomFactor;
     }
 
     public AmmoConsumer selectedAmmoConsumer(List<AmmoConsumer> consumers) {

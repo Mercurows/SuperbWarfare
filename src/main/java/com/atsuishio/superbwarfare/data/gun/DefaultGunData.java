@@ -352,6 +352,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
             seekType = SeekType.NONE;
         }
 
+        minZoom = Mth.clamp(minZoom, 1, 114);
+        maxZoom = Mth.clamp(maxZoom, minZoom, 114);
+        zoomFactor = Mth.clamp(zoomFactor, minZoom, maxZoom);
+
         autoIterativeReloadTime = Math.max(0, autoIterativeReloadTime);
         burstAmount = Math.max(0, burstAmount);
         rpm = Mth.clamp(rpm, 1, 114514);
