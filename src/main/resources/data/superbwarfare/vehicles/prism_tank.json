@@ -11,9 +11,17 @@
         -0.6,
         0
       ],
+      "CameraPos": {
+        "Transform": "Barrel",
+        "UseFixedCameraPos": true,
+        "Position": [0.5, 1.2, -0.1],
+        "ZoomPosition": [0, 0.95, 0],
+        "Direction": "Barrel"
+      },
       "CanRotateHead": false,
       "MinPitch": -15,
-      "MaxPitch": 32.5
+      "MaxPitch": 32.5,
+      "Weapons": ["Laser1"]
     },
     {
       "Transform": "Vehicle",
@@ -28,6 +36,76 @@
       "MaxYaw": 105
     }
   ],
+  "Weapons": {
+    "Laser1": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/laser.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "ray",
+      "Range": 512,
+      "ZoomFactor": 3,
+      "RPM": 30,
+      "Velocity": 6000000000,
+      "Damage": 350,
+      "ExplosionDamage": 72,
+      "ExplosionRadius": 12,
+      "Spread": 0,
+      "HeatPerShoot": 60,
+      "NaturalCooldown": 1,
+      "ShootAnimationTime": 3,
+      "AmmoType": "FE",
+      "AmmoCostPerShoot": 100000,
+      "Crosshair": "@VehicleCommonMissile",
+      "CrosshairColor": "0x00FFF6",
+      "Name": "superbwarfare.prism_tank_mode_1.cannon",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:prism_tank_fire_high_1p",
+        "Fire3P": "superbwarfare:prism_tank_fire_high_3p",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
+        "Change": "superbwarfare:into_missile"
+      },
+      "SoundRadius": 12,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.5, 0]],
+        "Directions": ["Barrel"]
+      }
+    },
+    "MachineGun": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Spread": 0.5,
+      "CrosshairColor": "0x00FFF6",
+      "Projectile": "superbwarfare:projectile",
+      "RPM": 600,
+      "Damage": 9.5,
+      "BypassesArmor": 0.3,
+      "Velocity": 30,
+      "RecoilTime": 22,
+      "RecoilForce": 0.1,
+      "HeatPerShoot": 4,
+      "NaturalCooldown": 1,
+      "ShootAnimationTime": 2,
+      "AmmoType": "@RifleAmmo",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0.3, 0.0517, 0.5]],
+        "Directions": ["Barrel"]
+      },
+      "Crosshair": "@VehicleCommonGun",
+      "Name": "superbwarfare.lav_150.gun",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:coax_fire_1p",
+        "Fire3P": "superbwarfare:m_60_fire_3p",
+        "Fire3PFar": "superbwarfare:m_60_far",
+        "Fire3PVeryFar": "superbwarfare:m_60_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 12
+    }
+  },
   "HUDColor": "0x00FFF6",
   "EngineType": "Track",
   "EngineInfo": {
