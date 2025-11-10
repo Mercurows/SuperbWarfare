@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator;
 import com.atsuishio.superbwarfare.client.model.curio.ParachuteModel;
@@ -10,6 +11,9 @@ import com.atsuishio.superbwarfare.client.tooltip.*;
 import com.atsuishio.superbwarfare.client.tooltip.component.*;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -22,6 +26,20 @@ import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientRenderHandler {
+
+    // TODO 正确赋值该变量
+    public static Vec3 bulletRenderOffset = null;
+
+    /**
+     * 修改子弹类实体的虚拟渲染位置
+     */
+    public static void transformVirtualRenderPosition(PoseStack stack, Entity entity, float partialTick) {
+        if (ClientRenderHandler.bulletRenderOffset == null) return;
+
+        var rate = 1 - AnimationCurves.EASE_OUT_CIRC.apply(Math.min(1, (entity.tickCount + partialTick) / 5.0));
+        var offset = ClientRenderHandler.bulletRenderOffset.subtract(entity.position()).multiply(rate, rate, rate);
+        stack.translate(offset.x, offset.y, offset.z);
+    }
 
     @SubscribeEvent
     public static void registerTooltip(RegisterClientTooltipComponentFactoriesEvent event) {
