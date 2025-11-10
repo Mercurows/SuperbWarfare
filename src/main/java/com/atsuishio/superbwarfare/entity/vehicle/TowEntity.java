@@ -120,8 +120,11 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public void vehicleShoot(LivingEntity living) {
         super.vehicleShoot(living);
-        Vec3 pos = getShootPos(living, 1).add(getBarrelVector(1).scale(-0.5));
-        AABB ab = new AABB(pos, pos).inflate(0.75).move(getBarrelVector(1).scale(-2)).expandTowards(getBarrelVector(1).scale(-5));
+
+        var barrelVector = getBarrelVector(1);
+
+        var pos = getShootPos(living, 1).add(barrelVector.scale(-0.5));
+        var ab = new AABB(pos, pos).inflate(0.75).move(barrelVector.scale(-2)).expandTowards(barrelVector.scale(-5));
 
         // 尾焰伤害
         for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
@@ -129,15 +132,15 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         ) {
             entity.hurt(ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), living), 30 - 2 * entity.distanceTo(this));
             double force = 4 - 0.7 * entity.distanceTo(this);
-            entity.push(-force * getBarrelVector(1).x, -force * getBarrelVector(1).y, -force * getBarrelVector(1).z);
+            entity.push(-force * barrelVector.x, -force * barrelVector.y, -force * barrelVector.z);
         }
 
         // 粒子效果
         if (level() instanceof ServerLevel serverLevel) {
-            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), pos, serverLevel, this);
-            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1), pos, serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector.scale(-1), pos, serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector, pos, serverLevel, this);
             for (int j = 0; j < 20; j += 4) {
-                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getBarrelVector(1), getShootPos(living, 1).add(getBarrelVector(1).scale(1))));
+                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, barrelVector, getShootPos(living, 1).add(barrelVector.scale(1))));
             }
         }
     }

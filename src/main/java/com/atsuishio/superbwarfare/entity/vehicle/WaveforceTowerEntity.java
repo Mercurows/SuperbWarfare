@@ -47,7 +47,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -277,24 +276,25 @@ public class WaveforceTowerEntity extends VehicleEntity implements GeoEntity, Ow
                 return;
             }
 
-            Vec3 targetVec = getShootPos(1).vectorTo(target.getEyePosition()).normalize();
+            var targetVec = getShootPos(1).vectorTo(target.getEyePosition()).normalize();
             if (this.entityData.get(COOL_DOWN) == 0) {
                 turretAutoAimFromVector(targetVec);
             }
 
             boolean canShoot = this.entityData.get(CHARGED_ENERGY) >= maxChargeEnergy;
 
-            if (canShoot && VectorTool.calculateAngle(getBarrelVector(1), targetVec) < 1) {
+            var barrelVector = getBarrelVector(1);
+            if (canShoot && VectorTool.calculateAngle(barrelVector, targetVec) < 1) {
                 changeTargetTimer++;
             }
 
-            if (canShoot && VectorTool.calculateAngle(getBarrelVector(1), targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
+            if (canShoot && VectorTool.calculateAngle(barrelVector, targetVec) < 1 && checkNoClip(this, target, getShootPos(1))) {
                 if (level() instanceof ServerLevel serverLevel) {
                     SoundTool.playDistantSound(serverLevel, ModSounds.WAVEFORCE_TOWER_FIRE.get(), position(), 6, random.nextFloat() * 0.1f + 1, null);
                 }
 
                 Predicate<Entity> filter = entity -> entity != this && !IS_FRIENDLY.test(this.getOwner(), entity);
-                List<TraceTool.RayTraceResultEntity> hitList = TraceTool.getEntitiesAlongVector(level(), getShootPos(1), getBarrelVector(1), getShootPos(1).distanceTo(target.getEyePosition()) + 0.5, filter);
+                var hitList = TraceTool.getEntitiesAlongVector(level(), getShootPos(1), barrelVector, getShootPos(1).distanceTo(target.getEyePosition()) + 0.5, filter);
                 for (TraceTool.RayTraceResultEntity hit : hitList) {
                     Entity entity = hit.entity;
                     Vec3 hitPos = hit.hitVec;

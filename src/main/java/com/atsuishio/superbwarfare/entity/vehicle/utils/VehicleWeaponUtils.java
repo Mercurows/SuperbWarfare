@@ -68,8 +68,10 @@ public final class VehicleWeaponUtils {
     public static void turretAutoAimFromVector(VehicleEntity vehicle, Vec3 shootVec) {
         float ySpeed = vehicle.getMainWeaponTurnYSpeed();
         float xSpeed = vehicle.getMainWeaponTurnXSpeed();
-        float diffY = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(vehicle.getBarrelVector(1)));
-        float diffX = (float) Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(vehicle.getBarrelVector(1)));
+
+        var barrelVector = vehicle.getBarrelVector(1);
+        float diffY = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(barrelVector));
+        float diffX = (float) Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(barrelVector));
 
         vehicle.turretTurnSound(diffX, diffY, 0.95f);
 
@@ -78,13 +80,14 @@ public final class VehicleWeaponUtils {
             xSpeed *= 0.2f;
         }
 
-        float min = -ySpeed + (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
-        float max = ySpeed + (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
+        float v = (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
+        float min = -ySpeed + v;
+        float max = ySpeed + v;
 
         vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.getMainWeaponMaxPitch(), -vehicle.getMainWeaponMinPitch()));
         vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.getMainWeaponMaxYaw(), -vehicle.getMainWeaponMinYaw()));
         vehicle.turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
-        vehicle.aiTurretDiff = VectorTool.calculateAngle(shootVec, vehicle.getBarrelVector(1));
+        vehicle.aiTurretDiff = VectorTool.calculateAngle(shootVec, barrelVector);
     }
 
     /**
