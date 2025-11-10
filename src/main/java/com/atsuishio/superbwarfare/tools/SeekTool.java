@@ -403,6 +403,11 @@ public class SeekTool {
             return this;
         }
 
+        public Builder withinRange(Vec3 vec3, double range) {
+            this.filters.add(e -> e.position().distanceTo(vec3) <= range);
+            return this;
+        }
+
         public Builder overRange(double range) {
             this.filters.add(e -> e.position().distanceTo(this.entity.getEyePosition()) >= range);
             return this;
