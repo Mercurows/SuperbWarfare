@@ -12,7 +12,8 @@ import com.atsuishio.superbwarfare.client.tooltip.component.*;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,11 +34,15 @@ public class ClientRenderHandler {
     /**
      * 修改子弹类实体的虚拟渲染位置
      */
-    public static void transformVirtualRenderPosition(PoseStack stack, Entity entity, float partialTick) {
+    public static void transformVirtualRenderPosition(PoseStack stack, Projectile projectile, float partialTick) {
         if (ClientRenderHandler.bulletRenderOffset == null) return;
 
-        var rate = 1 - AnimationCurves.EASE_OUT_CIRC.apply(Math.min(1, (entity.tickCount + partialTick) / 5.0));
-        var offset = ClientRenderHandler.bulletRenderOffset.subtract(entity.position()).multiply(rate, rate, rate);
+        var player = Minecraft.getInstance().player;
+        if (player == null || projectile.getOwner() == null || !player.getUUID().equals(projectile.getOwner().getUUID()))
+            return;
+
+        var rate = 1 - AnimationCurves.EASE_OUT_CIRC.apply(Math.min(1, (projectile.tickCount + partialTick) / 5.0));
+        var offset = ClientRenderHandler.bulletRenderOffset.subtract(projectile.position()).multiply(rate, rate, rate);
         stack.translate(offset.x, offset.y, offset.z);
     }
 
