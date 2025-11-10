@@ -91,7 +91,7 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    protected Entity getAmmoSupplier() {
+    public Entity getAmmoSupplier() {
         return getFirstPassenger();
     }
 

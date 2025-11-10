@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.weapon;
 import com.atsuishio.superbwarfare.entity.projectile.WgMissileEntity;
 import net.minecraft.world.entity.LivingEntity;
 
+@Deprecated(forRemoval = true, since = "0.8.9")
 public class WgMissileWeapon extends VehicleWeapon {
 
     public float damage = 250, explosionDamage = 200, explosionRadius = 10;
