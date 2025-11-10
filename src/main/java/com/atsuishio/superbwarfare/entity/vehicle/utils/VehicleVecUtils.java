@@ -88,11 +88,16 @@ public final class VehicleVecUtils {
      */
     public static void setDriverAngle(VehicleEntity vehicle, Player player) {
         if (vehicle.hasMainWeapon()) {
-            player.xRotO = -(float) getXRotFromVector(vehicle.getBarrelVector(1));
-            player.setXRot(-(float) getXRotFromVector(vehicle.getBarrelVector(1)));
-            player.yRotO = -(float) getYRotFromVector(vehicle.getBarrelVector(1));
-            player.setYRot(-(float) getYRotFromVector(vehicle.getBarrelVector(1)));
-            player.setYHeadRot(-(float) getYRotFromVector(vehicle.getBarrelVector(1)));
+            var barrelVector = vehicle.getBarrelVector(1);
+
+            double xRot = getXRotFromVector(barrelVector);
+            double yRot = getYRotFromVector(barrelVector);
+
+            player.xRotO = (float) -xRot;
+            player.setXRot((float) -xRot);
+            player.yRotO = (float) -yRot;
+            player.setYRot((float) -yRot);
+            player.setYHeadRot((float) -yRot);
         } else {
             player.xRotO = vehicle.getXRot();
             player.setXRot(vehicle.getXRot());
