@@ -5,10 +5,10 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.LaserWeapon;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -321,6 +321,11 @@ public class VehicleHudOverlay implements IGuiOverlay {
             RenderSystem.setShaderColor(1, 1, 1, Mth.lerp(progress, 0.2f, 1));
             xOffset = Mth.lerp(progress, maxXOffset, 0);
 
+            preciseBlit(guiGraphics, frame, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+
+            var data = vehicle.getGunData(vehicle.getSeatIndex(player), i);
+            if (data == null) continue;
+
             // 当前选中武器
             if (weaponIndex == i) {
                 var startY = Mth.lerp(progress,
@@ -334,18 +339,17 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 if (ammoCount == Integer.MAX_VALUE) {
                     preciseBlit(guiGraphics, NUMBER, w - 28 + xOffset, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
                 } else {
-                    // TODO 替换LaserWeapon判断
-                    renderNumber(guiGraphics, ammoCount, weapon instanceof LaserWeapon,
-                            w - 20 + xOffset, h - frameIndex * 18 - 15.5f, 0.25f);
+                    boolean percent = data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY;
+                    if (percent) {
+                        ammoCount /= (int) Math.max(1, (double) vehicle.getMaxEnergy() / 100);
+                    }
+                    renderNumber(guiGraphics, ammoCount, percent, w - 20 + xOffset, h - frameIndex * 18 - 15.5f, 0.25f);
                 }
             }
 
-            preciseBlit(guiGraphics, frame, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
             preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
-            var data = vehicle.getGunData(vehicle.getSeatIndex(player), i);
-
-            if (data != null && data.compute().autoIterativeReloadTime > 0) {
+            if (data.compute().autoIterativeReloadTime > 0) {
                 var time = data.compute().autoIterativeReloadTime;
                 var timer = data.autoIterativeReloadTimer.get();
                 float reloadProgress = (float) (time - timer) / time;
@@ -370,7 +374,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
-
 
             pose.popPose();
 
