@@ -738,8 +738,12 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return compute().projectileAmount <= 0 && compute().meleeDamage > 0;
     }
 
+    public boolean isShotgun(DefaultGunData gunData) {
+        return gunData.projectileAmount > 1;
+    }
+
     public boolean isShotgun() {
-        return compute().projectileAmount > 1;
+        return isShotgun(compute());
     }
 
     public Vec3 firePosition() {
