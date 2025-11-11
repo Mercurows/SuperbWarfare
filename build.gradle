@@ -151,6 +151,10 @@ configurations {
 }
 
 dependencies {
+    implementation "org.mozilla:rhino:1.8.0"
+    additionalRuntimeClasspath "org.mozilla:rhino:1.8.0"
+    jarJar(implementation("org.mozilla:rhino:1.8.0"))
+
     implementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5"
 
     runtimeOnly "top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1"
