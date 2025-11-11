@@ -157,19 +157,19 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
 
     // 主武器位
     @ServerOnly
-    @SerializedName("MainWeaponPos")
-    public Vec3 mainWeaponPos = null;
+    @SerializedName("TurretPos")
+    public Vec3 turretPos = null;
     @ServerOnly
-    @SerializedName("MainWeaponTurnSpeed")
-    public Vec2 mainWeaponTurnSpeed = new Vec2(5, 5);
+    @SerializedName("TurretTurnSpeed")
+    public Vec2 turretTurnSpeed = new Vec2(5, 5);
     @ServerOnly
-    @SerializedName("MainWeaponYawRange")
-    public Vec2 mainWeaponYawRange = new Vec2(-514, 514);
+    @SerializedName("TurretYawRange")
+    public Vec2 turretYawRange = new Vec2(-514, 514);
     @ServerOnly
-    @SerializedName("MainWeaponPitchRange")
-    public Vec2 mainWeaponPitchRange = new Vec2(-10, 30);
-    @SerializedName("MainWeaponControllerIndex")
-    public int mainWeaponControllerIndex = 0;
+    @SerializedName("TurretPitchRange")
+    public Vec2 turretPitchRange = new Vec2(-10, 30);
+    @SerializedName("TurretControllerIndex")
+    public int turretControllerIndex = 0;
     @SerializedName("MainWeaponHudType")
     public String mainWeaponHudType = "@Empty";
 
