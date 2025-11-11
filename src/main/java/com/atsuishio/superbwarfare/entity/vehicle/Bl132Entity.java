@@ -597,11 +597,6 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
         return super.getBarrelVector(pPartialTicks);
     }
 
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.15 : 0.3;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

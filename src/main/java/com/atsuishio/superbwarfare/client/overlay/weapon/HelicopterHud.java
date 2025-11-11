@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -21,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -80,7 +82,21 @@ public class HelicopterHud {
         float k = (screenWidth - i) / 2f;
         float l = (screenHeight - j) / 2f;
 
-        Vec3 pos = vehicle.getShootPos(player, partialTick).add(vehicle.getViewVec(player, partialTick).scale(192));
+        Vec3 shootPos = vehicle.getShootCenterPos(player, partialTick);
+
+        BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getViewVec(player, partialTick).scale(512)),
+                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+        Vec3 hitPos = result.getLocation();
+
+        double dis = shootPos.distanceTo(hitPos);
+
+        Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
+
+        if (entityPos != null) {
+            dis = shootPos.distanceTo(entityPos);
+        }
+
+        Vec3 pos = shootPos.add(vehicle.getViewVec(player, partialTick).scale(dis));
         Vec3 screenPos = VectorUtil.worldToScreen(pos);
         float x = (float) screenPos.x;
         float y = (float) screenPos.y;

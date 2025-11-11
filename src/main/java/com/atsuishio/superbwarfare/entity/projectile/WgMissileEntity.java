@@ -131,7 +131,7 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
             Entity shooter = this.getOwner();
 
             Vec3 lookVec = vehicle.getBarrelVector(1).normalize();
-            Vec3 vec3 = TraceTool.vehicleFindLookingPos(shooter, this, vehicle, vehicle.getZoomPos(shooter, 1), 512);
+            Vec3 vec3 = TraceTool.vehicleFindLookingPos(shooter, vehicle, vehicle.getZoomPos(shooter, 1), 512, 1);
             Vec3 toVec = getDeltaMovement();
 
             if (launcherVehicle == vehicle.getUUID()) {

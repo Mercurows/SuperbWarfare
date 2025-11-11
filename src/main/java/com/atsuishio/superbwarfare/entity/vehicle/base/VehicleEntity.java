@@ -36,6 +36,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -2249,6 +2250,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getEyePosition(ticks);
     }
 
+    /**
+     * @param entity 操控载具的实体
+     * @return 所有炮弹发射位置的中心点，用于HUD瞄准
+     */
+    public Vec3 getShootCenterPos(Entity entity, float ticks) {
+        var data = getGunData(getSeatIndex(entity));
+        if (data != null) {
+            var vec3 = data.fireCenterPosition();
+
+            var worldPosition = transformPosition(
+                    this.getTransformFromString(data.compute().shootPos.transform, ticks),
+                    (float) vec3.x, (float) vec3.y, (float) vec3.z);
+
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        }
+        return getEyePosition(ticks);
+    }
+
     public Vec3 getShootVec(int seatIndex, float ticks) {
         return getShootVec(getNthEntity(seatIndex), ticks);
     }
@@ -2464,6 +2483,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         } catch (Exception e) {
             Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e);
         }
+    }
+
+    public float getEngineSoundVolume() {
+        var computed = computed();
+
+        var engineType = computed.engineType;
+        if (engineType == EngineType.EMPTY) return 0;
+
+        var engineInfo = computed.engineInfo;
+        var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.class);
+        return switch (engineType) {
+            case FIXED -> 0;
+            case TRACK ->
+                    Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * info.engineSoundVolume;
+            case HELICOPTER -> entityData.get(PROPELLER_ROT) * info.engineSoundVolume;
+            default -> Mth.abs(entityData.get(POWER)) * info.engineSoundVolume;
+        };
     }
 
     public Matrix4f getVehicleTransform(float ticks) {
@@ -2886,7 +2922,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 调整后的灵敏度
      */
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return original;
+        var seat = computed().seats().get(seatIndex);
+        Vec3 sensitivity = seat.sensitivity;
+        return zoom ? sensitivity.x * original : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? sensitivity.y * original : sensitivity.z * original;
     }
 
     /**
@@ -3234,10 +3272,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public SoundEvent getEngineSound() {
         return this.computed().engineSound;
-    }
-
-    public float getEngineSoundVolume() {
-        return (float) Mth.lerp(Mth.clamp(getDeltaMovement().length(), 0F, 0.5F), 0, 0.7F);
     }
 
     public double getVelocity() {

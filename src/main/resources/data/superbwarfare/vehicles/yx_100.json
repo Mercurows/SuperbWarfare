@@ -17,7 +17,8 @@
       "Weapons": ["Cannon", "MachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
-      "MaxPitch": 30
+      "MaxPitch": 30,
+      "Sensitivity": [0.52, 0.72, 0.9]
     },
     {
       "HidePassenger": true,
@@ -35,7 +36,8 @@
       "Weapons": ["PassengerMachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
-      "MaxPitch": 60
+      "MaxPitch": 60,
+      "Sensitivity": [0.57, 0.75, 0.9]
     },
     {
       "Transform": "Turret",
@@ -47,7 +49,8 @@
       "Weapons": ["SwarmDrone"],
       "CanRotateBody": true,
       "MinPitch": -25,
-      "MaxPitch": 90
+      "MaxPitch": 90,
+      "Sensitivity": [0.6, 1, 1]
     },
     {
       "BanHand": true,
@@ -226,7 +229,8 @@
     "MaxBackwardSpeedRate": 0.55,
     "Increment": 0.02,
     "Decrement": 0.01,
-    "SteeringSpeed": 0.1
+    "SteeringSpeed": 0.1,
+    "EngineSoundVolume": 0.6
   },
   "MainWeaponPos": [0, 2.1059375, -0.43125],
   "BarrelPos": [0, 0.56345, 0.6477125],

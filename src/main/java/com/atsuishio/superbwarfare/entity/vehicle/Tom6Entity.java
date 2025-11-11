@@ -244,11 +244,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
         return this.cache;
     }
 
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return 0.3;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

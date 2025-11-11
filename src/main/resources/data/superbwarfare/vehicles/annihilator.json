@@ -7,7 +7,8 @@
     "Transform": "VehicleFlat",
     "Position": [0, 3.3, 1.5],
     "MinPitch": -5,
-    "MaxPitch": 45
+    "MaxPitch": 45,
+    "Sensitivity": [0.5, 0.7, 0.9]
   },
   "Mass": 2774,
   "DamageModifiers": [

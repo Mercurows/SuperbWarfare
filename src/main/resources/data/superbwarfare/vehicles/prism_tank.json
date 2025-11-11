@@ -21,7 +21,8 @@
       "CanRotateHead": false,
       "MinPitch": -15,
       "MaxPitch": 32.5,
-      "Weapons": ["Laser1"]
+      "Weapons": ["Laser1", "Laser2"],
+      "Sensitivity": [0.6, 0.78, 1]
     },
     {
       "Transform": "Vehicle",
@@ -39,8 +40,8 @@
   "Weapons": {
     "Laser1": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/laser.png",
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
       "Projectile": "ray",
       "Range": 512,
       "ZoomFactor": 3,
@@ -50,14 +51,14 @@
       "ExplosionDamage": 72,
       "ExplosionRadius": 12,
       "Spread": 0,
-      "HeatPerShoot": 60,
-      "NaturalCooldown": 1,
+      "HeatPerShoot": 50,
+      "NaturalCooldown": 0.7,
       "ShootAnimationTime": 3,
       "AmmoType": "FE",
       "AmmoCostPerShoot": 100000,
       "Crosshair": "@VehicleCommonMissile",
       "CrosshairColor": "0x00FFF6",
-      "Name": "superbwarfare.prism_tank_mode_1.cannon",
+      "Name": "superbwarfare.prism_tank.laser",
       "SoundInfo": {
         "Fire1P": "superbwarfare:prism_tank_fire_high_1p",
         "Fire3P": "superbwarfare:prism_tank_fire_high_3p",
@@ -72,38 +73,37 @@
         "Directions": ["Barrel"]
       }
     },
-    "MachineGun": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png",
+    "Laser2": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/laser.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
-      "Spread": 0.5,
+      "Projectile": "ray",
+      "Range": 512,
+      "ZoomFactor": 3,
+      "RPM": 1200,
+      "Velocity": 6000000000,
+      "Damage": 15,
+      "HeatPerShoot": 3,
+      "NaturalCooldown": 0.7,
+      "ShootAnimationTime": 1,
+      "AmmoType": "FE",
+      "AmmoCostPerShoot": 50000,
+      "Crosshair": "@VehicleCommonMissile",
       "CrosshairColor": "0x00FFF6",
-      "Projectile": "superbwarfare:projectile",
-      "RPM": 600,
-      "Damage": 9.5,
-      "BypassesArmor": 0.3,
-      "Velocity": 30,
-      "RecoilTime": 22,
-      "RecoilForce": 0.1,
-      "HeatPerShoot": 4,
-      "NaturalCooldown": 1,
-      "ShootAnimationTime": 2,
-      "AmmoType": "@RifleAmmo",
-      "ShootPos": {
-        "Transform": "Barrel",
-        "Positions": [[0.3, 0.0517, 0.5]],
-        "Directions": ["Barrel"]
-      },
-      "Crosshair": "@VehicleCommonGun",
-      "Name": "superbwarfare.lav_150.gun",
+      "Name": "superbwarfare.prism_tank.laser",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:coax_fire_1p",
-        "Fire3P": "superbwarfare:m_60_fire_3p",
-        "Fire3PFar": "superbwarfare:m_60_far",
-        "Fire3PVeryFar": "superbwarfare:m_60_veryfar",
+        "Fire1P": "superbwarfare:prism_tank_fire_low_1p",
+        "Fire3P": "superbwarfare:prism_tank_fire_low_3p",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
         "Change": "superbwarfare:into_cannon"
       },
-      "SoundRadius": 12
+      "SoundRadius": 12,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.5, 0]],
+        "Directions": ["Barrel"]
+      }
     }
   },
   "HUDColor": "0x00FFF6",

@@ -494,11 +494,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
         return getViewVector(pPartialTicks);
     }
 
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.25 : 0.3;
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {

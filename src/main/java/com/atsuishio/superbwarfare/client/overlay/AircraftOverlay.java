@@ -108,7 +108,7 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             float diffX = (float) ClientMouseHandler.lerpSpeedY;
 
             Vec3 pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(192));
-            Vec3 posCross = vehicle.getShootPos(player, partialTick).add(vehicle.getViewVec(player, partialTick).scale(192));
+            Vec3 posCross = vehicle.getShootCenterPos(player, partialTick).add(vehicle.getViewVec(player, partialTick).scale(192));
 
             Vec3 p = VectorUtil.worldToScreen(pos);
             Vec3 pCross = VectorUtil.worldToScreen(posCross);

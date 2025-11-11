@@ -8,8 +8,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
@@ -68,11 +66,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
         lowHealthWarning();
     }
 
-    @Override
-    public float getEngineSoundVolume() {
-        return Mth.abs(entityData.get(POWER)) * 0.4f;
-    }
-
     private PlayState cannonFirePredicate(AnimationState<Lav150Entity> event) {
         if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire"));
@@ -98,11 +91,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.23 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.3 : 0.4;
     }
 
     @Override

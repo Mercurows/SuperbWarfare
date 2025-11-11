@@ -580,11 +580,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public float getEngineSoundVolume() {
-        return entityData.get(POWER) * (sprintInputDown() ? 5.5f : 3f);
-    }
-
-    @Override
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
         Matrix4f transform = getVehicleTransform(1);
         if ((!onGround() || getDeltaMovement().length() >= 0.1)) {
@@ -789,11 +784,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     public boolean isFiring() {
         return this.entityData.get(FIRE_TIME) > 0;
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return 0;
     }
 
     @Override

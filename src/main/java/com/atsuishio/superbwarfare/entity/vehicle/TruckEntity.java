@@ -12,7 +12,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -120,11 +119,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
         if (decoyInputDown()) {
             horn();
         }
-    }
-
-    @Override
-    public float getEngineSoundVolume() {
-        return Mth.abs(entityData.get(POWER)) * 0.5f;
     }
 
     @Override

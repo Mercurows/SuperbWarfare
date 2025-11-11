@@ -8,13 +8,13 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
-import org.joml.*;
-import org.joml.Math;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -86,11 +86,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         }
     }
 
-    @Override
-    public float getEngineSoundVolume() {
-        return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
-    }
-
     private PlayState cannonFirePredicate(AnimationState<Bmp2Entity> event) {
         if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lav_150.fire"));
@@ -116,11 +111,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return seatIndex == 0 ? (zoom ? 0.22 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.27 : 0.36) : original;
     }
 
     @Override

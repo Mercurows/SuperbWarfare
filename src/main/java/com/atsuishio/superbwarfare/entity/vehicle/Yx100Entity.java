@@ -8,12 +8,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import org.joml.*;
-import org.joml.Math;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -82,11 +82,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         lowHealthWarning();
     }
 
-    @Override
-    public float getEngineSoundVolume() {
-        return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
-    }
-
     private PlayState cannonFirePredicate(AnimationState<Yx100Entity> event) {
         if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire"));
@@ -121,15 +116,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        if (seatIndex == 0) {
-            return zoom ? 0.17 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.22 : 0.35;
-        } else if (seatIndex == 1) {
-            return zoom ? 0.25 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.35 : 0.4;
-        } else return original;
     }
 
     @Override

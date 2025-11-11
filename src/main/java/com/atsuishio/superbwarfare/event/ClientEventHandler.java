@@ -1126,10 +1126,14 @@ public class ClientEventHandler {
         }
 
         if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
+            var gunData = pVehicle.getGunData(pVehicle.getSeatIndex(player));
+            if (gunData == null) return;
+
             if (!pVehicle.canShoot(player)) {
                 holdFireVehicle = false;
                 return;
             }
+
             int rpm = pVehicle.vehicleWeaponRpm(player);
             if (rpm == 0) {
                 rpm = 240;
@@ -1162,6 +1166,10 @@ public class ClientEventHandler {
                 }
             } else if (clientTimerVehicle.getProgress() >= cooldown) {
                 clientTimerVehicle.stop();
+            }
+
+            if (gunData.compute().defaultFireMode.equals("Semi")) {
+                holdFireVehicle = false;
             }
         } else {
             clientTimerVehicle.stop();

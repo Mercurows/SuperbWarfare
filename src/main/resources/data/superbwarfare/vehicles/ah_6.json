@@ -11,7 +11,8 @@
         "Position": [0.45, 2.45, 1],
         "ZoomPosition": [0.45, 2.45, 1.25],
         "UseFixedCameraPos": true,
-        "AircraftCamera": true
+        "AircraftCamera": true,
+        "Sensitivity": [0, 0, 0]
       },
       "CanRotateHead": false,
       "MinPitch": -80,
@@ -118,7 +119,8 @@
     "YawSpeed": 1,
     "RollSpeed": 1,
     "LiftSpeed": 1,
-    "EngineStartSound": "superbwarfare:ah_6_engine_start"
+    "EngineStartSound": "superbwarfare:ah_6_engine_start",
+    "EngineSoundVolume": 2
   },
   "UpStep": 1.1,
   "RotateOffsetHeight": 1.45,

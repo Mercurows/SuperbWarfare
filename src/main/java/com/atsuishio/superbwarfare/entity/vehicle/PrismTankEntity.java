@@ -14,9 +14,6 @@ import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -30,11 +27,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.*;
 import org.joml.Math;
@@ -148,112 +142,35 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         return selectedWeapon.get(seatIndex);
     }
 
-    // TODO 完善以能量作为弹药
+    //TODO 能否让光棱两个武器共用一个热量
 
-    @Override
-    public void vehicleShoot(LivingEntity living) {
-        super.vehicleShoot(living);
-        Vec3 root = getShootPos(living, 1);
-        var gunData = getGunData(0);
-        if (gunData != null) {
-            float dis = laserLengthEntity(root, gunData);
-
-            if (dis < laserLength(root)) {
-                this.entityData.set(LASER_LENGTH, dis);
+    public void hitBlock(Vec3 pos, GunData gunData, Entity shooter) {
+        if (level() instanceof ServerLevel serverLevel) {
+            if (getSelectedWeapon(0) == 0) {
+                findNearEntity(pos, gunData, shooter);
+                sendParticle(serverLevel, ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 24, 0, 0, 0, 0.2, true);
+                sendParticle(serverLevel, ParticleTypes.LAVA, pos.x, pos.y, pos.z, 8, 0, 0, 0, 0.4, true);
             } else {
-                this.entityData.set(LASER_LENGTH, laserLength(root));
-                hitBlock(root, gunData);
-            }
-
-            this.entityData.set(LASER_SCALE, (float) gunData.compute().shootAnimationTime);
-        }
-    }
-
-    private void hitBlock(Vec3 pos, GunData gunData) {
-        if (this.level() instanceof ServerLevel) {
-            BlockHitResult result = this.level().clip(new ClipContext(pos, pos.add(this.getBarrelVector(1).scale(512)),
-                    ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-
-            Vec3 hitPos = result.getLocation();
-            if (this.getFirstPassenger() != null && level() instanceof ServerLevel serverLevel) {
-                if (getSelectedWeapon(0) == 0) {
-                    findNearEntity(hitPos, gunData);
-                    sendParticle(serverLevel, ParticleTypes.END_ROD, hitPos.x, hitPos.y, hitPos.z, 24, 0, 0, 0, 0.2, true);
-                    sendParticle(serverLevel, ParticleTypes.LAVA, hitPos.x, hitPos.y, hitPos.z, 8, 0, 0, 0, 0.4, true);
-                } else {
-                    sendParticle(serverLevel, ParticleTypes.END_ROD, hitPos.x, hitPos.y, hitPos.z, 4, 0, 0, 0, 0.05, true);
-                    sendParticle(serverLevel, ParticleTypes.LAVA, hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.15, true);
-                }
+                sendParticle(serverLevel, ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 4, 0, 0, 0, 0.05, true);
+                sendParticle(serverLevel, ParticleTypes.LAVA, pos.x, pos.y, pos.z, 2, 0, 0, 0, 0.15, true);
             }
         }
     }
 
-    private float laserLength(Vec3 pos) {
-        return (float) pos.distanceTo((Vec3.atLowerCornerOf(level().clip(
-                new ClipContext(pos, pos.add(this.getBarrelVector(1).scale(512)),
-                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getBlockPos())));
-    }
-
-    private float laserLengthEntity(Vec3 pos, GunData gunData) {
-        if (this.level() instanceof ServerLevel) {
-            double distance = 512 * 512;
-            HitResult hitResult = pickNew(pos, 512);
-            if (hitResult.getType() != HitResult.Type.MISS) {
-                distance = hitResult.getLocation().distanceToSqr(pos);
-                double blockReach = 5;
-                if (distance > blockReach * blockReach) {
-                    Vec3 posB = hitResult.getLocation();
-                    hitResult = BlockHitResult.miss(posB, Direction.getNearest(pos.x, pos.y, pos.z), BlockPos.containing(posB));
-                }
-            }
-            Vec3 viewVec = getBarrelVector(1);
-            Vec3 toVec = pos.add(viewVec.x * 512, viewVec.y * 512, viewVec.z * 512);
-            AABB aabb = getBoundingBox().expandTowards(viewVec.scale(512)).inflate(1);
-            EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(this, pos, toVec, aabb,
-                    p -> !p.isSpectator() && p.isAlive() && SeekTool.NOT_IN_SMOKE.test(p), distance);
-
-            if (entityhitresult != null) {
-                Vec3 targetPos = entityhitresult.getLocation();
-                double distanceToTarget = pos.distanceToSqr(targetPos);
-                if (distanceToTarget > distance || distanceToTarget > 512 * 512) {
-                    hitResult = BlockHitResult.miss(targetPos, Direction.getNearest(viewVec.x, viewVec.y, viewVec.z), BlockPos.containing(targetPos));
-                } else if (distanceToTarget < distance) {
-                    hitResult = entityhitresult;
-                }
-                if (hitResult.getType() == HitResult.Type.ENTITY) {
-                    Entity passenger = this.getFirstPassenger();
-                    Entity target = ((EntityHitResult) hitResult).getEntity();
-
-                    if (passenger != null) {
-                        if (level() instanceof ServerLevel serverLevel) {
-                            DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) gunData.compute().damage);
-                            Vec3 vec = pos.scale(pos.distanceTo(target.position()));
-                            if (getSelectedWeapon(0) == 0) {
-                                findNearEntity(target.getEyePosition(), gunData);
-                                sendParticle(serverLevel, ParticleTypes.END_ROD, vec.x, vec.y, vec.z, 24, 0, 0, 0, 0.2, true);
-                                sendParticle(serverLevel, ParticleTypes.LAVA, vec.x, vec.y, vec.z, 8, 0, 0, 0, 0.4, true);
-                            } else {
-                                sendParticle(serverLevel, ParticleTypes.END_ROD, vec.x, vec.y, vec.z, 4, 0, 0, 0, 0.05, true);
-                                sendParticle(serverLevel, ParticleTypes.LAVA, vec.x, vec.y, vec.z, 2, 0, 0, 0, 0.15, true);
-                            }
-
-                            if (getFirstPassenger() != null && !getFirstPassenger().level().isClientSide() && getFirstPassenger() instanceof ServerPlayer player) {
-                                var holder = Holder.direct(ModSounds.INDICATION.get());
-                                player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
-                                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
-                            }
-                        }
-                    }
-
-                    target.invulnerableTime = 1;
-                    return (float) pos.distanceTo(target.position());
-                }
+    public void hitEntity(Vec3 pos, GunData gunData, Entity shooter) {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            if (getSelectedWeapon(0) == 0) {
+                findNearEntity(pos, gunData, shooter);
+                sendParticle(serverLevel, ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 24, 0, 0, 0, 0.2, true);
+                sendParticle(serverLevel, ParticleTypes.LAVA, pos.x, pos.y, pos.z, 8, 0, 0, 0, 0.4, true);
+            } else {
+                sendParticle(serverLevel, ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 4, 0, 0, 0, 0.05, true);
+                sendParticle(serverLevel, ParticleTypes.LAVA, pos.x, pos.y, pos.z, 2, 0, 0, 0, 0.15, true);
             }
         }
-        return 512;
     }
 
-    public void findNearEntity(Vec3 vec, GunData gunData) {
+    public void findNearEntity(Vec3 vec, GunData gunData, Entity shooter) {
         double aoeDamage = gunData.compute().explosionDamage;
         double range = gunData.compute().explosionRadius;
         if (level() instanceof ServerLevel serverLevel) {
@@ -275,26 +192,15 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
                 }
 
                 sendParticle(serverLevel, ParticleTypes.LAVA, e.getX(), e.getEyeY(), e.getZ(), 4, 0, 0, 0, 0.15, true);
-                DamageHandler.doDamage(e, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, this.getFirstPassenger()), (float) (aoeDamage - Mth.clamp(dis / range, 0, 0.75) * aoeDamage));
+                DamageHandler.doDamage(e, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) (aoeDamage - Mth.clamp(dis / range, 0, 0.75) * aoeDamage));
 
-                if (getFirstPassenger() != null && !getFirstPassenger().level().isClientSide() && getFirstPassenger() instanceof ServerPlayer player) {
+                if (shooter.level().isClientSide() && shooter instanceof ServerPlayer player) {
                     var holder = Holder.direct(ModSounds.INDICATION.get());
                     player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
                     PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
                 }
             }
         }
-    }
-
-    public HitResult pickNew(Vec3 pos, double pHitDistance) {
-        Vec3 vec31 = this.getBarrelVector(1);
-        Vec3 vec32 = pos.add(vec31.x * pHitDistance, vec31.y * pHitDistance, vec31.z * pHitDistance);
-        return this.level().clip(new ClipContext(pos, vec32, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-    }
-
-    @Override
-    public float getEngineSoundVolume() {
-        return Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * 0.4f;
     }
 
     @Override
@@ -304,11 +210,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return zoom ? 0.26 : Minecraft.getInstance().options.getCameraType().isFirstPerson() ? 0.33 : 0.45;
     }
 
     @Override

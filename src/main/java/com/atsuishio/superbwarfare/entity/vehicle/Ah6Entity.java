@@ -73,22 +73,12 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public float getEngineSoundVolume() {
-        return entityData.get(PROPELLER_ROT) * 2f;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return seatIndex == 0 ? 0 : original;
     }
 
     @Override

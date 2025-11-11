@@ -6,7 +6,8 @@
     "IsEnclosed": true,
     "Transform": "Vehicle",
     "Position": [0, 2.125, 3.7],
-    "CanRotateHead": false
+    "CanRotateHead": false,
+    "Sensitivity": [0, 0, 0]
   },
   "UpStep": 1.1,
   "Mass": 20,

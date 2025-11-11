@@ -747,6 +747,9 @@
   "superbwarfare.bmp_2.missile": "9M113 %1$s",
   "superbwarfare.yx_100.cannon_ap": "AP SHELL %1$s",
   "superbwarfare.yx_100.gun": ".50 CAL HMG %1$s",
+  "superbwarfare.ah_6.cannon": "20MM CANNON %1$s",
+  "superbwarfare.ah_6.rocket": "70MM ROCKET %1$s",
+  "superbwarfare.prism_tank.laser": "LASER %1$s",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",

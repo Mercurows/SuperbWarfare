@@ -185,11 +185,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public float getEngineSoundVolume() {
-        return getEnergy() > 0 ? entityData.get(POWER) : 0;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
