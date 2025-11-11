@@ -18,7 +18,7 @@ public enum VehicleFireMessage implements CustomPacketPayload {
         var player = context.player();
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
-            vehicle.vehicleShoot(player);
+            vehicle.vehicleShoot(player, vehicle.getSeatIndex(player));
         }
     }
 

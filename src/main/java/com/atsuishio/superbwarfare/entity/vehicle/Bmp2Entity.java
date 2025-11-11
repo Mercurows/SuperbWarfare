@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -74,16 +73,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         }
 
         lowHealthWarning();
-
-        var seats = computed().seats();
-        for (int i = 1; i < seats.size(); i++) {
-            if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null) {
-                int rpm = 20 / (vehicleWeaponRpm(mob) / 60);
-                if (tickCount % rpm == 0) {
-                    vehicleShoot(mob);
-                }
-            }
-        }
     }
 
     private PlayState cannonFirePredicate(AnimationState<Bmp2Entity> event) {

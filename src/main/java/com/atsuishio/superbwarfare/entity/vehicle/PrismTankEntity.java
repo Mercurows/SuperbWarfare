@@ -141,11 +141,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         lowHealthWarning();
     }
 
-    public int getSelectedWeapon(int seatIndex) {
-        var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
-        return selectedWeapon.get(seatIndex);
-    }
-
     //TODO 能否让光棱两个武器共用一个热量
 
     public void hitBlock(Vec3 pos, GunData gunData, Entity shooter) {
