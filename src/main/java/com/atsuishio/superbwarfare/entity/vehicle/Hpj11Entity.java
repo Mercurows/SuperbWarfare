@@ -225,7 +225,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
         if (this.getFirstPassenger() instanceof Player player && fireInputDown()) {
             if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
-                vehicleShoot(player);
+//                vehicleShoot(player);
             }
         }
 
@@ -325,7 +325,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
 
             if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
                 if (checkNoClip(this, target, barrelRootPos) && entityData.get(AMMO) > 0) {
-                    vehicleShoot(player);
+//                    vehicleShoot(player);
                 } else {
                     changeTargetTimer++;
                 }
@@ -409,7 +409,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living) {
+    public void vehicleShoot(LivingEntity living, int seat) {
         if (cannotFire) return;
         if (this.getEnergy() < VehicleConfig.HPJ11_SHOOT_COST.get()) return;
 

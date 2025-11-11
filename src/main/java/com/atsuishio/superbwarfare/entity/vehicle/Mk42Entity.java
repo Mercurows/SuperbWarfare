@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.server.level.ServerLevel;
@@ -53,28 +54,35 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         if (gunData == null) return InteractionResult.SUCCESS;
         ItemStack stack = player.getMainHandItem();
 
-        if (getShootAnimationTimer(0, 0) == 0) {
-            if (!gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
-                return super.interact(player, hand);
-            }
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
+            if (gunData.ammo.get() > 0) {
+                if (player.level() instanceof ServerLevel) {
+                    vehicleShoot(player, 0);
+                }
 
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        // 手动添加弹药
+
+        if (!gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
+            return super.interact(player, hand);
+        } else {
             var inStack = this.items.get(0);
             int count = inStack.getCount();
 
-            if (count >= this.getMaxStackSize()) {
-                return super.interact(player, hand);
+            if (count < this.getMaxStackSize()) {
+                this.setItem(0, stack.copyWithCount(count + 1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
+                }
             }
-
-            this.setItem(0, stack.copyWithCount(count + 1));
-
-            if (player instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
-            }
-
             return InteractionResult.SUCCESS;
-
         }
-        return super.interact(player, hand);
     }
 
     @Override

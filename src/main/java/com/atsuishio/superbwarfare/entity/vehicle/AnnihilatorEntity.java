@@ -8,7 +8,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
@@ -142,13 +145,13 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
             return InteractionResult.SUCCESS;
         }
 
-        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching()) {
-            if (this.entityData.get(COOL_DOWN) == 0) {
-                vehicleShoot(player);
-                entityData.set(SHOOTER_UUID, player.getStringUUID());
-            }
-            return InteractionResult.SUCCESS;
-        }
+//        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching()) {
+//            if (this.entityData.get(COOL_DOWN) == 0) {
+//                vehicleShoot(player);
+//                entityData.set(SHOOTER_UUID, player.getStringUUID());
+//            }
+//            return InteractionResult.SUCCESS;
+//        }
         return super.interact(player, hand);
     }
 
@@ -387,7 +390,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Canno
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living) {
+    public void vehicleShoot(LivingEntity living, int seat) {
         if (this.entityData.get(COOL_DOWN) > 0) {
             return;
         }

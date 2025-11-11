@@ -1208,15 +1208,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return gunData.shootAnimationTimer.get();
     }
 
-    public void vehicleShoot(LivingEntity living) {
-        var seatIndex = getSeatIndex(living);
-
+    public void vehicleShoot(LivingEntity living, int seatIndex) {
         modifyGunData(seatIndex, data -> {
             if (!data.canShoot(getAmmoSupplier())) return;
-            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.compute().spread, true, null, null));
+            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(seatIndex, 1), getShootVec(seatIndex, 1), data, data.compute().spread, true, null, null));
         });
 
-        var gunData = getGunData(getSeatIndex(living));
+        var gunData = getGunData(seatIndex);
 
         if (gunData != null) {
             var computedGunData = gunData.compute();
@@ -1240,13 +1238,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // TODO 数据包化发射震动
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
-        playShootSound3p(living);
+        playShootSound3p(living, seatIndex);
     }
 
-    public void playShootSound3p(LivingEntity living) {
+    public void playShootSound3p(LivingEntity living, int seatIndex) {
         if (!(living.level() instanceof ServerLevel serverLevel)) return;
 
-        var gunData = this.getGunData(getSeatIndex(living));
+        var gunData = this.getGunData(seatIndex);
         if (gunData == null) return;
 
         var pos = getShootPos(living, 1);
@@ -1254,16 +1252,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var soundInfo = computedGunData.soundInfo;
         float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
+        Entity listener = living.getVehicle() == this ? living : null;
+
         if (soundInfo.fire3P != null) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, (float) (computedGunData.soundRadius * 0.4f), pitch, living);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, (float) (computedGunData.soundRadius * 0.4f), pitch, listener);
         }
 
         if (soundInfo.fire3PFar != null) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, (float) (computedGunData.soundRadius * 0.7f), pitch, living);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, pos, (float) (computedGunData.soundRadius * 0.7f), pitch, listener);
         }
 
         if (soundInfo.fire3PVeryFar != null) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, (float) computedGunData.soundRadius, pitch, living);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, (float) computedGunData.soundRadius, pitch, listener);
         }
     }
 
@@ -2078,14 +2078,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void aiTurretShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity && aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living);
+            vehicleShoot(living, getSeatIndex(living));
         }
     }
 
     public void aiPassengerWeaponShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity && aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living);
+            vehicleShoot(living, getSeatIndex(living));
         }
+    }
+
+    public int getSelectedWeapon(int seatIndex) {
+        var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
+        return selectedWeapon.getInt(seatIndex);
     }
 
     @Deprecated(forRemoval = true, since = "0.8.9")

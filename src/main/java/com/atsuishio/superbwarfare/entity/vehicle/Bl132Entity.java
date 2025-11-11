@@ -162,7 +162,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
                     type = 3;
                 }
                 setWeaponIndex(0, type);
-                vehicleShoot(player);
+//                vehicleShoot(player);
             }
             return InteractionResult.SUCCESS;
         }
@@ -431,7 +431,7 @@ public class Bl132Entity extends VehicleEntity implements GeoEntity, CannonEntit
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living) {
+    public void vehicleShoot(LivingEntity living, int seat) {
         shoot(living, false);
     }
 

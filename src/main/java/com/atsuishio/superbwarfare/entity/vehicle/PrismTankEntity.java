@@ -36,8 +36,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -136,11 +136,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         }
 
         lowHealthWarning();
-    }
-
-    public int getSelectedWeapon(int seatIndex) {
-        var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
-        return selectedWeapon.getInt(seatIndex);
     }
 
     //TODO 能否让光棱两个武器共用一个热量
