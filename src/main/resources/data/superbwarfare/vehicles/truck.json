@@ -40,7 +40,8 @@
     "MaxBackwardSpeedRate": 0.7,
     "Increment": 0.012,
     "Decrement": 0.009,
-    "SteeringSpeed": 0.05
+    "SteeringSpeed": 0.05,
+    "EngineSoundVolume" : 0.6
   },
   "UpStep": 1.5,
   "Mass": 20,

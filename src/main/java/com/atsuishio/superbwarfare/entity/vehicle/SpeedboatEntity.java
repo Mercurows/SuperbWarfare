@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PlayMessages;
@@ -55,11 +54,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, ArmedVe
         super.baseTick();
         this.updateOBB();
         this.lowHealthWarning();
-    }
-
-    @Override
-    public float getEngineSoundVolume() {
-        return (Mth.abs(entityData.get(POWER)) - 0.01f) * 0.4f;
     }
 
     private PlayState machineGunFirePredicate(AnimationState<SpeedboatEntity> event) {

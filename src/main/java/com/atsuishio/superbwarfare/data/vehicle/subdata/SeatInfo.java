@@ -55,4 +55,7 @@ public class SeatInfo {
 
     @SerializedName("BanHand")
     public Boolean banHand = false;
+
+    @SerializedName("Sensitivity")
+    public Vec3 sensitivity = new Vec3(1, 1, 1);
 }

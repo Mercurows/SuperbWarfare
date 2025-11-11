@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.overlay.weapon.ArtilleryHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -88,6 +89,10 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
         int ammoCount = vehicle.getAmmoCount(player);
         var component = Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
 
+        if (vehicle instanceof PrismTankEntity) {
+            component = Component.translatable(data.compute().name, (int) (25 + data.heat.get()) + " " + "°C");
+        }
+
         guiGraphics.drawString(font, component, (screenWidth - font.width(component)) / 2, screenHeight - 65,
                 MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
     }
@@ -99,6 +104,10 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
 
         int ammoCount = vehicle.getAmmoCount(player);
         var component = Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
+
+        if (vehicle instanceof PrismTankEntity) {
+            component = Component.translatable(data.compute().name, (int) (25 + data.heat.get()) + " " + "°C");
+        }
 
         guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1F), false);
     }

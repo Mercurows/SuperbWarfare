@@ -1,13 +1,18 @@
 package com.atsuishio.superbwarfare.item.gun.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -15,6 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
+import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.LASER_LENGTH;
+import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.LASER_SCALE;
 
 public class VehicleGun extends GunItem {
 
@@ -53,5 +61,28 @@ public class VehicleGun extends GunItem {
     @Override
     public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
         pTooltipComponents.add(Component.translatable("des.superbwarfare.vehicle_gun").withStyle(ChatFormatting.RED));
+    }
+
+    @Override
+    public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result, Vec3 shootPosition, Vec3 shootDirection) {
+        super.onRayHitEntity(shooter, level, data, result, shootPosition, shootDirection);
+        if (shooter.getVehicle() instanceof PrismTankEntity prismTank) {
+            Vec3 root = prismTank.getShootPos(shooter, 1);
+            prismTank.getEntityData().set(LASER_LENGTH, (float) root.distanceTo(result.getHitPos()));
+            prismTank.hitEntity(result.getHitPos(), data, shooter);
+            prismTank.getEntityData().set(LASER_SCALE, (float) data.compute().shootAnimationTime);
+
+        }
+    }
+
+    @Override
+    public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockHitResult result, @NotNull Vec3 pos) {
+        super.onRayHitBlock(shooter, level, target, data, shootDirection, result, pos);
+        if (shooter.getVehicle() instanceof PrismTankEntity prismTank) {
+            Vec3 root = prismTank.getShootPos(shooter, 1);
+            prismTank.getEntityData().set(LASER_LENGTH, (float) root.distanceTo(result.getLocation()));
+            prismTank.hitBlock(result.getLocation(), data, shooter);
+            prismTank.getEntityData().set(LASER_SCALE, (float) data.compute().shootAnimationTime);
+        }
     }
 }

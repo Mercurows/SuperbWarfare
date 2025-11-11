@@ -19,7 +19,8 @@
         "ZoomPosition": [0, 0.5, -0.25],
         "Direction": "Barrel"
       },
-      "Weapons": ["MachineGun"]
+      "Weapons": ["MachineGun"],
+      "Sensitivity": [0.75, 0.8, 1]
     },
     {
       "Transform": "Vehicle",

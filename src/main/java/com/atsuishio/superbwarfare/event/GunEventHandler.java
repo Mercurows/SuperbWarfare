@@ -15,7 +15,6 @@ import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -188,7 +187,7 @@ public class GunEventHandler {
             }
         }
 
-        data.heat.set(Mth.clamp(data.heat.get() - computed.naturalCooldown * rate, 0, 100));
+        data.heat.set(Math.max(data.heat.get() - computed.naturalCooldown * rate, 0));
 
         if (data.heat.get() < 80 && data.overHeat.get()) {
             data.overHeat.set(false);

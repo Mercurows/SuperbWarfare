@@ -8,7 +8,8 @@
     "MinPitch": -60,
     "MaxPitch": 85,
     "MinYaw": -45,
-    "MaxYaw": 45
+    "MaxYaw": 45,
+    "Sensitivity": [0.6, 0.6, 1]
   },
   "HasDecoy": true,
   "UpStep": 1.1,

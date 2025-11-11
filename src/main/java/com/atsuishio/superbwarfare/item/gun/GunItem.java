@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.projectile.*;
+import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -77,6 +78,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.LASER_LENGTH;
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
@@ -648,7 +650,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
 
         // 添加热量
-        data.heat.set(Mth.clamp(data.heat.get() + data.compute().heatPerShoot, 0, 100));
+        data.heat.set(Math.max(data.heat.get() + data.compute().heatPerShoot, 0));
 
         // 载具射击动画时长
         data.shootAnimationTimer.set(data.compute().shootAnimationTime);
@@ -972,7 +974,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         Entity target = null;
 
         double distance = range * range;
-        Vec3 eyePos = shooter.getEyePosition(1.0f);
 
         BlockHitResult blockHitResult = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(range)),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
@@ -986,10 +987,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             pos = blockHitResult.getLocation();
         }
 
-        Vec3 viewVec = shooter.getViewVector(1);
-        Vec3 toVec = eyePos.add(viewVec.x * range, viewVec.y * range, viewVec.z * range);
-        AABB aabb = shooter.getBoundingBox().expandTowards(viewVec.scale(range)).inflate(1);
-        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(shooter, eyePos, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
+        Vec3 toVec = shootPosition.add(shootDirection.x * range, shootDirection.y * range, shootDirection.z * range);
+        AABB aabb = shooter.getBoundingBox().expandTowards(shootDirection.scale(range)).inflate(1);
+        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(shooter, shootPosition, toVec, aabb, p -> !p.isSpectator() && p.isAlive(), distance);
 
         Vec3 hitPos = null;
 
@@ -999,7 +999,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
 
         if (pos != null && hitPos != null) {
-            if (eyePos.distanceToSqr(pos) < eyePos.distanceToSqr(hitPos)) {
+            if (shootPosition.distanceToSqr(pos) < shootPosition.distanceToSqr(hitPos)) {
                 this.onRayHitBlock(shooter, level, target, data, shootDirection, blockHitResult, pos);
             } else {
                 this.rayHitEntity(shooter, target, level, data, hitPos, shootPosition, shootDirection);
@@ -1015,6 +1015,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         if (pos != null) {
             this.onRayHitBlock(shooter, level, target, data, shootDirection, blockHitResult, pos);
             return true;
+        }
+
+        if (shooter.getVehicle() instanceof PrismTankEntity prismTank) {
+            prismTank.getEntityData().set(LASER_LENGTH, 512f);
         }
 
         return true;

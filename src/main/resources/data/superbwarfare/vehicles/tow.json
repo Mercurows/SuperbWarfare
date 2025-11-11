@@ -18,7 +18,8 @@
       ],
       "Direction": "Barrel"
     },
-    "Weapons": ["Missile"]
+    "Weapons": ["Missile"],
+    "Sensitivity": [0.55, 0.75, 1]
   },
   "Weapons": {
     "Missile": {

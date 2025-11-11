@@ -18,6 +18,8 @@ public class EngineInfo {
     // 后退加速度
     @SerializedName("Decrement")
     public float decrement = 0.001f;
+    @SerializedName("EngineSoundVolume")
+    public float engineSoundVolume = 0.4f;
 
     public static class Wheel extends EngineInfo {
         @SerializedName("WheelRotSpeed")
