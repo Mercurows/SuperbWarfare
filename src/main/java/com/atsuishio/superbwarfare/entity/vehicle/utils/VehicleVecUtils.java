@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils;
 
 import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
@@ -86,7 +87,7 @@ public final class VehicleVecUtils {
      * @param player 载具驾驶员
      */
     public static void setDriverAngle(VehicleEntity vehicle, Player player) {
-        if (vehicle.hasMainWeapon()) {
+        if (vehicle.hasTurret()) {
             var barrelVector = vehicle.getBarrelVector(1);
 
             double xRot = getXRotFromVector(barrelVector);
@@ -226,7 +227,7 @@ public final class VehicleVecUtils {
         if (!entity.level().isClientSide) return;
         if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) return;
 
-        if (vehicle.getMainWeaponControllerIndex() == vehicle.getSeatIndex(entity)) {
+        if (vehicle.getTurretControllerIndex() == vehicle.getSeatIndex(entity)) {
             float f2 = Mth.wrapDegrees(entity.getYRot() - vehicle.getBarrelYRot(1));
             float f3 = Mth.clamp(f2, -20F, 20F);
             entity.yRotO += f3 - f2;
@@ -374,7 +375,11 @@ public final class VehicleVecUtils {
         StringOrVec3 stringOrVec3 = data.direction;
         if (stringOrVec3.isString()) {
             if (stringOrVec3.string.equals("Default")) {
-                return entity.getViewVector(partialTicks);
+                if (getZoomDirection(vehicle, entity, partialTicks) != null && ClientEventHandler.zoomVehicle) {
+                    return vehicle.getZoomDirection(entity, partialTicks);
+                } else {
+                    return entity.getViewVector(partialTicks);
+                }
             } else {
                 return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
             }
@@ -514,7 +519,7 @@ public final class VehicleVecUtils {
         Matrix4f transformV = vehicle.getVehicleTransform(partialTicks);
 
         Matrix4f transform = new Matrix4f();
-        var pos = vehicle.getMainWeaponPos();
+        var pos = vehicle.getTurretPos();
         if (pos == null) return transformV;
         Vector4f worldPosition = transformPosition(
                 transform,

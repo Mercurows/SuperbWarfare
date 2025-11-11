@@ -164,12 +164,12 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
             if (OBB.getLookingObb(player, player.getEntityReach()) == yawController) {
                 interactEvent(new Vec3(yawController.center()));
-                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -getMainWeaponMaxYaw(), -getMainWeaponMinYaw()));
+                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -getTurretMaxYaw(), -getTurretMinYaw()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.getEntityReach()) == pitchController) {
                 interactEvent(new Vec3(pitchController.center()));
-                entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -getMainWeaponMaxPitch(), -getMainWeaponMinPitch()));
+                entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -getTurretMaxPitch(), -getTurretMinPitch()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
 

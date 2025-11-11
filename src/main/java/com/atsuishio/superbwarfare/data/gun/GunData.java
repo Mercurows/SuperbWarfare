@@ -302,7 +302,8 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public double zoom() {
-        return compute().zoomFactor;
+        if (minZoom() >= maxZoom()) return compute().defaultZoom;
+        return Mth.clamp(compute().defaultZoom, minZoom(), maxZoom());
     }
 
     public AmmoConsumer selectedAmmoConsumer(List<AmmoConsumer> consumers) {

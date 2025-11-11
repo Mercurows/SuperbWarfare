@@ -46,11 +46,15 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             Map.entry("@VehicleRuApc", Mod.loc("textures/overlay/vehicle/crosshair/ru_apc.png")),
             Map.entry("@VehicleCommonMissile", Mod.loc("textures/overlay/vehicle/crosshair/common_missile.png")),
             Map.entry("@VehicleCommonGun", Mod.loc("textures/overlay/vehicle/crosshair/common_gun.png")),
-            Map.entry("@VehicleCommonCannon", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon.png"))
+            Map.entry("@VehicleCommonCannon", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon.png")),
+            Map.entry("@VehicleCommonCross", Mod.loc("textures/overlay/vehicle/crosshair/common_cross.png")),
+            Map.entry("@VehicleCnHpjZooming", Mod.loc("textures/overlay/vehicle/crosshair/cn_hpj_zooming.png")),
+            Map.entry("@VehicleCommonCannonZooming", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon_zooming.png")),
+            Map.entry("@VehicleLaserCannon", Mod.loc("textures/overlay/vehicle/crosshair/laser_cannon.png"))
+
     );
 
     private static final ResourceLocation CROSSHAIR_THIRD_CAMERA = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
-
     private static float scopeScale = 1;
 
     @Override
@@ -78,9 +82,14 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
         PoseStack poseStack = guiGraphics.pose();
 
         String crosshairPath = data.compute().crosshair;
+
         if (crosshairPath.equals(CrossHairOverlay.CROSSHAIR_EMPTY)) {
             resetScale();
             return;
+        }
+
+        if (ClientEventHandler.zoomVehicle && !data.compute().crosshairZooming.equals(CrossHairOverlay.CROSSHAIR_EMPTY)) {
+            crosshairPath = data.compute().crosshairZooming;
         }
 
         int color = data.compute().crosshairColor.get();
@@ -101,35 +110,65 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
         scopeScale = Mth.lerp(partialTick, scopeScale, 1F);
         float scale = scopeScale;
 
+        Vec3 shootPos = vehicle.getShootCenterPos(player, partialTick);
+
+        BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getViewVec(player, partialTick).scale(512)),
+                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+        Vec3 hitPos = result.getLocation();
+
+        double dis = shootPos.distanceTo(hitPos);
+
+        Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
+
+        if (entityPos != null) {
+            dis = shootPos.distanceTo(entityPos);
+        }
+
+        Vec3 pos = shootPos.add(vehicle.getViewVec(player, partialTick).scale(dis));
+        Vec3 p = VectorUtil.worldToScreen(pos);
+
         // 渲染第一人称
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
             poseStack.pushPose();
 
-            if (crosshairPath.equals(CrossHairOverlay.CROSSHAIR_CUSTOM)) {
-                // 载具自定义第一人称渲染
-                vehicle.renderFirstPersonOverlay(guiGraphics, poseStack, mc.font, player, screenWidth, screenHeight, scale, color);
+            ResourceLocation texture;
+            if (crosshairPath.startsWith("@")) {
+                texture = CROSSHAIR_MAP.get(crosshairPath);
             } else {
-                ResourceLocation texture;
-                if (crosshairPath.startsWith("@")) {
-                    texture = CROSSHAIR_MAP.get(crosshairPath);
-                } else {
-                    texture = ResourceLocation.tryParse(crosshairPath);
-                }
+                texture = ResourceLocation.tryParse(crosshairPath);
+            }
 
-                if (texture == null) {
-                    LOGGER.log(crosshairPath, logger -> logger.error("Failed to load crosshair texture for {}", crosshairPath));
-                } else {
-                    float minWH = (float) Math.min(screenWidth, screenHeight);
-                    float scaledMinWH = Mth.floor(minWH * scale);
-                    float centerW = (screenWidth - scaledMinWH) / 2;
-                    float centerH = (screenHeight - scaledMinWH) / 2;
+            if (texture == null) {
+                String finalCrosshairPath = crosshairPath;
+                LOGGER.log(crosshairPath, logger -> logger.error("Failed to load crosshair texture for {}", finalCrosshairPath));
+            } else {
+                float minWH = (float) Math.min(screenWidth, screenHeight);
+                float scaledMinWH = Mth.floor(minWH * scale);
+                float centerW = (screenWidth - scaledMinWH) / 2;
+                float centerH = (screenHeight - scaledMinWH) / 2;
 
-                    RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                if (crosshairPath.equals("@VehicleCommonCross") && VectorUtil.canSee(pos)) {
+                    float x = (float) p.x;
+                    float y = (float) p.y;
+                    RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                } else {
+                    if (crosshairPath.equals("@VehicleCommonCannonZooming")) {
+                        float fovAdjust = 70F / Minecraft.getInstance().options.fov().get();
+                        float f = (float) Math.min(screenWidth, screenHeight);
+                        float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * fovAdjust;
+                        int i = Mth.floor(f * f1);
+                        int j = Mth.floor(f * f1);
+                        int k = (screenWidth - i) / 2;
+                        int l = (screenHeight - j) / 2;
+                        preciseBlit(guiGraphics, texture, k, l, 0, 0, i, j, i, j);
+                    } else {
+                        RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                    }
+
                 }
             }
 
             poseStack.popPose();
-
             poseStack.pushPose();
 
             VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, data, mc.font, screenWidth, screenHeight, color);
@@ -137,23 +176,6 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
             // 渲染第三人称
-
-            Vec3 shootPos = vehicle.getShootCenterPos(player, partialTick);
-
-            BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getViewVec(player, partialTick).scale(512)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-            Vec3 hitPos = result.getLocation();
-
-            double dis = shootPos.distanceTo(hitPos);
-
-            Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
-
-            if (entityPos != null) {
-                dis = shootPos.distanceTo(entityPos);
-            }
-
-            Vec3 pos = shootPos.add(vehicle.getViewVec(player, partialTick).scale(dis));
-            Vec3 p = VectorUtil.worldToScreen(pos);
 
             if (VectorUtil.canSee(pos)) {
                 float x = (float) p.x;
@@ -166,9 +188,6 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
 
                 poseStack.translate(x, y, 0);
                 poseStack.scale(0.75f, 0.75f, 1);
-
-                // 载具自定义第三人称渲染
-                vehicle.renderThirdPersonOverlay(guiGraphics, mc.font, player, screenWidth, screenHeight, scale);
 
                 VehicleMainWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
 

@@ -1,13 +1,62 @@
 {
   "ID": "superbwarfare:mk_42",
   "MaxHealth": 350,
+  "TurretPos": [0, 0.413125, 0],
+  "TurretTurnSpeed": [1.75, 1.75],
+  "TurretPitchRange": [-15, 85],
+  "BarrelPos": [0, 1.746875, 0.5175],
   "Seats": {
     "HidePassenger": true,
-    "Transform": "VehicleFlat",
-    "Position": [0, 2.3, 0],
+    "Transform": "Turret",
+    "Position": [0, 1.886875, 0],
+    "CameraPos": {
+      "Transform": "Barrel",
+      "ZoomPosition": [0, 0.15, 0],
+      "ZoomDirection": "Barrel"
+    },
     "MinPitch": -15,
     "MaxPitch": 85,
-    "Sensitivity": [0.5, 0.7, 0.9]
+    "Sensitivity": [0.5, 0.7, 0.9],
+    "Weapons": ["CannonAP"]
+  },
+  "Weapons": {
+    "CannonAP": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Projectile": "superbwarfare:cannon_shell",
+      "DefaultZoom": 5,
+      "Velocity": 15,
+      "Damage": 450,
+      "ExplosionDamage": 120,
+      "ExplosionRadius": 3,
+      "Spread": 0.05,
+      "ShootAnimationTime": 30,
+      "Crosshair": "@VehicleCommonCross",
+      "CrosshairZooming": "@VehicleCommonCannonZooming",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:mk_42_fire_1p",
+        "Fire3P": "superbwarfare:mk_42_fire_3p",
+        "Fire3PFar": "superbwarfare:mk_42_far",
+        "Fire3PVeryFar": "superbwarfare:mk_42_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 32,
+      "AmmoType": "superbwarfare:ap_5_inches",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [
+          [
+            0,
+            0,
+            6.375
+          ]
+        ],
+        "Directions": [
+          "Barrel"
+        ]
+      }
+    }
   },
   "Mass": 61.4,
   "DamageModifiers": [
@@ -31,6 +80,7 @@
     "@superbwarfare:gun_grenade * 1.5",
     "All - 8"
   ],
+  "EngineType": "Fixed",
   "VehicleContainerType": "One",
   "DestroyInfo": {
     "ParticleType": "Medium",

@@ -42,7 +42,7 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
         var type = vehicle.computed().mainWeaponHudType;
         if (type.equals(EMPTY)) return;
 
-        if (vehicle.getSeatIndex(player) != vehicle.computed().mainWeaponControllerIndex) return;
+        if (vehicle.getSeatIndex(player) != vehicle.computed().turretControllerIndex) return;
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();

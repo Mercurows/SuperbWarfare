@@ -16,8 +16,37 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "barrel",
+					"name": "base",
 					"parent": "root",
+					"pivot": [0, 34.56, -7.2]
+				},
+				{
+					"name": "dizuo1",
+					"parent": "base",
+					"pivot": [0, 0.9, 0],
+					"cubes": [
+						{
+							"origin": [-31.68, 0.36, -31.68],
+							"size": [63.36, 5.68, 63.36],
+							"uv": {
+								"north": {"uv": [1, 14], "uv_size": [9, 8]},
+								"east": {"uv": [1, 14], "uv_size": [9, 8]},
+								"south": {"uv": [1, 14], "uv_size": [9, 8]},
+								"west": {"uv": [1, 14], "uv_size": [9, 8]},
+								"up": {"uv": [10, 22], "uv_size": [-9, -8]},
+								"down": {"uv": [3, 31], "uv_size": [-2, -3]}
+							}
+						}
+					]
+				},
+				{
+					"name": "turret",
+					"parent": "root",
+					"pivot": [0, 6.61, 0]
+				},
+				{
+					"name": "barrel",
+					"parent": "turret",
 					"pivot": [0, 34.56, -8.28]
 				},
 				{
@@ -166,37 +195,8 @@
 					]
 				},
 				{
-					"name": "body",
-					"parent": "root",
-					"pivot": [0, 34.56, 8.28]
-				},
-				{
-					"name": "base",
-					"parent": "body",
-					"pivot": [0, 34.56, -7.2]
-				},
-				{
-					"name": "dizuo1",
-					"parent": "base",
-					"pivot": [0, 0.9, 0],
-					"cubes": [
-						{
-							"origin": [-31.68, 0.36, -31.68],
-							"size": [63.36, 5.68, 63.36],
-							"uv": {
-								"north": {"uv": [1, 14], "uv_size": [9, 8]},
-								"east": {"uv": [1, 14], "uv_size": [9, 8]},
-								"south": {"uv": [1, 14], "uv_size": [9, 8]},
-								"west": {"uv": [1, 14], "uv_size": [9, 8]},
-								"up": {"uv": [10, 22], "uv_size": [-9, -8]},
-								"down": {"uv": [3, 31], "uv_size": [-2, -3]}
-							}
-						}
-					]
-				},
-				{
 					"name": "paoshen2",
-					"parent": "body",
+					"parent": "turret",
 					"pivot": [0, 35.28, -7.2]
 				},
 				{
@@ -216,7 +216,7 @@
 				},
 				{
 					"name": "paoshen4",
-					"parent": "body",
+					"parent": "turret",
 					"pivot": [0, 44.28, -7.2],
 					"cubes": [
 						{
@@ -405,7 +405,7 @@
 				},
 				{
 					"name": "top",
-					"parent": "body",
+					"parent": "turret",
 					"pivot": [0, 56.99868, 7.52064],
 					"cubes": [
 						{
@@ -702,7 +702,7 @@
 				},
 				{
 					"name": "qiuchuang3",
-					"parent": "body",
+					"parent": "turret",
 					"pivot": [0, 56.56966, 19.57736],
 					"cubes": [
 						{
@@ -722,7 +722,7 @@
 				},
 				{
 					"name": "huokong3",
-					"parent": "body",
+					"parent": "turret",
 					"pivot": [0, -45, 0]
 				},
 				{
@@ -830,7 +830,7 @@
 				},
 				{
 					"name": "huokong2",
-					"parent": "body",
+					"parent": "turret",
 					"pivot": [0, -45, 0]
 				},
 				{
@@ -938,7 +938,7 @@
 				},
 				{
 					"name": "fujiadangkuai",
-					"parent": "body",
+					"parent": "turret",
 					"pivot": [-10.44, 26.1, 3.06]
 				}
 			]

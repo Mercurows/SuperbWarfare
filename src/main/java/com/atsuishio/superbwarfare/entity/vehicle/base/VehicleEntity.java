@@ -35,11 +35,8 @@ import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -1800,10 +1797,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(MOUSE_SPEED_X, getMouseMoveSpeedX() * 0.95f);
         entityData.set(MOUSE_SPEED_Y, getMouseMoveSpeedY() * 0.95f);
 
-        if (hasMainWeapon()) {
-            if (getNthEntity(getMainWeaponControllerIndex()) instanceof Player) {
+        if (hasTurret()) {
+            if (getNthEntity(getTurretControllerIndex()) instanceof Player) {
                 this.adjustTurretAngle();
-            } else if (getNthEntity(getMainWeaponControllerIndex()) instanceof Mob mob) {
+            } else if (getNthEntity(getTurretControllerIndex()) instanceof Mob mob) {
                 this.turretAutoAimFromUuid(entityData.get(AI_TURRET_TARGET_UUID), mob);
             }
         }
@@ -2144,7 +2141,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation);
             }
 
-            if (hasMainWeapon() && index == getMainWeaponControllerIndex()) {
+            if (hasTurret() && index == getTurretControllerIndex()) {
                 if (seat.transform.equals("Vehicle") || seat.transform.equals("VehicleFlat")) {
                     float diffY = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
                     passengerPitch(entity, seat.minPitch, seat.maxPitch, diffY);
@@ -2530,58 +2527,58 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return VehicleVecUtils.getClientVehicleTransform(this, partialTicks);
     }
 
-    public boolean hasMainWeapon() {
-        return getMainWeaponPos() != null;
+    public boolean hasTurret() {
+        return getTurretPos() != null;
     }
 
-    public Vec3 getMainWeaponPos() {
-        return computed().mainWeaponPos;
+    public Vec3 getTurretPos() {
+        return computed().turretPos;
     }
 
-    public int getMainWeaponControllerIndex() {
-        return computed().mainWeaponControllerIndex;
+    public int getTurretControllerIndex() {
+        return computed().turretControllerIndex;
     }
 
     /**
      * @return 炮塔最大俯仰速度
      */
-    public float getMainWeaponTurnXSpeed() {
-        return computed().mainWeaponTurnSpeed.x;
+    public float getTurretTurnXSpeed() {
+        return computed().turretTurnSpeed.x;
     }
 
     /**
      * @return 炮塔最大偏航速度
      */
-    public float getMainWeaponTurnYSpeed() {
-        return computed().mainWeaponTurnSpeed.y;
+    public float getTurretTurnYSpeed() {
+        return computed().turretTurnSpeed.y;
     }
 
     /**
      * @return 炮塔最小偏航
      */
-    public float getMainWeaponMinYaw() {
-        return computed().mainWeaponYawRange.x;
+    public float getTurretMinYaw() {
+        return computed().turretYawRange.x;
     }
 
     /**
      * @return 炮塔最大偏航
      */
-    public float getMainWeaponMaxYaw() {
-        return computed().mainWeaponYawRange.y;
+    public float getTurretMaxYaw() {
+        return computed().turretYawRange.y;
     }
 
     /**
      * @return 炮塔最小俯角
      */
-    public float getMainWeaponMinPitch() {
-        return computed().mainWeaponPitchRange.x;
+    public float getTurretMinPitch() {
+        return computed().turretPitchRange.x;
     }
 
     /**
      * @return 炮塔最大仰角
      */
-    public float getMainWeaponMaxPitch() {
-        return computed().mainWeaponPitchRange.y;
+    public float getTurretMaxPitch() {
+        return computed().turretPitchRange.y;
     }
 
     public Vec3 getBarrelPosition() {
@@ -3010,22 +3007,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     /**
-     * 渲染载具的第一人称UI
-     * 务必标记 @OnlyIn(Dist.CLIENT)
-     */
-    @OnlyIn(Dist.CLIENT)
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
-    }
-
-    /**
-     * 渲染载具的第三人称UI
-     * 务必标记 @OnlyIn(Dist.CLIENT) !
-     */
-    @OnlyIn(Dist.CLIENT)
-    public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
-    }
-
-    /**
      * 获取视角旋转
      *
      * @param zoom          是否在载具上瞄准
@@ -3139,10 +3120,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      *
      * @return 放大倍率
      */
-    public double getZoomFactor(Entity entity) {
+    public double getDefaultZoom(Entity entity) {
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData != null) {
-            return gunData.compute().zoomFactor;
+            return gunData.compute().defaultZoom;
         } else {
             return 1;
         }

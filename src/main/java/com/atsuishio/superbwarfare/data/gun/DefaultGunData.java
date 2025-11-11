@@ -53,12 +53,12 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("RecoilForce")
     public float recoilForce = 0f;
 
-    @SerializedName("ZoomFactor")
-    public double zoomFactor = 1.25;
+    @SerializedName("DefaultZoom")
+    public double defaultZoom = 1.25;
     @SerializedName("MinZoom")
-    public double minZoom = zoomFactor;
+    public double minZoom = defaultZoom;
     @SerializedName("MaxZoom")
-    public double maxZoom = zoomFactor;
+    public double maxZoom = defaultZoom;
 
     @SerializedName("Spread")
     public double spread;
@@ -351,10 +351,6 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
         if (seekType == null) {
             seekType = SeekType.NONE;
         }
-
-        minZoom = Mth.clamp(minZoom, 1, 114);
-        maxZoom = Mth.clamp(maxZoom, minZoom, 114);
-        zoomFactor = Mth.clamp(zoomFactor, minZoom, maxZoom);
 
         autoIterativeReloadTime = Math.max(0, autoIterativeReloadTime);
         burstAmount = Math.max(0, burstAmount);

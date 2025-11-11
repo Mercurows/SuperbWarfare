@@ -107,7 +107,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         rawData.headshot += getCustomHeadshot(gunData);
         rawData.bypassesArmor += getCustomBypassArmor(gunData);
         rawData.magazine += getCustomMagazine(gunData);
-        rawData.zoomFactor += getCustomZoom(gunData);
+        rawData.defaultZoom += getCustomZoom(gunData);
         rawData.rpm += getCustomRPM(gunData);
         rawData.weight += getCustomWeight(gunData);
         rawData.velocity += getCustomVelocity(gunData);
