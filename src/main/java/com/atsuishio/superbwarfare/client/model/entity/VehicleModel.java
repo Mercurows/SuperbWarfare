@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import oshi.util.tuples.Pair;
@@ -59,7 +60,7 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             }
 
             LOGGER.log(vehicle, logger -> logger.error("failed to load model for {}!", vehicle));
-            var loc = Mod.loc("geo/" + VehicleResource.getRegistryId(vehicle.getType()) + ".geo.json");
+            var loc = Mod.loc("geo/" + EntityType.getKey(vehicle.getType()).getPath() + ".geo.json");
             modelCache = loc;
             return loc;
         }
@@ -81,7 +82,7 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             }
 
             LOGGER.log(vehicle, logger -> logger.error("failed to load texture for {}!", vehicle));
-            var loc = Mod.loc("textures/entity/" + VehicleResource.getRegistryId(vehicle.getType()) + ".png");
+            var loc = Mod.loc("textures/entity/" + EntityType.getKey(vehicle.getType()).getPath() + ".png");
             textureCache = loc;
             return loc;
         }

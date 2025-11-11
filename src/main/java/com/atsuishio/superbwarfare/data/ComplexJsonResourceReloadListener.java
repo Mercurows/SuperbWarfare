@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.data;
 import com.atsuishio.superbwarfare.Mod;
 import com.google.gson.JsonParseException;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -15,9 +14,9 @@ import java.util.Map;
 
 public class ComplexJsonResourceReloadListener extends SimplePreparableReloadListener<Object> {
 
-    private final Map<ResourceLocation, DataLoader.GeneralData<?>> data;
+    private final Map<String, DataLoader.GeneralData<?>> data;
 
-    public ComplexJsonResourceReloadListener(Map<ResourceLocation, DataLoader.GeneralData<?>> data) {
+    public ComplexJsonResourceReloadListener(Map<String, DataLoader.GeneralData<?>> data) {
         this.data = data;
     }
 
@@ -25,19 +24,14 @@ public class ComplexJsonResourceReloadListener extends SimplePreparableReloadLis
 
     @ParametersAreNonnullByDefault
     protected @NotNull Object prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
-        this.data.forEach((loc, value) -> {
+        this.data.forEach((name, value) -> {
             var map = value.data();
             map.clear();
-
-            var namespace = loc.getNamespace();
-            var name = loc.getPath();
 
             var converter = FileToIdConverter.json(name);
             for (var entry : converter.listMatchingResources(resourceManager).entrySet()) {
                 var resourcelocation = entry.getKey();
                 var pathLocation = converter.fileToId(resourcelocation);
-
-                if (!pathLocation.getNamespace().equals(namespace)) continue;
 
                 try (var reader = entry.getValue().openAsReader()) {
                     var data = DataLoader.GSON.fromJson(reader, value.type());
