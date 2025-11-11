@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -12,22 +11,16 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.common.ammo.CannonShellItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -54,9 +47,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
-
-public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity, RemoteControllableTurret {
+public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> RIGHT_BARREL_ANIM = SynchedEntityData.defineId(Mle1934Entity.class, EntityDataSerializers.INT);
@@ -138,168 +129,8 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
     }
 
     @Override
-    public boolean canRemoteFire() {
-        return this.getItem(0).getItem() instanceof CannonShellItem && this.getEntityData().get(COOL_DOWN) == 0;
-    }
-
-    @Override
-    public void remoteFire(@Nullable Player player) {
-        ItemStack stack = this.getItem(0);
-
-        // TODO 修改实现方式
-        int type = 0;
-        if (stack.is(ModItems.HE_5_INCHES.get())) {
-            type = 1;
-        } else if (stack.is(ModItems.CM_5_INCHES.get())) {
-            type = 2;
-        } else if (stack.is(ModItems.GS_5_INCHES.get())) {
-            type = 3;
-        }
-
-        this.setWeaponIndex(0, type);
-        this.shoot(player, true);
-    }
-
-    @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getMainHandItem();
-
-        if (stack.getItem() instanceof ArtilleryIndicator indicator) {
-            return indicator.bind(stack, player, this);
-        }
-
-        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
-            if (this.items.get(0).getItem() instanceof CannonShellItem) {
-                ItemStack item = this.getItem(0);
-
-                int type = 0;
-                if (item.is(ModItems.HE_5_INCHES.get())) {
-                    type = 1;
-                } else if (item.is(ModItems.CM_5_INCHES.get())) {
-                    type = 2;
-                } else if (item.is(ModItems.GS_5_INCHES.get())) {
-                    type = 3;
-                }
-                setWeaponIndex(0, type);
-//                vehicleShoot(player);
-            }
-            return InteractionResult.SUCCESS;
-        }
-
-        if (stack.getItem() instanceof CannonShellItem) {
-            if (this.entityData.get(COOL_DOWN) == 0 && (stack.getItem() == this.items.get(0).getItem() || this.items.get(0).isEmpty())) {
-                var inStack = this.items.get(0);
-                int count = inStack.getCount();
-
-                if (count >= Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
-                    return InteractionResult.PASS;
-                }
-
-                this.setItem(0, stack.copyWithCount(count + 1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                if (player instanceof ServerPlayer serverPlayer) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1);
-                }
-            }
-            return InteractionResult.SUCCESS;
-        }
-
-        if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
-            setTarget(player.getMainHandItem(), player);
-        }
-        if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
-            setTarget(player.getMainHandItem(), player);
-        }
-        return super.interact(player, hand);
-    }
-
-    //这个炮仰角太低只能用低伸弹道
-    @Override
-    public void setTarget(ItemStack stack, Entity entity) {
-        double targetX = stack.getOrCreateTag().getDouble("TargetX");
-        double targetY = stack.getOrCreateTag().getDouble("TargetY");
-        double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
-        boolean canAim = true;
-
-        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
-        entityData.set(DEPRESSED, true);
-        entityData.set(RADIUS, stack.getOrCreateTag().getInt("Radius"));
-        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, shootVelocity(), projectileGravity(), entityData.get(DEPRESSED));
-
-        Component component = Component.literal("");
-        Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
-                .append(Component.literal(" X:" + FormatTool.format0D(getX()) + " Y:" + FormatTool.format0D(getY()) + " Z:" + FormatTool.format0D(getZ()) + " "));
-        float angle = getXRot();
-
-        if (launchVector == null) {
-            canAim = false;
-            component = Component.translatable("tips.superbwarfare.mortar.out_of_range");
-        } else {
-            angle = (float) -VehicleVecUtils.getXRotFromVector(launchVector);
-            if (angle < -maxPitch() || angle > -minPitch()) {
-                canAim = false;
-                component = Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName());
-                if (angle < -maxPitch()) {
-                    component = Component.translatable("tips.superbwarfare.ballistics.warn3");
-                }
-            }
-        }
-
-        if (canAim) {
-            this.look(randomPos);
-            entityData.set(PITCH, angle);
-        } else if (entity instanceof Player player) {
-            player.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false);
-        }
-    }
-
-    @Override
-    public void resetTarget() {
-        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, 15, projectileGravity(), entityData.get(DEPRESSED));
-        this.look(randomPos);
-
-        if (launchVector == null) {
-            return;
-        }
-        float angle = (float) -VehicleVecUtils.getXRotFromVector(launchVector);
-        if (angle > -maxPitch() && angle < -minPitch()) {
-            entityData.set(PITCH, angle);
-        }
-    }
-
-    @Override
-    public double minPitch() {
-        return -2.7;
-    }
-
-    @Override
-    public double maxPitch() {
-        return 30;
-    }
-
-    @Override
-    public double shootVelocity() {
-        return 15;
-    }
-
-    @Override
     public float projectileGravity() {
         return 0.1f;
-    }
-
-    @Override
-    public void look(Vec3 pTarget) {
-        Matrix4f transform = getVehicleFlatTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0, 1.4992625f, 1.52065f);
-        Vec3 shootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        double d0 = pTarget.x - shootPos.x;
-        double d2 = pTarget.z - shootPos.z;
-        entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F));
     }
 
     @Override
@@ -446,9 +277,6 @@ public class Mle1934Entity extends VehicleEntity implements GeoEntity, CannonEnt
 
             ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 45);
 
-            if (reset) {
-                resetTarget();
-            }
         }
     }
 

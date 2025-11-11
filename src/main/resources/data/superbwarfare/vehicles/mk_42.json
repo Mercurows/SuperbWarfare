@@ -29,6 +29,7 @@
       "AutoIterativeReloadTime": 30,
       "DefaultZoom": 5,
       "Velocity": 15,
+      "Gravity": 0.1,
       "Damage": 450,
       "ExplosionDamage": 120,
       "ExplosionRadius": 3,

@@ -9,8 +9,6 @@ import software.bernie.geckolib.constant.DataTickets;
 
 import java.util.UUID;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity.*;
-
 public class Bl132Model extends VehicleModel<Bl132Entity> {
 
     @Override
@@ -31,10 +29,10 @@ public class Bl132Model extends VehicleModel<Bl132Entity> {
                     bone.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
                 }
             };
-            case "flare" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(COOL_DOWN) <= 75);
-            case "flare2" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_2) <= 10);
-            case "flare3" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_3) <= 10);
-            case "flare4" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_4) <= 10);
+//            case "flare" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(COOL_DOWN) <= 75);
+//            case "flare2" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_2) <= 10);
+//            case "flare3" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_3) <= 10);
+//            case "flare4" -> (bone, vehicle, state) -> bone.setHidden(vehicle.getEntityData().get(BARREL_ANIM_4) <= 10);
 
             default -> super.collectTransform(boneName);
         };

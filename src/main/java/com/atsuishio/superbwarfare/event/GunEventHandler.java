@@ -227,7 +227,7 @@ public class GunEventHandler {
             var soundInfo = data.compute().soundInfo;
             var sound = soundInfo.reloadPrepare;
             if (sound != null && ammoSupplier != null) {
-                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 0.6f, 1);
+                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 1, 1);
             }
         }
 
