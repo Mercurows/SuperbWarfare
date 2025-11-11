@@ -25,6 +25,8 @@
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
+      "Magazine": 1,
+      "AutoIterativeReloadTime": 30,
       "DefaultZoom": 5,
       "Velocity": 15,
       "Damage": 450,
@@ -34,6 +36,7 @@
       "ShootAnimationTime": 30,
       "Crosshair": "@VehicleCommonCross",
       "CrosshairZooming": "@VehicleCommonCannonZooming",
+      "Name": "superbwarfare.mk_42.cannon_ap",
       "SoundInfo": {
         "Fire1P": "superbwarfare:mk_42_fire_1p",
         "Fire3P": "superbwarfare:mk_42_fire_3p",
