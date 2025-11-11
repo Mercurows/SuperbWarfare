@@ -37,8 +37,8 @@ public class DataLoader {
                 }
             });
 
-    private static final Map<ResourceLocation, GeneralData<?>> LOADED_DATA = new HashMap<>();
-    private static final Map<ResourceLocation, GeneralData<?>> LOADED_RESOURCE = new HashMap<>();
+    private static final Map<String, GeneralData<?>> LOADED_DATA = new HashMap<>();
+    private static final Map<String, GeneralData<?>> LOADED_RESOURCE = new HashMap<>();
 
     public record GeneralData<T>(
             Class<?> type, DataMap<T> proxyMap,
@@ -63,34 +63,32 @@ public class DataLoader {
         }
     }
 
-    public static <T> DataMap<T> createData(String namespace, String directory, Class<T> clazz) {
-        return createData(namespace, directory, clazz, null);
+    public static <T> DataMap<T> createData(String directory, Class<T> clazz) {
+        return createData(directory, clazz, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> DataMap<T> createData(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
-        var loc = new ResourceLocation(namespace, directory);
-        if (LOADED_DATA.containsKey(loc)) {
-            return (DataMap<T>) LOADED_DATA.get(loc).proxyMap;
+    public static <T> DataMap<T> createData(String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
+        if (LOADED_DATA.containsKey(directory)) {
+            return (DataMap<T>) LOADED_DATA.get(directory).proxyMap;
         } else {
-            var proxyMap = new DataMap<T>(new ResourceLocation(namespace, directory), LOADED_DATA);
-            LOADED_DATA.put(loc, new GeneralData<>(clazz, proxyMap, new HashMap<>(), onReload));
+            var proxyMap = new DataMap<T>(directory, LOADED_DATA);
+            LOADED_DATA.put(directory, new GeneralData<>(clazz, proxyMap, new HashMap<>(), onReload));
             return proxyMap;
         }
     }
 
-    public static <T> DataMap<T> createResource(String namespace, String directory, Class<T> clazz) {
-        return createResource(namespace, directory, clazz, null);
+    public static <T> DataMap<T> createResource(String directory, Class<T> clazz) {
+        return createResource(directory, clazz, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> DataMap<T> createResource(String namespace, String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
-        var loc = new ResourceLocation(namespace, directory);
-        if (LOADED_RESOURCE.containsKey(loc)) {
-            return (DataMap<T>) LOADED_RESOURCE.get(loc).proxyMap;
+    public static <T> DataMap<T> createResource(String directory, Class<T> clazz, @Nullable Consumer<Map<String, Object>> onReload) {
+        if (LOADED_RESOURCE.containsKey(directory)) {
+            return (DataMap<T>) LOADED_RESOURCE.get(directory).proxyMap;
         } else {
-            var proxyMap = new DataMap<T>(new ResourceLocation(namespace, directory), LOADED_RESOURCE);
-            LOADED_RESOURCE.put(loc, new GeneralData<>(clazz, proxyMap, new HashMap<>(), onReload));
+            var proxyMap = new DataMap<T>(directory, LOADED_RESOURCE);
+            LOADED_RESOURCE.put(directory, new GeneralData<>(clazz, proxyMap, new HashMap<>(), onReload));
             return proxyMap;
         }
     }
@@ -128,31 +126,31 @@ public class DataLoader {
     // read-only custom data map
 
     public static class DataMap<T> extends HashMap<String, T> {
-        private final ResourceLocation location;
-        private final Map<ResourceLocation, GeneralData<?>> loadedData;
+        private final String directory;
+        private final Map<String, GeneralData<?>> loadedData;
 
-        private DataMap(ResourceLocation location, Map<ResourceLocation, GeneralData<?>> loadedData) {
-            this.location = location;
+        private DataMap(String directory, Map<String, GeneralData<?>> loadedData) {
+            this.directory = directory;
             this.loadedData = loadedData;
         }
 
         @Override
         public int size() {
-            if (!this.loadedData.containsKey(location)) return 0;
-            return this.loadedData.get(location).data.size();
+            if (!this.loadedData.containsKey(directory)) return 0;
+            return this.loadedData.get(directory).data.size();
         }
 
         @Override
         public boolean isEmpty() {
-            if (!this.loadedData.containsKey(location)) return true;
-            return this.loadedData.get(location).data.isEmpty();
+            if (!this.loadedData.containsKey(directory)) return true;
+            return this.loadedData.get(directory).data.isEmpty();
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T get(Object key) {
-            if (!this.loadedData.containsKey(location)) return null;
-            return (T) this.loadedData.get(location).data.get(key);
+            if (!this.loadedData.containsKey(directory)) return null;
+            return (T) this.loadedData.get(directory).data.get(key);
         }
 
         @Override
@@ -168,62 +166,62 @@ public class DataLoader {
 
         @Override
         public boolean containsKey(Object key) {
-            if (!this.loadedData.containsKey(location)) return false;
-            return this.loadedData.get(location).data.containsKey(key);
+            if (!this.loadedData.containsKey(directory)) return false;
+            return this.loadedData.get(directory).data.containsKey(key);
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T put(String key, T value) {
-            return (T) this.loadedData.get(location).data.put(key, value);
+            return (T) this.loadedData.get(directory).data.put(key, value);
         }
 
         @Override
         public void putAll(Map<? extends String, ? extends T> m) {
-            this.loadedData.get(location).data.putAll(m);
+            this.loadedData.get(directory).data.putAll(m);
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T remove(Object key) {
-            return (T) this.loadedData.get(location).data.remove(key);
+            return (T) this.loadedData.get(directory).data.remove(key);
         }
 
         @Override
         public void clear() {
-            this.loadedData.get(location).data.clear();
+            this.loadedData.get(directory).data.clear();
         }
 
         @Override
         public boolean containsValue(Object value) {
-            if (!this.loadedData.containsKey(location)) return false;
-            return this.loadedData.get(location).data.containsValue(value);
+            if (!this.loadedData.containsKey(directory)) return false;
+            return this.loadedData.get(directory).data.containsValue(value);
         }
 
         @Override
         public @NotNull Set<String> keySet() {
-            if (!this.loadedData.containsKey(location)) return Set.of();
-            return this.loadedData.get(location).data.keySet();
+            if (!this.loadedData.containsKey(directory)) return Set.of();
+            return this.loadedData.get(directory).data.keySet();
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public @NotNull Collection<T> values() {
-            if (!this.loadedData.containsKey(location)) return Set.of();
-            return this.loadedData.get(location).data.values().stream().map(v -> (T) v).toList();
+            if (!this.loadedData.containsKey(directory)) return Set.of();
+            return this.loadedData.get(directory).data.values().stream().map(v -> (T) v).toList();
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public @NotNull Set<Entry<String, T>> entrySet() {
-            if (!this.loadedData.containsKey(location)) return Set.of();
-            return this.loadedData.get(location).data.entrySet().stream()
+            if (!this.loadedData.containsKey(directory)) return Set.of();
+            return this.loadedData.get(directory).data.entrySet().stream()
                     .map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey(), (T) e.getValue()))
                     .collect(Collectors.toCollection(HashSet::new));
         }
 
-        public ResourceLocation getLocation() {
-            return location;
+        public String getDirectory() {
+            return directory;
         }
     }
 }
