@@ -44,7 +44,6 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         ItemStack stack = player.getMainHandItem();
 
         if (getShootAnimationTimer(0, 0) == 0) {
-
             if (!gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
                 return super.interact(player, hand);
             }
@@ -52,15 +51,18 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
             var inStack = this.items.get(0);
             int count = inStack.getCount();
 
-            if (count >= Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
+            if (count >= this.getMaxStackSize()) {
                 return super.interact(player, hand);
             }
 
             this.setItem(0, stack.copyWithCount(count + 1));
 
             if (player instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.CANNON_RELOAD.get(), 2, 1);
+                SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
             }
+
+            return InteractionResult.SUCCESS;
+
         }
         return super.interact(player, hand);
     }
@@ -85,6 +87,9 @@ public class Mk42Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
                 if (count < Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
                     this.setItem(0, gunData.selectedAmmoConsumer().stack().copyWithCount(count + 1));
                     InventoryTool.consumeItem(player, gunData.selectedAmmoConsumer().stack().getItem(), 1);
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
+                    }
                 }
             }
         }
