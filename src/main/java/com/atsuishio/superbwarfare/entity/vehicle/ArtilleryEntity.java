@@ -1,0 +1,260 @@
+package com.atsuishio.superbwarfare.entity.vehicle;
+
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
+import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.tools.*;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Math;
+import org.joml.Vector3f;
+
+import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
+
+public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntity {
+    public static final EntityDataAccessor<Vector3f> SHOOT_VEC = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
+    public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
+    public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.INT);
+
+    public ArtilleryEntity(EntityType<?> type, Level world) {
+        super(type, world);
+    }
+
+    @Override
+    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        var gunData = getGunData(0);
+        if (gunData == null) return InteractionResult.SUCCESS;
+        ItemStack stack = player.getMainHandItem();
+
+        if (stack.getItem() instanceof ArtilleryIndicator indicator) {
+            return indicator.bind(stack, player, this);
+        }
+
+        if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
+            if (gunData.ammo.get() > 0) {
+                if (player.level() instanceof ServerLevel) {
+                    vehicleShoot(player, 0);
+                    resetTarget(0);
+                }
+
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isShiftKeyDown()) {
+            setTarget(player.getMainHandItem(), player, 0);
+            return InteractionResult.SUCCESS;
+        }
+        if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isShiftKeyDown()) {
+            setTarget(player.getOffhandItem(), player, 0);
+            return InteractionResult.SUCCESS;
+        }
+
+        // 手动添加弹药
+
+        if (gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
+            var inStack = this.items.getFirst();
+            int count = inStack.getCount();
+
+            if (count < this.getMaxStackSize()) {
+                this.setItem(0, stack.copyWithCount(count + 1));
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                if (player instanceof ServerPlayer serverPlayer) {
+                    SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
+                }
+            }
+            return InteractionResult.SUCCESS;
+        } else {
+            return super.interact(player, hand);
+        }
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+
+        builder.define(SHOOT_VEC, getViewVector(1).toVector3f())
+                .define(DEPRESSED, false)
+                .define(TARGET_POS, new Vector3f())
+                .define(RADIUS, 0);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putFloat("ShootVecX", this.entityData.get(SHOOT_VEC).x);
+        compound.putFloat("ShootVecY", this.entityData.get(SHOOT_VEC).y);
+        compound.putFloat("ShootVecZ", this.entityData.get(SHOOT_VEC).z);
+
+        compound.putBoolean("Depressed", this.entityData.get(DEPRESSED));
+        compound.putInt("Radius", this.entityData.get(RADIUS));
+        compound.putFloat("TargetX", this.entityData.get(TARGET_POS).x);
+        compound.putFloat("TargetY", this.entityData.get(TARGET_POS).y);
+        compound.putFloat("TargetZ", this.entityData.get(TARGET_POS).z);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("ShootVecX") && compound.contains("ShootVecY") && compound.contains("ShootVecZ")) {
+            this.entityData.set(SHOOT_VEC, new Vector3f(compound.getFloat("ShootVecX"), compound.getFloat("ShootVecX"), compound.getFloat("ShootVecZ")));
+        }
+
+        if (compound.contains("Depressed")) {
+            this.entityData.set(DEPRESSED, compound.getBoolean("Depressed"));
+        }
+        if (compound.contains("Radius")) {
+            this.entityData.set(RADIUS, compound.getInt("Radius"));
+        }
+        if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
+            this.entityData.set(TARGET_POS, new Vector3f(compound.getFloat("TargetX"), compound.getFloat("TargetX"), compound.getFloat("TargetZ")));
+        }
+    }
+
+    public void setTarget(ItemStack stack, Entity entity, int seatIndex) {
+        var data = getGunData(seatIndex);
+
+        if (data == null) return;
+
+        var parameters = stack.getOrDefault(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos(0, 0, 0)));
+
+        double targetX = parameters.pos().getX();
+        double targetY = parameters.pos().getY();
+        double targetZ = parameters.pos().getZ();
+        boolean canAim = true;
+
+        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+        entityData.set(DEPRESSED, parameters.isDepressed());
+        entityData.set(RADIUS, parameters.radius());
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+        Vec3 launchVector = calculateLaunchVector(getShootPos(seatIndex, 1), randomPos, data.compute().velocity, data.compute().gravity, entityData.get(DEPRESSED));
+
+        Component component = Component.literal("");
+        Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
+                .append(Component.literal(" X:" + FormatTool.format0D(getX()) + " Y:" + FormatTool.format0D(getY()) + " Z:" + FormatTool.format0D(getZ()) + " "));
+
+        if (launchVector == null) {
+            canAim = false;
+            component = Component.translatable("tips.superbwarfare.mortar.out_of_range");
+        } else {
+            float angle = (float) -VehicleVecUtils.getXRotFromVector(launchVector);
+            if (angle < -getTurretMaxPitch() || angle > -getTurretMinPitch()) {
+                canAim = false;
+                component = Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName());
+                if (angle < -getTurretMaxPitch()) {
+                    component = Component.translatable("tips.superbwarfare.ballistics.warn");
+                }
+            }
+        }
+
+        if (canAim) {
+            entityData.set(SHOOT_VEC, launchVector.toVector3f());
+        } else if (entity instanceof Player player) {
+            player.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false);
+        }
+    }
+
+    public void resetTarget(int seatIndex) {
+        var data = getGunData(seatIndex);
+        if (data == null) return;
+
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+        Vec3 launchVector = calculateLaunchVector(getShootPos(seatIndex, 1), randomPos, data.compute().velocity, data.compute().gravity, entityData.get(DEPRESSED));
+
+        if (launchVector == null) {
+            return;
+        }
+        float angle = (float) -VehicleVecUtils.getXRotFromVector(launchVector);
+        if (angle > -getTurretMaxPitch() && angle < -getTurretMinPitch()) {
+            entityData.set(SHOOT_VEC, launchVector.toVector3f());
+        }
+    }
+
+    @Override
+    public void baseTick() {
+        super.baseTick();
+        var gunData = getGunData(0);
+        if (gunData != null && level() instanceof ServerLevel && getNthEntity(getTurretControllerIndex()) instanceof Player player) {
+            var ammoCount = InventoryTool.countItem(player, gunData.selectedAmmoConsumer().stack().getItem());
+            if (ammoCount > 0) {
+                var inStack = this.items.getFirst();
+                int count = inStack.getCount();
+
+                if (count < Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
+                    this.setItem(0, gunData.selectedAmmoConsumer().stack().copyWithCount(count + 1));
+                    InventoryTool.consumeItem(player, gunData.selectedAmmoConsumer().stack().getItem(), 1);
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
+                    }
+                }
+            }
+        }
+        var controller = getNthEntity(getTurretControllerIndex());
+
+        if (controller != null) {
+            entityData.set(SHOOT_VEC, controller.getViewVector(1).toVector3f());
+        } else {
+            turretAutoAimFromVector(new Vec3(entityData.get(SHOOT_VEC)));
+        }
+
+        lowHealthWarning();
+    }
+
+    @Override
+    public void vehicleShoot(LivingEntity living, int seatIndex) {
+        super.vehicleShoot(living, seatIndex);
+        if (living.level() instanceof ServerLevel level) {
+            ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(seatIndex, 1), getShootPos(seatIndex, 1), level, this);
+            for (int i = 0; i < 40; i += 4) {
+                Mod.queueServerWork(i, () -> ParticleTool.spawnBarrelSmoke(1, level, getShootVec(seatIndex, 1), getShootPos(seatIndex, 1)));
+            }
+        }
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
+
+    @Override
+    public boolean stillValid(@NotNull Player player) {
+        return false;
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
+        var gunData = getGunData(0);
+        if (gunData != null) {
+            return super.canPlaceItem(slot, stack) && gunData.selectedAmmoConsumer().isAmmoItem(stack);
+        } else {
+            return false;
+        }
+    }
+}

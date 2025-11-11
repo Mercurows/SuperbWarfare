@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
+import com.atsuishio.superbwarfare.entity.vehicle.ArtilleryEntity;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.ChatFormatting;
@@ -172,9 +172,9 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
             var tag = tags.getCompound(i);
             Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
 
-            if (entity instanceof RemoteControllableTurret lockTargetEntity) {
+            if (entity instanceof ArtilleryEntity artilleryEntity) {
                 list.add(tag);
-                lockTargetEntity.setTarget(stack, player);
+                artilleryEntity.setTarget(stack, player, 0);
             }
         }
 

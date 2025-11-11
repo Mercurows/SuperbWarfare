@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
+import com.atsuishio.superbwarfare.entity.vehicle.ArtilleryEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -45,8 +45,14 @@ public enum ArtilleryIndicatorFireMessage implements CustomPacketPayload {
                 var tag = tags.getCompound(i);
                 Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
 
-                if (entity instanceof RemoteControllableTurret turret && turret.canRemoteFire()) {
-                    Mod.queueServerWork(i % 5 + 1, () -> turret.remoteFire(player));
+                if (entity instanceof ArtilleryEntity artilleryEntity) {
+                    var gunData = artilleryEntity.getGunData(0);
+                    if (gunData != null && gunData.ammo.get() > 0) {
+                        Mod.queueServerWork(i % 5 + 1, () -> {
+                            artilleryEntity.vehicleShoot(player, 0);
+                            artilleryEntity.resetTarget(0);
+                        });
+                    }
                 }
             }
         }
