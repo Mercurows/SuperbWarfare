@@ -15,14 +15,14 @@ import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource;
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource;
 
 public class CustomData {
-    public static final DataLoader.DataMap<ProjectileInfo> LAUNCHABLE_ENTITY = DataLoader.createData(Mod.MODID, "launchable", ProjectileInfo.class);
-    public static final DataLoader.DataMap<DefaultVehicleData> VEHICLE_DATA = DataLoader.createData(Mod.MODID, "vehicles", DefaultVehicleData.class, map -> VehicleData.dataCache.invalidateAll());
-    public static final DataLoader.DataMap<DefaultGunData> GUN_DATA = DataLoader.createData(Mod.MODID, "guns", DefaultGunData.class, map -> GunData.DATA_CACHE.invalidateAll());
-    public static final DataLoader.DataMap<DroneAttachmentData> DRONE_ATTACHMENT = DataLoader.createData(Mod.MODID, "drone_attachments", DroneAttachmentData.class);
-    public static final DataLoader.DataMap<DefaultMobGunData> MOB_GUNS = DataLoader.createData(Mod.MODID, "mob_guns", DefaultMobGunData.class, map -> MobGunData.dataCache.invalidateAll());
+    public static final DataLoader.DataMap<ProjectileInfo> LAUNCHABLE_ENTITY = DataLoader.createData(Mod.MODID, "sbw_launchable", ProjectileInfo.class);
+    public static final DataLoader.DataMap<DefaultVehicleData> VEHICLE_DATA = DataLoader.createData(Mod.MODID, "sbw_vehicles", DefaultVehicleData.class, map -> VehicleData.dataCache.invalidateAll());
+    public static final DataLoader.DataMap<DefaultGunData> GUN_DATA = DataLoader.createData(Mod.MODID, "sbw_guns", DefaultGunData.class, map -> GunData.DATA_CACHE.invalidateAll());
+    public static final DataLoader.DataMap<DroneAttachmentData> DRONE_ATTACHMENT = DataLoader.createData(Mod.MODID, "sbw_drone_attachments", DroneAttachmentData.class);
+    public static final DataLoader.DataMap<DefaultMobGunData> MOB_GUNS = DataLoader.createData(Mod.MODID, "sbw_mob_guns", DefaultMobGunData.class, map -> MobGunData.dataCache.invalidateAll());
 
-    public static final DataLoader.DataMap<DefaultGunResource> GUN_RESOURCE = DataLoader.createResource(Mod.MODID, "guns", DefaultGunResource.class, map -> GunResource.RESOURCE_CACHE.invalidateAll());
-    public static final DataLoader.DataMap<DefaultVehicleResource> VEHICLE_RESOURCE = DataLoader.createResource(Mod.MODID, "vehicles", DefaultVehicleResource.class, map -> VehicleResource.RESOURCE_CACHE.invalidateAll());
+    public static final DataLoader.DataMap<DefaultGunResource> GUN_RESOURCE = DataLoader.createResource(Mod.MODID, "sbw_guns", DefaultGunResource.class, map -> GunResource.RESOURCE_CACHE.invalidateAll());
+    public static final DataLoader.DataMap<DefaultVehicleResource> VEHICLE_RESOURCE = DataLoader.createResource(Mod.MODID, "sbw_vehicles", DefaultVehicleResource.class, map -> VehicleResource.RESOURCE_CACHE.invalidateAll());
 
     // 务必在Mod加载时调用该方法，确保上面的静态数据加载成功
     public static void load() {
