@@ -3516,4 +3516,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public boolean isAmphibious() {
         return VehicleMiscUtils.isAmphibious(this);
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public Component firstPersonAmmoComponent(GunData data, Player player) {
+        int ammoCount = this.getAmmoCount(player);
+        return Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public Component thirdPersonAmmoComponent(GunData data, Player player) {
+        return firstPersonAmmoComponent(data, player);
+    }
 }
