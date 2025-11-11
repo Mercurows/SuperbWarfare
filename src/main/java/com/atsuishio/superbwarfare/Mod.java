@@ -29,7 +29,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mozilla.javascript.Context;
 import software.bernie.geckolib.constant.dataticket.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -91,15 +90,6 @@ public class Mod {
         NeoForge.EVENT_BUS.register(this);
 
         CustomData.load();
-
-        var ctx = Context.enter();
-        try (ctx) {
-            var js = "let a = 114; let b = 514; a + b";
-            var scope = ctx.initStandardObjects();
-
-            var result = ctx.evaluateString(scope, js, "<cmd>", 1, null);
-            System.out.println("js add: " + result);
-        }
     }
 
     public static ResourceLocation loc(String path) {
