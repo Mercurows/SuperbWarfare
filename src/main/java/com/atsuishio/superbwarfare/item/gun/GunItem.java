@@ -33,6 +33,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -826,7 +827,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 wgMissileEntity.setLauncherVehicle(shooter.getVehicle().getUUID());
             }
 
-            if (entity instanceof SmallCannonShellEntity smallCannonShell) {
+            if (entity instanceof SmallCannonShellEntity smallCannonShell && data.compute().antiAirProjectile) {
+                if (shooter instanceof Player player) {
+                    player.displayClientMessage(Component.literal("1"), true);
+                }
                 smallCannonShell.antiAir(true);
             }
 

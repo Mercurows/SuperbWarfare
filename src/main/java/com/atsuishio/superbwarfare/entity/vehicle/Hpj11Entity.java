@@ -183,13 +183,14 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
             return;
         }
         var data = getGunData(0);
-        if (data == null) return;;
+        if (data == null) return;
+        if (data().compute().seekInfo == null) return;
 
-        double maxSeekRange = 384;
-        double minSeekRange = 3;
-        double changeTargetTime = 60;
-        double seekIterative = 20;
-        double minTargetSize = 0.25;
+        double maxSeekRange = data().compute().seekInfo.maxSeekRange;
+        double minSeekRange = data().compute().seekInfo.minSeekRange;
+        int changeTargetTime = data().compute().seekInfo.changeTargetTime;
+        int seekIterative = data().compute().seekInfo.seekIterative;
+        double minTargetSize = data().compute().seekInfo.minTargetSize;
 
 //        if (this.getEnergy() <= VehicleConfig.HPJ11_SEEK_COST.get()) return;
         Vec3 barrelRootPos = getShootPos(0, 1);
@@ -320,12 +321,12 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
 
     // 判断载具和目标之间有无障碍物
     public boolean checkNoClip(Entity target, Vec3 pos) {
-        return this.level().clip(new ClipContext(pos, target.getEyePosition(),
+        return this.level().clip(new ClipContext(pos, target.getBoundingBox().getCenter(),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this)).getType() != HitResult.Type.BLOCK;
     }
 
     static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {
-        Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
+        Vec3 targetPos = target.getBoundingBox().getCenter();
         Vec3 toVec = pos.vectorTo(targetPos).normalize();
         double targetAngle = VehicleVecUtils.getXRotFromVector(toVec);
         return minAngle < targetAngle && targetAngle < maxAngle;

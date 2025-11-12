@@ -21,12 +21,20 @@
     },
     "Weapons": ["Cannon"]
   },
+  "SeekInfo": {
+    "MinSeekRange": 3,
+    "MaxSeekRange": 256,
+    "ChangeTargetTime": 60,
+    "SeekIterative": 20,
+    "MinTargetSize": 0.25
+  },
   "Weapons": {
     "Cannon": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
+      "AntiAirProjectile": true,
       "DefaultZoom": 3,
       "RPM": 2400,
       "Velocity": 40,
