@@ -826,6 +826,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 wgMissileEntity.setLauncherVehicle(shooter.getVehicle().getUUID());
             }
 
+            if (entity instanceof SmallCannonShellEntity smallCannonShell) {
+                smallCannonShell.antiAir(true);
+            }
+
             if (entity instanceof SwarmDroneEntity swarmDrone && shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle) {
                 Vec3 lookVec = shooter.getViewVector(1);
                 Entity lookingEntity = SeekTool.seekLivingEntity(shooter, 384, 6);

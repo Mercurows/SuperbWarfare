@@ -3,14 +3,11 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -46,7 +43,7 @@ public class RadarSetTargetMessage {
                 }
                 fuMO25Menu.getSelfPos().ifPresent(pos -> {
                     var entities = StreamSupport.stream(EntityFindUtil.getEntities(player.level()).getAll().spliterator(), false)
-                            .filter(e -> (e instanceof AutoAimable && e instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() == player && ownableEntity instanceof VehicleEntity vehicle && vehicle.distanceTo(player) <= 24))
+                            .filter(e -> (e instanceof Hpj11Entity hpj11Entity && hpj11Entity.getOwner() == player && hpj11Entity.distanceTo(player) <= 24))
                             .toList();
                     entities.forEach(e -> setTarget(e, message.targetUUID.toString()));
                 });

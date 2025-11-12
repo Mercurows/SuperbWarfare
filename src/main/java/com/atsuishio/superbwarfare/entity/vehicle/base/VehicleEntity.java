@@ -1185,6 +1185,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return data.compute().rpm;
     }
 
+    public int vehicleWeaponRpm(int seatIndex) {
+        var data = getGunData(seatIndex);
+        if (data == null) return 0;
+        return data.compute().rpm;
+    }
+
     public int getWeaponHeat(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
         if (gunData == null) return 0;
@@ -2337,6 +2343,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return (float) gunData.compute().velocity;
     }
 
+    public float projectileVelocity(int seatIndex) {
+        var gunData = getGunData(seatIndex);
+        if (gunData == null) return 25;
+
+        return (float) gunData.compute().velocity;
+    }
+
     /**
      * @param entity 操控载具的实体
      * @return 炮弹重力
@@ -2344,6 +2357,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public float projectileGravity(Entity entity) {
         var gunData = getGunData(getSeatIndex(entity));
+        if (gunData == null) return 0;
+
+        return (float) gunData.compute().gravity;
+    }
+
+    public float projectileGravity(int seatIndex) {
+        var gunData = getGunData(seatIndex);
         if (gunData == null) return 0;
 
         return (float) gunData.compute().gravity;
@@ -3038,6 +3058,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getAmmoCount(LivingEntity living) {
         var data = getGunData(getSeatIndex(living));
+        if (data == null) return 0;
+        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
+    }
+
+    public int getAmmoCount(int seatIndex) {
+        var data = getGunData(seatIndex);
         if (data == null) return 0;
         return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }

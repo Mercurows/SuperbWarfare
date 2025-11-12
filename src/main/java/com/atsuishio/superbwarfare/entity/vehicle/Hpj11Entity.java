@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
+import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvents;
@@ -32,32 +33,34 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable, WeaponVehicleEntity {
+public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEntity, WeaponVehicleEntity {
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.OPTIONAL_UUID);
+    public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.STRING);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public int changeTargetTimer = 60;
+    public int changeTargetTimer;
 
     public Hpj11Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.HPJ_11.get(), world);
@@ -66,8 +69,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
     public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
         super(type, world);
     }
-
-
 
     @Override
     protected void defineSynchedData() {
@@ -173,6 +174,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
     @Override
     public void baseTick() {
         super.baseTick();
+        autoAim();
         lowHealthWarning();
     }
 
@@ -180,15 +182,20 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
         if (this.getFirstPassenger() != null || !entityData.get(ACTIVE)) {
             return;
         }
+        var data = getGunData(0);
+        if (data == null) return;;
+
+        double maxSeekRange = 384;
+        double minSeekRange = 3;
+        double changeTargetTime = 60;
+        double seekIterative = 20;
+        double minTargetSize = 0.25;
 
 //        if (this.getEnergy() <= VehicleConfig.HPJ11_SEEK_COST.get()) return;
+        Vec3 barrelRootPos = getShootPos(0, 1);
 
-        Matrix4f transform = getBarrelTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
-        Vec3 barrelRootPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-
-        if (entityData.get(TARGET_UUID).equals("none") && tickCount % 2 == 0) {
-            Entity naerestEntity = seekNearLivingEntity(this, barrelRootPos, -32.5, 90, 3, 160, 0.3);
+        if (entityData.get(TARGET_UUID).equals("none") && tickCount % seekIterative == 0) {
+            Entity naerestEntity = seekNearLivingEntity(barrelRootPos, getTurretMinPitch(), getTurretMaxPitch(), minSeekRange, maxSeekRange, minTargetSize);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
 //                this.consumeEnergy(VehicleConfig.HPJ11_SEEK_COST.get());
@@ -207,7 +214,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
                 return;
             }
 
-            if (target.distanceTo(this) > 160) {
+            if (target.distanceTo(this) > maxSeekRange) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
@@ -219,7 +226,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
-            if (target instanceof Projectile && (VectorTool.calculateAngle(target.getDeltaMovement().normalize(), target.position().vectorTo(this.position()).normalize()) > 60 || target.onGround() || target.getDeltaMovement().lengthSqr() < 0.001)) {
+            if (target instanceof Projectile && (target.onGround() || target.getDeltaMovement().lengthSqr() < 0.001) || target.isInWater()) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
@@ -228,33 +235,24 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
                 this.entityData.set(TARGET_UUID, target.getVehicle().getStringUUID());
             }
 
+            if (!target.isAlive()) {
+                entityData.set(TARGET_UUID, "none");
+            }
+
             Vec3 targetPos = target.getBoundingBox().getCenter();
             Vec3 targetVel = target.getDeltaMovement();
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel, projectileVelocity(player), projectileGravity(player));
+            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel.scale(1.1 + random.nextFloat() * 0.2f), projectileVelocity(0), projectileGravity(0));
+            turretAutoAimFromVector(targetVec);
 
-            double d0 = targetVec.x;
-            double d1 = targetVec.y;
-            double d2 = targetVec.z;
-            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-
-            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F);
-            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
-
-            turretTurnSound(0, diffY, 1.1f);
-
-            this.setXRot(Mth.clamp(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))), -90, 40));
-            this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
-
-            if (target.distanceTo(this) <= 144 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 10) {
-                if (checkNoClip(this, target, barrelRootPos) && entityData.get(AMMO) > 0) {
-//                    vehicleShoot(player);
+            if (VectorTool.calculateAngle(getShootVec(0, 1), targetVec) < 1) {
+                int rpm = Mth.clamp(20 / Mth.clamp((vehicleWeaponRpm(0) / 60), 1, 2147483647), 1, 2147483647);
+                if (checkNoClip(target, barrelRootPos) && getAmmoCount(0) > 0 && !data.overHeat.get() && tickCount % rpm == 0) {
+                    if (player.level() instanceof ServerLevel) {
+                        vehicleShoot(player, 0);
+                    }
                 } else {
                     changeTargetTimer++;
-                }
-
-                if (!target.isAlive()) {
-                    entityData.set(TARGET_UUID, "none");
                 }
             }
 
@@ -262,13 +260,12 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
             entityData.set(TARGET_UUID, "none");
         }
 
-        if (changeTargetTimer > 60) {
+        if (changeTargetTimer > changeTargetTime) {
             entityData.set(TARGET_UUID, "none");
             changeTargetTimer = 0;
         }
     }
 
-    @Override
     public boolean basicEnemyFilter(Entity pEntity) {
         if (pEntity instanceof Projectile) return false;
         if (this.getOwner() == null) return false;
@@ -277,7 +274,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
         return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && TDMSavedData.enabledTDM(pEntity));
     }
 
-    @Override
     public boolean basicEnemyProjectileFilter(Projectile projectile) {
         if (this.getOwner() == null) return false;
         if (projectile.getOwner() != null && projectile.getOwner() == this.getOwner()) return false;
@@ -293,5 +289,45 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    // 防御类载具实体搜寻周围实体
+    public Entity seekNearLivingEntity(Vec3 pos, double minAngle, double maxAngle, double minRange, double seekRange, double size) {
+        for (Entity target : this.level().getEntitiesOfClass(Entity.class, new AABB(pos, pos).inflate(seekRange), e -> true).stream().sorted(Comparator.comparingDouble(e -> e.distanceToSqr(pos))).toList()) {
+            var condition = target.distanceToSqr(this) > minRange * minRange
+                    && target.distanceToSqr(this) <= seekRange * seekRange
+                    && canAim(pos, target, minAngle, maxAngle)
+                    && VehicleVecUtils.getSubmergedHeight(target) <= target.getBbHeight()
+                    && checkNoClip(target, pos)
+                    && !(target instanceof Player player && (player.isSpectator() || player.isCreative()))
+                    && ((target instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || isThreateningEntity(target, size, pos) || basicEnemyFilter(target))
+                    && SeekTool.NOT_IN_SMOKE.test(target);
+            if (condition) {
+                return target;
+            }
+        }
+        return null;
+    }
+
+    // 判断具有威胁的弹射物
+    public boolean isThreateningEntity(Entity target, double size, Vec3 pos) {
+        if (target instanceof SmallCannonShellEntity) return false;
+        if (!target.onGround() && target instanceof Projectile projectile && (target.getBbWidth() >= size || target.getBbHeight() >= size)) {
+            return checkNoClip(target, pos) && basicEnemyProjectileFilter(projectile);
+        }
+        return false;
+    }
+
+    // 判断载具和目标之间有无障碍物
+    public boolean checkNoClip(Entity target, Vec3 pos) {
+        return this.level().clip(new ClipContext(pos, target.getEyePosition(),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this)).getType() != HitResult.Type.BLOCK;
+    }
+
+    static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {
+        Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ());
+        Vec3 toVec = pos.vectorTo(targetPos).normalize();
+        double targetAngle = VehicleVecUtils.getXRotFromVector(toVec);
+        return minAngle < targetAngle && targetAngle < maxAngle;
     }
 }
