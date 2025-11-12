@@ -70,7 +70,7 @@
       "Velocity": 20,
       "Damage": 45,
       "RecoilTime": 30,
-      "RecoilForce": 0.3,
+      "RecoilForce": 0.62,
       "Spread": 0.5,
       "HeatPerShoot": 7,
       "NaturalCooldown": 1,

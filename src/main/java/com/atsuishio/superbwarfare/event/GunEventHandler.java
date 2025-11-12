@@ -250,8 +250,9 @@ public class GunEventHandler {
             data.autoIterativeReloadTimer.reduce();
         }
 
-        if (data.countBackupAmmo(ammoSupplier) > 0 && (data.compute().autoLoadWhileEmpty && data.ammo.get() == 0)) {
+        if (data.countBackupAmmo(ammoSupplier) > 0 && (data.compute().autoLoadWhileEmpty && (data.ammo.get() == 0 || data.vehicleReload.get()))) {
             data.autoIterativeReloadTimer.reduce();
+
         }
 
         if (data.autoIterativeReloadTimer.get() == 0) {
@@ -492,7 +493,7 @@ public class GunEventHandler {
         var required = Math.min(data.compute().magazine - data.ammo.get(), data.compute().iterativeLoadAmount);
         var available = Math.min(required, data.countBackupAmmo(shooter));
         data.ammo.add(available);
-
+        data.vehicleReload.set(false);
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
             if (shooter != null) {
                 var cap = shooter.getData(ModAttachments.PLAYER_VARIABLE);
