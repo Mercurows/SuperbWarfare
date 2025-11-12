@@ -190,7 +190,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
         int seekIterative = seekInfo.seekIterative;
         double minTargetSize = seekInfo.minTargetSize;
 
-        if (this.getEnergy() < data().compute().seekInfo.seekEnergyCost) return;
+        if (this.getEnergy() < seekInfo.seekEnergyCost) return;
 
         Vec3 barrelRootPos = getShootPos(0, 1);
 
@@ -198,7 +198,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
             Entity naerestEntity = seekNearLivingEntity(barrelRootPos, getTurretMinPitch(), getTurretMaxPitch(), minSeekRange, maxSeekRange, minTargetSize);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
-                this.consumeEnergy(data().compute().seekInfo.seekEnergyCost);
+                this.consumeEnergy(seekInfo.seekEnergyCost);
             }
         }
 

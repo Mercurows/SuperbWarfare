@@ -8,12 +8,10 @@ import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Math;
 import org.joml.Matrix4f;
@@ -40,12 +38,7 @@ public final class VehicleVecUtils {
     }
 
     public static double getSubmergedHeight(Entity entity) {
-        for (Fluid fluid : BuiltInRegistries.FLUID) {
-            var type = fluid.getFluidType();
-            if (entity.level().getFluidState(entity.blockPosition()).getFluidType() == type)
-                return entity.getFluidTypeHeight(type);
-        }
-        return 0;
+        return entity.getFluidTypeHeight(entity.level().getFluidState(entity.blockPosition()).getFluidType());
     }
 
     public static Quaternionf eulerToQuaternion(float yaw, float pitch, float roll) {
