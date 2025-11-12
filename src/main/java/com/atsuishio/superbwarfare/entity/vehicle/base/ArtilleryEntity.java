@@ -275,10 +275,11 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         return false;
     }
 
-    @Override
-    public Entity getAmmoSupplier() {
-        return getNthEntity(getTurretControllerIndex());
-    }
+    // TODO 正确获取ammo来源
+//    @Override
+//    public Entity getAmmoSupplier() {
+//        return getNthEntity(getTurretControllerIndex());
+//    }
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
