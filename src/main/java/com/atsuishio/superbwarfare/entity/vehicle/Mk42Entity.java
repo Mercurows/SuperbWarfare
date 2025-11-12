@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
