@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.data.lang_executor.js;
 
-public class TestObject implements JsVisitableObject {
+public class TestObject {
     public static int TestStatic = 1;
     public int instanceInt = 2;
 
@@ -9,8 +9,7 @@ public class TestObject implements JsVisitableObject {
         return 114514;
     }
 
-    @Override
-    public String toJSON() {
-        return "{ TestStatic: " + TestStatic + ", instanceInt: " + instanceInt + " }";
+    public int aObjectMethod() {
+        return 1919810;
     }
 }
