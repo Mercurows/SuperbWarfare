@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
@@ -60,7 +60,7 @@ public class AACalculatorOverlay implements IGuiOverlay {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
             Entity naerestEntity = new SeekTool.Builder(vehicle)
                     .withinRange(512)
-                    .withinAngle(20)
+                    .withinAngle(vehicle.getShootVec(vehicle.getSeatIndex(player), partialTick), 20)
                     .baseFilter()
                     .smokeFilter()
                     .noVehicle()
@@ -105,8 +105,8 @@ public class AACalculatorOverlay implements IGuiOverlay {
                 }
 
                 if (lockOn) {
-                    Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootCenterPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick), target.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
-                    Vec3 shootPos = vehicle.getShootCenterPos(player, partialTick).add(shootVector.scale(vehicle.getShootCenterPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick))));
+                    Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick), target.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
+                    Vec3 shootPos = vehicle.getShootPos(player, partialTick).add(shootVector.scale(vehicle.getShootPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(target, partialTick))));
                     Vec3 point0 = VectorUtil.worldToScreen(shootPos);
 
                     if (VectorUtil.canSee(shootPos)) {
@@ -137,9 +137,6 @@ public class AACalculatorOverlay implements IGuiOverlay {
 
     private static boolean shouldRenderCrossHair(Player player) {
         if (player == null) return false;
-        return !player.isSpectator() && player.getVehicle() instanceof VehicleEntity vehicle
-                && vehicle instanceof WeaponVehicleEntity weaponVehicle
-                && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))
-                && weaponVehicle.getWeapon(vehicle.getSeatIndex(player)).aaProjectileWeapon;
+        return !player.isSpectator() && player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof Hpj11Entity;
     }
 }

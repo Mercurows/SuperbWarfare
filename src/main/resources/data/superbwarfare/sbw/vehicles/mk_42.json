@@ -35,7 +35,7 @@
       "ExplosionRadius": 3,
       "Spread": 0.05,
       "ShootAnimationTime": 30,
-      "Crosshair": "@VehicleCommonCross",
+      "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleCommonCannonZooming",
       "Name": "superbwarfare.mk_42.cannon_ap",
       "SoundInfo": {
