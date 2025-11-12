@@ -13,6 +13,7 @@ public class VehicleResource implements DefaultDataSupplier<DefaultVehicleResour
 
     public static final LoadingCache<VehicleEntity, VehicleResource> RESOURCE_CACHE = CacheBuilder.newBuilder()
             .weakKeys()
+            .weakValues()
             .build(new CacheLoader<>() {
                 public @NotNull VehicleResource load(@NotNull VehicleEntity vehicle) {
                     return new VehicleResource(vehicle);

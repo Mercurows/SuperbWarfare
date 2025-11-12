@@ -24,6 +24,7 @@ public class MobGunData {
 
     public static final LoadingCache<Mob, MobGunData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
+            .weakValues()
             .build(new CacheLoader<>() {
                 public @NotNull MobGunData load(@NotNull Mob mob) {
                     return new MobGunData(mob);

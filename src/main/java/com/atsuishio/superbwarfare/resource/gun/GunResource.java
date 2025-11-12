@@ -14,6 +14,7 @@ public class GunResource implements DefaultDataSupplier<DefaultGunResource> {
 
     public static final LoadingCache<ItemStack, GunResource> RESOURCE_CACHE = CacheBuilder.newBuilder()
             .weakKeys()
+            .weakValues()
             .build(new CacheLoader<>() {
                 public @NotNull GunResource load(@NotNull ItemStack stack) {
                     return new GunResource(stack);

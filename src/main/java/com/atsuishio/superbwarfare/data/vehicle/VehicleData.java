@@ -79,6 +79,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
     public static final LoadingCache<VehicleEntity, VehicleData> dataCache = CacheBuilder.newBuilder()
             .weakKeys()
+            .weakValues()
             .build(new CacheLoader<>() {
                 public @NotNull VehicleData load(@NotNull VehicleEntity entity) {
                     return new VehicleData(entity);
