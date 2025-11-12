@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -83,9 +82,8 @@ public class AircraftOverlay implements IGuiOverlay {
         if (ClientEventHandler.isEditing)
             return;
 
-        if (player.getVehicle() instanceof ArmedVehicleEntity armedVehicle
-                && armedVehicle instanceof VehicleEntity vehicle
-                && armedVehicle.isDriver(player)
+        if (player.getVehicle() instanceof VehicleEntity vehicle
+                && vehicle.getFirstPassenger() == player
                 && player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle
                 && vehicle.getVehicleType() == VehicleType.AIRPLANE) {
             poseStack.pushPose();

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
+@Deprecated(forRemoval = true, since = "0.8.9")
 public interface ArmedVehicleEntity {
 
     default VehicleEntity getVehicleEntity() {

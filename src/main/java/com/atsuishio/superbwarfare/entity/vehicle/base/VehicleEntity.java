@@ -1249,7 +1249,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public float shootingPitch() {
-        var gunData= getGunData(0);
+        var gunData = getGunData(0);
         if (gunData != null) {
             return (float) (0.98f + entityData.get(FIRE_TIME) * 0.01f - (gunData.heat.get() > 80 ? (gunData.heat.get() - 80) * 0.01 : 0));
         } else {
@@ -2540,7 +2540,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.class);
         return switch (engineType) {
             case FIXED -> 0;
-            case TRACK -> Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * info.engineSoundVolume;
+            case TRACK ->
+                    Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * info.engineSoundVolume;
             case HELICOPTER -> entityData.get(PROPELLER_ROT) * info.engineSoundVolume;
             default -> Mth.abs(entityData.get(POWER)) * info.engineSoundVolume;
         };
@@ -3343,6 +3344,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public SoundEvent getEngineSound() {
         return this.computed().engineSound;
     }
+
     public double getVelocity() {
         return this.velocity;
     }

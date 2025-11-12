@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -94,7 +93,7 @@ public class ClickHandler {
 
     private static boolean cancelZoomKey(Player player, ItemStack stack) {
         return stack.getItem() instanceof GunItem
-                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && !stack.getItem().isEdible());
+                || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.getFirstPassenger() == player && !stack.getItem().isEdible());
     }
 
     @SubscribeEvent
@@ -158,7 +157,7 @@ public class ClickHandler {
         if (stack.getItem() instanceof GunItem
                 || stack.is(ModItems.MONITOR.get())
                 || stack.is(ModItems.LUNGE_MINE.get())
-                || (player.getVehicle() instanceof ArmedVehicleEntity)
+                || player.getVehicle() instanceof VehicleEntity
                 || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))
                 || (stack.is(ModItems.ARTILLERY_INDICATOR.get()))
         ) {
@@ -357,7 +356,7 @@ public class ClickHandler {
 
             if (stack.getItem() instanceof GunItem
                     || stack.is(ModItems.MONITOR.get())
-                    || (player.getVehicle() instanceof ArmedVehicleEntity iVehicle && iVehicle.isDriver(player))
+                    || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.getFirstPassenger() == player)
                     || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))
                     || (stack.is(ModItems.ARTILLERY_INDICATOR.get()))
             ) {
