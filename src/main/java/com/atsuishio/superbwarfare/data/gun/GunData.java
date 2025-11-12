@@ -40,6 +40,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public static final LoadingCache<ItemStack, GunData> DATA_CACHE = CacheBuilder.newBuilder()
             .weakKeys()
+            .weakValues()
             .build(new CacheLoader<>() {
                 public @NotNull GunData load(@NotNull ItemStack stack) {
                     return new GunData(stack);
