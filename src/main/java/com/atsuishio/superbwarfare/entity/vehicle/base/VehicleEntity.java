@@ -110,7 +110,6 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
 public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity {
-
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -150,6 +149,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     };
     public static Consumer<VehicleEntity> inCarMusic = vehicle -> {
     };
+    public static Consumer<VehicleEntity> fireSound = vehicle -> {
+    };
 
     public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
 
@@ -159,7 +160,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW_WHILE_SHOOT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
-    public static final EntityDataAccessor<Integer> FIRE_ANIM = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Boolean> DECOY_READY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
@@ -338,7 +339,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     private boolean wasEngineRunning = false;
     private boolean wasHornWorking = false;
     private boolean wasInCarMusicPlaying = false;
-
+    private boolean wasFiring = false;
     public double targetSpeed;
     public float rudderRot;
     public float rudderRotO;
@@ -1045,7 +1046,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.define(POWER, 0f);
         this.entityData.define(YAW_WHILE_SHOOT, 0f);
         this.entityData.define(AMMO, 0);
-        this.entityData.define(FIRE_ANIM, 0);
+        this.entityData.define(FIRE_TIME, 0);
         this.entityData.define(DECOY_READY, false);
         this.entityData.define(GEAR_ROT, 0);
         this.entityData.define(GEAR_UP, false);
@@ -1235,10 +1236,25 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 entityData.set(CANNON_RECOIL_FORCE, (float) v3.length());
             }
         }
+
+        entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
         // TODO 数据包化发射震动
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
         playShootSound3p(living, seatIndex);
+    }
+
+    public float shootingVolume() {
+        return entityData.get(FIRE_TIME) * 0.25f;
+    }
+
+    public float shootingPitch() {
+        var gunData= getGunData(0);
+        if (gunData != null) {
+            return (float) (0.98f + entityData.get(FIRE_TIME) * 0.01f - (gunData.heat.get() > 80 ? (gunData.heat.get() - 80) * 0.01 : 0));
+        } else {
+            return 1;
+        }
     }
 
     public void playShootSound3p(LivingEntity living, int seatIndex) {
@@ -1650,6 +1666,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
                 inCarMusic.accept(this);
             }
+
+            if (!this.wasFiring && this.isFiring() && this.level().isClientSide()) {
+                fireSound.accept(this);
+            }
+            this.wasFiring = this.isFiring();
         }
 
         // 枪数据处理
@@ -1883,6 +1904,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) * 0.5f);
+        if (entityData.get(FIRE_TIME) > 0) {
+            entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
+        }
 
         if (hasDecoy()) {
             if (getVehicleType() == VehicleType.AIRPLANE || getVehicleType() == VehicleType.HELICOPTER) {
@@ -1899,6 +1923,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.inertiaRotate(this.computed().inertiaRotateRate);
 
         this.refreshDimensions();
+    }
+
+    public SoundEvent getShootSoundInstance() {
+        var gunData = getGunData(0);
+        if (gunData != null) {
+            return gunData.compute().soundInfo.fireSoundInstances;
+        } else {
+            return SoundEvents.EMPTY;
+        }
+    }
+
+    public boolean isFiring() {
+        return this.entityData.get(FIRE_TIME) > 0;
     }
 
     protected void updateBackupAmmoCount() {

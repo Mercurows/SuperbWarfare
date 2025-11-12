@@ -3041,12 +3041,12 @@
       }
     ]
   },
-  "hpj_11_fire_3p": {
+  "hpj_11_fire": {
     "sounds": [
       {
         "attenuation_distance": 192,
         "stream": true,
-        "name": "superbwarfare:hpj11/hpj_11_fire_3p"
+        "name": "superbwarfare:hpj11/hpj_11_fire"
       }
     ]
   },

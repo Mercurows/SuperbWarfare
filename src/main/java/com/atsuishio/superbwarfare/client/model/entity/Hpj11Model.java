@@ -1,13 +1,14 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity.ANIM_TIME;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.FIRE_TIME;
+
 
 public class Hpj11Model extends VehicleModel<Hpj11Entity> {
 
@@ -16,17 +17,17 @@ public class Hpj11Model extends VehicleModel<Hpj11Entity> {
         return switch (boneName) {
             case "radar2" -> (bone, vehicle, state) -> {
                 Player player = Minecraft.getInstance().player;
-                bone.setHidden(vehicle.getFirstPassenger() == player && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
+                bone.setHidden(vehicle.getNthEntity(vehicle.getTurretControllerIndex()) == player && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle));
             };
 
-            case "barrel", "rdr", "rdr2" ->
-                    (bone, vehicle, state) -> bone.setRotX(-Mth.lerp(state.getPartialTick(), vehicle.xRotO, vehicle.getXRot()) * Mth.DEG_TO_RAD);
+            case "rdr", "rdr2" ->
+                    (bone, vehicle, state) -> bone.setRotX(getAnimationProcessor().getBone("barrel").getRotX());
 
             case "paoguanroll" -> (bone, vehicle, state) ->
-                    bone.setRotZ(-Mth.lerp(state.getPartialTick(), vehicle.gunRotO, vehicle.getGunRot()));
+                    bone.setRotZ(bone.getRotZ() + vehicle.getEntityData().get(FIRE_TIME));
 
             case "flare" -> (bone, vehicle, state) -> {
-                bone.setHidden(vehicle.getEntityData().get(ANIM_TIME) == 0);
+                bone.setHidden(vehicle.getEntityData().get(FIRE_TIME) <= 2);
                 bone.setScaleX((float) (2 + 0.8 * (Math.random() - 0.5)));
                 bone.setScaleY((float) (2 + 0.8 * (Math.random() - 0.5)));
                 bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
@@ -37,8 +38,8 @@ public class Hpj11Model extends VehicleModel<Hpj11Entity> {
 
     }
 
-    @Override
-    public boolean hideForTurretControllerWhileZooming() {
-        return true;
-    }
+//    @Override
+//    public boolean hideForTurretControllerWhileZooming() {
+//        return true;
+//    }
 }
