@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.block;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.core.BlockPos;
@@ -64,14 +63,14 @@ public class JumpPadBlock extends Block {
     @ParametersAreNonnullByDefault
     public @NotNull VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return switch (state.getValue(FACING)) {
-            default ->
-                    Shapes.or(box(0, 0, 0, 16, 3, 16), box(-0.25, -0.1, -0.25, 2, 3.25, 2), box(14, -0.1, -0.25, 16.25, 3.25, 2), box(14, -0.1, 14, 16.25, 3.25, 16.25), box(-0.25, -0.1, 14, 2, 3.25, 16.25), box(1, 3, 1, 15, 4, 15));
             case NORTH ->
                     Shapes.or(box(0, 0, 0, 16, 3, 16), box(14, -0.1, 14, 16.25, 3.25, 16.25), box(-0.25, -0.1, 14, 2, 3.25, 16.25), box(-0.25, -0.1, -0.25, 2, 3.25, 2), box(14, -0.1, -0.25, 16.25, 3.25, 2), box(1, 3, 1, 15, 4, 15));
             case EAST ->
                     Shapes.or(box(0, 0, 0, 16, 3, 16), box(-0.25, -0.1, 14, 2, 3.25, 16.25), box(-0.25, -0.1, -0.25, 2, 3.25, 2), box(14, -0.1, -0.25, 16.25, 3.25, 2), box(14, -0.1, 14, 16.25, 3.25, 16.25), box(1, 3, 1, 15, 4, 15));
             case WEST ->
                     Shapes.or(box(0, 0, 0, 16, 3, 16), box(14, -0.1, -0.25, 16.25, 3.25, 2), box(14, -0.1, 14, 16.25, 3.25, 16.25), box(-0.25, -0.1, 14, 2, 3.25, 16.25), box(-0.25, -0.1, -0.25, 2, 3.25, 2), box(1, 3, 1, 15, 4, 15));
+            default ->
+                    Shapes.or(box(0, 0, 0, 16, 3, 16), box(-0.25, -0.1, -0.25, 2, 3.25, 2), box(14, -0.1, -0.25, 16.25, 3.25, 2), box(14, -0.1, 14, 16.25, 3.25, 16.25), box(-0.25, -0.1, 14, 2, 3.25, 16.25), box(1, 3, 1, 15, 4, 15));
         };
     }
 
@@ -114,7 +113,7 @@ public class JumpPadBlock extends Block {
         super.entityInside(state, level, pos, entity);
 
         // 禁止套娃
-        if (entity instanceof TargetEntity || entity instanceof CannonEntity) return;
+        if (entity instanceof TargetEntity) return;
 
         if (entity.isShiftKeyDown()) {
             if (entity.onGround()) {

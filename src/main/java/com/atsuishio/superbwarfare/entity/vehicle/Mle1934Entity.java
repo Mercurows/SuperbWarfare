@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Mle1934Entity extends ArtilleryEntity implements GeoEntity {
@@ -30,34 +30,28 @@ public class Mle1934Entity extends ArtilleryEntity implements GeoEntity {
                 .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage);
     }
 
-//    private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
-//        if (this.entityData.get(COOL_DOWN) > 54) {
-//            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_left"));
-//        }
-//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
-//    }
-//
-//    private PlayState fireRightPredicate(AnimationState<Mle1934Entity> event) {
-//        if (this.entityData.get(RIGHT_BARREL_ANIM) > 0) {
-//            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_right"));
-//        }
-//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
-//    }
+    private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
+        if (this.entityData.get(BARREL_ANIM).get(1) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_left"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
+    }
+
+    private PlayState fireRightPredicate(AnimationState<Mle1934Entity> event) {
+        if (this.entityData.get(BARREL_ANIM).getFirst() > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_right"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-//        data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
-//        data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
+        data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
+        data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
     }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-
-    @Override
-    public int getMaxStackSize() {
-        return 2;
     }
 }

@@ -7,7 +7,7 @@
   "BarrelPos": [0, 1.746875, 0.5175],
   "Seats": {
     "HidePassenger": true,
-    "Transform": "Turret",
+    "Transform": "Auto",
     "Position": [0, 1.886875, 0],
     "CameraPos": {
       "Transform": "Barrel",
@@ -43,7 +43,8 @@
         "Fire3P": "superbwarfare:mk_42_fire_3p",
         "Fire3PFar": "superbwarfare:mk_42_far",
         "Fire3PVeryFar": "superbwarfare:mk_42_veryfar",
-        "ReloadPrepare": "superbwarfare:cannon_reload",
+        "ReloadPrepare": "superbwarfare:missile_reload",
+        "ReloadEnd": "superbwarfare:cannon_reload",
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 32,

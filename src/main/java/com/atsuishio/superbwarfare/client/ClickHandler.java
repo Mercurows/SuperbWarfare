@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -439,7 +438,7 @@ public class ClickHandler {
             ClientEventHandler.usingLunge = true;
         }
 
-        if (stack.getItem() instanceof GunItem gunItem && !(player.getVehicle() instanceof CannonEntity)
+        if (stack.getItem() instanceof GunItem gunItem
                 && clientTimer.getProgress() == 0
                 && !notInGame()
         ) {
