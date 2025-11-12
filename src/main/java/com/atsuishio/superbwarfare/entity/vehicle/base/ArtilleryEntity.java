@@ -37,8 +37,11 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.INT);
+
     public ArtilleryEntity(EntityType<?> type, Level world) {
         super(type, world);
+
+        this.entityData.set(BARREL_ANIM, IntList.of(new int[Math.max(4, this.getMaxBarrel())]));
     }
 
     @Override
@@ -52,11 +55,8 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         }
 
         if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
-            if (gunData.ammo.get() > 0) {
-                if (player.level() instanceof ServerLevel) {
-                    vehicleShoot(player, 0);
-                }
-
+            if (gunData.ammo.get() > 0 && player.level() instanceof ServerLevel) {
+                vehicleShoot(player, 0);
             }
             return InteractionResult.SUCCESS;
         }
@@ -98,7 +98,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         this.entityData.define(DEPRESSED, false);
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(RADIUS, 0);
-        this.entityData.define(BARREL_ANIM, IntList.of(new int[this.getMaxBarrel()]));
+        this.entityData.define(BARREL_ANIM, IntList.of(new int[4]));
     }
 
     @Override
@@ -135,9 +135,9 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     public void setTarget(ItemStack stack, Entity entity, int seatIndex) {
         var data = getGunData(seatIndex);
-        
+
         if (data == null) return;
-        
+
         double targetX = stack.getOrCreateTag().getDouble("TargetX");
         double targetY = stack.getOrCreateTag().getDouble("TargetY");
         double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
@@ -203,10 +203,11 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     public void baseTick() {
         super.baseTick();
 
-        for (int i = 0;i < getMaxBarrel();i++) {
-            if (this.entityData.get(BARREL_ANIM).getInt(i) > 0) {
-                var barrelAnim = entityData.get(BARREL_ANIM).toIntArray();
-                barrelAnim[i] = this.entityData.get(BARREL_ANIM).getInt(i) - 1;
+        for (int i = 0; i < getMaxBarrel(); i++) {
+            var animCounters = entityData.get(BARREL_ANIM);
+            if (i < animCounters.size() && animCounters.getInt(i) > 0) {
+                var barrelAnim = animCounters.toIntArray();
+                barrelAnim[i] = animCounters.getInt(i) - 1;
                 entityData.set(BARREL_ANIM, IntList.of(barrelAnim));
             }
         }
@@ -257,6 +258,11 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     @Override
     public boolean stillValid(@NotNull Player player) {
         return false;
+    }
+
+    @Override
+    public Entity getAmmoSupplier() {
+        return getNthEntity(getTurretControllerIndex());
     }
 
     @Override

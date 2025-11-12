@@ -1667,7 +1667,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 inCarMusic.accept(this);
             }
 
-            if (!this.wasFiring && this.isFiring() && this.level().isClientSide()) {
+            if (fireSound != null && !this.wasFiring && this.isFiring() && this.level().isClientSide()) {
                 fireSound.accept(this);
             }
             this.wasFiring = this.isFiring();
@@ -1926,12 +1926,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public SoundEvent getShootSoundInstance() {
+        // TODO why 0?
         var gunData = getGunData(0);
         if (gunData != null) {
-            return gunData.compute().soundInfo.fireSoundInstances;
-        } else {
-            return SoundEvents.EMPTY;
+            var instance = gunData.compute().soundInfo.fireSoundInstances;
+            if (instance != null) return instance;
         }
+
+        return SoundEvents.EMPTY;
     }
 
     public boolean isFiring() {
