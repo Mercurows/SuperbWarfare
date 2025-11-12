@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.FiringParameters;
 import com.atsuishio.superbwarfare.tools.*;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -32,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
@@ -45,6 +45,8 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     public ArtilleryEntity(EntityType<?> type, Level world) {
         super(type, world);
+
+        this.entityData.set(BARREL_ANIM, newIntList(Math.max(4, this.getMaxBarrel())));
     }
 
     @Override
@@ -58,11 +60,8 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         }
 
         if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
-            if (gunData.ammo.get() > 0) {
-                if (player.level() instanceof ServerLevel) {
-                    vehicleShoot(player, 0);
-                }
-
+            if (gunData.ammo.get() > 0 && player.level() instanceof ServerLevel) {
+                vehicleShoot(player, 0);
             }
             return InteractionResult.SUCCESS;
         }
@@ -105,7 +104,15 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
                 .define(DEPRESSED, false)
                 .define(TARGET_POS, new Vector3f())
                 .define(RADIUS, 0)
-                .define(BARREL_ANIM, IntList.of(new int[this.getMaxBarrel()]));
+                .define(BARREL_ANIM, newIntList(4));
+    }
+
+    protected static List<Integer> newIntList(int size) {
+        var list = new ArrayList<Integer>();
+        for (int i = 0; i < size; i++) {
+            list.add(0);
+        }
+        return list;
     }
 
     @Override
@@ -214,7 +221,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
         for (int i = 0; i < getMaxBarrel(); i++) {
             var animCounters = this.entityData.get(BARREL_ANIM);
-            if (animCounters.get(i) > 0) {
+            if (i < animCounters.size() && animCounters.get(i) > 0) {
                 animCounters.set(i, animCounters.get(i) - 1);
                 entityData.set(BARREL_ANIM, animCounters, true);
             }
@@ -266,6 +273,11 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     @Override
     public boolean stillValid(@NotNull Player player) {
         return false;
+    }
+
+    @Override
+    public Entity getAmmoSupplier() {
+        return getNthEntity(getTurretControllerIndex());
     }
 
     @Override
