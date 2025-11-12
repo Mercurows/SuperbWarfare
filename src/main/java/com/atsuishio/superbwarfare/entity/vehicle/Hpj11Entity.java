@@ -180,13 +180,15 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
         }
         var data = getGunData(0);
         if (data == null) return;
-        if (data().compute().seekInfo == null) return;
 
-        double maxSeekRange = data().compute().seekInfo.maxSeekRange;
-        double minSeekRange = data().compute().seekInfo.minSeekRange;
-        int changeTargetTime = data().compute().seekInfo.changeTargetTime;
-        int seekIterative = data().compute().seekInfo.seekIterative;
-        double minTargetSize = data().compute().seekInfo.minTargetSize;
+        var seekInfo = data().compute().seekInfo;
+        if (seekInfo == null) return;
+
+        double maxSeekRange = seekInfo.maxSeekRange;
+        double minSeekRange = seekInfo.minSeekRange;
+        int changeTargetTime = seekInfo.changeTargetTime;
+        int seekIterative = seekInfo.seekIterative;
+        double minTargetSize = seekInfo.minTargetSize;
 
 //        if (this.getEnergy() <= VehicleConfig.HPJ11_SEEK_COST.get()) return;
         Vec3 barrelRootPos = getShootPos(0, 1);
