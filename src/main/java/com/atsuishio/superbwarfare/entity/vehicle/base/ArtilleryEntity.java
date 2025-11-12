@@ -1,9 +1,7 @@
-package com.atsuishio.superbwarfare.entity.vehicle;
+package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -230,6 +228,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     @Override
     public void vehicleShoot(LivingEntity living, int seatIndex) {
         super.vehicleShoot(living, seatIndex);
+        // TODO 为啥粒子只从一边的炮管冒出来
         if (living.level() instanceof ServerLevel level) {
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(seatIndex, 1), getShootPos(seatIndex, 1), level, this);
             for (int i = 0; i < 40; i += 4) {

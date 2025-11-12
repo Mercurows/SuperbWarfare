@@ -1,13 +1,64 @@
 {
   "ID": "superbwarfare:mle_1934",
   "MaxHealth": 350,
+  "TurretPos": [0, 0.196925, 0],
+  "TurretTurnSpeed": [1.25, 2],
+  "TurretPitchRange": [-5, 30],
+  "BarrelPos": [0, 1.30234, 1.52065],
   "Seats": {
     "HidePassenger": true,
-    "Transform": "VehicleFlat",
-    "Position": [0, 2, 0.5],
+    "Transform": "Turret",
+    "Position": [0, 1.803075, 0.5],
+    "CameraPos": {
+      "Transform": "Barrel",
+      "ZoomPosition": [0, 0.15, 0],
+      "ZoomDirection": "Barrel"
+    },
     "MinPitch": -2.7,
     "MaxPitch": 30,
-    "Sensitivity": [0.5, 0.7, 0.9]
+    "Sensitivity": [0.42, 0.7, 0.9],
+    "Weapons": ["Cannon"]
+  },
+  "Weapons": {
+    "Cannon": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Projectile": "superbwarfare:cannon_shell",
+      "Magazine": 2,
+      "AutoIterativeReloadTime": 74,
+      "DefaultZoom": 5,
+      "Velocity": 15,
+      "Gravity": 0.1,
+      "Damage": 500,
+      "ExplosionDamage": 130,
+      "ExplosionRadius": 4,
+      "Spread": 0.05,
+      "ShootAnimationTime": 30,
+      "Crosshair": "@VehicleCommonCross",
+      "CrosshairZooming": "@VehicleCommonCannonZooming",
+      "Name": "superbwarfare.mle_1934.cannon_ap",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:mk_42_fire_1p",
+        "Fire3P": "superbwarfare:mk_42_fire_3p",
+        "Fire3PFar": "superbwarfare:mk_42_far",
+        "Fire3PVeryFar": "superbwarfare:mk_42_veryfar",
+        "ReloadPrepare": "superbwarfare:cannon_reload",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 32,
+      "AmmoType": "superbwarfare:ap_5_inches",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [
+          [-0.489, 0, 6.53125], [0.489, 0, 6.53125]
+        ],
+        "BoundUpWithAmmoAmount": true,
+        "Directions": [
+          "Barrel"
+        ]
+      }
+    }
   },
   "Mass": 100,
   "DamageModifiers": [
