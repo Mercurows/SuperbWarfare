@@ -255,12 +255,16 @@ public class ClickHandler {
         var mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null) return;
-        if (player.isSpectator()) return;
-
-        ItemStack stack = player.getMainHandItem();
-
         int key = event.getKey();
         if (key < 0) return;
+
+        if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
+            handleDismountPress(player);
+        }
+
+        if (player.isSpectator()) return;
+
+        var stack = player.getMainHandItem();
 
         if (event.getAction() == GLFW.GLFW_PRESS) {
             if (player.hasEffect(ModMobEffects.SHOCK)) return;
@@ -318,9 +322,6 @@ public class ClickHandler {
                 }
             }
 
-            if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
-                handleDismountPress(player);
-            }
             if (key == ModKeyMappings.EDIT_MODE.getKey().getValue()) {
                 if (stack.getItem() instanceof ItemScreenProvider provider) {
                     var screen = provider.getItemScreen(stack, player, InteractionHand.MAIN_HAND);

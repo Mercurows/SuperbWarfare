@@ -68,8 +68,11 @@ public class GameRendererMixin {
             // rotate camera
             float a = Mth.wrapDegrees(mainCamera.getYRot() - Mth.lerp(tickDelta, vehicle.yRotO, vehicle.getYRot()));
 
+            var seats = VehicleData.compute(vehicle).seats();
             int index = vehicle.getSeatIndex(entity);
-            var seat = VehicleData.compute(vehicle).seats().get(index);
+            if (index < 0 || index >= seats.size()) return;
+
+            var seat = seats.get(index);
 
             if (seat.transform.equals("VehicleFlat")) {
                 a = 0;
