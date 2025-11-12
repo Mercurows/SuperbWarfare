@@ -349,13 +349,29 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
             preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
-            if (data.compute().autoIterativeReloadTime > 0) {
-                var time = data.compute().autoIterativeReloadTime;
-                var timer = data.autoIterativeReloadTimer.get();
-                float reloadProgress = (float) (time - timer) / time;
+            var computed = data.compute();
+            if (data.autoIterativeReloadTimer.get() > 0 || data.reloading()) {
+                int totalReloadTime, currentReloadTime;
+                if (data.reloading()) {
+                    if (data.reload.iterativeLoadTimer.get() > 0) {
+                        // 单发装填时长
+                        totalReloadTime = computed.iterativeAmmoLoadTime;
+                        currentReloadTime = totalReloadTime - data.reload.iterativeLoadTimer.get();
+                    } else {
+                        // 普通换弹时长
+                        totalReloadTime = data.reload.empty() ? computed.emptyReloadTime : computed.normalReloadTime;
+                        currentReloadTime = data.reload.reloadTimer.get();
+                    }
+                } else {
+                    // 自动单发装填时长
+                    totalReloadTime = computed.autoIterativeReloadTime;
+                    currentReloadTime = data.autoIterativeReloadTimer.get();
+                }
+
+                float reloadProgress = (float) (totalReloadTime - currentReloadTime) / totalReloadTime;
                 float alpha = Mth.lerp(progress, 0.4f, 1);
 
-                if (timer > 0 && timer < time) {
+                if (currentReloadTime > 0 && currentReloadTime < totalReloadTime) {
                     RenderHelper.renderCircularRing(
                             guiGraphics,
                             w - 102 + xOffset, h - frameIndex * 18 - 12,

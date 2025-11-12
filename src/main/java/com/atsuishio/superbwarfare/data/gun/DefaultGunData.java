@@ -202,7 +202,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("IterativeTime")
     public int iterativeTime;
 
-    // 单发装填时的上弹时间
+    // 单发装填时的上弹时间，在reload.iterativeLoadTimer等于该值时上弹
     @SerializedName("IterativeAmmoLoadTime")
     public int iterativeAmmoLoadTime = 1;
 
@@ -295,9 +295,6 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
 
     @SerializedName("ShootAnimationTime")
     public int shootAnimationTime = 3;
-
-    @SerializedName("AutoLoadWhileEmpty")
-    public boolean autoLoadWhileEmpty = false;
 
     @SerializedName("Icon")
     public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();

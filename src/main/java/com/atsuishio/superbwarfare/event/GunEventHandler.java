@@ -222,15 +222,29 @@ public class GunEventHandler {
 
     // 自动单发装填
     public static void autoIterativeReload(@Nullable Entity ammoSupplier, @NotNull GunData data) {
-        var autoIterativeReloadTime = data.compute().autoIterativeReloadTime;
+        var computed = data.compute();
+        var autoIterativeReloadTime = computed.autoIterativeReloadTime;
+
+        if (autoIterativeReloadTime <= 0
+                || data.bolt.needed.get()
+                || data.reloading()
+                || data.charging()
+                || data.ammo.get() >= computed.magazine
+                || !data.hasBackupAmmo(ammoSupplier)
+        ) {
+            data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
+            return;
+        }
 
         if (data.autoIterativeReloadTimer.get() == autoIterativeReloadTime - 1) {
-            var soundInfo = data.compute().soundInfo;
+            var soundInfo = computed.soundInfo;
             var sound = soundInfo.reloadPrepare;
             var sound1p = soundInfo.reloadNormal;
+
             if (sound != null && ammoSupplier != null) {
                 ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
             }
+
             if (sound1p != null && ammoSupplier instanceof VehicleEntity vehicle) {
                 for (Entity passenger: vehicle.getPassengers()) {
                     if (passenger instanceof ServerPlayer serverPlayer) {
@@ -240,29 +254,13 @@ public class GunEventHandler {
             }
         }
 
-        if (autoIterativeReloadTime <= 0
-                || data.bolt.needed.get()
-                || data.reloading()
-                || data.charging()
-                || data.ammo.get() >= data.compute().magazine
-        ) {
-            data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
-            return;
-        }
 
-        if (data.countBackupAmmo(ammoSupplier) > 0 && !data.compute().autoLoadWhileEmpty) {
-            data.autoIterativeReloadTimer.reduce();
-        }
-
-        if (data.countBackupAmmo(ammoSupplier) > 0 && (data.compute().autoLoadWhileEmpty && (data.ammo.get() == 0 || data.vehicleReload.get()))) {
-            data.autoIterativeReloadTimer.reduce();
-
-        }
+        data.autoIterativeReloadTimer.reduce();
 
         if (data.autoIterativeReloadTimer.get() == 0) {
             iterativeLoad(ammoSupplier, data);
             data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
-            var soundInfo = data.compute().soundInfo;
+            var soundInfo = computed.soundInfo;
             var sound = soundInfo.reloadEnd;
             if (sound != null && ammoSupplier != null) {
                 ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
@@ -497,7 +495,6 @@ public class GunEventHandler {
         var required = Math.min(data.compute().magazine - data.ammo.get(), data.compute().iterativeLoadAmount);
         var available = Math.min(required, data.countBackupAmmo(shooter));
         data.ammo.add(available);
-        data.vehicleReload.set(false);
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
             data.consumeBackupAmmo(shooter, available);
         }
