@@ -18,4 +18,7 @@ public class SeekInfo {
 
     @SerializedName("MinTargetSize")
     public double minTargetSize = 0.25;
+
+    @SerializedName("seekEnergyCost")
+    public int seekEnergyCost = 1000;
 }

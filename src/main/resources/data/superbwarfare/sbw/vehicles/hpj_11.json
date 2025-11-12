@@ -26,7 +26,8 @@
     "MaxSeekRange": 256,
     "ChangeTargetTime": 60,
     "SeekIterative": 20,
-    "MinTargetSize": 0.25
+    "MinTargetSize": 0.25,
+    "seekEnergyCost": 5000
   },
   "Weapons": {
     "Cannon": {

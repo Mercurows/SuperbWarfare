@@ -180,24 +180,22 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
         }
         var data = getGunData(0);
         if (data == null) return;
+        if (data().compute().seekInfo == null) return;
 
-        var seekInfo = data().compute().seekInfo;
-        if (seekInfo == null) return;
+        double maxSeekRange = data().compute().seekInfo.maxSeekRange;
+        double minSeekRange = data().compute().seekInfo.minSeekRange;
+        int changeTargetTime = data().compute().seekInfo.changeTargetTime;
+        int seekIterative = data().compute().seekInfo.seekIterative;
+        double minTargetSize = data().compute().seekInfo.minTargetSize;
+        if (this.getEnergy() < data().compute().seekInfo.seekEnergyCost) return;
 
-        double maxSeekRange = seekInfo.maxSeekRange;
-        double minSeekRange = seekInfo.minSeekRange;
-        int changeTargetTime = seekInfo.changeTargetTime;
-        int seekIterative = seekInfo.seekIterative;
-        double minTargetSize = seekInfo.minTargetSize;
-
-//        if (this.getEnergy() <= VehicleConfig.HPJ11_SEEK_COST.get()) return;
         Vec3 barrelRootPos = getShootPos(0, 1);
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % seekIterative == 0) {
             Entity naerestEntity = seekNearLivingEntity(barrelRootPos, getTurretMinPitch(), getTurretMaxPitch(), minSeekRange, maxSeekRange, minTargetSize);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
-//                this.consumeEnergy(VehicleConfig.HPJ11_SEEK_COST.get());
+                this.consumeEnergy(data().compute().seekInfo.seekEnergyCost);
             }
         }
 
