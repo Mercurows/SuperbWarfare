@@ -21,8 +21,11 @@ public class LivingEntityRendererMixin<T extends LivingEntity> {
         if (entity.getRootVehicle() != entity && entity.getRootVehicle() instanceof VehicleEntity vehicle) {
             float a = Mth.wrapDegrees(Mth.lerp(tickDelta, entity.yBodyRotO, entity.yBodyRot) - Mth.lerp(tickDelta, vehicle.yRotO, vehicle.getYRot()));
 
+            var seats = VehicleData.compute(vehicle).seats();
             int index = vehicle.getSeatIndex(entity);
-            var seat = VehicleData.compute(vehicle).seats().get(index);
+            if (index < 0 || index >= seats.size()) return;
+
+            var seat = seats.get(index);
             if (seat.transform.equals("VehicleFlat")) return;
 
             if (entity.yBodyRot == vehicle.getYRot()) {
