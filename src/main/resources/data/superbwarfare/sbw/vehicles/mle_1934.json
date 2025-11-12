@@ -22,11 +22,13 @@
   "Weapons": {
     "Cannon": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
-      "DefaultFireMode": "Semi",
-      "AvailableFireModes": "Semi",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:cannon_shell",
       "Magazine": 2,
+      "IterativeLoadAmount": 2,
       "AutoIterativeReloadTime": 74,
+      "AutoLoadWhileEmpty": true,
       "DefaultZoom": 5,
       "Velocity": 15,
       "Gravity": 0.1,
@@ -43,7 +45,8 @@
         "Fire3P": "superbwarfare:mk_42_fire_3p",
         "Fire3PFar": "superbwarfare:mk_42_far",
         "Fire3PVeryFar": "superbwarfare:mk_42_veryfar",
-        "ReloadPrepare": "superbwarfare:cannon_reload",
+        "ReloadPrepare": "superbwarfare:missile_reload",
+        "ReloadEnd": "superbwarfare:cannon_reload",
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 32,

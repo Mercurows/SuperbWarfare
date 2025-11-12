@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -139,9 +138,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (level() instanceof ServerLevel serverLevel) {
             ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector.scale(-1), pos, serverLevel, this);
             ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector, pos, serverLevel, this);
-            for (int j = 0; j < 20; j += 4) {
-                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, barrelVector, getShootPos(living, 1).add(barrelVector.scale(1))));
-            }
         }
     }
 

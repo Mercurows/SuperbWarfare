@@ -296,6 +296,9 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("ShootAnimationTime")
     public int shootAnimationTime = 3;
 
+    @SerializedName("AutoLoadWhileEmpty")
+    public boolean autoLoadWhileEmpty = false;
+
     @SerializedName("Icon")
     public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();
     /*

@@ -11,6 +11,10 @@ import net.minecraftforge.network.PlayMessages;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Mle1934Entity extends ArtilleryEntity implements GeoEntity {
@@ -36,34 +40,28 @@ public class Mle1934Entity extends ArtilleryEntity implements GeoEntity {
                 .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage);
     }
 
-//    private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
-//        if (this.entityData.get(COOL_DOWN) > 54) {
-//            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_left"));
-//        }
-//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
-//    }
-//
-//    private PlayState fireRightPredicate(AnimationState<Mle1934Entity> event) {
-//        if (this.entityData.get(RIGHT_BARREL_ANIM) > 0) {
-//            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_right"));
-//        }
-//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
-//    }
+    private PlayState fireLeftPredicate(AnimationState<Mle1934Entity> event) {
+        if (this.entityData.get(BARREL_ANIM).getInt(1) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_left"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
+    }
+
+    private PlayState fireRightPredicate(AnimationState<Mle1934Entity> event) {
+        if (this.entityData.get(BARREL_ANIM).getInt(0) > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.mle_1934.fire_right"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mle_1934.idle"));
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-//        data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
-//        data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
+        data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
+        data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
     }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-
-    @Override
-    public int getMaxStackSize() {
-        return 2;
     }
 }

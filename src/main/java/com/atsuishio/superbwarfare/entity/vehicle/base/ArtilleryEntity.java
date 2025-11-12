@@ -1,12 +1,13 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.tools.*;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,7 @@ import org.joml.Vector3f;
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntity {
+    public static final EntityDataAccessor<IntList> BARREL_ANIM = SynchedEntityData.defineId(ArtilleryEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     public static final EntityDataAccessor<Vector3f> SHOOT_VEC = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
@@ -53,7 +55,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             if (gunData.ammo.get() > 0) {
                 if (player.level() instanceof ServerLevel) {
                     vehicleShoot(player, 0);
-                    resetTarget(0);
                 }
 
             }
@@ -97,6 +98,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         this.entityData.define(DEPRESSED, false);
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(RADIUS, 0);
+        this.entityData.define(BARREL_ANIM, IntList.of(new int[this.getMaxBarrel()]));
     }
 
     @Override
@@ -117,7 +119,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("ShootVecX") && compound.contains("ShootVecY") && compound.contains("ShootVecZ")) {
-            this.entityData.set(SHOOT_VEC, new Vector3f(compound.getFloat("ShootVecX"), compound.getFloat("ShootVecX"), compound.getFloat("ShootVecZ")));
+            this.entityData.set(SHOOT_VEC, new Vector3f(compound.getFloat("ShootVecX"), compound.getFloat("ShootVecY"), compound.getFloat("ShootVecZ")));
         }
 
         if (compound.contains("Depressed")) {
@@ -188,9 +190,27 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         }
     }
 
+    public int getMaxBarrel() {
+        var data = getGunData(0);
+        if (data != null) {
+            return data.compute().magazine;
+        } else {
+            return 0;
+        }
+    }
+
     @Override
     public void baseTick() {
         super.baseTick();
+
+        for (int i = 0;i < getMaxBarrel();i++) {
+            if (this.entityData.get(BARREL_ANIM).getInt(i) > 0) {
+                var barrelAnim = entityData.get(BARREL_ANIM).toIntArray();
+                barrelAnim[i] = this.entityData.get(BARREL_ANIM).getInt(i) - 1;
+                entityData.set(BARREL_ANIM, IntList.of(barrelAnim));
+            }
+        }
+
         var gunData = getGunData(0);
         if (gunData != null && level() instanceof ServerLevel && getNthEntity(getTurretControllerIndex()) instanceof Player player) {
             var ammoCount = InventoryTool.countItem(player, gunData.selectedAmmoConsumer().stack().getItem());
@@ -201,9 +221,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
                 if (count < Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
                     this.setItem(0, gunData.selectedAmmoConsumer().stack().copyWithCount(count + 1));
                     InventoryTool.consumeItem(player, gunData.selectedAmmoConsumer().stack().getItem(), 1);
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
-                    }
                 }
             }
         }
@@ -220,19 +237,21 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     @Override
     public void vehicleShoot(LivingEntity living, int seatIndex) {
-        super.vehicleShoot(living, seatIndex);
-        // TODO 为啥粒子只从一边的炮管冒出来
+        var data = getGunData(0);
+        if (data != null) {
+            var barrelAnim = entityData.get(BARREL_ANIM).toIntArray();
+            barrelAnim[data.ammo.get() - 1] = data.compute().shootAnimationTime;
+            entityData.set(BARREL_ANIM, IntList.of(barrelAnim));
+        }
         if (living.level() instanceof ServerLevel level) {
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(seatIndex, 1), getShootPos(seatIndex, 1), level, this);
-            for (int i = 0; i < 40; i += 4) {
-                Mod.queueServerWork(i, () -> ParticleTool.spawnBarrelSmoke(1, level, getShootVec(seatIndex, 1), getShootPos(seatIndex, 1)));
-            }
         }
+        super.vehicleShoot(living, seatIndex);
     }
 
     @Override
     public int getMaxStackSize() {
-        return 1;
+        return getMaxBarrel();
     }
 
     @Override

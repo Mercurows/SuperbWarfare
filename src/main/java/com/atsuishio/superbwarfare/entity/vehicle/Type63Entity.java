@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -288,9 +287,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
             ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1).scale(-1), shootPos.add(getShootVector(1).scale(-0.5)), serverLevel, this);
             ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1).scale(-1), shootPos.add(getShootVector(1).scale(-1.5)), serverLevel, this);
             ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1), shootPos.add(getShootVector(1).scale(1.5)), serverLevel, this);
-            for (int j = 0; j < 20; j += 4) {
-                Mod.queueServerWork(j, () -> ParticleTool.spawnBarrelSmoke(1, serverLevel, getShootVector(1), shootPos.add(getShootVector(1).scale(1.3))));
-            }
         }
 
         ShakeClientMessage.sendToNearbyPlayers(this, 8, 8, 10, 20);

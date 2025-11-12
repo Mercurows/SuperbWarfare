@@ -2,13 +2,68 @@
   "ID": "superbwarfare:bl_132",
   "MaxHealth": 400,
   "Mass": 300,
+  "TurretPos": [0, 0.375, 0],
+  "TurretTurnSpeed": [1.25, 2],
+  "TurretPitchRange": [-5, 85],
+  "BarrelPos": [0, 2.25, -0.39375],
   "Seats": {
     "HidePassenger": true,
-    "Transform" : "VehicleFlat",
-    "Position": [0, 4, -2],
+    "Transform" : "Turret",
+    "Position": [0, 3.625, -2],
+    "CameraPos": {
+      "Transform": "Barrel",
+      "ZoomPosition": [0, 0.5, 0],
+      "ZoomDirection": "Barrel"
+    },
     "MinPitch": -6,
     "MaxPitch": 85,
-    "Sensitivity": [0.5, 0.7, 0.9]
+    "Sensitivity": [0.42, 0.7, 0.9],
+    "Weapons": ["Cannon"]
+  },
+  "Weapons": {
+    "Cannon": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "superbwarfare:cannon_shell",
+      "RPM": 300,
+      "Magazine": 4,
+      "IterativeLoadAmount": 4,
+      "AutoLoadWhileEmpty": true,
+      "AutoIterativeReloadTime": 90,
+      "DefaultZoom": 5,
+      "Velocity": 15,
+      "Gravity": 0.1,
+      "Damage": 470,
+      "ExplosionDamage": 125,
+      "ExplosionRadius": 3.7,
+      "Spread": 0.05,
+      "ShootAnimationTime": 30,
+      "Crosshair": "@VehicleCommonCross",
+      "CrosshairZooming": "@VehicleCommonCannonZooming",
+      "Name": "superbwarfare.mle_1934.cannon_ap",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bl_132_fire_1p",
+        "Fire3P": "superbwarfare:bl_132_fire_3p",
+        "Fire3PFar": "superbwarfare:mk_42_far",
+        "Fire3PVeryFar": "superbwarfare:mk_42_veryfar",
+        "ReloadPrepare": "superbwarfare:missile_reload",
+        "ReloadEnd": "superbwarfare:bl_132_reload",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 32,
+      "AmmoType": "superbwarfare:ap_5_inches",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [
+          [-1.246875, -0.54375, 7.5], [1.246875, -0.54375, 7.5], [-1.246875, 0.565625, 7.5], [1.246875, 0.565625, 7.5]
+        ],
+        "BoundUpWithAmmoAmount": true,
+        "Directions": [
+          "Barrel"
+        ]
+      }
+    }
   },
   "DamageModifiers": [
     "All * 0.2",

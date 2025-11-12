@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ReloadType;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -226,8 +227,16 @@ public class GunEventHandler {
         if (data.autoIterativeReloadTimer.get() == autoIterativeReloadTime - 1) {
             var soundInfo = data.compute().soundInfo;
             var sound = soundInfo.reloadPrepare;
+            var sound1p = soundInfo.reloadNormal;
             if (sound != null && ammoSupplier != null) {
                 ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
+            }
+            if (sound1p != null && ammoSupplier instanceof VehicleEntity vehicle) {
+                for (Entity passenger: vehicle.getPassengers()) {
+                    if (passenger instanceof ServerPlayer serverPlayer) {
+                        SoundTool.playLocalSound(serverPlayer, sound1p, 8, 1);
+                    }
+                }
             }
         }
 
@@ -241,7 +250,11 @@ public class GunEventHandler {
             return;
         }
 
-        if (data.countBackupAmmo(ammoSupplier) > 0) {
+        if (data.countBackupAmmo(ammoSupplier) > 0 && !data.compute().autoLoadWhileEmpty) {
+            data.autoIterativeReloadTimer.reduce();
+        }
+
+        if (data.countBackupAmmo(ammoSupplier) > 0 && (data.compute().autoLoadWhileEmpty && data.ammo.get() == 0)) {
             data.autoIterativeReloadTimer.reduce();
         }
 
@@ -251,7 +264,7 @@ public class GunEventHandler {
             var soundInfo = data.compute().soundInfo;
             var sound = soundInfo.reloadEnd;
             if (sound != null && ammoSupplier != null) {
-                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 0.6f, 1);
+                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
             }
         }
     }
@@ -485,7 +498,7 @@ public class GunEventHandler {
         data.ammo.add(available);
 
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
-            data.consumeBackupAmmo(shooter, 1);
+            data.consumeBackupAmmo(shooter, available);
         }
     }
 

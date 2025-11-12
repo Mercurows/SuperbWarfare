@@ -91,6 +91,7 @@
         "Fire3P": "superbwarfare:yx_100_fire_3p",
         "Fire3PFar": "superbwarfare:yx_100_far",
         "Fire3PVeryFar": "superbwarfare:yx_100_veryfar",
+        "ReloadNormal": "superbwarfare:yx_100_reload",
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 32,
