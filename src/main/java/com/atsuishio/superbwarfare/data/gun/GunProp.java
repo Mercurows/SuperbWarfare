@@ -104,7 +104,6 @@ public final class GunProp<T> extends com.atsuishio.superbwarfare.data.Prop<GunD
     public static final GunProp<Integer> FINISH_TIME = new GunProp<>("FinishTime");
     public static final GunProp<Integer> BURST_COOLDOWN = new GunProp<>("BurstCooldown");
     public static final GunProp<Integer> SHOOT_ANIMATION_TIME = new GunProp<>("ShootAnimationTime");
-    public static final GunProp<Integer> ANTI_AIR_PROJECTILE = new GunProp<>("AntiAirProjectile");
     public static final GunProp<Boolean> AUTO_LOAD_WHILE_EMPTY = new GunProp<>("AutoLoadWhileEmpty");
 
     public static final GunProp<Double> SOUND_RADIUS = new GunProp<>("SoundRadius");

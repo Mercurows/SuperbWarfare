@@ -35,7 +35,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
-      "AntiAirProjectile": true,
+      "IsAntiAirProjectile": true,
       "DefaultZoom": 3,
       "RPM": 2400,
       "Velocity": 40,
