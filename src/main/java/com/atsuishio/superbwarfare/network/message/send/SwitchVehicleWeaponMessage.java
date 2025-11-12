@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -27,7 +28,7 @@ public record SwitchVehicleWeaponMessage(int index, double value, boolean isScro
     public static void handler(SwitchVehicleWeaponMessage message, final IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
 
-        if (player.getVehicle() instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.isDriver(player)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
             var value = message.isScroll ? (Mth.clamp(message.value > 0 ? Mth.ceil(message.value) : Mth.floor(message.value), -1, 1)) : message.value;
             weaponVehicle.changeWeapon(message.index, (int) value, message.isScroll);
         }
