@@ -52,8 +52,6 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<MedicalKitEntity>> MEDICAL_KIT = register("medical_kit",
             EntityType.Builder.of(MedicalKitEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.4f, 0.2f));
-    public static final RegistryObject<EntityType<WaterMaskEntity>> WATER_MASK = register("water_mask",
-            EntityType.Builder.of(WaterMaskEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).sized(1f, 1f).noSave().noSummon().fireImmune());
 
     // Projectiles
     public static final RegistryObject<EntityType<TaserBulletEntity>> TASER_BULLET = register("taser_bullet",
