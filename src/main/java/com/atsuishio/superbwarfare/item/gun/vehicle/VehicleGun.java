@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.vehicle;
 
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -27,6 +28,15 @@ public class VehicleGun extends GunItem {
 
     public VehicleGun() {
         super(new Properties());
+    }
+
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        if (rawData.autoIterativeReloadTime == 0) {
+            rawData.autoReload = true;
+        }
+
+        return rawData;
     }
 
     @Override

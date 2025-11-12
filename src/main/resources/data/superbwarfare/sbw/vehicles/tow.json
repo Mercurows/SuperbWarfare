@@ -30,7 +30,6 @@
       "Projectile": "superbwarfare:wg_missile",
       "DefaultZoom": 3,
       "Magazine": 1,
-      "AutoIterativeReloadTime": 1,
       "Damage": 500,
       "Velocity": 3,
       "ShootPos": {

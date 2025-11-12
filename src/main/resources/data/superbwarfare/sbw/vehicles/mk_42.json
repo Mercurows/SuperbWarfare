@@ -26,7 +26,7 @@
       "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
       "Magazine": 1,
-      "AutoIterativeReloadTime": 30,
+      "EmptyReloadTime": 30,
       "DefaultZoom": 5,
       "Velocity": 15,
       "Gravity": 0.1,
