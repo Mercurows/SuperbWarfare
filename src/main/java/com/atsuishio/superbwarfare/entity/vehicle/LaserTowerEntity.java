@@ -1,25 +1,15 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.TargetEntity;
-import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectile;
-import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.*;
-import com.atsuishio.superbwarfare.world.TDMSavedData;
-import net.minecraft.core.particles.ParticleTypes;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvents;
@@ -27,9 +17,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -39,15 +31,12 @@ import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
-
-public class LaserTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable {
+public class LaserTowerEntity extends VehicleEntity implements GeoEntity, OwnableEntity {
 
     public static final EntityDataAccessor<Integer> COOL_DOWN = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(LaserTowerEntity.class, EntityDataSerializers.STRING);
@@ -185,7 +174,6 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
         } else {
             this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
         }
-        this.autoAim();
     }
 
     @Override
@@ -211,122 +199,6 @@ public class LaserTowerEntity extends VehicleEntity implements GeoEntity, Ownabl
         this.interpolationSteps = 10;
     }
 
-    public void autoAim() {
-        if (this.getEnergy() <= 0 || !entityData.get(ACTIVE)) {
-            return;
-        }
-
-        Vec3 barrelRootPos = new Vec3(this.getX(), this.getY() + 1.390625f, this.getZ());
-
-        if (entityData.get(TARGET_UUID).equals("none") && tickCount % 10 == 0 && entityData.get(COOL_DOWN) == 0) {
-            Entity naerestEntity = seekNearLivingEntity(this, barrelRootPos, -40, 90, 1, 72, 0.01);
-            if (naerestEntity != null) {
-                entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
-            }
-        }
-
-        Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
-
-        if (target != null && SeekTool.NOT_IN_SMOKE.test(target)) {
-            if (target instanceof Player player1 && (player1.isSpectator() || player1.isCreative())) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (VehicleVecUtils.getSubmergedHeight(target) >= target.getBbHeight()) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (target.distanceTo(this) > 72) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (target instanceof LivingEntity living && living.getHealth() <= 0) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (target == this || target instanceof TargetEntity) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (target instanceof Projectile && (VectorTool.calculateAngle(target.getDeltaMovement().normalize(), target.position().vectorTo(this.position()).normalize()) > 60 || target.onGround() || target.getDeltaMovement().lengthSqr() < 0.001)) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-
-            Vec3 targetVec = barrelRootPos.vectorTo(target.getEyePosition()).normalize();
-
-            double d0 = targetVec.x;
-            double d1 = targetVec.y;
-            double d2 = targetVec.z;
-            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-            this.setXRot(Mth.clamp(Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))), -90, 40));
-            float targetY = Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F);
-
-            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(targetY - this.getYRot()));
-
-            turretTurnSound(0, diffY, 1.1f);
-
-            this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -60f, 60f));
-            this.setRot(this.getYRot(), this.getXRot());
-
-            if (this.entityData.get(COOL_DOWN) == 0 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 1) {
-                changeTargetTimer++;
-            }
-
-            if (this.entityData.get(COOL_DOWN) == 0 && VectorTool.calculateAngle(getViewVector(1), targetVec) < 1 && checkNoClip(this, target, barrelRootPos)) {
-                this.entityData.set(COOL_DOWN, VehicleConfig.LASER_TOWER_COOLDOWN.get());
-
-                if (level() instanceof ServerLevel serverLevel) {
-                    SoundTool.playDistantSound(serverLevel, ModSounds.LASER_TOWER_SHOOT.get(), position(), 2, random.nextFloat() * 0.1f + 1, null);
-                    sendParticle(serverLevel, ParticleTypes.END_ROD, target.getX(), target.getEyeY(), target.getZ(), 12, 0, 0, 0, 0.05, true);
-                    sendParticle(serverLevel, ParticleTypes.LAVA, target.getX(), target.getEyeY(), target.getZ(), 4, 0, 0, 0, 0.15, true);
-                }
-
-                DamageHandler.doDamage(target, ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, this.getOwner()), VehicleConfig.LASER_TOWER_DAMAGE.get());
-                target.invulnerableTime = 0;
-                entityData.set(LASER_LENGTH, distanceTo(target));
-                if (Math.random() < 0.25 && target instanceof LivingEntity living) {
-                    living.setRemainingFireTicks(2);
-                }
-
-                if (target instanceof Projectile && !(target instanceof DestroyableProjectile)) {
-                    causeAirExplode(target.position());
-                    target.discard();
-                }
-
-                if (!target.isAlive()) {
-                    entityData.set(TARGET_UUID, "none");
-                }
-                this.consumeEnergy(VehicleConfig.LASER_TOWER_SHOOT_COST.get());
-            }
-
-        } else {
-            entityData.set(TARGET_UUID, "none");
-        }
-
-        if (changeTargetTimer > 60) {
-            entityData.set(TARGET_UUID, "none");
-            changeTargetTimer = 0;
-        }
-    }
-
-    @Override
-    public boolean basicEnemyFilter(Entity pEntity) {
-        if (pEntity instanceof Projectile) return false;
-        if (this.getOwner() == null) return false;
-        if (pEntity.getTeam() == null) return false;
-
-        return !pEntity.isAlliedTo(this.getOwner()) || (pEntity.getTeam() != null && TDMSavedData.enabledTDM(pEntity));
-    }
-
-    @Override
-    public boolean basicEnemyProjectileFilter(Projectile projectile) {
-        if (this.getOwner() == null) return false;
-        if (projectile.getOwner() != null && projectile.getOwner() == this.getOwner()) return false;
-        return (projectile.getOwner() != null && !projectile.getOwner().isAlliedTo(this.getOwner()))
-                || (projectile.getOwner() != null && projectile.getOwner().getTeam() != null && TDMSavedData.enabledTDM(projectile.getOwner()))
-                || projectile.getOwner() == null;
-    }
 
     private void causeAirExplode(Vec3 vec3) {
         createCustomExplosion()

@@ -34,7 +34,7 @@
       "Damage": 25,
       "ExplosionDamage": 7,
       "ExplosionRadius": 4,
-      "Spread": 0.25,
+      "Spread": 0.35,
       "HeatPerShoot": 1.5,
       "NaturalCooldown": 0.8,
       "ShootAnimationTime": 3,

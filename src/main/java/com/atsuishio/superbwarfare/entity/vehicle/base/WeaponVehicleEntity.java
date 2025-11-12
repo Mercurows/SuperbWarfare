@@ -9,7 +9,7 @@ import java.util.List;
  * 拥有任意武器的载具
  */
 // TODO 把这个删了，合并至vehicle entity
-public interface WeaponVehicleEntity extends ArmedVehicleEntity {
+public interface WeaponVehicleEntity {
     /**
      * 检测该槽位是否有可用武器
      *

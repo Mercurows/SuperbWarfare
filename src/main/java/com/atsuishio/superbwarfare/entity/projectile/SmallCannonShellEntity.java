@@ -198,4 +198,8 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
+
+    public void antiAir(boolean antiAir) {
+        this.aa = antiAir;
+    }
 }

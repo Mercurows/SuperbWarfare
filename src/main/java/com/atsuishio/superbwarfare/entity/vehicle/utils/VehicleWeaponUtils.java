@@ -84,8 +84,8 @@ public final class VehicleWeaponUtils {
         float min = -ySpeed + v;
         float max = ySpeed + v;
 
-        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
-        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
+        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.99f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
+        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.99f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
         vehicle.turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
         vehicle.aiTurretDiff = VectorTool.calculateAngle(shootVec, barrelVector);
     }
