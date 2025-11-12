@@ -109,6 +109,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("DestroyInfo")
     public DestroyInfo destroyInfo = new DestroyInfo();
 
+    @SerializedName("SeekInfo")
+    public SeekInfo seekInfo = null;
+
     @SerializedName("VehicleContainerType")
     public VehicleContainerType vehicleContainerType = VehicleContainerType.MEDIUM;
 
