@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
@@ -9,19 +8,18 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.RangeTool;
+import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
-import com.mojang.math.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvents;
@@ -29,15 +27,15 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -50,22 +48,12 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEntity, AutoAimable, WeaponVehicleEntity {
-
-    public static Consumer<VehicleEntity> fireSound = vehicle -> {
-    };
-
-    public static final EntityDataAccessor<Integer> ANIM_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Float> GUN_ROTATE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.OPTIONAL_UUID);
-    public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(Hpj11Entity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    private boolean wasFiring = false;
 
     public int changeTargetTimer = 60;
 
@@ -76,20 +64,13 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
         super(type, world);
     }
 
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(ANIM_TIME, 0)
-                .define(GUN_ROTATE, 0f)
-                .define(TARGET_UUID, "none")
+        builder.define(TARGET_UUID, "none")
                 .define(OWNER_UUID, Optional.empty())
-                .define(ACTIVE, false)
-                .define(FIRE_TIME, 0);
+                .define(ACTIVE, false);
     }
 
     @Override
@@ -100,7 +81,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("AnimTime", this.entityData.get(ANIM_TIME));
         compound.putBoolean("Active", this.entityData.get(ACTIVE));
         if (this.getOwnerUUID() != null) {
             compound.putUUID("Owner", this.getOwnerUUID());
@@ -110,7 +90,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(ANIM_TIME, compound.getInt("AnimTime"));
         this.entityData.set(ACTIVE, compound.getBoolean("Active"));
 
         UUID uuid;
@@ -183,67 +162,13 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
     @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 1f) * damage);
-    }
-
-    @Override
-    public @NotNull Vec3 getDeltaMovement() {
-        return new Vec3(0, Math.min(super.getDeltaMovement().y, 0), 0);
+                .custom((source, damage) -> getSourceAngle(source, 0.5f) * damage);
     }
 
     @Override
     public void baseTick() {
-        if (!this.wasFiring && this.isFiring() && this.level().isClientSide()) {
-            fireSound.accept(this);
-        }
-        this.wasFiring = this.isFiring();
-
-        this.gunRotO = this.getGunRot();
         super.baseTick();
-
-        if (this.entityData.get(ANIM_TIME) > 0) {
-            this.entityData.set(ANIM_TIME, this.entityData.get(ANIM_TIME) - 1);
-        }
-
-        if (this.level() instanceof ServerLevel) {
-            this.handleAmmo();
-        }
-
-        this.move(MoverType.SELF, this.getDeltaMovement());
-        if (this.onGround()) {
-            this.setDeltaMovement(Vec3.ZERO);
-        } else {
-            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
-        }
-
-        if (this.getFirstPassenger() instanceof Player player && fireInputDown()) {
-            if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
-//                vehicleShoot(player);
-            }
-        }
-
-        this.entityData.set(GUN_ROTATE, this.entityData.get(GUN_ROTATE) * 0.8f);
-        setGunRot(getGunRot() + entityData.get(GUN_ROTATE));
-
-        autoAim();
-
-        if (entityData.get(FIRE_TIME) > 0) {
-            entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
-        }
-
         lowHealthWarning();
-    }
-
-    private void handleAmmo() {
-        if (hasItem(ModItems.CREATIVE_AMMO_BOX.get())) {
-            entityData.set(AMMO, 9999);
-        } else {
-            entityData.set(AMMO, countItem(ModItems.SMALL_SHELL.get()));
-        }
-    }
-
-    public boolean isFiring() {
-        return this.entityData.get(FIRE_TIME) > 0;
     }
 
     public void autoAim() {
@@ -251,7 +176,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
             return;
         }
 
-        if (this.getEnergy() <= VehicleConfig.HPJ11_SEEK_COST.get()) return;
+//        if (this.getEnergy() <= VehicleConfig.HPJ11_SEEK_COST.get()) return;
 
         Matrix4f transform = getBarrelTransform(1);
         Vector4f worldPosition = transformPosition(transform, 0f, 0.4f, 0);
@@ -261,7 +186,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
             Entity naerestEntity = seekNearLivingEntity(this, barrelRootPos, -32.5, 90, 3, 160, 0.3);
             if (naerestEntity != null) {
                 entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
-                this.consumeEnergy(VehicleConfig.HPJ11_SEEK_COST.get());
+//                this.consumeEnergy(VehicleConfig.HPJ11_SEEK_COST.get());
             }
         }
 
@@ -356,130 +281,6 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
                 || projectile.getOwner() == null;
     }
 
-    public float getGunRot() {
-        return this.gunRot;
-    }
-
-    public void setGunRot(float pGunRot) {
-        this.gunRot = pGunRot;
-    }
-
-    @Override
-    public void handleClientSync() {
-        if (isControlledByLocalInstance()) {
-            interpolationSteps = 0;
-            syncPacketPositionCodec(getX(), getY(), getZ());
-        }
-        if (interpolationSteps <= 0) {
-            return;
-        }
-
-        double interpolatedYaw = Mth.wrapDegrees(serverYRot - (double) getYRot());
-        setYRot(getYRot() + (float) interpolatedYaw / (float) interpolationSteps);
-        setXRot(getXRot() + (float) (serverXRot - (double) getXRot()) / (float) interpolationSteps);
-        setRot(getYRot(), getXRot());
-
-    }
-
-    @Override
-    public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps) {
-        serverYRot = yRot;
-        serverXRot = xRot;
-        this.interpolationSteps = 10;
-    }
-
-    public Vec3 driverPos(float ticks) {
-        Matrix4f transform = getVehicleFlatTransform(ticks);
-        Vector4f worldPosition = transformPosition(transform, -1.0625f, 3f, -1.0625f);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public Vec3 getZoomPos(Entity entity, float partialTicks) {
-        Matrix4f transform = getBarrelTransform(partialTicks);
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.5f, 0);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity living, int seat) {
-        if (cannotFire) return;
-        if (this.getEnergy() < VehicleConfig.HPJ11_SHOOT_COST.get()) return;
-
-        boolean hasCreativeAmmo = InventoryTool.hasCreativeAmmoBox(getFirstPassenger()) || hasItem(ModItems.CREATIVE_AMMO_BOX.get());
-
-        entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
-
-        var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
-
-        entityToSpawn.setPos(getShootPos(living, 1).x, getShootPos(living, 1).y, getShootPos(living, 1).z);
-        entityToSpawn.shoot(getLookAngle().x, getLookAngle().y, getLookAngle().z, projectileVelocity(living), 0.25f);
-        level().addFreshEntity(entityToSpawn);
-
-        this.entityData.set(GUN_ROTATE, entityData.get(GUN_ROTATE) + 0.5f);
-        this.entityData.set(ANIM_TIME, 1);
-
-        this.consumeEnergy(VehicleConfig.HPJ11_SHOOT_COST.get());
-
-        if (hasCreativeAmmo) return;
-
-        this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-    }
-
-    public float shootingVolume() {
-        return entityData.get(FIRE_TIME) * 0.4f;
-    }
-
-    public float shootingPitch() {
-        return 0.8f + entityData.get(FIRE_TIME) * 0.1f;
-    }
-
-    @Override
-    public Vec3 getShootPos(int seatIndex, float ticks) {
-        Matrix4f transform = getBarrelTransform(1);
-        Vector4f worldPosition = transformPosition(transform, 0f, 0.35f, 0);
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    // 炮弹发射速度
-    @Override
-    public float projectileVelocity(Entity entity) {
-        return 20;
-    }
-
-    // 炮弹重力
-    @Override
-    public float projectileGravity(Entity entity) {
-        return 0.03f;
-    }
-
-    public Matrix4f getBarrelTransform(float partialTicks) {
-        Matrix4f transformV = getVehicleFlatTransform(partialTicks);
-
-        Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, 1.375f, 0.25f);
-
-        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
-        transformV.rotate(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, xRotO, getXRot())));
-        return transformV;
-    }
-
-    @Override
-    public void travel() {
-        if (this.getEnergy() <= 0) return;
-        Entity passenger = this.getFirstPassenger();
-        if (passenger != null) {
-
-            float diffY = Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot());
-            float diffX = Mth.wrapDegrees(passenger.getXRot() - this.getXRot());
-
-            turretTurnSound(diffX, diffY, 0.95f);
-
-            this.setYRot(this.getYRot() + Mth.clamp(0.9f * diffY, -20f, 20f));
-            this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.9f * diffX, -15f, 15f), -90, 32.5f));
-        }
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
@@ -487,37 +288,5 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public Vec3 getBarrelVector(float pPartialTicks) {
-        return getViewVector(pPartialTicks);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (zoom || isFirstPerson) {
-            return new Vec2(Mth.lerp(partialTicks, player.yRotO, player.getYRot()), Mth.lerp(partialTicks, player.xRotO, player.getXRot()));
-        }
-        return super.getCameraRotation(partialTicks, player, false, false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (zoom || isFirstPerson) {
-            if (zoom) {
-                return new Vec3(this.getZoomPos(player, partialTicks).x, this.getZoomPos(player, partialTicks).y, this.getZoomPos(player, partialTicks).z);
-            } else {
-                return new Vec3(this.driverPos(partialTicks).x, this.driverPos(partialTicks).y, this.driverPos(partialTicks).z);
-            }
-        }
-        return super.getCameraPosition(partialTicks, player, false, false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public boolean useFixedCameraPos(Entity entity) {
-        return true;
     }
 }

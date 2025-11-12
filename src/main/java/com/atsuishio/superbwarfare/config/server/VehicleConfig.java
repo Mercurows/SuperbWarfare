@@ -42,12 +42,6 @@ public class VehicleConfig {
     public static ModConfigSpec.DoubleValue TOM_6_BOMB_EXPLOSION_RADIUS;
 
 
-    public static ModConfigSpec.DoubleValue HPJ11_DAMAGE;
-    public static ModConfigSpec.DoubleValue HPJ11_EXPLOSION_DAMAGE;
-    public static ModConfigSpec.DoubleValue HPJ11_EXPLOSION_RADIUS;
-    public static ModConfigSpec.IntValue HPJ11_SHOOT_COST;
-    public static ModConfigSpec.IntValue HPJ11_SEEK_COST;
-
     public static ModConfigSpec.IntValue A_10_MAX_ENERGY_COST;
     public static ModConfigSpec.IntValue A_10_CANNON_DAMAGE;
     public static ModConfigSpec.IntValue A_10_CANNON_EXPLOSION_DAMAGE;
@@ -153,25 +147,6 @@ public class VehicleConfig {
 
         builder.comment("The Melon Bomb explosion radius of Tom-6");
         TOM_6_BOMB_EXPLOSION_RADIUS = builder.defineInRange("tom_6_bomb_explosion_radius", 10d, 1d, 10000000d);
-
-        builder.pop();
-
-        builder.push("HPJ-11");
-
-        builder.comment("The damage of HPJ-11");
-        HPJ11_DAMAGE = builder.defineInRange("hpj_11_damage", 20d, 1, 10000000);
-
-        builder.comment("The explosion damage of HPJ-11");
-        HPJ11_EXPLOSION_DAMAGE = builder.defineInRange("hpj_11_explosion_damage", 7d, 1, 10000000);
-
-        builder.comment("The explosion radius of HPJ-11");
-        HPJ11_EXPLOSION_RADIUS = builder.defineInRange("hpj_11_explosion_radius", 4d, 1, 50);
-
-        builder.comment("The energy cost of HPJ-11 per shoot");
-        HPJ11_SHOOT_COST = builder.defineInRange("hpj_11_shoot_cost", 64, 0, 2147483647);
-
-        builder.comment("The energy cost of HPJ-11 find a new target");
-        HPJ11_SEEK_COST = builder.defineInRange("hpj_11_seek_cost", 1024, 0, 2147483647);
 
         builder.pop();
 

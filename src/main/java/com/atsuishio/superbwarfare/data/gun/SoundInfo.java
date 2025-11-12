@@ -63,6 +63,9 @@ public class SoundInfo {
     @SerializedName("Locked")
     public SoundEvent locked;
 
+    @SerializedName("FireSoundInstances")
+    public SoundEvent fireSoundInstances;
+
     // 切枪时应该被中止播放的音效
     @SerializedName("CancellableSounds")
     public ObjectToList<String> cancellableSounds = new ObjectToList<>();
