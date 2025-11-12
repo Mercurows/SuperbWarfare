@@ -56,16 +56,18 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
         randomFloat = random.nextFloat();
     }
 
-    public SwarmDroneEntity(LivingEntity entity, Level level, float explosionDamage, float explosionRadius) {
-        super(ModEntities.SWARM_DRONE.get(), entity, level);
-        this.noCulling = true;
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
-        this.gravity = 0.1f;
-    }
-
     public SwarmDroneEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.SWARM_DRONE.get(), level);
+    }
+
+    @Override
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        var entity = source.getDirectEntity();
+        if (entity instanceof SwarmDroneEntity swarmDrone && swarmDrone.getOwner() == this.getOwner()) {
+            return false;
+        }
+
+        return super.hurt(source, amount);
     }
 
     @Override

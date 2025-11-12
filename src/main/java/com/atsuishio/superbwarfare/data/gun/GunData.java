@@ -111,6 +111,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         heat = new DoubleValue(gunDataTag, "Heat");
         shootAnimationTimer = new IntValue(gunDataTag, "ShootAnimationTimer");
         overHeat = new BooleanValue(gunDataTag, "OverHeat");
+        vehicleReload = new BooleanValue(gunDataTag, "VehicleReload");
         zooming = new BooleanValue(gunDataTag, "Zooming");
 
         var defaultFireMode = compute(false).defaultFireMode;
@@ -821,6 +822,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public final Reload reload;
+    public final BooleanValue vehicleReload;
 
     /**
      * 是否正在换弹

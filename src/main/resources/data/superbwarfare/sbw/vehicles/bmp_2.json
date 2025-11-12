@@ -137,7 +137,7 @@
       "HeatPerShoot": 8,
       "NaturalCooldown": 1,
       "RecoilTime": 30,
-      "RecoilForce": 0.3,
+      "RecoilForce": 0.67,
       "Spread": 0.5,
       "Crosshair": "@VehicleRuApc",
       "CrosshairColor": "0xFFC700",
