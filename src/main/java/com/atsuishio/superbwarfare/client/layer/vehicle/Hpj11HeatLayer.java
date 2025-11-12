@@ -24,10 +24,9 @@ public class Hpj11HeatLayer extends GeoRenderLayer<Hpj11Entity> {
     public void render(PoseStack poseStack, Hpj11Entity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
         RenderType glowRenderType = RenderType.eyes(LAYER);
         float heat = animatable.getWeaponHeat(0, 0) < 20 ? 0 : animatable.getWeaponHeat(0) - 20;
-        var value = (int) (heat / 80f * 255);
+        var value = Math.round(heat / 80 * 255);
         var color = FastColor.ARGB32.color(value, value, value);
         getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, color);
-
     }
 }
 

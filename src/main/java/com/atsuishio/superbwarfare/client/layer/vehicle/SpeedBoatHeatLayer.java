@@ -24,10 +24,9 @@ public class SpeedBoatHeatLayer extends GeoRenderLayer<SpeedboatEntity> {
     public void render(PoseStack poseStack, SpeedboatEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
         RenderType glowRenderType = RenderType.eyes(LAYER);
         float heat = animatable.getWeaponHeat(0, 0) < 20 ? 0 : animatable.getWeaponHeat(0) - 20;
-        int heatColor = (int) (heat / 80);
-        getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY,
-                FastColor.ARGB32.color(255, heatColor, heatColor, heatColor)
-        );
+        int heatColor = Math.round(heat / 80 * 255);
+        int color = FastColor.ARGB32.color(255, heatColor, heatColor, heatColor);
+        getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, color);
     }
 }
 
