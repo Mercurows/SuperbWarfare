@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -1196,10 +1195,10 @@ public class ClientEventHandler {
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem gunItem)) return;
-        var data = GunData.from(stack);
-
-        if (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && iArmedVehicle.getVehicleEntity().hidePassenger(player))
+        if (player.getVehicle() instanceof VehicleEntity vehicle && player == vehicle.getFirstPassenger() && vehicle.hidePassenger(player))
             return;
+
+        var data = GunData.from(stack);
 
         float pose;
         float times = 2 * (float) Math.min(getDelta(), 0.8);

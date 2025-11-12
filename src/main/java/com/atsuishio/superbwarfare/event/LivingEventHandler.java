@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimable;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -119,18 +118,18 @@ public class LivingEventHandler {
     }
 
     private static void handleVehicleHurt(LivingIncomingDamageEvent event) {
-        var vehicle = event.getEntity().getVehicle();
-        if (vehicle instanceof VehicleEntity && vehicle instanceof ArmedVehicleEntity iArmedVehicle) {
+        var entity = event.getEntity().getVehicle();
+        if (entity instanceof VehicleEntity vehicle) {
             var source = event.getSource();
             if (source.is(ModTags.DamageTypes.VEHICLE_IGNORE)) return;
 
-            if (iArmedVehicle.getVehicleEntity().isEnclosed(event.getEntity())) {
+            if (vehicle.isEnclosed(event.getEntity())) {
                 if (!source.is(ModDamageTypes.VEHICLE_EXPLOSION)) {
                     event.setCanceled(true);
                 }
             } else {
                 if (!source.is(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
-                    vehicle.hurt(event.getSource(), 0.7f * event.getAmount());
+                    entity.hurt(event.getSource(), 0.7f * event.getAmount());
                 }
 
                 event.setAmount(0.3f * event.getAmount());
@@ -652,7 +651,7 @@ public class LivingEventHandler {
         Player player = event.getAttackingPlayer();
         if (player == null) return;
 
-        if (player.getVehicle() instanceof ArmedVehicleEntity) {
+        if (player.getVehicle() instanceof VehicleEntity) {
             player.giveExperiencePoints(event.getDroppedExperience());
             event.setCanceled(true);
         }
