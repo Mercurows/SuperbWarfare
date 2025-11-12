@@ -52,8 +52,6 @@ public class ModEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<MedicalKitEntity>> MEDICAL_KIT = register("medical_kit",
             EntityType.Builder.of(MedicalKitEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.4f, 0.2f));
-    public static final DeferredHolder<EntityType<?>, EntityType<WaterMaskEntity>> WATER_MASK = register("water_mask",
-            EntityType.Builder.of(WaterMaskEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).sized(1f, 1f).noSave().noSummon().fireImmune());
 
     // Projectiles
     public static final DeferredHolder<EntityType<?>, EntityType<TaserBulletEntity>> TASER_BULLET = register("taser_bullet",
@@ -100,7 +98,7 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<WgMissileEntity>> WG_MISSILE = register("wg_missile",
             EntityType.Builder.<WgMissileEntity>of(WgMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().fireImmune().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<SwarmDroneEntity>> SWARM_DRONE = register("swarm_drone",
-            EntityType.Builder.<SwarmDroneEntity>of(SwarmDroneEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().fireImmune().sized(0.5f, 0.5f));
+            EntityType.Builder.of(SwarmDroneEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().fireImmune().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<Mk82Entity>> MK_82 = register("mk_82",
             EntityType.Builder.<Mk82Entity>of(Mk82Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.8f, 0.8f));
 
