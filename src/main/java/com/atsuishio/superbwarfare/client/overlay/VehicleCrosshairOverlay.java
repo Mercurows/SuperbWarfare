@@ -49,6 +49,8 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
             Map.entry("@VehicleCommonGun", Mod.loc("textures/overlay/vehicle/crosshair/common_gun.png")),
             Map.entry("@VehicleCommonCannon", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon.png")),
             Map.entry("@VehicleCommonCross", Mod.loc("textures/overlay/vehicle/crosshair/common_cross.png")),
+            Map.entry("@VehicleDynamicCross", Mod.loc("textures/overlay/vehicle/crosshair/common_dynamic_cross.png")),
+            Map.entry("@VehicleFixedPoint", Mod.loc("textures/overlay/vehicle/crosshair/common_fixed_point.png")),
             Map.entry("@VehicleCnHpjZooming", Mod.loc("textures/overlay/vehicle/crosshair/cn_hpj_zooming.png")),
             Map.entry("@VehicleCommonCannonZooming", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon_zooming.png")),
             Map.entry("@VehicleLaserCannon", Mod.loc("textures/overlay/vehicle/crosshair/laser_cannon.png"))
@@ -151,12 +153,21 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                 float scaledMinWH = Mth.floor(minWH * scale);
                 float centerW = (screenWidth - scaledMinWH) / 2;
                 float centerH = (screenHeight - scaledMinWH) / 2;
+                float x = (float) p.x;
+                float y = (float) p.y;
 
-                if (crosshairPath.equals("@VehicleCommonCross") && VectorUtil.canSee(pos)) {
-                    float x = (float) p.x;
-                    float y = (float) p.y;
+                if (crosshairPath.equals("@VehicleDynamicCross") && VectorUtil.canSee(pos)) {
                     RenderHelper.preciseBlitWithColor(guiGraphics, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                    ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
+                    RenderHelper.preciseBlitWithColor(guiGraphics, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 } else {
+                    if (crosshairPath.equals("@VehicleCnHpjZooming")) {
+                        ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
+                        RenderHelper.preciseBlitWithColor(guiGraphics, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                        ResourceLocation dynamicTexture = CROSSHAIR_MAP.get("@VehicleDynamicCross");
+                        RenderHelper.preciseBlitWithColor(guiGraphics, dynamicTexture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                    }
+
                     if (crosshairPath.equals("@VehicleCommonCannonZooming")) {
                         float fovAdjust = 70F / Minecraft.getInstance().options.fov().get();
                         float f = (float) Math.min(screenWidth, screenHeight);

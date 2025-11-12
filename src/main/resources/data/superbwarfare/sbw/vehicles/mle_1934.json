@@ -35,7 +35,7 @@
       "ExplosionRadius": 4,
       "Spread": 0.05,
       "ShootAnimationTime": 30,
-      "Crosshair": "@VehicleCommonCross",
+      "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleCommonCannonZooming",
       "Name": "superbwarfare.mle_1934.cannon_ap",
       "SoundInfo": {

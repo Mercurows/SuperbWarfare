@@ -38,8 +38,8 @@
       "HeatPerShoot": 1.5,
       "NaturalCooldown": 0.8,
       "ShootAnimationTime": 3,
-      "Crosshair": "@VehicleCommonCross",
-      "CrosshairZooming": "@VehicleCommonCross",
+      "Crosshair": "@VehicleDynamicCross",
+      "CrosshairZooming": "@VehicleCnHpjZooming",
       "Name": "superbwarfare.hpj_11.cannon",
       "AmmoType": "superbwarfare:small_shell",
       "ShootPos": {

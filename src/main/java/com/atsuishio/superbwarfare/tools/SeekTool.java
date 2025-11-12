@@ -196,6 +196,11 @@ public class SeekTool {
         return VectorTool.calculateAngle(start, end);
     }
 
+    private static double calculateAngle(Vec3 vec3, Entity entityA, Entity entityB) {
+        Vec3 start = new Vec3(entityA.getX() - entityB.getX(), entityA.getY() - entityB.getY(), entityA.getZ() - entityB.getZ());
+        return VectorTool.calculateAngle(start, vec3);
+    }
+
     /**
      * 判断实体是否存活
      */
@@ -455,6 +460,11 @@ public class SeekTool {
 
         public Builder withinAngle(double angle) {
             this.filters.add(e -> SeekTool.calculateAngle(e, entity) < angle);
+            return this;
+        }
+
+        public Builder withinAngle(Vec3 vec3, double angle) {
+            this.filters.add(e -> SeekTool.calculateAngle(vec3, e, entity) < angle);
             return this;
         }
 
