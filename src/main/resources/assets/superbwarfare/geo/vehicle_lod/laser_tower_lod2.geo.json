@@ -543,17 +543,17 @@
 					]
 				},
 				{
-					"name": "turret2",
+                  "name": "turretLaser",
 					"pivot": [0, 10.5, 0]
 				},
 				{
-					"name": "barrel2",
-					"parent": "turret2",
+                  "name": "barrelLaser",
+                  "parent": "turretLaser",
 					"pivot": [0, 22.25, 0]
 				},
 				{
 					"name": "laser",
-					"parent": "barrel2",
+                  "parent": "barrelLaser",
 					"pivot": [0, 22.2505, 0],
 					"cubes": [
 						{

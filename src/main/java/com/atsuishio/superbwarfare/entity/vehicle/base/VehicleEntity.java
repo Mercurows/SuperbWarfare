@@ -176,6 +176,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> LASER_SCALE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> LASER_SCALE_O = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     // Map SeatIndex -> GunData
     protected static final EntityDataAccessor<Map<String, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.VEHICLE_GUN_DATA_MAP_SERIALIZER.get());
@@ -1060,7 +1063,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(ENERGY, 0)
                 .define(PROPELLER_ROT, 0f)
 
-                .define(HORN_VOLUME, 0f);
+                .define(HORN_VOLUME, 0f)
+                .define(LASER_LENGTH, 0f)
+                .define(LASER_SCALE, 0f)
+                .define(LASER_SCALE_O, 0f);
     }
 
     // energy start
@@ -1214,6 +1220,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var gunData = getGunData(seatIndex, weaponIndex);
         if (gunData == null) return 0;
         return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
+    }
+
+    public int getShootAnimationTimer(String weaponName) {
+        var gunData = getGunData(weaponName);
+        if (gunData == null) return 0;
+        return gunData.shootAnimationTimer.get();
     }
 
     public int getShootAnimationTimer(int seatIndex, int weaponIndex) {
@@ -1767,6 +1779,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             collisionCoolDown--;
         }
 
+        this.entityData.set(LASER_SCALE_O, this.entityData.get(LASER_SCALE));
+
         flap1LRotO = this.getFlap1LRot();
         flap1RRotO = this.getFlap1RRot();
         flap1L2RotO = this.getFlap1L2Rot();
@@ -1777,6 +1791,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         gearRotO = entityData.get(GEAR_ROT);
 
         super.baseTick();
+
+        if (this.entityData.get(LASER_SCALE) > 0) {
+            this.entityData.set(LASER_SCALE, Math.max(this.entityData.get(LASER_SCALE) - 0.1f, 0));
+            this.entityData.set(LASER_SCALE, this.entityData.get(LASER_SCALE) * 0.9f);
+        }
+
+        if (this.entityData.get(LASER_SCALE) == 0) {
+            this.entityData.set(LASER_LENGTH, 0f);
+        }
 
         if (repairCoolDown > 0) {
             repairCoolDown--;
@@ -1972,6 +1995,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public SoundEvent getShootSoundInstance() {
         // TODO why 0?
         var gunData = getGunData(0);
+        if (gunData != null) {
+            var instance = gunData.compute().soundInfo.fireSoundInstances;
+            if (instance != null) return instance;
+        } else {
+            return getShootSoundInstance("Main");
+        }
+        return SoundEvents.EMPTY;
+    }
+
+    public SoundEvent getShootSoundInstance(String weaponName) {
+        var gunData = getGunData(weaponName);
         if (gunData != null) {
             var instance = gunData.compute().soundInfo.fireSoundInstances;
             if (instance != null) return instance;

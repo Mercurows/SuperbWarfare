@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
-import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -33,6 +32,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
+import static com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud.lerpRecoil;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
@@ -104,8 +104,9 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
         poseStack.pushPose();
 
         float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
-        poseStack.translate(LandVehicleHud.lerpRecoil * 6, recoil * -3, 0);
-        poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * LandVehicleHud.lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
+        poseStack.translate(lerpRecoil * 6 + screenWidth * 0.025f * recoil, recoil * 3 + screenHeight * 0.025f * recoil, 0);
+        poseStack.scale(1 - recoil * 0.05f, 1 - recoil * 0.05f, 1);
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);

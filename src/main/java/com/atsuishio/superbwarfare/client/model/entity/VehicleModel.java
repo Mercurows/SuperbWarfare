@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.YAW_WHILE_SHOOT;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
 public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoModel<T> {
 
@@ -135,6 +135,16 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
         // 瞄准时隐藏乘客武器站
         if (boneName.equals("passengerWeaponStation") && hideForTurretControllerWhileZooming()) {
             return (bone, vehicle, state) -> bone.setHidden(hideForPassengerWeaponStationControllerWhileZooming);
+        }
+
+        if (boneName.equals("laser")) {
+            return (bone, vehicle, state) -> {
+                bone.setScaleZ(10 * vehicle.getEntityData().get(LASER_LENGTH));
+                float scale = Math.min(Mth.lerp(state.getPartialTick(), vehicle.getEntityData().get(LASER_SCALE_O), vehicle.getEntityData().get(LASER_SCALE)), 1.2f);
+
+                bone.setScaleX(scale);
+                bone.setScaleY(scale);
+            };
         }
 
         //射击时带来的车体摇晃视觉效果

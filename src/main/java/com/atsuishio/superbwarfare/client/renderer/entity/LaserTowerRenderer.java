@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.layer.vehicle.LaserTowerLaserLayer;
 import com.atsuishio.superbwarfare.client.layer.vehicle.LaserTowerPowerLayer;
 import com.atsuishio.superbwarfare.client.model.entity.LaserTowerModel;
 import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class LaserTowerRenderer extends VehicleRenderer<LaserTowerEntity> {
@@ -14,9 +13,4 @@ public class LaserTowerRenderer extends VehicleRenderer<LaserTowerEntity> {
         this.addRenderLayer(new LaserTowerPowerLayer(this));
         this.addRenderLayer(new LaserTowerLaserLayer(this));
     }
-
-    @Override
-    public void vehicleAxis(LaserTowerEntity entityIn, PoseStack poseStack, float entityYaw, float partialTicks) {
-    }
-
 }

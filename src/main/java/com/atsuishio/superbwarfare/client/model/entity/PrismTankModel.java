@@ -4,19 +4,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.*;
-
 public class PrismTankModel extends VehicleModel<PrismTankEntity> {
     @Override
     public @Nullable TransformContext<PrismTankEntity> collectTransform(String boneName) {
         return switch (boneName) {
-            case "laser" -> (laser, vehicle, state) -> {
-                laser.setScaleZ(10 * vehicle.getEntityData().get(LASER_LENGTH));
-                float scale = Math.min(Mth.lerp(state.getPartialTick(), vehicle.getEntityData().get(LASER_SCALE_O), vehicle.getEntityData().get(LASER_SCALE)), 1.2f);
-
-                laser.setScaleX(scale);
-                laser.setScaleY(scale);
-            };
             case "fanL", "fanR" -> (fanL, vehicle, state) -> {
                 if (vehicle.getEnergy() > 0) {
                     fanL.setRotY((System.currentTimeMillis() % 36000000) / 75f);

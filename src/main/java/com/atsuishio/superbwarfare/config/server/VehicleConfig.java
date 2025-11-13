@@ -29,10 +29,6 @@ public class VehicleConfig {
 
     public static ModConfigSpec.IntValue ANNIHILATOR_SHOOT_COST;
 
-    public static ModConfigSpec.IntValue LASER_TOWER_COOLDOWN;
-    public static ModConfigSpec.IntValue LASER_TOWER_DAMAGE;
-    public static ModConfigSpec.IntValue LASER_TOWER_SHOOT_COST;
-
 
     public static ModConfigSpec.IntValue WHEELCHAIR_JUMP_ENERGY_COST;
     public static ModConfigSpec.IntValue WHEELCHAIR_MOVE_ENERGY_COST;
@@ -112,20 +108,6 @@ public class VehicleConfig {
         ANNIHILATOR_SHOOT_COST = builder.defineInRange("annihilator_shoot_cost", 2000000, 0, 2147483647);
 
         builder.pop();
-
-        builder.push("Laser Tower");
-
-        builder.comment("The damage of Laser Tower");
-        LASER_TOWER_DAMAGE = builder.defineInRange("laser_tower_damage", 15, 1, 10000000);
-
-        builder.comment("The cooldown time(ticks) of Laser Tower");
-        LASER_TOWER_COOLDOWN = builder.defineInRange("laser_tower_cooldown", 40, 15, 10000000);
-
-        builder.comment("The energy cost of Laser Tower per shoot");
-        LASER_TOWER_SHOOT_COST = builder.defineInRange("laser_tower_shoot_cost", 5000, 0, 2147483647);
-
-        builder.pop();
-
 
         builder.push("Wheelchair");
 
