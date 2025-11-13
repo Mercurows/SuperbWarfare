@@ -19,7 +19,7 @@
       "Position": [-1.0625, 3, -1.0625],
       "ZoomDirection": "Barrel"
     },
-    "Weapons": ["Cannon"]
+    "Weapons": ["Main"]
   },
   "SeekInfo": {
     "MinSeekRange": 3,
@@ -30,7 +30,7 @@
     "seekEnergyCost": 5000
   },
   "Weapons": {
-    "Cannon": {
+    "Main": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",

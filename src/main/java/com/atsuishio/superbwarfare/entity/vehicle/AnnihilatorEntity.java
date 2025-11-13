@@ -390,7 +390,7 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Weapo
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int seat) {
+    public void vehicleShoot(LivingEntity living) {
         if (this.entityData.get(COOL_DOWN) > 0) {
             return;
         }

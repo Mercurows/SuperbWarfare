@@ -111,8 +111,8 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int seat) {
-        super.vehicleShoot(living, seat);
+    public void vehicleShoot(LivingEntity living) {
+        super.vehicleShoot(living);
 
         var barrelVector = getBarrelVector(1);
 

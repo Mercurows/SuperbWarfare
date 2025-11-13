@@ -235,7 +235,7 @@ public class GunEventHandler {
         if (data.autoIterativeReloadTimer.get() == autoIterativeReloadTime - 1) {
             var soundInfo = computed.soundInfo;
             var sound = soundInfo.reloadPrepare;
-            var sound1p = soundInfo.reloadNormal;
+            var sound1p = soundInfo.reloadEmpty;
 
             if (sound != null && ammoSupplier != null) {
                 ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);

@@ -61,17 +61,17 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
         if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown()) {
             if (gunData.ammo.get() > 0 && player.level() instanceof ServerLevel) {
-                vehicleShoot(player, 0);
+                vehicleShoot(player, "Main");
             }
             return InteractionResult.SUCCESS;
         }
 
         if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isShiftKeyDown()) {
-            setTarget(player.getMainHandItem(), player, 0);
+            setTarget(player.getMainHandItem(), player, "Main");
             return InteractionResult.SUCCESS;
         }
         if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isShiftKeyDown()) {
-            setTarget(player.getOffhandItem(), player, 0);
+            setTarget(player.getOffhandItem(), player, "Main");
             return InteractionResult.SUCCESS;
         }
 
@@ -147,8 +147,8 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         }
     }
 
-    public void setTarget(ItemStack stack, Entity entity, int seatIndex) {
-        var data = getGunData(seatIndex);
+    public void setTarget(ItemStack stack, Entity entity, String weaponName) {
+        var data = getGunData(weaponName);
 
         if (data == null) return;
 
@@ -163,7 +163,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         entityData.set(DEPRESSED, parameters.isDepressed());
         entityData.set(RADIUS, parameters.radius());
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getShootPos(seatIndex, 1), randomPos, data.compute().velocity, data.compute().gravity, entityData.get(DEPRESSED));
+        Vec3 launchVector = calculateLaunchVector(getShootPos(weaponName, 1), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
 
         Component component = Component.literal("");
         Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
@@ -190,12 +190,12 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         }
     }
 
-    public void resetTarget(int seatIndex) {
-        var data = getGunData(seatIndex);
+    public void resetTarget(String weaponName) {
+        var data = getGunData(weaponName);
         if (data == null) return;
 
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getShootPos(seatIndex, 1), randomPos, data.compute().velocity, data.compute().gravity, entityData.get(DEPRESSED));
+        Vec3 launchVector = calculateLaunchVector(getShootPos(weaponName, 1), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
 
         if (launchVector == null) {
             return;
@@ -207,7 +207,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     }
 
     public int getMaxBarrel() {
-        var data = getGunData(0);
+        var data = getGunData("Main");
         if (data != null) {
             return data.compute().magazine;
         } else {
@@ -227,7 +227,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             }
         }
 
-        var gunData = getGunData(0);
+        var gunData = getGunData("Main");
         if (gunData != null && level() instanceof ServerLevel && getNthEntity(getTurretControllerIndex()) instanceof Player player) {
             var ammoCount = InventoryTool.countItem(player, gunData.selectedAmmoConsumer().stack().getItem());
             if (ammoCount > 0) {
@@ -252,17 +252,17 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int seatIndex) {
-        var data = getGunData(0);
+    public void vehicleShoot(LivingEntity living, String weaponName) {
+        var data = getGunData("Main");
         if (data != null) {
             var barrelAnim = entityData.get(BARREL_ANIM);
             barrelAnim.set(data.ammo.get() - 1, data.compute().shootAnimationTime);
             entityData.set(BARREL_ANIM, barrelAnim, true);
         }
         if (living.level() instanceof ServerLevel level) {
-            ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(seatIndex, 1), getShootPos(seatIndex, 1), level, this);
+            ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(weaponName, 1), getShootPos(weaponName, 1), level, this);
         }
-        super.vehicleShoot(living, seatIndex);
+        super.vehicleShoot(living, weaponName);
     }
 
     @Override
@@ -283,7 +283,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        var gunData = getGunData(0);
+        var gunData = getGunData("Main");
         if (gunData != null) {
             return super.canPlaceItem(slot, stack) && gunData.selectedAmmoConsumer().isAmmoItem(stack);
         } else {

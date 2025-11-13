@@ -308,6 +308,37 @@ public final class VehicleVecUtils {
         }
     }
 
+    public static Vec3 getShootVec(VehicleEntity vehicle, String weaponName, float partialTicks) {
+        var data = vehicle.getGunData(weaponName);
+        if (data == null) {
+            return vehicle.getViewVector(partialTicks);
+        }
+
+        var stringOrVec3 = data.fireDirection();
+
+        if (stringOrVec3.isString()) {
+            return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, weaponName);
+        } else {
+            var vec3 = data.firePosition();
+
+            var worldPosition = transformPosition(
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                    (float) vec3.x + (float) stringOrVec3.vec3.x,
+                    (float) vec3.y + (float) stringOrVec3.vec3.y,
+                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+            var worldPositionO = transformPosition(
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                    (float) vec3.x,
+                    (float) vec3.y,
+                    (float) vec3.z);
+
+            var startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+            var endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            return startPos.vectorTo(endPos).normalize();
+        }
+    }
+
     /**
      * 获取乘客在载具上的摄像机位置
      *

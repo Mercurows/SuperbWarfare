@@ -643,7 +643,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, int seat) {
+    public void vehicleShoot(LivingEntity living) {
         Matrix4f transform = getVehicleTransform(1);
 
         if (getWeaponIndex(0) == 0) {

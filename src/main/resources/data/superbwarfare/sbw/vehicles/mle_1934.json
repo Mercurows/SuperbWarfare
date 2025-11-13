@@ -17,10 +17,10 @@
     "MinPitch": -2.7,
     "MaxPitch": 30,
     "Sensitivity": [0.42, 0.7, 0.9],
-    "Weapons": ["Cannon"]
+    "Weapons": ["Main"]
   },
   "Weapons": {
-    "Cannon": {
+    "Main": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
