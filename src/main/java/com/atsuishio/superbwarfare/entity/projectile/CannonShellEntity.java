@@ -268,11 +268,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public ParticleTool.ParticleType explosionParticleType() {
-        return explosionRadius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM;
-    }
-
-    @Override
     public boolean discardAfterExplode() {
         return true;
     }

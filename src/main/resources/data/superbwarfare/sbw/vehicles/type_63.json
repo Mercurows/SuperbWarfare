@@ -6,6 +6,60 @@
   "TurretYawRange": [-15, 15],
   "TurretPitchRange": [-5, 60],
   "BarrelPos": [0, 0.65, -0.203125],
+  "Weapons": {
+    "AP": {
+      "Velocity": 10,
+      "Gravity": 0.05,
+      "Damage": 500,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 5,
+      "IsArmorPiercingProjectile": true,
+      "Spread": 0.5,
+      "SoundInfo": {
+        "Fire1P": null,
+        "Fire3P": "superbwarfare:medium_rocket_fire",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
+        "ReloadEnd": "ty63_reload"
+      },
+      "SoundRadius": 4
+    },
+    "HE": {
+      "Velocity": 10,
+      "Gravity": 0.05,
+      "Damage": 200,
+      "ExplosionDamage": 200,
+      "ExplosionRadius": 12,
+      "IsHighExplosiveProjectile": true,
+      "Spread": 0.5,
+      "SoundInfo": {
+        "Fire1P": null,
+        "Fire3P": "superbwarfare:medium_rocket_fire",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
+        "ReloadEnd": "ty63_reload"
+      },
+      "SoundRadius": 4
+    },
+    "CM": {
+      "Velocity": 10,
+      "Gravity": 0.05,
+      "Damage": 300,
+      "ExplosionDamage": 300,
+      "ExplosionRadius": 12,
+      "IsClusterMunitionsProjectile": true,
+      "ClusterMunitionsSize": 12,
+      "Spread": 0.5,
+      "SoundInfo": {
+        "Fire1P": null,
+        "Fire3P": "superbwarfare:medium_rocket_fire",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
+        "ReloadEnd": "ty63_reload"
+      },
+      "SoundRadius": 4
+    }
+  },
   "DamageModifiers": [
     "minecraft:arrow * 0.1",
     "minecraft:trident * 0.2",

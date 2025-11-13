@@ -212,7 +212,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                 .damage(explosionDamage)
                 .radius(explosionRadius)
                 .position(vec3)
-                .withParticleType(explosionParticleType());
+                .withParticleType(explosionParticleType(explosionRadius));
     }
 
     public void causeExplode(Vec3 vec3) {
@@ -223,8 +223,20 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         }
     }
 
-    public ParticleTool.ParticleType explosionParticleType() {
-        return ParticleTool.ParticleType.MEDIUM;
+    public ParticleTool.ParticleType explosionParticleType(float radius) {
+        ParticleTool.ParticleType particleType;
+
+        if (radius <= 4) {
+            particleType = ParticleTool.ParticleType.SMALL;
+        } else if (radius > 4 && radius < 10) {
+            particleType = ParticleTool.ParticleType.MEDIUM;
+        } else if (radius >= 10 && radius < 20) {
+            particleType = ParticleTool.ParticleType.HUGE;
+        } else {
+            particleType = ParticleTool.ParticleType.GIANT;
+        }
+
+        return particleType;
     }
 
     public boolean discardAfterExplode() {

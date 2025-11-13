@@ -299,6 +299,18 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("IsAntiAirProjectile")
     public boolean isAntiAirProjectile = false;
 
+    @SerializedName("IsClusterMunitionsProjectile")
+    public boolean isClusterMunitionsProjectile = false;
+
+    @SerializedName("ClusterMunitionsSize")
+    public int clusterMunitionsSize = 10;
+
+    @SerializedName("IsArmorPiercingProjectile")
+    public boolean isArmorPiercingProjectile = false;
+
+    @SerializedName("IsHighExplosiveProjectile")
+    public boolean isHighExplosiveProjectile = false;
+
     @SerializedName("Icon")
     public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();
     /*

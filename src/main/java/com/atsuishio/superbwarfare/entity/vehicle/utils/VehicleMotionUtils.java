@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
@@ -72,7 +73,7 @@ public final class VehicleMotionUtils {
      */
     public static void supportEntities(VehicleEntity vehicle) {
         if (vehicle.isRemoved()) return;
-        if (!(vehicle instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
+        if (!(vehicle instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty() || vehicle instanceof Type63Entity) {
             return;
         }
 

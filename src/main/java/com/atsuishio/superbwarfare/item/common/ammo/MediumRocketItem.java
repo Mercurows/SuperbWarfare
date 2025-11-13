@@ -39,7 +39,7 @@ public class MediumRocketItem extends Item implements DispenserLaunchable {
     }
 
     public MediumRocketEntity createProjectile(Level level, Position pos) {
-        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount);
+        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount, 0.1f);
     }
 
     @Override

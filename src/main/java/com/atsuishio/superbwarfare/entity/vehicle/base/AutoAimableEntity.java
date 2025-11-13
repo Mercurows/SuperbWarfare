@@ -96,7 +96,6 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         this.entityData.define(TARGET_UUID, "none");
         this.entityData.define(OWNER_UUID, Optional.empty());
         this.entityData.define(ACTIVE, false);
-        this.entityData.define(CHARGE_PROGRESS, 0f);
     }
 
     public void setOwnerUUID(@Nullable UUID pUuid) {
@@ -377,9 +376,9 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         float radius = (float) gunData.compute().explosionRadius;
         ParticleTool.ParticleType particleType;
 
-        if (radius < 4) {
+        if (radius <= 4) {
             particleType = ParticleTool.ParticleType.SMALL;
-        } else if (radius >= 4 && radius < 10) {
+        } else if (radius > 4 && radius < 10) {
             particleType = ParticleTool.ParticleType.MEDIUM;
         } else if (radius >= 10 && radius < 20) {
             particleType = ParticleTool.ParticleType.HUGE;

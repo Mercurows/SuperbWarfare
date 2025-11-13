@@ -44,8 +44,8 @@ import java.util.List;
 
 public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity {
 
-    public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> BODY_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
@@ -96,6 +96,26 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     }
 
     @Override
+    public boolean canBeCollidedWith() {
+        return true;
+    }
+
+    @Override
+    public void playerTouch(Player pPlayer) {
+        if (this.position().distanceTo(pPlayer.position()) > 1.4 || pPlayer == this.getFirstPassenger() || pPlayer.position().y > position().y || !pPlayer.isShiftKeyDown()) return;
+        if (!this.level().isClientSide
+                && pPlayer.getY() < this.getY() + this.getBbHeight()
+                && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
+        ) {
+            double entitySize = pPlayer.getBbWidth() * pPlayer.getBbHeight();
+            double thisSize = this.getBbWidth() * this.getBbHeight();
+            double f = Math.min(entitySize / thisSize, 2);
+            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(pPlayer.position().vectorTo(this.position()).toVector3f()).scale(0.5 * f * pPlayer.getDeltaMovement().length())));
+            this.setYRot(pPlayer.getYHeadRot());
+        }
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         var list = new IntArrayList();
@@ -103,8 +123,8 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
             list.add(-1);
         }
 
-        this.entityData.define(PITCH, 0f);
-        this.entityData.define(YAW, 0f);
+        this.entityData.define(TARGET_PITCH, 0f);
+        this.entityData.define(TARGET_YAW, 0f);
         this.entityData.define(BODY_YAW, 0f);
         this.entityData.define(SHOOT_PITCH, 0f);
         this.entityData.define(SHOOT_YAW, 0f);
@@ -114,15 +134,15 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putFloat("Pitch", this.entityData.get(PITCH));
-        compound.putFloat("Yaw", this.entityData.get(YAW));
+        compound.putFloat("Pitch", this.entityData.get(TARGET_PITCH));
+        compound.putFloat("Yaw", this.entityData.get(TARGET_YAW));
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.entityData.set(PITCH, compound.getFloat("Pitch"));
-        this.entityData.set(YAW, compound.getFloat("Yaw"));
+        this.entityData.set(TARGET_PITCH, compound.getFloat("Pitch"));
+        this.entityData.set(TARGET_YAW, compound.getFloat("Yaw"));
         setChanged();
     }
 
@@ -163,12 +183,12 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
             if (OBB.getLookingObb(player, player.getEntityReach()) == yawController) {
                 interactEvent(new Vec3(yawController.center()));
-                entityData.set(YAW, Mth.clamp(entityData.get(YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -getTurretMaxYaw(), -getTurretMinYaw()));
+                entityData.set(TARGET_YAW, Mth.clamp(entityData.get(TARGET_YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -getTurretMaxYaw(), -getTurretMinYaw()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
             if (OBB.getLookingObb(player, player.getEntityReach()) == pitchController) {
                 interactEvent(new Vec3(pitchController.center()));
-                entityData.set(PITCH, Mth.clamp(entityData.get(PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -getTurretMaxPitch(), -getTurretMinPitch()));
+                entityData.set(TARGET_PITCH, Mth.clamp(entityData.get(TARGET_PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -getTurretMaxPitch(), -getTurretMinPitch()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
 
@@ -248,7 +268,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     public void interactEvent(Vec3 vec3) {
         if (level() instanceof ServerLevel serverLevel) {
             interactionTick++;
-            interactionTick++;
             if (cooldown == 0) {
                 cooldown = 6;
                 serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.05f + 0.975f);
@@ -263,30 +282,46 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
             return;
         }
 
+        var gunData = switch (rocketItem.type) {
+            case AP -> getGunData("AP");
+            case HE -> getGunData("HE");
+            case CM -> getGunData("CM");
+        };
+
+        if (gunData == null) return;
+
+        float shootVelocity = projectileVelocity(gunData);
+        float shootSpread = projectileSpread(gunData);
+        float shootGravity = projectileGravity(gunData);
+
         OBB obb = this.barrel[i];
         Vec3 shootPos = new Vec3(obb.center());
 
-        MediumRocketEntity entityToSpawn = rocketItem.createProjectile(level(), shootPos);
-        entityToSpawn.setOwner(player);
-        entityToSpawn.shoot(getShootVector(1).x, getShootVector(1).y, getShootVector(1).z, 10, 0.75F);
-        level().addFreshEntity(entityToSpawn);
-        level().playSound(null, shootPos.x, shootPos.y, shootPos.z, ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, random.nextFloat() * 0.1f + 0.95f);
+        MediumRocketEntity entityToSpawn = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), shootPos.x, shootPos.y, shootPos.z, level(),
+                (float)gunData.compute().damage, (float)gunData.compute().explosionRadius, (float)gunData.compute().explosionDamage,
+                0, 0, rocketItem.type, gunData.compute().clusterMunitionsSize, shootGravity);
 
-        AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(getShootVector(1).scale(-2)).expandTowards(getShootVector(1).scale(-5));
+        entityToSpawn.setOwner(player);
+        entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, shootVelocity, shootSpread);
+        level().addFreshEntity(entityToSpawn);
+
+        level().playSound(null, shootPos.x, shootPos.y, shootPos.z, gunData.compute().soundInfo.fire3P, SoundSource.PLAYERS, (float) gunData.compute().soundRadius, random.nextFloat() * 0.1f + 0.95f);
+
+        AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(getBarrelVector(1).scale(-2)).expandTowards(getBarrelVector(1).scale(-5));
 
         for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
                 target -> target != this && target != getFirstPassenger() && target.getVehicle() == null)
         ) {
             entity.hurt(ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), player), 30 - 2 * entity.distanceTo(this));
             double force = 4 - 0.7 * entity.distanceTo(this);
-            entity.push(-force * getShootVector(1).x, -force * getShootVector(1).y, -force * getShootVector(1).z);
+            entity.push(-force * getBarrelVector(1).x, -force * getBarrelVector(1).y, -force * getBarrelVector(1).z);
         }
 
         cooldown = 10;
         if (level() instanceof ServerLevel serverLevel) {
-            ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1).scale(-1), shootPos.add(getShootVector(1).scale(-0.5)), serverLevel, this);
-            ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1).scale(-1), shootPos.add(getShootVector(1).scale(-1.5)), serverLevel, this);
-            ParticleTool.spawnMediumCannonMuzzleParticles(getShootVector(1), shootPos.add(getShootVector(1).scale(1.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), shootPos.add(getBarrelVector(1).scale(-0.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), shootPos.add(getBarrelVector(1).scale(-1.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1), shootPos.add(getBarrelVector(1).scale(1.5)), serverLevel, this);
         }
 
         ShakeClientMessage.sendToNearbyPlayers(this, 8, 8, 10, 20);
@@ -323,11 +358,11 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
             cooldown--;
         }
 
-        interactionTick *= 0.96;
+        interactionTick *= 0.94;
 
         if (level() instanceof ServerLevel) {
-            entityData.set(SHOOT_PITCH, (float) VehicleVecUtils.getXRotFromVector(getShootVector(1)));
-            entityData.set(SHOOT_YAW, (float) -VehicleVecUtils.getYRotFromVector(getShootVector(1)));
+            entityData.set(SHOOT_PITCH, (float) VehicleVecUtils.getXRotFromVector(getBarrelVector(1)));
+            entityData.set(SHOOT_YAW, (float) -VehicleVecUtils.getYRotFromVector(getBarrelVector(1)));
         }
 
         entityData.set(BODY_YAW, entityData.get(BODY_YAW) * 0.8f);
@@ -338,23 +373,16 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
 
     @Override
     public void travel() {
-        float diffY = entityData.get(YAW) - getTurretYRot();
-        this.setTurretYRot(Mth.clamp(this.getTurretYRot() + 0.1f * diffY, -15, 15));
+        float diffY = entityData.get(TARGET_YAW) - getTurretYRot();
+        this.setTurretYRot(Mth.clamp(this.getTurretYRot() + 0.1f * diffY, -getTurretMaxYaw(), -getTurretMinYaw()));
 
-        float diffX = entityData.get(PITCH) - getTurretXRot();
-        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + 0.1f * diffX, -60, 5));
+        float diffX = entityData.get(TARGET_PITCH) - getTurretXRot();
+        this.setTurretXRot(Mth.clamp(this.getTurretXRot() + 0.1f * diffX, -getTurretMaxPitch(), -getTurretMinPitch()));
 
         double s0 = getDeltaMovement().dot(this.getViewVector(1));
 
         this.setLeftWheelRot((float) (this.getLeftWheelRot() - 1.167 * s0));
         this.setRightWheelRot((float) (this.getRightWheelRot() - 1.167 * s0));
-    }
-
-    public Vec3 getShootVector(float pPartialTicks) {
-        Matrix4f transform = getBarrelTransform(pPartialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
-        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
     public Vec3 getShootPos(float pPartialTicks) {

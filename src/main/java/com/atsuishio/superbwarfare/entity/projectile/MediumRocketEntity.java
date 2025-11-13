@@ -61,7 +61,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.noCulling = true;
     }
 
-    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount) {
+    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount, float gravity) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.damage = damage;
@@ -71,20 +71,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.fireTime = fireTime;
         this.type = type;
         this.sparedAmount = sparedAmount;
-        this.gravity = 0.05f;
-    }
-
-    public MediumRocketEntity(LivingEntity entity, Level level, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount) {
-        super(ModEntities.MEDIUM_ROCKET.get(), entity, level);
-        this.noCulling = true;
-        this.damage = damage;
-        this.explosionRadius = radius;
-        this.explosionDamage = explosionDamage;
-        this.fireProbability = fireProbability;
-        this.fireTime = fireTime;
-        this.type = type;
-        this.sparedAmount = sparedAmount;
-        this.gravity = 0.05f;
+        this.gravity = gravity;
     }
 
     public MediumRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -226,11 +213,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         if (!this.level().isClientSide) {
             NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientMotionSyncMessage(this));
         }
-    }
-
-    @Override
-    public ParticleTool.ParticleType explosionParticleType() {
-        return explosionRadius > 9 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM;
     }
 
     @Override

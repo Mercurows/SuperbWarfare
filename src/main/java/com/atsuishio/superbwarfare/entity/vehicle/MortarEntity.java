@@ -148,10 +148,10 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         }
     }
 
-    @Override
-    public float projectileGravity() {
-        return 0.13f;
-    }
+//    @Override
+//    public float projectileGravity() {
+//        return 0.13f;
+//    }
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
