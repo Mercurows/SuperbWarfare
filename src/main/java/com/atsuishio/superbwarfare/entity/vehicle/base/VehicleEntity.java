@@ -218,6 +218,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getGunData(seatIndex, selectedWeapon.get(seatIndex));
     }
 
+    // TODO 添加一个仅通过weaponIndex获取武器的方法？
+
     public @Nullable GunData getGunData(int seatIndex, int weaponIndex) {
         var seat = getSeat(seatIndex);
         if (seat == null) return null;
