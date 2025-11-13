@@ -166,7 +166,7 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
 
             if (entity instanceof ArtilleryEntity artilleryEntity) {
                 list.add(tag);
-                artilleryEntity.setTarget(stack, player, 0);
+                artilleryEntity.setTarget(stack, player, "Main");
             }
         }
 

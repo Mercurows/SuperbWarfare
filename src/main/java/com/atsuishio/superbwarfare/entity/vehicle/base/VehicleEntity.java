@@ -223,8 +223,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getGunData(seatIndex, selectedWeapon.getInt(seatIndex));
     }
 
-    // TODO 添加一个仅通过weaponIndex获取武器的方法？
-
     public @Nullable GunData getGunData(int seatIndex, int weaponIndex) {
         var seat = getSeat(seatIndex);
         if (seat == null) return null;
@@ -1193,6 +1191,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return data.compute().rpm;
     }
 
+    public int vehicleWeaponRpm(String weaponName) {
+        var data = getGunData(weaponName);
+        if (data == null) return 0;
+        return data.compute().rpm;
+    }
+
     public int getWeaponHeat(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
         if (gunData == null) return 0;
@@ -1201,6 +1205,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getWeaponHeat(int seatIndex) {
         var gunData = getGunData(seatIndex);
+        if (gunData == null) return 0;
+        return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
+    }
+
+    public int getWeaponHeat(String weaponName) {
+        var gunData = getGunData(weaponName);
         if (gunData == null) return 0;
         return java.lang.Math.toIntExact(java.lang.Math.round(gunData.heat.get()));
     }
@@ -1217,14 +1227,30 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return gunData.shootAnimationTimer.get();
     }
 
-    public void vehicleShoot(LivingEntity living, int seatIndex) {
+    public void vehicleShoot(LivingEntity living, String weaponName) {
+        modifyGunData(weaponName, data -> {
+            if (!data.canShoot(getAmmoSupplier())) return;
+            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(weaponName, 1), getShootVec(weaponName, 1), data, data.compute().spread, true, null, null));
+        });
+
+        var gunData = getGunData(weaponName);
+        afterShoot(gunData, getShootVec(weaponName, 1));
+        playShootSound3p(living, weaponName);
+    }
+
+    public void vehicleShoot(LivingEntity living) {
+        int seatIndex = getSeatIndex(living);
         modifyGunData(seatIndex, data -> {
             if (!data.canShoot(getAmmoSupplier())) return;
-            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(seatIndex, 1), getShootVec(seatIndex, 1), data, data.compute().spread, true, null, null));
+            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.compute().spread, true, null, null));
         });
 
         var gunData = getGunData(seatIndex);
+        afterShoot(gunData, getShootVec(living, 1));
+        playShootSound3p(living, seatIndex);
+    }
 
+    public void afterShoot(GunData gunData, Vec3 shootVec) {
         if (gunData != null) {
             var computedGunData = gunData.compute();
             if (computedGunData.recoilTime > 0) {
@@ -1232,7 +1258,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     entityData.set(CANNON_RECOIL_TIME, computedGunData.recoilTime);
                 }
 
-                float angle = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(getViewVector(1)) + VehicleVecUtils.getYRotFromVector(getShootVec(living, 1)));
+                float angle = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(getViewVector(1)) + VehicleVecUtils.getYRotFromVector(shootVec));
 
                 Vec3 vo = new Vec3(0, 0, 1);
                 double f = 0.3 * entityData.get(CANNON_RECOIL_FORCE) * (double) (entityData.get(CANNON_RECOIL_TIME) / computedGunData.recoilTime);
@@ -1249,7 +1275,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // TODO 数据包化发射震动
 
         ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
-        playShootSound3p(living, seatIndex);
     }
 
     public float shootingVolume() {
@@ -1265,13 +1290,27 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    public void playShootSound3p(LivingEntity living, int seatIndex) {
-        if (!(living.level() instanceof ServerLevel serverLevel)) return;
+    public void playShootSound3p(LivingEntity living, String weaponName) {
+        var gunData = this.getGunData(weaponName);
+        if (gunData == null) return;
+        var pos = getShootPos(weaponName, 1);
 
+        playShootSound3p(living, gunData, pos);
+    }
+
+    public void playShootSound3p(LivingEntity living, int seatIndex) {
         var gunData = this.getGunData(seatIndex);
         if (gunData == null) return;
-
         var pos = getShootPos(living, 1);
+
+        playShootSound3p(living, gunData, pos);
+    }
+
+    public void playShootSound3p(LivingEntity living, GunData gunData, Vec3 pos) {
+        if (!(living.level() instanceof ServerLevel serverLevel)) return;
+
+        if (gunData == null) return;
+
         var computedGunData = gunData.compute();
         var soundInfo = computedGunData.soundInfo;
         float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
@@ -1290,6 +1329,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             SoundTool.playDistantSound(serverLevel, soundInfo.fire3PVeryFar, pos, (float) computedGunData.soundRadius, pitch, listener);
         }
     }
+
+
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
@@ -2125,13 +2166,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void aiTurretShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity && aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living, getSeatIndex(living));
+            vehicleShoot(living);
         }
     }
 
     public void aiPassengerWeaponShoot(LivingEntity living) {
         if (this instanceof WeaponVehicleEntity && aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living, getSeatIndex(living));
+            vehicleShoot(living);
         }
     }
 
@@ -2278,6 +2319,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         };
     }
 
+    public Vec3 getVectorFromString(String string, float ticks, String weaponName) {
+        return switch (string) {
+            case "Turret" -> getTurretVector(ticks);
+            case "Barrel" -> getBarrelVector(ticks);
+            case "Bomb" ->
+                    ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(weaponName, ticks), getShootVec(weaponName, ticks), -0.06);
+            case "WeaponStationBarrel" -> getPassengerWeaponStationVector(ticks);
+            default -> getViewVector(ticks);
+        };
+    }
+
     /**
      * @return 炮弹发射位置
      */
@@ -2285,12 +2337,27 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getShootPos(getNthEntity(seatIndex), ticks);
     }
 
+
     /**
      * @param entity 操控载具的实体
      * @return 炮弹发射位置
      */
     public Vec3 getShootPos(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
+        if (data != null) {
+            var vec3 = data.firePosition();
+
+            var worldPosition = transformPosition(
+                    this.getTransformFromString(data.compute().shootPos.transform, ticks),
+                    (float) vec3.x, (float) vec3.y, (float) vec3.z);
+
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        }
+        return getEyePosition(ticks);
+    }
+
+    public Vec3 getShootPos(String weaponName, float ticks) {
+        var data = getGunData(weaponName);
         if (data != null) {
             var vec3 = data.firePosition();
 
@@ -2329,6 +2396,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return VehicleVecUtils.getShootVec(this, entity, partialTicks);
     }
 
+    public Vec3 getShootVec(String weaponName, float partialTicks) {
+        return VehicleVecUtils.getShootVec(this, weaponName, partialTicks);
+    }
+
     public Vec3 getViewVec(Entity entity, float partialTicks) {
         return VehicleVecUtils.getViewVec(this, entity, partialTicks);
     }
@@ -2352,6 +2423,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return (float) gunData.compute().velocity;
     }
 
+    public float projectileVelocity(String weaponName) {
+        var gunData = getGunData(weaponName);
+        if (gunData == null) return 25;
+
+        return (float) gunData.compute().velocity;
+    }
+
     /**
      * @param entity 操控载具的实体
      * @return 炮弹重力
@@ -2366,6 +2444,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public float projectileGravity(int seatIndex) {
         var gunData = getGunData(seatIndex);
+        if (gunData == null) return 0;
+
+        return (float) gunData.compute().gravity;
+    }
+
+    public float projectileGravity(String weaponName) {
+        var gunData = getGunData(weaponName);
         if (gunData == null) return 0;
 
         return (float) gunData.compute().gravity;
@@ -3066,6 +3151,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getAmmoCount(int seatIndex) {
         var data = getGunData(seatIndex);
+        if (data == null) return 0;
+        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
+    }
+
+    public int getAmmoCount(String weaponName) {
+        var data = getGunData(weaponName);
         if (data == null) return 0;
         return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }

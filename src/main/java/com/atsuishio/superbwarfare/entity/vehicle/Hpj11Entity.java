@@ -182,7 +182,8 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
         if (this.getFirstPassenger() != null || !entityData.get(ACTIVE)) {
             return;
         }
-        var data = getGunData(0);
+        String weaponName = "Main";
+        var data = getGunData(weaponName);
         if (data == null) return;
 
         var seekInfo = data().compute().seekInfo;
@@ -196,7 +197,7 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
 
         if (this.getEnergy() < seekInfo.seekEnergyCost) return;
 
-        Vec3 barrelRootPos = getShootPos(0, 1);
+        Vec3 barrelRootPos = getShootPos(weaponName, 1);
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % seekIterative == 0) {
             Entity naerestEntity = seekNearLivingEntity(barrelRootPos, getTurretMinPitch(), getTurretMaxPitch(), minSeekRange, maxSeekRange, minTargetSize);
@@ -246,14 +247,14 @@ public class Hpj11Entity extends VehicleEntity implements GeoEntity, OwnableEnti
             Vec3 targetPos = target.getBoundingBox().getCenter();
             Vec3 targetVel = target.getDeltaMovement();
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel.scale(1.1 + random.nextFloat() * 0.2f), projectileVelocity(0), projectileGravity(0));
+            Vec3 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel.scale(1.1 + random.nextFloat() * 0.2f), projectileVelocity(weaponName), projectileGravity(weaponName));
             turretAutoAimFromVector(targetVec);
 
-            if (VectorTool.calculateAngle(getShootVec(0, 1), targetVec) < 1) {
-                int rpm = Mth.clamp(20 / Mth.clamp((vehicleWeaponRpm(0) / 60), 1, 2147483647), 1, 2147483647);
-                if (checkNoClip(target, barrelRootPos) && getAmmoCount(0) > 0 && !data.overHeat.get() && tickCount % rpm == 0) {
+            if (VectorTool.calculateAngle(getShootVec(weaponName, 1), targetVec) < 1) {
+                int rpm = Mth.clamp(20 / Mth.clamp((vehicleWeaponRpm(weaponName) / 60), 1, 2147483647), 1, 2147483647);
+                if (checkNoClip(target, barrelRootPos) && getAmmoCount(weaponName) > 0 && !data.overHeat.get() && tickCount % rpm == 0) {
                     if (player.level() instanceof ServerLevel) {
-                        vehicleShoot(player, 0);
+                        vehicleShoot(player, "Main");
                     }
                 } else {
                     changeTargetTimer++;

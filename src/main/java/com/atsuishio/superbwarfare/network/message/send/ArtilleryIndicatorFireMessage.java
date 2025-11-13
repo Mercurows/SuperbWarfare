@@ -46,8 +46,8 @@ public enum ArtilleryIndicatorFireMessage {
                             var gunData = artilleryEntity.getGunData(0);
                             if (gunData != null && gunData.ammo.get() > 0) {
                                 Mod.queueServerWork(i % 5 + 1, () -> {
-                                    artilleryEntity.vehicleShoot(player, 0);
-                                    artilleryEntity.resetTarget(0);
+                                    artilleryEntity.vehicleShoot(player, "Main");
+                                    artilleryEntity.resetTarget("Main");
                                 });
                             }
                         }
