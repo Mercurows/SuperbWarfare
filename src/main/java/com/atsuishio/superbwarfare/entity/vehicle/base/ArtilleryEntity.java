@@ -253,6 +253,17 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     @Override
     public void vehicleShoot(LivingEntity living, String weaponName) {
+        beforeShoot(living);
+        super.vehicleShoot(living, weaponName);
+    }
+
+    @Override
+    public void vehicleShoot(LivingEntity living) {
+        beforeShoot(living);
+        super.vehicleShoot(living);
+    }
+
+    public void beforeShoot(LivingEntity living) {
         var data = getGunData("Main");
         if (data != null) {
             var barrelAnim = entityData.get(BARREL_ANIM);
@@ -260,9 +271,8 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             entityData.set(BARREL_ANIM, barrelAnim, true);
         }
         if (living.level() instanceof ServerLevel level) {
-            ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(weaponName, 1), getShootPos(weaponName, 1), level, this);
+            ParticleTool.spawnBigCannonMuzzleParticles(getShootVec("Main", 1), getShootPos("Main", 1), level, this);
         }
-        super.vehicleShoot(living, weaponName);
     }
 
     @Override
