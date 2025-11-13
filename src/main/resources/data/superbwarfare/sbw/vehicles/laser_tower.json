@@ -3,6 +3,48 @@
   "MaxHealth": 100,
   "MaxEnergy": 500000,
   "Mass": 0.5,
+  "TurretPos": [0, 0.65625, 0],
+  "TurretTurnSpeed": [30, 30],
+  "TurretPitchRange": [-42.5, 90],
+  "BarrelPos": [0, 0.734375, 0],
+  "SeekInfo": {
+    "MinSeekRange": 1,
+    "MaxSeekRange": 72,
+    "ChangeTargetTime": 60,
+    "SeekIterative": 30,
+    "MinTargetSize": 0.1,
+    "seekEnergyCost": 500
+  },
+  "Weapons": {
+    "Main": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "ray",
+      "Range": 512,
+      "RPM": 30,
+      "Velocity": 6000000000,
+      "Gravity": 0,
+      "Damage": 15,
+      "Spread": 0,
+      "ShootAnimationTime": 3,
+      "Name": "",
+      "AmmoType": "FE",
+      "AmmoCostPerShoot": 4500,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0, 0]],
+        "Directions": ["Barrel"]
+      },
+      "SoundRadius": 6,
+      "SoundInfo": {
+        "Fire1P": null,
+        "Fire3P": "superbwarfare:laser_tower_shoot",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
+        "Change": null
+      }
+    }
+  },
   "DamageModifiers": [
     "minecraft:arrow * 0.1",
     "minecraft:trident * 0.2",

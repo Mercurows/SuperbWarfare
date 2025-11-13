@@ -20,9 +20,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -36,8 +33,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PlayMessages;
-import org.joml.Math;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -48,10 +47,6 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
-
-    public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> LASER_SCALE = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> LASER_SCALE_O = SynchedEntityData.defineId(PrismTankEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public OBB obb;
@@ -91,14 +86,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(LASER_LENGTH, 0f);
-        this.entityData.define(LASER_SCALE, 0f);
-        this.entityData.define(LASER_SCALE_O, 0f);
-    }
-
-    @Override
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
                 .custom((source, damage) -> getSourceAngle(source, 0.4f) * damage);
@@ -106,7 +93,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
 
     @Override
     public void baseTick() {
-        this.entityData.set(LASER_SCALE_O, this.entityData.get(LASER_SCALE));
         super.baseTick();
         updateOBB();
 
@@ -124,15 +110,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
 
         if (getRightTrack() > 100) {
             setRightTrack(0);
-        }
-
-        if (this.entityData.get(LASER_SCALE) > 0) {
-            this.entityData.set(LASER_SCALE, Math.max(this.entityData.get(LASER_SCALE) - 0.1f, 0));
-            this.entityData.set(LASER_SCALE, this.entityData.get(LASER_SCALE) * 0.9f);
-        }
-
-        if (this.entityData.get(LASER_SCALE) == 0) {
-            this.entityData.set(LASER_LENGTH, 0f);
         }
 
         lowHealthWarning();

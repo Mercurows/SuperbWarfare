@@ -134,6 +134,8 @@
       "RPM": 250,
       "Velocity": 20,
       "Damage": 55,
+      "ExplosionDamage": 15,
+      "ExplosionRadius": 4,
       "HeatPerShoot": 8,
       "NaturalCooldown": 1,
       "RecoilTime": 34,
@@ -158,9 +160,7 @@
           [-0.45, 0.4, 3.2]
         ],
         "Directions": ["Barrel"]
-      },
-      "ExplosionDamage": 15,
-      "ExplosionRadius": 4
+      }
     },
     "MainMachineGun": {
       "DefaultFireMode": "Auto",
