@@ -136,7 +136,7 @@
       "Damage": 55,
       "HeatPerShoot": 8,
       "NaturalCooldown": 1,
-      "RecoilTime": 30,
+      "RecoilTime": 34,
       "RecoilForce": 0.67,
       "Spread": 0.5,
       "Crosshair": "@VehicleRuApc",

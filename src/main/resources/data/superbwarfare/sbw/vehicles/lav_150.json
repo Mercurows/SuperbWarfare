@@ -69,7 +69,7 @@
       "RPM": 300,
       "Velocity": 20,
       "Damage": 45,
-      "RecoilTime": 30,
+      "RecoilTime": 34,
       "RecoilForce": 0.62,
       "Spread": 0.5,
       "HeatPerShoot": 7,

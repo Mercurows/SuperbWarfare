@@ -276,6 +276,7 @@ public class GunEventHandler {
         redrawExtraAmmo(shooter, data);
         autoIterativeReload(shooter, data);
         data.shootAnimationTimer.set(Math.max(data.shootAnimationTimer.get() - 1, 0));
+        var computed = data.compute();
 
         if (inMainHand) {
             handleGunBolt(data);
@@ -284,6 +285,24 @@ public class GunEventHandler {
             if (data.reload.reloadStarter.start()) {
                 MinecraftForge.EVENT_BUS.post(new ReloadEvent.Pre(shooter, data));
                 startReload(shooter, data);
+            }
+
+            if (data.reload.time() == data.compute().emptyReloadTime - 1) {
+                var soundInfo = computed.soundInfo;
+                var sound = soundInfo.reloadPrepare;
+                var sound1p = soundInfo.reloadEmpty;
+
+                if (sound != null && shooter != null) {
+                    shooter.level().playSound(shooter, shooter.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
+                }
+
+                if (sound1p != null && shooter instanceof VehicleEntity vehicle) {
+                    for (Entity passenger: vehicle.getPassengers()) {
+                        if (passenger instanceof ServerPlayer serverPlayer) {
+                            SoundTool.playLocalSound(serverPlayer, sound1p, 8, 1);
+                        }
+                    }
+                }
             }
 
             // 减少换弹剩余时间
@@ -298,6 +317,12 @@ public class GunEventHandler {
             // 换弹完成
             if (data.reload.time() == 1) {
                 finishReload(shooter, data);
+
+                var soundInfo = computed.soundInfo;
+                var sound = soundInfo.reloadEnd;
+                if (sound != null && shooter instanceof VehicleEntity vehicle) {
+                    vehicle.level().playSound(vehicle, vehicle.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
+                }
             }
 
             handleGunSingleReload(shooter, data);
