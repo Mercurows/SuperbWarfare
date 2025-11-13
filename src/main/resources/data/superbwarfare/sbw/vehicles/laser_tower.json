@@ -20,7 +20,6 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "ray",
-      "Range": 512,
       "RPM": 30,
       "Velocity": 6000000000,
       "Gravity": 0,

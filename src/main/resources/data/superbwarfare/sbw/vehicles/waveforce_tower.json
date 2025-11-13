@@ -2,10 +2,47 @@
   "ID": "superbwarfare:waveforce_tower",
   "MaxHealth": 400,
   "MaxEnergy": 10000000,
-  "TurretPos": [0, 2, -0.05843125],
-  "TurretTurnSpeed": [12, 8],
-  "TurretPitchRange": [-45, 50],
-  "BarrelPos": [0, 0.41615625, -0.02555],
+  "TurretPos": [0, 2.052, -0.05995],
+  "TurretTurnSpeed": [10, 10],
+  "TurretPitchRange": [-30, 30],
+  "BarrelPos": [0, 0.4271, -0.02626],
+  "SeekInfo": {
+    "MinSeekRange": 3.5,
+    "MaxSeekRange": 128,
+    "ChangeTargetTime": 60,
+    "SeekIterative": 40,
+    "MinTargetSize": 0.25,
+    "seekEnergyCost": 5000
+  },
+  "Weapons": {
+    "Main": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "ray",
+      "RPM": 20,
+      "Velocity": 6000000000,
+      "Gravity": 0,
+      "Damage": 350,
+      "Spread": 0,
+      "ShootAnimationTime": 5,
+      "Name": "",
+      "AmmoType": "FE",
+      "AmmoCostPerShoot": 95000,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.4734, 3.053]],
+        "Directions": ["Barrel"]
+      },
+      "SoundRadius": 10,
+      "SoundInfo": {
+        "Fire1P": null,
+        "Fire3P": "superbwarfare:waveforce_tower_fire",
+        "Fire3PFar": null,
+        "Fire3PVeryFar": null,
+        "Change": null
+      }
+    }
+  },
   "Mass": 10,
   "DamageModifiers": [
     "All * 0.2",

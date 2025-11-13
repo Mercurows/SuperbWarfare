@@ -52,7 +52,6 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.STRING);
-
     public int changeTargetTimer;
 
     public AutoAimableEntity(EntityType<?> type, Level world) {
@@ -97,6 +96,7 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         this.entityData.define(TARGET_UUID, "none");
         this.entityData.define(OWNER_UUID, Optional.empty());
         this.entityData.define(ACTIVE, false);
+        this.entityData.define(CHARGE_PROGRESS, 0f);
     }
 
     public void setOwnerUUID(@Nullable UUID pUuid) {
@@ -177,6 +177,12 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         var projectileInfo = data.compute().projectile();
         var projectileType = projectileInfo.type;
         var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
+        int rpm = (int) Mth.clamp(20 / ((float) Math.max(vehicleWeaponRpm(weaponName),1) / 60), 1, 2147483647);
+
+        if (projectileTypeStr.equals("ray") && this.entityData.get(CHARGE_PROGRESS) < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
+            float chargeSpeed = 1f / rpm;
+            this.entityData.set(CHARGE_PROGRESS, Mth.clamp(this.entityData.get(CHARGE_PROGRESS) + chargeSpeed, 0, 1));
+        }
 
         Vec3 barrelRootPos = getShootPos(weaponName, 1);
 
@@ -204,6 +210,12 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
+
+            if (target.distanceTo(this) < minSeekRange) {
+                this.entityData.set(TARGET_UUID, "none");
+                return;
+            }
+
             if (target instanceof LivingEntity living && living.getHealth() <= 0) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
@@ -239,14 +251,13 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
             if (entityData.get(LASER_SCALE) == 0) {
                 turretAutoAimFromVector(targetVec);
                 if (VectorTool.calculateAngle(getShootVec(weaponName, 1), targetVec) < 1) {
-                    int rpm = Mth.clamp(20 / Mth.clamp((vehicleWeaponRpm(weaponName) / 60), 1, 2147483647), 1, 2147483647);
-                    if (checkNoClip(target, barrelRootPos)&& !data.overHeat.get() && tickCount % rpm == 0) {
-                        if (projectileTypeStr.equals("ray") && getEnergy() > data.compute().ammoCostPerShoot) {
+                    if (checkNoClip(target, barrelRootPos)&& !data.overHeat.get()) {
+                        if (projectileTypeStr.equals("ray") && getEntityData().get(CHARGE_PROGRESS) == 1) {
                             if (player.level() instanceof ServerLevel) {
                                 rayShoot(player, target, data);
                             }
                             changeTargetTimer = 0;
-                        } else if (getAmmoCount(weaponName) > 0) {
+                        } else if (getAmmoCount(weaponName) > 0 && tickCount % rpm == 0) {
                             if (player.level() instanceof ServerLevel) {
                                 vehicleShoot(player, "Main");
                             }
@@ -355,6 +366,7 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         }
 
         entityData.set(LASER_SCALE, (float) gunData.compute().shootAnimationTime);
+        this.entityData.set(CHARGE_PROGRESS, 0f);
         entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
         playShootSound3p(living, "Main");
 

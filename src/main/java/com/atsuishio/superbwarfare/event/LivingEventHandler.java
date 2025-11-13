@@ -12,7 +12,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
-import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -694,14 +694,14 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onPreSendKillMessage(PreKillEvent.SendKillMessage event) {
-        if (event.getSource().getDirectEntity() instanceof Hpj11Entity && !(event.getTarget() instanceof Player)) {
+        if (event.getSource().getDirectEntity() instanceof AutoAimableEntity && !(event.getTarget() instanceof Player)) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     public static void onPreIndicator(PreKillEvent.Indicator event) {
-        if (event.getSource().getDirectEntity() instanceof Hpj11Entity && !(event.getTarget() instanceof Player)) {
+        if (event.getSource().getDirectEntity() instanceof AutoAimableEntity && !(event.getTarget() instanceof Player)) {
             event.setCanceled(true);
         }
     }

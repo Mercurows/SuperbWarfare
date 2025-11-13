@@ -184,6 +184,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> LASER_LENGTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_SCALE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_SCALE_O = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> CHARGE_PROGRESS = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     // Map SeatIndex -> GunData
     protected static final EntityDataAccessor<Map<String, GunData>> GUN_DATA_MAP = SynchedEntityData.defineId(VehicleEntity.class, ModSerializers.VEHICLE_GUN_DATA_MAP_SERIALIZER.get());
@@ -1346,6 +1347,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
+        this.entityData.set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"));
         this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"));
         this.entityData.set(LAST_DRIVER_UUID, compound.getString("LastDriver"));
 
@@ -1458,6 +1460,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putInt("GearRot", this.entityData.get(GEAR_ROT));
         compound.putBoolean("GearUp", this.entityData.get(GEAR_UP));
         compound.putFloat("PropellerRot", this.entityData.get(PROPELLER_ROT));
+        compound.putFloat("ChargeProgress", this.entityData.get(CHARGE_PROGRESS));
 
         if (this.getMaxPassengers() > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON).toIntArray());
