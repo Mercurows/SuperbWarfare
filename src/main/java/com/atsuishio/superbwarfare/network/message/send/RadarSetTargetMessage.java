@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
-import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import io.netty.buffer.ByteBuf;
@@ -11,13 +9,14 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.stream.StreamSupport;
+
+import static com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity.TARGET_UUID;
 
 public record RadarSetTargetMessage(UUID target) implements CustomPacketPayload {
     public static final Type<RadarSetTargetMessage> TYPE = new Type<>(Mod.loc("radar_set_target"));
@@ -38,20 +37,10 @@ public record RadarSetTargetMessage(UUID target) implements CustomPacketPayload 
             }
             fuMO25Menu.getSelfPos().ifPresent(pos -> {
                 var entities = StreamSupport.stream(EntityFindUtil.getEntities(player.level()).getAll().spliterator(), false)
-                        .filter(e -> (e instanceof Hpj11Entity hpj11Entity && hpj11Entity.getOwner() == player && hpj11Entity.distanceTo(player) <= 24))
+                        .filter(e -> (e instanceof AutoAimableEntity autoAimableEntity && autoAimableEntity.getOwner() == player && autoAimableEntity.distanceTo(player) <= 24))
                         .toList();
-                entities.forEach(e -> setTarget(e, message.target.toString()));
+                entities.forEach(e -> e.getEntityData().set(TARGET_UUID, message.target.toString()));
             });
-        }
-    }
-
-    public static void setTarget(Entity e, String uuid) {
-        if (e instanceof LaserTowerEntity laserTower) {
-            laserTower.getEntityData().set(LaserTowerEntity.TARGET_UUID, uuid);
-        } else if (e instanceof Hpj11Entity hpj11Entity) {
-            hpj11Entity.getEntityData().set(Hpj11Entity.TARGET_UUID, uuid);
-        } else if (e instanceof WaveforceTowerEntity waveforceTowerEntity) {
-            waveforceTowerEntity.getEntityData().set(WaveforceTowerEntity.TARGET_UUID, uuid);
         }
     }
 

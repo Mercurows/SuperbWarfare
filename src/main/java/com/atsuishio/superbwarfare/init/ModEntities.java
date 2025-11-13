@@ -105,61 +105,61 @@ public class ModEntities {
     // Vehicles
     // Turrets
     public static final DeferredHolder<EntityType<?>, EntityType<Type63Entity>> TYPE_63 = register("type_63",
-            EntityType.Builder.of(Type63Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1f, 1.5f));
+            EntityType.Builder.of(Type63Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1f, 1.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<Mk42Entity>> MK_42 = register("mk_42",
-            EntityType.Builder.of(Mk42Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(3.4f, 3.5f));
+            EntityType.Builder.of(Mk42Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(3.4f, 3.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<Hpj11Entity>> HPJ_11 = register("hpj_11",
-            EntityType.Builder.of(Hpj11Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(2.8f, 2.4f));
+            EntityType.Builder.of(Hpj11Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(2.8f, 2.4f));
     public static final DeferredHolder<EntityType<?>, EntityType<Mle1934Entity>> MLE_1934 = register("mle_1934",
-            EntityType.Builder.of(Mle1934Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(4.5f, 2.8f));
+            EntityType.Builder.of(Mle1934Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(4.5f, 2.8f));
     public static final DeferredHolder<EntityType<?>, EntityType<Bl132Entity>> BL_132 = register("bl_132",
-            EntityType.Builder.of(Bl132Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(7f, 4.4375f));
+            EntityType.Builder.of(Bl132Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(7f, 4.4375f));
     public static final DeferredHolder<EntityType<?>, EntityType<AnnihilatorEntity>> ANNIHILATOR = register("annihilator",
-            EntityType.Builder.of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(13f, 4.2f));
+            EntityType.Builder.of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(13f, 4.2f));
     public static final DeferredHolder<EntityType<?>, EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
-            EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.9f, 1.65f));
+            EntityType.Builder.of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(0.9f, 1.65f));
     public static final DeferredHolder<EntityType<?>, EntityType<WaveforceTowerEntity>> WAVEFORCE_TOWER = register("waveforce_tower",
-            EntityType.Builder.<WaveforceTowerEntity>of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1.75f, 3.3f));
+            EntityType.Builder.of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.75f, 3.3f));
     public static final DeferredHolder<EntityType<?>, EntityType<TowEntity>> TOW = register("tow",
-            EntityType.Builder.of(TowEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.5f, 1.35f));
+            EntityType.Builder.of(TowEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(0.5f, 1.35f));
     public static final DeferredHolder<EntityType<?>, EntityType<SteelCoilEntity>> STEEL_COIL = register("steel_coil",
-            EntityType.Builder.of(SteelCoilEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(2, 2));
+            EntityType.Builder.of(SteelCoilEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2, 2));
 
     // Boats
     public static final DeferredHolder<EntityType<?>, EntityType<SpeedboatEntity>> SPEEDBOAT = register("speedboat",
-            EntityType.Builder.of(SpeedboatEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(3.0f, 2.0f));
+            EntityType.Builder.of(SpeedboatEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(3.0f, 2.0f));
 
     // Land Vehicles
     public static final DeferredHolder<EntityType<?>, EntityType<WheelChairEntity>> WHEEL_CHAIR = register("wheel_chair",
-            EntityType.Builder.of(WheelChairEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1.0f, 1.0f));
+            EntityType.Builder.of(WheelChairEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.0f, 1.0f));
     public static final DeferredHolder<EntityType<?>, EntityType<Lav150Entity>> LAV_150 = register("lav_150",
-            EntityType.Builder.of(Lav150Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(2.8f, 3.1f));
+            EntityType.Builder.of(Lav150Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.8f, 3.1f));
     public static final DeferredHolder<EntityType<?>, EntityType<Bmp2Entity>> BMP_2 = register("bmp_2",
-            EntityType.Builder.of(Bmp2Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(4f, 3f));
+            EntityType.Builder.of(Bmp2Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4f, 3f));
     public static final DeferredHolder<EntityType<?>, EntityType<Yx100Entity>> YX_100 = register("yx_100",
-            EntityType.Builder.of(Yx100Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(4.6f, 3.25f));
+            EntityType.Builder.of(Yx100Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4.6f, 3.25f));
     public static final DeferredHolder<EntityType<?>, EntityType<PrismTankEntity>> PRISM_TANK = register("prism_tank",
-            EntityType.Builder.of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(5f, 2.6f));
+            EntityType.Builder.of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(5f, 2.6f));
 
     // Aircraft
     public static final DeferredHolder<EntityType<?>, EntityType<Tom6Entity>> TOM_6 = register("tom_6",
-            EntityType.Builder.of(Tom6Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(1.05f, 1.0f));
+            EntityType.Builder.of(Tom6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.05f, 1.0f));
     public static final DeferredHolder<EntityType<?>, EntityType<Ah6Entity>> AH_6 = register("ah_6",
-            EntityType.Builder.of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(3f, 2.9f));
+            EntityType.Builder.of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(3f, 2.9f));
     public static final DeferredHolder<EntityType<?>, EntityType<A10Entity>> A_10A = register("a_10a",
-            EntityType.Builder.of(A10Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(9f, 3.5f));
+            EntityType.Builder.of(A10Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(9f, 3.5f));
 
     // Special
     public static final DeferredHolder<EntityType<?>, EntityType<DroneEntity>> DRONE = register("drone",
-            EntityType.Builder.of(DroneEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.6f, 0.2f));
+            EntityType.Builder.of(DroneEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).sized(0.6f, 0.2f));
     public static final DeferredHolder<EntityType<?>, EntityType<MortarEntity>> MORTAR = register("mortar",
-            EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(0.8f, 1.4f));
+            EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(0.8f, 1.4f));
 
     public static final DeferredHolder<EntityType<?>, EntityType<VehicleAssemblingTableVehicleEntity>> VEHICLE_ASSEMBLING_TABLE = register("vehicle_assembling_table",
-            EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(2, 1.875f));
+            EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2, 1.875f));
 
     public static final DeferredHolder<EntityType<?>, EntityType<TruckEntity>> TRUCK = register("truck",
-            EntityType.Builder.of(TruckEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).fireImmune().sized(3.7f, 4f));
+            EntityType.Builder.of(TruckEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(3.7f, 4f));
 
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));

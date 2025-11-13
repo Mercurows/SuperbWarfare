@@ -1,52 +1,44 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.CHARGED_ENERGY;
-import static com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity.WAVEFORCE_LENGTH;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
 public class WaveforceTowerModel extends VehicleModel<WaveforceTowerEntity> {
-
-    int energy0 = 0;
+    float energy0 = 0;
     private final Pattern LIGHT_PATTERN = Pattern.compile("^light_(?<type>on|off)(?<id>\\d+)");
 
     @Override
     public @Nullable TransformContext<WaveforceTowerEntity> collectTransform(String boneName) {
         switch (boneName) {
-            case "root" -> {
+
+            case "glow" -> {
                 return (bone, vehicle, state) -> {
-                    var minecraft = Minecraft.getInstance();
-                    var pCamera = minecraft.levelRenderer.getFrustum();
-
-                    var aabb = vehicle.getBoundingBoxForCulling().inflate(0.5);
-                    if (aabb.hasNaN() || aabb.getSize() == 0) {
-                        aabb = new AABB(vehicle.getX() - 6.0, vehicle.getY() - 4.0, vehicle.getZ() - 6.0, vehicle.getX() + 6.0, vehicle.getY() + 4.0, vehicle.getZ() + 6.0);
-                    }
-
-                    bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
+                    float scale = Math.min(Mth.lerp(state.getPartialTick(), vehicle.getEntityData().get(LASER_SCALE_O), vehicle.getEntityData().get(LASER_SCALE)), 1.2f);
+                    bone.setScaleX(scale);
+                    bone.setScaleY(scale);
+                    bone.setScaleZ(scale);
                 };
             }
 
-            case "laser" -> {
-                return (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(WAVEFORCE_LENGTH));
-            }
             case "glow2" -> {
-                return (bone, vehicle, state) -> bone.setPosZ(-16 * vehicle.getEntityData().get(WAVEFORCE_LENGTH));
+                return (bone, vehicle, state) -> {
+                    bone.setPosZ(-16f * vehicle.getEntityData().get(LASER_LENGTH));
+                    float scale = Math.min(Mth.lerp(state.getPartialTick(), vehicle.getEntityData().get(LASER_SCALE_O), vehicle.getEntityData().get(LASER_SCALE)), 1.2f);
+                    bone.setScaleX(scale);
+                    bone.setScaleY(scale);
+                    bone.setScaleZ(scale);
+                };
             }
             case "charge" -> {
                 return (bone, vehicle, state) -> {
-                    int energy = vehicle.getEntityData().get(CHARGED_ENERGY);
-                    float energyRate = (float) energy / vehicle.maxChargeEnergy;
-                    float energyRate0 = (float) energy0 / vehicle.maxChargeEnergy;
-
-                    bone.setScaleZ(Mth.lerp(state.getPartialTick(), energyRate0, energyRate));
+                    float energy = vehicle.getEntityData().get(CHARGE_PROGRESS);
+                    float energyRate0 = energy0;
+                    bone.setScaleZ(Mth.lerp(state.getPartialTick(), energyRate0, energy));
                     energy0 = energy;
                 };
             }
@@ -58,9 +50,8 @@ public class WaveforceTowerModel extends VehicleModel<WaveforceTowerEntity> {
             var index = Integer.parseInt(matcher.group("id"));
 
             return (bone, vehicle, state) -> {
-                int energy = vehicle.getEntityData().get(CHARGED_ENERGY);
-                float energyRate = (float) energy / vehicle.maxChargeEnergy;
-                var shouldTurnOn = energyRate >= index / 7f;
+                float energy = vehicle.getEntityData().get(CHARGE_PROGRESS);
+                var shouldTurnOn =  energy >= index / 7f;
 
                 bone.setHidden(shouldTurnOn != isOn);
             };
