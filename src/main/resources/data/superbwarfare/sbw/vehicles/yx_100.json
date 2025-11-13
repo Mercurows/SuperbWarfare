@@ -70,14 +70,15 @@
     "Cannon": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
       "DefaultFireMode": "Semi",
-      "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
+      "AmmoType": "superbwarfare:ap_5_inches",
+      "IsArmorPiercingProjectile": true,
       "DefaultZoom": 3,
       "Magazine": 1,
-      "AutoIterativeReloadTime": 80,
+      "AutoIterativeReloadTime": 70,
       "Velocity": 40,
       "Damage": 500,
-      "ExplosionDamage": 100,
+      "ExplosionDamage": 80,
       "ExplosionRadius": 4,
       "RecoilTime": 42,
       "RecoilForce": 1.0,
@@ -86,6 +87,27 @@
       "Crosshair": "@VehicleUsTank",
       "CrosshairColor": "0x00FFF6",
       "Name": "superbwarfare.yx_100.cannon_ap",
+      "AvailableFireModes": [
+        "Semi",
+        {
+          "Mode": "Semi",
+          "Name": "HE",
+          "Override": {
+            "Icon": "superbwarfare:textures/screens/vehicle_weapon/he_shell.png",
+            "AmmoType": "superbwarfare:he_5_inches",
+            "IsArmorPiercingProjectile": false,
+            "IsHighExplosiveProjectile": true,
+            "Velocity": 25,
+            "Damage": 250,
+            "ExplosionDamage": 120,
+            "ExplosionRadius": 10,
+            "ShootAnimationTime": 10,
+            "Crosshair": "@VehicleUsTank",
+            "CrosshairColor": "0x00FFF6",
+            "Name": "superbwarfare.yx_100.cannon_he"
+          }
+        }
+      ],
       "SoundInfo": {
         "Fire1P": "superbwarfare:yx_100_fire_1p",
         "Fire3P": "superbwarfare:yx_100_fire_3p",
@@ -95,7 +117,6 @@
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 32,
-      "AmmoType": "superbwarfare:ap_5_inches",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0, 0, 5]],
