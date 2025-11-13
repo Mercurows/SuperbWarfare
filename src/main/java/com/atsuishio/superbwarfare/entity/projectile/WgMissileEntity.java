@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -114,11 +113,6 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
             causeExplode(result.getLocation());
             this.discard();
         }
-    }
-
-    @Override
-    public ParticleTool.ParticleType explosionParticleType() {
-        return ParticleTool.ParticleType.HUGE;
     }
 
     @Override

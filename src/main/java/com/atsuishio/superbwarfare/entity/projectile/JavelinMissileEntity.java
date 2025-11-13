@@ -139,11 +139,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
     }
 
     @Override
-    public ParticleTool.ParticleType explosionParticleType() {
-        return ParticleTool.ParticleType.HUGE;
-    }
-
-    @Override
     public void tick() {
         super.tick();
 

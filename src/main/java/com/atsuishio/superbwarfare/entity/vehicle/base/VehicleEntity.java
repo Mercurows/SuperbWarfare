@@ -1067,7 +1067,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(HORN_VOLUME, 0f)
                 .define(LASER_LENGTH, 0f)
                 .define(LASER_SCALE, 0f)
-                .define(LASER_SCALE_O, 0f);
+                .define(LASER_SCALE_O, 0f)
+                .define(CHARGE_PROGRESS, 0f);
     }
 
     // energy start
@@ -1341,10 +1342,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
-        this.entityData.set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"));
-        this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"));
-        this.entityData.set(LAST_DRIVER_UUID, compound.getString("LastDriver"));
-
         this.entityData.set(OVERRIDE, compound.getString("Override"));
 
         // GunData
@@ -1385,6 +1382,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.set(GEAR_ROT, compound.getInt("GearRot"));
         this.entityData.set(GEAR_UP, compound.getBoolean("GearUp"));
         this.entityData.set(PROPELLER_ROT, compound.getFloat("PropellerRot"));
+        this.entityData.set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"));
+        this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"));
+        this.entityData.set(LAST_DRIVER_UUID, compound.getString("LastDriver"));
 
         var selectedWeaponTag = compound.get("SelectedWeapon");
         int[] selected;
@@ -2462,6 +2462,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return (float) gunData.compute().velocity;
     }
 
+    public float projectileVelocity(GunData gunData) {
+        if (gunData == null) return 25;
+        return (float) gunData.compute().velocity;
+    }
+
     /**
      * @param entity 操控载具的实体
      * @return 炮弹重力
@@ -2488,13 +2493,40 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return (float) gunData.compute().gravity;
     }
 
+    public float projectileGravity(GunData gunData) {
+        if (gunData == null) return 0;
+        return (float) gunData.compute().gravity;
+    }
+
     /**
-     * 本方法用于固定式火炮，其他载具应该使用 {@link VehicleEntity#projectileGravity(Entity)}
-     *
-     * @return 炮弹重力
+     * @param entity 操控载具的实体
+     * @return 炮弹发射时的散布
      */
-    public float projectileGravity() {
-        return 0.03f;
+
+    public float projectileSpread(Entity entity) {
+        var gunData = getGunData(getSeatIndex(entity));
+        if (gunData == null) return 0.5f;
+
+        return (float) gunData.compute().spread;
+    }
+
+    public float projectileSpread(int seatIndex) {
+        var gunData = getGunData(seatIndex);
+        if (gunData == null) return 0.5f;
+
+        return (float) gunData.compute().spread;
+    }
+
+    public float projectileSpread(String weaponName) {
+        var gunData = getGunData(weaponName);
+        if (gunData == null) return 0.5f;
+
+        return (float) gunData.compute().spread;
+    }
+
+    public float projectileSpread(GunData gunData) {
+        if (gunData == null) return 0.5f;
+        return (float) gunData.compute().spread;
     }
 
     /**

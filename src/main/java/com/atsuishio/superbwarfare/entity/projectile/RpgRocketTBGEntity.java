@@ -117,11 +117,6 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     }
 
     @Override
-    public ParticleTool.ParticleType explosionParticleType() {
-        return explosionRadius >= 10 ? ParticleTool.ParticleType.HUGE : ParticleTool.ParticleType.MEDIUM;
-    }
-
-    @Override
     public void tick() {
         super.tick();
 
