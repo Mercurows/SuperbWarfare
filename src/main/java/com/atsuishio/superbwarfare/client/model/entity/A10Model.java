@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,14 +39,14 @@ public class A10Model extends VehicleModel<A10Entity> {
             case "qianzhou", "qianzhou2" ->
                     (bone, vehicle, state) -> bone.setRotZ(Mth.lerp(state.getPartialTick(), vehicle.propellerRotO, vehicle.getPropellerRot()));
 
-//            case "bomb1" -> (bone, vehicle, state) ->
-//                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 3);
-//
-//            case "bomb2" -> (bone, vehicle, state) ->
-//                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 2);
-//
-//            case "bomb3" -> (bone, vehicle, state) ->
-//                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 1);
+            case "bomb1" -> (bone, vehicle, state) ->
+                    bone.setHidden(shouldHideBomb(vehicle, 3));
+
+            case "bomb2" -> (bone, vehicle, state) ->
+                    bone.setHidden(shouldHideBomb(vehicle, 2));
+
+            case "bomb3" -> (bone, vehicle, state) ->
+                    bone.setHidden(shouldHideBomb(vehicle, 1));
 //
 //            case "missile1" -> (bone, vehicle, state) ->
 //                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 4);
@@ -62,4 +63,13 @@ public class A10Model extends VehicleModel<A10Entity> {
             default -> null;
         };
     }
+    public boolean shouldHideBomb(VehicleEntity vehicle, int ammo) {
+        var gunData = vehicle.getGunData("Bomb");
+        if (gunData == null) {
+            return false;
+        } else {
+            return gunData.ammo.get() < ammo;
+        }
+    }
 }
+

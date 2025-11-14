@@ -61,6 +61,7 @@ public class AircraftHud {
     private static final ResourceLocation HUD_BASE = Mod.loc("textures/overlay/vehicle/aircraft/hud_base.png");
     private static final ResourceLocation HUD_LINE = Mod.loc("textures/overlay/vehicle/aircraft/hud_line.png");
     private static final ResourceLocation HUD_IND = Mod.loc("textures/overlay/vehicle/aircraft/hud_ind.png");
+    private static final ResourceLocation HUD_BOMB = Mod.loc("textures/overlay/vehicle/aircraft/bomb.png");
     private static final ResourceLocation HUD_BASE2 = Mod.loc("textures/overlay/vehicle/aircraft/hud_base2.png");
     private static final ResourceLocation COMPASS_IND = Mod.loc("textures/overlay/vehicle/aircraft/compass_ind.png");
     private static final ResourceLocation HELICOPTER_ROLL_IND = Mod.loc("textures/overlay/vehicle/helicopter/roll_ind.png");
@@ -80,6 +81,8 @@ public class AircraftHud {
         if (gunData == null) return;
         
         poseStack.pushPose();
+
+        boolean bomb = gunData.compute().crosshair.equals("@AirBomb");
 
         int color = vehicle.getHudColor();
         RenderSystem.disableDepthTest();
@@ -110,43 +113,41 @@ public class AircraftHud {
         Vec3 pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(512));
         Vec3 posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));
 
+        if (bomb) {
+            posCross = vehicle.bombHitPos(player, partialTick);
+        }
+
         Vec3 p = VectorUtil.worldToScreen(pos);
         Vec3 pCross = VectorUtil.worldToScreen(posCross);
 
-//        // 投弹准星
-//        if (vehicle instanceof A10Entity a10Entity && weaponVehicle.getWeaponIndex(0) == 2 && (zoomVehicle || mc.options.getCameraType() != CameraType.FIRST_PERSON)) {
-//            Vec3 p0 = a10Entity.bombLandingPosO;
-//            Vec3 p1 = a10Entity.bombLandingPos;
-//            if (p0 != null && p1 != null) {
-//                Vec3 bombCross = p0.lerp(p1, partialTick);
-//                pCross = VectorUtil.worldToScreen(bombCross);
-//
-//                if (zoomVehicle && VectorUtil.canSee(bombCross)) {
-//                    float f = (float) Math.min(screenWidth, screenHeight);
-//                    float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f);
-//                    int i = Mth.floor(f * f1);
-//                    int j = Mth.floor(f * f1);
-//
-//                    float x = (float) pCross.x;
-//                    float y = (float) pCross.y;
-//
-//
-//                    poseStack.pushPose();
-//                    poseStack.translate(x, y, 0);
-//                    guiGraphics.drawString(mc.font, Component.literal("MK82 BOMB " + vehicle.getAmmoCount(player)), 25, -11, 1, false);
-//                    poseStack.popPose();
-//
-//                    preciseBlit(guiGraphics, BOMB_SCOPE, x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
-//
-//                    poseStack.pushPose();
-//                    poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
-//                    preciseBlit(guiGraphics, BOMB_SCOPE_PITCH, x - 1.5f * i, y - 1.5f * j - 4 * a10Entity.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
-//                    VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-//                    poseStack.popPose();
-//                    return;
-//                }
-//            }
-//        }
+        // 投弹准星
+        if (bomb && ClientEventHandler.zoomVehicle) {
+            if (VectorUtil.canSee(posCross)) {
+                float f = (float) Math.min(screenWidth, screenHeight);
+                float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f);
+                int i = Mth.floor(f * f1);
+                int j = Mth.floor(f * f1);
+
+                float x = (float) pCross.x;
+                float y = (float) pCross.y;
+
+
+                poseStack.pushPose();
+                poseStack.translate(x, y, 0);
+                var component = vehicle.thirdPersonAmmoComponent(gunData, player);
+                guiGraphics.drawString(mc.font, component, 25, -11, 1, false);
+                poseStack.popPose();
+
+                preciseBlit(guiGraphics, BOMB_SCOPE, x - 1.5f * i, y - 1.5f * j, 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+
+                poseStack.pushPose();
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
+                preciseBlit(guiGraphics, BOMB_SCOPE_PITCH, x - 1.5f * i, y - 1.5f * j - 4 * vehicle.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
+                VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                poseStack.popPose();
+                return;
+            }
+        }
 
         poseStack.pushPose();
 
@@ -160,12 +161,6 @@ public class AircraftHud {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
-
-//            if (vehicle instanceof A10Entity && weaponVehicle.getWeaponIndex(0) == 3) {
-//                RenderHelper.blit(poseStack, HUD_BASE_MISSILE, x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
-//            } else {
-//
-//            }
 
             RenderHelper.blit(poseStack, HUD_BASE, x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
 
@@ -222,7 +217,13 @@ public class AircraftHud {
             poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), x, y, 0);
             float pitch = vehicle.getPitch(partialTick);
             RenderHelper.blit(poseStack, HUD_LINE, x - 96 + diffY, y - 128, 0, 448 + 4.10625f * pitch, 192, 256, 192, 1152, color);
-            RenderHelper.blit(poseStack, HUD_IND, x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24, color);
+
+            if (bomb) {
+                RenderHelper.blit(poseStack, HUD_BOMB, x - 64 + diffY, y - 64, 0, 0, 128, 128, 128, 128, color);
+            } else {
+                RenderHelper.blit(poseStack, HUD_IND, x - 18 + diffY, y - 12, 0, 0, 36, 24, 36, 24, color);
+            }
+
             poseStack.popPose();
 
             // 能量警告
@@ -243,7 +244,7 @@ public class AircraftHud {
             float x = (float) pCross.x;
             float y = (float) pCross.y;
 
-            if (mc.options.getCameraType() == CameraType.FIRST_PERSON) {
+            if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !gunData.compute().crosshair.equals("@AirBomb")) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
                 RenderSystem.enableBlend();
@@ -263,6 +264,11 @@ public class AircraftHud {
 
                 ResourceLocation cross = CROSSHAIR_3P;
                 float size = 16;
+
+                if (gunData.compute().crosshair.equals("@AirBomb")) {
+                    cross = BOMB_RING;
+                    size = 24;
+                }
 
                 float heat = vehicle.getWeaponHeat(player) / 100F;
                 var component = vehicle.thirdPersonAmmoComponent(gunData, player);
