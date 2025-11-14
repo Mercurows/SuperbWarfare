@@ -7,48 +7,37 @@
   "TurretPitchRange": [-5, 60],
   "BarrelPos": [0, 0.65, -0.203125],
   "Weapons": {
-    "AP": {
+    "@Rocket": {
       "Velocity": 10,
       "Gravity": 0.05,
+      "Spread": 0.5,
+      "SoundInfo": {
+        "Fire3P": "superbwarfare:medium_rocket_fire",
+        "ReloadEnd": "ty63_reload"
+      },
+      "SoundRadius": 4
+    },
+    "AP": {
+      "Template": "@Rocket",
       "Damage": 500,
       "ExplosionDamage": 100,
       "ExplosionRadius": 5,
-      "IsArmorPiercingProjectile": true,
-      "Spread": 0.5,
-      "SoundInfo": {
-        "Fire3P": "superbwarfare:medium_rocket_fire",
-        "ReloadEnd": "ty63_reload"
-      },
-      "SoundRadius": 4
+      "IsArmorPiercingProjectile": true
     },
     "HE": {
-      "Velocity": 10,
-      "Gravity": 0.05,
+      "Template": "@Rocket",
       "Damage": 200,
       "ExplosionDamage": 200,
       "ExplosionRadius": 12,
-      "IsHighExplosiveProjectile": true,
-      "Spread": 0.5,
-      "SoundInfo": {
-        "Fire3P": "superbwarfare:medium_rocket_fire",
-        "ReloadEnd": "ty63_reload"
-      },
-      "SoundRadius": 4
+      "IsHighExplosiveProjectile": true
     },
     "CM": {
-      "Velocity": 10,
-      "Gravity": 0.05,
+      "Template": "@Rocket",
       "Damage": 300,
       "ExplosionDamage": 300,
       "ExplosionRadius": 12,
       "IsClusterMunitionsProjectile": true,
-      "ClusterMunitionsSize": 12,
-      "Spread": 0.5,
-      "SoundInfo": {
-        "Fire3P": "superbwarfare:medium_rocket_fire",
-        "ReloadEnd": "ty63_reload"
-      },
-      "SoundRadius": 4
+      "ClusterMunitionsSize": 12
     }
   },
   "DamageModifiers": [

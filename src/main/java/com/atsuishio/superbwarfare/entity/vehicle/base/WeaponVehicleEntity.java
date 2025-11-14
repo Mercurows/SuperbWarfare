@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.util.Mth;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public interface WeaponVehicleEntity {
         if (weapons.isEmpty()) return;
         var count = weapons.size();
 
-        var typeIndex = isScroll ? (value + getWeaponIndex(seatIndex) + count) % count : value;
+        var typeIndex = Mth.clamp(isScroll ? (value + getWeaponIndex(seatIndex) + count) % count : value, 0, count - 1);
         var weapon = weapons.get(typeIndex);
 
         // 修改该槽位选择的武器

@@ -490,9 +490,8 @@ public final class VehicleVecUtils {
                 Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                 return startPos.vectorTo(endPos).normalize();
             }
-        } else {
-            return vehicle.cameraDirection(entity, partialTicks);
         }
+        return null;
     }
 
     // From Immersive_Aircraft

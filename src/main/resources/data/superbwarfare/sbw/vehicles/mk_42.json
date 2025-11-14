@@ -51,16 +51,8 @@
       "AmmoType": "superbwarfare:ap_5_inches",
       "ShootPos": {
         "Transform": "Barrel",
-        "Positions": [
-          [
-            0,
-            0,
-            6.375
-          ]
-        ],
-        "Directions": [
-          "Barrel"
-        ]
+        "Positions": [[0, 0, 6.375]],
+        "Directions": ["Barrel"]
       }
     }
   },
