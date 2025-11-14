@@ -62,13 +62,13 @@ public class EngineInfo {
 
     public static class Helicopter extends EngineInfo {
         @SerializedName("PitchSpeed")
-        public float pitchSpeed = 0;
+        public float pitchSpeed = 1;
         @SerializedName("YawSpeed")
-        public float yawSpeed = 0;
+        public float yawSpeed = 1;
         @SerializedName("RollSpeed")
-        public float rollSpeed = 0;
+        public float rollSpeed = 1;
         @SerializedName("LiftSpeed")
-        public float liftSpeed = 0;
+        public float liftSpeed = 1;
 
         // 引擎启动音效
         @SerializedName("EngineStartSound")
@@ -76,6 +76,18 @@ public class EngineInfo {
     }
 
     public static class AirCraft extends EngineInfo {
+        @SerializedName("PitchSpeed")
+        public float pitchSpeed = 1;
+        @SerializedName("YawSpeed")
+        public float yawSpeed = 1;
+        @SerializedName("RollSpeed")
+        public float rollSpeed = 1;
+        @SerializedName("LiftSpeed")
+        public float liftSpeed = 1;
+        @SerializedName("SpeedRate")
+        public float speedRate = 1;
+        @SerializedName("GearRotateAngle")
+        public float gearRotateAngle = 85;
         // 引擎启动音效
         @SerializedName("EngineStartSound")
         public SoundEvent engineStartSound = SoundEvents.EMPTY;
