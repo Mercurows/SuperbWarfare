@@ -168,7 +168,7 @@
     "YawSpeed": 1,
     "RollSpeed": 1,
     "LiftSpeed": 1,
-    "SpeedRate": 1.5,
+    "SpeedRate": 1,
     "GearRotateAngle": 85,
     "EngineStartSound": "superbwarfare:a_10a_engine_start",
     "EngineSoundVolume": 0.8
