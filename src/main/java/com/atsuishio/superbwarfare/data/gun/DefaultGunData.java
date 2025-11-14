@@ -317,6 +317,9 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("IsHighExplosiveProjectile")
     public boolean isHighExplosiveProjectile = false;
 
+    @SerializedName("UseVehicleDeltaMovement")
+    public boolean useVehicleDeltaMovement = false;
+
     @SerializedName("Icon")
     public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();
     /*

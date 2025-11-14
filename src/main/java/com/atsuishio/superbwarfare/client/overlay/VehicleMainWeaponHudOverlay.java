@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.overlay.weapon.AircraftHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.ArtilleryHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud;
@@ -61,6 +62,8 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
                     HelicopterHud.render(vehicle, player, gui, guiGraphics, partialTick, screenWidth, screenHeight);
             case ArtilleryHud.ID ->
                     ArtilleryHud.render(vehicle, player, gui, guiGraphics, partialTick, screenWidth, screenHeight);
+            case AircraftHud.ID ->
+                    AircraftHud.render(vehicle, player, gui, guiGraphics, partialTick, screenWidth, screenHeight);
         }
 
         poseStack.popPose();

@@ -248,6 +248,9 @@ public final class VehicleVecUtils {
         if (stringOrVec3 == null) {
             return vehicle.getShootVec(entity, partialTicks);
         } else if (stringOrVec3.isString()) {
+            if (stringOrVec3.string.equals("Bomb")) {
+                return getViewPos(vehicle, entity, partialTicks).vectorTo(vehicle.bombHitPos(entity, partialTicks));
+            }
             return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
         } else {
             var vec3 = stringOrVec3.vec3;
@@ -266,6 +269,22 @@ public final class VehicleVecUtils {
             Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
             Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
             return startPos.vectorTo(endPos).normalize();
+        }
+    }
+
+    public static Vec3 getViewPos(VehicleEntity vehicle, Entity entity, float partialTicks) {
+        var data = vehicle.getGunData(vehicle.getSeatIndex(entity));
+        if (data == null) {
+            return entityEyePos(entity, partialTicks);
+        }
+
+        Vec3 vec3 = data.compute().shootPos.viewPosition;
+
+        if (vec3 == null) {
+            return vehicle.getCameraPos(entity, partialTicks);
+        } else {
+            Vector4f worldPosition = transformPosition(vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
     }
 
@@ -317,7 +336,7 @@ public final class VehicleVecUtils {
         var stringOrVec3 = data.fireDirection();
 
         if (stringOrVec3.isString()) {
-            return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, weaponName);
+            return vehicle.getVectorFromString(stringOrVec3.string, partialTicks);
         } else {
             var vec3 = data.firePosition();
 
@@ -528,7 +547,6 @@ public final class VehicleVecUtils {
         );
         transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot()) + ClientMouseHandler.freeCameraYaw)));
         transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(partialTicks, vehicle.xRotO, vehicle.getXRot()) + ClientMouseHandler.freeCameraPitch)));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, vehicle.prevRoll, vehicle.getRoll())));
         return transform;
     }
 

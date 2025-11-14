@@ -420,9 +420,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float flap3Rot;
     public float flap3RotO;
     public float gearRotO;
-
+    public Vec3 lerpBombHitPosO;
+    public Vec3 lerpBombHitPos;
     public boolean engineStart;
     public boolean engineStartOver;
+
+    public double bombHitPosX;
+    public double bombHitPosY;
+    public double bombHitPosZ;
 
     public int holdTick;
     public int holdPowerTick;
@@ -1839,6 +1844,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         flap2RRotO = this.getFlap2RRot();
         flap3RotO = this.getFlap3Rot();
         gearRotO = entityData.get(GEAR_ROT);
+        lerpBombHitPosO = lerpBombHitPos;
 
         super.baseTick();
 
@@ -2393,21 +2399,20 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return switch (string) {
             case "Turret" -> getTurretVector(ticks);
             case "Barrel" -> getBarrelVector(ticks);
-            case "Bomb" ->
-                    ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(seatIndex, ticks), getShootVec(seatIndex, ticks), -0.06);
+            case "Bomb" -> bombHitPos(getNthEntity(seatIndex), ticks).subtract(getShootPosForHud(getNthEntity(seatIndex), ticks));
             case "WeaponStationBarrel" -> getPassengerWeaponStationVector(ticks);
             case "Passenger" -> entity != null ? entity.getViewVector(ticks) : getViewVector(ticks);
+            case "DeltaMovement" -> getDeltaMovement().normalize();
             default -> getViewVector(ticks);
         };
     }
 
-    public Vec3 getVectorFromString(String string, float ticks, String weaponName) {
+    public Vec3 getVectorFromString(String string, float ticks) {
         return switch (string) {
             case "Turret" -> getTurretVector(ticks);
             case "Barrel" -> getBarrelVector(ticks);
-            case "Bomb" ->
-                    ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(weaponName, ticks), getShootVec(weaponName, ticks), -0.06);
             case "WeaponStationBarrel" -> getPassengerWeaponStationVector(ticks);
+            case "DeltaMovement" -> getDeltaMovement().normalize();
             default -> getViewVector(ticks);
         };
     }
@@ -2419,6 +2424,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getShootPos(getNthEntity(seatIndex), ticks);
     }
 
+    public Vec3 bombHitPos(Entity entity, float ticks) {
+        var gunData = getGunData(entity);
+        if (gunData != null) {
+            Vec3 bombHitPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPosForHud(entity, ticks), getShootVec(entity, ticks), getDeltaMovement().length() * gunData.compute().velocity, -projectileGravity(entity));
+            bombHitPosX = Mth.lerp(ticks, bombHitPosX, bombHitPos.x);
+            bombHitPosY = Mth.lerp(ticks, bombHitPosY, bombHitPos.y);
+            bombHitPosZ = Mth.lerp(ticks, bombHitPosZ, bombHitPos.z);
+            return new Vec3(bombHitPosX, bombHitPosY, bombHitPosZ);
+        } else {
+            return Vec3.ZERO;
+        }
+    }
 
     /**
      * @param entity 操控载具的实体
@@ -2522,6 +2539,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return VehicleVecUtils.getViewVec(this, entity, partialTicks);
     }
 
+    public Vec3 getViewPos(Entity entity, float partialTicks) {
+        return VehicleVecUtils.getViewPos(this, entity, partialTicks);
+    }
+
     /**
      * @param entity 操控载具的实体
      * @return 炮弹发射时的初始速度
@@ -2530,6 +2551,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float projectileVelocity(Entity entity) {
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData == null) return 25;
+        if (gunData.compute().useVehicleDeltaMovement) {
+            return (float) (getDeltaMovement().length() * gunData.compute().velocity);
+        }
 
         return (float) gunData.compute().velocity;
     }
@@ -2537,6 +2561,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float projectileVelocity(int seatIndex) {
         var gunData = getGunData(seatIndex);
         if (gunData == null) return 25;
+        if (gunData.compute().useVehicleDeltaMovement) {
+            return (float) (getDeltaMovement().length() * gunData.compute().velocity);
+        }
 
         return (float) gunData.compute().velocity;
     }
@@ -2544,12 +2571,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float projectileVelocity(String weaponName) {
         var gunData = getGunData(weaponName);
         if (gunData == null) return 25;
+        if (gunData.compute().useVehicleDeltaMovement) {
+            return (float) (getDeltaMovement().length() * gunData.compute().velocity);
+        }
 
         return (float) gunData.compute().velocity;
     }
 
     public float projectileVelocity(GunData gunData) {
         if (gunData == null) return 25;
+        if (gunData.compute().useVehicleDeltaMovement) {
+            return (float) (getDeltaMovement().length() * gunData.compute().velocity);
+        }
         return (float) gunData.compute().velocity;
     }
 
@@ -3335,9 +3368,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         int index = this.getSeatIndex(player);
         var seat = computed().seats().get(index);
+        var gunData= getGunData(player);
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
+                if (zoom && gunData != null && gunData.compute().shootPos.viewDirection != null) {
+                    return new Vec2((float) -VehicleVecUtils.getYRotFromVector(getViewVec(player, partialTicks)), (float) -VehicleVecUtils.getXRotFromVector(getViewVec(player, partialTicks)));
+                }
                 if (data.aircraftCamera) {
                     return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
                 }
@@ -3363,16 +3400,21 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
+            var gunData= getGunData(player);
             if (data != null) {
                 if (zoom || isFirstPerson) {
                     if (zoom) {
-                        return getZoomPos(player, partialTicks);
+                        if (gunData != null && gunData.compute().shootPos.viewPosition != null) {
+                            return getViewPos(player, partialTicks);
+                        } else {
+                            return getZoomPos(player, partialTicks);
+                        }
                     } else {
                         return getCameraPos(player, partialTicks);
                     }
                 } else if (data.aircraftCamera) {
                     Matrix4f transform = getClientVehicleTransform(partialTicks);
-                    Vector4f maxCameraPosition = transformPosition(transform, (float) data.aircraftCameraPos.x, (float) data.aircraftCameraPos.y, (float) data.aircraftCameraPos.z - (float) ClientMouseHandler.custom3pDistanceLerp);
+                    Vector4f maxCameraPosition = transformPosition(transform, (float) data.aircraftCameraPos.x, (float) data.aircraftCameraPos.y + 0.1f * (float) ClientMouseHandler.custom3pDistanceLerp, (float) data.aircraftCameraPos.z - (float) ClientMouseHandler.custom3pDistanceLerp);
                     return CameraTool.getMaxZoom(transform, maxCameraPosition);
                 }
             }

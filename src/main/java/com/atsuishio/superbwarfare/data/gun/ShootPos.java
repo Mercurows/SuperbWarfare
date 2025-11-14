@@ -29,6 +29,10 @@ public class ShootPos {
     @SerializedName("BoundUpWithAmmoAmount")
     public boolean boundUpWithAmmoAmount = false;
 
+
+    @SerializedName("ViewPosition")
+    public Vec3 viewPosition = null;
+
     @SerializedName("ViewDirection")
     public StringOrVec3 viewDirection = null;
 }

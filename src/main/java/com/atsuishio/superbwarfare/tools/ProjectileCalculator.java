@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.tools;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -22,9 +21,9 @@ public class ProjectileCalculator {
      * @param launchVector 发射向量（Vec3）
      * @return 精确的落点位置（Vec3），如果没有碰撞则返回最后位置
      */
-    public static Vec3 calculatePreciseImpactPoint(Level level, Vec3 startPos, Vec3 launchVector, double gravity) {
+    public static Vec3 calculatePreciseImpactPoint(Level level, Vec3 startPos, Vec3 launchVector, double velocity, double gravity) {
         Vec3 currentPos = startPos;
-        Vec3 currentVelocity = launchVector;
+        Vec3 currentVelocity = launchVector.normalize().scale(velocity);
         Vec3 previousPos = startPos;
 
         for (int i = 0; i < MAX_ITERATIONS; i++) {
@@ -108,38 +107,5 @@ public class ProjectileCalculator {
         }
 
         return bestPoint;
-    }
-
-    /**
-     * 可视化炮弹轨迹（用于调试）
-     */
-    public static void visualizeTrajectory(Level level, Vec3 startPos, Vec3 launchVector, double gravity) {
-        if (!level.isClientSide()) return;
-
-        Vec3 currentPos = startPos;
-        Vec3 currentVelocity = launchVector;
-
-        for (int i = 0; i < 100; i++) {
-            Vec3 nextPos = currentPos.add(
-                    currentVelocity.x * 0.5,
-                    currentVelocity.y * 0.5,
-                    currentVelocity.z * 0.5
-            );
-
-            // 创建粒子效果显示轨迹
-            for (double d = 0; d < 1; d += 0.1) {
-                Vec3 point = currentPos.add(nextPos.subtract(currentPos).scale(d));
-                level.addParticle(ParticleTypes.ELECTRIC_SPARK,
-                        point.x, point.y, point.z,
-                        0, 0, 0);
-            }
-
-            // 应用重力
-            currentVelocity = currentVelocity.add(0, gravity * 0.5, 0);
-            currentPos = nextPos;
-
-            // 提前终止检查
-            if (currentPos.y < level.getMinBuildHeight()) break;
-        }
     }
 }
