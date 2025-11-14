@@ -263,29 +263,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Weapo
         }
     }
 
-    @Override
-    public void handleClientSync() {
-        if (isControlledByLocalInstance()) {
-            interpolationSteps = 0;
-            syncPacketPositionCodec(getX(), getY(), getZ());
-        }
-        if (interpolationSteps <= 0) {
-            return;
-        }
-
-        double interpolatedYaw = Mth.wrapDegrees(serverYRot - (double) getYRot());
-        setYRot(getYRot() + (float) interpolatedYaw / (float) interpolationSteps);
-        setXRot(getXRot() + (float) (serverXRot - (double) getXRot()) / (float) interpolationSteps);
-        setRot(getYRot(), getXRot());
-
-    }
-
-    @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-        serverYRot = yaw;
-        serverXRot = pitch;
-        this.interpolationSteps = 10;
-    }
 
     private float laserLength(Vec3 pos, Entity cannon) {
         if (this.level() instanceof ServerLevel) {

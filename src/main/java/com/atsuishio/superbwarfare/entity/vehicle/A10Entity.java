@@ -9,43 +9,25 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.Agm65Weapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.Mk82Weapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallCannonShellWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.SmallRocketWeapon;
-import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.*;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -54,37 +36,20 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
-import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
-import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
-import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity, OBBEntity {
 
-    public static Consumer<VehicleEntity> fireSound = vehicle -> {
-    };
-
-    public static final EntityDataAccessor<Integer> LOADED_ROCKET = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> LOADED_BOMB = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> LOADED_MISSILE = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(A10Entity.class, EntityDataSerializers.INT);
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public int fireIndex;
-    public int reloadCoolDownBomb;
-    public int reloadCoolDownMissile;
     public String lockingTargetO = "none";
     public String lockingTarget = "none";
     public float destroyRot;
     public int lockTime;
     public boolean locked;
-    private boolean wasFiring = false;
     public Vec3 bombLandingPosO;
     public Vec3 bombLandingPos;
-    public Vec3 deltaMovementO;
 
     public OBB obb;
     public OBB obb2;
@@ -118,38 +83,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public int getContainerSize() {
-        return 102;
-    }
-
-    @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(17, 3, 0);
-    }
-
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(LOADED_ROCKET, 0);
-        this.entityData.define(LOADED_BOMB, 0);
-        this.entityData.define(LOADED_MISSILE, 0);
-        this.entityData.define(FIRE_TIME, 0);
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("LoadedRocket", this.entityData.get(LOADED_ROCKET));
-        compound.putInt("LoadedBomb", this.entityData.get(LOADED_BOMB));
-        compound.putInt("LoadedMissile", this.entityData.get(LOADED_MISSILE));
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.entityData.set(LOADED_ROCKET, compound.getInt("LoadedRocket"));
-        this.entityData.set(LOADED_BOMB, compound.getInt("LoadedBomb"));
-        this.entityData.set(LOADED_MISSILE, compound.getInt("LoadedMissile"));
     }
 
     @Override
@@ -159,48 +94,9 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() == ModItems.SMALL_ROCKET.get() && this.entityData.get(LOADED_ROCKET) < 28) {
-            // 装载火箭
-            this.entityData.set(LOADED_ROCKET, this.entityData.get(LOADED_ROCKET) + 1);
-            if (!player.isCreative()) {
-                stack.shrink(1);
-            }
-            this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 2, 1);
-            return InteractionResult.sidedSuccess(this.level().isClientSide());
-        }
-        if (stack.getItem() == ModItems.MEDIUM_AERIAL_BOMB.get() && this.entityData.get(LOADED_BOMB) < 3) {
-            // 装载航弹
-            this.entityData.set(LOADED_BOMB, this.entityData.get(LOADED_BOMB) + 1);
-            if (!player.isCreative()) {
-                stack.shrink(1);
-            }
-            this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
-            return InteractionResult.sidedSuccess(this.level().isClientSide());
-        }
-        if (stack.getItem() == ModItems.AGM.get() && this.entityData.get(LOADED_MISSILE) < 4) {
-            // 装载导弹
-            this.entityData.set(LOADED_MISSILE, this.entityData.get(LOADED_MISSILE) + 1);
-            if (!player.isCreative()) {
-                stack.shrink(1);
-            }
-            this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
-            return InteractionResult.sidedSuccess(this.level().isClientSide());
-        }
-        return super.interact(player, hand);
-    }
-
-    @Override
     public void baseTick() {
-        if (!this.wasFiring && this.isFiring() && this.level().isClientSide()) {
-            fireSound.accept(this);
-        }
-        this.wasFiring = this.isFiring();
-
         this.lockingTargetO = getTargetUuid();
         bombLandingPosO = bombLandingPos;
-        deltaMovementO = getDeltaMovement();
 
         super.baseTick();
         this.updateOBB();
@@ -217,36 +113,8 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             }
         }
 
-        if (this.level() instanceof ServerLevel) {
-            if (reloadCoolDown > 0) {
-                reloadCoolDown--;
-            }
-            if (reloadCoolDownBomb > 0) {
-                reloadCoolDownBomb--;
-            }
-            if (reloadCoolDownMissile > 0) {
-                reloadCoolDownMissile--;
-            }
-            handleAmmo();
-        }
-
-        if (this.getFirstPassenger() instanceof Player player && fireInputDown()) {
-            if (this.getWeaponIndex(0) == 0) {
-                if ((this.entityData.get(AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire) {
-//                    vehicleShoot(player);
-                }
-            } else if (this.getWeaponIndex(0) == 1) {
-                if (this.entityData.get(AMMO) > 0) {
-//                    vehicleShoot(player);
-                }
-            }
-        }
         if (onGround()) {
             terrainCompactA10();
-        }
-
-        if (entityData.get(FIRE_TIME) > 0) {
-            entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
         }
 
         if (this.getWeaponIndex(0) == 3) {
@@ -326,49 +194,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         } else if (isInWater()) {
             setXRot(getXRot() * 0.9f);
             setZRot(getRoll() * 0.9f);
-        }
-    }
-
-    private void handleAmmo() {
-        boolean hasCreativeAmmoBox = this.getFirstPassenger() instanceof Player player && InventoryTool.hasCreativeAmmoBox(player);
-
-        int ammoCount = countItem(ModItems.SMALL_SHELL.get());
-
-        if ((hasItem(ModItems.SMALL_ROCKET.get()) || hasCreativeAmmoBox) && reloadCoolDown == 0 && this.getEntityData().get(LOADED_ROCKET) < 28) {
-            this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) + 1);
-            reloadCoolDown = 15;
-            if (!hasCreativeAmmoBox) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_ROCKET.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-            }
-            this.level().playSound(null, this, ModSounds.MISSILE_RELOAD.get(), this.getSoundSource(), 2, 1);
-        }
-
-        if ((hasItem(ModItems.MEDIUM_AERIAL_BOMB.get()) || hasCreativeAmmoBox) && reloadCoolDownBomb == 0 && this.getEntityData().get(LOADED_BOMB) < 3) {
-            this.entityData.set(LOADED_BOMB, this.getEntityData().get(LOADED_BOMB) + 1);
-            reloadCoolDownBomb = 300;
-            if (!hasCreativeAmmoBox) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.MEDIUM_AERIAL_BOMB.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-            }
-            this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
-        }
-
-        if ((hasItem(ModItems.AGM.get()) || hasCreativeAmmoBox) && reloadCoolDownMissile == 0 && this.getEntityData().get(LOADED_MISSILE) < 4) {
-            this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) + 1);
-            reloadCoolDownMissile = 400;
-            if (!hasCreativeAmmoBox) {
-                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.AGM.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-            }
-            this.level().playSound(null, this, ModSounds.BOMB_RELOAD.get(), this.getSoundSource(), 2, 1);
-        }
-
-        if (this.getWeaponIndex(0) == 0) {
-            this.entityData.set(AMMO, ammoCount);
-        } else if (this.getWeaponIndex(0) == 1) {
-            this.entityData.set(AMMO, this.getEntityData().get(LOADED_ROCKET));
-        } else if (this.getWeaponIndex(0) == 2) {
-            this.entityData.set(AMMO, this.getEntityData().get(LOADED_BOMB));
-        } else if (this.getWeaponIndex(0) == 3) {
-            this.entityData.set(AMMO, this.getEntityData().get(LOADED_MISSILE));
         }
     }
 
@@ -613,183 +438,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public Vec3 getShootPos(Entity entity, float tickDelta) {
-        Matrix4f transform = getVehicleTransform(tickDelta);
-        Vector4f worldPosition;
-        if (getWeaponIndex(0) == 0) {
-            worldPosition = transformPosition(transform, 0.1321625f, 1.81053125f, 7.85210625f);
-        } else if (getWeaponIndex(0) == 1) {
-            worldPosition = transformPosition(transform, 0f, 0.932f, 0.13f);
-        } else if (getWeaponIndex(0) == 2) {
-            worldPosition = transformPosition(transform, 0f, 1.171875f, 0.0625f);
-        } else {
-            worldPosition = transformPosition(transform, 0, 0.825f, 1.83f);
-        }
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-    }
-
-    @Override
-    public Vec3 getShootVec(Entity entity, float partialTicks) {
-        Matrix4f transform = getVehicleTransform(partialTicks);
-        Vector4f worldPosition;
-        Vector4f worldPosition2;
-        if (getWeaponIndex(0) == 2) {
-            return deltaMovementO.lerp(getDeltaMovement(), partialTicks).scale(0.75);
-        } else if (getWeaponIndex(0) == 3) {
-            worldPosition = transformPosition(transform, 0, 0, 0);
-            worldPosition2 = transformPosition(transform, 0, 0f, 1);
-        } else {
-            worldPosition = transformPosition(transform, 0, 0, 0);
-            worldPosition2 = transformPosition(transform, 0, -0.03f, 1);
-        }
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity living) {
-        Matrix4f transform = getVehicleTransform(1);
-
-        if (getWeaponIndex(0) == 0) {
-            if (this.cannotFire) return;
-
-            boolean hasCreativeAmmo = InventoryTool.hasCreativeAmmoBox(getFirstPassenger());
-
-            Vector4f worldPosition = transformPosition(transform, 0.1321625f, 1.81053125f, 7.85210625f);
-            Vector4f worldPosition2 = transformPosition(transform, 0.1321625f + 0.01f, 1.81053125f - 0.015f, 8.85210625f);
-
-            Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
-
-
-            if (this.entityData.get(AMMO) > 0 || hasCreativeAmmo) {
-                entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 6, 6));
-
-                var entityToSpawn = ((SmallCannonShellWeapon) getWeapon(0)).create(living);
-
-                entityToSpawn.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                entityToSpawn.shoot(shootVec.x, shootVec.y, shootVec.z, 40, 0.5f);
-                level().addFreshEntity(entityToSpawn);
-
-                sendParticle((ServerLevel) this.level(), ParticleTypes.LARGE_SMOKE, worldPosition.x, worldPosition.y, worldPosition.z, 1, 0.2, 0.2, 0.2, 0.001, true);
-                sendParticle((ServerLevel) this.level(), ParticleTypes.CLOUD, worldPosition.x, worldPosition.y, worldPosition.z, 2, 0.5, 0.5, 0.5, 0.005, true);
-
-                if (!hasCreativeAmmo) {
-                    this.getItemStacks().stream().filter(stack -> stack.is(ModItems.SMALL_SHELL.get())).findFirst().ifPresent(stack -> stack.shrink(1));
-                }
-
-            }
-
-            ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 12);
-        } else if (getWeaponIndex(0) == 1 && this.getEntityData().get(LOADED_ROCKET) > 0) {
-            var heliRocketEntity = ((SmallRocketWeapon) getWeapon(0)).create(living);
-
-            Vector4f worldPosition;
-            Vector4f worldPosition2;
-
-            if (fireIndex == 0) {
-                worldPosition = transformPosition(transform, -3.9321875f, 0.98819375f, 0.12965f);
-                worldPosition2 = transformPosition(transform, -3.9321875f + 0.01f + 0.01f, 0.98819375f - 0.03f, 1.12965f);
-                fireIndex = 1;
-            } else if (fireIndex == 1) {
-                worldPosition = transformPosition(transform, -1.56875f, 0.932f, 0.1272f);
-                worldPosition2 = transformPosition(transform, -1.56875f + 0.005f + 0.01f, 0.932f - 0.03f, 1.1272f);
-                fireIndex = 2;
-            } else if (fireIndex == 2) {
-                worldPosition = transformPosition(transform, 1.56875f, 0.932f, 0.1272f);
-                worldPosition2 = transformPosition(transform, 1.56875f - 0.005f + 0.01f, 0.932f - 0.03f, 1.1272f);
-                fireIndex = 3;
-            } else {
-                worldPosition = transformPosition(transform, 3.9321875f, 0.98819375f, 0.12965f);
-                worldPosition2 = transformPosition(transform, 3.9321875f - 0.01f + 0.01f, 0.98819375f - 0.03f, 1.12965f);
-                fireIndex = 0;
-            }
-
-            Vec3 shootVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
-
-            heliRocketEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            heliRocketEntity.shoot(shootVec.x, shootVec.y, shootVec.z, 17, 0.5f);
-            living.level().addFreshEntity(heliRocketEntity);
-
-            BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
-
-            this.level().playSound(null, pos, ModSounds.SMALL_ROCKET_FIRE_3P.get(), SoundSource.PLAYERS, 4, 1);
-
-            this.entityData.set(LOADED_ROCKET, this.getEntityData().get(LOADED_ROCKET) - 1);
-
-            ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 12);
-
-            reloadCoolDown = 15;
-        } else if (getWeaponIndex(0) == 2 && this.getEntityData().get(LOADED_BOMB) > 0) {
-            var Mk82Entity = ((Mk82Weapon) getWeapon(0)).create(living);
-
-            Vector4f worldPosition;
-
-            if (this.getEntityData().get(LOADED_BOMB) == 3) {
-                worldPosition = transformPosition(transform, 0.55625f, 1.171875f, 0.0625f);
-            } else if (this.getEntityData().get(LOADED_BOMB) == 2) {
-                worldPosition = transformPosition(transform, 0f, 1.171875f, 0.0625f);
-            } else {
-                worldPosition = transformPosition(transform, -0.55625f, 1.171875f, 0.0625f);
-            }
-
-            Mk82Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            Mk82Entity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().scale(0.75).length(), 0.5f);
-            living.level().addFreshEntity(Mk82Entity);
-
-            BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
-
-            this.level().playSound(null, pos, ModSounds.BOMB_RELEASE.get(), SoundSource.PLAYERS, 3, 1);
-
-            if (this.getEntityData().get(LOADED_BOMB) == 3) {
-                reloadCoolDownBomb = 300;
-            }
-            this.entityData.set(LOADED_BOMB, this.getEntityData().get(LOADED_BOMB) - 1);
-        } else if (getWeaponIndex(0) == 3 && this.getEntityData().get(LOADED_MISSILE) > 0) {
-            var Agm65Entity = ((Agm65Weapon) getWeapon(0)).create(living);
-
-            Vector4f worldPosition;
-
-            if (this.getEntityData().get(LOADED_MISSILE) == 4) {
-                worldPosition = transformPosition(transform, 5.28f, 0.615f, 1.87f);
-            } else if (this.getEntityData().get(LOADED_MISSILE) == 3) {
-                worldPosition = transformPosition(transform, -5.28f, 0.615f, 1.87f);
-            } else if (this.getEntityData().get(LOADED_MISSILE) == 2) {
-                worldPosition = transformPosition(transform, 6.63f, 0.825f, 1.83f);
-            } else {
-                worldPosition = transformPosition(transform, -6.63f, 0.825f, 1.83f);
-            }
-
-            if (locked) {
-                Agm65Entity.setTargetUuid(getTargetUuid());
-            }
-            Agm65Entity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            Agm65Entity.shoot(getShootVec(living, 1).x, getShootVec(living, 1).y, getShootVec(living, 1).z, (float) getDeltaMovement().length() + 1, 1);
-            living.level().addFreshEntity(Agm65Entity);
-
-            BlockPos pos = BlockPos.containing(new Vec3(worldPosition.x, worldPosition.y, worldPosition.z));
-
-            this.level().playSound(null, pos, ModSounds.BOMB_RELEASE.get(), SoundSource.PLAYERS, 3, 1);
-
-            if (this.getEntityData().get(LOADED_MISSILE) == 4) {
-                reloadCoolDownMissile = 400;
-            }
-
-            this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) - 1);
-        }
-    }
-
-    public float shootingVolume() {
-        return entityData.get(FIRE_TIME) * 0.3f;
-    }
-
-    public float shootingPitch() {
-        return 0.7f + entityData.get(FIRE_TIME) * 0.05f;
-    }
-
-    public boolean isFiring() {
-        return this.entityData.get(FIRE_TIME) > 0;
-    }
-
-    @Override
     public double getMouseSensitivity() {
         return zoomVehicle ? 0.03 : 0.07;
     }
@@ -802,52 +450,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public double getMouseSpeedY() {
         return 0.3;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        Minecraft mc = Minecraft.getInstance();
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
-
-        Vec3 p0 = bombLandingPosO;
-        Vec3 p1 = bombLandingPos;
-        Vec3 p2 = getViewVector(partialTicks);
-        if (p0 != null && p1 != null) {
-            p2 = cameraPos.vectorTo(p0.lerp(p1, partialTicks));
-        }
-
-        if (this.getSeatIndex(player) == 0) {
-            if (getWeaponIndex(0) == 2 && zoomVehicle) {
-                return new Vec2((float) (-VehicleVecUtils.getYRotFromVector(p2) - freeCameraYaw), (float) (-VehicleVecUtils.getXRotFromVector(p2) + freeCameraPitch));
-            }
-            return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
-        }
-
-        return super.getCameraRotation(partialTicks, player, false, false);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (this.getSeatIndex(player) == 0) {
-
-            if (getWeaponIndex(0) == 2 && zoomVehicle) {
-                return getShootPos(player, partialTicks);
-            }
-
-            Matrix4f transform = getClientVehicleTransform(partialTicks);
-            Vector4f maxCameraPosition = transformPosition(transform, 0, 4f, -14 - (float) ClientMouseHandler.custom3pDistanceLerp);
-            Vec3 finalPos = CameraTool.getMaxZoom(transform, maxCameraPosition);
-
-            if (isFirstPerson) {
-                return new Vec3(Mth.lerp(partialTicks, player.xo, player.getX()), Mth.lerp(partialTicks, player.yo + player.getEyeHeight(), player.getEyeY()), Mth.lerp(partialTicks, player.zo, player.getZ()));
-            } else {
-                return finalPos;
-            }
-        }
-        return super.getCameraPosition(partialTicks, player, false, false);
     }
 
     @Override
@@ -863,7 +465,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
         this.obb.setRotation(VectorTool.combineRotations(1, this));
 
-        Vector4f worldPosition2 = transformPosition(transform, 0, 0, -0.46875f);
+        Vector4f worldPosition2 = transformPosition(transform, 0, 2.35f, -0.46875f);
         this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.obb2.setRotation(VectorTool.combineRotations(1, this));
 
