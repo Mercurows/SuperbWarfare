@@ -74,4 +74,10 @@ public class EngineInfo {
         @SerializedName("EngineStartSound")
         public SoundEvent engineStartSound = SoundEvents.EMPTY;
     }
+
+    public static class AirCraft extends EngineInfo {
+        // 引擎启动音效
+        @SerializedName("EngineStartSound")
+        public SoundEvent engineStartSound = SoundEvents.EMPTY;
+    }
 }

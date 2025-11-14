@@ -125,6 +125,7 @@
     "EngineStartSound": "superbwarfare:ah_6_engine_start",
     "EngineSoundVolume" : 2
   },
+  "EngineSound": "superbwarfare:ah_6_engine",
   "UpStep": 1.1,
   "RotateOffsetHeight": 1.45,
   "Mass": 1.2,
@@ -167,7 +168,6 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/ah_6_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Helicopter",
-  "EngineSound": "superbwarfare:ah_6_engine",
   "MainWeaponHudType": "@Helicopter",
   "TerrainCompat": [2.7, 2.7]
 }
