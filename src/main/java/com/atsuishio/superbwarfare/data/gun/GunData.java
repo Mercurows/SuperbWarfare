@@ -763,18 +763,12 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         }
     }
 
-    public Vec3 fireCenterPosition() {
-        var list = this.compute().shootPos.positions;
-        var size = list.size();
-        if (size == 0) {
-            return Vec3.ZERO;
+    public Vec3 firePositionForHud() {
+        if (this.compute().shootPos.shootPositionForHud != null) {
+            return this.compute().shootPos.shootPositionForHud;
+        } else {
+            return firePosition();
         }
-
-        double centerX = list.stream().mapToDouble(Vec3::x).average().orElse(0);
-        double centerY = list.stream().mapToDouble(Vec3::y).average().orElse(0);
-        double centerZ = list.stream().mapToDouble(Vec3::z).average().orElse(0);
-
-        return new Vec3(centerX, centerY, centerZ);
     }
 
     public StringOrVec3 fireDirection() {
@@ -785,6 +779,14 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         }
 
         return list.get(this.fireIndex.get() % size);
+    }
+
+    public StringOrVec3 fireDirectionForHud() {
+        if (this.compute().shootPos.shootDirectionForHud != null) {
+            return this.compute().shootPos.shootDirectionForHud;
+        } else {
+            return fireDirection();
+        }
     }
 
     public IEnergyStorage getEnergyProvider(@Nullable Entity ammoSupplier) {

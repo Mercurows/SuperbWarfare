@@ -236,30 +236,6 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
 //    }
 
     @Override
-    public void handleClientSync() {
-        if (isControlledByLocalInstance()) {
-            interpolationSteps = 0;
-            syncPacketPositionCodec(getX(), getY(), getZ());
-        }
-        if (interpolationSteps <= 0) {
-            return;
-        }
-
-        double interpolatedYaw = Mth.wrapDegrees(serverYRot - (double) getYRot());
-        setYRot(getYRot() + (float) interpolatedYaw / (float) interpolationSteps);
-        setXRot(getXRot() + (float) (serverXRot - (double) getXRot()) / (float) interpolationSteps);
-        setRot(getYRot(), getXRot());
-
-    }
-
-    @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
-        serverYRot = yaw;
-        serverXRot = pitch;
-        this.interpolationSteps = 10;
-    }
-
-    @Override
     public void travel() {
         float diffY = Mth.wrapDegrees(entityData.get(YAW) - this.getYRot());
         float diffX = Mth.wrapDegrees(entityData.get(PITCH) - this.getXRot());

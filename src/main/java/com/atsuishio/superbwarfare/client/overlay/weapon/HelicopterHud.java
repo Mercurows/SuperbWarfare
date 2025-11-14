@@ -82,9 +82,9 @@ public class HelicopterHud {
         float k = (screenWidth - i) / 2f;
         float l = (screenHeight - j) / 2f;
 
-        Vec3 shootPos = vehicle.getShootCenterPos(player, partialTick);
+        Vec3 shootPos = vehicle.getShootPosForHud(player, partialTick);
 
-        BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getViewVec(player, partialTick).scale(512)),
+        BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512)),
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
         Vec3 hitPos = result.getLocation();
 
@@ -96,7 +96,7 @@ public class HelicopterHud {
             dis = shootPos.distanceTo(entityPos);
         }
 
-        Vec3 pos = shootPos.add(vehicle.getViewVec(player, partialTick).scale(dis));
+        Vec3 pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));
         Vec3 screenPos = VectorUtil.worldToScreen(pos);
         float x = (float) screenPos.x;
         float y = (float) screenPos.y;

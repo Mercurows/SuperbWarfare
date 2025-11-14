@@ -25,6 +25,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -105,8 +107,22 @@ public class AircraftOverlay implements LayeredDraw.Layer {
             float diffY = (float) ClientMouseHandler.lerpSpeedX;
             float diffX = (float) ClientMouseHandler.lerpSpeedY;
 
-            Vec3 pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(192));
-            Vec3 posCross = vehicle.getShootCenterPos(player, partialTick).add(vehicle.getViewVec(player, partialTick).scale(192));
+            Vec3 shootPos = vehicle.getShootPosForHud(player, partialTick);
+
+            BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+            Vec3 hitPos = result.getLocation();
+
+            double dis = shootPos.distanceTo(hitPos);
+
+            Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
+
+            if (entityPos != null) {
+                dis = shootPos.distanceTo(entityPos);
+            }
+
+            Vec3 pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(512));
+            Vec3 posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));
 
             Vec3 p = VectorUtil.worldToScreen(pos);
             Vec3 pCross = VectorUtil.worldToScreen(posCross);

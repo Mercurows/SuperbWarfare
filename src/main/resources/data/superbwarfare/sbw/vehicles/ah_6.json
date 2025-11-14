@@ -6,13 +6,13 @@
     {
       "Transform": "Vehicle",
       "Position": [0.45, 0.85, 1],
+      "Sensitivity": [0, 0, 0],
       "CameraPos": {
         "Transform": "Vehicle",
         "Position": [0.45, 2.45, 1],
         "ZoomPosition": [0.45, 2.45, 1.25],
         "UseFixedCameraPos": true,
-        "AircraftCamera": true,
-        "Sensitivity": [0, 0, 0]
+        "AircraftCamera": true
       },
       "CanRotateHead": false,
       "MinPitch": -80,
@@ -72,6 +72,8 @@
       "AmmoType": "superbwarfare:small_shell",
       "ShootPos": {
         "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 0.62, 0.8],
+        "ShootDirectionForHud": [0, 0.025, 1],
         "Positions": [[-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
       }
@@ -95,6 +97,8 @@
       "Velocity": 16,
       "ShootPos": {
         "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 0.62, 0.8],
+        "ShootDirectionForHud": [0, 0.025, 1],
         "Positions": [[-1.7, 0.62, 0.8], [1.7, 0.62, 0.8]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
       },

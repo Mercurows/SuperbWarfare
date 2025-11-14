@@ -7,7 +7,71 @@
     "Transform": "Vehicle",
     "Position": [0, 2.125, 3.7],
     "CanRotateHead": false,
-    "Sensitivity": [0, 0, 0]
+    "Sensitivity": [0, 0, 0],
+    "CameraPos": {
+      "Transform": "Vehicle",
+      "AircraftCamera": true
+    },
+    "Weapons": ["Cannon", "Rocket"]
+  },
+  "Weapons": {
+    "Cannon": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "AmmoType": "superbwarfare:small_shell",
+      "Projectile": "superbwarfare:small_cannon_shell",
+      "DefaultZoom": 2,
+      "RPM": 1200,
+      "Velocity": 35,
+      "Damage": 35,
+      "ExplosionDamage": 10,
+      "ExplosionRadius": 4,
+      "HeatPerShoot": 2,
+      "NaturalCooldown": 1,
+      "Spread": 0.5,
+      "Name": "superbwarfare.a_10_a.cannon",
+      "SoundInfo": {
+        "FireSoundInstances": "superbwarfare:a_10a_fire"
+      },
+      "Crosshair": "@Empty",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "Positions": [[0.1334, 1.814, 7.869]]
+      }
+    },
+    "Rocket": {
+      "AmmoType": "superbwarfare:small_rocket",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
+      "DefaultZoom": 2,
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Magazine": 28,
+      "EmptyReloadTime": 160,
+      "Projectile": "superbwarfare:small_rocket",
+      "Spread": 0.4,
+      "Name": "superbwarfare.ah_6.cannon",
+      "RPM": 900,
+      "Damage": 80,
+      "ExplosionDamage": 40,
+      "ExplosionRadius": 5,
+      "Velocity": 16,
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 1.579, 0.128],
+        "ShootDirectionForHud": [0, -0.025, 1],
+        "Positions": [[3.932, 1.6054, 0.130], [1.57, 1.552, 0.1272], [-1.57, 1.552, 0.1272], [-3.932, 1.6054, 0.130]],
+        "Directions": [[-0.007, -0.025, 1], [-0.004, -0.025, 1], [0.004, -0.025, 1], [0.007, -0.025, 1]]
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:small_rocket_fire_1p",
+        "Fire3P": "superbwarfare:small_rocket_fire_3p",
+        "ReloadEnd": "superbwarfare:missile_reload",
+        "Change": "superbwarfare:into_missile"
+      },
+      "Crosshair": "@Empty",
+      "SoundRadius": 12
+    }
   },
   "UpStep": 1.1,
   "Mass": 20,

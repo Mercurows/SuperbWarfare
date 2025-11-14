@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.DataLoader;
+import com.atsuishio.superbwarfare.data.StringOrVec3;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
@@ -148,6 +149,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     };
 
     public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
+
+    public static final EntityDataAccessor<Float> SERVER_YAW = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> SERVER_PITCH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Integer> CANNON_RECOIL_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> CANNON_RECOIL_FORCE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -336,8 +340,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     protected double x;
     protected double y;
     protected double z;
-    protected double serverYRot;
-    protected double serverXRot;
 
     public float roll;
     public float prevRoll;
@@ -394,9 +396,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public double recoilShake;
     public double recoilShakeO;
-
-    public boolean cannotFireCoax;
-    public int reloadCoolDown;
 
     public double velocityO;
     public double velocity;
@@ -1078,6 +1077,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(CANNON_RECOIL_FORCE, 0f)
                 .define(POWER, 0f)
                 .define(YAW_WHILE_SHOOT, 0f)
+                .define(SERVER_YAW, getYRot())
+                .define(SERVER_PITCH, getXRot())
                 .define(AMMO, 0)
                 .define(FIRE_TIME, 0)
                 .define(DECOY_READY, false)
@@ -1094,8 +1095,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(SPRINT_INPUT_DOWN, false)
                 .define(LANDING_INPUT_DOWN, false)
                 .define(PLANE_BREAK, 0f)
-
-                // 怎么还不给玩动态注册了（恼）
                 .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]))
                 .define(ENERGY, 0)
                 .define(PROPELLER_ROT, 0f)
@@ -1422,6 +1421,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"));
         this.entityData.set(LAST_DRIVER_UUID, compound.getString("LastDriver"));
 
+        this.entityData.set(SERVER_YAW, compound.getFloat("ServerYaw"));
+        this.entityData.set(SERVER_PITCH, compound.getFloat("ServerPitch"));
+
+
         var selectedWeaponTag = compound.get("SelectedWeapon");
         int[] selected;
         if (selectedWeaponTag instanceof IntArrayTag arrayTag) {
@@ -1493,6 +1496,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putBoolean("GearUp", this.entityData.get(GEAR_UP));
         compound.putFloat("PropellerRot", this.entityData.get(PROPELLER_ROT));
         compound.putFloat("ChargeProgress", this.entityData.get(CHARGE_PROGRESS));
+
+        compound.putFloat("ServerYaw", this.entityData.get(SERVER_YAW));
+        compound.putFloat("ServerPitch", this.entityData.get(SERVER_PITCH));
 
         if (this.getMaxPassengers() > 0) {
             compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON));
@@ -2444,10 +2450,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param entity 操控载具的实体
      * @return 所有炮弹发射位置的中心点，用于HUD瞄准
      */
-    public Vec3 getShootCenterPos(Entity entity, float ticks) {
+    public Vec3 getShootPosForHud(Entity entity, float ticks) {
         var data = getGunData(getSeatIndex(entity));
         if (data != null) {
-            var vec3 = data.fireCenterPosition();
+            var vec3 = data.firePositionForHud();
 
             var worldPosition = transformPosition(
                     this.getTransformFromString(data.compute().shootPos.transform, ticks),
@@ -2456,6 +2462,42 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
         return getEyePosition(ticks);
+    }
+
+    /**
+     * @param entity 操控载具的实体
+     * @return 所有炮弹发射位置的方向，用于HUD瞄准
+     */
+    public Vec3 getShootDirectionForHud(Entity entity, float partialTicks) {
+        var data = getGunData(getSeatIndex(entity));
+        if (data == null) {
+            return getViewVector(partialTicks);
+        }
+
+        StringOrVec3 stringOrVec3 = data.fireDirectionForHud();
+
+        if (stringOrVec3 == null) {
+            return getShootVec(entity, partialTicks);
+        } else if (stringOrVec3.isString()) {
+            return getVectorFromString(stringOrVec3.string, partialTicks, getSeatIndex(entity));
+        } else {
+            var vec3 = stringOrVec3.vec3;
+            Vector4f worldPosition = transformPosition(
+                    getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                    (float) vec3.x + (float) stringOrVec3.vec3.x,
+                    (float) vec3.y + (float) stringOrVec3.vec3.y,
+                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+            Vector4f worldPositionO = transformPosition(
+                    getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                    (float) vec3.x,
+                    (float) vec3.y,
+                    (float) vec3.z);
+
+            Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+            Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            return startPos.vectorTo(endPos).normalize();
+        }
     }
 
     public Vec3 getShootVec(int seatIndex, float ticks) {
@@ -2926,6 +2968,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void handleClientSync() {
+        if (level() instanceof ServerLevel) {
+            entityData.set(SERVER_YAW, getYRot());
+            entityData.set(SERVER_PITCH, getXRot());
+        }
         if (isControlledByLocalInstance()) {
             interpolationSteps = 0;
             syncPacketPositionCodec(getX(), getY(), getZ());
@@ -2933,15 +2979,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (interpolationSteps <= 0) {
             return;
         }
+
         double interpolatedX = getX() + (x - getX()) / (double) interpolationSteps;
         double interpolatedY = getY() + (y - getY()) / (double) interpolationSteps;
         double interpolatedZ = getZ() + (z - getZ()) / (double) interpolationSteps;
-        double interpolatedYaw = Mth.wrapDegrees(serverYRot - (double) getYRot());
-        setYRot(getYRot() + (float) interpolatedYaw / (float) interpolationSteps);
-        setXRot(getXRot() + (float) (serverXRot - (double) getXRot()) / (float) interpolationSteps);
+
+        float diffY = Mth.wrapDegrees(entityData.get(SERVER_YAW) - this.getYRot());
+        float diffX = Mth.wrapDegrees(entityData.get(SERVER_PITCH) - this.getXRot());
+
+        this.setYRot(this.getYRot() + 0.5f * diffY);
+        this.setXRot(this.getXRot() + 0.5f * diffX);
 
         setPos(interpolatedX, interpolatedY, interpolatedZ);
-        setRot(getYRot(), getXRot());
 
         --interpolationSteps;
     }
@@ -2951,8 +3000,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.x = x;
         this.y = y;
         this.z = z;
-        this.serverYRot = yRot;
-        this.serverXRot = xRot;
         this.interpolationSteps = 10;
     }
 

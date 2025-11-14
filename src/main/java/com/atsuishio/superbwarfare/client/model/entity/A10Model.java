@@ -4,8 +4,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.A10Entity.LOADED_BOMB;
-import static com.atsuishio.superbwarfare.entity.vehicle.A10Entity.LOADED_MISSILE;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.GEAR_ROT;
 
 public class A10Model extends VehicleModel<A10Entity> {
@@ -40,26 +38,26 @@ public class A10Model extends VehicleModel<A10Entity> {
             case "qianzhou", "qianzhou2" ->
                     (bone, vehicle, state) -> bone.setRotZ(Mth.lerp(state.getPartialTick(), vehicle.propellerRotO, vehicle.getPropellerRot()));
 
-            case "bomb1" -> (bone, vehicle, state) ->
-                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 3);
-
-            case "bomb2" -> (bone, vehicle, state) ->
-                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 2);
-
-            case "bomb3" -> (bone, vehicle, state) ->
-                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 1);
-
-            case "missile1" -> (bone, vehicle, state) ->
-                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 4);
-
-            case "missile2" -> (bone, vehicle, state) ->
-                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 3);
-
-            case "missile4" -> (bone, vehicle, state) ->
-                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 2);
-
-            case "missile3" -> (bone, vehicle, state) ->
-                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 1);
+//            case "bomb1" -> (bone, vehicle, state) ->
+//                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 3);
+//
+//            case "bomb2" -> (bone, vehicle, state) ->
+//                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 2);
+//
+//            case "bomb3" -> (bone, vehicle, state) ->
+//                    bone.setHidden(vehicle.getEntityData().get(LOADED_BOMB) < 1);
+//
+//            case "missile1" -> (bone, vehicle, state) ->
+//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 4);
+//
+//            case "missile2" -> (bone, vehicle, state) ->
+//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 3);
+//
+//            case "missile4" -> (bone, vehicle, state) ->
+//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 2);
+//
+//            case "missile3" -> (bone, vehicle, state) ->
+//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 1);
 
             default -> null;
         };
