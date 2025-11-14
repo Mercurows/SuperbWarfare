@@ -46,7 +46,7 @@ public class EditMessage {
             if (player == null) return;
 
             if (message.vehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
-                var data = vehicle.getGunData(player, vehicle.getSelectedWeapon(vehicle.getSeatIndex(player)));
+                var data = vehicle.getGunData(player);
                 if (data == null) return;
                 if (message.type != 5) return;
 
