@@ -33,4 +33,7 @@ public class CameraPos {
 
     @SerializedName("AircraftCamera")
     public Boolean aircraftCamera = false;
+
+    @SerializedName("AircraftCameraPos")
+    public Vec3 aircraftCameraPos = new Vec3(0, 3, -10);
 }
