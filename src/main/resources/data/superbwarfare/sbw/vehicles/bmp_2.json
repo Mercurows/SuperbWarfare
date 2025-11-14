@@ -223,8 +223,6 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
         "Fire3P": "superbwarfare:bmp_2_missile_fire_3p",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
         "ReloadEnd": "superbwarfare:medium_missile_reload",
         "Change": "superbwarfare:into_missile"
       },
@@ -243,7 +241,6 @@
       "Velocity": 30,
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
-      "Name": "",
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
       "SoundInfo": {
@@ -273,7 +270,6 @@
       "Velocity": 30,
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
-      "Name": "",
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
       "SoundInfo": {
@@ -303,7 +299,6 @@
       "Velocity": 30,
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
-      "Name": "",
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
       "SoundInfo": {
@@ -333,7 +328,6 @@
       "Velocity": 30,
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
-      "Name": "",
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
       "SoundInfo": {
@@ -363,7 +357,6 @@
       "Velocity": 30,
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
-      "Name": "",
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
       "SoundInfo": {
@@ -393,7 +386,6 @@
       "Velocity": 30,
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0xFFC700",
-      "Name": "",
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
       "SoundInfo": {

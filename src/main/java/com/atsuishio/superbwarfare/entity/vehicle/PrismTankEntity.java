@@ -230,6 +230,9 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @OnlyIn(Dist.CLIENT)
     @Override
     public Component firstPersonAmmoComponent(GunData data, Player player) {
-        return Component.translatable(data.compute().name, (int) (25 + data.heat.get()) + " " + "°C");
+        var name = data.compute().name;
+        if (name == null || name.isBlank()) return Component.empty();
+
+        return Component.translatable(name, (int) (25 + data.heat.get()) + " " + "°C");
     }
 }

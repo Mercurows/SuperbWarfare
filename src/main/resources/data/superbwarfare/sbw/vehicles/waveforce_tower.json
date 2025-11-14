@@ -25,7 +25,6 @@
       "Damage": 350,
       "Spread": 0,
       "ShootAnimationTime": 5,
-      "Name": "",
       "AmmoType": "FE",
       "AmmoCostPerShoot": 95000,
       "ShootPos": {
@@ -35,11 +34,7 @@
       },
       "SoundRadius": 10,
       "SoundInfo": {
-        "Fire1P": null,
-        "Fire3P": "superbwarfare:waveforce_tower_fire",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
-        "Change": null
+        "Fire3P": "superbwarfare:waveforce_tower_fire"
       }
     }
   },

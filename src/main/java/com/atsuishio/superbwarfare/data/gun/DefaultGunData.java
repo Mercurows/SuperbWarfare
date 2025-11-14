@@ -329,7 +329,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("CrosshairColor")
     public ModColor crosshairColor = new ModColor();
     @SerializedName("Name")
-    public String name = "superbwarfare.gun.default";
+    public String name;
 
     @Override
     public void limit() {

@@ -26,7 +26,6 @@
       "Damage": 15,
       "Spread": 0,
       "ShootAnimationTime": 3,
-      "Name": "",
       "AmmoType": "FE",
       "AmmoCostPerShoot": 4500,
       "ShootPos": {
@@ -36,11 +35,7 @@
       },
       "SoundRadius": 6,
       "SoundInfo": {
-        "Fire1P": null,
-        "Fire3P": "superbwarfare:laser_tower_shoot",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
-        "Change": null
+        "Fire3P": "superbwarfare:laser_tower_shoot"
       }
     }
   },

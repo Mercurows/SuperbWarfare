@@ -16,10 +16,7 @@
       "IsArmorPiercingProjectile": true,
       "Spread": 0.5,
       "SoundInfo": {
-        "Fire1P": null,
         "Fire3P": "superbwarfare:medium_rocket_fire",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
         "ReloadEnd": "ty63_reload"
       },
       "SoundRadius": 4
@@ -33,10 +30,7 @@
       "IsHighExplosiveProjectile": true,
       "Spread": 0.5,
       "SoundInfo": {
-        "Fire1P": null,
         "Fire3P": "superbwarfare:medium_rocket_fire",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
         "ReloadEnd": "ty63_reload"
       },
       "SoundRadius": 4
@@ -51,10 +45,7 @@
       "ClusterMunitionsSize": 12,
       "Spread": 0.5,
       "SoundInfo": {
-        "Fire1P": null,
         "Fire3P": "superbwarfare:medium_rocket_fire",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
         "ReloadEnd": "ty63_reload"
       },
       "SoundRadius": 4
