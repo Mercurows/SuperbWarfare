@@ -2246,6 +2246,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getSelectedWeapon(int seatIndex) {
         var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
+        if (seatIndex < 0 || seatIndex >= selectedWeapon.size()) return -1;
+
         return selectedWeapon.get(seatIndex);
     }
 

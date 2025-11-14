@@ -12,11 +12,7 @@
       "MaxPitch": 74,
       "CameraPos": {
         "Transform": "Barrel",
-        "ZoomPosition": [
-          -0.4,
-          0.4,
-          0
-        ],
+        "ZoomPosition": [-0.4, 0.4, 0],
         "Direction": "Barrel"
       },
       "Weapons": ["Cannon", "MainMachineGun", "Missile"],
@@ -355,7 +351,8 @@
     "@superbwarfare:mortar_shell * 1.1",
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
-    "All - 8"
+    "All - 8",
+    "$entity.getSourceAngle(source, 0.4) * damage"
   ],
   "VehicleContainerType": "Medium",
   "DestroyInfo": {

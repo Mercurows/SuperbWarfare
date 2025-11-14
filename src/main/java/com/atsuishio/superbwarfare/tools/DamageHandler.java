@@ -180,7 +180,7 @@ public class DamageHandler {
     }
 
     public static MutableComponent getDamageInfo(VehicleEntity vehicle, DamageSource source, float damage) {
-        var detailedDamageResult = vehicle.getDamageModifier().matchResult(source, damage);
+        var detailedDamageResult = vehicle.getDamageModifier().matchResult(vehicle, source, damage);
         float finalDamage = detailedDamageResult.isEmpty() ? damage : detailedDamageResult.getLast().damage();
 
         var details = Component.empty()

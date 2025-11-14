@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -75,12 +74,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(4 + ClientMouseHandler.custom3pDistanceLerp, 1, 1);
-    }
-
-    @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 0.4f) * damage);
     }
 
     @Override

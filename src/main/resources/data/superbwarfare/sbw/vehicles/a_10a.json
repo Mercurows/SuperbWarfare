@@ -37,7 +37,8 @@
     "@superbwarfare:gun_grenade * 1.5",
     "@#superbwarfare:at_rocket * 3",
     "All * 0.75",
-    "All - 7"
+    "All - 7",
+    "$entity.getSourceAngle(source, 0.25) * damage * (entity.getHealth() > 0.1 ? 0.4 : 0.05)"
   ],
   "RotateOffsetHeight": 2.375,
   "DestroyInfo": {

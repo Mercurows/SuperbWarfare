@@ -33,7 +33,8 @@
     "@superbwarfare:c4 * 10",
     "@superbwarfare:gun_grenade * 3",
     "@superbwarfare:cannon_shell * 3",
-    "All - 12"
+    "All - 12",
+    "$entity.getSourceAngle(source, 3) * damage"
   ],
   "VehicleContainerType": "Empty",
   "DestroyInfo": {

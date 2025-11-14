@@ -43,7 +43,7 @@ public abstract class DestroyableProjectile extends FastThrowableProjectile impl
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
-        amount = DAMAGE_MODIFIER.compute(source, amount);
+        amount = DAMAGE_MODIFIER.compute(this, source, amount);
         this.entityData.set(HEALTH, this.entityData.get(HEALTH) - amount);
 
         return super.hurt(source, amount);

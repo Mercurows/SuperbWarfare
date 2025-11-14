@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
@@ -44,12 +43,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(3 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
-    }
-
-    @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 0.4f) * damage);
     }
 
     @Override

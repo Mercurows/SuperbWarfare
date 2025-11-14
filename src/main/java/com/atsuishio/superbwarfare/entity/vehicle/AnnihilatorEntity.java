@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -175,12 +174,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Weapo
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         entityData.set(YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F));
         entityData.set(PITCH, Mth.wrapDegrees((float) (-(Mth.atan2(d1, d3) * 57.2957763671875))));
-    }
-
-    @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 3) * damage);
     }
 
     @Override

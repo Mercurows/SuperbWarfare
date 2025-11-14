@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.Agm65Weapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.Mk82Weapon;
@@ -147,12 +146,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.entityData.set(LOADED_ROCKET, compound.getInt("LoadedRocket"));
         this.entityData.set(LOADED_BOMB, compound.getInt("LoadedBomb"));
         this.entityData.set(LOADED_MISSILE, compound.getInt("LoadedMissile"));
-    }
-
-    @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage * (getHealth() > 0.1f ? 0.4f : 0.05f));
     }
 
     @Override
