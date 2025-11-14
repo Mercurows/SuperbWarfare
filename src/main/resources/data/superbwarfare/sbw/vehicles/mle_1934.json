@@ -55,9 +55,7 @@
           [-0.489, 0, 6.53125], [0.489, 0, 6.53125]
         ],
         "BoundUpWithAmmoAmount": true,
-        "Directions": [
-          "Barrel"
-        ]
+        "Directions": ["Barrel"]
       }
     }
   },

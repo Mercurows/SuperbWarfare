@@ -3,14 +3,12 @@ package com.atsuishio.superbwarfare.data.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.data.IDBasedData;
-import com.atsuishio.superbwarfare.data.ModColor;
-import com.atsuishio.superbwarfare.data.ObjectToList;
-import com.atsuishio.superbwarfare.data.StringToObject;
+import com.atsuishio.superbwarfare.data.*;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -21,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -145,7 +144,38 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public float rotateOffsetHeight = 0;
 
     @SerializedName("Weapons")
-    public Map<String, DefaultGunData> weapons = Map.of();
+    protected Map<String, JsonObject> weapons = Map.of();
+
+    private transient Map<String, DefaultGunData> processedWeapons;
+
+    public Map<String, DefaultGunData> weapons() {
+        if (processedWeapons != null) return processedWeapons;
+
+        var map = new HashMap<String, DefaultGunData>();
+
+        for (var entry : weapons.entrySet()) {
+            var value = entry.getValue();
+            if (value == null) continue;
+            value = value.deepCopy();
+
+            if (value.get("Template") instanceof JsonPrimitive primitive && primitive.isString()) {
+                value.remove("Template");
+                var templateValue = weapons.get(primitive.getAsString());
+                if (templateValue != null) {
+                    var newValue = templateValue.deepCopy();
+                    for (var kv : value.entrySet()) {
+                        newValue.add(kv.getKey(), kv.getValue());
+                    }
+                    value = newValue;
+                }
+            }
+
+            map.put(entry.getKey(), DataLoader.GSON.fromJson(value, DefaultGunData.class));
+        }
+
+        processedWeapons = Collections.unmodifiableMap(map);
+        return processedWeapons;
+    }
 
     /**
      * 碰撞等级，范围是0~4

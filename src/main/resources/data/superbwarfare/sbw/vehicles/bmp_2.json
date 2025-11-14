@@ -229,7 +229,7 @@
       "SoundRadius": 12,
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_9m113.png"
     },
-    "MG1": {
+    "@MG": {
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:projectile",
@@ -258,150 +258,53 @@
       },
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
     },
+    "MG1": {
+      "Template": "@MG",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "Positions": [[1.803125, 1.9765625, -0.8125]],
+        "Directions": ["Passenger"]
+      }
+    },
     "MG2": {
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Projectile": "superbwarfare:projectile",
-      "DefaultZoom": 2,
-      "RPM": 600,
-      "Damage": 9.5,
-      "Spread": 0.5,
-      "BypassesArmor": 0.3,
-      "Velocity": 30,
-      "Crosshair": "@VehicleCommonGun",
-      "CrosshairColor": "0xFFC700",
-      "HeatPerShoot": 4,
-      "NaturalCooldown": 1,
-      "SoundInfo": {
-        "Fire1P": "superbwarfare:coax_fire_1p",
-        "Fire3P": "superbwarfare:m_60_fire_3p",
-        "Fire3PFar": "superbwarfare:m_60_far",
-        "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
-      },
-      "SoundRadius": 12,
-      "AmmoType": "@RifleAmmo",
+      "Template": "@MG",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[-1.803125, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
-      },
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      }
     },
     "MG3": {
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Projectile": "superbwarfare:projectile",
-      "DefaultZoom": 2,
-      "RPM": 600,
-      "Damage": 9.5,
-      "Spread": 0.5,
-      "BypassesArmor": 0.3,
-      "Velocity": 30,
-      "Crosshair": "@VehicleCommonGun",
-      "CrosshairColor": "0xFFC700",
-      "HeatPerShoot": 4,
-      "NaturalCooldown": 1,
-      "SoundInfo": {
-        "Fire1P": "superbwarfare:coax_fire_1p",
-        "Fire3P": "superbwarfare:m_60_fire_3p",
-        "Fire3PFar": "superbwarfare:m_60_far",
-        "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
-      },
-      "SoundRadius": 12,
-      "AmmoType": "@RifleAmmo",
+      "Template": "@MG",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[1.815625, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
-      },
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      }
     },
     "MG4": {
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Projectile": "superbwarfare:projectile",
-      "DefaultZoom": 2,
-      "RPM": 600,
-      "Damage": 9.5,
-      "Spread": 0.5,
-      "BypassesArmor": 0.3,
-      "Velocity": 30,
-      "Crosshair": "@VehicleCommonGun",
-      "CrosshairColor": "0xFFC700",
-      "HeatPerShoot": 4,
-      "NaturalCooldown": 1,
-      "SoundInfo": {
-        "Fire1P": "superbwarfare:coax_fire_1p",
-        "Fire3P": "superbwarfare:m_60_fire_3p",
-        "Fire3PFar": "superbwarfare:m_60_far",
-        "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
-      },
-      "SoundRadius": 12,
-      "AmmoType": "@RifleAmmo",
+      "Template": "@MG",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[-1.815625, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
-      },
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      }
     },
     "MG5": {
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Projectile": "superbwarfare:projectile",
-      "DefaultZoom": 2,
-      "RPM": 600,
-      "Damage": 9.5,
-      "Spread": 0.5,
-      "BypassesArmor": 0.3,
-      "Velocity": 30,
-      "Crosshair": "@VehicleCommonGun",
-      "CrosshairColor": "0xFFC700",
-      "HeatPerShoot": 4,
-      "NaturalCooldown": 1,
-      "SoundInfo": {
-        "Fire1P": "superbwarfare:coax_fire_1p",
-        "Fire3P": "superbwarfare:m_60_fire_3p",
-        "Fire3PFar": "superbwarfare:m_60_far",
-        "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
-      },
-      "SoundRadius": 12,
-      "AmmoType": "@RifleAmmo",
+      "Template": "@MG",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[0.6875, 1.6015625, -4.1]],
         "Directions": ["Passenger"]
-      },
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      }
     },
     "MG6": {
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Projectile": "superbwarfare:projectile",
-      "DefaultZoom": 2,
-      "RPM": 600,
-      "Damage": 9.5,
-      "Spread": 0.5,
-      "BypassesArmor": 0.3,
-      "Velocity": 30,
-      "Crosshair": "@VehicleCommonGun",
-      "CrosshairColor": "0xFFC700",
-      "HeatPerShoot": 4,
-      "NaturalCooldown": 1,
-      "SoundInfo": {
-        "Fire1P": "superbwarfare:coax_fire_1p",
-        "Fire3P": "superbwarfare:m_60_fire_3p",
-        "Fire3PFar": "superbwarfare:m_60_far",
-        "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
-      },
-      "SoundRadius": 12,
-      "AmmoType": "@RifleAmmo",
+      "Template": "@MG",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[-1.50625, 1.9765625, -3.0625]],
         "Directions": ["Passenger"]
-      },
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      }
     }
   },
   "HUDColor": "0xFFC700",

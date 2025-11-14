@@ -151,11 +151,12 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         var result = super.interact(player, hand);
         if (result != InteractionResult.PASS) return result;
 
-        ItemStack stack = player.getMainHandItem();
+        var stack = player.getMainHandItem();
+        var lookingObb = OBB.getLookingObb(player, player.entityInteractionRange());
 
         if (stack.isEmpty()) {
             if (player.isShiftKeyDown()) {
-                if (OBB.getLookingObb(player, player.entityInteractionRange()) == hoe1) {
+                if (lookingObb == hoe1) {
                     if (player.level() instanceof ServerLevel serverLevel) {
                         entityData.set(BODY_YAW, entityData.get(BODY_YAW) + 0.2f * (float) interactionTick);
                         interactionTick++;
@@ -167,7 +168,8 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
                     }
                     player.swing(InteractionHand.MAIN_HAND);
                 }
-                if (OBB.getLookingObb(player, player.entityInteractionRange()) == hoe2) {
+
+                if (lookingObb == hoe2) {
                     if (player.level() instanceof ServerLevel serverLevel) {
                         entityData.set(BODY_YAW, entityData.get(BODY_YAW) - 0.2f * (float) interactionTick);
                         interactionTick++;
@@ -179,40 +181,41 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
                     }
                     player.swing(InteractionHand.MAIN_HAND);
                 }
+            } else {
+                // 取出炮弹
+                player.swing(InteractionHand.MAIN_HAND);
+
+                if (level() instanceof ServerLevel serverLevel && cooldown == 0) {
+                    for (int i = 0; i < this.barrel.length; i++) {
+                        if (lookingObb == this.barrel[i] && !items.get(i).isEmpty()) {
+                            player.addItem(items.get(i).copyWithCount(1));
+                            Vec3 vec3 = new Vec3(this.barrel[i].center());
+                            serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+                            cooldown = 5;
+                            items.set(i, ItemStack.EMPTY);
+                            setChanged();
+                        }
+                    }
+                }
             }
 
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == yawController) {
+            if (lookingObb == yawController) {
                 interactEvent(new Vec3(yawController.center()));
                 entityData.set(TARGET_YAW, Mth.clamp(entityData.get(TARGET_YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -getTurretMaxYaw(), -getTurretMinYaw()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == pitchController) {
+
+            if (lookingObb == pitchController) {
                 interactEvent(new Vec3(pitchController.center()));
                 entityData.set(TARGET_PITCH, Mth.clamp(entityData.get(TARGET_PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -getTurretMaxPitch(), -getTurretMinPitch()));
                 player.swing(InteractionHand.MAIN_HAND);
-            }
-
-            // 取出炮弹
-
-            if (player.isShiftKeyDown()) {
-                for (int i = 0; i < this.barrel.length; i++) {
-                    if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && !items.get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
-                        player.addItem(items.get(i).copyWithCount(1));
-                        Vec3 vec3 = new Vec3(this.barrel[i].center());
-                        serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
-                        cooldown = 5;
-                        items.set(i, ItemStack.EMPTY);
-                        setChanged();
-                    }
-                    player.swing(InteractionHand.MAIN_HAND);
-                }
             }
 
         }
 
         if (stack.getItem() instanceof MediumRocketItem) {
             for (int i = 0; i < this.barrel.length; i++) {
-                if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
+                if (lookingObb == this.barrel[i] && items.get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
                     this.setItem(i, stack.copyWithCount(1));
                     if (!player.isCreative()) {
                         stack.shrink(1);
@@ -226,26 +229,27 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
             }
         }
 
-        if (stack.is(ModTags.Items.TOOLS_CROWBAR) || stack.is(Items.FLINT_AND_STEEL)) {
+        if (cooldown == 0 && (stack.is(ModTags.Items.TOOLS_CROWBAR) || stack.is(Items.FLINT_AND_STEEL))) {
             // 发射
             if (lookingAtBarrel(player)) {
                 // 精准发射
                 for (int i = 0; i < this.barrel.length; i++) {
-                    if (OBB.getLookingObb(player, player.entityInteractionRange()) == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
+                    if (lookingObb == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem) {
                         shoot(player, i);
                         items.set(i, ItemStack.EMPTY);
                         setChanged();
-                        player.swing(InteractionHand.MAIN_HAND);
                     }
-                    player.swing(InteractionHand.MAIN_HAND);
                 }
+
+                player.swing(InteractionHand.MAIN_HAND);
             } else {
                 // 顺序发射
                 for (int i = 0; i < 12; i++) {
-                    if (items.get(i).getItem() instanceof MediumRocketItem && cooldown == 0) {
+                    if (items.get(i).getItem() instanceof MediumRocketItem) {
                         shoot(player, i);
                         items.set(i, ItemStack.EMPTY);
                         setChanged();
+
                         player.swing(InteractionHand.MAIN_HAND);
                         return InteractionResult.SUCCESS;
                     }
@@ -257,18 +261,21 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
     }
 
     public boolean lookingAtBarrel(Player player) {
+        var lookingObb = OBB.getLookingObb(player, player.entityInteractionRange());
+
         for (int i = 0; i < 12; i++) {
-            if (OBB.getLookingObb(player, player.entityInteractionRange()) == barrel[i]) {
+            if (lookingObb == barrel[i]) {
                 return true;
             }
         }
+
         return false;
     }
 
     public void interactEvent(Vec3 vec3) {
         if (level() instanceof ServerLevel serverLevel) {
             interactionTick++;
-            if (cooldown == 0) {
+            if (cooldown <= 0) {
                 cooldown = 6;
                 serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.HAND_WHEEL_ROT.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.05f + 0.975f);
             }
@@ -282,12 +289,7 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
             return;
         }
 
-        var gunData = switch (rocketItem.type) {
-            case AP -> getGunData("AP");
-            case HE -> getGunData("HE");
-            case CM -> getGunData("CM");
-        };
-
+        var gunData = getGunData(rocketItem.type.toString());
         if (gunData == null) return;
 
         float shootVelocity = projectileVelocity(gunData);
@@ -297,31 +299,35 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         OBB obb = this.barrel[i];
         Vec3 shootPos = new Vec3(obb.center());
 
-        MediumRocketEntity entityToSpawn = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), shootPos.x, shootPos.y, shootPos.z, level(),
-                (float) gunData.compute().damage, (float) gunData.compute().explosionRadius, (float) gunData.compute().explosionDamage,
-                0, 0, rocketItem.type, gunData.compute().clusterMunitionsSize, shootGravity);
+        var computed = gunData.compute();
+        var entityToSpawn = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), shootPos.x, shootPos.y, shootPos.z, level(),
+                (float) computed.damage, (float) computed.explosionRadius, (float) computed.explosionDamage,
+                0, 0, rocketItem.type, computed.clusterMunitionsSize, shootGravity);
 
         entityToSpawn.setOwner(player);
-        entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y, getBarrelVector(1).z, shootVelocity, shootSpread);
+
+        var barrelVector = getBarrelVector(1);
+        entityToSpawn.shoot(barrelVector.x, barrelVector.y, barrelVector.z, shootVelocity, shootSpread);
         level().addFreshEntity(entityToSpawn);
 
-        level().playSound(null, shootPos.x, shootPos.y, shootPos.z, gunData.compute().soundInfo.fire3P, SoundSource.PLAYERS, (float) gunData.compute().soundRadius, random.nextFloat() * 0.1f + 0.95f);
+        level().playSound(null, shootPos.x, shootPos.y, shootPos.z, computed.soundInfo.fire3P, SoundSource.PLAYERS, (float) computed.soundRadius, random.nextFloat() * 0.1f + 0.95f);
 
-        AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(getBarrelVector(1).scale(-2)).expandTowards(getBarrelVector(1).scale(-5));
+        AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(barrelVector.scale(-2)).expandTowards(barrelVector.scale(-5));
 
+        // 尾焰
         for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
                 target -> target != this && target != getFirstPassenger() && target.getVehicle() == null)
         ) {
             entity.hurt(ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), player), 30 - 2 * entity.distanceTo(this));
             double force = 4 - 0.7 * entity.distanceTo(this);
-            entity.push(-force * getBarrelVector(1).x, -force * getBarrelVector(1).y, -force * getBarrelVector(1).z);
+            entity.push(-force * barrelVector.x, -force * barrelVector.y, -force * barrelVector.z);
         }
 
         cooldown = 10;
         if (level() instanceof ServerLevel serverLevel) {
-            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), shootPos.add(getBarrelVector(1).scale(-0.5)), serverLevel, this);
-            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1).scale(-1), shootPos.add(getBarrelVector(1).scale(-1.5)), serverLevel, this);
-            ParticleTool.spawnMediumCannonMuzzleParticles(getBarrelVector(1), shootPos.add(getBarrelVector(1).scale(1.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector.scale(-1), shootPos.add(barrelVector.scale(-0.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector.scale(-1), shootPos.add(barrelVector.scale(-1.5)), serverLevel, this);
+            ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector, shootPos.add(barrelVector.scale(1.5)), serverLevel, this);
         }
 
         ShakeClientMessage.sendToNearbyPlayers(this, 8, 8, 10, 20);

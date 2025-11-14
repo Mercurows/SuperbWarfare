@@ -293,21 +293,27 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("SoundInfo")
     public SoundInfo soundInfo = new SoundInfo();
 
+    @ServerOnly
     @SerializedName("ShootAnimationTime")
-    public int shootAnimationTime = 3;
+    public int shootAnimationTime = 0;
 
+    @ServerOnly
     @SerializedName("IsAntiAirProjectile")
     public boolean isAntiAirProjectile = false;
 
+    @ServerOnly
     @SerializedName("IsClusterMunitionsProjectile")
     public boolean isClusterMunitionsProjectile = false;
 
+    @ServerOnly
     @SerializedName("ClusterMunitionsSize")
     public int clusterMunitionsSize = 10;
 
+    @ServerOnly
     @SerializedName("IsArmorPiercingProjectile")
     public boolean isArmorPiercingProjectile = false;
 
+    @ServerOnly
     @SerializedName("IsHighExplosiveProjectile")
     public boolean isHighExplosiveProjectile = false;
 

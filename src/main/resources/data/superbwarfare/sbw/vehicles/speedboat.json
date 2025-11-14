@@ -5,11 +5,7 @@
   "Seats": [
     {
       "Transform": "Vehicle",
-      "Position": [
-        0,
-        0.6,
-        -0.2
-      ],
+      "Position": [0, 0.6, -0.2],
       "MinPitch": -25,
       "MaxPitch": 50,
       "MinYaw": -105,
@@ -24,41 +20,25 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [
-        -0.8,
-        0.35,
-        -1.2
-      ],
+      "Position": [-0.8, 0.35, -1.2],
       "MinYaw": -90,
       "MaxYaw": 90
     },
     {
       "Transform": "Vehicle",
-      "Position": [
-        0.8,
-        0.35,
-        -1.2
-      ],
+      "Position": [0.8, 0.35, -1.2],
       "MinYaw": -90,
       "MaxYaw": 90
     },
     {
       "Transform": "Vehicle",
-      "Position": [
-        -0.8,
-        0.35,
-        -2.2
-      ],
+      "Position": [-0.8, 0.35, -2.2],
       "MinYaw": -90,
       "MaxYaw": 90
     },
     {
       "Transform": "Vehicle",
-      "Position": [
-        0.8,
-        0.35,
-        -2.2
-      ],
+      "Position": [0.8, 0.35, -2.2],
       "MinYaw": -90,
       "MaxYaw": 90
     }
