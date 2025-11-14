@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.mixin.ExplosionAccess;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -38,16 +39,20 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -713,6 +718,42 @@ public class LivingEventHandler {
                 && vehicle.isEnclosed(vehicle.getSeatIndex(event.getEntity()))
         ) {
             event.setResult(Event.Result.DENY);
+        }
+    }
+
+    /**
+     * 取消原版爆炸对载具的影响，改为单独计算
+     * Code based on YWZJ-Vehicle
+     */
+    @SubscribeEvent
+    public static void onExplosionDetonate(ExplosionEvent.Detonate event) {
+        var explosion = event.getExplosion();
+        if (explosion instanceof CustomExplosion) return;
+
+        Iterator<Entity> iterator = event.getAffectedEntities().iterator();
+        while (iterator.hasNext()) {
+            Entity entity = iterator.next();
+            if (entity instanceof VehicleEntity) {
+                iterator.remove();
+
+                Vec3 explosionPos = explosion.getPosition();
+                float explosionRadius = ((ExplosionAccess) explosion).superbwarfare$getRadius() * 2.0F;
+                if (!entity.ignoreExplosion()) {
+                    double distanceRatio = Math.sqrt(entity.distanceToSqr(explosionPos)) / explosionRadius;
+                    if (distanceRatio <= 1.0D) {
+                        double dx = entity.getX() - explosionPos.x;
+                        double dy = entity.getEyeY() - explosionPos.y;
+                        double dz = entity.getZ() - explosionPos.z;
+                        double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                        if (distance != 0.0D) {
+                            double visibilityFactor = Explosion.getSeenPercent(explosionPos, entity);
+                            double impactStrength = (1.0D - distanceRatio) * visibilityFactor;
+                            float damage = (float) ((int) ((impactStrength * impactStrength + impactStrength) / 2.0D * 7.0D * explosionRadius + 1.0D));
+                            entity.hurt(explosion.getDamageSource(), damage);
+                        }
+                    }
+                }
+            }
         }
     }
 }
