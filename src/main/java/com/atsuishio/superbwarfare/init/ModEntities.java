@@ -47,7 +47,7 @@ public class ModEntities {
             EntityType.Builder.<Tm62Entity>of(Tm62Entity::new, MobCategory.MISC).setTrackingRange(32).setUpdateInterval(1).sized(0.5f, 0.15f));
     public static final RegistryObject<EntityType<Ptkm1rEntity>> PTKM_1R = register("ptkm_1r",
             EntityType.Builder.<Ptkm1rEntity>of(Ptkm1rEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.2f, 0.7f));
-    public static final RegistryObject<EntityType<C4Entity>> C_4 = register("c4",
+    public static final RegistryObject<EntityType<C4Entity>> C4 = register("c4",
             EntityType.Builder.<C4Entity>of(C4Entity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f));
 
     public static final RegistryObject<EntityType<MedicalKitEntity>> MEDICAL_KIT = register("medical_kit",

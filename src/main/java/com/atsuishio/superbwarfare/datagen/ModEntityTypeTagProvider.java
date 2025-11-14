@@ -63,6 +63,26 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.RPG_ROCKET_STANDARD.get(),
                 ModEntities.RPG_ROCKET_TBG.get()
         );
+
+        this.tag(ModTags.EntityTypes.SEEK_BLACKLIST).add(
+                        EntityType.ITEM,
+                        EntityType.ARMOR_STAND,
+                        EntityType.EXPERIENCE_ORB,
+                        EntityType.ITEM_DISPLAY,
+                        EntityType.FALLING_BLOCK,
+                        EntityType.ITEM_FRAME,
+                        EntityType.FIREWORK_ROCKET,
+                        EntityType.GLOW_ITEM_FRAME,
+                        EntityType.AREA_EFFECT_CLOUD,
+                        ModEntities.CLAYMORE.get(),
+                        ModEntities.C4.get()
+                ).addOptional(new ResourceLocation("touhou_little_maid", "power_point"))
+                .addOptional(new ResourceLocation("evilcraft", "vengeance_spirit"))
+                .addOptional(new ResourceLocation("mts", "builder_rendering"))
+                .addOptional(new ResourceLocation("create", "carriage_contraption"))
+                .addOptional(new ResourceLocation("create", "stationary_contraption"))
+                .addOptional(new ResourceLocation("create", "gantry_contraption"))
+                .addOptional(new ResourceLocation("create", "super_glue"));
     }
 
     public static TagKey<EntityType<?>> forgeTag(String name) {

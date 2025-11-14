@@ -91,7 +91,7 @@ public class C4BombItem extends Item implements DispenserLaunchable {
                 Position position = DispenserBlock.getDispensePosition(pSource);
                 Direction direction = pSource.getBlockState().getValue(DispenserBlock.FACING);
 
-                var entity = new C4Entity(ModEntities.C_4.get(), level);
+                var entity = new C4Entity(ModEntities.C4.get(), level);
                 entity.setPos(position.x(), position.y(), position.z());
 
                 var pX = direction.getStepX();

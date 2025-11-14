@@ -48,6 +48,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         var gunData = getGunData(0);
         if (gunData == null) return InteractionResult.SUCCESS;
+
         ItemStack stack = player.getMainHandItem();
 
         if (stack.getItem() instanceof ArtilleryIndicator indicator) {
@@ -65,6 +66,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             setTarget(player.getMainHandItem(), player, "Main");
             return InteractionResult.SUCCESS;
         }
+
         if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isShiftKeyDown()) {
             setTarget(player.getOffhandItem(), player, "Main");
             return InteractionResult.SUCCESS;
@@ -121,7 +123,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         if (compound.contains("ShootVecX") && compound.contains("ShootVecY") && compound.contains("ShootVecZ")) {
             this.entityData.set(SHOOT_VEC, new Vector3f(compound.getFloat("ShootVecX"), compound.getFloat("ShootVecY"), compound.getFloat("ShootVecZ")));
         }
-
         if (compound.contains("Depressed")) {
             this.entityData.set(DEPRESSED, compound.getBoolean("Depressed"));
         }
@@ -135,7 +136,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     public void setTarget(ItemStack stack, Entity entity, String weaponName) {
         var data = getGunData(weaponName);
-
         if (data == null) return;
 
         double targetX = stack.getOrCreateTag().getDouble("TargetX");
