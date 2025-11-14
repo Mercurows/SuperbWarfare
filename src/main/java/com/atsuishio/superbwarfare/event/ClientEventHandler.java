@@ -985,7 +985,7 @@ public class ClientEventHandler {
         NetworkRegistry.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockedEntity != null ? lockedEntity.getUUID() : null));
         fireRecoilTime = 10;
 
-        // 真实后座（
+        // 真实后坐（
         var computed = data.compute();
         if (computed.recoil != 0) {
             player.setDeltaMovement(player.getDeltaMovement().add(player.getViewVector(1).scale(-computed.recoil)));
@@ -1738,14 +1738,14 @@ public class ClientEventHandler {
             }
         }
 
-        // 水平后座
+        // 水平后坐
         float newYaw = player.getYRot() - (float) (0.6 * recoilHorizon * pose * times * (0.5 + fireSpread) * recoil * (4 / (customWeight + 4)) * gripRecoilX * rpm);
         player.setYRot(newYaw);
         player.yRotO = player.getYRot();
 
         double sinRes = 0;
 
-        // 竖直后座
+        // 竖直后坐
         if (0 < recoilTime && recoilTime < 0.5) {
             float newPitch = (float) (player.getXRot() - 0.02f * gunRecoilX * times * recoil * (4 / (customWeight + 4)) * gripRecoilY * rpm);
             player.setXRot(newPitch);

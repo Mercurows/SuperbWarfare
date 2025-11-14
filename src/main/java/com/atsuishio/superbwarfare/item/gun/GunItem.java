@@ -573,9 +573,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             }
         }
 
-        // 真实后座（
+        // 真实后坐（
         if (shooter != null && computed.recoil != 0) {
-            shooter.setDeltaMovement(shooter.getDeltaMovement().add(shooter.getViewVector(1).scale(-computed.recoil)));
+            shooter.getRootVehicle().setDeltaMovement(shooter.getDeltaMovement().add(shooter.getViewVector(1).scale(-computed.recoil)));
         }
 
         data.clearTempModifications();
