@@ -38,7 +38,7 @@ public record EditMessage(int msgType, boolean add, boolean isVehicle) implement
     public static void pressAction(Player player, EditMessage message) {
         if (player == null) return;
         if (message.isVehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
-            var data = vehicle.getGunData(player, vehicle.getSelectedWeapon(vehicle.getSeatIndex(player)));
+            var data = vehicle.getGunData(player);
             if (data == null) return;
             if (message.msgType != 5) return;
 

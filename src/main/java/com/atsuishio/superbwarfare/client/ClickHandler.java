@@ -325,7 +325,7 @@ public class ClickHandler {
 
             // 玩家位于载具上时，处理切换弹种
             if (player.getVehicle() instanceof VehicleEntity vehicle) {
-                var data = vehicle.getGunData(player, vehicle.getSelectedWeapon(vehicle.getSeatIndex(player)));
+                var data = vehicle.getGunData(player);
                 if (data != null && data.getDefault().getAmmoConsumers().size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
                         PacketDistributor.sendToServer(new EditMessage(5, false, true));

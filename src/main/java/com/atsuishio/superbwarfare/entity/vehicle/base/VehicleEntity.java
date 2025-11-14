@@ -215,6 +215,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getSeat(getSeatIndex(passenger));
     }
 
+    /**
+     * 获取载具座位上选中的武器
+     *
+     * @param seatIndex 座位号
+     * @return 武器数据
+     */
     public @Nullable GunData getGunData(int seatIndex) {
         if (seatIndex < 0) return null;
         var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
@@ -222,6 +228,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getGunData(seatIndex, selectedWeapon.get(seatIndex));
     }
 
+    /**
+     * 获取载具座位上指定编号的武器
+     *
+     * @param seatIndex   座位号
+     * @param weaponIndex 武器号
+     * @return 武器数据
+     */
     public @Nullable GunData getGunData(int seatIndex, int weaponIndex) {
         var seat = getSeat(seatIndex);
         if (seat == null) return null;
@@ -232,10 +245,33 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getGunData(weapons.get(weaponIndex));
     }
 
+    /**
+     * 获取载具的乘客座位上指定编号的武器
+     *
+     * @param passenger   乘客
+     * @param weaponIndex 武器号
+     * @return 武器数据
+     */
     public @Nullable GunData getGunData(Entity passenger, int weaponIndex) {
         return getGunData(getSeatIndex(passenger), weaponIndex);
     }
 
+    /**
+     * 获取载具的乘客座位上选中的武器
+     *
+     * @param passenger 乘客
+     * @return 武器数据
+     */
+    public @Nullable GunData getGunData(Entity passenger) {
+        return getGunData(passenger, this.getSelectedWeapon(this.getSeatIndex(passenger)));
+    }
+
+    /**
+     * 根据名称获取武器
+     *
+     * @param name 武器名称
+     * @return 武器数据
+     */
     public @Nullable GunData getGunData(String name) {
         return getGunDataMap().get(name);
     }
@@ -1568,7 +1604,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // 计算减伤后的伤害
         float computedAmount = amount;
         if (!source.is(ModTags.DamageTypes.BYPASSES_VEHICLE)) {
-            computedAmount = this.getDamageModifier().compute(source, amount);
+            computedAmount = this.getDamageModifier().compute(this, source, amount);
         }
 
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
