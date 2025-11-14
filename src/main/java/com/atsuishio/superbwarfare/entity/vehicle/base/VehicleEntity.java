@@ -1798,7 +1798,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
                 var newData = kv.getValue().copy();
-                newData.tick(this, selectedWeapons.contains(kv.getKey()));
+                newData.tick(this, true);
                 newMap.put(kv.getKey(), newData);
             }
             entityData.set(GUN_DATA_MAP, newMap);
