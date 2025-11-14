@@ -244,7 +244,7 @@ public class AircraftHud {
             float x = (float) pCross.x;
             float y = (float) pCross.y;
 
-            if (mc.options.getCameraType() == CameraType.FIRST_PERSON && !gunData.compute().crosshair.equals("@AirBomb")) {
+            if ((mc.options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && !gunData.compute().crosshair.equals("@AirBomb")) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
                 RenderSystem.enableBlend();
