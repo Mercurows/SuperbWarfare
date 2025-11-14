@@ -96,6 +96,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("SendHitParticles")
     public boolean sendHitParticles = true;
 
+    /**
+     * 住：由于脚本缓存的问题，该属性目前无法被computed()重写
+     */
     @ServerOnly
     @SerializedName("DamageModifiers")
     public ObjectToList<StringToObject<DamageModify>> damageModifiers = new ObjectToList<>();

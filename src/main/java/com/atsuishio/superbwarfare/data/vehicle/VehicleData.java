@@ -93,7 +93,8 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
     @SuppressWarnings("unchecked")
     public DamageModifier damageModifier() {
         var modifier = new DamageModifier();
-        var data = compute();
+        // TODO 是否考虑让该属性支持重写？
+        var data = getDefault();
 
         if (data.applyDefaultDamageModifiers) {
             modifier.addAll(DamageModifier.createDefaultModifier().toList());

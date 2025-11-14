@@ -4,9 +4,7 @@ import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.world.entity.EntityType;
@@ -56,19 +54,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
         return new ThirdPersonCameraPosition(7, 1, -2.7);
-    }
-
-    @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> {
-                    var entity = source.getDirectEntity();
-                    if (entity != null && entity.getType().is(ModTags.EntityTypes.AERIAL_BOMB)) {
-                        damage *= 2;
-                    }
-                    damage *= getHealth() > 0.1f ? 0.7f : 0.05f;
-                    return damage;
-                });
     }
 
     @Override

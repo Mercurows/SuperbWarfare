@@ -1615,7 +1615,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // 计算减伤后的伤害
         float computedAmount = amount;
         if (!source.is(ModTags.DamageTypes.BYPASSES_VEHICLE)) {
-            computedAmount = this.getDamageModifier().compute(source, amount);
+            computedAmount = this.getDamageModifier().compute(this, source, amount);
         }
 
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
@@ -2258,6 +2258,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getSelectedWeapon(int seatIndex) {
         var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
+        if (seatIndex < 0 || seatIndex >= selectedWeapon.size()) return -1;
+
         return selectedWeapon.getInt(seatIndex);
     }
 

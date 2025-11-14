@@ -6,11 +6,7 @@
     {
       "IsEnclosed": true,
       "Transform": "Vehicle",
-      "Position": [
-        0.834375,
-        1.65,
-        4.63
-      ],
+      "Position": [0.834375, 1.65, 4.63],
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -95,
@@ -19,11 +15,7 @@
     {
       "IsEnclosed": true,
       "Transform": "Vehicle",
-      "Position": [
-        -0.834375,
-        1.65,
-        4.63
-      ],
+      "Position": [-0.834375, 1.65, 4.63],
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -95,
@@ -68,7 +60,8 @@
     "@superbwarfare:rgo_grenade * 3",
     "@superbwarfare:hand_grenade * 2.5",
     "@superbwarfare:mortar_shell * 2",
-    "All - 4"
+    "All - 4",
+    "$entity.getSourceAngle(source, 0.25) * damage"
   ],
   "VehicleContainerType": "Huge",
   "DestroyInfo": {

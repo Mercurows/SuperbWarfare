@@ -11,8 +11,7 @@
         "Direction": "Barrel"
       },
       "Transform": "Turret",
-      "Position": [0.6669625, 0.07, 0.4776875
-      ],
+      "Position": [0.6669625, 0.07, 0.4776875],
       "Weapons": ["Cannon", "MachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
@@ -27,11 +26,7 @@
         "ZoomPosition": [0, 0.1, 0],
         "Direction": "WeaponStationBarrel"
       },
-      "Position": [
-        -0.75805625,
-        0.3,
-        -0.57275625
-      ],
+      "Position": [-0.75805625, 0.3, -0.57275625],
       "Weapons": ["PassengerMachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
@@ -40,11 +35,7 @@
     },
     {
       "Transform": "Turret",
-      "Position": [
-        0.86219375,
-        0.07,
-        -0.5696875
-      ],
+      "Position": [0.86219375, 0.07, -0.5696875],
       "Weapons": ["SwarmDrone"],
       "CanRotateBody": true,
       "MinPitch": -25,
@@ -285,7 +276,8 @@
     "@superbwarfare:gun_grenade * 1.25",
     "@superbwarfare:mortar_shell * 1.25",
     "@superbwarfare:tm_62 * 2.5",
-    "All - 9"
+    "All - 9",
+    "$entity.getSourceAngle(source, 0.3) * damage"
   ],
   "DestroyInfo": {
     "ParticleType": "Giant",
