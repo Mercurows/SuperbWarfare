@@ -84,7 +84,6 @@
           "Ammo": "superbwarfare:he_5_inches",
           "Override": {
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/he_shell.png",
-            "AmmoType": "superbwarfare:he_5_inches",
             "IsArmorPiercingProjectile": false,
             "IsHighExplosiveProjectile": true,
             "Velocity": 25,
