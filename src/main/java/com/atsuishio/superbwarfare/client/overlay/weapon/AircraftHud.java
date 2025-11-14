@@ -254,7 +254,6 @@ public class AircraftHud {
                 RenderSystem.setShaderColor(1, 1, 1, 1);
                 RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE2, x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
 
-
             } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
 
                 poseStack.pushPose();

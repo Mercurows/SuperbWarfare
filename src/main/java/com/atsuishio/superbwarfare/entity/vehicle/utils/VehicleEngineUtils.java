@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -54,7 +55,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() < energyCost) return;
+        if (vehicle.getEnergy() <= energyCost) return;
 
         if (passenger0 == null) {
             vehicle.setLeftInputDown(false);
@@ -175,7 +176,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() < energyCost) return;
+        if (vehicle.getEnergy() <= energyCost) return;
 
         if (passenger0 == null) {
             vehicle.setLeftInputDown(false);
@@ -356,7 +357,7 @@ public final class VehicleEngineUtils {
     }
 
     public static void helicopterEngine(VehicleEntity vehicle, EngineInfo.Helicopter engineInfo) {
-        int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
+        int energyCost = (int) engineInfo.energyCostRate;
         float powerAdd = engineInfo.increment;
         float powerReduce = engineInfo.decrement;
         float pitchSpeed = engineInfo.pitchSpeed;
@@ -496,7 +497,7 @@ public final class VehicleEngineUtils {
         vehicle.getEntityData().set(PROPELLER_ROT, vehicle.getEntityData().get(PROPELLER_ROT) * 0.9995f);
 
         if (vehicle.engineStart) {
-            vehicle.consumeEnergy((int) (energyCost * vehicle.getEntityData().get(POWER) * 8.3333f));
+            vehicle.consumeEnergy((int) (energyCost * 8.3333f * Mth.abs(vehicle.getEntityData().get(POWER))));
         }
 
         Matrix4f transform = vehicle.getVehicleTransform(1);
@@ -509,6 +510,186 @@ public final class VehicleEngineUtils {
         vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(force.scale(vehicle.getEntityData().get(PROPELLER_ROT) * lift)));
 
         if (vehicle.getEntityData().get(POWER) > 0.04f) {
+            vehicle.engineStartOver = true;
+        }
+
+        if (vehicle.getEntityData().get(POWER) < 0.0004f) {
+            vehicle.engineStart = false;
+            vehicle.engineStartOver = false;
+        }
+    }
+
+    public static void aircraftEngine(VehicleEntity vehicle, EngineInfo.AirCraft engineInfo) {
+        int energyCost = (int) (engineInfo.energyCostRate);
+        float f = (float) Mth.clamp(Math.max((vehicle.onGround() ? 0.819f : 0.82f) - 0.005 * vehicle.getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90, 0.01, 0.99);
+
+        boolean forward = vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) > 0;
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale((forward ? 0.227 : 0.1) * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f, f, f));
+
+        if (vehicle.isInWater() && vehicle.tickCount % 4 == 0) {
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.6, 0.6, 0.6));
+            if (vehicle.lastTickSpeed > 0.4) {
+                vehicle.hurt(ModDamageTypes.causeVehicleStrikeDamage(vehicle.level().registryAccess(), vehicle, vehicle.getFirstPassenger() == null ? vehicle : vehicle.getFirstPassenger()), (float) (20 * ((vehicle.lastTickSpeed - 0.4) * (vehicle.lastTickSpeed - 0.4))));
+            }
+        }
+
+        Entity passenger = vehicle.getFirstPassenger();
+
+        if (vehicle.getHealth() > 0.1f * vehicle.getMaxHealth()) {
+            if (passenger == null || vehicle.isInWater()) {
+                vehicle.setLeftInputDown(false);
+                vehicle.setRightInputDown(false);
+                vehicle.setForwardInputDown(false);
+                vehicle.setBackInputDown(false);
+                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
+                if (vehicle.onGround()) {
+                    vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.94, 1, 0.94));
+                } else {
+                    vehicle.setXRot(Mth.clamp(vehicle.getXRot() + 0.1f, -89, 89));
+                }
+            } else if (passenger instanceof Player) {
+
+                if (!vehicle.engineStart && vehicle.forwardInputDown()) {
+                    vehicle.engineStart = true;
+                    vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
+                }
+
+                if (vehicle.getEnergy() > 0) {
+                    if (vehicle.forwardInputDown()) {
+                        vehicle.getEntityData().set(POWER, Math.min(vehicle.getEntityData().get(POWER) + 0.0025f, 1));
+                    }
+
+                    if (vehicle.backInputDown()) {
+                        vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.002f, vehicle.onGround() ? -0.1f : 0.5f));
+                    }
+                }
+
+                if (!vehicle.forwardInputDown() && !vehicle.backInputDown()) {
+                    vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.995f);
+                }
+
+                if (!vehicle.onGround()) {
+                    if (vehicle.rightInputDown()) {
+                        vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) - 1.2f);
+                    } else if (vehicle.leftInputDown()) {
+                        vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) + 1.2f);
+                    }
+                }
+
+                // 刹车
+                if (vehicle.downInputDown()) {
+                    if (vehicle.onGround()) {
+                        vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.77f);
+                        vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.96, 1, 0.96));
+                    } else {
+                        vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.97f);
+                        vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.994, 1, 0.994));
+                    }
+                    vehicle.getEntityData().set(PLANE_BREAK, Math.min(vehicle.getEntityData().get(PLANE_BREAK) + 10, 60f));
+                }
+            }
+
+            if (vehicle.engineStart) {
+                vehicle.consumeEnergy((int) (energyCost * Mth.abs(vehicle.getEntityData().get(POWER))));
+            }
+
+            float rotSpeed = 1.5f + 2 * Mth.abs(VectorTool.calculateY(vehicle.getRoll()));
+
+            float addY = Mth.clamp(Math.max((vehicle.onGround() ? 0.6f : 0.2f) * (float) vehicle.getDeltaMovement().length(), 0f) * vehicle.getMouseMoveSpeedX(), -rotSpeed, rotSpeed);
+            float addX = Mth.clamp(Math.min((float) Math.max(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) - 0.24, 0.15), 0.4f) * vehicle.getMouseMoveSpeedY(), -3.5f, 3.5f);
+            float addZ = vehicle.getEntityData().get(DELTA_ROT) - (vehicle.onGround() ? 0 : 0.004f) * vehicle.getMouseMoveSpeedX() * (float) vehicle.getDeltaMovement().dot(vehicle.getViewVector(1));
+
+            vehicle.setYRot(vehicle.getYRot() + addY);
+            if (!vehicle.onGround()) {
+                vehicle.setXRot(vehicle.getXRot() + addX);
+                vehicle.setZRot(vehicle.getRoll() - addZ);
+            }
+
+            // 自动回正
+            if (!vehicle.onGround()) {
+                float xSpeed = 1 + 20 * Mth.abs(vehicle.getXRot() / 180);
+                float speed = Mth.clamp(Mth.abs(vehicle.roll) / (90 / xSpeed), 0, 1);
+
+                if (vehicle.roll > 0) {
+                    vehicle.setZRot(vehicle.roll - Math.min(speed, vehicle.roll));
+                } else if (vehicle.roll < 0) {
+                    vehicle.setZRot(vehicle.roll + Math.min(speed, -vehicle.roll));
+                }
+            }
+
+            vehicle.setPropellerRot(vehicle.getPropellerRot() + 30 * vehicle.getEntityData().get(POWER));
+
+            // 起落架
+            if (vehicle.upInputDown()) {
+                vehicle.setUpInputDown(false);
+                if (vehicle.getEntityData().get(GEAR_ROT) == 0 && !vehicle.onGround()) {
+                    vehicle.getEntityData().set(GEAR_UP, true);
+                } else if (vehicle.getEntityData().get(GEAR_ROT) == 1) {
+                    vehicle.getEntityData().set(GEAR_UP, false);
+                }
+            }
+
+            if (vehicle.onGround()) {
+                vehicle.getEntityData().set(GEAR_UP, false);
+            }
+
+            if (vehicle.getEntityData().get(GEAR_UP)) {
+                vehicle.getEntityData().set(GEAR_ROT, Math.min(vehicle.getEntityData().get(GEAR_ROT) + 0.05f, 1));
+            } else {
+                vehicle.getEntityData().set(GEAR_ROT, Math.max(vehicle.getEntityData().get(GEAR_ROT) - 0.05f, 0));
+            }
+
+            vehicle.setGearRot(vehicle.getEntityData().get(GEAR_ROT) * 85);
+
+            float flapX = (1 - (Mth.abs(vehicle.getRoll())) / 90) * Mth.clamp(vehicle.getMouseMoveSpeedY(), -22.5f, 22.5f) - VectorTool.calculateY(vehicle.getRoll()) * Mth.clamp(vehicle.getMouseMoveSpeedX(), -22.5f, 22.5f);
+
+            vehicle.setFlap1LRot(Mth.clamp(-flapX - 4 * addZ - vehicle.getEntityData().get(PLANE_BREAK), -22.5f, 22.5f));
+            vehicle.setFlap1RRot(Mth.clamp(-flapX + 4 * addZ - vehicle.getEntityData().get(PLANE_BREAK), -22.5f, 22.5f));
+            vehicle.setFlap1L2Rot(Mth.clamp(-flapX - 4 * addZ + vehicle.getEntityData().get(PLANE_BREAK), -22.5f, 22.5f));
+            vehicle.setFlap1R2Rot(Mth.clamp(-flapX + 4 * addZ + vehicle.getEntityData().get(PLANE_BREAK), -22.5f, 22.5f));
+
+            vehicle.setFlap2LRot(Mth.clamp(flapX - 4 * addZ, -22.5f, 22.5f));
+            vehicle.setFlap2RRot(Mth.clamp(flapX + 4 * addZ, -22.5f, 22.5f));
+
+            float flapY = (1 - (Mth.abs(vehicle.getRoll())) / 90) * Mth.clamp(vehicle.getMouseMoveSpeedX(), -22.5f, 22.5f) + VectorTool.calculateY(vehicle.getRoll()) * Mth.clamp(vehicle.getMouseMoveSpeedY(), -22.5f, 22.5f);
+
+            vehicle.setFlap3Rot(flapY * 5);
+        } else if (!vehicle.onGround()) {
+            float diffX;
+            vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.0003f, 0.02f));
+            vehicle.destroyRot += 0.1f;
+            diffX = 90 - vehicle.getXRot();
+            vehicle.setXRot(vehicle.getXRot() + diffX * 0.001f * vehicle.destroyRot);
+            vehicle.setZRot(vehicle.getRoll() - vehicle.destroyRot);
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, -0.03, 0));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, -vehicle.destroyRot * 0.005, 0));
+        }
+
+        vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) * 0.85f);
+        vehicle.getEntityData().set(PLANE_BREAK, vehicle.getEntityData().get(PLANE_BREAK) * 0.8f);
+
+        if (vehicle.getEntityData().get(MAIN_ENGINE_DAMAGED)) {
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.96f);
+        }
+
+        if (vehicle.getEntityData().get(SUB_ENGINE_DAMAGED)) {
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.96f);
+        }
+
+        Matrix4f transform = vehicle.getVehicleTransform(1);
+        double flapAngle = (vehicle.getFlap1LRot() + vehicle.getFlap1RRot() + vehicle.getFlap1L2Rot() + vehicle.getFlap1R2Rot()) / 4;
+
+        Vector4f force0 = vehicle.transformPosition(transform, 0, 0, 0);
+        Vector4f force1 = vehicle.transformPosition(transform, 0, 1, 0);
+
+        Vec3 force = new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
+
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(force.scale(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 0.022 * (1 + Math.sin((vehicle.onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
+
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.03 * vehicle.getEntityData().get(POWER) * (vehicle.sprintInputDown() ? 2.2 : 1))));
+
+        if (vehicle.getEntityData().get(POWER) > 0.2f) {
             vehicle.engineStartOver = true;
         }
 

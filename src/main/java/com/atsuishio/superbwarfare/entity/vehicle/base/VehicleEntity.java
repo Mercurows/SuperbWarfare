@@ -50,6 +50,7 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -165,7 +166,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Boolean> DECOY_READY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
     public static final EntityDataAccessor<Float> PROPELLER_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Integer> GEAR_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> GEAR_ROT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> GEAR_UP = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> FORWARD_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> BACK_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
@@ -415,6 +416,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float flap3Rot;
     public float flap3RotO;
     public float gearRotO;
+    public float gearRot;
     public Vec3 lerpBombHitPosO;
     public Vec3 lerpBombHitPos;
     public boolean engineStart;
@@ -427,6 +429,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int holdTick;
     public int holdPowerTick;
     public float destroyRot;
+
+    public String lockingTargetO = "none";
+    public String lockingTarget = "none";
+    public int lockTime;
+    public boolean locked;
 
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -1087,7 +1094,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(AMMO, 0)
                 .define(FIRE_TIME, 0)
                 .define(DECOY_READY, false)
-                .define(GEAR_ROT, 0)
+                .define(GEAR_ROT, 0F)
                 .define(GEAR_UP, false)
                 .define(FORWARD_INPUT_DOWN, false)
                 .define(BACK_INPUT_DOWN, false)
@@ -1419,7 +1426,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.entityData.set(POWER, compound.getFloat("Power"));
         this.entityData.set(DECOY_READY, compound.getBoolean("DecoyReady"));
-        this.entityData.set(GEAR_ROT, compound.getInt("GearRot"));
+        this.entityData.set(GEAR_ROT, compound.getFloat("GearRot"));
         this.entityData.set(GEAR_UP, compound.getBoolean("GearUp"));
         this.entityData.set(PROPELLER_ROT, compound.getFloat("PropellerRot"));
         this.entityData.set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"));
@@ -1497,7 +1504,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         compound.putFloat("Power", this.entityData.get(POWER));
         compound.putBoolean("DecoyReady", this.entityData.get(DECOY_READY));
-        compound.putInt("GearRot", this.entityData.get(GEAR_ROT));
+        compound.putFloat("GearRot", this.entityData.get(GEAR_ROT));
         compound.putBoolean("GearUp", this.entityData.get(GEAR_UP));
         compound.putFloat("PropellerRot", this.entityData.get(PROPELLER_ROT));
         compound.putFloat("ChargeProgress", this.entityData.get(CHARGE_PROGRESS));
@@ -1838,8 +1845,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         flap2LRotO = this.getFlap2LRot();
         flap2RRotO = this.getFlap2RRot();
         flap3RotO = this.getFlap3Rot();
-        gearRotO = entityData.get(GEAR_ROT);
+        gearRotO = this.getGearRot();
         lerpBombHitPosO = lerpBombHitPos;
+        this.lockingTargetO = getTargetUuid();
 
         super.baseTick();
 
@@ -2809,6 +2817,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Ship.class);
                     this.shipEngine(info);
                 }
+                case AIRCRAFT -> {
+                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.AirCraft.class);
+                    this.airCraftEngine(info);
+                }
             }
         } catch (Exception e) {
             Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e);
@@ -3205,7 +3217,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public float gearRot(float tickDelta) {
-        return Mth.lerp(tickDelta, gearRotO, entityData.get(GEAR_ROT));
+        return Mth.lerp(tickDelta, gearRotO, getGearRot());
     }
 
     public float getMass() {
@@ -3472,6 +3484,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleEngineUtils.shipEngine(this, engineInfo);
     }
 
+    public void airCraftEngine(EngineInfo.AirCraft engineInfo) {
+        VehicleEngineUtils.aircraftEngine(this, engineInfo);
+    }
+
     public void releaseSmokeDecoy(Vec3 vec3) {
         VehicleWeaponUtils.releaseSmokeDecoy(this, vec3);
     }
@@ -3536,7 +3552,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
 
         if (verticalCollision) {
-            if (this.getVehicleType() == VehicleType.AIRPLANE && ((entityData.get(GEAR_ROT) > 10 && !(this instanceof Tom6Entity)) || Mth.abs(getRoll()) > 20 || Mth.abs(getXRot()) > 30)) {
+            if (this.getVehicleType() == VehicleType.AIRPLANE && ((entityData.get(GEAR_ROT) > 0.15 && !(this instanceof Tom6Entity)) || Mth.abs(getRoll()) > 20 || Mth.abs(getXRot()) > 30)) {
                 this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) ((8 + Mth.abs(getRoll() * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)));
                 if (!this.level().isClientSide) {
                     this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
@@ -3738,6 +3754,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.flap3Rot = pFlap3Rot;
     }
 
+    public float getGearRot() {
+        return this.gearRot;
+    }
+
+    public void setGearRot(float pGearRot) {
+        this.gearRot = pGearRot;
+    }
+
     public boolean hasDecoy() {
         return computed().hasDecoy;
     }
@@ -3829,5 +3853,69 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @OnlyIn(Dist.CLIENT)
     public Component thirdPersonAmmoComponent(GunData data, Player player) {
         return firstPersonAmmoComponent(data, player);
+    }
+
+
+    public void seekTarget() {
+        if (!(this.getFirstPassenger() instanceof Player player)) return;
+
+        if (getTargetUuid().equals(lockingTargetO) && !getTargetUuid().equals("none")) {
+            lockTime++;
+        } else {
+            resetSeek(player);
+        }
+
+        Entity entity = new SeekTool.Builder(this)
+                .withinRange(384)
+                .withinAngle(18)
+                .baseFilter()
+                .onGround(10)
+                .sizeBiggerThan(0.9)
+                .smokeFilter()
+                .noVehicle()
+                .noClip()
+                .buildWithClosest();
+
+        if (entity != null) {
+            if (lockTime == 0) {
+                setTargetUuid(String.valueOf(entity.getUUID()));
+            }
+            if (!String.valueOf(entity.getUUID()).equals(getTargetUuid())) {
+                resetSeek(player);
+                setTargetUuid(String.valueOf(entity.getUUID()));
+            }
+        } else {
+            setTargetUuid("none");
+        }
+
+        if (lockTime == 1) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_LOCKING.get(), 2, 1);
+            }
+        }
+
+        if (lockTime > 10) {
+            if (player instanceof ServerPlayer serverPlayer) {
+                SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_LOCKED.get(), 2, 1);
+            }
+            locked = true;
+        }
+    }
+
+    public void resetSeek(Player player) {
+        lockTime = 0;
+        locked = false;
+        if (player instanceof ServerPlayer serverPlayer) {
+            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("jet_lock"), SoundSource.PLAYERS);
+            serverPlayer.connection.send(clientboundstopsoundpacket);
+        }
+    }
+
+    public void setTargetUuid(String uuid) {
+        this.lockingTarget = uuid;
+    }
+
+    public String getTargetUuid() {
+        return this.lockingTarget;
     }
 }
