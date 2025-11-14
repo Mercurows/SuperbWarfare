@@ -2423,9 +2423,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var gunData = getGunData(entity);
         if (gunData != null) {
             Vec3 bombHitPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPosForHud(entity, ticks), getShootVec(entity, ticks), getDeltaMovement().length() * gunData.compute().velocity, -projectileGravity(entity));
-            bombHitPosX = Mth.lerp(ticks, bombHitPosX, bombHitPos.x);
-            bombHitPosY = Mth.lerp(ticks, bombHitPosY, bombHitPos.y);
-            bombHitPosZ = Mth.lerp(ticks, bombHitPosZ, bombHitPos.z);
+            bombHitPosX = Mth.lerp(0.2 * ticks, bombHitPosX, bombHitPos.x);
+            bombHitPosY = Mth.lerp(0.2 * ticks, bombHitPosY, bombHitPos.y);
+            bombHitPosZ = Mth.lerp(0.2 * ticks, bombHitPosZ, bombHitPos.z);
             return new Vec3(bombHitPosX, bombHitPosY, bombHitPosZ);
         } else {
             return Vec3.ZERO;

@@ -69,7 +69,7 @@ public class ProjectileCalculator {
                 start,
                 end,
                 ClipContext.Block.COLLIDER, // 只检测碰撞方块
-                ClipContext.Fluid.NONE, // 忽略流体
+                ClipContext.Fluid.ANY, // 忽略流体
                 CollisionContext.empty() // 无实体
         ));
 
