@@ -17,7 +17,7 @@
       "CanRotateHead": false,
       "MinPitch": -15,
       "MaxPitch": 32.5,
-      "Weapons": ["Laser1", "Laser2"],
+      "Weapons": ["Laser"],
       "Sensitivity": [0.6, 0.78, 1]
     },
     {
@@ -30,7 +30,7 @@
     }
   ],
   "Weapons": {
-    "Laser1": {
+    "Laser": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/laser.png",
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
@@ -46,8 +46,31 @@
       "HeatPerShoot": 50,
       "NaturalCooldown": 0.7,
       "ShootAnimationTime": 3,
-      "AmmoType": "FE",
       "AmmoCostPerShoot": 100000,
+      "AmmoType": [
+        "FE",
+        {
+          "Ammo": "FE",
+          "Override": {
+            "DefaultFireMode": "Auto",
+            "RPM": 1200,
+            "Velocity": 6000000000,
+            "Damage": 15,
+            "HeatPerShoot": 3,
+            "ShootAnimationTime": 1,
+            "AmmoCostPerShoot": 5000,
+            "ExplosionDamage": 0,
+            "ExplosionRadius": 0,
+            "SoundInfo": {
+              "Fire1P": "superbwarfare:prism_tank_fire_low_1p",
+              "Fire3P": "superbwarfare:prism_tank_fire_low_3p",
+              "Fire3PFar": null,
+              "Fire3PVeryFar": null,
+              "Change": "superbwarfare:into_cannon"
+            }
+          }
+        }
+      ],
       "Crosshair": "@VehicleCommonMissile",
       "CrosshairColor": "0x00FFF6",
       "Name": "superbwarfare.prism_tank.laser",
@@ -55,38 +78,6 @@
         "Fire1P": "superbwarfare:prism_tank_fire_high_1p",
         "Fire3P": "superbwarfare:prism_tank_fire_high_3p",
         "Change": "superbwarfare:into_missile"
-      },
-      "SoundRadius": 12,
-      "ShootPos": {
-        "Transform": "Barrel",
-        "Positions": [[0, 0.5, 0]],
-        "Directions": ["Barrel"]
-      }
-    },
-    "Laser2": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/laser.png",
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Projectile": "ray",
-      "Range": 512,
-      "DefaultZoom": 3,
-      "RPM": 1200,
-      "Velocity": 6000000000,
-      "Damage": 15,
-      "HeatPerShoot": 3,
-      "NaturalCooldown": 0.7,
-      "ShootAnimationTime": 1,
-      "AmmoType": "FE",
-      "AmmoCostPerShoot": 50000,
-      "Crosshair": "@VehicleCommonMissile",
-      "CrosshairColor": "0x00FFF6",
-      "Name": "superbwarfare.prism_tank.laser",
-      "SoundInfo": {
-        "Fire1P": "superbwarfare:prism_tank_fire_low_1p",
-        "Fire3P": "superbwarfare:prism_tank_fire_low_3p",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
-        "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 12,
       "ShootPos": {

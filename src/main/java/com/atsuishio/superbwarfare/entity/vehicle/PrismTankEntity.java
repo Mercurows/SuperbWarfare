@@ -100,11 +100,9 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         lowHealthWarning();
     }
 
-    //TODO 能否让光棱两个武器共用一个热量
-
     public void hitBlock(Vec3 pos, GunData gunData, Entity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
-            if (getSelectedWeapon(0) == 0) {
+            if (gunData.compute().explosionRadius > 0) {
                 findNearEntity(pos, gunData, shooter);
                 sendParticle(serverLevel, ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 24, 0, 0, 0, 0.2, true);
                 sendParticle(serverLevel, ParticleTypes.LAVA, pos.x, pos.y, pos.z, 8, 0, 0, 0, 0.4, true);
@@ -117,7 +115,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
 
     public void hitEntity(Vec3 pos, GunData gunData, Entity shooter) {
         if (this.level() instanceof ServerLevel serverLevel) {
-            if (getSelectedWeapon(0) == 0) {
+            if (gunData.compute().explosionRadius > 0) {
                 findNearEntity(pos, gunData, shooter);
                 sendParticle(serverLevel, ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 24, 0, 0, 0, 0.2, true);
                 sendParticle(serverLevel, ParticleTypes.LAVA, pos.x, pos.y, pos.z, 8, 0, 0, 0, 0.4, true);
