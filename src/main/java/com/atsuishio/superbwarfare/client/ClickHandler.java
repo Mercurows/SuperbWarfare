@@ -305,6 +305,7 @@ public class ClickHandler {
                 }
             }
 
+            // 玩家手持枪械时，处理卸弹/切换弹种
             if (stack.getItem() instanceof GunItem) {
                 var data = GunData.from(stack);
                 if (key == ModKeyMappings.UNLOAD.getKey().getValue()) {
@@ -319,6 +320,22 @@ public class ClickHandler {
                     }
                     if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
                         NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
+                        burstFireAmount = 0;
+                    }
+                }
+            }
+
+            // 玩家位于载具上时，处理切换弹种
+            if (player.getVehicle() instanceof VehicleEntity vehicle) {
+                var data = vehicle.getGunData(player, vehicle.getSelectedWeapon(vehicle.getSeatIndex(player)));
+                if (data != null && data.getDefault().getAmmoConsumers().size() > 1) {
+                    if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, false, true));
+                        burstFireAmount = 0;
+                    }
+                    if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue() ||
+                            key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true, true));
                         burstFireAmount = 0;
                     }
                 }

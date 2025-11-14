@@ -6,15 +6,13 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public enum VehicleFireMessage {
-
     INSTANCE;
 
     public static void handler(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            if (context.getSender() != null) {
-                var player = context.getSender();
-
+            var player = context.getSender();
+            if (player != null) {
                 if (player.getVehicle() instanceof VehicleEntity vehicle) {
                     vehicle.vehicleShoot(player);
                 }
@@ -22,5 +20,4 @@ public enum VehicleFireMessage {
         });
         context.setPacketHandled(true);
     }
-
 }
