@@ -10,7 +10,8 @@
     "Sensitivity": [0, 0, 0],
     "CameraPos": {
       "Transform": "Vehicle",
-      "AircraftCamera": true
+      "AircraftCamera": true,
+      "AircraftCameraPos": [0, 4, -14]
     },
     "Weapons": ["Cannon", "Rocket"]
   },
@@ -37,7 +38,9 @@
       "Crosshair": "@Empty",
       "ShootPos": {
         "Transform": "Vehicle",
-        "Positions": [[0.1334, 1.814, 7.869]]
+        "Positions": [[0.1334, 1.814, 7.869]],
+        "Directions": [[0, -0.02, 1]],
+        "ShootDirectionForHud": [0, -0.03, 1]
       }
     },
     "Rocket": {

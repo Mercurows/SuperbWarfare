@@ -12,7 +12,8 @@
         "Position": [0.45, 2.45, 1],
         "ZoomPosition": [0.45, 2.45, 1.25],
         "UseFixedCameraPos": true,
-        "AircraftCamera": true
+        "AircraftCamera": true,
+        "AircraftCameraPos": [-2.1, 2.45, -10]
       },
       "CanRotateHead": false,
       "MinPitch": -80,
@@ -73,7 +74,7 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.62, 0.8],
-        "ShootDirectionForHud": [0, 0.025, 1],
+        "ShootDirectionForHud": [0, 0.018, 1],
         "Positions": [[-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
       }
@@ -98,7 +99,7 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.62, 0.8],
-        "ShootDirectionForHud": [0, 0.025, 1],
+        "ShootDirectionForHud": [0, 0.018, 1],
         "Positions": [[-1.7, 0.62, 0.8], [1.7, 0.62, 0.8]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
       },

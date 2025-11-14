@@ -2968,7 +2968,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void handleClientSync() {
-        if (level() instanceof ServerLevel) {
+        if (level() instanceof ServerLevel && tickCount %2 == 0) {
             entityData.set(SERVER_YAW, getYRot());
             entityData.set(SERVER_PITCH, getXRot());
         }
@@ -2987,8 +2987,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         float diffY = Mth.wrapDegrees(entityData.get(SERVER_YAW) - this.getYRot());
         float diffX = Mth.wrapDegrees(entityData.get(SERVER_PITCH) - this.getXRot());
 
-        this.setYRot(this.getYRot() + 0.5f * diffY);
-        this.setXRot(this.getXRot() + 0.5f * diffX);
+        this.setYRot(this.getYRot() + 0.1f * diffY);
+        this.setXRot(this.getXRot() + 0.1f * diffX);
 
         setPos(interpolatedX, interpolatedY, interpolatedZ);
 
@@ -3361,7 +3361,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     }
                 } else if (data.aircraftCamera) {
                     Matrix4f transform = getClientVehicleTransform(partialTicks);
-                    Vector4f maxCameraPosition = transformPosition(transform, -2.1f, 2.45f, -10 - (float) ClientMouseHandler.custom3pDistanceLerp);
+                    Vector4f maxCameraPosition = transformPosition(transform, (float) data.aircraftCameraPos.x, (float) data.aircraftCameraPos.y, (float) data.aircraftCameraPos.z - (float) ClientMouseHandler.custom3pDistanceLerp);
                     return CameraTool.getMaxZoom(transform, maxCameraPosition);
                 }
             }
