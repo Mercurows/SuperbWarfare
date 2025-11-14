@@ -750,6 +750,8 @@
   "superbwarfare.yx_100.gun": ".50 CAL HMG %1$s",
   "superbwarfare.ah_6.cannon": "20MM CANNON %1$s",
   "superbwarfare.ah_6.rocket": "70MM ROCKET %1$s",
+  "superbwarfare.a_10_a.cannon": "30MM CANNON %1$s",
+  "superbwarfare.a_10_a.rocket": "70MM ROCKET %1$s",
   "superbwarfare.prism_tank.laser": "LASER %1$s",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",

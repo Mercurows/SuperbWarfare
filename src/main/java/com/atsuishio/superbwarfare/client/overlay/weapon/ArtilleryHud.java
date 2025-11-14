@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
@@ -28,15 +27,10 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 public class ArtilleryHud {
 
     public static final String ID = "@Artillery";
-
-    private static final ResourceOnceLogger LOGGER = new ResourceOnceLogger();
-
     private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
-    private static final ResourceLocation THIRD_CROSSHAIR = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
     private static final ResourceLocation ROLL_IND_WHITE = Mod.loc("textures/overlay/vehicle/cannon/roll_ind_white.png");
     private static final ResourceLocation CANNON_PITCH = Mod.loc("textures/overlay/vehicle/cannon/cannon_pitch.png");
     private static final ResourceLocation CANNON_PITCH_IND = Mod.loc("textures/overlay/vehicle/cannon/cannon_pitch_ind.png");
-    private static final ResourceLocation INDICATOR = Mod.loc("textures/overlay/vehicle/cannon/indicator.png");
 
     public static void render(VehicleEntity vehicle, Player player, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getInstance();

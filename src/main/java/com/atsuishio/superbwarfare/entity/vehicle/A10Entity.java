@@ -11,7 +11,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.OBB;
+import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,8 +47,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public float destroyRot;
     public int lockTime;
     public boolean locked;
-    public Vec3 bombLandingPosO;
-    public Vec3 bombLandingPos;
 
     public OBB obb;
     public OBB obb2;
@@ -82,7 +83,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public void baseTick() {
         this.lockingTargetO = getTargetUuid();
-        bombLandingPosO = bombLandingPos;
 
         super.baseTick();
         this.updateOBB();
@@ -108,12 +108,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         }
 
         lowHealthWarning();
-
-        //  计算航弹落点
-        if (level().isClientSide) {
-            bombLandingPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPos(0, 1), getShootVec(0, 1), -0.06);
-        }
-
         this.refreshDimensions();
     }
 

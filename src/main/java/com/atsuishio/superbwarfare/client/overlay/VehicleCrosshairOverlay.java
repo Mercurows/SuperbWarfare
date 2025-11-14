@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -53,8 +54,8 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
             Map.entry("@VehicleFixedPoint", Mod.loc("textures/overlay/vehicle/crosshair/common_fixed_point.png")),
             Map.entry("@VehicleCnHpjZooming", Mod.loc("textures/overlay/vehicle/crosshair/cn_hpj_zooming.png")),
             Map.entry("@VehicleCommonCannonZooming", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon_zooming.png")),
-            Map.entry("@VehicleLaserCannon", Mod.loc("textures/overlay/vehicle/crosshair/laser_cannon.png"))
-
+            Map.entry("@VehicleLaserCannon", Mod.loc("textures/overlay/vehicle/crosshair/laser_cannon.png")),
+            Map.entry("@AirCraftCommon", Mod.loc("textures/overlay/vehicle/aircraft/common.png"))
     );
 
     private static final ResourceLocation CROSSHAIR_THIRD_CAMERA = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
@@ -161,6 +162,8 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                     RenderHelper.preciseBlitWithColor(guiGraphics, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
                     RenderHelper.preciseBlitWithColor(guiGraphics, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                } else if (crosshairPath.equals("@AirCraftCommon") && VectorUtil.canSee(pos)) {
+                    RenderHelper.preciseBlitWithColor(guiGraphics, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 } else {
                     if (crosshairPath.equals("@VehicleCnHpjZooming")) {
                         ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
@@ -193,8 +196,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
             // 渲染第三人称
-
-            if (VectorUtil.canSee(pos)) {
+            if (VectorUtil.canSee(pos) && vehicle.getVehicleType() != VehicleType.AIRPLANE && vehicle.getVehicleType() != VehicleType.HELICOPTER) {
                 float x = (float) p.x;
                 float y = (float) p.y;
 

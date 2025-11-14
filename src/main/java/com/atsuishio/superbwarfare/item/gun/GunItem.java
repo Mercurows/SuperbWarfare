@@ -896,6 +896,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             }
         }
 
+        if (shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle && data.compute().useVehicleDeltaMovement) {
+            velocity = (float) (vehicle.getDeltaMovement().length() * data.compute().velocity);
+        }
+
         // 发射任意实体
         entity.setPos(shootPosition.x - 0.1 * shootDirection.x, shootPosition.y - 0.1 - 0.1 * shootDirection.y, shootPosition.z + -0.1 * shootDirection.z);
 

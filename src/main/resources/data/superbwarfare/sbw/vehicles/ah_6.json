@@ -90,7 +90,7 @@
       "Projectile": "superbwarfare:small_rocket",
       "HeatPerShoot": 0.5,
       "Spread": 0.25,
-      "Name": "superbwarfare.ah_6.cannon",
+      "Name": "superbwarfare.ah_6.rocket",
       "RPM": 500,
       "Damage": 80,
       "ExplosionDamage": 40,

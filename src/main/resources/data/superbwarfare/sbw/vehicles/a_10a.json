@@ -10,11 +10,15 @@
     "Sensitivity": [0, 0, 0],
     "CameraPos": {
       "Transform": "Vehicle",
+      "Position": [0, 3.725, 3.7],
+      "ZoomPosition": [0, 3.725, 4],
+      "UseFixedCameraPos": true,
       "AircraftCamera": true,
       "AircraftCameraPos": [0, 4, -14]
     },
-    "Weapons": ["Cannon", "Rocket"]
+    "Weapons": ["Cannon", "Rocket", "Bomb"]
   },
+  "MainWeaponHudType": "@Aircraft",
   "Weapons": {
     "Cannon": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
@@ -35,7 +39,8 @@
       "SoundInfo": {
         "FireSoundInstances": "superbwarfare:a_10a_fire"
       },
-      "Crosshair": "@Empty",
+      "Crosshair": "@AirCraftCommon",
+      "CrosshairColor": "0x66FF00",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[0.1334, 1.814, 7.869]],
@@ -53,7 +58,7 @@
       "EmptyReloadTime": 160,
       "Projectile": "superbwarfare:small_rocket",
       "Spread": 0.4,
-      "Name": "superbwarfare.ah_6.cannon",
+      "Name": "superbwarfare.a_10_a.rocket",
       "RPM": 900,
       "Damage": 80,
       "ExplosionDamage": 40,
@@ -62,9 +67,9 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.579, 0.128],
-        "ShootDirectionForHud": [0, -0.025, 1],
+        "ShootDirectionForHud": [0, -0.03, 1],
         "Positions": [[3.932, 1.6054, 0.130], [1.57, 1.552, 0.1272], [-1.57, 1.552, 0.1272], [-3.932, 1.6054, 0.130]],
-        "Directions": [[-0.007, -0.025, 1], [-0.004, -0.025, 1], [0.004, -0.025, 1], [0.007, -0.025, 1]]
+        "Directions": [[-0.005, -0.03, 1], [-0.003, -0.03, 1], [0.003, -0.03, 1], [0.005, -0.03, 1]]
       },
       "SoundInfo": {
         "Fire1P": "superbwarfare:small_rocket_fire_1p",
@@ -72,7 +77,44 @@
         "ReloadEnd": "superbwarfare:missile_reload",
         "Change": "superbwarfare:into_missile"
       },
-      "Crosshair": "@Empty",
+      "Crosshair": "@AirCraftCommon",
+      "CrosshairColor": "0x66FF00",
+      "SoundRadius": 12
+    },
+    "Bomb": {
+      "AmmoType": "superbwarfare:medium_aerial_bomb",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/mk_82.png",
+      "DefaultZoom": 2,
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Magazine": 3,
+      "EmptyReloadTime": 200,
+      "Projectile": "superbwarfare:mk_82",
+      "Gravity": 0.06,
+      "Spread": 0.5,
+      "Name": "superbwarfare.a_10_a.bomb",
+      "ExplosionDamage": 650,
+      "ExplosionRadius": 22,
+      "UseVehicleDeltaMovement": true,
+      "Velocity": 0.75,
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 1.171875, 0.0625],
+        "ShootDirectionForHud": "Bomb",
+        "Positions": [[-0.55625, 1.171875, 0.0625], [0, 1.171875, 0.0625], [0.55625, 1.171875, 0.0625]],
+        "BoundUpWithAmmoAmount": true,
+        "Directions": ["DeltaMovement"],
+        "ViewPosition": [0, 1.171875, 0.0625],
+        "ViewDirection": "Bomb"
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bomb_release",
+        "Fire3P": "superbwarfare:bomb_release",
+        "ReloadEnd": "superbwarfare:bomb_reload",
+        "Change": "superbwarfare:into_missile"
+      },
+      "Crosshair": "@AirBomb",
+      "CrosshairColor": "0x66FF00",
       "SoundRadius": 12
     }
   },
