@@ -52,6 +52,7 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.STRING);
+
     public int changeTargetTimer;
 
     public AutoAimableEntity(EntityType<?> type, Level world) {
@@ -158,6 +159,7 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         if (this.getFirstPassenger() != null || !entityData.get(ACTIVE)) {
             return;
         }
+
         String weaponName = "Main";
         var data = getGunData(weaponName);
         if (data == null) return;
@@ -176,7 +178,7 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         var projectileInfo = data.compute().projectile();
         var projectileType = projectileInfo.type;
         var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
-        int rpm = (int) Mth.clamp(20 / ((float) Math.max(vehicleWeaponRpm(weaponName),1) / 60), 1, 2147483647);
+        int rpm = (int) Mth.clamp(20 / ((float) Math.max(vehicleWeaponRpm(weaponName), 1) / 60), 1, 2147483647);
 
         if (projectileTypeStr.equals("ray") && this.entityData.get(CHARGE_PROGRESS) < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
             float chargeSpeed = 1f / rpm;
@@ -196,34 +198,16 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         Entity target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID));
 
         if (target != null && this.getOwner() instanceof Player player && SeekTool.NOT_IN_SMOKE.test(target)) {
-            if (target instanceof Player player1 && (player1.isSpectator() || player1.isCreative())) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (VehicleVecUtils.getSubmergedHeight(target) >= target.getBbHeight()) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-
-            if (target.distanceTo(this) > maxSeekRange) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-
-            if (target.distanceTo(this) < minSeekRange) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-
-            if (target instanceof LivingEntity living && living.getHealth() <= 0) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (target == this || target instanceof TargetEntity) {
-                this.entityData.set(TARGET_UUID, "none");
-                return;
-            }
-            if (target instanceof Projectile && (target.onGround() || target.getDeltaMovement().lengthSqr() < 0.001) || target.isInWater()) {
+            if (SeekTool.IS_INVULNERABLE.test(target)
+                    || VehicleVecUtils.getSubmergedHeight(target) >= target.getBbHeight()
+                    || target.distanceTo(this) > maxSeekRange
+                    || target.distanceTo(this) < minSeekRange
+                    || target instanceof LivingEntity living && living.getHealth() <= 0
+                    || target == this
+                    || target instanceof TargetEntity
+                    || target.isInWater()
+                    || target instanceof Projectile && (target.onGround() || target.getDeltaMovement().lengthSqr() < 0.001)
+            ) {
                 this.entityData.set(TARGET_UUID, "none");
                 return;
             }
@@ -250,7 +234,7 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
             if (entityData.get(LASER_SCALE) == 0) {
                 turretAutoAimFromVector(targetVec);
                 if (VectorTool.calculateAngle(getShootVec(weaponName, 1), targetVec) < 1) {
-                    if (checkNoClip(target, barrelRootPos)&& !data.overHeat.get()) {
+                    if (checkNoClip(target, barrelRootPos) && !data.overHeat.get()) {
                         if (projectileTypeStr.equals("ray") && getEntityData().get(CHARGE_PROGRESS) == 1) {
                             if (player.level() instanceof ServerLevel) {
                                 rayShoot(player, target, data);
@@ -304,7 +288,8 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
                     && checkNoClip(target, pos)
                     && !(target instanceof Player player && (player.isSpectator() || player.isCreative()))
                     && ((target instanceof LivingEntity living && living instanceof Enemy && living.getHealth() > 0) || isThreateningEntity(target, size, pos) || basicEnemyFilter(target))
-                    && SeekTool.NOT_IN_SMOKE.test(target);
+                    && SeekTool.NOT_IN_SMOKE.test(target)
+                    && !SeekTool.IN_BLACKLIST.test(target);
             if (condition) {
                 return target;
             }
@@ -327,7 +312,7 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this)).getType() != HitResult.Type.BLOCK;
     }
 
-    static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {
+    public static boolean canAim(Vec3 pos, Entity target, double minAngle, double maxAngle) {
         Vec3 targetPos = target.getBoundingBox().getCenter();
         Vec3 toVec = pos.vectorTo(targetPos).normalize();
         double targetAngle = VehicleVecUtils.getXRotFromVector(toVec);

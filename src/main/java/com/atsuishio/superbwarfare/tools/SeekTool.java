@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.tools;
 
-import com.atsuishio.superbwarfare.config.server.SeekConfig;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -214,10 +212,7 @@ public class SeekTool {
     /**
      * 判定实体是否位于黑名单中
      */
-    public static final Predicate<Entity> IN_BLACKLIST = e -> {
-        var type = BuiltInRegistries.ENTITY_TYPE.getKey(e.getType());
-        return SeekConfig.SEEK_BLACKLIST.get().contains(type.toString());
-    };
+    public static final Predicate<Entity> IN_BLACKLIST = e -> e.getType().is(ModTags.EntityTypes.SEEK_BLACKLIST);
 
     /**
      * 判断实体的类型是否属于被排除的默认类型
@@ -356,6 +351,11 @@ public class SeekTool {
             return true;
         }
     };
+
+    /**
+     * 判断实体是否无敌
+     */
+    public static final Predicate<Entity> IS_INVULNERABLE = e -> e.isInvulnerable() || (e instanceof Player player && (player.isCreative() || player.isSpectator()));
 
     public static class Builder {
 

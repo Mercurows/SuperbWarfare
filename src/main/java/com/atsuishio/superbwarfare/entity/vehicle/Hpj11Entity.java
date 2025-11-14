@@ -30,11 +30,6 @@ public class Hpj11Entity extends AutoAimableEntity implements GeoEntity {
     }
 
     @Override
-    public void baseTick() {
-        super.baseTick();
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 

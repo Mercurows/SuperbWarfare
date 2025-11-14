@@ -63,6 +63,26 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.RPG_ROCKET_STANDARD.get(),
                 ModEntities.RPG_ROCKET_TBG.get()
         );
+
+        this.tag(ModTags.EntityTypes.SEEK_BLACKLIST).add(
+                        EntityType.ITEM,
+                        EntityType.ARMOR_STAND,
+                        EntityType.EXPERIENCE_ORB,
+                        EntityType.ITEM_DISPLAY,
+                        EntityType.FALLING_BLOCK,
+                        EntityType.ITEM_FRAME,
+                        EntityType.FIREWORK_ROCKET,
+                        EntityType.GLOW_ITEM_FRAME,
+                        EntityType.AREA_EFFECT_CLOUD,
+                        ModEntities.CLAYMORE.get(),
+                        ModEntities.C4.get()
+                ).addOptional(ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "power_point"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("evilcraft", "vengeance_spirit"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("mts", "builder_rendering"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("create", "carriage_contraption"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("create", "stationary_contraption"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("create", "gantry_contraption"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("create", "super_glue"));
     }
 
     public static TagKey<EntityType<?>> cTag(String name) {

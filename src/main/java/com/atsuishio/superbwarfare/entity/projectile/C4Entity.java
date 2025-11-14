@@ -73,7 +73,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     public C4Entity(LivingEntity owner, Level level, boolean isControllable) {
-        super(ModEntities.C_4.get(), level);
+        super(ModEntities.C4.get(), level);
         if (owner != null) {
             this.setOwnerUUID(owner.getUUID());
         }

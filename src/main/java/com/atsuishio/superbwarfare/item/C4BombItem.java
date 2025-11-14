@@ -92,7 +92,7 @@ public class C4BombItem extends Item {
             Position position = DispenserBlock.getDispensePosition(blockSource);
             Direction direction = blockSource.state().getValue(DispenserBlock.FACING);
 
-            var entity = new C4Entity(ModEntities.C_4.get(), level);
+            var entity = new C4Entity(ModEntities.C4.get(), level);
             entity.setPos(position.x(), position.y(), position.z());
 
             var pX = direction.getStepX();

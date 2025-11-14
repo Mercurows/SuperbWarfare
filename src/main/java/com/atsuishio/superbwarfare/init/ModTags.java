@@ -113,8 +113,8 @@ public class ModTags {
         public static final TagKey<EntityType<?>> NO_EXPERIENCE = modEntityTag("no_experience");
         public static final TagKey<EntityType<?>> CAN_REPAIR = modEntityTag("can_repair");
         public static final TagKey<EntityType<?>> MINE = modEntityTag("mine");
-
         public static final TagKey<EntityType<?>> AT_ROCKET = modEntityTag("at_rocket");
+        public static final TagKey<EntityType<?>> SEEK_BLACKLIST = modEntityTag("seek_blacklist");
     }
 
     private static TagKey<EntityType<?>> modEntityTag(String name) {
