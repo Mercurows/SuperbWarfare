@@ -71,8 +71,8 @@
     "Cannon": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
       "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
-      "AmmoType": "superbwarfare:ap_5_inches",
       "IsArmorPiercingProjectile": true,
       "DefaultZoom": 3,
       "Magazine": 1,
@@ -88,11 +88,10 @@
       "Crosshair": "@VehicleUsTank",
       "CrosshairColor": "0x00FFF6",
       "Name": "superbwarfare.yx_100.cannon_ap",
-      "AvailableFireModes": [
-        "Semi",
+      "AmmoType": [
+        "superbwarfare:ap_5_inches",
         {
-          "Mode": "Semi",
-          "Name": "HE",
+          "Ammo": "superbwarfare:he_5_inches",
           "Override": {
             "Icon": "superbwarfare:textures/screens/vehicle_weapon/he_shell.png",
             "AmmoType": "superbwarfare:he_5_inches",
@@ -102,9 +101,6 @@
             "Damage": 250,
             "ExplosionDamage": 120,
             "ExplosionRadius": 10,
-            "ShootAnimationTime": 10,
-            "Crosshair": "@VehicleUsTank",
-            "CrosshairColor": "0x00FFF6",
             "Name": "superbwarfare.yx_100.cannon_he"
           }
         }
