@@ -3734,8 +3734,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @OnlyIn(Dist.CLIENT)
     public Component firstPersonAmmoComponent(GunData data, Player player) {
+        var name = data.compute().name;
+        if (name == null || name.isBlank()) return Component.empty();
+
         int ammoCount = this.getAmmoCount(player);
-        return Component.translatable(data.compute().name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
+        return Component.translatable(name, ammoCount == Integer.MAX_VALUE ? "∞" : ammoCount);
     }
 
     @OnlyIn(Dist.CLIENT)

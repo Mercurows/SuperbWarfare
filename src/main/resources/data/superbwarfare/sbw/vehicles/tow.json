@@ -25,7 +25,6 @@
     "Missile": {
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
-      "Name": "",
       "AmmoType": "superbwarfare:tow_missile",
       "Projectile": "superbwarfare:wg_missile",
       "DefaultZoom": 3,
@@ -41,9 +40,7 @@
       "ExplosionRadius": 6,
       "SoundInfo": {
         "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
-        "Fire3P": "superbwarfare:bmp_2_missile_fire_3p",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null
+        "Fire3P": "superbwarfare:bmp_2_missile_fire_3p"
       },
       "SoundRadius": 12,
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_tow.png"

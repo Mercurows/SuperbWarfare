@@ -62,8 +62,6 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:prism_tank_fire_high_1p",
         "Fire3P": "superbwarfare:prism_tank_fire_high_3p",
-        "Fire3PFar": null,
-        "Fire3PVeryFar": null,
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 12,

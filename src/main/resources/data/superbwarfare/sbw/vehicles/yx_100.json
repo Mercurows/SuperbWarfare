@@ -181,7 +181,6 @@
         "Directions": ["WeaponStationBarrel"]
       },
       "Crosshair": "@VehicleCommonGun",
-      "Name": "",
       "SoundInfo": {
         "Fire1P": "superbwarfare:m_2_hb_fire_1p",
         "Fire3P": "superbwarfare:m_2_hb_fire_3p",
@@ -228,7 +227,6 @@
         "Directions": [[0, 1, 0]]
       },
       "Crosshair": "@VehicleCommonMissile",
-      "Name": "",
       "SoundInfo": {
         "Fire1P": "superbwarfare:decoy_release",
         "Fire3P": "superbwarfare:decoy_release",
