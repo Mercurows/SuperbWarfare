@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -563,7 +563,6 @@ public final class VehicleEngineUtils {
                     vehicle.setXRot(Mth.clamp(vehicle.getXRot() + 0.1f, -89, 89));
                 }
             } else if (passenger instanceof Player) {
-
                 if (!vehicle.engineStart && vehicle.forwardInputDown()) {
                     vehicle.engineStart = true;
                     vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
