@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.network.message.send.ChangeVehicleSeatMessage;
 import com.atsuishio.superbwarfare.network.message.send.SwitchVehicleWeaponMessage;
 import net.minecraft.client.Minecraft;
@@ -71,7 +72,10 @@ public class MinecraftMixin {
                 if (!options.keyShift.isDown()
                         && weaponVehicle.hasWeapon(seatIndex)
                         && weaponVehicle.getWeaponIndex(seatIndex) != index) {
-                    PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, false));
+                    if (ClientEventHandler.switchVehicleWeaponCooldown <= 0) {
+                        PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, false));
+                        ClientEventHandler.switchVehicleWeaponCooldown = 3;
+                    }
                 }
             }
         }
