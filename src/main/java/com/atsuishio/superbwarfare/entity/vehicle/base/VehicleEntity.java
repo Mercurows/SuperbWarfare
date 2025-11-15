@@ -999,6 +999,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 getThirdPersonCameraPosition() {
         var pos = computed().thirdPersonCameraPos;
+        if (pos == null) {
+            pos = new Vec3(0, 1, 3);
+        }
         return new Vec3(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x);
     }
 
@@ -3022,7 +3025,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void handleClientSync() {
-        if (level() instanceof ServerLevel && tickCount %2 == 0) {
+        if (level() instanceof ServerLevel && tickCount % 2 == 0) {
             entityData.set(SERVER_YAW, getYRot());
             entityData.set(SERVER_PITCH, getXRot());
         }
