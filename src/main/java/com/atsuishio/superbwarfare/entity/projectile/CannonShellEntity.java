@@ -58,7 +58,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         this.noCulling = true;
     }
 
-    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, Type type, int sparedAmount, int sparedTime, int sparedAngle) {
+    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, int sparedTime) {
         super(ModEntities.CANNON_SHELL.get(), entity, world);
         this.noCulling = true;
         this.damage = damage;
@@ -67,10 +67,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
         this.gravity = gravity;
-        this.type = type;
-        this.sparedAmount = sparedAmount;
         this.sparedTime = sparedTime;
-        this.sparedAngle = sparedAngle;
     }
 
     public CannonShellEntity durability(int durability) {
@@ -289,5 +286,17 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public boolean forceLoadChunk() {
         return true;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public void setSparedAmount(int sparedAmount) {
+        this.sparedAmount = sparedAmount;
+    }
+
+    public void setSparedAngle(int sparedAngle) {
+        this.sparedAngle = sparedAngle;
     }
 }

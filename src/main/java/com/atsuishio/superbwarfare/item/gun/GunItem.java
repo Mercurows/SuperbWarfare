@@ -827,6 +827,24 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 smallCannonShell.antiAir(true);
             }
 
+            if (entity instanceof CannonShellEntity cannonShell) {
+                var compute = data.compute();
+                if (compute.isArmorPiercingProjectile) {
+                    cannonShell.setType(CannonShellEntity.Type.AP);
+                    cannonShell.durability(100);
+                } else if (compute.isHighExplosiveProjectile) {
+                    cannonShell.setType(CannonShellEntity.Type.HE);
+                } else if (compute.isClusterMunitionsProjectile) {
+                    cannonShell.setType(CannonShellEntity.Type.CM);
+                    cannonShell.setSparedAmount(compute.sparedAmount);
+                    cannonShell.setSparedAngle(compute.sparedAngle);
+                } else if (compute.isGrapeShotProjectile) {
+                    cannonShell.setType(CannonShellEntity.Type.GRAPE);
+                    cannonShell.setSparedAmount(compute.sparedAmount);
+                    cannonShell.setSparedAngle(compute.sparedAngle);
+                }
+            }
+
             if (entity instanceof SwarmDroneEntity swarmDrone && shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle) {
                 Vec3 lookVec = shooter.getViewVector(1);
                 Entity lookingEntity = SeekTool.seekLivingEntity(shooter, 384, 6);

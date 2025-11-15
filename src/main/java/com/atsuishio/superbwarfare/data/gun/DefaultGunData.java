@@ -306,8 +306,12 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public boolean isClusterMunitionsProjectile = false;
 
     @ServerOnly
-    @SerializedName("ClusterMunitionsSize")
-    public int clusterMunitionsSize = 10;
+    @SerializedName("SparedAmount")
+    public int sparedAmount = 10;
+
+    @ServerOnly
+    @SerializedName("SparedAngle")
+    public int sparedAngle = 15;
 
     @ServerOnly
     @SerializedName("IsArmorPiercingProjectile")
@@ -316,6 +320,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @ServerOnly
     @SerializedName("IsHighExplosiveProjectile")
     public boolean isHighExplosiveProjectile = false;
+
+    @ServerOnly
+    @SerializedName("IsGrapeShotProjectile")
+    public boolean isGrapeShotProjectile = false;
 
     @SerializedName("UseVehicleDeltaMovement")
     public boolean useVehicleDeltaMovement = false;

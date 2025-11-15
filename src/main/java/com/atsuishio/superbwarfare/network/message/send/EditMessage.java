@@ -11,12 +11,15 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+
+import static com.atsuishio.superbwarfare.event.LivingEventHandler.stopGunReloadSound;
 
 public record EditMessage(int msgType, boolean add, boolean isVehicle) implements CustomPacketPayload {
     public static final Type<EditMessage> TYPE = new Type<>(Mod.loc("edit"));
@@ -42,6 +45,7 @@ public record EditMessage(int msgType, boolean add, boolean isVehicle) implement
 
             vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
                 int size = data.getDefault().getAmmoConsumers().size();
+                stopGunReloadSound((ServerPlayer) player, data);
                 data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
             });
 

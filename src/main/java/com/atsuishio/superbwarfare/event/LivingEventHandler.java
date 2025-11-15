@@ -449,7 +449,7 @@ public class LivingEventHandler {
         }
     }
 
-    private static void stopGunReloadSound(ServerPlayer player, GunData data) {
+    public static void stopGunReloadSound(ServerPlayer player, GunData data) {
         var soundInfo = data.compute().soundInfo;
         soundInfo.cancellableSounds.list
                 .forEach(str -> {
