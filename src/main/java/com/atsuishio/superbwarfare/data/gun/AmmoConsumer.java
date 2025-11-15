@@ -199,6 +199,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
      * 返还指定数量的弹药
      * <br>
      * 注：不会实际消耗枪内弹药
+     *
      * @return 成功返还的弹药数量
      */
     public int withdraw(@NotNull Entity ammoSupplier, int count) {
@@ -278,6 +279,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
             if (!result.isEmpty()) {
                 Mod.LOGGER.warn("trying to withdraw ammo {} with count {}, but only {} is inserted", stackToInsert, count, inserted);
+                break;
             }
         }
 
