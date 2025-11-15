@@ -418,6 +418,8 @@ public class ModItems {
         DispenserBlock.registerBehavior(MEDIUM_ROCKET_AP.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_AP.get()));
         DispenserBlock.registerBehavior(MEDIUM_ROCKET_CM.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_CM.get()));
         DispenserBlock.registerBehavior(MEDIUM_ROCKET_HE.get(), new MediumRocketItem.MediumRocketDispenseBehavior(MEDIUM_ROCKET_HE.get()));
+        DispenserBlock.registerBehavior(MORTAR_SHELL.get(), new MortarShell.MortarShellDispenseBehavior(MORTAR_SHELL.get()));
+        DispenserBlock.registerBehavior(POTION_MORTAR_SHELL.get(), new MortarShell.MortarShellDispenseBehavior(POTION_MORTAR_SHELL.get()));
     }
 
     public static void register(IEventBus bus) {

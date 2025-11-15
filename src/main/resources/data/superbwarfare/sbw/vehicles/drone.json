@@ -4,5 +4,6 @@
   "Mass": 0.0005,
   "VehicleContainerType": "Empty",
   "SendHitParticles": false,
+  "EngineSound": "superbwarfare:drone_engine",
   "Type": "Drone"
 }

@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -115,7 +114,7 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
         if (stack.getItem() instanceof FiringParameters) {
             var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
             if (parameters == null) {
-                parameters = new FiringParameters.Parameters(new BlockPos(0, 0, 0));
+                parameters = new FiringParameters.Parameters();
             }
             double targetX = parameters.pos().getX();
             double targetY = parameters.pos().getY() - 1;

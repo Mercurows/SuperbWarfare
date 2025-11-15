@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.PITCH;
+import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.TARGET_PITCH;
 
 public record AdjustMortarAngleMessage(double scroll) implements CustomPacketPayload {
     public static final Type<AdjustMortarAngleMessage> TYPE = new Type<>(Mod.loc("adjust_mortar_angle"));
@@ -33,7 +33,7 @@ public record AdjustMortarAngleMessage(double scroll) implements CustomPacketPay
         if (looking == null) return;
 
         if (looking instanceof MortarEntity mortar) {
-            mortar.getEntityData().set(PITCH, (float) Mth.clamp(mortar.getEntityData().get(PITCH) + 0.5 * message.scroll, -89, -20));
+            mortar.getEntityData().set(TARGET_PITCH, (float) Mth.clamp(mortar.getEntityData().get(TARGET_PITCH) + 0.5 * message.scroll, -89, -20));
         }
 
         SoundTool.playLocalSound(player, ModSounds.ADJUST_FOV.get(), 1f, 0.7f);

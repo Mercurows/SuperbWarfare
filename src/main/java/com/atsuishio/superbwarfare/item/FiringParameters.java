@@ -31,6 +31,10 @@ public class FiringParameters extends Item implements ItemScreenProvider {
         public Parameters(BlockPos pos) {
             this(pos, 0, false);
         }
+
+        public Parameters() {
+            this(new BlockPos(0, 0, 0));
+        }
     }
 
     public FiringParameters() {

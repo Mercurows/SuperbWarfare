@@ -4,20 +4,20 @@ import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSerializers;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.FiringParameters;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -77,25 +77,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             return InteractionResult.SUCCESS;
         }
 
-        // 手动添加弹药
-
-        if (gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
-            var inStack = this.items.getFirst();
-            int count = inStack.getCount();
-
-            if (count < this.getMaxStackSize()) {
-                this.setItem(0, stack.copyWithCount(count + 1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                if (player instanceof ServerPlayer serverPlayer) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
-                }
-            }
-            return InteractionResult.SUCCESS;
-        } else {
-            return super.interact(player, hand);
-        }
+        return super.interact(player, hand);
     }
 
     @Override
@@ -152,7 +134,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         var data = getGunData(weaponName);
         if (data == null) return;
 
-        var parameters = stack.getOrDefault(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos(0, 0, 0)));
+        var parameters = stack.getOrDefault(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters());
 
         double targetX = parameters.pos().getX();
         double targetY = parameters.pos().getY();

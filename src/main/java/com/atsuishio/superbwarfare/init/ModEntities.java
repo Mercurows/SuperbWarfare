@@ -66,7 +66,7 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<RpgRocketStandardEntity>> RPG_ROCKET_STANDARD = register("rpg_rocket_standard",
             EntityType.Builder.<RpgRocketStandardEntity>of(RpgRocketStandardEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<MortarShellEntity>> MORTAR_SHELL = register("mortar_shell",
-            EntityType.Builder.<MortarShellEntity>of(MortarShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<MortarShellEntity>of(MortarShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f).eyeHeight(0.2F));
     public static final DeferredHolder<EntityType<?>, EntityType<ProjectileEntity>> PROJECTILE = register("projectile",
             EntityType.Builder.<ProjectileEntity>of(ProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).noSave().noSummon().sized(0.25f, 0.25f));
     public static final DeferredHolder<EntityType<?>, EntityType<CannonShellEntity>> CANNON_SHELL = register("cannon_shell",

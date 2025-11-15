@@ -20,6 +20,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.*;
@@ -357,7 +358,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float gunYRotO;
     public float gunXRotO;
 
-    public boolean cannotFire;
 
     public int noPassengerTime;
 
@@ -1027,6 +1027,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void turretTurnSound(float diffX, float diffY, float pitch) {
+        if (this instanceof MortarEntity) return;
         if (level().isClientSide && (java.lang.Math.abs(diffY) > 0.5 || java.lang.Math.abs(diffX) > 0.5)) {
             level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), ModSounds.TURRET_TURN.get(), this.getSoundSource(), (float) java.lang.Math.min(0.15 * (java.lang.Math.max(Mth.abs(diffX), Mth.abs(diffY))), 0.75), (random.nextFloat() * 0.05f + pitch), false);
         }
@@ -2282,18 +2283,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return selectedWeapon.get(seatIndex);
     }
 
-    @Deprecated(forRemoval = true, since = "0.8.9")
-    public void turretAutoAimFormVector(Vec3 shootVec) {
-        this.turretAutoAimFromVector(shootVec);
-    }
-
     public void turretAutoAimFromVector(Vec3 shootVec) {
         VehicleWeaponUtils.turretAutoAimFromVector(this, shootVec);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.8.9")
-    public void turretAutoAimFormUuid(String uuid, LivingEntity pLiving) {
-        this.turretAutoAimFromUuid(uuid, pLiving);
     }
 
     public void turretAutoAimFromUuid(String uuid, LivingEntity pLiving) {
