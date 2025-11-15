@@ -33,6 +33,7 @@ import com.atsuishio.superbwarfare.menu.VehicleMenu;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
+import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
@@ -3220,12 +3221,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return 0.1;
     }
 
-    public double getMouseSpeedX() {
-        return 0.4;
-    }
-
-    public double getMouseSpeedY() {
-        return 0.4;
+    public Vec2 getMouseSpeed() {
+        return VehicleResource.compute(this).mouseSpeed;
     }
 
     public float gearRot(float tickDelta) {

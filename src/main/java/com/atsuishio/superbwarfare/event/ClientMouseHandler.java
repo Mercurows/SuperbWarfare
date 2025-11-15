@@ -88,8 +88,9 @@ public class ClientMouseHandler {
                 speedX = (drone.getMouseSensitivity() / ClientEventHandler.droneFovLerp) * (posN.x - posO.x);
                 speedY = (drone.getMouseSensitivity() / ClientEventHandler.droneFovLerp) * (posN.y - posO.y);
 
-                lerpSpeedX = Mth.lerp(drone.getMouseSpeedX(), lerpSpeedX, speedX);
-                lerpSpeedY = Mth.lerp(drone.getMouseSpeedY(), lerpSpeedY, speedY);
+                var mouseSpeed = drone.getMouseSpeed();
+                lerpSpeedX = Mth.lerp(mouseSpeed.x, lerpSpeedX, speedX);
+                lerpSpeedY = Mth.lerp(mouseSpeed.y, lerpSpeedY, speedY);
 
                 NetworkRegistry.PACKET_HANDLER.sendToServer(new MouseMoveMessage(lerpSpeedX, lerpSpeedY));
             }
@@ -112,8 +113,9 @@ public class ClientMouseHandler {
             speedX = vehicle.getMouseSensitivity() * (posN.x - posO.x);
             speedY = y * vehicle.getMouseSensitivity() * (posN.y - posO.y);
 
-            lerpSpeedX = Mth.lerp(vehicle.getMouseSpeedX(), lerpSpeedX, speedX);
-            lerpSpeedY = Mth.lerp(vehicle.getMouseSpeedY(), lerpSpeedY, speedY);
+            var mouseSpeed = vehicle.getMouseSpeed();
+            lerpSpeedX = Mth.lerp(mouseSpeed.x, lerpSpeedX, speedX);
+            lerpSpeedY = Mth.lerp(mouseSpeed.y, lerpSpeedY, speedY);
 
             double i = 0;
 

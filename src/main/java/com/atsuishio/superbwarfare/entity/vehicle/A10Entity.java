@@ -170,16 +170,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public double getMouseSpeedX() {
-        return 0.3;
-    }
-
-    @Override
-    public double getMouseSpeedY() {
-        return 0.3;
-    }
-
-    @Override
     public List<OBB> getOBBs() {
         return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7, this.obb8, this.obb9, this.obb10, this.obb11);
     }
