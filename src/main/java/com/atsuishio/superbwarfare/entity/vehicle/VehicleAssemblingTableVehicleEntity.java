@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
-import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -25,14 +24,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -40,10 +35,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
-import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
-import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
 public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implements GeoEntity, HasCustomInventoryScreen, MenuProvider {
 
@@ -220,29 +211,8 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     }
 
     @Override
-    public boolean engineRunning() {
-        return (getFirstPassenger() != null && Math.abs(getDeltaMovement().length()) > 0);
-    }
-
-    @Override
-    public float getEngineSoundVolume() {
-        return (float) getDeltaMovement().length();
-    }
-
-    @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.5f, getY() + 0.5f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
-    }
-
-    @Override
     public void destroy() {
         super.destroy();
-
         if (level() instanceof ServerLevel) {
             var item = new ItemEntity(level(), this.getX(), this.getY(), this.getZ(), new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
             item.setPickUpDelay(50);
@@ -259,15 +229,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
         return this.cache;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (isFreeCam(player) && this.getSeatIndex(player) == 0 && Mth.abs((float) (freeCameraYaw * freeCameraPitch)) > 0.01) {
-            return new Vec2((float) (getYaw(partialTicks) - 0.5f * Mth.lerp(partialTicks, deltaYo, deltaY) - freeCameraYaw), (float) (getPitch(partialTicks) - 0.5f * Mth.lerp(partialTicks, deltaXo, deltaX) + freeCameraPitch));
-        }
-
-        return super.getCameraRotation(partialTicks, player, false, false);
-    }
 
     @Override
     public @NotNull List<ItemStack> getRetrieveItems() {
