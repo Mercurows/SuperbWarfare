@@ -191,7 +191,7 @@ public class Kh39Entity extends MissileProjectile implements GeoEntity {
 
     @Override
     public double getDefaultGravity() {
-        return tickCount < 8 ? 0.15F : super.getGravity();
+        return tickCount < 8 ? 0.15F : super.getDefaultGravity();
     }
 
     @Override

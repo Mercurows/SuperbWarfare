@@ -38,7 +38,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class Agm65Entity extends MissileProjectile implements GeoEntity {
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level level) {
@@ -191,7 +190,7 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity {
 
     @Override
     public double getDefaultGravity() {
-        return tickCount < 8 ? 0.15F : super.getGravity();
+        return tickCount < 8 ? 0.15F : super.getDefaultGravity();
     }
 
     @Override

@@ -112,7 +112,7 @@
   ],
   "Seats": {
     "HidePassenger": true,
-    "Transform" : "Turret",
+    "Transform": "Turret",
     "Position": [0, 3.3, 1.5],
     "MinPitch": -5,
     "MaxPitch": 45,
