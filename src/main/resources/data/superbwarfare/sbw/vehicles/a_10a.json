@@ -132,7 +132,15 @@
       "ExplosionDamage": 250,
       "ExplosionRadius": 12,
       "UseVehicleDeltaMovement": true,
-      "Velocity": 0.95,
+      "Velocity": 1.05,
+      "SeekWeaponInfo": {
+        "SeekDirection": "Default",
+        "SeekRange": 384,
+        "SeekAngle": 20,
+        "seekTime": 10,
+        "TargetHeight": 10,
+        "MinTargetSize": 0.9
+      },
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.53, 0],
@@ -145,7 +153,7 @@
         "ReloadEnd": "superbwarfare:bomb_reload",
         "Change": "superbwarfare:into_missile"
       },
-      "Crosshair": "@AirCraftCommon",
+      "Crosshair": "@AirCraftMissile",
       "CrosshairColor": "0x66FF00",
       "SoundRadius": 8
     }

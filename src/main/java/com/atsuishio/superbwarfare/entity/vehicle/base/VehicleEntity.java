@@ -1301,11 +1301,18 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         playShootSound3p(living, weaponName);
     }
 
+    public Entity tergetEntity(GunData gunData) {
+        var seekInfo = gunData.compute().seekWeaponInfo;
+        if (seekInfo == null) return null;
+        if (lockTime < seekInfo.seekTime) return null;
+        return EntityFindUtil.findEntity(level(), getTargetUuid());
+    }
+
     public void vehicleShoot(LivingEntity living) {
         int seatIndex = getSeatIndex(living);
         modifyGunData(seatIndex, data -> {
             if (!data.canShoot(getAmmoSupplier())) return;
-            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.compute().spread, true, null, null));
+            data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1), data, data.compute().spread, true, tergetEntity(data) == null ? null : tergetEntity(data).getUUID(), null));
         });
 
         var gunData = getGunData(seatIndex);
@@ -2054,6 +2061,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
         this.inertiaRotate(this.computed().inertiaRotateRate);
 
+        for (int i = 0; i < data().compute().seats().size();i ++) {
+            seekTarget(i, getNthEntity(i));
+        }
+
         this.refreshDimensions();
     }
 
@@ -2549,6 +2560,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 getViewPos(Entity entity, float partialTicks) {
         return VehicleVecUtils.getViewPos(this, entity, partialTicks);
+    }
+
+    public Vec3 getSeekVec(Entity entity, float partialTicks) {
+        return VehicleVecUtils.getSeekVec(this, entity, partialTicks);
+    }
+
+    public Vec3 getSeekVec(int seatIndex, float partialTicks) {
+        return VehicleVecUtils.getSeekVec(this, getNthEntity(seatIndex), partialTicks);
     }
 
     /**
@@ -3898,23 +3917,25 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return firstPersonAmmoComponent(data, player);
     }
 
-
-
-    public void seekTarget() {
-        if (!(this.getFirstPassenger() instanceof Player player)) return;
+    public void seekTarget(int seatIndex, Entity controller) {
+        if (controller == null) return;
+        var gunData = getGunData(seatIndex);
+        if (gunData == null) return;
+        var seekInfo = gunData.compute().seekWeaponInfo;
+        if (seekInfo == null) return;
 
         if (getTargetUuid().equals(lockingTargetO) && !getTargetUuid().equals("none")) {
             lockTime++;
         } else {
-            resetSeek(player);
+            resetSeek(controller);
         }
 
         Entity entity = new SeekTool.Builder(this)
-                .withinRange(384)
-                .withinAngle(18)
+                .withinRange(seekInfo.seekRange)
+                .withinAngle(getSeekVec(seatIndex, 1),seekInfo.seekAngle)
                 .baseFilter()
-                .onGround(10)
-                .sizeBiggerThan(0.9)
+                .onGround(seekInfo.targetHeight)
+                .sizeBiggerThan(seekInfo.minTargetSize)
                 .smokeFilter()
                 .noVehicle()
                 .noClip()
@@ -3925,7 +3946,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 setTargetUuid(String.valueOf(entity.getUUID()));
             }
             if (!String.valueOf(entity.getUUID()).equals(getTargetUuid())) {
-                resetSeek(player);
+                resetSeek(controller);
                 setTargetUuid(String.valueOf(entity.getUUID()));
             }
         } else {
@@ -3933,23 +3954,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (lockTime == 1) {
-            if (player instanceof ServerPlayer serverPlayer) {
+            if (controller instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_LOCKING.get(), 2, 1);
             }
         }
 
-        if (lockTime > 10) {
-            if (player instanceof ServerPlayer serverPlayer) {
+        if (lockTime > seekInfo.seekTime) {
+            if (controller instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_LOCKED.get(), 2, 1);
             }
             locked = true;
         }
     }
 
-    public void resetSeek(Player player) {
+    public void resetSeek(Entity controller) {
         lockTime = 0;
         locked = false;
-        if (player instanceof ServerPlayer serverPlayer) {
+        if (controller instanceof ServerPlayer serverPlayer) {
             var clientboundstopsoundpacket = new ClientboundStopSoundPacket(new ResourceLocation(Mod.MODID, "jet_lock"), SoundSource.PLAYERS);
             serverPlayer.connection.send(clientboundstopsoundpacket);
         }

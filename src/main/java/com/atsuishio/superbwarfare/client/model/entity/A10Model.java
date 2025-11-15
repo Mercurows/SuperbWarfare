@@ -48,24 +48,33 @@ public class A10Model extends VehicleModel<A10Entity> {
 
             case "bomb3" -> (bone, vehicle, state) ->
                     bone.setHidden(shouldHideBomb(vehicle, 1));
-//
-//            case "missile1" -> (bone, vehicle, state) ->
-//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 4);
-//
-//            case "missile2" -> (bone, vehicle, state) ->
-//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 3);
-//
-//            case "missile4" -> (bone, vehicle, state) ->
-//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 2);
-//
-//            case "missile3" -> (bone, vehicle, state) ->
-//                    bone.setHidden(vehicle.getEntityData().get(LOADED_MISSILE) < 1);
+
+            case "missile1" -> (bone, vehicle, state) ->
+                    bone.setHidden(shouldHideMissile(vehicle, 4));
+
+            case "missile2" -> (bone, vehicle, state) ->
+                    bone.setHidden(shouldHideMissile(vehicle, 3));
+
+            case "missile4" -> (bone, vehicle, state) ->
+                    bone.setHidden(shouldHideMissile(vehicle, 2));
+
+            case "missile3" -> (bone, vehicle, state) ->
+                    bone.setHidden(shouldHideMissile(vehicle, 1));
 
             default -> null;
         };
     }
     public boolean shouldHideBomb(VehicleEntity vehicle, int ammo) {
         var gunData = vehicle.getGunData("Bomb");
+        if (gunData == null) {
+            return false;
+        } else {
+            return gunData.ammo.get() < ammo;
+        }
+    }
+
+    public boolean shouldHideMissile(VehicleEntity vehicle, int ammo) {
+        var gunData = vehicle.getGunData("Missile");
         if (gunData == null) {
             return false;
         } else {

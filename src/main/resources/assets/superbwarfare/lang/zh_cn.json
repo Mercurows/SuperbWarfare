@@ -757,6 +757,7 @@
   "superbwarfare.a_10_a.cannon": "30MM CANNON %1$s",
   "superbwarfare.a_10_a.rocket": "70MM ROCKET %1$s",
   "superbwarfare.a_10_a.bomb": "MK-82 BOMB %1$s",
+  "superbwarfare.a_10_a.missile": "AGM-65 %1$s",
   "superbwarfare.prism_tank.laser": "LASER %1$s",
 
   "config.superbwarfare.title": "卓越前线",

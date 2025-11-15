@@ -289,6 +289,46 @@ public final class VehicleVecUtils {
     }
 
     /**
+     * 获取载具锁定向量
+     *
+     * @param vehicle      载具
+     * @param entity       乘客
+     * @param partialTicks 客户端ticks
+     * @return 视角向量
+     */
+    public static Vec3 getSeekVec(VehicleEntity vehicle, Entity entity, float partialTicks) {
+        var data = vehicle.getGunData(vehicle.getSeatIndex(entity));
+        if (data == null) {
+            return vehicle.getViewVector(partialTicks);
+        }
+
+        StringOrVec3 stringOrVec3 = data.compute().seekWeaponInfo.seekDirection;
+
+        if (stringOrVec3 == null) {
+            return vehicle.getShootVec(entity, partialTicks);
+        } else if (stringOrVec3.isString()) {
+            return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
+        } else {
+            var vec3 = stringOrVec3.vec3;
+            Vector4f worldPosition = transformPosition(
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                    (float) vec3.x + (float) stringOrVec3.vec3.x,
+                    (float) vec3.y + (float) stringOrVec3.vec3.y,
+                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+            Vector4f worldPositionO = transformPosition(
+                    vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                    (float) vec3.x,
+                    (float) vec3.y,
+                    (float) vec3.z);
+
+            Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+            Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            return startPos.vectorTo(endPos).normalize();
+        }
+    }
+
+    /**
      * 获取载具射击向量
      *
      * @param vehicle      载具

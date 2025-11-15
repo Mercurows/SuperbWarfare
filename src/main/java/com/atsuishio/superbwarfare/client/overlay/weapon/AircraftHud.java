@@ -4,11 +4,13 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.vehicle.A10Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.MathTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
+import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +23,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -30,8 +31,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.joml.Math;
-
-import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
@@ -42,19 +41,11 @@ public class AircraftHud {
     public static final String ID = "@Aircraft";
 
     private static float lerpVy = 1;
-    private static float lerpLock = 1;
     private static float lerpG = 1;
     private static float diffY;
     private static float diffX;
 
-    private static final ResourceLocation FRAME_GREEN = Mod.loc("textures/overlay/frame/frame_green.png");
-    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target.png");
-    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
 
-    private static final ResourceLocation IND_1 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind1.png");
-    private static final ResourceLocation IND_2 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind2.png");
-    private static final ResourceLocation IND_3 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind3.png");
-    private static final ResourceLocation IND_4 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind4.png");
     private static final ResourceLocation BOMB_SCOPE = Mod.loc("textures/overlay/vehicle/aircraft/bomb_scope.png");
     private static final ResourceLocation BOMB_SCOPE_PITCH = Mod.loc("textures/overlay/vehicle/aircraft/bomb_scope_pitch.png");
     private static final ResourceLocation HUD_BASE_MISSILE = Mod.loc("textures/overlay/vehicle/aircraft/hud_base_missile.png");
@@ -162,7 +153,11 @@ public class AircraftHud {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            RenderHelper.blit(poseStack, HUD_BASE, x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+            if (gunData.compute().crosshair.equals("@AirCraftMissile")) {
+                RenderHelper.blit(poseStack, HUD_BASE_MISSILE, x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+            } else {
+                RenderHelper.blit(poseStack, HUD_BASE, x - 160, y - 160, 0, 0, 320, 320, 320, 320, color);
+            }
 
             //指南针
             RenderHelper.blit(poseStack, COMPASS, x - 128, y - 122, 128 + (64F / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
@@ -244,7 +239,7 @@ public class AircraftHud {
             float x = (float) pCross.x;
             float y = (float) pCross.y;
 
-            if ((mc.options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && !gunData.compute().crosshair.equals("@AirBomb")) {
+            if ((mc.options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && !gunData.compute().crosshair.equals("@AirBomb") && !gunData.compute().crosshair.equals("@AirCraftMissile")) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
                 RenderSystem.enableBlend();
@@ -253,7 +248,7 @@ public class AircraftHud {
                 RenderSystem.setShaderColor(1, 1, 1, 1);
                 RenderHelper.blit(poseStack, HUD_BASE2, x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
 
-            } else if (mc.options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
+            } else if (mc.options.getCameraType() != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
 
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
@@ -283,51 +278,6 @@ public class AircraftHud {
         }
 
         poseStack.popPose();
-
-        // A-10的导弹锁定
-        if (vehicle instanceof A10Entity a10Entity && a10Entity.getWeaponIndex(0) == 3) {
-            Entity targetEntity = EntityFindUtil.findEntity(player.level(), a10Entity.getTargetUuid());
-            List<Entity> entities = new SeekTool.Builder(a10Entity)
-                    .withinRange(384)
-                    .withinAngle(20)
-                    .baseFilter()
-                    .onGround(10)
-                    .sizeBiggerThan(0.9)
-                    .smokeFilter()
-                    .noVehicle()
-                    .noClip()
-                    .notFriendly()
-                    .build();
-
-            for (var e : entities) {
-                Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                if (VectorUtil.canSee(pos3)) {
-                    Vec3 point = VectorUtil.worldToScreen(pos3);
-                    boolean nearest = e == targetEntity;
-                    boolean lockOn = a10Entity.locked && nearest;
-
-                    poseStack.pushPose();
-                    float x = (float) point.x;
-                    float y = (float) point.y;
-
-                    if (lockOn) {
-                        RenderHelper.blit(poseStack, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                    } else if (nearest) {
-                        lerpLock = Mth.lerp(partialTick, lerpLock, 2 * a10Entity.lockTime);
-                        float lockTime = Mth.clamp(20 - lerpLock, 0, 20);
-                        RenderHelper.blit(poseStack, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        RenderHelper.blit(poseStack, FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                    } else {
-                        RenderHelper.blit(poseStack, FRAME_GREEN, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                    }
-                    poseStack.popPose();
-                }
-            }
-        }
-
         poseStack.popPose();
     }
 

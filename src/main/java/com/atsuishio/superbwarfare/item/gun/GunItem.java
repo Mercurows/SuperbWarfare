@@ -848,6 +848,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 }
             }
 
+            if (entity instanceof MissileProjectile missileProjectile && !(entity instanceof SwarmDroneEntity swarmDrone)) {
+                missileProjectile.setTargetUuid(String.valueOf(uuid));
+            }
+
             if (entity instanceof SwarmDroneEntity swarmDrone && shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle) {
                 Vec3 lookVec = shooter.getViewVector(1);
                 Entity lookingEntity = SeekTool.seekLivingEntity(shooter, 384, 6);
