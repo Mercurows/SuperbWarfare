@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.nbt.CompoundTag;
@@ -94,12 +92,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
             return InteractionResult.sidedSuccess(this.level().isClientSide());
         }
         return super.interact(player, hand);
-    }
-
-
-    @Override
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(5 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.world.entity.EntityType;
@@ -38,11 +36,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.375f, 0.78125f, 3.46875f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.15625f, 0.375f, 1.125f), new Quaternionf(), OBB.Part.MAIN_ENGINE);
         this.obbTurret = new OBB(this.position().toVector3f(), new Vector3f(1.5f, 0.34375f, 1.5f), new Quaternionf(), OBB.Part.TURRET);
-    }
-
-    @Override
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(3 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
     }
 
     @Override

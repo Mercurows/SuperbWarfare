@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
@@ -56,11 +55,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(0.75f, 0.75f, 1.5625f), new Quaternionf(), OBB.Part.SUB_ENGINE);
         this.obb10 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
         this.obb11 = new OBB(this.position().toVector3f(), new Vector3f(0.34375f, 0.359375f, 1.78125f), new Quaternionf(), OBB.Part.BODY);
-    }
-
-    @Override
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(17, 3, 0);
     }
 
     @Override

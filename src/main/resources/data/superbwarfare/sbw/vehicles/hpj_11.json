@@ -84,6 +84,7 @@
     "All - 8",
     "$entity.getSourceAngle(source, 0.5) * damage"
   ],
+  "camera3PPos": [0, 1, 2],
   "DestroyInfo": {
     "ParticleType": "Medium",
     "ExplosionDamage": 100,

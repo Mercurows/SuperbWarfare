@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
-import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -15,11 +13,6 @@ public class Hpj11Entity extends AutoAimableEntity implements GeoEntity {
 
     public Hpj11Entity(EntityType<Hpj11Entity> type, Level world) {
         super(type, world);
-    }
-
-    @Override
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(2 + 0.75 * ClientMouseHandler.custom3pDistanceLerp, 0.75, 0);
     }
 
     @Override
