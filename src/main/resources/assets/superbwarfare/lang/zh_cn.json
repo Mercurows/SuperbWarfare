@@ -749,6 +749,8 @@
   "superbwarfare.bmp_2.missile": "9M113 %1$s",
   "superbwarfare.yx_100.cannon_ap": "AP SHELL %1$s",
   "superbwarfare.yx_100.cannon_he": "HE SHELL %1$s",
+  "superbwarfare.yx_100.cannon_cm": "CM SHELL %1$s",
+  "superbwarfare.yx_100.cannon_grape": "GS SHELL %1$s",
   "superbwarfare.yx_100.gun": ".50 CAL HMG %1$s",
   "superbwarfare.ah_6.cannon": "20MM CANNON %1$s",
   "superbwarfare.ah_6.rocket": "70MM ROCKET %1$s",

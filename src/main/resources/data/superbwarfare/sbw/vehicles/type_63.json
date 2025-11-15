@@ -35,9 +35,9 @@
       "Template": "@Rocket",
       "Damage": 300,
       "ExplosionDamage": 300,
-      "ExplosionRadius": 12,
+      "ExplosionRadius": 6,
       "IsClusterMunitionsProjectile": true,
-      "ClusterMunitionsSize": 12
+      "SparedAmount": 12
     }
   },
   "DamageModifiers": [

@@ -7,8 +7,8 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -36,14 +36,6 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity, Expl
         this.gravity = 0.06f;
     }
 
-    public Mk82Entity(LivingEntity entity, Level level) {
-        super(ModEntities.MK_82.get(), entity, level);
-        this.noCulling = true;
-        this.explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
-        this.explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
-        this.gravity = 0.06f;
-    }
-
     public Mk82Entity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.MK_82.get(), level);
     }
@@ -54,6 +46,16 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity, Expl
         this.explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
         this.explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
         this.gravity = 0.06f;
+    }
+
+    @Override
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        var entity = source.getDirectEntity();
+        if (entity instanceof Mk82Entity mk82Entity && mk82Entity.getOwner() == this.getOwner()) {
+            return false;
+        }
+
+        return super.hurt(source, amount);
     }
 
     @Override

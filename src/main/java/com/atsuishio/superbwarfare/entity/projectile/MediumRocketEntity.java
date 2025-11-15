@@ -55,13 +55,14 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     private float fireProbability = 0;
     private int fireTime = 0;
     private int sparedAmount = 50;
+    private int sparedAngle = 15;
 
     public MediumRocketEntity(EntityType<? extends MediumRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount, float gravity) {
+    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount, float gravity, int sparedAngle) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.damage = damage;
@@ -72,6 +73,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.type = type;
         this.sparedAmount = sparedAmount;
         this.gravity = gravity;
+        this.sparedAngle = sparedAngle;
     }
 
     public MediumRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -232,7 +234,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
                 gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
-                        20);
+                        sparedAngle);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }
             discard();

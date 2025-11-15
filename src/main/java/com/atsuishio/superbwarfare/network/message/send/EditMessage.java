@@ -13,6 +13,8 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import static com.atsuishio.superbwarfare.event.LivingEventHandler.stopGunReloadSound;
+
 public record EditMessage(int type, boolean add, boolean isVehicle) {
 
     public EditMessage(int type, boolean add) {
@@ -40,6 +42,7 @@ public record EditMessage(int type, boolean add, boolean isVehicle) {
 
                 vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
                     int size = data.getDefault().getAmmoConsumers().size();
+                    stopGunReloadSound(player, data);
                     data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
                 });
 
