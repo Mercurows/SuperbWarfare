@@ -1004,8 +1004,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Nullable
     public ThirdPersonCameraPosition getThirdPersonCameraPosition() {
-        Vec3 camera3PPos = data().compute().camera3PPos;
-        return new ThirdPersonCameraPosition(camera3PPos.z + ClientMouseHandler.custom3pDistanceLerp, camera3PPos.y, camera3PPos.x);
+        var pos = computed().thirdPersonCameraPos;
+        return new ThirdPersonCameraPosition(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x);
     }
 
     public float getRoll() {
