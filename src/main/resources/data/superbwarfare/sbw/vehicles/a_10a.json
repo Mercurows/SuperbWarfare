@@ -37,7 +37,8 @@
       "Spread": 0.5,
       "Name": "superbwarfare.a_10_a.cannon",
       "SoundInfo": {
-        "FireSoundInstances": "superbwarfare:a_10a_fire"
+        "FireSoundInstances": "superbwarfare:a_10a_fire",
+        "Change": "superbwarfare:into_cannon"
       },
       "Crosshair": "@AirCraftCommon",
       "CrosshairColor": "0x66FF00",
