@@ -16,7 +16,7 @@
       "AircraftCamera": true,
       "AircraftCameraPos": [0, 4, -14]
     },
-    "Weapons": ["Cannon", "Rocket", "Bomb"]
+    "Weapons": ["Cannon", "Rocket", "Bomb", "Missile"]
   },
   "MainWeaponHudType": "@Aircraft",
   "Weapons": {

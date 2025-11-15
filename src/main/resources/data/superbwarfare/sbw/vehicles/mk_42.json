@@ -123,7 +123,7 @@
   ],
   "3rdPersonCameraPos": [0, 1, 8],
   "EngineType": "Fixed",
-  "VehicleContainerType": "One",
+  "VehicleContainerType": "Small",
   "DestroyInfo": {
     "ParticleType": "Medium",
     "ExplosionDamage": 160,

@@ -23,9 +23,9 @@
     "ExplodePassengers": false,
     "ExplodeBlocks": false
   },
+  "3rdPersonCameraPos": [0, 0, 1.5],
   "HasLowHealthWarning": false,
   "SelfHurtPercent": 0,
-  "3rdPersonCameraPos": [0, 0, 1.5],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/vehicle_assembling_table_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
   "Type": "Car",
