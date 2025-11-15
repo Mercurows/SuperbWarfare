@@ -65,9 +65,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
         if (onGround()) {
             terrainCompactA10();
         }
-
-        lowHealthWarning();
-        this.refreshDimensions();
     }
 
     @Override

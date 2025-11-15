@@ -146,6 +146,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("3rdPersonCameraPos")
     public Vec3 thirdPersonCameraPos = new Vec3(0, 1, 3);
 
+    @SerializedName("HasLowHealthWarning")
+    public boolean hasLowHealthWarning = true;
+
     @SerializedName("RotateOffsetHeight")
     public float rotateOffsetHeight = 0;
 

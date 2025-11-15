@@ -84,8 +84,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
         if (getRightTrack() > 100) {
             setRightTrack(0);
         }
-
-        lowHealthWarning();
     }
 
     public void hitBlock(Vec3 pos, GunData gunData, Entity shooter) {

@@ -191,8 +191,6 @@ public class AnnihilatorEntity extends VehicleEntity implements GeoEntity, Weapo
             this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
         }
 
-        lowHealthWarning();
-
         float delta = Math.abs(getYRot() - yRotO);
         while (getYRot() > 180F) {
             setYRot(getYRot() - 360F);

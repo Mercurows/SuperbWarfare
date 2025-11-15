@@ -24,6 +24,8 @@
     "ExplodePassengers": false,
     "ExplodeBlocks": false
   },
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0,
   "3rdPersonCameraPos": [0, 0, 0.1],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/wheel_chair_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/otto.png",

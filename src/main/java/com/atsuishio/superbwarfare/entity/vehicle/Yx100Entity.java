@@ -60,8 +60,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         if (getRightTrack() > 80) {
             setRightTrack(0);
         }
-
-        lowHealthWarning();
     }
 
     private PlayState cannonFirePredicate(AnimationState<Yx100Entity> event) {

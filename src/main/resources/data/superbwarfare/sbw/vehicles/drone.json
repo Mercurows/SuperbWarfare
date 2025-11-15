@@ -5,5 +5,7 @@
   "VehicleContainerType": "Empty",
   "SendHitParticles": false,
   "EngineSound": "superbwarfare:drone_engine",
-  "Type": "Drone"
+  "Type": "Drone",
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0
 }

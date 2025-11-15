@@ -48,7 +48,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public void baseTick() {
         super.baseTick();
         updateOBB();
-        lowHealthWarning();
     }
 
     @Override

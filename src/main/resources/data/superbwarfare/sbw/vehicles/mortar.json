@@ -19,6 +19,8 @@
     }
   },
   "Mass": 0.05,
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0,
   "VehicleContainerType": "One",
   "SendHitParticles": false,
   "Type": "Artillery"

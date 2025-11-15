@@ -98,9 +98,6 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
     public void baseTick() {
         super.baseTick();
         updateOBB();
-
-        lowHealthWarning();
-
         if (decoyInputDown()) {
             horn();
         }
