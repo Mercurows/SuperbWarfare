@@ -150,11 +150,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public boolean allowEjection() {
-        return true;
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
