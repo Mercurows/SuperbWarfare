@@ -316,7 +316,7 @@
     "ExplosionDamage": 200,
     "ExplosionRadius": 16
   },
-  "3rdPersonCameraPos": [-0.8669625, 1.5, 5],
+  "ThirdPersonCameraPos": [-0.8669625, 1.5, 5],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/yx_100_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "Type": "Tank",

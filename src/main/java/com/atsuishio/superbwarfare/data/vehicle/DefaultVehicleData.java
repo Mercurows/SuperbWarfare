@@ -143,7 +143,7 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("HornSound")
     public SoundEvent hornSound = SoundEvents.EMPTY;
     // 第三人称视角
-    @SerializedName("3rdPersonCameraPos")
+    @SerializedName("ThirdPersonCameraPos")
     public Vec3 thirdPersonCameraPos = new Vec3(0, 1, 3);
 
     @SerializedName("HasLowHealthWarning")

@@ -124,7 +124,7 @@
     "All - 8",
     "$entity.getSourceAngle(source, 0.25) * damage"
   ],
-  "3rdPersonCameraPos": [0, 1.3, 10],
+  "ThirdPersonCameraPos": [0, 1.3, 10],
   "VehicleContainerType": "Small",
   "DestroyInfo": {
     "ParticleType": "Medium",

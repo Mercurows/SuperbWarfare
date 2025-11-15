@@ -28,7 +28,7 @@
     "ExplosionRadius": 2,
     "CrashPassengers": true
   },
-  "3rdPersonCameraPos": [0, 1, 4],
+  "ThirdPersonCameraPos": [0, 1, 4],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/tom_6_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Airplane",

@@ -1003,10 +1003,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return entity.getPersistentData().getInt(TAG_SEAT_INDEX);
     }
 
-    @Nullable
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition() {
+    public Vec3 getThirdPersonCameraPosition() {
         var pos = computed().thirdPersonCameraPos;
-        return new ThirdPersonCameraPosition(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x);
+        return new Vec3(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x);
     }
 
     public float getRoll() {
