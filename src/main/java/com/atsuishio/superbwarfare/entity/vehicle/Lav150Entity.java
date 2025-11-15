@@ -58,7 +58,6 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
     public void baseTick() {
         super.baseTick();
         updateOBB();
-        lowHealthWarning();
     }
 
     private PlayState cannonFirePredicate(AnimationState<Lav150Entity> event) {

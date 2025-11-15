@@ -45,7 +45,6 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, WeaponV
     public void baseTick() {
         super.baseTick();
         this.updateOBB();
-        this.lowHealthWarning();
     }
 
     private PlayState machineGunFirePredicate(AnimationState<SpeedboatEntity> event) {

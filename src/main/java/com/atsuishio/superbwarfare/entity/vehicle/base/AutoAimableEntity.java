@@ -152,7 +152,6 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
     public void baseTick() {
         super.baseTick();
         autoAim();
-        lowHealthWarning();
     }
 
     public void autoAim() {

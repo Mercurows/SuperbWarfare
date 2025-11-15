@@ -67,8 +67,6 @@ public class Bmp2Entity extends VehicleEntity implements GeoEntity, WeaponVehicl
         if (getRightTrack() > 100) {
             setRightTrack(0);
         }
-
-        lowHealthWarning();
     }
 
     private PlayState cannonFirePredicate(AnimationState<Bmp2Entity> event) {

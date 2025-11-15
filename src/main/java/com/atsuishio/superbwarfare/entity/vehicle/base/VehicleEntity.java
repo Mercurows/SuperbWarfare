@@ -2062,6 +2062,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             seekTarget(i, getNthEntity(i));
         }
 
+        lowHealthWarning();
         this.refreshDimensions();
     }
 
@@ -2224,6 +2225,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void lowHealthWarning() {
+        if (!data().compute().hasLowHealthWarning) return;
         if (this.getHealth() <= 0.4 * this.getMaxHealth()) {
             addRandomParticle(ParticleTypes.LARGE_SMOKE, new Vec3(this.getX(), this.getY() + 0.7f * getBbHeight(), this.getZ()), 0.35f * this.getBbWidth(), level(), 0.01f, 1);
         }

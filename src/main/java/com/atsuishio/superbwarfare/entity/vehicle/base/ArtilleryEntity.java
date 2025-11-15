@@ -200,8 +200,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         } else {
             turretAutoAimFromVector(new Vec3(entityData.get(SHOOT_VEC)));
         }
-
-        lowHealthWarning();
     }
 
     @Override

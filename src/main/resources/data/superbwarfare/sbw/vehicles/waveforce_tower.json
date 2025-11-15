@@ -70,6 +70,8 @@
     "ExplosionDamage": 120,
     "ExplosionRadius": 6
   },
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/waveforce_tower_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
   "Type": "Defense"
