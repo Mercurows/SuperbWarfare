@@ -28,9 +28,9 @@ public interface WeaponVehicleEntity {
     /**
      * 切换武器事件
      *
-     * @param seatIndex    武器槽位
-     * @param value    数值（可能为-1~1之间的滚动，或绝对数值）
-     * @param isScroll 是否是滚动事件
+     * @param seatIndex 武器槽位
+     * @param value     数值（可能为-1~1之间的滚动，或绝对数值）
+     * @param isScroll  是否是滚动事件
      */
     default void changeWeapon(int seatIndex, int value, boolean isScroll) {
         if (!(this instanceof VehicleEntity vehicle)) return;
@@ -40,7 +40,10 @@ public interface WeaponVehicleEntity {
         if (weapons.isEmpty()) return;
         var count = weapons.size();
 
-        var typeIndex = Mth.clamp(isScroll ? (value + getWeaponIndex(seatIndex) + count) % count : value, 0, count - 1);
+        var currentIndex = getWeaponIndex(seatIndex);
+        var typeIndex = Mth.clamp(isScroll ? (value + currentIndex + count) % count : value, 0, count - 1);
+        if (typeIndex == currentIndex) return;
+
         var weapon = weapons.get(typeIndex);
 
         // 修改该槽位选择的武器
@@ -104,8 +107,8 @@ public interface WeaponVehicleEntity {
     /**
      * 设置该槽位当前的武器编号
      *
-     * @param seatIndex 武器槽位
-     * @param selectedWeapon  武器类型
+     * @param seatIndex      武器槽位
+     * @param selectedWeapon 武器类型
      */
     default void setWeaponIndex(int seatIndex, int selectedWeapon) {
         if (!(this instanceof VehicleEntity vehicle)) return;

@@ -49,7 +49,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.25,
-      "CrosshairColor": "0xFFC700",
+      "CrosshairColor": "0xFFFFFF",
       "Projectile": "superbwarfare:projectile",
       "RPM": 450,
       "Damage": 40,
