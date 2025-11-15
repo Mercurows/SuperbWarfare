@@ -44,10 +44,11 @@ public record EditMessage(int type, boolean add, boolean isVehicle) {
                     int size = data.getDefault().getAmmoConsumers().size();
                     stopGunReloadSound(player, data);
                     data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
-                });
 
-                // TODO 替换成合适的音效
-                SoundTool.playLocalSound(player, ModSounds.INTO_CANNON.get(), 1f, 1f);
+                    var sound = data.compute().soundInfo.change;
+                    if (sound == null) return;
+                    SoundTool.playLocalSound(player, sound, 1f, 1f);
+                });
             } else {
                 ItemStack stack = player.getMainHandItem();
                 if (!(stack.getItem() instanceof GunItem gunItem)) return;
