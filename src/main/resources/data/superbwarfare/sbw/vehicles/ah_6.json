@@ -126,7 +126,7 @@
     "EngineSoundVolume": 2
   },
   "EngineSound": "superbwarfare:ah_6_engine",
-  "camera3PPos": [0, 1, 7],
+  "3rdPersonCameraPos": [0, 1, 7],
   "UpStep": 1.1,
   "RotateOffsetHeight": 1.45,
   "Mass": 1.2,
