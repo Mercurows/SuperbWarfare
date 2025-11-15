@@ -1005,6 +1005,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 getThirdPersonCameraPosition() {
         var pos = computed().thirdPersonCameraPos;
+        if (pos == null) {
+            pos = new Vec3(0, 1, 3);
+        }
         return new Vec3(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x);
     }
 
@@ -2058,7 +2061,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
         this.inertiaRotate(this.computed().inertiaRotateRate);
 
-        for (int i = 0; i < data().compute().seats().size();i ++) {
+        for (int i = 0; i < data().compute().seats().size(); i++) {
             seekTarget(i, getNthEntity(i));
         }
 
@@ -2407,7 +2410,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return switch (string) {
             case "Turret" -> getTurretVector(ticks);
             case "Barrel" -> getBarrelVector(ticks);
-            case "Bomb" -> bombHitPos(getNthEntity(seatIndex), ticks).subtract(getShootPosForHud(getNthEntity(seatIndex), ticks));
+            case "Bomb" ->
+                    bombHitPos(getNthEntity(seatIndex), ticks).subtract(getShootPosForHud(getNthEntity(seatIndex), ticks));
             case "WeaponStationBarrel" -> getPassengerWeaponStationVector(ticks);
             case "Passenger" -> entity != null ? entity.getViewVector(ticks) : getViewVector(ticks);
             case "DeltaMovement" -> getDeltaMovement().normalize();
@@ -3027,7 +3031,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void handleClientSync() {
-        if (level() instanceof ServerLevel && tickCount %2 == 0) {
+        if (level() instanceof ServerLevel && tickCount % 2 == 0) {
             entityData.set(SERVER_YAW, getYRot());
             entityData.set(SERVER_PITCH, getXRot());
         }
@@ -3383,7 +3387,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
         int index = this.getSeatIndex(player);
         var seat = computed().seats().get(index);
-        var gunData= getGunData(player);
+        var gunData = getGunData(player);
         if (seat != null) {
             var data = seat.cameraPos;
             if (data != null) {
@@ -3415,7 +3419,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = computed().seats().get(index);
         if (seat != null) {
             var data = seat.cameraPos;
-            var gunData= getGunData(player);
+            var gunData = getGunData(player);
             if (data != null) {
                 if (zoom || isFirstPerson) {
                     if (zoom) {
@@ -3916,7 +3920,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         Entity entity = new SeekTool.Builder(this)
                 .withinRange(seekInfo.seekRange)
-                .withinAngle(getSeekVec(seatIndex, 1),seekInfo.seekAngle)
+                .withinAngle(getSeekVec(seatIndex, 1), seekInfo.seekAngle)
                 .baseFilter()
                 .onGround(seekInfo.targetHeight)
                 .sizeBiggerThan(seekInfo.minTargetSize)
