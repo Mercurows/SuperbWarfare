@@ -1095,15 +1095,19 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result, Vec3 shootPosition, Vec3 shootDirection) {
         var target = result.getEntity();
+
+        float damage = (float) data.compute().damage;
+        float headshot = (float) data.compute().headshot;
+
+        int type = 0;
+
         if (target instanceof LivingEntity living) {
             ICustomKnockback iCustomKnockback = ICustomKnockback.getInstance(living);
             iCustomKnockback.superbWarfare$setKnockbackStrength(0);
 
-            float damage = (float) data.compute().damage;
-            float headshot = (float) data.compute().headshot;
-
             if (result.isHeadshot()) {
                 DamageHandler.doDamage(living, ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), null, shooter), damage * headshot);
+                type = 1;
             } else if (result.isLegShot()) {
                 DamageHandler.doDamage(living, ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter), damage * 0.5f);
             } else {
@@ -1113,11 +1117,24 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             target.invulnerableTime = 0;
 
             iCustomKnockback.superbWarfare$resetKnockbackStrength();
-
-            if (shooter instanceof ServerPlayer player) {
-                player.level().playSound(null, player.blockPosition(), result.isHeadshot() ? ModSounds.HEADSHOT.get() : ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(result.isHeadshot() ? 1 : 0, 5));
+        } else {
+            if (result.isHeadshot()) {
+                DamageHandler.doDamage(target, ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), null, shooter), damage * headshot);
+                type = 1;
+            } else if (result.isLegShot()) {
+                DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter), damage * 0.5f);
+            } else {
+                DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter), damage);
             }
+
+            if (target instanceof VehicleEntity) {
+                type = 3;
+            }
+        }
+
+        if (shooter instanceof ServerPlayer player) {
+            player.level().playSound(null, player.blockPosition(), result.isHeadshot() ? ModSounds.HEADSHOT.get() : ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
+            PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(type, 5));
         }
 
         level.playSound(null, result.getHitPos().x, result.getHitPos().y, result.getHitPos().z, this.getRayHitEntitySound(data), SoundSource.PLAYERS, 0.7F, (float) ((2 * Math.random() - 1) * 0.05f + 1.0f));

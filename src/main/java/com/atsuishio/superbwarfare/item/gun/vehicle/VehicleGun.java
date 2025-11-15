@@ -48,6 +48,7 @@ public class VehicleGun extends GunItem {
         return true;
     }
 
+    @Override
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
         return data.compute().projectileAmount > 0
                 && !data.overHeat.get()
@@ -74,6 +75,7 @@ public class VehicleGun extends GunItem {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
+    // TODO 去掉特判
     @Override
     public void onRayHitEntity(Entity shooter, ServerLevel level, @NotNull GunData data, EntityResult result, Vec3 shootPosition, Vec3 shootDirection) {
         super.onRayHitEntity(shooter, level, data, result, shootPosition, shootDirection);
@@ -82,7 +84,6 @@ public class VehicleGun extends GunItem {
             prismTank.getEntityData().set(LASER_LENGTH, (float) root.distanceTo(result.getHitPos()));
             prismTank.hitEntity(result.getHitPos(), data, shooter);
             prismTank.getEntityData().set(LASER_SCALE, (float) data.compute().shootAnimationTime);
-
         }
     }
 

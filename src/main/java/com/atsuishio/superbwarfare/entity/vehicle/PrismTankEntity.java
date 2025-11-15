@@ -136,7 +136,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
                 sendParticle(serverLevel, ParticleTypes.LAVA, e.getX(), e.getEyeY(), e.getZ(), 4, 0, 0, 0, 0.15, true);
                 DamageHandler.doDamage(e, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter), (float) (aoeDamage - Mth.clamp(dis / range, 0, 0.75) * aoeDamage));
 
-                if (shooter.level().isClientSide() && shooter instanceof ServerPlayer player) {
+                if (shooter instanceof ServerPlayer player) {
                     var holder = Holder.direct(ModSounds.INDICATION.get());
                     player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
                     PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
