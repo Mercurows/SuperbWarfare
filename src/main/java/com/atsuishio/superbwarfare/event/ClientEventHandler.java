@@ -1188,15 +1188,14 @@ public class ClientEventHandler {
 
     public static void playVehicleClientSounds(Player player, VehicleEntity vehicle) {
         var gunData = vehicle.getGunData(vehicle.getSeatIndex(player));
-        if (gunData != null) {
-            var soundInfo = gunData.compute().soundInfo;
-            // TODO 正确获取热量
-            float pitch = vehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - vehicle.getWeaponHeat(player)));
+        if (gunData == null) return;
 
-            var sound = soundInfo.fire1P;
-            if (sound != null) {
-                player.playSound(sound, 1f, pitch);
-            }
+        var soundInfo = gunData.compute().soundInfo;
+        float pitch = vehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - vehicle.getWeaponHeat(player)));
+
+        var sound = soundInfo.fire1P;
+        if (sound != null) {
+            player.playSound(sound, 1f, pitch);
         }
     }
 
