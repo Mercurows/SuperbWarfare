@@ -216,8 +216,11 @@ public class ClickHandler {
                 && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))
                 && vehicle.banHand(player)
         ) {
-            int index = vehicle.getSeatIndex(player);
-            NetworkRegistry.PACKET_HANDLER.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
+            if (switchVehicleWeaponCooldown <= 0) {
+                int index = vehicle.getSeatIndex(player);
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
+                switchVehicleWeaponCooldown = 3;
+            }
             event.setCanceled(true);
         }
 

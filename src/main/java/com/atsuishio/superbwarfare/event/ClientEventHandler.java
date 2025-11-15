@@ -126,6 +126,9 @@ public class ClientEventHandler {
     public static double lookDistance = 0;
     public static double cameraLocation = 0.6;
 
+    // 切换载具武器的冷却时间
+    public static int switchVehicleWeaponCooldown = 0;
+
     public static double drawTime = 1;
 
     public static int shellIndex = 0;
@@ -685,6 +688,10 @@ public class ClientEventHandler {
 
         if (aimVillagerCountdown > 0) {
             aimVillagerCountdown--;
+        }
+
+        if (switchVehicleWeaponCooldown > 0) {
+            switchVehicleWeaponCooldown--;
         }
     }
 
