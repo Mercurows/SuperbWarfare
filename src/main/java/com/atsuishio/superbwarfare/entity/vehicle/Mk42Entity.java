@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
-import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -26,11 +24,6 @@ public class Mk42Entity extends ArtilleryEntity implements GeoEntity {
 
     public Mk42Entity(EntityType<Mk42Entity> type, Level world) {
         super(type, world);
-    }
-
-    @Override
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(8 + ClientMouseHandler.custom3pDistanceLerp, 1, 0);
     }
 
     private PlayState shootPredicate(AnimationState<Mk42Entity> event) {

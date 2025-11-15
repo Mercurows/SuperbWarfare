@@ -2,9 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import com.mojang.math.Axis;
@@ -274,11 +272,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     @Override
     public @NotNull List<ItemStack> getRetrieveItems() {
         return List.of(new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
-    }
-
-    @Override
-    public @Nullable ThirdPersonCameraPosition getThirdPersonCameraPosition(int seatIndex) {
-        return new ThirdPersonCameraPosition(1.5 * ClientMouseHandler.custom3pDistanceLerp, 0, 0);
     }
 
     @Override

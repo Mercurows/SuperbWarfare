@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.DestroyInfo;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -79,11 +78,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
             );
         }
         return super.computeProperties(vehicleData, rawData);
-    }
-
-    @Override
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int index) {
-        return new ThirdPersonCameraPosition(4, 1, 0);
     }
 
     @Override

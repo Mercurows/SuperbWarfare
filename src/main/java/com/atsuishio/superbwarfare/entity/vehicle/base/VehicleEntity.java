@@ -1002,14 +1002,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return entity.getPersistentData().getInt(TAG_SEAT_INDEX);
     }
 
-    /**
-     * 第三人称视角相机位置重载，返回null表示不进行修改
-     *
-     * @param seatIndex 座位索引
-     */
     @Nullable
-    public ThirdPersonCameraPosition getThirdPersonCameraPosition(int seatIndex) {
-        return null;
+    public ThirdPersonCameraPosition getThirdPersonCameraPosition() {
+        Vec3 camera3PPos = data().compute().camera3PPos;
+        return new ThirdPersonCameraPosition(camera3PPos.z + ClientMouseHandler.custom3pDistanceLerp, camera3PPos.y, camera3PPos.x);
     }
 
     public float getRoll() {
@@ -3974,4 +3970,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public String getTargetUuid() {
         return this.lockingTarget;
     }
+
+
 }
