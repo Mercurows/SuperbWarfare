@@ -11,10 +11,8 @@
       "Gravity": 0.13,
       "Spread": 0.5,
       "SoundInfo": {
-        "Fire1P": null,
         "Fire3P": "superbwarfare:mortar_fire",
         "Fire3PFar": "superbwarfare:mortar_distant",
-        "Fire3PVeryFar": null,
         "ReloadEmpty": "superbwarfare:mortar_load"
       },
       "SoundRadius": 32
