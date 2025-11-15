@@ -200,6 +200,12 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     }
 
     @Override
+    public Entity getAmmoSupplier() {
+        var entity = this.getNthEntity(this.getTurretControllerIndex());
+        return entity == null ? this : entity;
+    }
+
+    @Override
     public void baseTick() {
         super.baseTick();
 
@@ -212,6 +218,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             }
         }
 
+        // TODO 替换装弹逻辑？
         var gunData = getGunData("Main");
         if (gunData != null && level() instanceof ServerLevel && getNthEntity(getTurretControllerIndex()) instanceof Player player) {
             var ammoCount = InventoryTool.countItem(player, gunData.selectedAmmoConsumer().stack().getItem());
@@ -269,12 +276,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     public boolean stillValid(@NotNull Player player) {
         return false;
     }
-
-    // TODO 正确获取ammo来源
-//    @Override
-//    public Entity getAmmoSupplier() {
-//        return getNthEntity(getTurretControllerIndex());
-//    }
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
