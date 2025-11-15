@@ -49,17 +49,18 @@ public class AK12ItemRenderer extends CustomGunRenderer<AK12Item> {
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
+                    var data = GunData.from(itemStack);
+                    if (data.attachment.get(AttachmentType.SCOPE) == 2
                             && (name.equals("hidden2"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
+                    if (data.attachment.get(AttachmentType.SCOPE) == 3
                             && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
 
                     switch (scopeType) {
                         case 1 ->

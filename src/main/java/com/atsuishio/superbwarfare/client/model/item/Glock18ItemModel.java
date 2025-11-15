@@ -55,7 +55,7 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
         CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
         huatao.setPosZ(1.5f * (float) ClientEventHandler.firePos);
-        if (GunData.from(stack).holdOpen.get()) {
+        if (data.holdOpen.get()) {
             huatao.setPosZ(1.5f);
         }
 
@@ -82,9 +82,9 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 0.7f, 1f);
 
-        CoreGeoBone shell = getAnimationProcessor().getBone("shell");
-        CoreGeoBone barrel = getAnimationProcessor().getBone("guan");
-        if (GunData.from(stack).holdOpen.get()) {
+        var shell = getAnimationProcessor().getBone("shell");
+        var barrel = getAnimationProcessor().getBone("guan");
+        if (data.holdOpen.get()) {
             barrel.setRotX(4 * Mth.DEG_TO_RAD);
             bullet.setScaleX(0);
             bullet.setScaleY(0);

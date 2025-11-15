@@ -46,23 +46,24 @@ public class TracheliumItemRenderer extends CustomGunRenderer<TracheliumItem> {
 
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                var data = GunData.from(itemStack);
                 if (name.equals("humu")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 && GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.SCOPE) == 0 && data.attachment.get(AttachmentType.GRIP) == 0);
                 }
 
                 if (name.equals("qianzhunxing1")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) > 0 || GunData.from(itemStack).attachment.get(AttachmentType.GRIP) > 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.SCOPE) > 0 || data.attachment.get(AttachmentType.GRIP) > 0);
                 }
 
                 if (name.equals("railup")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.SCOPE) == 0);
                 }
 
                 if (name.equals("raildown")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.GRIP) == 0);
                 }
 
-                if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !itemStack.getOrCreateTag().getBoolean("ScopeAlt") && (name.equals("hidden"))) {
+                if (data.attachment.get(AttachmentType.SCOPE) == 2 && !itemStack.getOrCreateTag().getBoolean("ScopeAlt") && (name.equals("hidden"))) {
                     bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                 }
 
@@ -70,7 +71,7 @@ public class TracheliumItemRenderer extends CustomGunRenderer<TracheliumItem> {
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
                     switch (scopeType) {
                         case 1 ->
                                 AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.3, 30, 1.2f, 255, 0, 0, 255, "dot", false);

@@ -36,7 +36,8 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         CoreGeoBone button7 = getAnimationProcessor().getBone("button7");
         CoreGeoBone strike = getAnimationProcessor().getBone("jizhen");
 
-        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+        var data = GunData.from(stack);
+        int type = data.attachment.get(AttachmentType.SCOPE);
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;
@@ -95,14 +96,14 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         sight1fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
         sight2fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
 
-        if (GunData.from(stack).closeStrike.get()) {
+        if (data.closeStrike.get()) {
             strike.setPosZ(-0.2f);
         }
 
         float numR = (float) (1 - 0.92 * zt);
         float numP = (float) (1 - 0.82 * zt);
 
-        if (GunData.from(stack).reload.time() > 0 || GunData.from(stack).bolt.actionTimer.get() > 0) {
+        if (data.reload.time() > 0 || data.bolt.actionTimer.get() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

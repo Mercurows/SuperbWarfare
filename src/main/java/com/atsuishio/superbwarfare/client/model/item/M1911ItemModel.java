@@ -47,7 +47,8 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
 
         CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
         huatao.setPosZ(2.75f * (float) ClientEventHandler.firePos);
-        if (GunData.from(stack).holdOpen.get()) {
+        var data = GunData.from(stack);
+        if (data.holdOpen.get()) {
             huatao.setPosZ(1.5f);
         }
 
@@ -59,7 +60,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         float numR = (float) (1 - 0.12 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunData.from(stack).reload.time() > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());
@@ -75,7 +76,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 0.7f, 1f);
         CoreGeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (GunData.from(stack).holdOpen.get()) {
+        if (data.holdOpen.get()) {
             bullet.setScaleX(0);
             bullet.setScaleY(0);
             bullet.setScaleZ(0);

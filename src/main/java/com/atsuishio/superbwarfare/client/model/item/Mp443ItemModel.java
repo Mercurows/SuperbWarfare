@@ -44,7 +44,8 @@ public class Mp443ItemModel extends CustomGunModel<Mp443Item> {
 
         CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
         huatao.setPosZ(1.5f * (float) ClientEventHandler.firePos);
-        if (GunData.from(stack).holdOpen.get()) {
+        var data = GunData.from(stack);
+        if (data.holdOpen.get()) {
             huatao.setPosZ(1.5f);
         }
 
@@ -56,7 +57,7 @@ public class Mp443ItemModel extends CustomGunModel<Mp443Item> {
         float numR = (float) (1 - 0.12 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunData.from(stack).reload.time() > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());
@@ -71,8 +72,8 @@ public class Mp443ItemModel extends CustomGunModel<Mp443Item> {
         ClientEventHandler.handleReloadShake(Mth.RAD_TO_DEG * camera.getRotX(), Mth.RAD_TO_DEG * camera.getRotY(), Mth.RAD_TO_DEG * camera.getRotZ());
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 0.7f, 1f);
 
-        CoreGeoBone shell = getAnimationProcessor().getBone("shell");
-        if (GunData.from(stack).holdOpen.get()) {
+        var shell = getAnimationProcessor().getBone("shell");
+        if (data.holdOpen.get()) {
             bullet.setScaleX(0);
             bullet.setScaleY(0);
             bullet.setScaleZ(0);

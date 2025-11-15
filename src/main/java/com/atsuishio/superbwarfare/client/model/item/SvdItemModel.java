@@ -35,7 +35,8 @@ public class SvdItemModel extends CustomGunModel<SvdItem> {
 
         double fp = ClientEventHandler.firePos;
 
-        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+        var data = GunData.from(stack);
+        int type = data.attachment.get(AttachmentType.SCOPE);
 
         float posX = switch (type) {
             case 0, 1 -> 1.701f;

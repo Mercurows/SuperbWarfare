@@ -43,24 +43,25 @@ public class Ntw20Renderer extends CustomGunRenderer<Ntw20Item> {
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                var data = GunData.from(itemStack);
                 if (name.equals("ironSight")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.SCOPE) != 0);
                 }
 
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
+                    if (data.attachment.get(AttachmentType.SCOPE) == 2
                             && (name.equals("bone1") || name.equals("zhituiqi") || name.equals("guan") || name.equals("hidden"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
+                    if (data.attachment.get(AttachmentType.SCOPE) == 3
                             && (name.equals("bone1") || name.equals("zhituiqi") || name.equals("guan") || name.equals("jing") || name.equals("rail") || name.equals("base2") || name.equals("guan7"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
                     switch (scopeType) {
                         case 1 ->
                                 AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.468755, 40, 1, 255, 0, 0, 255, "eotech", false);

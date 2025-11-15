@@ -46,22 +46,23 @@ public class Qbz191ItemRenderer extends CustomGunRenderer<Qbz191Item> {
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
 
+                var data = GunData.from(itemStack);
                 if (needHide) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.STOCK) == 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.STOCK) == 0);
                 }
 
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && bone.getName().endsWith("_hide2")) {
+                    if (data.attachment.get(AttachmentType.SCOPE) == 2 && bone.getName().endsWith("_hide2")) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3 && bone.getName().endsWith("_hide3")) {
+                    if (data.attachment.get(AttachmentType.SCOPE) == 3 && bone.getName().endsWith("_hide3")) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
 
                     switch (scopeType) {
                         case 1 ->

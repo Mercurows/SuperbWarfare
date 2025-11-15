@@ -45,10 +45,11 @@ public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        int stockType = GunData.from(stack).attachment.get(AttachmentType.STOCK);
-        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+        var data = GunData.from(stack);
+        int stockType = data.attachment.get(AttachmentType.STOCK);
+        int barrelType = data.attachment.get(AttachmentType.BARREL);
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
 
         posYAlt = Mth.lerp(times, posYAlt, stack.getOrCreateTag().getBoolean("ScopeAlt") ? -1.98f : -0.83f);
         scaleZAlt = Mth.lerp(times, scaleZAlt, stack.getOrCreateTag().getBoolean("ScopeAlt") ? 0.4f : 0.8f);
@@ -106,7 +107,7 @@ public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
         ammo.setRotZ(60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
         ammohole.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
 
-        if (GunData.from(stack).reload.empty()) {
+        if (data.reload.empty()) {
             lun.setRotZ(0);
             ammo.setRotZ(0);
             ammohole.setRotZ(0);
