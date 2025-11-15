@@ -13,20 +13,10 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-public class EditMessage {
-
-    private final int type;
-    private final boolean add;
-    private final boolean vehicle;
+public record EditMessage(int type, boolean add, boolean isVehicle) {
 
     public EditMessage(int type, boolean add) {
         this(type, add, false);
-    }
-
-    public EditMessage(int type, boolean add, boolean vehicle) {
-        this.type = type;
-        this.add = add;
-        this.vehicle = vehicle;
     }
 
     public static EditMessage decode(FriendlyByteBuf buffer) {
@@ -36,7 +26,7 @@ public class EditMessage {
     public static void encode(EditMessage message, FriendlyByteBuf buffer) {
         buffer.writeInt(message.type);
         buffer.writeBoolean(message.add);
-        buffer.writeBoolean(message.vehicle);
+        buffer.writeBoolean(message.isVehicle);
     }
 
     public static void handler(EditMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
@@ -45,14 +35,13 @@ public class EditMessage {
             var player = context.getSender();
             if (player == null) return;
 
-            if (message.vehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
-                var data = vehicle.getGunData(player);
-                if (data == null) return;
+            if (message.isVehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
                 if (message.type != 5) return;
 
-                int size = data.getDefault().getAmmoConsumers().size();
-                data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, player);
-                data.save();
+                vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
+                    int size = data.getDefault().getAmmoConsumers().size();
+                    data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
+                });
 
                 // TODO 替换成合适的音效
                 SoundTool.playLocalSound(player, ModSounds.INTO_CANNON.get(), 1f, 1f);
