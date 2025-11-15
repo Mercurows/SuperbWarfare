@@ -122,7 +122,7 @@
     "$entity.getSourceAngle(source, 0.25) * damage"
   ],
   "EngineType": "Fixed",
-  "VehicleContainerType": "One",
+  "VehicleContainerType": "Small",
   "DestroyInfo": {
     "ParticleType": "Medium",
     "ExplosionDamage": 160,

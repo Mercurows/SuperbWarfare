@@ -3,10 +3,11 @@ package com.atsuishio.superbwarfare.entity.vehicle.base;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSerializers;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +16,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -26,7 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Math;
 import org.joml.Vector3f;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
@@ -41,7 +40,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     public ArtilleryEntity(EntityType<?> type, Level world) {
         super(type, world);
 
-        this.entityData.set(BARREL_ANIM, IntList.of(new int[Math.max(4, this.getMaxBarrel())]));
+        this.entityData.set(BARREL_ANIM, IntList.of(new int[this.getMaxBarrel()]));
     }
 
     @Override
@@ -72,25 +71,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             return InteractionResult.SUCCESS;
         }
 
-        // 手动添加弹药
-
-        if (gunData.selectedAmmoConsumer().isAmmoItem(stack)) {
-            var inStack = this.items.get(0);
-            int count = inStack.getCount();
-
-            if (count < this.getMaxStackSize()) {
-                this.setItem(0, stack.copyWithCount(count + 1));
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                }
-                if (player instanceof ServerPlayer serverPlayer) {
-                    SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_RELOAD.get(), 1, 1);
-                }
-            }
-            return InteractionResult.SUCCESS;
-        } else {
-            return super.interact(player, hand);
-        }
+        return super.interact(player, hand);
     }
 
     @Override
@@ -195,14 +176,8 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         if (data != null) {
             return data.compute().magazine;
         } else {
-            return 0;
+            return 1;
         }
-    }
-
-    @Override
-    public Entity getAmmoSupplier() {
-        var entity = this.getNthEntity(this.getTurretControllerIndex());
-        return entity == null ? this : entity;
     }
 
     @Override
@@ -218,20 +193,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
             }
         }
 
-        // TODO 替换装弹逻辑？
-        var gunData = getGunData("Main");
-        if (gunData != null && level() instanceof ServerLevel && getNthEntity(getTurretControllerIndex()) instanceof Player player) {
-            var ammoCount = InventoryTool.countItem(player, gunData.selectedAmmoConsumer().stack().getItem());
-            if (ammoCount > 0) {
-                var inStack = this.items.get(0);
-                int count = inStack.getCount();
-
-                if (count < Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
-                    this.setItem(0, gunData.selectedAmmoConsumer().stack().copyWithCount(count + 1));
-                    InventoryTool.consumeItem(player, gunData.selectedAmmoConsumer().stack().getItem(), 1);
-                }
-            }
-        }
         var controller = getNthEntity(getTurretControllerIndex());
 
         if (controller != null) {
@@ -264,26 +225,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         }
         if (living.level() instanceof ServerLevel level) {
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec("Main", 1), getShootPos("Main", 1), level, this);
-        }
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return getMaxBarrel();
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        var gunData = getGunData("Main");
-        if (gunData != null) {
-            return super.canPlaceItem(slot, stack) && gunData.selectedAmmoConsumer().isAmmoItem(stack);
-        } else {
-            return false;
         }
     }
 }

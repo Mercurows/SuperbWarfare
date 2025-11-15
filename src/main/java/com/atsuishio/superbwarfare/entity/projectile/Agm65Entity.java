@@ -168,6 +168,8 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
 
         if (this.tickCount > 8) {
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.06, 0));
         }
 
         if (this.tickCount == 8) {

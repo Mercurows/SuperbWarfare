@@ -124,7 +124,7 @@
     "All - 8",
     "$entity.getSourceAngle(source, 0.25) * damage"
   ],
-  "VehicleContainerType": "One",
+  "VehicleContainerType": "Small",
   "DestroyInfo": {
     "ParticleType": "Medium",
     "ExplosionDamage": 160,
