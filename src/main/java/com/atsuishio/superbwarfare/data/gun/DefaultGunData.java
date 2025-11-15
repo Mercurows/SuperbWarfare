@@ -93,6 +93,9 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("ShootPos")
     public ShootPos shootPos = new ShootPos();
 
+    @SerializedName("SeekWeaponInfo")
+    public SeekWeaponInfo seekWeaponInfo = null;
+
     @SerializedName("AmmoCostPerShoot")
     public int ammoCostPerShoot = 1;
     @SerializedName("ProjectileAmount")

@@ -143,13 +143,16 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
                         entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                     }
 
-                    Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + (entity instanceof EnderDragon ? -2 : 0), entity.getZ());
+                    double dis = entity.position().vectorTo(position()).horizontalDistance();
+                    double height = dis > 30 ? 0.4 * (dis - 30) : 0;
 
-                    Vec3 toVec = position().vectorTo(targetPos).normalize();
+                    Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + (entity instanceof EnderDragon ? -2 : 0) + height, entity.getZ());
+                    Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
+
                     if (this.tickCount > 8) {
                         boolean lostTarget = (VectorTool.calculateAngle(getLookAngle(), toVec) > 80);
                         if (!lostTarget) {
-                            turn(toVec, 6);
+                            turn(toVec, 8);
                         }
                     }
                 }
@@ -157,7 +160,11 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
         }
 
         if (this.tickCount > 8) {
-            this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.85, 0.85, 0.85));
+        } else {
+            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.06, 0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
 
         if (this.tickCount == 8) {
@@ -176,8 +183,6 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
             }
             this.discard();
         }
-
-        this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
 
         destroyBlock();
     }

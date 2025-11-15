@@ -570,11 +570,11 @@ public final class VehicleEngineUtils {
 
                 if (vehicle.getEnergy() > 0) {
                     if (vehicle.forwardInputDown()) {
-                        vehicle.getEntityData().set(POWER, Math.min(vehicle.getEntityData().get(POWER) + 0.0025f * powerAdd, 1));
+                        vehicle.getEntityData().set(POWER, (float) Mth.clamp(vehicle.getEntityData().get(POWER) + 0.0035f * powerAdd, -0.1, 1));
                     }
 
                     if (vehicle.backInputDown()) {
-                        vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.002f * powerReduce, vehicle.onGround() ? -0.1f : 0.5f));
+                        vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.002f * powerReduce, vehicle.onGround() ? -0.2f : 0.4f));
                     }
                 }
 
@@ -752,7 +752,7 @@ public final class VehicleEngineUtils {
         landingBlocks.sort(Comparator.comparingDouble(pos ->
                 entity.position().distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5)));
 
-        return landingBlocks.get(0).getCenter();
+        return landingBlocks.getFirst().getCenter();
     }
 
     public static void updateAutoLanding(VehicleEntity entity, Vec3 landingTarget) {

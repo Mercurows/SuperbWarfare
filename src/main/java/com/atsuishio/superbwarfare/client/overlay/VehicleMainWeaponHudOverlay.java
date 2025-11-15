@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.weapon.AircraftHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.ArtilleryHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud;
@@ -9,7 +10,10 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.MathTool;
+import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -22,10 +26,14 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * 控制载具主武器的玩家显示的HUD
@@ -35,6 +43,17 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
 
     public static final ResourceLocation ID = Mod.loc("vehicle_main_weapon_hud");
     public static final String EMPTY = "@Empty";
+
+    private static float lerpLock = 1;
+
+    private static final ResourceLocation FRAME_GREEN = Mod.loc("textures/overlay/frame/frame_green.png");
+    private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target.png");
+    private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
+
+    private static final ResourceLocation IND_1 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind1.png");
+    private static final ResourceLocation IND_2 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind2.png");
+    private static final ResourceLocation IND_3 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind3.png");
+    private static final ResourceLocation IND_4 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind4.png");
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -72,6 +91,55 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
                     ArtilleryHud.render(vehicle, player, guiGraphics, partialTick, screenWidth, screenHeight);
             case AircraftHud.ID ->
                     AircraftHud.render(vehicle, player, guiGraphics, partialTick, screenWidth, screenHeight);
+        }
+
+        var gunData = vehicle.getGunData(player);
+        if (gunData == null) return;
+        var seekInfo = gunData.compute().seekWeaponInfo;
+
+        if (seekInfo != null) {
+            Entity targetEntity = EntityFindUtil.findEntity(player.level(), vehicle.getTargetUuid());
+            List<Entity> entities = new SeekTool.Builder(vehicle)
+                    .withinRange(seekInfo.seekRange)
+                    .withinAngle(vehicle.getSeekVec(player, partialTick), seekInfo.seekAngle)
+                    .baseFilter()
+                    .onGround(seekInfo.targetHeight)
+                    .sizeBiggerThan(seekInfo.minTargetSize)
+                    .smokeFilter()
+                    .noVehicle()
+                    .noClip()
+                    .notFriendly()
+                    .build();
+
+            for (var e : entities) {
+                Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
+                if (VectorUtil.canSee(pos3)) {
+                    Vec3 point = VectorUtil.worldToScreen(pos3);
+                    boolean nearest = e == targetEntity;
+                    boolean lockOn = vehicle.locked && nearest;
+
+                    poseStack.pushPose();
+                    float x = (float) point.x;
+                    float y = (float) point.y;
+
+                    int seekTime = seekInfo.seekTime;
+
+                    if (lockOn) {
+                        RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                    } else if (nearest) {
+                        lerpLock = Mth.lerp(partialTick, lerpLock, vehicle.lockTime);
+                        float lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0, 20);
+                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                    } else {
+                        RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_GREEN, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                    }
+                    poseStack.popPose();
+                }
+            }
         }
 
         poseStack.popPose();
