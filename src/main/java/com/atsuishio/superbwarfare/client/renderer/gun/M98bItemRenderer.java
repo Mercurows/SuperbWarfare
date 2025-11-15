@@ -48,15 +48,16 @@ public class M98bItemRenderer extends CustomGunRenderer<M98bItem> {
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (bone.getName().endsWith("_hide"))) {
+                    var data = GunData.from(itemStack);
+                    if (data.attachment.get(AttachmentType.SCOPE) == 2 && !NBTTool.getTag(itemStack).getBoolean("ScopeAlt") && (bone.getName().endsWith("_hide"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3 && (bone.getName().endsWith("_hide3"))) {
+                    if (data.attachment.get(AttachmentType.SCOPE) == 3 && (bone.getName().endsWith("_hide3"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
 
                     switch (scopeType) {
                         case 1 ->

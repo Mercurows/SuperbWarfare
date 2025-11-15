@@ -55,7 +55,7 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
         GeoBone huatao = getAnimationProcessor().getBone("huatao");
         huatao.setPosZ(1.5f * (float) ClientEventHandler.firePos);
-        if (GunData.from(stack).holdOpen.get()) {
+        if (data.holdOpen.get()) {
             huatao.setPosZ(1.5f);
         }
 
@@ -84,7 +84,7 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
         GeoBone shell = getAnimationProcessor().getBone("shell");
         GeoBone barrel = getAnimationProcessor().getBone("guan");
-        if (GunData.from(stack).holdOpen.get()) {
+        if (data.holdOpen.get()) {
             barrel.setRotX(4 * Mth.DEG_TO_RAD);
             bullet.setScaleX(0);
             bullet.setScaleY(0);

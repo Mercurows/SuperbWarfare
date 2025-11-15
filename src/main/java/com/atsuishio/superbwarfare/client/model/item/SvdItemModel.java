@@ -35,7 +35,8 @@ public class SvdItemModel extends CustomGunModel<SvdItem> {
 
         double fp = ClientEventHandler.firePos;
 
-        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+        var data = GunData.from(stack);
+        int type = data.attachment.get(AttachmentType.SCOPE);
 
         float posX = switch (type) {
             case 0, 1 -> 1.701f;
@@ -70,8 +71,6 @@ public class SvdItemModel extends CustomGunModel<SvdItem> {
         gun.setPosZ(posZ * (float) zp + (float) (0.3f * zpz));
         gun.setRotZ((float) (0.05f * zpz));
         gun.setScaleZ(1f - (scaleZ * (float) zp));
-
-        var data = GunData.from(stack);
 
         GeoBone shen;
         if (zt < 0.5) {

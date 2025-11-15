@@ -61,9 +61,10 @@ public class AureliaSceptreItem extends GunGeoItem {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.idle"));
 
+        var data = GunData.from(stack);
         if (player.isSprinting() && player.onGround()
                 && ClientEventHandler.noSprintTicks == 0
-                && !(GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) && ClientEventHandler.drawTime < 0.01 && ClientEventHandler.gunMelee == 0) {
+                && !(data.reload.normal() || data.reload.empty()) && ClientEventHandler.drawTime < 0.01 && ClientEventHandler.gunMelee == 0) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.aurelia_sceptre.run"));
         }
 

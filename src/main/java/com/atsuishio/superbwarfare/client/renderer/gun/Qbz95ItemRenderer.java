@@ -45,30 +45,31 @@ public class Qbz95ItemRenderer extends CustomGunRenderer<Qbz95Item> {
 
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                var data = GunData.from(itemStack);
                 if (name.equals("tiba")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) != 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.SCOPE) != 0);
                 }
                 if (name.equals("longbow")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.SCOPE) == 0);
                 }
                 if (name.equals("under_rail")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.GRIP) == 0);
                 }
 
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
+                    if (data.attachment.get(AttachmentType.SCOPE) == 2
                             && (name.equals("hidden"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
+                    if (data.attachment.get(AttachmentType.SCOPE) == 3
                             && (name.equals("hidden2") || name.equals("jimiao2"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
                     switch (scopeType) {
                         case 1 ->
                                 AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.5363125, 16, 1, 255, 0, 0, 255, "dot", false);

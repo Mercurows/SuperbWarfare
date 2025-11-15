@@ -45,21 +45,22 @@ public class SvdItemRenderer extends CustomGunRenderer<SvdItem> {
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
 
+                var data = GunData.from(itemStack);
                 if (needHide) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 0 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2);
+                    bone.setHidden(data.attachment.get(AttachmentType.SCOPE) == 0 || data.attachment.get(AttachmentType.SCOPE) == 2);
                 }
 
                 AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3)
+                    if ((data.attachment.get(AttachmentType.SCOPE) == 2 || data.attachment.get(AttachmentType.SCOPE) == 3)
                             && (name.equals("Hidden2") || name.equals("Hidden") || name.equals("gun") || name.equals("bolt") || name.equals("Lefthand") || name.equals("Barrel") || name.equals("bipod") || name.equals("mount")) && ClientEventHandler.zoom && ClientEventHandler.zoomPos > 0.7) {
                         bone.setHidden(true);
                         renderingArms = false;
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
 
                     switch (scopeType) {
                         case 1 ->
