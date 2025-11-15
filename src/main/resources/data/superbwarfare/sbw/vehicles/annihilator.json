@@ -1,14 +1,58 @@
 {
   "ID": "superbwarfare:annihilator",
   "MaxHealth": 1200,
+  "TurretPos": [0, 0.453, 0],
+  "TurretTurnSpeed": [0.9, 0.9],
+  "TurretPitchRange": [-5, 45],
+  "BarrelPos": [0, 1.797, 4.95],
   "MaxEnergy": 20000000,
   "Seats": {
     "HidePassenger": true,
-    "Transform": "VehicleFlat",
+    "Transform" : "Turret",
     "Position": [0, 3.3, 1.5],
     "MinPitch": -5,
     "MaxPitch": 45,
-    "Sensitivity": [0.5, 0.7, 0.9]
+    "Sensitivity": [0.5, 0.7, 0.9],
+    "CameraPos": {
+      "Transform": "Turret",
+      "ZoomPosition": [0, 3.574, 4.6],
+      "ZoomDirection": "Barrel"
+    },
+    "Weapons": ["Main"]
+  },
+  "Weapons": {
+    "Main": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/laser.png",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Projectile": "ray",
+      "Range": 512,
+      "DefaultZoom": 3,
+      "RPM": 12,
+      "Velocity": 6000000000,
+      "Damage": 1000,
+      "ExplosionDamage": 72,
+      "ExplosionRadius": 16,
+      "ShootAnimationTime": 12,
+      "AmmoCostPerShoot": 2000000,
+      "AmmoType": "FE",
+      "Crosshair": "@VehicleDynamicCross",
+      "CrosshairZooming": "@VehicleLaserCannon",
+      "Name": "superbwarfare.annihilator.main_gun",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:annihilator_fire_1p",
+        "Fire3P": "superbwarfare:annihilator_fire_3p",
+        "Fire3PFar": "superbwarfare:annihilator_far",
+        "Fire3PVeryFar": "superbwarfare:annihilator_veryfar",
+        "ReloadEmpty": "superbwarfare:annihilator_reload"
+      },
+      "SoundRadius": 32,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, -0.045, 15.75]],
+        "Directions": ["Barrel"]
+      }
+    }
   },
   "Mass": 2774,
   "3rdPersonCameraPos": [0, 1.3, 16],

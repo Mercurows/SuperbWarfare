@@ -7,7 +7,7 @@
   "BarrelPos": [0, 1.746875, 0.5175],
   "Seats": {
     "HidePassenger": true,
-    "Transform": "Auto",
+    "Transform": "Turret",
     "Position": [0, 1.886875, 0],
     "CameraPos": {
       "Transform": "Barrel",

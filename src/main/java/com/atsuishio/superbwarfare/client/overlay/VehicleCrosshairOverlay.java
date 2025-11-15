@@ -162,7 +162,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                     RenderHelper.preciseBlitWithColor(guiGraphics, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
                     RenderHelper.preciseBlitWithColor(guiGraphics, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-                } else if (crosshairPath.equals("@AirCraftCommon") && VectorUtil.canSee(pos)) {
+                } else if ((crosshairPath.equals("@AirCraftCommon") || crosshairPath.equals("@VehicleLaserCannon")) && VectorUtil.canSee(pos)) {
                     RenderHelper.preciseBlitWithColor(guiGraphics, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 } else {
                     if (crosshairPath.equals("@VehicleCnHpjZooming")) {

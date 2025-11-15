@@ -1,11 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
-import com.atsuishio.superbwarfare.client.RenderHelper;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
@@ -21,25 +16,12 @@ public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
 
         return switch (boneName) {
             case "laser1" ->
-                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_LEFT_LENGTH) + 0.5f);
+                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_LEFT_LENGTH));
             case "laser2" ->
-                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_MIDDLE_LENGTH) + 0.5f);
+                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_MIDDLE_LENGTH));
             case "laser3" ->
-                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_RIGHT_LENGTH) + 0.5f);
-            case "root" -> (bone, vehicle, state) -> {
-                var minecraft = Minecraft.getInstance();
-                var pCamera = minecraft.levelRenderer.getFrustum();
+                    (bone, vehicle, state) -> bone.setScaleZ(vehicle.getEntityData().get(LASER_RIGHT_LENGTH));
 
-                var aabb = vehicle.getBoundingBoxForCulling().inflate(0.5);
-                if (aabb.hasNaN() || aabb.getSize() == 0) {
-                    aabb = new AABB(vehicle.getX() - 6.0, vehicle.getY() - 4.0, vehicle.getZ() - 6.0, vehicle.getX() + 6.0, vehicle.getY() + 4.0, vehicle.getZ() + 6.0);
-                }
-
-                bone.setHidden(!pCamera.isVisible(aabb) && !RenderHelper.isInGui());
-            };
-
-            case "barrel", "barrel2" ->
-                    (bone, vehicle, state) -> bone.setRotX(-Mth.lerp(state.getPartialTick(), vehicle.xRotO, vehicle.getXRot()) * Mth.DEG_TO_RAD);
             default -> {
                 var matcher = LED_PATTERN.matcher(boneName);
                 if (matcher.matches()) {
@@ -47,10 +29,10 @@ public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
                     var id = Integer.parseInt(matcher.group("id"));
 
                     yield (bone, vehicle, state) -> {
-                        float coolDown = vehicle.getEntityData().get(COOL_DOWN);
-                        boolean cantShoot = vehicle.getEnergy() < VehicleConfig.ANNIHILATOR_SHOOT_COST.get();
+                        float charge = vehicle.getEntityData().get(CHARGE_PROGRESS);
+                        boolean cantShoot = charge > 1;
 
-                        var hideGreen = coolDown > (100 - id * 20) || cantShoot;
+                        var hideGreen = 5 * charge < id || cantShoot;
                         bone.setHidden(isGreen == hideGreen);
                     };
                 }
