@@ -61,9 +61,9 @@ public abstract class VehicleRenderer<T extends VehicleEntity & GeoAnimatable> e
         } else if (vehicle.noCulling) {
             return true;
         } else {
-            AABB aabb = vehicle.getBoundingBoxForCulling().inflate(3);
+            AABB aabb = vehicle.getBoundingBoxForCulling().inflate(5);
             if (aabb.hasNaN() || aabb.getSize() == 0) {
-                aabb = new AABB(vehicle.getX() - 5.0, vehicle.getY() - 4.0, vehicle.getZ() - 5.0, vehicle.getX() + 5.0, vehicle.getY() + 4.0, vehicle.getZ() + 5.0);
+                aabb = new AABB(vehicle.getX() - 8.0, vehicle.getY() - 6.0, vehicle.getZ() - 8.0, vehicle.getX() + 8.0, vehicle.getY() + 6.0, vehicle.getZ() + 8.0);
             }
 
             return pCamera.isVisible(aabb);

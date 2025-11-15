@@ -157,7 +157,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                     RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
                     RenderHelper.blit(poseStack, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-                } else if (crosshairPath.equals("@AirCraftCommon") && VectorUtil.canSee(pos)) {
+                } else if ((crosshairPath.equals("@AirCraftCommon") || crosshairPath.equals("@VehicleLaserCannon")) && VectorUtil.canSee(pos)) {
                     RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 } else {
                     if (crosshairPath.equals("@VehicleCnHpjZooming")) {
