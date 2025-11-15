@@ -23,7 +23,7 @@
     "ExplodePassengers": false,
     "ExplodeBlocks": false
   },
-  "3rdPersonCameraPos": [0, 0, 1.5],
+  "ThirdPersonCameraPos": [0, 0, 1.5],
   "RotateOffsetHeight": 0.5,
   "HasLowHealthWarning": false,
   "SelfHurtPercent": 0,

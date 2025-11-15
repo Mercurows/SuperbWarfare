@@ -126,7 +126,7 @@
     "BodyPitchRate": 1.1,
     "BodyPitchRoll": 1.0
   },
-  "3rdPersonCameraPos": [0, 1, 3],
+  "ThirdPersonCameraPos": [0, 1, 3],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png",
   "Type": "Boat",

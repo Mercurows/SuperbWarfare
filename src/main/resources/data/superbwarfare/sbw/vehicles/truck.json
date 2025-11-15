@@ -69,7 +69,7 @@
     "ExplosionDamage": 120,
     "ExplosionRadius": 7
   },
-  "3rdPersonCameraPos": [0, 1, 5],
+  "ThirdPersonCameraPos": [0, 1, 5],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
   "Type": "Car",

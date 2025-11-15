@@ -55,7 +55,7 @@
     }
   },
   "Mass": 2774,
-  "3rdPersonCameraPos": [0, 1.3, 16],
+  "ThirdPersonCameraPos": [0, 1.3, 16],
   "DamageModifiers": [
     "All * 0.1",
     "minecraft:arrow 0",

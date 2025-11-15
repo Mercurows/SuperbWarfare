@@ -24,7 +24,7 @@
     "ExplodePassengers": false,
     "ExplodeBlocks": false
   },
-  "3rdPersonCameraPos": [0, 0, 0.1],
+  "ThirdPersonCameraPos": [0, 0, 0.1],
   "HasLowHealthWarning": false,
   "SelfHurtPercent": 0,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/wheel_chair_icon.png",

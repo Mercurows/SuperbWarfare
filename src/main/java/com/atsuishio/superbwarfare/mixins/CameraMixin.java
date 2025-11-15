@@ -147,9 +147,7 @@ public abstract class CameraMixin implements ICustomCamera {
         if (!thirdPerson || !(entity.getVehicle() instanceof VehicleEntity vehicle)) return;
 
         var cameraPosition = vehicle.getThirdPersonCameraPosition();
-        if (cameraPosition != null) {
-            move(-getMaxZoom((float) cameraPosition.distance()), (float) cameraPosition.y(), -(float) cameraPosition.z());
-        }
+        move(-getMaxZoom((float) cameraPosition.x()), (float) cameraPosition.y(), (float) cameraPosition.z());
     }
 
     @Shadow
