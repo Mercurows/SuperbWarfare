@@ -33,7 +33,7 @@
       "ExplosionDamage": 10,
       "ExplosionRadius": 4,
       "HeatPerShoot": 2,
-      "NaturalCooldown": 1,
+      "NaturalCooldown": 0.5,
       "Spread": 0.5,
       "Name": "superbwarfare.a_10_a.cannon",
       "SoundInfo": {

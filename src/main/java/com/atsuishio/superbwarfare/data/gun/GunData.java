@@ -805,11 +805,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     }
 
     public StringOrVec3 fireDirectionForHud() {
-        if (this.compute().shootPos.shootDirectionForHud != null) {
-            return this.compute().shootPos.shootDirectionForHud;
-        } else {
-            return fireDirection();
-        }
+        return this.compute().shootPos.shootDirectionForHud;
     }
 
     public IEnergyStorage getEnergyProvider(@Nullable Entity ammoSupplier) {

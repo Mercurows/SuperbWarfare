@@ -2514,7 +2514,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         StringOrVec3 stringOrVec3 = data.fireDirectionForHud();
 
         if (stringOrVec3 == null) {
-            return getShootVec(entity, partialTicks);
+            return getViewVec(entity, partialTicks);
         } else if (stringOrVec3.isString()) {
             return getVectorFromString(stringOrVec3.string, partialTicks, getSeatIndex(entity));
         } else {
