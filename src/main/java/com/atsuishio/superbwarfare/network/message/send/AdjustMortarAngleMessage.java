@@ -12,7 +12,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.PITCH;
+import static com.atsuishio.superbwarfare.entity.vehicle.MortarEntity.TARGET_PITCH;
 
 public class AdjustMortarAngleMessage {
 
@@ -41,7 +41,7 @@ public class AdjustMortarAngleMessage {
             if (looking == null) return;
 
             if (looking instanceof MortarEntity mortar) {
-                mortar.getEntityData().set(PITCH, (float) Mth.clamp(mortar.getEntityData().get(PITCH) + 0.5 * message.scroll, -89, -20));
+                mortar.getEntityData().set(TARGET_PITCH, (float) Mth.clamp(mortar.getEntityData().get(TARGET_PITCH) + 0.5 * message.scroll, -89, -20));
             }
 
             SoundTool.playLocalSound(player, ModSounds.ADJUST_FOV.get(), 1f, 0.7f);

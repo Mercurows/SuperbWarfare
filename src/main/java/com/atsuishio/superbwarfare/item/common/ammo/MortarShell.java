@@ -25,8 +25,8 @@ public class MortarShell extends Item implements DispenserLaunchable {
         super(new Properties());
     }
 
-    public static MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack) {
-        MortarShellEntity shellEntity = new MortarShellEntity(entity, level);
+    public static MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack, float gravity) {
+        MortarShellEntity shellEntity = new MortarShellEntity(entity, level, gravity);
         shellEntity.setEffectsFromItem(stack);
         return shellEntity;
     }
@@ -42,7 +42,7 @@ public class MortarShell extends Item implements DispenserLaunchable {
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel);
+                return new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 0.13f);
             }
 
             @Override

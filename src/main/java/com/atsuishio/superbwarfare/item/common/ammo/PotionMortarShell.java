@@ -61,7 +61,7 @@ public class PotionMortarShell extends MortarShell implements DispenserLaunchabl
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                var shell = new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel);
+                var shell = new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 0.13f);
                 shell.setEffectsFromItem(pStack);
                 return shell;
             }

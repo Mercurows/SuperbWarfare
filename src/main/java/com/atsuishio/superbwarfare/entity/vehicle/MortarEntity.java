@@ -1,15 +1,23 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,10 +28,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +37,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -46,20 +50,16 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MortarEntity extends VehicleEntity implements GeoEntity {
+import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-    public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Float> PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
+public class MortarEntity extends ArtilleryEntity implements GeoEntity {
+    public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
-
-    public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.VECTOR3);
-    public static final EntityDataAccessor<Integer> RADIUS = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
+    private LivingEntity shooter = null;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private LivingEntity shooter = null;
 
     public MortarEntity(PlayMessages.SpawnEntity packet, Level level) {
         this(ModEntities.MORTAR.get(), level);
@@ -72,92 +72,63 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     public MortarEntity(Level level, float yRot) {
         super(ModEntities.MORTAR.get(), level);
         this.setYRot(yRot);
-        this.entityData.set(YAW, yRot);
+        this.entityData.set(TARGET_YAW, yRot);
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(FIRE_TIME, 0);
-        this.entityData.define(PITCH, -70f);
-        this.entityData.define(YAW, this.getYRot());
-
-        this.entityData.define(DEPRESSED, false);
         this.entityData.define(INTELLIGENT, false);
-        this.entityData.define(TARGET_POS, new Vector3f());
-        this.entityData.define(RADIUS, 0);
-    }
-
-    @Override
-    protected float getEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
-        return 0.2F;
+        this.entityData.define(TARGET_PITCH, -70f);
+        this.entityData.define(TARGET_YAW, this.getYRot());
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putFloat("Pitch", this.entityData.get(PITCH));
-        compound.putFloat("Yaw", this.entityData.get(YAW));
+        compound.putFloat("TargetPitch", this.entityData.get(TARGET_PITCH));
+        compound.putFloat("TargetYaw", this.entityData.get(TARGET_YAW));
         compound.putBoolean("Intelligent", this.entityData.get(INTELLIGENT));
-
-        compound.putBoolean("Depressed", this.entityData.get(DEPRESSED));
-        compound.putInt("Radius", this.entityData.get(RADIUS));
-        compound.putFloat("TargetX", this.entityData.get(TARGET_POS).x);
-        compound.putFloat("TargetY", this.entityData.get(TARGET_POS).y);
-        compound.putFloat("TargetZ", this.entityData.get(TARGET_POS).z);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Pitch")) {
-            this.entityData.set(PITCH, compound.getFloat("Pitch"));
+        if (compound.contains("TargetPitch")) {
+            this.entityData.set(TARGET_PITCH, compound.getFloat("TargetPitch"));
         }
-        if (compound.contains("Yaw")) {
-            this.entityData.set(YAW, compound.getFloat("Yaw"));
+        if (compound.contains("TargetYaw")) {
+            this.entityData.set(TARGET_YAW, compound.getFloat("TargetYaw"));
         }
         if (compound.contains("Intelligent")) {
             this.entityData.set(INTELLIGENT, compound.getBoolean("Intelligent"));
         }
-
-        if (compound.contains("Depressed")) {
-            this.entityData.set(DEPRESSED, compound.getBoolean("Depressed"));
-        }
-        if (compound.contains("Radius")) {
-            this.entityData.set(RADIUS, compound.getInt("Radius"));
-        }
-        if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
-            this.entityData.set(TARGET_POS, new Vector3f(compound.getFloat("TargetX"), compound.getFloat("TargetX"), compound.getFloat("TargetZ")));
-        }
     }
 
-    public void fire(@Nullable LivingEntity shooter) {
+    @Override
+    public void vehicleShoot(@Nullable LivingEntity living, String weaponName) {
         if (!(this.items.get(0).getItem() instanceof MortarShell)) return;
+        var gunData = getGunData(weaponName);
+        if  (gunData == null) return;
         if (entityData.get(FIRE_TIME) != 0) return;
+        var soundInfo = gunData.compute().soundInfo;
 
-        this.shooter = shooter;
+        this.shooter = living;
         this.entityData.set(FIRE_TIME, 25);
 
         if (!this.level().isClientSide()) {
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.MORTAR_LOAD.get(), SoundSource.PLAYERS, 1f, 1f);
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), soundInfo.reloadEmpty, SoundSource.PLAYERS, 1f, 1f);
         }
 
         if (level() instanceof ServerLevel serverLevel) {
-            SoundTool.playDistantSound(serverLevel, ModSounds.MORTAR_FIRE.get(), position(), 8, random.nextFloat() * 0.1f + 1, null);
-            SoundTool.playDistantSound(serverLevel, ModSounds.MORTAR_DISTANT.get(), position(), 32, random.nextFloat() * 0.1f + 1, null);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, position(), (float) (0.25f * gunData.compute().soundRadius), random.nextFloat() * 0.1f + 1, null);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), (float) gunData.compute().soundRadius, random.nextFloat() * 0.1f + 1, null);
         }
     }
 
-//    @Override
-//    public float projectileGravity() {
-//        return 0.13f;
-//    }
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        var result = super.interact(player, hand);
-        if (result != InteractionResult.PASS) return result;
-
         ItemStack mainHandItem = player.getMainHandItem();
 
         if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && this.entityData.get(INTELLIGENT)) {
@@ -176,7 +147,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
 
         if (mainHandItem.is(ModTags.Items.TOOLS_CROWBAR)) {
             if (this.items.get(0).getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0 && level() instanceof ServerLevel) {
-                fire(player);
+                vehicleShoot(player, "Main");
             }
             return InteractionResult.SUCCESS;
         }
@@ -186,11 +157,18 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
-            fire(player);
+            vehicleShoot(player, "Main");
+        }
+
+        if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
+            setTarget(player.getMainHandItem(), player, "Main");
+        }
+        if (player.getOffhandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
+            setTarget(player.getOffhandItem(), player, "Main");
         }
 
         if (player.isShiftKeyDown()) {
-            entityData.set(YAW, player.getYRot());
+            entityData.set(TARGET_YAW, player.getYRot());
         }
 
         return InteractionResult.FAIL;
@@ -208,51 +186,112 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
         return list;
     }
 
-
     @Override
-    public @NotNull Vec3 getDeltaMovement() {
-        return new Vec3(0, Math.min(super.getDeltaMovement().y, 0), 0);
+    protected float getEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
+        return 0.2F;
     }
 
-//    @Override
-//    public void baseTick() {
-//        super.baseTick();
-//        int fireTime = this.entityData.get(FIRE_TIME);
-//        if (fireTime > 0) {
-//            this.entityData.set(FIRE_TIME, fireTime - 1);
-//        }
-//
-//        if (fireTime == 5 && this.items.get(0).getItem() instanceof MortarShell) {
-//            Level level = this.level();
-//            if (level instanceof ServerLevel server) {
-//                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0));
-//                entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-//                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, (float) shootVelocity(), 0.1F);
-//                level.addFreshEntity(entityToSpawn);
-//
-//                ParticleTool.spawnMediumCannonMuzzleParticles(getLookAngle(), new Vec3(this.getX(), this.getEyeY(), this.getZ()).add(getLookAngle().scale(1.5)), server, this);
-//
-//                this.clearContent();
-//
-//                if (this.entityData.get(INTELLIGENT)) {
-//                    this.resetTarget();
-//                }
-//                ShakeClientMessage.sendToNearbyPlayers(this, 6, 6, 8, 14);
-//            }
-//        }
-//
-//        this.move(MoverType.SELF, this.getDeltaMovement());
-//        if (this.onGround()) {
-//            this.setDeltaMovement(Vec3.ZERO);
-//        } else {
-//            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
-//        }
-//    }
+    @Override
+    public void baseTick() {
+        super.baseTick();
+        if (entityData.get(FIRE_TIME) == 5 && this.items.get(0).getItem() instanceof MortarShell) {
+            Level level = this.level();
+            if (level instanceof ServerLevel server) {
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0), projectileGravity("Main"));
+                entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, projectileVelocity("Main"), projectileSpread("Main"));
+                level.addFreshEntity(entityToSpawn);
+
+                ParticleTool.spawnMediumCannonMuzzleParticles(getLookAngle(), new Vec3(this.getX(), this.getEyeY(), this.getZ()).add(getLookAngle().scale(1.5)), server, this);
+
+                this.clearContent();
+
+                if (this.entityData.get(INTELLIGENT)) {
+                    this.resetTarget("Main");
+                }
+                ShakeClientMessage.sendToNearbyPlayers(this, 6, 6, 8, 14);
+            }
+        }
+    }
+
+    @Override
+    public void setTarget(ItemStack stack, Entity entity, String weaponName) {
+        double targetX = stack.getOrCreateTag().getDouble("TargetX");
+        double targetY = stack.getOrCreateTag().getDouble("TargetY") - 1;
+        double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
+        boolean canAim = true;
+
+        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+        entityData.set(DEPRESSED, stack.getOrCreateTag().getBoolean("IsDepressed"));
+        entityData.set(RADIUS, stack.getOrCreateTag().getInt("Radius"));
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
+        Vec3 launchVector2 = calculateLaunchVector(getEyePosition(), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), !entityData.get(DEPRESSED));
+
+        Component component = Component.literal("");
+        Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
+                .append(Component.literal(" X:" + FormatTool.format0D(getX()) + " Y:" + FormatTool.format0D(getY()) + " Z:" + FormatTool.format0D(getZ()) + " "));
+        float angle = getXRot();
+
+        if (launchVector == null || launchVector2 == null) {
+            canAim = false;
+            component = Component.translatable("tips.superbwarfare.mortar.out_of_range");
+        } else {
+            angle = (float) -VehicleVecUtils.getXRotFromVector(launchVector);
+            float angle2 = (float) -VehicleVecUtils.getXRotFromVector(launchVector2);
+            if (angle < -getTurretMaxPitch() || angle > -getTurretMinPitch()) {
+                if (angle2 > -getTurretMaxPitch() && angle2 < -getTurretMinPitch()) {
+                    component = Component.translatable("tips.superbwarfare.ballistics.warn2");
+                    canAim = false;
+                } else {
+                    component = Component.translatable("tips.superbwarfare.mortar.warn", this.getDisplayName());
+                    if (entity instanceof Player player) {
+                        player.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false);
+                    }
+                    return;
+                }
+            }
+
+            if (angle < -getTurretMaxPitch()) {
+                component = Component.translatable("tips.superbwarfare.ballistics.warn");
+                canAim = false;
+            }
+        }
+
+        if (canAim) {
+            this.look(randomPos);
+            entityData.set(TARGET_PITCH, angle);
+        } else if (entity instanceof Player player) {
+            player.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false);
+        }
+    }
+
+    @Override
+    public void resetTarget(String weaponName) {
+        Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
+        this.look(randomPos);
+
+        if (launchVector == null) {
+            return;
+        }
+        float angle = (float) -VehicleVecUtils.getXRotFromVector(launchVector);
+        if (angle > -getTurretMaxPitch() && angle < -getTurretMinPitch()) {
+            entityData.set(TARGET_PITCH, angle);
+        }
+    }
+
+    public void look(Vec3 pTarget) {
+        Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(this);
+        double d0 = (pTarget.x - vec3.x) * 0.2;
+        double d2 = (pTarget.z - vec3.z) * 0.2;
+        entityData.set(TARGET_YAW, Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F));
+    }
 
     @Override
     public void travel() {
-        float diffY = Mth.wrapDegrees(entityData.get(YAW) - this.getYRot());
-        float diffX = Mth.wrapDegrees(entityData.get(PITCH) - this.getXRot());
+        float diffY = Mth.wrapDegrees(entityData.get(TARGET_YAW) - this.getYRot());
+        float diffX = Mth.wrapDegrees(entityData.get(TARGET_PITCH) - this.getXRot());
 
         this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -20f, 20f));
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -20f, 20f), -89, -20));
@@ -302,7 +341,7 @@ public class MortarEntity extends VehicleEntity implements GeoEntity {
     @Override
     public void setChanged() {
         if (!entityData.get(INTELLIGENT)) {
-            fire(null);
+            vehicleShoot(null , "Main");
         }
     }
 
