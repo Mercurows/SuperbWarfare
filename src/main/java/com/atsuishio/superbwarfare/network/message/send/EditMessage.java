@@ -38,13 +38,12 @@ public record EditMessage(int msgType, boolean add, boolean isVehicle) implement
     public static void pressAction(Player player, EditMessage message) {
         if (player == null) return;
         if (message.isVehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
-            var data = vehicle.getGunData(player);
-            if (data == null) return;
             if (message.msgType != 5) return;
 
-            int size = data.getDefault().getAmmoConsumers().size();
-            data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, player);
-            data.save();
+            vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
+                int size = data.getDefault().getAmmoConsumers().size();
+                data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
+            });
 
             // TODO 替换成合适的音效
             SoundTool.playLocalSound(player, ModSounds.INTO_CANNON.get(), 1f, 1f);

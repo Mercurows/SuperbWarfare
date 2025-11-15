@@ -356,6 +356,29 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         this.item.whenNoAmmo(this);
         this.closeHammer.set(false);
         this.fireIndex.reset();
+
+        resetStatus();
+    }
+
+    public void resetStatus() {
+        this.reload.stage.reset();
+        this.reload.setState(ReloadState.NOT_RELOADING);
+        this.reload.iterativeLoadTimer.reset();
+        this.reload.reloadTimer.reset();
+        this.reload.finishTimer.reset();
+        this.reload.prepareTimer.reset();
+        this.reload.prepareLoadTimer.reset();
+        this.reload.reloadStarter.finish();
+        this.reload.singleReloadStarter.finish();
+        this.reload.singleReloadStarter.finish();
+
+        // TODO 是否应该改改这玩意的计算方式？
+        this.autoIterativeReloadTimer.set(compute().autoIterativeReloadTime);
+
+        this.bolt.actionTimer.reset();
+        this.bolt.needed.reset();
+        this.charge.starter.finish();
+        this.charge.timer.reset();
     }
 
     public FireModeInfo selectedFireModeInfo(List<FireModeInfo> fireModes) {
