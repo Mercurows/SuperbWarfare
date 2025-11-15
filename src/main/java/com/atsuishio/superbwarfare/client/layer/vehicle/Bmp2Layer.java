@@ -14,7 +14,7 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class Bmp2Layer extends GeoRenderLayer<Bmp2Entity> {
 
-    private static final ResourceLocation LAYER = Mod.loc("textures/entity/speedboat_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/entity/flare_e.png");
 
     public Bmp2Layer(GeoRenderer<Bmp2Entity> entityRenderer) {
         super(entityRenderer);
