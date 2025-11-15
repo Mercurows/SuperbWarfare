@@ -3116,9 +3116,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return new Vec3(0, 0, 0);
     }
 
-    // TODO 允许数据包配置能否弹射
     public boolean allowEjection() {
-        return false;
+        return this.computed().canEject;
     }
 
     public void removeSeatIndexTag(Entity entity) {
