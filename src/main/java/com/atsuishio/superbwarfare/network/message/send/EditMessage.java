@@ -47,12 +47,12 @@ public record EditMessage(int msgType, boolean add, boolean isVehicle) implement
                 int size = data.getDefault().getAmmoConsumers().size();
                 stopGunReloadSound((ServerPlayer) player, data);
                 data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
+
+                var sound = data.compute().soundInfo.change;
+                if (sound == null) return;
+                SoundTool.playLocalSound(player, sound, 1f, 1f);
             });
-
-            // TODO 替换成合适的音效
-            SoundTool.playLocalSound(player, ModSounds.INTO_CANNON.get(), 1f, 1f);
         } else {
-
             ItemStack stack = player.getMainHandItem();
             if (!(stack.getItem() instanceof GunItem gunItem)) return;
             var data = GunData.from(stack);

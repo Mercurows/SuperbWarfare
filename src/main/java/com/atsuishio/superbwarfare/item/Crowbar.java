@@ -5,10 +5,15 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
@@ -72,6 +77,21 @@ public class Crowbar extends SwordItem {
             }
         }
         return InteractionResult.SUCCESS;
+    }
+
+    public static final ResourceLocation BLOCK_INTERACTION_RANGE_ID = ResourceLocation.withDefaultNamespace("player.block_interaction_range");
+
+    @Override
+    public @NotNull ItemAttributeModifiers getDefaultAttributeModifiers(@NotNull ItemStack stack) {
+        var modifiers = super.getDefaultAttributeModifiers(stack);
+
+        modifiers.modifiers().add(new ItemAttributeModifiers.Entry(
+                Attributes.BLOCK_INTERACTION_RANGE,
+                new AttributeModifier(BLOCK_INTERACTION_RANGE_ID, 3, AttributeModifier.Operation.ADD_VALUE),
+                EquipmentSlotGroup.MAINHAND
+        ));
+
+        return modifiers;
     }
 
     @Override
