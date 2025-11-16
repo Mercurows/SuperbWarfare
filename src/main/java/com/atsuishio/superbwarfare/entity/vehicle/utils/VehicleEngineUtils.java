@@ -412,7 +412,7 @@ public final class VehicleEngineUtils {
                     vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.99f);
                 }
             } else {
-                if (!vehicle.landingInputDown() || landingPos == null) {
+                if (!vehicle.backInputDown() || landingPos == null) {
                     if (vehicle.rightInputDown()) {
                         vehicle.holdTick++;
                         vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) - 2f * Math.min(vehicle.holdTick, 7) * vehicle.getEntityData().get(POWER));
@@ -427,7 +427,7 @@ public final class VehicleEngineUtils {
                 }
 
                 vehicle.setYRot(vehicle.getYRot() + yawSpeed * Mth.clamp((vehicle.onGround() ? 0.1f : 2f) * vehicle.getMouseMoveSpeedX() * vehicle.getEntityData().get(PROPELLER_ROT) + (vehicle.getEntityData().get(SUB_ENGINE_DAMAGED) ? 25 : 0) * vehicle.getEntityData().get(PROPELLER_ROT), -10f, 10f));
-                if (landingPos != null && !vehicle.onGround() && vehicle.landingInputDown()) {
+                if (landingPos != null && !vehicle.onGround() && vehicle.backInputDown()) {
                     updateAutoLanding(vehicle, landingPos);
                 }
 
