@@ -60,6 +60,7 @@
       "HeatPerShoot": 5,
       "NaturalCooldown": 1,
       "ShootAnimationTime": 1,
+      "Name": "superbwarfare.50_cal_gun",
       "AmmoType": "@HeavyAmmo",
       "ShootPos": {
         "Transform": "Barrel",

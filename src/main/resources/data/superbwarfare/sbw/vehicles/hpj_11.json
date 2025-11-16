@@ -49,7 +49,7 @@
       "ShootAnimationTime": 3,
       "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleCnHpjZooming",
-      "Name": "superbwarfare.hpj_11.cannon",
+      "Name": "superbwarfare.30mm_cannon",
       "AmmoType": "superbwarfare:small_shell",
       "ShootPos": {
         "Transform": "Barrel",

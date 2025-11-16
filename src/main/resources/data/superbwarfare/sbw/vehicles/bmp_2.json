@@ -140,7 +140,7 @@
       "Spread": 0.5,
       "Crosshair": "@VehicleRuApc",
       "CrosshairColor": "0xFFC700",
-      "Name": "superbwarfare.bmp_2.cannon",
+      "Name": "superbwarfare.30mm_2a42",
       "SoundInfo": {
         "Fire1P": "superbwarfare:bmp_2_cannon_fire_1p",
         "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
@@ -182,7 +182,7 @@
         "Directions": ["Barrel"]
       },
       "Crosshair": "@VehicleCommonGun",
-      "Name": "superbwarfare.bmp_2.gun",
+      "Name": "superbwarfare.762mm_coax",
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
         "Fire3P": "superbwarfare:m_60_fire_3p",
@@ -200,7 +200,7 @@
       "HeatPerShoot": 0.5,
       "Spread": 0.5,
       "CrosshairColor": "0xFFC700",
-      "Name": "superbwarfare.bmp_2.missile",
+      "Name": "superbwarfare.9m113.missile",
       "AmmoType": "superbwarfare:wire_guide_missile",
       "Projectile": "superbwarfare:wg_missile",
       "Magazine": 1,
