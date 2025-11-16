@@ -257,7 +257,8 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
                 }
             });
 
-            ShakeClientMessage.sendToNearbyPlayers(this, 20, 15, 15, 25);
+            Vec3 shootShake = gunData.compute().shootShake;
+            ShakeClientMessage.sendToNearbyPlayers(this, shootShake.x, shootShake.y, shootShake.z);
             playShootSound3p(living, gunData, barrelMiddlePos);
         }
     }

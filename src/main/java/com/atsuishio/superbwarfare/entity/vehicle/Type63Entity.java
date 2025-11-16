@@ -330,7 +330,8 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
             ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector, shootPos.add(barrelVector.scale(1.5)), serverLevel, this);
         }
 
-        ShakeClientMessage.sendToNearbyPlayers(this, 8, 8, 10, 20);
+        Vec3 shootShake = gunData.compute().shootShake;
+        ShakeClientMessage.sendToNearbyPlayers(this, shootShake.x, shootShake.y, shootShake.z);
     }
 
     @Override

@@ -35,6 +35,7 @@
       "Damage": 470,
       "ExplosionDamage": 125,
       "ExplosionRadius": 3.7,
+      "ShootShake": [8, 10, 60],
       "Spread": 0.05,
       "ShootAnimationTime": 30,
       "Crosshair": "@VehicleDynamicCross",
