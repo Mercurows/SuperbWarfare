@@ -202,7 +202,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void syncMotion() {
         if (!this.level().isClientSide) {
-            PacketDistributor.sendToAllPlayers(new ClientMotionSyncMessage(this));
+            PacketDistributor.sendToPlayersTrackingEntity(this, new ClientMotionSyncMessage(this));
         }
     }
 

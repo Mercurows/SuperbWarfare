@@ -289,7 +289,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (!shouldSyncMotion()) return;
 
         if (this.tickCount % this.getType().updateInterval() == 0) {
-            PacketDistributor.sendToAllPlayers(new ClientMotionSyncMessage(this));
+            PacketDistributor.sendToPlayersTrackingEntity(this, new ClientMotionSyncMessage(this));
         }
     }
 
