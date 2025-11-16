@@ -60,6 +60,10 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get());
         if (lookingEntity instanceof SmokeDecoyEntity) return;
 
+        if (TraceTool.vehicleKookingEntity != null) {
+            lookingEntity = TraceTool.vehicleKookingEntity;
+        }
+
         if (lookingEntity != null) {
             lookAtEntity = true;
             entityRange = player.distanceTo(lookingEntity);

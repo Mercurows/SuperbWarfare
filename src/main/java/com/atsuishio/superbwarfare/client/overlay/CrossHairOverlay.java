@@ -143,7 +143,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
 
         // 在开启伤害指示器时才进行渲染
         if (DisplayConfig.KILL_INDICATION.get() && !(player.getVehicle() instanceof Ah6Entity ah6Entity && ah6Entity.getFirstPassenger() == player)) {
-            renderKillIndicator(guiGraphics, screenWidth, screenHeight, moveX, moveY);
+            renderKillIndicatorDynamic(guiGraphics, screenWidth, screenHeight, moveX, moveY);
         }
 
         RenderSystem.depthMask(true);
@@ -241,7 +241,7 @@ public class CrossHairOverlay implements LayeredDraw.Layer {
         guiGraphics.blit(REX, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
     }
 
-    private static void renderKillIndicator(GuiGraphics guiGraphics, int w, int h, float moveX, float moveY) {
+    private static void renderKillIndicatorDynamic(GuiGraphics guiGraphics, int w, int h, float moveX, float moveY) {
         float posX = w / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
         float posY = h / 2f - 7.5f + (float) (2 * (Math.random() - 0.5f));
         float rate = (40 - killIndicator * 5) / 5.5f;

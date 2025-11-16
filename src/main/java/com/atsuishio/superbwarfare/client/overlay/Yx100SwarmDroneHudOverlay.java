@@ -21,7 +21,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Math;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -40,11 +39,6 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
-        float minWH = (float) Math.min(screenWidth, screenHeight);
-        float scaledMinWH = Mth.floor(minWH);
-        float centerW = ((screenWidth - scaledMinWH) / 2);
-        float centerH = ((screenHeight - scaledMinWH) / 2);
-
         if (!shouldRenderCrossHair(player)) return;
 
         Entity cannon = player.getVehicle();
@@ -59,8 +53,6 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
 
         if (player.getVehicle() instanceof Yx100Entity yx100 && yx100.banHand(player)) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-
-                VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                 Entity naerestEntity = SeekTool.seekLivingEntity(player, 384, 6);
 
                 if (naerestEntity != null) {

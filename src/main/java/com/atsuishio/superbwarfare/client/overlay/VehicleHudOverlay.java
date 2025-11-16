@@ -191,7 +191,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         }
     }
 
-    public static void renderKillIndicator3P(GuiGraphics guiGraphics, float posX, float posY) {
+    public static void renderKillIndicatorDynamic(GuiGraphics guiGraphics, float posX, float posY) {
         float rate = (40 - killIndicator * 5) / 5.5f;
 
         if (hitIndicator > 0) {

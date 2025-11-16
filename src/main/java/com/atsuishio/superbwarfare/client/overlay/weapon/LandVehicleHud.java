@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.overlay.weapon;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
-import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -146,8 +145,6 @@ public class LandVehicleHud {
 
             // 诱饵
             gui.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), screenWidth / 2 - 165, screenHeight / 2 - 36, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
-
-            VehicleHudOverlay.renderKillIndicator(gui, screenWidth, screenHeight);
         }
         poseStack.popPose();
     }
