@@ -39,7 +39,7 @@
       "ShootShake": [20, 15, 25],
       "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleLaserCannon",
-      "Name": "superbwarfare.annihilator.main_gun",
+      "Name": "superbwarfare.laser",
       "SoundInfo": {
         "Fire1P": "superbwarfare:annihilator_fire_1p",
         "Fire3P": "superbwarfare:annihilator_fire_3p",

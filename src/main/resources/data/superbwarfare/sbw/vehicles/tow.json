@@ -29,6 +29,7 @@
     "Missile": {
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
+      "Name": "superbwarfare.tow.missile",
       "AmmoType": "superbwarfare:tow_missile",
       "Projectile": "superbwarfare:wg_missile",
       "DefaultZoom": 3,
