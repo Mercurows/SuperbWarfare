@@ -12,9 +12,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.ScriptableObject;
 
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -22,33 +19,30 @@ import java.util.regex.Pattern;
 public class DamageModify implements DeserializeFromString {
     private static final Pattern MODIFY_PATTERN = Pattern.compile("^(?<prefix>(@#|#|@)?)(?<id>\\w+(:\\w+)?)\\s*(?<operator>[-*]?)\\s*(?<value>([+-]?\\d+(\\.\\d*)?)?)$");
 
-    private transient Context context;
-    private transient Script script;
-    private transient ScriptableObject scope;
+    private transient ScriptManager.CustomScript script;
 
     @Override
     public void deserializeFromString(String str) {
         if (str.trim().startsWith("$")) {
             var trimmed = str.trim().substring(1);
-            this.context = ScriptManager.getContext();
 
-            if (!context.stringIsCompilableUnit(trimmed)) {
+            var script = ScriptManager.createSafeScript("damageModifier", trimmed);
+            if (script == null) {
                 this.type = ModifyType.INVALID;
                 Mod.LOGGER.warn("invalid damage modify: {}", str);
                 return;
             }
 
-            this.scope = this.context.initSafeStandardObjects();
-            this.script = this.context.compileString(trimmed, "damageModifier", 1, null);
+            this.script = script;
             this.type = ModifyType.CUSTOM;
 
             this.modifyFunction = (entity, source, damage) -> {
                 try {
-                    ScriptableObject.putProperty(scope, "entity", entity);
-                    ScriptableObject.putProperty(scope, "source", source);
-                    ScriptableObject.putProperty(scope, "damage", damage);
+                    this.script.putProperty("entity", entity);
+                    this.script.putProperty("source", source);
+                    this.script.putProperty("damage", damage);
 
-                    var result = script.exec(context, scope);
+                    var result = this.script.exec();
                     if (result instanceof Number num) {
                         return num.floatValue();
                     } else {
