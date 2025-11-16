@@ -1,15 +1,9 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,11 +21,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class WheelChairEntity extends VehicleEntity implements GeoEntity {
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public int jumpCoolDown;
-    public int handBusyTime;
 
     public WheelChairEntity(EntityType<WheelChairEntity> type, Level world) {
         super(type, world);
@@ -55,22 +45,7 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
 
     @Override
     public void baseTick() {
-        if (jumpCoolDown > 0 && onGround()) {
-            jumpCoolDown--;
-        }
-
-        if (handBusyTime > 0) {
-            handBusyTime--;
-        }
-
         super.baseTick();
-        if (this.onGround()) {
-            float f = (float) Mth.clamp(0.85f + 0.05f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90, 0.01, 0.99);
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.99, f));
-        } else {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
-        }
-        this.setSprinting(this.getDeltaMovement().horizontalDistance() > 0.15);
         attractEntity();
     }
 
@@ -101,80 +76,6 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         ) {
             ModCriteriaTriggers.OTTO_SPRINT.get().trigger(player);
         }
-    }
-
-    @Override
-    public void travel() {
-        Entity passenger = this.getFirstPassenger();
-
-        float diffY = 0;
-
-        if (passenger == null) {
-            setLeftInputDown(false);
-            setRightInputDown(false);
-            setForwardInputDown(false);
-            setBackInputDown(false);
-        } else if (passenger instanceof Player) {
-            diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - this.getYRot()));
-            this.setYRot(this.getYRot() + Mth.clamp(0.4f * diffY, -5f, 5f));
-
-            float direct = (90 - (float) VehicleVecUtils.calculateAngle(this.getDeltaMovement(), this.getViewVector(1))) / 90;
-            this.setZRot((float) (this.getRoll() + direct * diffY * 0.2 * this.getDeltaMovement().length()));
-        }
-
-        if (this.forwardInputDown()) {
-            this.entityData.set(POWER, this.entityData.get(POWER) + (sprintInputDown() ? 0.02f : 0.01f));
-            if (this.getEnergy() <= 0 && passenger instanceof Player player) {
-                moveWithOutPower(player, true);
-            }
-        }
-
-        if (this.backInputDown()) {
-            this.entityData.set(POWER, this.entityData.get(POWER) - 0.01f);
-            if (this.getEnergy() <= 0 && passenger instanceof Player player) {
-                moveWithOutPower(player, false);
-            }
-        }
-
-        if (this.upInputDown() && this.onGround() && this.getEnergy() > 400 && jumpCoolDown == 0) {
-            if (passenger instanceof ServerPlayer serverPlayer) {
-                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 1, 1);
-            }
-            this.consumeEnergy(400);
-            this.setDeltaMovement(this.getDeltaMovement().add(0, 0.6, 0));
-            jumpCoolDown = 3;
-        }
-
-        this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER))));
-
-        if (passenger instanceof Player player && player.level().isClientSide && this.handBusyTime > 0) {
-            var localPlayer = Minecraft.getInstance().player;
-            if (localPlayer != null && player.getUUID().equals(localPlayer.getUUID())) {
-                localPlayer.handsBusy = true;
-            }
-        }
-
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.87f);
-
-        double s0 = getDeltaMovement().dot(this.getViewVector(1));
-
-        this.setLeftWheelRot((float) (this.getLeftWheelRot() - 1.25 * s0) - 0.015f * Mth.clamp(0.4f * diffY, -5f, 5f));
-        this.setRightWheelRot((float) (this.getRightWheelRot() - 1.25 * s0) + 0.015f * Mth.clamp(0.4f * diffY, -5f, 5f));
-
-        float power = this.entityData.get(POWER) * Mth.clamp(1 + (s0 > 0 ? 1 : -1) * getXRot() / 35, 0, 2);
-        this.setDeltaMovement(this.getDeltaMovement().add(getViewVector(1).scale((this.onGround() ? 1 : 0.1) * power)));
-    }
-
-    public void moveWithOutPower(Player player, boolean forward) {
-        this.entityData.set(POWER, this.entityData.get(POWER) + (forward ? 0.015f : -0.015f));
-        if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.BOAT_PADDLE_LAND, SoundSource.PLAYERS, 1, 1);
-        }
-        player.causeFoodExhaustion(0.03F);
-
-        this.handBusyTime = 4;
-        setForwardInputDown(false);
-        setBackInputDown(false);
     }
 
     @Override

@@ -9,5 +9,6 @@ public enum EngineType {
     @SerializedName("Track") TRACK,
     @SerializedName("Helicopter") HELICOPTER,
     @SerializedName("Ship") SHIP,
-    @SerializedName("Aircraft") AIRCRAFT
+    @SerializedName("Aircraft") AIRCRAFT,
+    @SerializedName("WheelChair") WHEELCHAIR
 }
