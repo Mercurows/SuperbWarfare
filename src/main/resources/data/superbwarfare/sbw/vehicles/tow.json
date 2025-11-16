@@ -22,7 +22,7 @@
     "Sensitivity": [0.55, 0.75, 1],
     "DismountInfo": {
       "Transform": "Turret",
-      "Position": [0.3, -1.3689, -0.6]
+      "Position": [0.3, -0.8, -0.6]
     }
   },
   "Weapons": {

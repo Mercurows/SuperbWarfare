@@ -3083,43 +3083,53 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var dismountInfo = this.computed().seats().get(index).dismountInfo;
         if (dismountInfo != null) {
             var vec3 = dismountInfo.position;
-            var worldPosition = transformPosition(
-                    this.getTransformFromString(dismountInfo.transform, 1),
-                    (float) vec3.x, (float) vec3.y, (float) vec3.z);
-
-            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            if (vec3 != null) {
+                var worldPosition = transformPosition(
+                        this.getTransformFromString(dismountInfo.transform, 1),
+                        (float) vec3.x, (float) vec3.y, (float) vec3.z);
+                return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            } else {
+                return dismount(passenger);
+            }
         } else {
-            Vec3 vec3d = VehicleMiscUtils.getDismountOffset(this, getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
-            double ox = getX() - vec3d.x;
-            double oz = getZ() + vec3d.z;
-            BlockPos exitPos = new BlockPos((int) ox, (int) getY(), (int) oz);
-            BlockPos floorPos = exitPos.below();
-            if (!level().isWaterAt(floorPos)) {
-                ArrayList<Vec3> list = Lists.newArrayList();
-                double exitHeight = level().getBlockFloorHeight(exitPos);
-                if (DismountHelper.isBlockFloorValid(exitHeight)) {
-                    list.add(new Vec3(ox, (double) exitPos.getY() + exitHeight, oz));
-                }
-                double floorHeight = level().getBlockFloorHeight(floorPos);
-                if (DismountHelper.isBlockFloorValid(floorHeight)) {
-                    list.add(new Vec3(ox, (double) floorPos.getY() + floorHeight, oz));
-                }
-                for (Pose entityPose : passenger.getDismountPoses()) {
-                    for (Vec3 vec3d2 : list) {
-                        if (!DismountHelper.canDismountTo(level(), vec3d2, passenger, entityPose)) continue;
-                        passenger.setPose(entityPose);
-                        return vec3d2;
-                    }
+            return dismount(passenger);
+        }
+    }
+
+    public @NotNull Vec3 dismount(LivingEntity passenger) {
+        Vec3 vec3d = VehicleMiscUtils.getDismountOffset(this, getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
+        double ox = getX() - vec3d.x;
+        double oz = getZ() + vec3d.z;
+        BlockPos exitPos = new BlockPos((int) ox, (int) getY(), (int) oz);
+        BlockPos floorPos = exitPos.below();
+        if (!level().isWaterAt(floorPos)) {
+            ArrayList<Vec3> list = Lists.newArrayList();
+            double exitHeight = level().getBlockFloorHeight(exitPos);
+            if (DismountHelper.isBlockFloorValid(exitHeight)) {
+                list.add(new Vec3(ox, (double) exitPos.getY() + exitHeight, oz));
+            }
+            double floorHeight = level().getBlockFloorHeight(floorPos);
+            if (DismountHelper.isBlockFloorValid(floorHeight)) {
+                list.add(new Vec3(ox, (double) floorPos.getY() + floorHeight, oz));
+            }
+            for (Pose entityPose : passenger.getDismountPoses()) {
+                for (Vec3 vec3d2 : list) {
+                    if (!DismountHelper.canDismountTo(level(), vec3d2, passenger, entityPose)) continue;
+                    passenger.setPose(entityPose);
+                    return vec3d2;
                 }
             }
-            return super.getDismountLocationForPassenger(passenger);
         }
+        return super.getDismountLocationForPassenger(passenger);
     }
 
     public @NotNull Vec3 getEjectionPosition(LivingEntity passenger, int index) {
         var dismountInfo = this.computed().seats().get(index).dismountInfo;
         if (dismountInfo != null) {
             var vec3 = dismountInfo.ejectPosition;
+            if (vec3 == null) {
+                return passenger.position();
+            }
             var worldPosition = transformPosition(
                     this.getTransformFromString(dismountInfo.transform, 1),
                     (float) vec3.x, (float) vec3.y, (float) vec3.z);
