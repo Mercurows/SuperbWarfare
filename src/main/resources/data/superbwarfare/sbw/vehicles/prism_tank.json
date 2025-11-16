@@ -73,7 +73,7 @@
       ],
       "Crosshair": "@VehicleCommonMissile",
       "CrosshairColor": "0x00FFF6",
-      "Name": "superbwarfare.laser",
+      "Name": "weapon.superbwarfare.laser",
       "SoundInfo": {
         "Fire1P": "superbwarfare:prism_tank_fire_high_1p",
         "Fire3P": "superbwarfare:prism_tank_fire_high_3p",

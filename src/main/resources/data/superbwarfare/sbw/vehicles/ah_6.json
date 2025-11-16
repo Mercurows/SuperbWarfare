@@ -76,7 +76,7 @@
       "HeatPerShoot": 5,
       "NaturalCooldown": 1,
       "Spread": 0.25,
-      "Name": "superbwarfare.20mm_cannon",
+      "Name": "weapon.superbwarfare.20mm_cannon",
       "SoundInfo": {
         "Fire1P": "superbwarfare:ah_6_cannon_fire_1p",
         "Fire3P": "superbwarfare:ah_6_cannon_fire_3p",
@@ -106,7 +106,7 @@
       "Projectile": "superbwarfare:small_rocket",
       "HeatPerShoot": 0.5,
       "Spread": 0.25,
-      "Name": "superbwarfare.70mm_rocket",
+      "Name": "weapon.superbwarfare.70mm_rocket",
       "RPM": 500,
       "Damage": 80,
       "ExplosionDamage": 40,

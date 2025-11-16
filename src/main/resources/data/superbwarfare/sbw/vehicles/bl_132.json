@@ -40,7 +40,7 @@
       "ShootAnimationTime": 30,
       "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleCommonCannonZooming",
-      "Name": "superbwarfare.cannon_ap",
+      "Name": "weapon.superbwarfare.cannon_ap",
       "SoundInfo": {
         "Fire1P": "superbwarfare:bl_132_fire_1p",
         "Fire3P": "superbwarfare:bl_132_fire_3p",
@@ -62,7 +62,7 @@
             "Damage": 250,
             "ExplosionDamage": 160,
             "ExplosionRadius": 11,
-            "Name": "superbwarfare.cannon_he"
+            "Name": "weapon.superbwarfare.cannon_he"
           }
         },
         {
@@ -76,7 +76,7 @@
             "Damage": 360,
             "ExplosionDamage": 220,
             "ExplosionRadius": 7,
-            "Name": "superbwarfare.cannon_cm"
+            "Name": "weapon.superbwarfare.cannon_cm"
           }
         },
         {
@@ -90,7 +90,7 @@
             "Damage": 1100,
             "ExplosionDamage": 180,
             "ExplosionRadius": 6,
-            "Name": "superbwarfare.cannon_grape"
+            "Name": "weapon.superbwarfare.cannon_gs"
           }
         }
       ],
