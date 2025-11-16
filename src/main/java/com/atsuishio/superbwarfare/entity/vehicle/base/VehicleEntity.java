@@ -179,7 +179,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Boolean> DECOY_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> FIRE_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> SPRINT_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> LANDING_INPUT_DOWN = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> PLANE_BREAK = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
     public static final EntityDataAccessor<Integer> ENERGY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
@@ -459,7 +458,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         setRightInputDown((keys & 0b000000010) > 0);
         setForwardInputDown((keys & 0b000000100) > 0);
         setBackInputDown((keys & 0b000001000) > 0);
-        setLandingInputDown((keys & 0b000001000) > 0);
         setUpInputDown((keys & 0b000010000) > 0);
         setDownInputDown((keys & 0b000100000) > 0);
         setDecoyInputDown((keys & 0b001000000) > 0);
@@ -489,10 +487,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public boolean downInputDown() {
         return entityData.get(DOWN_INPUT_DOWN);
-    }
-
-    public boolean landingInputDown() {
-        return entityData.get(LANDING_INPUT_DOWN);
     }
 
     public boolean fireInputDown() {
@@ -529,10 +523,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void setDownInputDown(boolean set) {
         entityData.set(DOWN_INPUT_DOWN, set);
-    }
-
-    public void setLandingInputDown(boolean set) {
-        entityData.set(LANDING_INPUT_DOWN, set);
     }
 
     public void setFireInputDown(boolean set) {
@@ -1105,7 +1095,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .define(FIRE_INPUT_DOWN, false)
                 .define(DECOY_INPUT_DOWN, false)
                 .define(SPRINT_INPUT_DOWN, false)
-                .define(LANDING_INPUT_DOWN, false)
+
                 .define(PLANE_BREAK, 0f)
                 .define(SELECTED_WEAPON, IntList.of(new int[this.getMaxPassengers()]))
                 .define(ENERGY, 0)
