@@ -2405,6 +2405,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             case "WeaponStationBarrel" -> getPassengerWeaponStationVector(ticks);
             case "Passenger" -> entity != null ? entity.getViewVector(ticks) : getViewVector(ticks);
             case "DeltaMovement" -> getDeltaMovement().normalize();
+            case "Up" -> getUpVec(ticks);
             default -> getViewVector(ticks);
         };
     }
@@ -3079,43 +3080,92 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @return 下车的位置
      */
     public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
-        Vec3 vec3d = VehicleMiscUtils.getDismountOffset(this, getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
-        double ox = getX() - vec3d.x;
-        double oz = getZ() + vec3d.z;
-        BlockPos exitPos = new BlockPos((int) ox, (int) getY(), (int) oz);
-        BlockPos floorPos = exitPos.below();
-        if (!level().isWaterAt(floorPos)) {
-            ArrayList<Vec3> list = Lists.newArrayList();
-            double exitHeight = level().getBlockFloorHeight(exitPos);
-            if (DismountHelper.isBlockFloorValid(exitHeight)) {
-                list.add(new Vec3(ox, (double) exitPos.getY() + exitHeight, oz));
-            }
-            double floorHeight = level().getBlockFloorHeight(floorPos);
-            if (DismountHelper.isBlockFloorValid(floorHeight)) {
-                list.add(new Vec3(ox, (double) floorPos.getY() + floorHeight, oz));
-            }
-            for (Pose entityPose : passenger.getDismountPoses()) {
-                for (Vec3 vec3d2 : list) {
-                    if (!DismountHelper.canDismountTo(level(), vec3d2, passenger, entityPose)) continue;
-                    passenger.setPose(entityPose);
-                    return vec3d2;
+        var dismountInfo = this.computed().seats().get(index).dismountInfo;
+        if (dismountInfo != null) {
+            var vec3 = dismountInfo.position;
+            var worldPosition = transformPosition(
+                    this.getTransformFromString(dismountInfo.transform, 1),
+                    (float) vec3.x, (float) vec3.y, (float) vec3.z);
+
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        } else {
+            Vec3 vec3d = VehicleMiscUtils.getDismountOffset(this, getBbWidth() * Mth.SQRT_OF_TWO, passenger.getBbWidth() * Mth.SQRT_OF_TWO);
+            double ox = getX() - vec3d.x;
+            double oz = getZ() + vec3d.z;
+            BlockPos exitPos = new BlockPos((int) ox, (int) getY(), (int) oz);
+            BlockPos floorPos = exitPos.below();
+            if (!level().isWaterAt(floorPos)) {
+                ArrayList<Vec3> list = Lists.newArrayList();
+                double exitHeight = level().getBlockFloorHeight(exitPos);
+                if (DismountHelper.isBlockFloorValid(exitHeight)) {
+                    list.add(new Vec3(ox, (double) exitPos.getY() + exitHeight, oz));
+                }
+                double floorHeight = level().getBlockFloorHeight(floorPos);
+                if (DismountHelper.isBlockFloorValid(floorHeight)) {
+                    list.add(new Vec3(ox, (double) floorPos.getY() + floorHeight, oz));
+                }
+                for (Pose entityPose : passenger.getDismountPoses()) {
+                    for (Vec3 vec3d2 : list) {
+                        if (!DismountHelper.canDismountTo(level(), vec3d2, passenger, entityPose)) continue;
+                        passenger.setPose(entityPose);
+                        return vec3d2;
+                    }
                 }
             }
+            return super.getDismountLocationForPassenger(passenger);
         }
-
-        return super.getDismountLocationForPassenger(passenger);
     }
 
-    public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
-        return new Vec3(0, 0, 0);
+    public @NotNull Vec3 getEjectionPosition(LivingEntity passenger, int index) {
+        var dismountInfo = this.computed().seats().get(index).dismountInfo;
+        if (dismountInfo != null) {
+            var vec3 = dismountInfo.ejectPosition;
+            var worldPosition = transformPosition(
+                    this.getTransformFromString(dismountInfo.transform, 1),
+                    (float) vec3.x, (float) vec3.y, (float) vec3.z);
+
+            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+        }
+        return passenger.position();
     }
 
-    public boolean allowEjection() {
-        return this.computed().canEject;
+    public boolean allowEjection(int seatIndex) {
+        return this.computed().seats().get(seatIndex).dismountInfo.canEject;
     }
 
     public void removeSeatIndexTag(Entity entity) {
         entity.getPersistentData().remove(TAG_SEAT_INDEX);
+    }
+
+    public @NotNull Vec3 getEjectionMovement(LivingEntity entity, int index) {
+        var dismountInfo = this.computed().seats().get(index).dismountInfo;
+        if (dismountInfo == null) return getDeltaMovement();
+
+        double force = dismountInfo.ejectForce;
+        StringOrVec3 stringOrVec3 = dismountInfo.ejectDirection;
+
+        if (stringOrVec3 == null) {
+            return getDeltaMovement().add(getUpVec(1).scale(force));
+        } else if (stringOrVec3.isString()) {
+            return getDeltaMovement().add(getVectorFromString(stringOrVec3.string, 1, getSeatIndex(entity)).scale(force));
+        } else {
+            var vec3 = stringOrVec3.vec3;
+            Vector4f worldPosition = transformPosition(
+                    getTransformFromString(dismountInfo.transform, 1),
+                    (float) vec3.x + (float) stringOrVec3.vec3.x,
+                    (float) vec3.y + (float) stringOrVec3.vec3.y,
+                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+
+            Vector4f worldPositionO = transformPosition(
+                    getTransformFromString(dismountInfo.transform, 1),
+                    (float) vec3.x,
+                    (float) vec3.y,
+                    (float) vec3.z);
+
+            Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
+            Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+            return getDeltaMovement().add(startPos.vectorTo(endPos).normalize().scale(force));
+        }
     }
 
     public ResourceLocation getVehicleIcon() {
@@ -3124,6 +3174,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public boolean allowFreeCam() {
         return computed().allowFreeCam;
+    }
+
+    public Vec3 getUpVec(float ticks) {
+        Matrix4f transform = getVehicleTransform(ticks);
+
+        Vector4f force0 = transformPosition(transform, 0, 0, 0);
+        Vector4f force1 = transformPosition(transform, 0, 1, 0);
+
+        return new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
     }
 
     // 本方法留空

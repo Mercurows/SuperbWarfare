@@ -12,11 +12,9 @@ import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.*;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -137,22 +135,6 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
             setXRot(getXRot() * 0.9f);
             setZRot(getRoll() * 0.9f);
         }
-    }
-
-    @Override
-    public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
-        Matrix4f transform = getVehicleTransform(1);
-        if ((!onGround() || getDeltaMovement().length() >= 0.1)) {
-            Vector4f worldPosition = transformPosition(transform, 0, 4.025f, 3.7f);
-            return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
-        } else {
-            return super.getDismountLocationForIndex(passenger, index);
-        }
-    }
-
-    @Override
-    public @NotNull Vec3 getDismountMovement(LivingEntity passenger, int index) {
-        return getDeltaMovement().add(new Vec3(0, 4, 0));
     }
 
     @Override

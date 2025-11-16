@@ -15,8 +15,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -505,12 +503,7 @@ public final class VehicleEngineUtils {
             vehicle.consumeEnergy((int) (energyCost * 8.3333f * Mth.abs(vehicle.getEntityData().get(POWER))));
         }
 
-        Matrix4f transform = vehicle.getVehicleTransform(1);
-
-        Vector4f force0 = vehicle.transformPosition(transform, 0, 0, 0);
-        Vector4f force1 = vehicle.transformPosition(transform, 0, 1, 0);
-
-        Vec3 force = new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
+        Vec3 force = vehicle.getUpVec(1);
 
         vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(force.scale(vehicle.getEntityData().get(PROPELLER_ROT) * lift)));
 
@@ -693,15 +686,9 @@ public final class VehicleEngineUtils {
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.96f);
         }
 
-        Matrix4f transform = vehicle.getVehicleTransform(1);
         double flapAngle = (vehicle.getFlap1LRot() + vehicle.getFlap1RRot() + vehicle.getFlap1L2Rot() + vehicle.getFlap1R2Rot()) / 4;
 
-        Vector4f force0 = vehicle.transformPosition(transform, 0, 0, 0);
-        Vector4f force1 = vehicle.transformPosition(transform, 0, 1, 0);
-
-        Vec3 force = new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
-
-        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(force.scale(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 0.022 * lift * (1 + Math.sin((vehicle.onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getUpVec(1).scale(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 0.022 * lift * (1 + Math.sin((vehicle.onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
 
         vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.03 * speedRate * vehicle.getEntityData().get(POWER) * (vehicle.sprintInputDown() ? 2.2 : 1))));
 

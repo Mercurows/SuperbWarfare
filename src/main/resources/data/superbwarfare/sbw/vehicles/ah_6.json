@@ -20,7 +20,11 @@
       "MaxPitch": 80,
       "MinYaw": -80,
       "MaxYaw": 80,
-      "Weapons": ["Cannon", "Rocket"]
+      "Weapons": ["Cannon", "Rocket"],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [2, 1.2, 1]
+      }
     },
     {
       "Transform": "Vehicle",
@@ -28,21 +32,33 @@
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,
-      "MaxYaw": 80
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-2, 1.2, 1]
+      }
     },
     {
       "Transform": "Vehicle",
       "Position": [-1.4, 0.4, 0],
       "Orientation": 90,
       "MinYaw": -80,
-      "MaxYaw": 80
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-2, 1.2, 0]
+      }
     },
     {
       "Transform": "Vehicle",
       "Position": [1.4, 0.4, 0],
       "Orientation": -90,
       "MinYaw": -80,
-      "MaxYaw": 80
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [2, 1.2, 0]
+      }
     }
   ],
   "Weapons": {

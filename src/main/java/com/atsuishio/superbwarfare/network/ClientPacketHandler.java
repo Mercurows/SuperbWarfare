@@ -104,6 +104,7 @@ public class ClientPacketHandler {
             Minecraft minecraft = Minecraft.getInstance();
             Player player = minecraft.player;
             if (player != null) {
+                player.setPos(message.position().x, message.position().y, message.position().z);
                 player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
             }
         }

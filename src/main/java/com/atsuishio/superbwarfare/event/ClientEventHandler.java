@@ -370,7 +370,7 @@ public class ClientEventHandler {
             holdArtilleryIndicator = 0;
         }
 
-        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowEjection() && ModKeyMappings.DISMOUNT.isDown()) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowEjection(vehicle.getSeatIndex(player)) && ModKeyMappings.DISMOUNT.isDown()) {
             holdToEjection = Mth.clamp(holdToEjection + 1, 0, 10);
             if (holdToEjection >= 10) {
                 NetworkRegistry.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(true));
