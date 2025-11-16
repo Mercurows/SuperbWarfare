@@ -78,7 +78,7 @@
       "ShootAnimationTime": 10,
       "Crosshair": "@VehicleUsTank",
       "CrosshairColor": "0x00FFF6",
-      "Name": "superbwarfare.cannon_ap",
+      "Name": "weapon.superbwarfare.cannon_ap",
       "AmmoType": [
         "superbwarfare:ap_5_inches",
         {
@@ -91,7 +91,7 @@
             "Damage": 250,
             "ExplosionDamage": 120,
             "ExplosionRadius": 10,
-            "Name": "superbwarfare.cannon_he"
+            "Name": "weapon.superbwarfare.cannon_he"
           }
         },
         {
@@ -106,7 +106,7 @@
             "Damage": 300,
             "ExplosionDamage": 180,
             "ExplosionRadius": 6,
-            "Name": "superbwarfare.cannon_cm"
+            "Name": "weapon.superbwarfare.cannon_cm"
           }
         },
         {
@@ -121,7 +121,7 @@
             "Damage": 1000,
             "ExplosionDamage": 180,
             "ExplosionRadius": 6,
-            "Name": "superbwarfare.cannon_grape"
+            "Name": "weapon.superbwarfare.cannon_gs"
           }
         }
       ],
@@ -167,7 +167,7 @@
         "Directions": ["Barrel"]
       },
       "Crosshair": "@VehicleCommonGun",
-      "Name": "superbwarfare.50_cal_gun",
+      "Name": "weapon.superbwarfare.50_cal_gun",
       "SoundInfo": {
         "Fire1P": "superbwarfare:m_2_hb_fire_1p",
         "Fire3P": "superbwarfare:m_2_hb_fire_3p",
@@ -201,7 +201,7 @@
         "Directions": ["WeaponStationBarrel"]
       },
       "Crosshair": "@VehicleCommonGun",
-      "Name": "superbwarfare.50_cal_gun",
+      "Name": "weapon.superbwarfare.50_cal_gun",
       "SoundInfo": {
         "Fire1P": "superbwarfare:m_2_hb_fire_1p",
         "Fire3P": "superbwarfare:m_2_hb_fire_3p",
@@ -248,7 +248,7 @@
         "Directions": [[0, 1, 0]]
       },
       "Crosshair": "@VehicleCommonMissile",
-      "Name": "superbwarfare.swarm_drone",
+      "Name": "weapon.superbwarfare.swarm_drone",
       "SoundInfo": {
         "Fire1P": "superbwarfare:decoy_release",
         "Fire3P": "superbwarfare:decoy_release",
