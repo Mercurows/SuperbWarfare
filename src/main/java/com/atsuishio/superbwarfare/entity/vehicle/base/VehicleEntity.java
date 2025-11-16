@@ -1023,7 +1023,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void turretTurnSound(float diffX, float diffY, float pitch) {
         if (this instanceof MortarEntity) return;
-        if (level().isClientSide && (java.lang.Math.abs(diffY) > 0.5 || java.lang.Math.abs(diffX) > 0.5)) {
+        if (level().isClientSide && (Math.abs(diffY) > 0.5 || Math.abs(diffX) > 0.5)) {
             level().playLocalSound(this.getX(), this.getY() + this.getBbHeight() * 0.5, this.getZ(), ModSounds.TURRET_TURN.get(), this.getSoundSource(), (float) java.lang.Math.min(0.15 * (java.lang.Math.max(Mth.abs(diffX), Mth.abs(diffY))), 0.75), (random.nextFloat() * 0.05f + pitch), false);
         }
     }
