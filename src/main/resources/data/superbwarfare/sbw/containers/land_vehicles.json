@@ -13,6 +13,10 @@
       "Weight": 3
     },
     {
+      "Type": "superbwarfare:truck",
+      "Weight": 2
+    },
+    {
       "Type": "superbwarfare:prism_tank",
       "Weight": 2
     },

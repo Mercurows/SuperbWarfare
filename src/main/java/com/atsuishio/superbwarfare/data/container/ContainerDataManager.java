@@ -20,7 +20,7 @@ public class ContainerDataManager extends SimpleJsonResourceReloadListener {
     public static ContainerDataManager INSTANCE = new ContainerDataManager();
 
     private static final Gson GSON = new Gson();
-    private static final String DIRECTORY = "containers";
+    private static final String DIRECTORY = "sbw/containers";
     private final Map<ResourceLocation, List<Pair<String, Integer>>> containerData = new HashMap<>();
 
     public ContainerDataManager() {
