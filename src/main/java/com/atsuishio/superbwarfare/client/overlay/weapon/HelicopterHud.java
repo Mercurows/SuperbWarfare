@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -48,6 +49,7 @@ public class HelicopterHud {
     private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/overlay/vehicle/helicopter/crosshair_ind.png");
     private static final ResourceLocation HELI_DRIVER_ANGLE = Mod.loc("textures/overlay/vehicle/helicopter/heli_driver_angle.png");
     private static final ResourceLocation FRAME = Mod.loc("textures/overlay/vehicle/land/tv_frame.png");
+    private static final ResourceLocation LINE = Mod.loc("textures/overlay/vehicle/land/line.png");
 
     private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
     private static final ResourceLocation CROSSHAIR_3P = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
@@ -69,10 +71,9 @@ public class HelicopterHud {
 
         if (vehicle.getSeatIndex(player) == vehicle.computed().turretControllerIndex && vehicle.hasTurret()) {
             if (ClientEventHandler.zoomVehicle) {
-                int heat = vehicle.getWeaponHeat(player);
-                var component = vehicle.firstPersonAmmoComponent(data, player);
-                guiGraphics.drawString(mc.font, component, screenWidth / 2 - 160, screenHeight / 2 - 59,
-                        MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+                // 武器名
+
+                VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, vehicle.getGunData(player), mc.font, screenWidth, screenHeight, color);
 
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
@@ -81,9 +82,53 @@ public class HelicopterHud {
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
 
+                // 指南针
+                RenderHelper.blit(poseStack, COMPASS, (float) screenWidth / 2 - 128, 10F, (float) (128 - (64F / 45 * VehicleVecUtils.getYRotFromVector(vehicle.getBarrelVector(partialTick)))), 0, 256, 16, 512, 16, color);
+                RenderHelper.blit(poseStack, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0F, 16, 16, 16, 16, color);
+
+                // 电视
                 int addW = (screenWidth / screenHeight) * 48;
                 int addH = (screenWidth / screenHeight) * 27;
                 preciseBlit(guiGraphics, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
+                RenderHelper.blit(poseStack, LINE, screenWidth / 2f - 64, screenHeight - 56, 0, 0F, 128, 1, 128, 1, color);
+
+                // 时速
+                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format0D(vehicle.getDeltaMovement().dot(vehicle.getViewVector(partialTick)) * 72, " km/h")),
+                        screenWidth / 2 + 160, screenHeight / 2 - 48, color, false);
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getY(), " m")),
+                        screenWidth / 2 + 160, screenHeight / 2 - 39, color, false);
+
+                // 低电量警告
+                VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
+
+                // 测距
+                boolean lookAtEntity = false;
+
+                BlockHitResult result = player.level().clip(new ClipContext(vehicle.getShootPosForHud(player, partialTick), vehicle.getShootPosForHud(player, partialTick).add(vehicle.getShootDirectionForHud(player, partialTick).scale(512)),
+                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+                Vec3 hitPos = result.getLocation();
+
+                double blockRange = player.getEyePosition(1).distanceTo(hitPos);
+                double entityRange = 0;
+
+                Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, vehicle.getShootPosForHud(player, partialTick), vehicle.getShootDirectionForHud(player, partialTick), 512);
+                if (lookingEntity != null) {
+                    lookAtEntity = true;
+                    entityRange = player.distanceTo(lookingEntity);
+                }
+
+                if (lookAtEntity) {
+                    int width = Minecraft.getInstance().font.width(FormatTool.format0D(entityRange, " m"));
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(entityRange, " m")), screenWidth / 2 - width / 2, screenHeight - 53, color, false);
+                } else {
+                    if (blockRange > 500) {
+                        int width = Minecraft.getInstance().font.width("---m");
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("---m"), screenWidth / 2 - width / 2, screenHeight - 53, color, false);
+                    } else {
+                        int width = Minecraft.getInstance().font.width(FormatTool.format0D(blockRange, " m"));
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(blockRange, " m")), screenWidth / 2 - width / 2, screenHeight - 53, color, false);
+                    }
+                }
             }
         } else {
             poseStack.pushPose();

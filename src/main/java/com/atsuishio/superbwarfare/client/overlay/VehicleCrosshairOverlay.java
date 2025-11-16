@@ -192,7 +192,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             poseStack.popPose();
             poseStack.pushPose();
 
-            VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, data, mc.font, screenWidth, screenHeight, color);
+
 
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {

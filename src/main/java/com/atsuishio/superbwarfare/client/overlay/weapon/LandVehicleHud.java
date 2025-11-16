@@ -129,16 +129,16 @@ public class LandVehicleHud {
                 entityRange = player.distanceTo(lookingEntity);
             }
 
-            // 测距
             if (lookAtEntity) {
-                guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(entityRange, "m")),
-                        screenWidth / 2 - 6, screenHeight - 53, color, false);
+                int width = Minecraft.getInstance().font.width(FormatTool.format0D(entityRange, " m"));
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(entityRange, " m")), screenWidth / 2 - width / 2, screenHeight - 53, color, false);
             } else {
                 if (blockRange > 500) {
-                    guiGraphics.drawString(mc.font, Component.literal("---m"), screenWidth / 2 - 6, screenHeight - 53, color, false);
+                    int width = Minecraft.getInstance().font.width("---m");
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("---m"), screenWidth / 2 - width / 2, screenHeight - 53, color, false);
                 } else {
-                    guiGraphics.drawString(mc.font, Component.literal(FormatTool.format1D(blockRange, "m")),
-                            screenWidth / 2 - 6, screenHeight - 53, color, false);
+                    int width = Minecraft.getInstance().font.width(FormatTool.format0D(blockRange, " m"));
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(blockRange, " m")), screenWidth / 2 - width / 2, screenHeight - 53, color, false);
                 }
             }
 
@@ -148,6 +148,8 @@ public class LandVehicleHud {
 
             // 诱饵
             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), screenWidth / 2 - 165, screenHeight / 2 - 36, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
+
+            VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, vehicle.getGunData(player), mc.font, screenWidth, screenHeight, color);
         }
         poseStack.popPose();
     }
