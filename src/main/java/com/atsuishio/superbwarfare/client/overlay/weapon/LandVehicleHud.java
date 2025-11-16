@@ -54,6 +54,8 @@ public class LandVehicleHud {
     public static void render(VehicleEntity vehicle, LocalPlayer player, GuiGraphics gui, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getInstance();
 
+        if (vehicle.getSeatIndex(player) != vehicle.computed().turretControllerIndex) return;
+
         PoseStack poseStack = gui.pose();
 
         Camera camera = mc.gameRenderer.getMainCamera();

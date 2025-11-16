@@ -560,10 +560,11 @@ public final class VehicleMotionUtils {
 
         double targetY;
 
-        BlockState state = level.getBlockState(BlockPos.containing(pos));
+        BlockPos blockPos = BlockPos.containing(pos);
+        BlockState state = level.getBlockState(blockPos);
         VoxelShape shape = state.getCollisionShape(level, BlockPos.containing(pos));
         if (!shape.isEmpty()) {
-            targetY = pos.y + shape.max(Direction.Axis.Y);
+            targetY = blockPos.getY() + shape.max(Direction.Axis.Y);
         } else if (res.getType() == HitResult.Type.BLOCK && level.noCollision(new AABB(pos, pos))) {
             targetY = res.getLocation().y;
         } else {

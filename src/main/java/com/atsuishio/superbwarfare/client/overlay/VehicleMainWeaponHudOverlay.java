@@ -66,8 +66,6 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
         var type = vehicle.computed().mainWeaponHudType;
         if (type.equals(EMPTY)) return;
 
-        if (vehicle.getSeatIndex(player) != vehicle.computed().turretControllerIndex) return;
-
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
 

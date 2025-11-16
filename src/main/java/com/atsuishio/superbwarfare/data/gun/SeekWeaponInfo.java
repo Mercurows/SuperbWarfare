@@ -15,7 +15,7 @@ public class SeekWeaponInfo {
     @SerializedName("TargetHeight")
     public double targetHeight = 10;
 
-    @SerializedName("seekTime")
+    @SerializedName("SeekTime")
     public int seekTime = 10;
 
     @SerializedName("MinTargetSize")

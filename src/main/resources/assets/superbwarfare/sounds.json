@@ -3869,5 +3869,53 @@
         "stream": false
       }
     ]
+  },
+  "mi_28_engine_start": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_engine_start"
+      }
+    ]
+  },
+  "mi_28_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 160,
+        "stream": true,
+        "name": "superbwarfare:vehicle/mi_28/mi_28_engine"
+      }
+    ]
+  },
+  "mi_28_cannon_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "mi_28_cannon_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "mi_28_cannon_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_far",
+        "stream": false
+      }
+    ]
+  },
+  "mi_28_cannon_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_veryfar",
+        "stream": false
+      }
+    ]
   }
 }
