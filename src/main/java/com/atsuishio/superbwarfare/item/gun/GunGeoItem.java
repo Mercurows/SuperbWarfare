@@ -51,7 +51,6 @@ public abstract class GunGeoItem extends GunItem implements GeoItem, CustomRende
         return this.cache;
     }
 
-
     @Override
     public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);

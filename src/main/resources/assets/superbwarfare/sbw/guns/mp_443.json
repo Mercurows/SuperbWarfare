@@ -7,6 +7,11 @@
     "LODModel": "superbwarfare:geo/lod/mp_443.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/mp_443.png"
   },
+  "Animation": {
+    "Idle": "animation.mp_443.idle",
+    "ReloadNormal": "animation.mp_443.reload_normal",
+    "ReloadEmpty": "animation.mp_443.reload_empty"
+  },
   "FlarePosition": [
     0,
     0,
