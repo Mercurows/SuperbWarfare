@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -9,17 +10,16 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -124,23 +124,20 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
             Entity shooter = this.getOwner();
 
-            Vec3 lookVec = vehicle.getBarrelVector(1).normalize();
-            Vec3 vec3 = TraceTool.vehicleFindLookingPos(shooter, vehicle, vehicle.getZoomPos(shooter, 1), 512, 1);
             Vec3 toVec = getDeltaMovement();
 
             if (launcherVehicle == vehicle.getUUID()) {
-                if (vec3 != null) {
-                    toVec = this.position().vectorTo(vec3).normalize();
+                Vec3 lookVec;
+                if ((vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER) && shooter == vehicle.getFirstPassenger()) {
+                    lookVec = vehicle.getViewVector(1).scale(1.45);
                 } else {
-                    BlockHitResult result = level().clip(new ClipContext(vehicle.getZoomPos(shooter, 1), vehicle.getZoomPos(shooter, 1).add(lookVec.scale(512)),
-                            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
-                    Vec3 hitPos = result.getLocation();
-
-                    toVec = this.position().vectorTo(hitPos).normalize();
+                    lookVec = vehicle.getBarrelVector(1).scale(1.45);
                 }
+                Vec3 missileVec = vehicle.getShootPosForHud(shooter, 1).vectorTo(position()).normalize();
+                toVec = missileVec.vectorTo(lookVec);
             }
 
-            turn(toVec, 5);
+            turn(toVec, Mth.clamp(0.3f * tickCount, 0, 20));
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
         }
 

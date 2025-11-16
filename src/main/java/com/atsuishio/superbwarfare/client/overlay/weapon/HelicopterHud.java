@@ -5,8 +5,10 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -44,6 +46,7 @@ public class HelicopterHud {
     private static final ResourceLocation SPEED_FRAME = Mod.loc("textures/overlay/vehicle/helicopter/speed_frame.png");
     private static final ResourceLocation CROSSHAIR_IND = Mod.loc("textures/overlay/vehicle/helicopter/crosshair_ind.png");
     private static final ResourceLocation HELI_DRIVER_ANGLE = Mod.loc("textures/overlay/vehicle/helicopter/heli_driver_angle.png");
+    private static final ResourceLocation FRAME = Mod.loc("textures/overlay/vehicle/land/tv_frame.png");
 
     private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
     private static final ResourceLocation CROSSHAIR_3P = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
@@ -55,133 +58,153 @@ public class HelicopterHud {
     public static void render(VehicleEntity vehicle, LocalPlayer player, GuiGraphics gui, float partialTick, int screenWidth, int screenHeight) {
         Minecraft mc = Minecraft.getInstance();
         PoseStack poseStack = gui.pose();
-
-        if (player != vehicle.getFirstPassenger()) return;
-
-        poseStack.pushPose();
-
-        int color = vehicle.getHudColor();
-
         int index = vehicle.getSeatIndex(player);
         var data = vehicle.getGunData(index);
         if (data == null) {
             scopeScale = 0.7f;
             return;
         }
+        int color = vehicle.getHudColor();
 
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+        if (vehicle.getSeatIndex(player) == vehicle.computed().turretControllerIndex && vehicle.hasTurret()) {
+            if (ClientEventHandler.zoomVehicle) {
+                int heat = vehicle.getWeaponHeat(player);
+                var component = vehicle.firstPersonAmmoComponent(data, player);
+                gui.drawString(mc.font, component, screenWidth / 2 - 160, screenHeight / 2 - 59,
+                        MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
 
-        scopeScale = Mth.lerp(partialTick, scopeScale, 1F);
-        float f = (float) Math.min(screenWidth, screenHeight);
-        float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * scopeScale;
-        float i = Mth.floor(f * f1);
-        float j = Mth.floor(f * f1);
-        float k = (screenWidth - i) / 2f;
-        float l = (screenHeight - j) / 2f;
+                RenderSystem.disableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.enableBlend();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        Vec3 shootPos = vehicle.getShootPosForHud(player, partialTick);
-
-        BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-        Vec3 hitPos = result.getLocation();
-
-        double dis = shootPos.distanceTo(hitPos);
-
-        Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
-
-        if (entityPos != null) {
-            dis = shootPos.distanceTo(entityPos);
-        }
-
-        Vec3 pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));
-        Vec3 screenPos = VectorUtil.worldToScreen(pos);
-        float x = (float) screenPos.x;
-        float y = (float) screenPos.y;
-
-        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
-            RenderHelper.preciseBlitWithColor(gui, HELI_BASE, k, l, 0, 0, i, j, i, j, color);
-
-            float diffY = Mth.wrapDegrees(Mth.lerp(partialTick, player.yHeadRotO, player.getYHeadRot()) - Mth.lerp(partialTick, vehicle.yRotO, vehicle.getYRot())) * 0.35f;
-            float diffX = Mth.wrapDegrees(Mth.lerp(partialTick, player.xRotO, player.getXRot()) - Mth.lerp(partialTick, vehicle.xRotO, vehicle.getXRot())) * 0.072f;
-            RenderHelper.preciseBlitWithColor(gui, HELI_DRIVER_ANGLE, k + diffY, l + diffX, 0, 0, i, j, i, j, color);
-
-            RenderHelper.preciseBlitWithColor(gui, COMPASS, (float) screenWidth / 2 - 128, 6F, 128 + (64F / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
-
+                int addW = (screenWidth / screenHeight) * 48;
+                int addH = (screenWidth / screenHeight) * 27;
+                preciseBlit(gui, FRAME, (float) -addW / 2, (float) -addH / 2, 10, 0, 0F, screenWidth + addW, screenHeight + addH, screenWidth + addW, screenHeight + addH);
+            }
+        } else {
             poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), screenWidth / 2f, screenHeight / 2f, 0);
-            float pitch = vehicle.getPitch(partialTick);
-            RenderHelper.preciseBlitWithColor(gui, HELI_LINE, (float) screenWidth / 2 - 128, (float) screenHeight / 2 - 512 - 5.475f * pitch, 0, 0, 256, 1024, 256, 1024, color);
-            poseStack.popPose();
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), screenWidth / 2f, screenHeight / 2f - 56, 0);
-            RenderHelper.preciseBlitWithColor(gui, ROLL_IND, (float) screenWidth / 2 - 8, (float) screenHeight / 2 - 88, 0, 0, 16, 16, 16, 16, color);
-            poseStack.popPose();
+            scopeScale = Mth.lerp(partialTick, scopeScale, 1F);
+            float f = (float) Math.min(screenWidth, screenHeight);
+            float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * scopeScale;
+            float i = Mth.floor(f * f1);
+            float j = Mth.floor(f * f1);
+            float k = (screenWidth - i) / 2f;
+            float l = (screenHeight - j) / 2f;
 
-            RenderHelper.preciseBlitWithColor(gui, HELI_POWER_RULER, (float) screenWidth / 2 + 100, (float) screenHeight / 2 - 64, 0, 0, 64, 128, 64, 128, color);
+            Vec3 shootPos = vehicle.getShootPosForHud(player, partialTick);
 
-            double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(100)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
-            double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y + 0.06, vehicle.getDeltaMovement().z).normalize().scale(100)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+            BlockHitResult result = player.level().clip(new ClipContext(shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+            Vec3 hitPos = result.getLocation();
 
-            float power = vehicle.getPower();
-            lerpPower = Mth.lerp(0.001f * partialTick, lerpPower, power);
-            RenderHelper.preciseBlitWithColor(gui, HELI_POWER, (float) screenWidth / 2 + 130f, ((float) screenHeight / 2 - 64 + 124 - power * 980), 0, 0, 4, power * 980, 4, power * 980, color);
+            double dis = shootPos.distanceTo(hitPos);
 
-            lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, vehicle.getDeltaMovement().y());
-            RenderHelper.preciseBlitWithColor(gui, HELI_VY_MOVE, (float) screenWidth / 2 + 138, ((float) screenHeight / 2 - 3 - Math.max(lerpVy * 20, -24) * 2.5f), 0, 0, 8, 8, 8, 8, color);
+            Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
 
-            gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(lerpVy * 20, "m/s")),
-                    screenWidth / 2 + 146, (int) (screenHeight / 2F - 3 - Math.max(lerpVy * 20, -24) * 2.5), (lerpVy * 20 < -24 || ((lerpVy * 20 < -10 || (lerpVy * 20 < -1 && length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 100)) && height < 36) || (length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 40 && blockInWay < 72) ? -65536 : color), false);
-            gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getY())),
-                    screenWidth / 2 + 104, screenHeight / 2, color, false);
-            RenderHelper.preciseBlitWithColor(gui, SPEED_FRAME, (float) screenWidth / 2 - 144, (float) screenHeight / 2 - 6, 0, 0, 50, 18, 50, 18, color);
-            gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72, "km/h")),
-                    screenWidth / 2 - 140, screenHeight / 2, color, false);
-
-            gui.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), screenWidth / 2 - 160, screenHeight / 2 - 50, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
-
-            if (lerpVy * 20 < -24) {
-                gui.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
-                        screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
-            } else if (((lerpVy * 20 < -10 || (lerpVy * 20 < -1 && length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 100)) && height < 36)
-                    || (length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 40 && blockInWay < 72)) {
-                gui.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
-                        screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
+            if (entityPos != null) {
+                dis = shootPos.distanceTo(entityPos);
             }
 
-            VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, gui, screenWidth, screenHeight, mc.font);
+            Vec3 pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));
+            Vec3 screenPos = VectorUtil.worldToScreen(pos);
+            float x = (float) screenPos.x;
+            float y = (float) screenPos.y;
 
-            RenderHelper.preciseBlitWithColor(gui, CROSSHAIR_IND, x - 8, y - 8, 0, 0, 16, 16, 16, 16, color);
-            VehicleHudOverlay.renderKillIndicatorDynamic(gui, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
-        } else if (VectorUtil.canSee(pos)) {
-            poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
-            preciseBlit(gui, CROSSHAIR_3P, x - 8, y - 8, 0, 0, 16, 16, 16, 16);
-            VehicleHudOverlay.renderKillIndicatorDynamic(gui, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
+                RenderHelper.preciseBlitWithColor(gui, HELI_BASE, k, l, 0, 0, i, j, i, j, color);
 
-            poseStack.pushPose();
+                float diffY = -Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot()) * 0.3f;
+                float diffX = (float) (Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(vehicle.getBarrelVector(partialTick)) - Mth.lerp(partialTick, vehicle.xRotO, vehicle.getXRot())) * 0.072f);
+                RenderHelper.preciseBlitWithColor(gui, HELI_DRIVER_ANGLE, k + diffY, l + diffX, 0, 0, i, j, i, j, color);
 
-            poseStack.translate(x, y, 0);
-            poseStack.scale(0.75f, 0.75f, 1);
+                RenderHelper.preciseBlitWithColor(gui, COMPASS, (float) screenWidth / 2 - 128, 6F, 128 + (64F / 45 * vehicle.getYRot()), 0, 256, 16, 512, 16, color);
 
-            VehicleMainWeaponHudOverlay.renderWeaponInfoThird(gui, vehicle, player, data, mc.font);
+                poseStack.pushPose();
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(-vehicle.getRoll(partialTick)), screenWidth / 2f, screenHeight / 2f, 0);
+                float pitch = vehicle.getPitch(partialTick);
+                RenderHelper.preciseBlitWithColor(gui, HELI_LINE, (float) screenWidth / 2 - 128, (float) screenHeight / 2 - 512 - 5.475f * pitch, 0, 0, 256, 1024, 256, 1024, color);
+                poseStack.popPose();
 
-            if (vehicle.hasDecoy()) {
-                gui.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), 30, 1, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
+                poseStack.pushPose();
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), screenWidth / 2f, screenHeight / 2f - 56, 0);
+                RenderHelper.preciseBlitWithColor(gui, ROLL_IND, (float) screenWidth / 2 - 8, (float) screenHeight / 2 - 88, 0, 0, 16, 16, 16, 16, color);
+                poseStack.popPose();
+
+                RenderHelper.preciseBlitWithColor(gui, HELI_POWER_RULER, (float) screenWidth / 2 + 100, (float) screenHeight / 2 - 64, 0, 0, 64, 128, 64, 128, color);
+
+                double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(100)),
+                        ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+                double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y + 0.06, vehicle.getDeltaMovement().z).normalize().scale(100)),
+                        ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+
+                float power = vehicle.getPower();
+                lerpPower = Mth.lerp(0.001f * partialTick, lerpPower, power);
+                RenderHelper.preciseBlitWithColor(gui, HELI_POWER, (float) screenWidth / 2 + 130f, ((float) screenHeight / 2 - 64 + 124 - power * 980), 0, 0, 4, power * 980, 4, power * 980, color);
+
+                lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, vehicle.getDeltaMovement().y());
+                RenderHelper.preciseBlitWithColor(gui, HELI_VY_MOVE, (float) screenWidth / 2 + 138, ((float) screenHeight / 2 - 3 - Math.max(lerpVy * 20, -24) * 2.5f), 0, 0, 8, 8, 8, 8, color);
+
+                gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(lerpVy * 20, "m/s")),
+                        screenWidth / 2 + 146, (int) (screenHeight / 2F - 3 - Math.max(lerpVy * 20, -24) * 2.5), (lerpVy * 20 < -24 || ((lerpVy * 20 < -10 || (lerpVy * 20 < -1 && length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 100)) && height < 36) || (length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 40 && blockInWay < 72) ? -65536 : color), false);
+                gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getY())),
+                        screenWidth / 2 + 104, screenHeight / 2, color, false);
+                RenderHelper.preciseBlitWithColor(gui, SPEED_FRAME, (float) screenWidth / 2 - 144, (float) screenHeight / 2 - 6, 0, 0, 50, 18, 50, 18, color);
+                gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72, "km/h")),
+                        screenWidth / 2 - 140, screenHeight / 2, color, false);
+
+                gui.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), screenWidth / 2 - 160, screenHeight / 2 - 50, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
+                var component = vehicle.firstPersonAmmoComponent(data, player);
+
+                int heat = vehicle.getWeaponHeat(player);
+                gui.drawString(mc.font, component, screenWidth / 2 - 160, screenHeight / 2 - 59,
+                        MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+
+                if (lerpVy * 20 < -24) {
+                    gui.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
+                            screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
+                } else if (((lerpVy * 20 < -10 || (lerpVy * 20 < -1 && length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 100)) && height < 36)
+                        || (length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 40 && blockInWay < 72)) {
+                    gui.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
+                            screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
+                }
+
+                VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, gui, screenWidth, screenHeight, mc.font);
+
+                RenderHelper.preciseBlitWithColor(gui, CROSSHAIR_IND, x - 8, y - 8, 0, 0, 16, 16, 16, 16, color);
+                VehicleHudOverlay.renderKillIndicatorDynamic(gui, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+            } else if (VectorUtil.canSee(pos)) {
+                poseStack.pushPose();
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
+                preciseBlit(gui, CROSSHAIR_3P, x - 8, y - 8, 0, 0, 16, 16, 16, 16);
+                VehicleHudOverlay.renderKillIndicatorDynamic(gui, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+
+                poseStack.pushPose();
+
+                poseStack.translate(x, y, 0);
+                poseStack.scale(0.75f, 0.75f, 1);
+
+                VehicleMainWeaponHudOverlay.renderWeaponInfoThird(gui, vehicle, player, data, mc.font);
+
+                if (vehicle.hasDecoy()) {
+                    gui.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), 30, 1, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
+                }
+
+                poseStack.popPose();
+                poseStack.popPose();
             }
 
             poseStack.popPose();
-            poseStack.popPose();
         }
-
-        poseStack.popPose();
     }
 
     private static double length(double x, double y, double z) {
