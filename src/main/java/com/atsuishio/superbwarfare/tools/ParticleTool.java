@@ -157,7 +157,7 @@ public class ParticleTool {
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 150, 7, 0.1, 7, 0.005, true);
             sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 1, z, 200, 3, 4, 3, 0.4, true);
 
-            ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 192, 30, 192, 12);
+            ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 192, 30, 12);
         }
     }
 
@@ -207,7 +207,7 @@ public class ParticleTool {
                     sendParticle(serverLevel, new CustomCloudOption(0.667f, 0.631f, 0.592f, 100, 4, 0, false, false), x, y + 0.2, z, 4 * j, j, 0.1, j, 0.0003 * j, true);
                 });
             }
-            ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 384, 30, 384, 16);
+            ShakeClientMessage.sendToNearbyPlayers(level, x, y, z, 384, 30, 16);
         }
     }
 

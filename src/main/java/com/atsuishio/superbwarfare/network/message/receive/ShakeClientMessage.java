@@ -52,15 +52,15 @@ public class ShakeClientMessage {
         context.get().setPacketHandled(true);
     }
 
-    public static void sendToNearbyPlayers(Level level, double x, double y, double z, double sendRadius, double time, double radius, double amplitude) {
+    public static void sendToNearbyPlayers(Level level, double x, double y, double z, double sendRadius, double time, double amplitude) {
         var center = new Vec3(x, y, z);
 
         for (var serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, new AABB(center, center).inflate(sendRadius), e -> true)) {
-            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(time, radius, amplitude, x, y, z));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(time, sendRadius, amplitude, x, y, z));
         }
     }
 
-    public static void sendToNearbyPlayers(Entity source, double sendRadius, double time, double radius, double amplitude) {
-        sendToNearbyPlayers(source.level(), source.getX(), source.getY(), source.getZ(), sendRadius, time, radius, amplitude);
+    public static void sendToNearbyPlayers(Entity source, double sendRadius, double time, double amplitude) {
+        sendToNearbyPlayers(source.level(), source.getX(), source.getY(), source.getZ(), sendRadius, time, amplitude);
     }
 }

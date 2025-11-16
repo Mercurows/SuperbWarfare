@@ -209,7 +209,13 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
                 if (this.entityData.get(INTELLIGENT)) {
                     this.resetTarget("Main");
                 }
-                ShakeClientMessage.sendToNearbyPlayers(this, 6, 6, 8, 14);
+
+
+                var gunData = getGunData("Main");
+                if (gunData != null) {
+                    Vec3 shootShake = gunData.compute().shootShake;
+                    ShakeClientMessage.sendToNearbyPlayers(this, shootShake.x, shootShake.y, shootShake.z);
+                }
             }
         }
     }

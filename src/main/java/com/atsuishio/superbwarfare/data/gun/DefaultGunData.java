@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Set;
@@ -53,6 +54,11 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public int recoilTime = 0;
     @SerializedName("RecoilForce")
     public float recoilForce = 0f;
+
+    //x:范围，y：振动时长，z：振幅
+    @ServerOnly
+    @SerializedName("ShootShake")
+    public Vec3 shootShake = new Vec3(5, 6, 9);
 
     @SerializedName("DefaultZoom")
     public double defaultZoom = 1.25;

@@ -73,6 +73,7 @@
       "ExplosionRadius": 4,
       "RecoilTime": 42,
       "RecoilForce": 1.0,
+      "ShootShake": [8, 10, 60],
       "Spread": 0.02,
       "ShootAnimationTime": 10,
       "Crosshair": "@VehicleUsTank",

@@ -36,6 +36,7 @@
       "ShootAnimationTime": 12,
       "AmmoCostPerShoot": 2000000,
       "AmmoType": "FE",
+      "ShootShake": [20, 15, 25],
       "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleLaserCannon",
       "Name": "superbwarfare.annihilator.main_gun",

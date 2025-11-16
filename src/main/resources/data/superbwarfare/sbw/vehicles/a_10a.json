@@ -106,7 +106,7 @@
       "ExplosionDamage": 650,
       "ExplosionRadius": 22,
       "AddShooterDeltaMovement": true,
-      "Velocity": 0.75,
+      "Velocity": 0.95,
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.171875, 0.0625],

@@ -1329,12 +1329,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(vo) + VehicleVecUtils.getYRotFromVector(v3)));
                 entityData.set(CANNON_RECOIL_FORCE, (float) v3.length());
             }
+            Vec3 shootShake = computedGunData.shootShake;
+            ShakeClientMessage.sendToNearbyPlayers(this, shootShake.x, shootShake.y, shootShake.z);
         }
 
         entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
-        // TODO 数据包化发射震动
 
-        ShakeClientMessage.sendToNearbyPlayers(this, 5, 6, 5, 9);
     }
 
     public float shootingVolume() {
@@ -3140,7 +3140,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public boolean allowEjection(int seatIndex) {
-        return this.computed().seats().get(seatIndex).dismountInfo.canEject;
+        var dismountInfo = this.computed().seats().get(seatIndex).dismountInfo;
+        if (dismountInfo != null) {
+            return this.computed().seats().get(seatIndex).dismountInfo.canEject;
+        } else {
+            return false;
+        }
     }
 
     public void removeSeatIndexTag(Entity entity) {

@@ -10,6 +10,7 @@
       "Velocity": 10,
       "Gravity": 0.13,
       "Spread": 0.5,
+      "ShootShake": [8, 6, 14],
       "SoundInfo": {
         "Fire3P": "superbwarfare:mortar_fire",
         "Fire3PFar": "superbwarfare:mortar_distant",
