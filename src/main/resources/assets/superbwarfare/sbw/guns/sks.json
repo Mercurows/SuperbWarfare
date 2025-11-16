@@ -7,6 +7,11 @@
     "LODModel": "superbwarfare:geo/lod/sks.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/sks.png"
   },
+  "Animation": {
+    "Idle": "animation.sks.idle",
+    "ReloadNormal": "animation.sks.reload_normal",
+    "ReloadEmpty": "animation.sks.reload_empty"
+  },
   "FlarePosition": [
     0,
     0,

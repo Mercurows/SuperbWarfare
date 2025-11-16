@@ -7,6 +7,11 @@
     "LODModel": "superbwarfare:geo/lod/devotion.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/devotion.png"
   },
+  "Animation": {
+    "Idle": "animation.devotion.idle",
+    "ReloadNormal": "animation.devotion.reload_normal",
+    "ReloadEmpty": "animation.devotion.reload_empty"
+  },
   "FlarePosition": [
     0,
     0,

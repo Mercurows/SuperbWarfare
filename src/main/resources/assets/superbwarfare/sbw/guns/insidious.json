@@ -7,6 +7,10 @@
     "LODModel": "superbwarfare:geo/lod/insidious.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/insidious.png"
   },
+  "Animation": {
+    "Idle": "animation.insidious.idle",
+    "Reload": "animation.insidious.reload"
+  },
   "FlarePosition": [0, 0, 1],
   "FlareSize": 0.38
 }

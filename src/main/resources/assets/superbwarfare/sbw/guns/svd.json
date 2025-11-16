@@ -7,6 +7,12 @@
     "LODModel": "superbwarfare:geo/lod/svd.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/svd.png"
   },
+  "Animation": {
+    "Idle": "animation.svd.idle",
+    "ReloadNormal": "animation.svd.reload_normal",
+    "ReloadEmpty": "animation.svd.reload_empty",
+    "Edit": "animation.svd.edit"
+  },
   "FlarePosition": [
     0,
     0,

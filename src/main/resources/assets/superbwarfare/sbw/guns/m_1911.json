@@ -7,6 +7,11 @@
     "LODModel": "superbwarfare:geo/lod/m_1911.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/m_1911.png"
   },
+  "Animation": {
+    "Idle": "animation.glock_17.idle",
+    "ReloadNormal": "animation.glock_17.reload_normal",
+    "ReloadEmpty": "animation.glock_17.reload_empty"
+  },
   "FlarePosition": [
     0,
     0,
