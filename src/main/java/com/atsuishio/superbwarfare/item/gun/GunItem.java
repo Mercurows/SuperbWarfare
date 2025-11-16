@@ -248,7 +248,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
     }
 
     public ResourceLocation getGunIcon(GunData data) {
-        var icon = ResourceLocation.tryParse(data.compute().icon);
+        var icon = data.compute().icon;
         return icon == null ? DEFAULT_ICON : icon;
     }
 
@@ -921,7 +921,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             }
         }
 
-        if (shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle && data.compute().useVehicleDeltaMovement) {
+        if (shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle && data.compute().addShooterDeltaMovement) {
             velocity = (float) (vehicle.getDeltaMovement().length() * data.compute().velocity);
         }
 

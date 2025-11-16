@@ -1205,7 +1205,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 return new ProjectileWeapon()
                         .zoom(false)
                         .sound(sound.change)
-                        .icon(ResourceLocation.tryParse(icon));
+                        .icon(icon);
             }).toArray(VehicleWeapon[]::new);
         }).toArray(VehicleWeapon[][]::new);
     }
@@ -2562,7 +2562,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float projectileVelocity(Entity entity) {
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData == null) return 25;
-        if (gunData.compute().useVehicleDeltaMovement) {
+        if (gunData.compute().addShooterDeltaMovement) {
             return (float) (getDeltaMovement().length() * gunData.compute().velocity);
         }
 
@@ -2572,7 +2572,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float projectileVelocity(int seatIndex) {
         var gunData = getGunData(seatIndex);
         if (gunData == null) return 25;
-        if (gunData.compute().useVehicleDeltaMovement) {
+        if (gunData.compute().addShooterDeltaMovement) {
             return (float) (getDeltaMovement().length() * gunData.compute().velocity);
         }
 
@@ -2582,7 +2582,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float projectileVelocity(String weaponName) {
         var gunData = getGunData(weaponName);
         if (gunData == null) return 25;
-        if (gunData.compute().useVehicleDeltaMovement) {
+        if (gunData.compute().addShooterDeltaMovement) {
             return (float) (getDeltaMovement().length() * gunData.compute().velocity);
         }
 
@@ -2591,7 +2591,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public float projectileVelocity(GunData gunData) {
         if (gunData == null) return 25;
-        if (gunData.compute().useVehicleDeltaMovement) {
+        if (gunData.compute().addShooterDeltaMovement) {
             return (float) (getDeltaMovement().length() * gunData.compute().velocity);
         }
         return (float) gunData.compute().velocity;

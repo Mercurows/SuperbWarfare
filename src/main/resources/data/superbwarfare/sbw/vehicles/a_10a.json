@@ -105,7 +105,7 @@
       "Name": "superbwarfare.a_10_a.bomb",
       "ExplosionDamage": 650,
       "ExplosionRadius": 22,
-      "UseVehicleDeltaMovement": true,
+      "AddShooterDeltaMovement": true,
       "Velocity": 0.75,
       "ShootPos": {
         "Transform": "Vehicle",
@@ -140,7 +140,7 @@
       "Damage": 1100,
       "ExplosionDamage": 250,
       "ExplosionRadius": 12,
-      "UseVehicleDeltaMovement": true,
+      "AddShooterDeltaMovement": true,
       "Velocity": 1.05,
       "SeekWeaponInfo": {
         "SeekDirection": "Default",
