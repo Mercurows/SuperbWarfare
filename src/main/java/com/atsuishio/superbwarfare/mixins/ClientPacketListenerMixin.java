@@ -60,7 +60,7 @@ public abstract class ClientPacketListenerMixin {
 
                 if (passenger == player || hasIndirectPassenger) {
                     Component component = Component.translatable("mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage());
-                    if (vehicle.allowEjection()) {
+                    if (vehicle.allowEjection(vehicle.getSeatIndex(passenger))) {
                         component = Component.translatable("tips.superbwarfare.mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage());
                     }
 

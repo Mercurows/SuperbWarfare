@@ -58,4 +58,7 @@ public class SeatInfo {
 
     @SerializedName("Sensitivity")
     public Vec3 sensitivity = new Vec3(1, 1, 1);
+
+    @SerializedName("DismountInfo")
+    public DismountInfo dismountInfo = null;
 }

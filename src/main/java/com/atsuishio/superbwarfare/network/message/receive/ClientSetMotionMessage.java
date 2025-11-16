@@ -12,13 +12,15 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-public record ClientSetMotionMessage(Vector3f motion) implements CustomPacketPayload {
+public record ClientSetMotionMessage(Vector3f motion, Vector3f position) implements CustomPacketPayload {
 
     public static final Type<ClientSetMotionMessage> TYPE = new Type<>(Mod.loc("client_set_motion"));
 
     public static final StreamCodec<ByteBuf, ClientSetMotionMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VECTOR3F,
             ClientSetMotionMessage::motion,
+            ByteBufCodecs.VECTOR3F,
+            ClientSetMotionMessage::position,
             ClientSetMotionMessage::new
     );
 
@@ -27,6 +29,7 @@ public record ClientSetMotionMessage(Vector3f motion) implements CustomPacketPay
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
         if (player != null) {
+            player.setPos(message.position().x, message.position().y, message.position().z);
             player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
         }
     }

@@ -6,10 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -62,24 +59,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public double getMouseSensitivity() {
         return 0.25;
-    }
-
-    @Override
-    public @NotNull Vec3 getDismountLocationForIndex(LivingEntity passenger, int index) {
-        Matrix4f transform = getVehicleTransform(1);
-        Vector4f worldPosition;
-
-        if (index == 0) {
-            worldPosition = transformPosition(transform, 2f, 1.2f, 1f);
-        } else if (index == 1) {
-            worldPosition = transformPosition(transform, -2f, 1.2f, 1f);
-        } else if (index == 2) {
-            worldPosition = transformPosition(transform, -2f, 1.2f, 0);
-        } else {
-            worldPosition = transformPosition(transform, 2f, 1.2f, 0);
-        }
-
-        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     @Override

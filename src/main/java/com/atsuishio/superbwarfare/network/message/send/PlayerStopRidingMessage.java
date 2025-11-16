@@ -33,11 +33,10 @@ public record PlayerStopRidingMessage(boolean ejection) implements CustomPacketP
 
     public static void handler(PlayerStopRidingMessage message, final IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();
-        var entity = player.getVehicle();
-        if (entity instanceof VehicleEntity vehicle) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle) {
             if (message.ejection) {
-                var vec = vehicle.getDismountMovement(player, vehicle.getTagSeatIndex(player));
-                Mod.queueServerWork(1, () -> PacketDistributor.sendToPlayer(player, new ClientSetMotionMessage(vec.toVector3f())));
+                var vec = vehicle.getEjectionMovement(player, vehicle.getTagSeatIndex(player));
+                var pos = vehicle.getEjectionPosition(player, vehicle.getTagSeatIndex(player));
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.MEDIUM_ROCKET_FIRE.get(), SoundSource.PLAYERS, 4f, 1);
                 if (player.level() instanceof ServerLevel serverLevel) {
                     for (int p = 0; p < 8; p++) {
@@ -47,9 +46,13 @@ public record PlayerStopRidingMessage(boolean ejection) implements CustomPacketP
                         sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pPos.x, pPos.y, pPos.z, 15, 0.5, 0.5, 0.5, 0.05, true);
                     }
                 }
+
+                Mod.queueServerWork(1, () -> PacketDistributor.sendToPlayer(player, new ClientSetMotionMessage(vec.toVector3f(), pos.toVector3f())));
             }
+
             player.stopRiding();
             player.setJumping(false);
+
             player.addEffect(new MobEffectInstance(ModMobEffects.STRIKE_PROTECTION, 10, 0, false, false), player);
         }
     }

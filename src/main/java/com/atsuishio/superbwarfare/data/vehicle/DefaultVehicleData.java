@@ -246,10 +246,6 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("InertiaRotateRate")
     public float inertiaRotateRate = 0f;
 
-    // 能否弹射驾驶员
-    @SerializedName("CanEject")
-    public boolean canEject;
-
     @Override
     public void limit() {
         this.maxHealth = Math.max(this.maxHealth, 0);

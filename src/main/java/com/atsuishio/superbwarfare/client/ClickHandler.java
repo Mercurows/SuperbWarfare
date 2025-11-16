@@ -618,7 +618,7 @@ public class ClickHandler {
     private static void handleDismountPress(Player player) {
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             if ((!vehicle.onGround() || vehicle.getDeltaMovement().length() >= 0.1) && ClientEventHandler.dismountCountdown <= 0) {
-                if (vehicle.allowEjection()) {
+                if (vehicle.allowEjection(vehicle.getSeatIndex(player))) {
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage()), true);
                 } else {
                     player.displayClientMessage(Component.translatable("mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage()), true);
