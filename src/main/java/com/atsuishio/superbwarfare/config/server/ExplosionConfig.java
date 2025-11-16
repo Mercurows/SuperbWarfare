@@ -14,28 +14,12 @@ public class ExplosionConfig {
     public static ForgeConfigSpec.IntValue M67_GRENADE_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue M67_GRENADE_EXPLOSION_RADIUS;
 
-    public static ForgeConfigSpec.IntValue MORTAR_SHELL_EXPLOSION_DAMAGE;
-    public static ForgeConfigSpec.IntValue MORTAR_SHELL_EXPLOSION_RADIUS;
-
-    public static ForgeConfigSpec.IntValue DRONE_KAMIKAZE_EXPLOSION_DAMAGE;
-    public static ForgeConfigSpec.IntValue DRONE_KAMIKAZE_EXPLOSION_RADIUS;
-
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_COUNTDOWN;
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue C4_EXPLOSION_RADIUS;
 
     public static ForgeConfigSpec.IntValue CLAYMORE_EXPLOSION_DAMAGE;
     public static ForgeConfigSpec.IntValue CLAYMORE_EXPLOSION_RADIUS;
-
-    public static ForgeConfigSpec.IntValue RPG_EXPLOSION_DAMAGE;
-    public static ForgeConfigSpec.IntValue RPG_EXPLOSION_RADIUS;
-
-    public static ForgeConfigSpec.IntValue AGM_65_DAMAGE;
-    public static ForgeConfigSpec.IntValue AGM_65_EXPLOSION_DAMAGE;
-    public static ForgeConfigSpec.DoubleValue AGM_65_EXPLOSION_RADIUS;
-
-    public static ForgeConfigSpec.IntValue MK_82_EXPLOSION_DAMAGE;
-    public static ForgeConfigSpec.DoubleValue MK_82_EXPLOSION_RADIUS;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         builder.push("explosion");
@@ -71,26 +55,6 @@ public class ExplosionConfig {
         builder.pop();
 
 
-        builder.push("Mortar Shell");
-
-        builder.comment("The explosion damage of Mortar shell");
-        MORTAR_SHELL_EXPLOSION_DAMAGE = builder.defineInRange("mortar_shell_explosion_damage", 160, 1, 10000000);
-
-        builder.comment("The explosion radius of Mortar shell");
-        MORTAR_SHELL_EXPLOSION_RADIUS = builder.defineInRange("mortar_shell_explosion_radius", 9, 1, 50);
-
-        builder.pop();
-
-        builder.push("Drone Kamikaze");
-
-        builder.comment("The explosion damage of Drone Kamikaze");
-        DRONE_KAMIKAZE_EXPLOSION_DAMAGE = builder.defineInRange("drone_kamikaze_explosion_damage", 160, 1, 10000000);
-
-        builder.comment("The explosion radius of Drone Kamikaze");
-        DRONE_KAMIKAZE_EXPLOSION_RADIUS = builder.defineInRange("drone_kamikaze_explosion_radius", 9, 1, 50);
-
-        builder.pop();
-
         builder.push("C4");
 
         builder.comment("The explosion damage of C4");
@@ -111,39 +75,6 @@ public class ExplosionConfig {
 
         builder.comment("The explosion radius of Claymore");
         CLAYMORE_EXPLOSION_RADIUS = builder.defineInRange("claymore_explosion_radius", 4, 1, Integer.MAX_VALUE);
-
-        builder.pop();
-
-        builder.push("RPG");
-
-        builder.comment("The explosion damage of RPG in the drone");
-        RPG_EXPLOSION_DAMAGE = builder.defineInRange("rpg_explosion_damage", 130, 1, Integer.MAX_VALUE);
-
-        builder.comment("The explosion radius of RPG in the drone");
-        RPG_EXPLOSION_RADIUS = builder.defineInRange("rpg_explosion_radius", 10, 1, Integer.MAX_VALUE);
-
-        builder.pop();
-
-        builder.push("AGM-65");
-
-        builder.comment("The damage of AGM-65");
-        AGM_65_DAMAGE = builder.defineInRange("agm_65_damage", 1100, 1, Integer.MAX_VALUE);
-
-        builder.comment("The explosion damage of AGM-65");
-        AGM_65_EXPLOSION_DAMAGE = builder.defineInRange("agm_65_explosion_damage", 150, 1, Integer.MAX_VALUE);
-
-        builder.comment("The explosion radius of AGM-65");
-        AGM_65_EXPLOSION_RADIUS = builder.defineInRange("agm_65_explosion_radius", 9d, 1, Integer.MAX_VALUE);
-
-        builder.pop();
-
-        builder.push("MK-82");
-
-        builder.comment("The explosion damage of MK-82");
-        MK_82_EXPLOSION_DAMAGE = builder.defineInRange("mk_82_explosion_damage", 650, 1, Integer.MAX_VALUE);
-
-        builder.comment("The explosion radius of MK-82");
-        MK_82_EXPLOSION_RADIUS = builder.defineInRange("mk_82_explosion_radius", 22d, 1, Integer.MAX_VALUE);
 
         builder.pop();
 

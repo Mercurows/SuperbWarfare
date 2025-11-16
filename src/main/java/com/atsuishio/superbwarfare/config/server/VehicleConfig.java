@@ -27,16 +27,6 @@ public class VehicleConfig {
 
     public static ForgeConfigSpec.IntValue VEHICLE_INFO_DISPLAY_DISTANCE;
 
-    public static ForgeConfigSpec.IntValue ANNIHILATOR_SHOOT_COST;
-
-
-    public static ForgeConfigSpec.IntValue WHEELCHAIR_JUMP_ENERGY_COST;
-    public static ForgeConfigSpec.IntValue WHEELCHAIR_MOVE_ENERGY_COST;
-
-    public static ForgeConfigSpec.IntValue TOM_6_ENERGY_COST;
-    public static ForgeConfigSpec.IntValue TOM_6_BOMB_EXPLOSION_DAMAGE;
-    public static ForgeConfigSpec.DoubleValue TOM_6_BOMB_EXPLOSION_RADIUS;
-
     public static void init(ForgeConfigSpec.Builder builder) {
         builder.push("vehicle");
 
@@ -89,36 +79,6 @@ public class VehicleConfig {
 
         builder.comment("The default amount of health restored per tick when a vehicle is self-repairing");
         REPAIR_AMOUNT = builder.defineInRange("repair_amount", 0.05d, -100000000, 100000000);
-
-        builder.pop();
-
-        builder.push("Annihilator");
-
-        builder.comment("The energy cost of Annihilator per shoot");
-        ANNIHILATOR_SHOOT_COST = builder.defineInRange("annihilator_shoot_cost", 2000000, 0, 2147483647);
-
-        builder.pop();
-
-        builder.push("Wheelchair");
-
-        builder.comment("The jump energy cost of the wheelchair");
-        WHEELCHAIR_JUMP_ENERGY_COST = builder.defineInRange("wheelchair_jump_energy_cost", 400, 0, 2147483647);
-
-        builder.comment("The move energy cost of the wheelchair");
-        WHEELCHAIR_MOVE_ENERGY_COST = builder.defineInRange("wheelchair_move_energy_cost", 1, 0, 2147483647);
-
-        builder.pop();
-
-        builder.push("Tom-6");
-
-        builder.comment("The energy cost of Tom-6 per tick");
-        TOM_6_ENERGY_COST = builder.defineInRange("tom_6_energy_cost", 16, 0, 2147483647);
-
-        builder.comment("The Melon Bomb explosion damage of Tom-6");
-        TOM_6_BOMB_EXPLOSION_DAMAGE = builder.defineInRange("tom_6_bomb_explosion_damage", 500, 1, 10000000);
-
-        builder.comment("The Melon Bomb explosion radius of Tom-6");
-        TOM_6_BOMB_EXPLOSION_RADIUS = builder.defineInRange("tom_6_bomb_explosion_radius", 10d, 1d, 10000000d);
 
         builder.pop();
 

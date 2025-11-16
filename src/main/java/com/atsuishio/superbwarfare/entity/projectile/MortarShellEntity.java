@@ -52,27 +52,27 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     public MortarShellEntity(EntityType<? extends MortarShellEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-        this.damage = 50;
-        this.explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
-        this.explosionRadius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
+        this.damage = 60;
+        this.explosionDamage = 100;
+        this.explosionRadius = 8;
         this.gravity = 0.13f;
     }
 
     public MortarShellEntity(EntityType<? extends MortarShellEntity> type, double x, double y, double z, Level level, float gravity) {
         super(type, x, y, z, level);
         this.noCulling = true;
-        this.damage = 50;
-        this.explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
-        this.explosionRadius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
+        this.damage = 60;
+        this.explosionDamage = 100;
+        this.explosionRadius = 8;
         this.gravity = gravity;
     }
 
-    public MortarShellEntity(LivingEntity entity, Level level, float gravity) {
+    public MortarShellEntity(LivingEntity entity, Level level, float gravity, float explosionDamage, float explosionRadius) {
         super(ModEntities.MORTAR_SHELL.get(), entity, level);
         this.noCulling = true;
         this.damage = 50;
-        this.explosionDamage = ExplosionConfig.MORTAR_SHELL_EXPLOSION_DAMAGE.get();
-        this.explosionRadius = ExplosionConfig.MORTAR_SHELL_EXPLOSION_RADIUS.get();
+        this.explosionDamage = explosionDamage;
+        this.explosionRadius = explosionRadius;
         this.gravity = gravity;
     }
 

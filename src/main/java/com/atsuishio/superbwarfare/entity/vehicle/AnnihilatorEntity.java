@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
@@ -235,7 +234,7 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
         if (gunData == null) return;
         if (level() instanceof ServerLevel) {
             this.entityData.set(CHARGE_PROGRESS, 0f);
-            this.consumeEnergy(VehicleConfig.ANNIHILATOR_SHOOT_COST.get());
+            this.consumeEnergy(gunData.compute().ammoCostPerShoot);
 
             Matrix4f transform = getBarrelTransform(1);
             Vector4f worldPosition1 = transformPosition(transform, 2.703f, -0.045f, 15.75f);

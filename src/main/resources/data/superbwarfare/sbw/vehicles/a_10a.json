@@ -138,7 +138,7 @@
       "Projectile": "superbwarfare:agm_65",
       "Name": "superbwarfare.agm_65_missile",
       "Damage": 1100,
-      "ExplosionDamage": 250,
+      "ExplosionDamage": 180,
       "ExplosionRadius": 12,
       "AddShooterDeltaMovement": true,
       "Velocity": 1.05,

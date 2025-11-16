@@ -46,20 +46,9 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
     public Agm65Entity(EntityType<? extends Agm65Entity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-        this.damage = ExplosionConfig.AGM_65_DAMAGE.get();
-        this.explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
-        this.explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
-        this.distracted = false;
-        this.gravity = 0.15f;
-        this.durability = 25;
-    }
-
-    public Agm65Entity(LivingEntity entity, Level level) {
-        super(ModEntities.AGM_65.get(), entity, level);
-        this.noCulling = true;
-        this.damage = ExplosionConfig.AGM_65_DAMAGE.get();
-        this.explosionDamage = ExplosionConfig.AGM_65_EXPLOSION_DAMAGE.get();
-        this.explosionRadius = ExplosionConfig.AGM_65_EXPLOSION_RADIUS.get().floatValue();
+        this.damage = 1100;
+        this.explosionDamage = 180;
+        this.explosionRadius = 12;
         this.distracted = false;
         this.gravity = 0.15f;
         this.durability = 25;

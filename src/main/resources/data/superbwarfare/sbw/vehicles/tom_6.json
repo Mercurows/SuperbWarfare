@@ -11,6 +11,12 @@
     "MaxYaw": 45,
     "Sensitivity": [0.6, 0.6, 1]
   },
+  "Weapons": {
+    "MelonBomb": {
+      "ExplosionDamage": 500,
+      "ExplosionRadius": 11
+    }
+  },
   "HasDecoy": true,
   "UpStep": 1.1,
   "Mass": 0.02,
