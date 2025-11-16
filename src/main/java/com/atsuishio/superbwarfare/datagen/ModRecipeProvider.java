@@ -1431,7 +1431,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 3)
                 .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
                 .require(ModItems.MEDIUM_BATTERY_PACK.get())
-                .require(ModItems.LARGE_PROPELLER.get(), 2)
+                .require(ModItems.LARGE_PROPELLER.get())
+                .require(ModItems.PROPELLER.get())
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.AH_6.get())));
@@ -1452,6 +1453,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.TRUCK.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.MI_28.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
+                .require(ModItems.WHEEL.get(), 3)
+                .require(ModItems.LARGE_PROPELLER.get())
+                .require(ModItems.PROPELLER.get())
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.HEAVY_ARMAMENT_MODULE.get()), has(ModItems.HEAVY_ARMAMENT_MODULE.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.MI_28.get())));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
                 .require(PLATES_COPPER, 4)
