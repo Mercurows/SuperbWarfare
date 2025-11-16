@@ -59,7 +59,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult result) {
+    protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
@@ -85,7 +85,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     }
 
     @Override
-    public void onHitBlock(BlockHitResult result) {
+    public void onHitBlock(@NotNull BlockHitResult result) {
         super.onHitBlock(result);
         BlockPos resultPos = result.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);

@@ -88,7 +88,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult result) {
+    protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (entity instanceof SwarmDroneEntity) {

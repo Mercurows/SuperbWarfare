@@ -75,7 +75,7 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult result) {
+    protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))

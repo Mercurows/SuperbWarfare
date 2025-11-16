@@ -260,7 +260,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void syncMotion() {
         if (!this.level().isClientSide) {
-            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientMotionSyncMessage(this));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new ClientMotionSyncMessage(this));
         }
     }
 

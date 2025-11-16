@@ -150,7 +150,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult pResult) {
+    protected void onHitEntity(@NotNull EntityHitResult pResult) {
         super.onHitEntity(pResult);
         MinecraftForge.EVENT_BUS.post(
                 new ProjectileHitEvent.HitEntity(
@@ -163,7 +163,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     @Override
-    protected void onHitBlock(BlockHitResult pResult) {
+    protected void onHitBlock(@NotNull BlockHitResult pResult) {
         super.onHitBlock(pResult);
         MinecraftForge.EVENT_BUS.post(
                 new ProjectileHitEvent.HitBlock(
@@ -279,7 +279,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     @Override
-    public void remove(Entity.RemovalReason reason) {
+    public void remove(Entity.@NotNull RemovalReason reason) {
         if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
             // 释放所有加载的区块
             for (ChunkPos pos : currentChunks) {
@@ -296,7 +296,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (!shouldSyncMotion()) return;
 
         if (this.tickCount % this.getType().updateInterval() == 0) {
-            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientMotionSyncMessage(this));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new ClientMotionSyncMessage(this));
         }
     }
 

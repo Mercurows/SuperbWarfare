@@ -388,7 +388,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     @Override
     public void syncMotion() {
         if (!this.level().isClientSide) {
-            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientMotionSyncMessage(this));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new ClientMotionSyncMessage(this));
         }
     }
 
