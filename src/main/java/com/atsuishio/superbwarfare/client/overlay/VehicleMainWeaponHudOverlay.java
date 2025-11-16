@@ -158,8 +158,6 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
 
     // TODO 正确显示文本和备弹数量，正确判断是否应该显示武器名称
     public static void renderWeaponInfoFirst(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font, int screenWidth, int screenHeight, int color) {
-        if (!(vehicle instanceof WeaponVehicleEntity)) return;
-        if (!vehicle.isAmphibious()) return;
 
         int heat = vehicle.getWeaponHeat(player);
         var component = vehicle.firstPersonAmmoComponent(data, player);
