@@ -107,7 +107,7 @@
       "HeatPerShoot": 0.5,
       "Spread": 0.25,
       "Name": "weapon.superbwarfare.70mm_rocket",
-      "RPM": 500,
+      "RPM": 450,
       "Damage": 80,
       "ExplosionDamage": 40,
       "ExplosionRadius": 5,

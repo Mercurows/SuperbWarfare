@@ -142,7 +142,7 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
                     Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
 
                     if (this.tickCount > 8) {
-                        boolean lostTarget = (VectorTool.calculateAngle(getLookAngle(), toVec) > 80);
+                        boolean lostTarget = (VectorTool.calculateAngle(getLookAngle(), toVec) > 170);
                         if (!lostTarget) {
                             turn(toVec, 8);
                         }

@@ -46,7 +46,7 @@
       "MaxPitch": 10,
       "MinYaw": -110,
       "MaxYaw": 110,
-      "Weapons": ["Cannon", "PassengerMissile"],
+      "Weapons": ["Cannon", "PassengerMissile", "SeekMissile"],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [2.5, 1.2, 3.5625]
@@ -98,7 +98,7 @@
       "Projectile": "superbwarfare:small_rocket",
       "Spread": 0.25,
       "Name": "weapon.superbwarfare.80mm_rocket",
-      "RPM": 600,
+      "RPM": 450,
       "Damage": 85,
       "ExplosionDamage": 42,
       "ExplosionRadius": 6,
@@ -123,7 +123,6 @@
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_9m120.png",
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
-      "Magazine": 8,
       "RPM": 12,
       "EmptyReloadTime": 200,
       "AmmoType": "superbwarfare:saclos_missile",
@@ -146,6 +145,7 @@
     },
     "DriverMissile": {
       "DefaultZoom": 2,
+      "Magazine": 8,
       "Crosshair": "@AirCraftMissile",
       "Template": "@Missile",
       "ShootPos": {
@@ -166,25 +166,59 @@
     },
     "PassengerMissile": {
       "DefaultZoom": 3,
+      "Magazine": 4,
       "Template": "@Missile",
       "Crosshair": "@VehicleFixedPoint",
       "CrosshairZooming": "@VehicleCommonMissile",
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.0625, 5.625],
-        "Positions": [
-          [2.258, 1.932, 0],
-          [2.258, 1.67, 0],
-          [2.446, 1.932, 0],
-          [2.446, 1.67, 0],
-          [2.806, 1.932, 0],
-          [2.806, 1.67, 0],
-          [2.993, 1.932, 0],
-          [2.993, 1.67, 0]
-        ],
+        "Positions": [[2.258, 1.932, 0], [2.258, 1.67, 0], [2.446, 1.932, 0], [2.446, 1.67, 0]],
         "BoundUpWithAmmoAmount": true,
         "ViewDirection": "Barrel"
       }
+    },
+    "SeekMissile": {
+      "AmmoType": "superbwarfare:agm",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/agm_65.png",
+      "DefaultZoom": 3,
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Magazine": 4,
+      "EmptyReloadTime": 200,
+      "Projectile": "superbwarfare:agm_65",
+      "Name": "weapon.superbwarfare.agm_65_missile",
+      "Damage": 1100,
+      "ExplosionDamage": 180,
+      "ExplosionRadius": 12,
+      "Velocity": 3,
+      "SeekWeaponInfo": {
+        "SeekDirection": "Barrel",
+        "SeekRange": 384,
+        "SeekAngle": 20,
+        "SeekTime": 10,
+        "TargetHeight": 10,
+        "MinTargetSize": 0.9
+      },
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 1.0625, 5.625],
+        "Positions": [[2.806, 1.932, 0], [2.806, 1.67, 0], [2.993, 1.932, 0], [2.993, 1.67, 0]],
+        "ViewDirection": "Barrel",
+        "BoundUpWithAmmoAmount": true
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bomb_release",
+        "Fire3P": "superbwarfare:bomb_release",
+        "ReloadEnd": "superbwarfare:bomb_reload",
+        "Change": "superbwarfare:into_missile",
+        "Locking": "superbwarfare:missile_locking",
+        "Locked": "superbwarfare:missile_locked"
+      },
+      "CrosshairColor": "0xFFC700",
+      "Crosshair": "@VehicleFixedPoint",
+      "CrosshairZooming": "@VehicleCommonMissile",
+      "SoundRadius": 8
     }
   },
   "EngineType": "Helicopter",
