@@ -47,6 +47,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             Map.entry("@VehicleRuApc", Mod.loc("textures/overlay/vehicle/crosshair/ru_apc.png")),
             Map.entry("@VehicleCommonMissile", Mod.loc("textures/overlay/vehicle/crosshair/common_missile.png")),
             Map.entry("@VehicleCommonGun", Mod.loc("textures/overlay/vehicle/crosshair/common_gun.png")),
+            Map.entry("@VehicleCommonGunDynamic", Mod.loc("textures/overlay/vehicle/crosshair/common_gun.png")),
             Map.entry("@VehicleCommonCannon", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon.png")),
             Map.entry("@VehicleCommonCross", Mod.loc("textures/overlay/vehicle/crosshair/common_cross.png")),
             Map.entry("@VehicleDynamicCross", Mod.loc("textures/overlay/vehicle/crosshair/common_dynamic_cross.png")),
@@ -158,7 +159,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                     VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                     ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
                     RenderHelper.blit(poseStack, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-                } else if ((crosshairPath.equals("@AirCraftCommon") || crosshairPath.equals("@VehicleLaserCannon")) && VectorUtil.canSee(pos)) {
+                } else if ((crosshairPath.equals("@AirCraftCommon") || crosshairPath.equals("@VehicleLaserCannon") || crosshairPath.equals("@VehicleCommonGunDynamic")) && VectorUtil.canSee(pos)) {
                     RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                 } else {
@@ -196,7 +197,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
             // 渲染第三人称
-            if (VectorUtil.canSee(pos) && vehicle.getVehicleType() != VehicleType.AIRPLANE && vehicle.getVehicleType() != VehicleType.HELICOPTER) {
+            if (VectorUtil.canSee(pos) && !((vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER) && player == vehicle.getFirstPassenger())) {
                 float x = (float) p.x;
                 float y = (float) p.y;
 

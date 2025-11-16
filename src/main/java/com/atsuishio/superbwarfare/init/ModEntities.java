@@ -146,6 +146,8 @@ public class ModEntities {
             EntityType.Builder.<Tom6Entity>of(Tom6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Tom6Entity::new).fireImmune().sized(1.05f, 1.0f));
     public static final RegistryObject<EntityType<Ah6Entity>> AH_6 = register("ah_6",
             EntityType.Builder.<Ah6Entity>of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Ah6Entity::new).fireImmune().sized(3f, 2.9f));
+    public static final RegistryObject<EntityType<Mi28Entity>> MI_28 = register("mi_28",
+            EntityType.Builder.<Mi28Entity>of(Mi28Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Mi28Entity::new).fireImmune().sized(4.5f, 4.5f));
     public static final RegistryObject<EntityType<A10Entity>> A_10A = register("a_10a",
             EntityType.Builder.<A10Entity>of(A10Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(A10Entity::new).fireImmune().sized(9f, 3.5f));
 

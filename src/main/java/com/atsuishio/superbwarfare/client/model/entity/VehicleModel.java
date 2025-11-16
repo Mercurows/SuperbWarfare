@@ -203,7 +203,7 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
                         }
                     }
 
-                    bone.setRotX(-turretXRot * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD);
+                    bone.setRotX(Mth.clamp(-turretXRot - r * pitch - r2 * roll, vehicle.getTurretMinPitch(), vehicle.getTurretMaxPitch()) * Mth.DEG_TO_RAD);
 
                     var barrelLaser = getAnimationProcessor().getBone("barrelLaser");
                     if (barrelLaser != null) {

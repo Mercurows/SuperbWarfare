@@ -4016,13 +4016,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (lockTime == 1) {
             if (controller instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_LOCKING.get(), 2, 1);
+                SoundTool.playLocalSound(serverPlayer, gunData.compute().soundInfo.locking, 2, 1);
             }
         }
 
         if (lockTime > seekInfo.seekTime) {
             if (controller instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, ModSounds.MISSILE_LOCKED.get(), 2, 1);
+                SoundTool.playLocalSound(serverPlayer, gunData.compute().soundInfo.locked, 2, 1);
             }
             locked = true;
         }

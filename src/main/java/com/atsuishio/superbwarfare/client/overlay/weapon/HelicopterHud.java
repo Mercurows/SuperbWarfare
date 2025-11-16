@@ -57,6 +57,8 @@ public class HelicopterHud {
         Minecraft mc = gui.getMinecraft();
         PoseStack poseStack = guiGraphics.pose();
 
+        if (player != vehicle.getFirstPassenger()) return;
+
         poseStack.pushPose();
 
         int color = vehicle.getHudColor();

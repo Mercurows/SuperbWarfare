@@ -63,6 +63,7 @@ public class AircraftHud {
     private static final ResourceLocation BOMB_RING = Mod.loc("textures/overlay/crosshair/rex_circle.png");
     
     public static void render(VehicleEntity vehicle, Player player, ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+        if (player != vehicle.getFirstPassenger()) return;
         Minecraft mc = gui.getMinecraft();
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
