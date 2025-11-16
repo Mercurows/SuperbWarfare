@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -263,8 +262,7 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
                 }
             });
 
-            Vec3 shootShake = gunData.compute().shootShake;
-            ShakeClientMessage.sendToNearbyPlayers(this, shootShake.x, shootShake.y, shootShake.z);
+            gunData.shakePlayers(this);
             playShootSound3p(living, gunData, barrelMiddlePos);
         }
     }

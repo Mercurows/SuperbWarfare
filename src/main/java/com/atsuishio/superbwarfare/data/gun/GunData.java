@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.gun.value.*;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.google.common.cache.CacheBuilder;
@@ -804,6 +805,15 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public LazyOptional<IEnergyStorage> getEnergyProvider(@Nullable Entity ammoSupplier) {
         return this.item.getEnergyProvider(this, ammoSupplier);
+    }
+
+    public void shakePlayers(@Nullable Entity source) {
+        if (source == null) return;
+
+        var shootShake = compute().shootShake;
+        if (shootShake == null) return;
+
+        ShakeClientMessage.sendToNearbyPlayers(source, shootShake.x, shootShake.y, shootShake.z);
     }
 
     // 可持久化属性开始

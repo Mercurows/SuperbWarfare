@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
-import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -210,11 +209,9 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
                     this.resetTarget("Main");
                 }
 
-
                 var gunData = getGunData("Main");
                 if (gunData != null) {
-                    Vec3 shootShake = gunData.compute().shootShake;
-                    ShakeClientMessage.sendToNearbyPlayers(this, shootShake.x, shootShake.y, shootShake.z);
+                    gunData.shakePlayers(this);
                 }
             }
         }

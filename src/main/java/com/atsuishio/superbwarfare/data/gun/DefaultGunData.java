@@ -58,7 +58,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     //x:范围，y：振动时长，z：振幅
     @ServerOnly
     @SerializedName("ShootShake")
-    public Vec3 shootShake = new Vec3(5, 6, 9);
+    public Vec3 shootShake = null;
 
     @SerializedName("DefaultZoom")
     public double defaultZoom = 1.25;

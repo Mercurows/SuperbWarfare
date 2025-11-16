@@ -61,6 +61,8 @@ public class ShakeClientMessage {
     }
 
     public static void sendToNearbyPlayers(Entity source, double sendRadius, double time, double amplitude) {
+        if (sendRadius <= 0 || time <= 0 || amplitude <= 0) return;
+        
         sendToNearbyPlayers(source.level(), source.getX(), source.getY(), source.getZ(), sendRadius, time, amplitude);
     }
 }
