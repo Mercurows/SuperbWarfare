@@ -10,7 +10,7 @@ public class DismountInfo {
     public String transform = "Default";
 
     @SerializedName("Position")
-    public Vec3 position = Vec3.ZERO;
+    public Vec3 position = null;
 
     // 能否弹射成员
     @SerializedName("CanEject")
