@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 import java.util.List;
@@ -328,11 +329,11 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("IsGrapeShotProjectile")
     public boolean isGrapeShotProjectile = false;
 
-    @SerializedName("UseVehicleDeltaMovement")
-    public boolean useVehicleDeltaMovement = false;
+    @SerializedName("AddShooterDeltaMovement")
+    public boolean addShooterDeltaMovement = false;
 
     @SerializedName("Icon")
-    public String icon = Mod.loc("textures/gun_icon/default_icon.png").toString();
+    public ResourceLocation icon = Mod.loc("textures/gun_icon/default_icon.png");
     /*
      * 准星类型
      * 预制的字段有：
