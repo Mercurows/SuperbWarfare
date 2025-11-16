@@ -20,6 +20,8 @@ import java.util.function.Predicate;
 
 public class TraceTool {
 
+    public static Entity vehicleKookingEntity;
+
     public static Entity findLookingEntity(Entity entity, double entityReach) {
         double distance = entityReach * entityReach;
         Vec3 eyePos = entity.getEyePosition(1.0f);
@@ -63,7 +65,6 @@ public class TraceTool {
         EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(entity, eyePos, toVec, aabb, p -> !p.isSpectator() && entity.getVehicle() != p && p.isAlive(), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
-
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             return ((EntityHitResult) hitResult).getEntity();
@@ -82,6 +83,9 @@ public class TraceTool {
                 p -> !p.isSpectator() && p.isAlive() && SeekTool.BASIC_FILTER.test(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(p) && p != shooter && !(p instanceof Projectile), distance);
         if (entityhitresult != null) {
             hitResult = entityhitresult;
+            vehicleKookingEntity = entityhitresult.getEntity();
+        } else {
+            vehicleKookingEntity = null;
         }
 
         if (hitResult.getType() == HitResult.Type.ENTITY) {

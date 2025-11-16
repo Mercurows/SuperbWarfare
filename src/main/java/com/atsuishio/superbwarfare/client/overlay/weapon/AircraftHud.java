@@ -134,7 +134,7 @@ public class AircraftHud {
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
                 preciseBlit(guiGraphics, BOMB_SCOPE_PITCH, x - 1.5f * i, y - 1.5f * j - 4 * vehicle.getPitch(partialTick), 0, 0, 3 * i, 3 * j, 3 * i, 3 * j);
-                VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                 poseStack.popPose();
                 return;
             }
@@ -272,7 +272,7 @@ public class AircraftHud {
 
                 poseStack.popPose();
                 preciseBlit(guiGraphics, cross, x - 0.5f * size, y - 0.5f * size, 0, 0, size, size, size, size);
-                VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                 poseStack.popPose();
             }
         }

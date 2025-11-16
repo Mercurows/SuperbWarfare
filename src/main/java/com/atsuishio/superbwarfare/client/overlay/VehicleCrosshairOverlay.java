@@ -155,16 +155,19 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
 
                 if (crosshairPath.equals("@VehicleDynamicCross") && VectorUtil.canSee(pos)) {
                     RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                    VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                     ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
                     RenderHelper.blit(poseStack, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                 } else if ((crosshairPath.equals("@AirCraftCommon") || crosshairPath.equals("@VehicleLaserCannon")) && VectorUtil.canSee(pos)) {
                     RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                    VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                 } else {
                     if (crosshairPath.equals("@VehicleCnHpjZooming")) {
                         ResourceLocation fixedTexture = CROSSHAIR_MAP.get("@VehicleFixedPoint");
                         RenderHelper.blit(poseStack, fixedTexture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                         ResourceLocation dynamicTexture = CROSSHAIR_MAP.get("@VehicleDynamicCross");
                         RenderHelper.blit(poseStack, dynamicTexture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                        VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                     }
 
                     if (crosshairPath.equals("@VehicleCommonCannonZooming")) {
@@ -176,8 +179,10 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                         int k = (screenWidth - i) / 2;
                         int l = (screenHeight - j) / 2;
                         preciseBlit(guiGraphics, texture, k, l, 0, 0, i, j, i, j);
+                        VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                     } else {
                         RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                        VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                     }
 
                 }
@@ -196,7 +201,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                 float y = (float) p.y;
 
                 preciseBlit(guiGraphics, CROSSHAIR_THIRD_CAMERA, x - 12, y - 12, 0, 0, 24, 24, 24, 24);
-                VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+                VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
                 poseStack.pushPose();
 

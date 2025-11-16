@@ -183,8 +183,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
             preciseBlit(guiGraphics, KILL_MARKER_4, posX2, posY2, 0, 0, 16, 16, 16, 16);
         }
     }
-
-    public static void renderKillIndicator3P(GuiGraphics guiGraphics, float posX, float posY) {
+    public static void renderKillIndicatorDynamic(GuiGraphics guiGraphics, float posX, float posY) {
         float rate = (40 - killIndicator * 5) / 5.5f;
 
         if (hitIndicator > 0) {

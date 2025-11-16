@@ -21,7 +21,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import org.joml.Math;
 
 @OnlyIn(Dist.CLIENT)
 public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
@@ -35,11 +34,6 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
         Minecraft mc = gui.getMinecraft();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
-        float minWH = (float) Math.min(screenWidth, screenHeight);
-        float scaledMinWH = Mth.floor(minWH);
-        float centerW = ((screenWidth - scaledMinWH) / 2);
-        float centerH = ((screenHeight - scaledMinWH) / 2);
-
         if (!shouldRenderCrossHair(player)) return;
 
         Entity cannon = player.getVehicle();
@@ -56,8 +50,6 @@ public class Yx100SwarmDroneHudOverlay implements IGuiOverlay {
 
         if (player.getVehicle() instanceof Yx100Entity yx100 && yx100.banHand(player)) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-
-                VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                 Entity naerestEntity = SeekTool.seekLivingEntity(player,384, 6);
 
                 if (naerestEntity != null) {

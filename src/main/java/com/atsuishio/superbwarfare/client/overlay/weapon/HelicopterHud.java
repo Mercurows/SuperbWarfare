@@ -158,12 +158,12 @@ public class HelicopterHud {
             VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
 
             RenderHelper.blit(poseStack, CROSSHAIR_IND, x - 8, y - 8, 0, 0, 16, 16, 16, 16, color);
-            VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+            VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
         } else if (VectorUtil.canSee(pos)) {
             poseStack.pushPose();
             poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
             preciseBlit(guiGraphics, CROSSHAIR_3P, x - 8, y - 8, 0, 0, 16, 16, 16, 16);
-            VehicleHudOverlay.renderKillIndicator3P(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
+            VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
 
             poseStack.pushPose();
 
