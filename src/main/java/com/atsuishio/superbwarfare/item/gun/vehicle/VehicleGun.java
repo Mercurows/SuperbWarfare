@@ -36,6 +36,11 @@ public class VehicleGun extends GunItem {
             rawData.autoReload = true;
         }
 
+        // TODO 如何处理真的想设置null的情况
+        if (rawData.shootShake == null) {
+            rawData.shootShake = new Vec3(5, 6, 9);
+        }
+
         return rawData;
     }
 

@@ -575,8 +575,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             shooter.getRootVehicle().setDeltaMovement(shooter.getDeltaMovement().add(shooter.getViewVector(1).scale(-computed.recoil)));
         }
 
-        data.clearTempModifications();
-
         int size = computed.shootPos.positions.size();
         if (size > 0 && !computed.shootPos.boundUpWithAmmoAmount) {
             data.fireIndex.set((data.fireIndex.get() + 1) % size);
@@ -585,6 +583,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
 
         data.autoIterativeReloadTimer.set(data.compute().autoIterativeReloadTime);
+
+        data.shakePlayers(shooter);
+
+        data.clearTempModifications();
     }
 
     @Deprecated(forRemoval = true)
