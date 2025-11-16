@@ -7,6 +7,10 @@
     "LODModel": "superbwarfare:geo/lod/m_79.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/m_79.png"
   },
+  "Animation": {
+    "Idle": "animation.m_79.idle",
+    "Reload": "animation.m_79.reload"
+  },
   "FlarePosition": [
     0,
     0,
