@@ -186,8 +186,9 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
         super.baseTick();
         if (entityData.get(FIRE_TIME) == 5 && this.items.getFirst().getItem() instanceof MortarShell) {
             Level level = this.level();
-            if (level instanceof ServerLevel server) {
-                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.getFirst(), projectileGravity("Main"));
+            var gunData = getGunData("Main");
+            if (level instanceof ServerLevel server && gunData != null) {
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0), projectileGravity("Main"), (float) gunData.compute().explosionDamage, (float) gunData.compute().explosionRadius);
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
                 entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, projectileVelocity("Main"), projectileSpread("Main"));
                 level.addFreshEntity(entityToSpawn);
@@ -200,10 +201,7 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
                     this.resetTarget("Main");
                 }
 
-                var gunData = getGunData("Main");
-                if (gunData != null) {
-                    gunData.shakePlayers(this);
-                }
+                gunData.shakePlayers(this);
             }
         }
     }

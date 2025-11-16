@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.DestroyInfo;
@@ -66,8 +65,8 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
                     rawData.destroyInfo.crashPassengers,
                     rawData.destroyInfo.explodePassengers,
                     rawData.destroyInfo.explodeBlocks,
-                    VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get(),
-                    VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue(),
+                    getMelonExplosionDamage(),
+                    getMelonExplosionRadius(),
                     ParticleTool.ParticleType.HUGE
             );
         }
@@ -150,7 +149,7 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
             }
 
             if (this.level() instanceof ServerLevel) {
-                this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * VehicleConfig.TOM_6_ENERGY_COST.get()));
+                this.consumeEnergy((int) (Mth.abs(this.entityData.get(POWER)) * 16));
             }
 
             if (backInputDown() || downInputDown()) {
@@ -191,8 +190,8 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
                 worldPosition = transformPosition(transform, 0, 0.3f, 0);
 
                 MelonBombEntity melonBomb = new MelonBombEntity(player, player.level());
-                melonBomb.setExplosionDamage(VehicleConfig.TOM_6_BOMB_EXPLOSION_DAMAGE.get());
-                melonBomb.setExplosionRadius(VehicleConfig.TOM_6_BOMB_EXPLOSION_RADIUS.get().floatValue());
+                melonBomb.setExplosionDamage(getMelonExplosionDamage());
+                melonBomb.setExplosionRadius(getMelonExplosionRadius());
                 melonBomb.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
                 melonBomb.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) getDeltaMovement().length(), 0);
                 passenger.level().addFreshEntity(melonBomb);
@@ -217,6 +216,24 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
 //                Mth.clamp(Math.sin((onGround() ? 45 : -(getXRot() - 30)) * Mth.DEG_TO_RAD) * getDeltaMovement().dot(getViewVector(1)) * 0.067, -0.04, 0.09),
 //                Mth.cos(this.getYRot() * 0.017453292F) * 0.19 * this.entityData.get(POWER)
 //        ));
+    }
+
+    public float getMelonExplosionDamage() {
+        var gunData = getGunData("MelonBomb");
+        if (gunData != null) {
+            return (float) gunData.compute().explosionDamage;
+        } else {
+            return 0;
+        }
+    }
+
+    public float getMelonExplosionRadius() {
+        var gunData = getGunData("MelonBomb");
+        if (gunData != null) {
+            return (float) gunData.compute().explosionRadius;
+        } else {
+            return 0;
+        }
     }
 
     @Override

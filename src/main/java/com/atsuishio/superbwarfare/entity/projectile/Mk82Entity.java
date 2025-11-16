@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
@@ -25,16 +24,16 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity, Expl
     public Mk82Entity(EntityType<? extends Mk82Entity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-        this.explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
-        this.explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = 22;
+        this.explosionDamage = 650;
         this.gravity = 0.06f;
     }
 
     public Mk82Entity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
-        this.explosionRadius = ExplosionConfig.MK_82_EXPLOSION_RADIUS.get().floatValue();
-        this.explosionDamage = ExplosionConfig.MK_82_EXPLOSION_DAMAGE.get();
+        this.explosionRadius = 22;
+        this.explosionDamage = 650;
         this.gravity = 0.06f;
     }
 
