@@ -44,6 +44,19 @@ public class EngineInfo {
         public double trackDifferential = 0;
     }
 
+    public static class WheelChair extends Wheel {
+        @SerializedName("BodyRollRate")
+        public double bodyRollRate = 1;
+        @SerializedName("CanJump")
+        public boolean canJump = false;
+        @SerializedName("JumpEnergyCost")
+        public int jumpEnergyCost = 400;
+        @SerializedName("JumpCoolDown")
+        public int jumpCoolDown = 3;
+        @SerializedName("JumpForce")
+        public double jumpForce = 0.6;
+    }
+
     public static class Ship extends EngineInfo {
         @SerializedName("BodyPitchRate")
         public double bodyPitchRate = 1;

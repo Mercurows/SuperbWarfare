@@ -3,12 +3,16 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -700,6 +704,114 @@ public final class VehicleEngineUtils {
             vehicle.engineStart = false;
             vehicle.engineStartOver = false;
         }
+    }
+
+    public static void wheelChairEngine(VehicleEntity vehicle, EngineInfo.WheelChair engineInfo) {
+        double buoyancy = engineInfo.buoyancy;
+        int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
+        double wheelRotSpeed = engineInfo.wheelRotSpeed;
+        float wheelDifferential = (float) engineInfo.wheelDifferential;
+        float maxForwardSpeedRate = engineInfo.maxForwardSpeedRate;
+        float maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate;
+        float powerAdd = engineInfo.increment;
+        float powerReduce = engineInfo.decrement;
+        float steeringSpeed = engineInfo.steeringSpeed;
+        float bodyRollRate = (float) engineInfo.bodyRollRate;
+        int jumpEnergyCost = engineInfo.jumpEnergyCost;
+
+        if (buoyancy != 0) {
+            double fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(vehicle);
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(0, fluidFloat, 0));
+        }
+
+        if (vehicle.onGround()) {
+            float f0 = 0.63f + 0.25f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.05 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f0, 0.99, f0));
+        } else if (vehicle.isInWater()) {
+            float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.04 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f1, 0.85, f1));
+        } else {
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.99, 0.99, 0.99));
+        }
+        vehicle.setSprinting(vehicle.getDeltaMovement().horizontalDistance() > 0.15);
+
+        Entity passenger0 = vehicle.getFirstPassenger();
+        float diffY = 0;
+
+        if (passenger0 == null) {
+            vehicle.setLeftInputDown(false);
+            vehicle.setRightInputDown(false);
+            vehicle.setForwardInputDown(false);
+            vehicle.setBackInputDown(false);
+            vehicle.getEntityData().set(POWER, 0f);
+        } else {
+            diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger0.getYHeadRot() - vehicle.getYRot()));
+            vehicle.setYRot(vehicle.getYRot() + Mth.clamp(0.4f * diffY, -5f * steeringSpeed, 5f * steeringSpeed));
+
+            float direct = (90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
+            vehicle.setZRot((float) (vehicle.getRoll() + direct * diffY * 0.1 * bodyRollRate * vehicle.getDeltaMovement().length()));
+        }
+
+        if (vehicle.forwardInputDown()) {
+            if (vehicle.getEnergy() <= 0 && passenger0 instanceof Player player) {
+                moveWithOutPower(vehicle, player, true);
+            } else {
+                vehicle.getEntityData().set(POWER, Math.min(vehicle.getEntityData().get(POWER) + (vehicle.getEntityData().get(POWER) < 0 ? powerAdd * 2f : powerAdd), (vehicle.sprintInputDown() ? 2f : 1f)));
+            }
+        }
+
+        if (vehicle.backInputDown()) {
+            if (vehicle.getEnergy() <= 0 && passenger0 instanceof Player player) {
+                moveWithOutPower(vehicle, player, false);
+            } else {
+                vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - (vehicle.getEntityData().get(POWER) > 0 ? powerReduce * 2f : powerReduce), -1));
+            }
+        }
+
+        if (vehicle.getEntityData().get(POWER) > 0) {
+            vehicle.targetSpeed = maxForwardSpeedRate * (1 + vehicle.getXRot() / 55);
+        } else {
+            vehicle.targetSpeed = maxBackwardSpeedRate * (1 - vehicle.getXRot() / 55);
+        }
+
+        if (!vehicle.forwardInputDown() && !vehicle.backInputDown()) {
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.96f);
+        }
+
+        if (vehicle.upInputDown() && vehicle.onGround() && vehicle.getEnergy() > jumpEnergyCost && vehicle.jumpCoolDown == 0 && engineInfo.canJump) {
+            if (passenger0 instanceof ServerPlayer serverPlayer) {
+                serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 1, 1);
+            }
+            vehicle.consumeEnergy(jumpEnergyCost);
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getUpVec(1).scale(engineInfo.jumpForce)));
+            vehicle.jumpCoolDown = engineInfo.jumpCoolDown;
+        }
+
+        if (vehicle.level() instanceof ServerLevel) {
+            vehicle.consumeEnergy(energyCost);
+        }
+
+        double s0 = vehicle.getDeltaMovement().dot(vehicle.getViewVector(1));
+        vehicle.setLeftWheelRot((float) (vehicle.getLeftWheelRot() - 1.25 * wheelRotSpeed * s0) - 0.015f * wheelDifferential * Mth.clamp(0.4f * diffY, -5f, 5f));
+        vehicle.setRightWheelRot((float) (vehicle.getRightWheelRot() - 1.25 * wheelRotSpeed * s0) + 0.015f * wheelDifferential * Mth.clamp(0.4f * diffY, -5f, 5f));
+
+        if (vehicle.isInWater() || vehicle.onGround()) {
+            double water = (!vehicle.isInWater() && !vehicle.onGround() ? 0.05f : (vehicle.isInWater() && !vehicle.onGround() ? 0.3f : 1));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.08 * water * vehicle.targetSpeed * vehicle.getEntityData().get(POWER))));
+        }
+    }
+
+    public static void moveWithOutPower(VehicleEntity vehicle, Player player, boolean forward) {
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(forward ? 0.1f : -0.1f)));
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.BOAT_PADDLE_LAND, SoundSource.PLAYERS, 1, 1);
+        }
+        player.causeFoodExhaustion(0.03F);
+        
+        vehicle.setForwardInputDown(false);
+        vehicle.setBackInputDown(false);
     }
 
     /**

@@ -438,6 +438,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public String lockingTarget = "none";
     public int lockTime;
     public boolean locked;
+    public int jumpCoolDown;
 
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -1828,6 +1829,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         recoilShakeO = this.getRecoilShake();
 
         velocityO = this.getVelocity();
+        if (jumpCoolDown > 0 && onGround()) {
+            jumpCoolDown--;
+        }
 
         lastTickSpeed = new Vec3(this.getDeltaMovement().x, this.getDeltaMovement().y + 0.06, this.getDeltaMovement().z).length();
         lastTickVerticalSpeed = this.getDeltaMovement().y + 0.06;
@@ -2826,6 +2830,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.AirCraft.class);
                     this.airCraftEngine(info);
                 }
+                case WHEELCHAIR -> {
+                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.WheelChair.class);
+                    this.wheelChairEngine(info);
+                }
             }
         } catch (Exception e) {
             Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e);
@@ -3601,6 +3609,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void airCraftEngine(EngineInfo.AirCraft engineInfo) {
         VehicleEngineUtils.aircraftEngine(this, engineInfo);
+    }
+
+    public void wheelChairEngine(EngineInfo.WheelChair engineInfo) {
+        VehicleEngineUtils.wheelChairEngine(this, engineInfo);
     }
 
     public void releaseSmokeDecoy(Vec3 vec3) {

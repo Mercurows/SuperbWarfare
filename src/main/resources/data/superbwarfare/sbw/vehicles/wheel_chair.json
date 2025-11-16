@@ -31,6 +31,23 @@
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/otto.png",
   "Type": "Car",
   "EngineSound": "superbwarfare:wheel_chair_engine",
+  "EngineType": "WheelChair",
+  "EngineInfo": {
+    "Buoyancy": 0.052,
+    "EnergyCostRate": 4,
+    "WheelRotSpeed": 1,
+    "WheelDifferential": 1,
+    "MaxForwardSpeedRate": 0.82,
+    "MaxBackwardSpeedRate": 0.4,
+    "Increment": 0.025,
+    "Decrement": 0.015,
+    "SteeringSpeed": 1,
+    "BodyRollRate": 1,
+    "CanJump": true,
+    "JumpEnergyCost": 400,
+    "JumpCoolDown": 3,
+    "JumpForce": 0.6
+  },
   "TerrainCompat": [0.9, 1.2],
   "InertiaRotateRate": 10
 }
