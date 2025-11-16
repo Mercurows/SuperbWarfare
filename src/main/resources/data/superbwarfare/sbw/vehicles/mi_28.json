@@ -25,7 +25,7 @@
       "MaxPitch": 80,
       "MinYaw": -80,
       "MaxYaw": 80,
-      "Weapons": ["Rocket", "Missile"],
+      "Weapons": ["Rocket", "DriverMissile"],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [2.5, 1.2, 2.5]
@@ -46,7 +46,7 @@
       "MaxPitch": 10,
       "MinYaw": -120,
       "MaxYaw": 120,
-      "Weapons": ["Cannon"],
+      "Weapons": ["Cannon", "PassengerMissile"],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [2.5, 1.2, 3.5625]
@@ -65,10 +65,10 @@
       "Damage": 55,
       "ExplosionDamage": 15,
       "ExplosionRadius": 4,
-      "HeatPerShoot": 5,
+      "HeatPerShoot": 7,
       "NaturalCooldown": 1,
       "Spread": 0.25,
-      "Name": "superbwarfare.30mm_cannon",
+      "Name": "weapon.superbwarfare.30mm_2a42",
       "SoundInfo": {
         "Fire1P": "superbwarfare:mi_28_cannon_fire_1p",
         "Fire3P": "superbwarfare:mi_28_cannon_fire_3p",
@@ -76,7 +76,8 @@
         "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
-      "Crosshair": "@VehicleCommonGunDynamic",
+      "Crosshair": "@VehicleFixedPoint",
+      "CrosshairZooming": "@VehicleCommonGunDynamic",
       "CrosshairColor": "0xFFC700",
       "SoundRadius": 24,
       "AmmoType": "superbwarfare:small_shell",
@@ -96,8 +97,8 @@
       "EmptyReloadTime": 100,
       "Projectile": "superbwarfare:small_rocket",
       "Spread": 0.25,
-      "Name": "superbwarfare.70mm_rocket",
-      "RPM": 500,
+      "Name": "weapon.superbwarfare.80mm_rocket",
+      "RPM": 600,
       "Damage": 85,
       "ExplosionDamage": 42,
       "ExplosionRadius": 6,
@@ -118,34 +119,21 @@
       "Crosshair": "@Empty",
       "SoundRadius": 12
     },
-    "Missile": {
-      "AmmoType": "superbwarfare:agm",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/agm_65.png",
-      "DefaultZoom": 2,
+    "@Missile": {
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_9m120.png",
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
-      "Magazine": 4,
+      "Magazine": 8,
+      "RPM": 12,
       "EmptyReloadTime": 200,
-      "Projectile": "superbwarfare:agm_65",
-      "Name": "superbwarfare.agm_65_missile",
-      "Damage": 1100,
-      "ExplosionDamage": 180,
-      "ExplosionRadius": 12,
+      "AmmoType": "superbwarfare:saclos_missile",
+      "Projectile": "superbwarfare:wg_missile",
+      "Name": "weapon.superbwarfare.9m_120_missile",
+      "Damage": 750,
+      "ExplosionDamage": 140,
+      "ExplosionRadius": 10,
       "Velocity": 3,
-      "SeekWeaponInfo": {
-        "SeekDirection": "Default",
-        "SeekRange": 384,
-        "SeekAngle": 20,
-        "SeekTime": 20,
-        "TargetHeight": 10,
-        "MinTargetSize": 0.9
-      },
-      "ShootPos": {
-        "Transform": "Vehicle",
-        "ShootPositionForHud": [0, 1.53, 0],
-        "Positions": [[-6.625, 1.5825, 0], [-5.28125, 1.4888, 0], [5.28125, 1.4888, 0], [6.625, 1.5825, 0]],
-        "BoundUpWithAmmoAmount": true
-      },
+      "CrosshairColor": "0xFFC700",
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
         "Fire3P": "superbwarfare:bomb_release",
@@ -154,9 +142,31 @@
         "Locking": "superbwarfare:javelin_locking",
         "Locked": "superbwarfare:javelin_locked"
       },
-      "Crosshair": "@AirCraftMissile",
-      "CrosshairColor": "0x66FF00",
       "SoundRadius": 8
+    },
+    "DriverMissile": {
+      "DefaultZoom": 2,
+      "Crosshair": "@AirCraftMissile",
+      "Template": "@Missile",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 3.5625, 2.25],
+        "Positions": [[-2.258, 1.932, 0], [-2.258, 1.67, 0], [-2.446, 1.932, 0], [-2.446, 1.67, 0], [-2.806, 1.932, 0], [-2.806, 1.67, 0], [-2.993, 1.932, 0], [-2.993, 1.67, 0]],
+        "BoundUpWithAmmoAmount": true
+      }
+    },
+    "PassengerMissile": {
+      "DefaultZoom": 3,
+      "Template": "@Missile",
+      "Crosshair": "@VehicleFixedPoint",
+      "CrosshairZooming": "@VehicleCommonMissile",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 1.0625, 5.625],
+        "Positions": [[2.258, 1.932, 0], [2.258, 1.67, 0], [2.446, 1.932, 0], [2.446, 1.67, 0], [2.806, 1.932, 0], [2.806, 1.67, 0], [2.993, 1.932, 0], [2.993, 1.67, 0]],
+        "BoundUpWithAmmoAmount": true,
+        "ViewDirection": "Barrel"
+      }
     }
   },
   "EngineType": "Helicopter",

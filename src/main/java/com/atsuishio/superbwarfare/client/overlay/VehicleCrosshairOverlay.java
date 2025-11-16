@@ -211,12 +211,14 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
 
                 VehicleMainWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
 
-                double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                        FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1F), false);
+                if (player == vehicle.getFirstPassenger()) {
+                    double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
+                            FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1F), false);
 
-                if (vehicle.hasDecoy()) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), 30, 11, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
+                    if (vehicle.hasDecoy()) {
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), 30, 11, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
+                    }
                 }
 
                 poseStack.popPose();
