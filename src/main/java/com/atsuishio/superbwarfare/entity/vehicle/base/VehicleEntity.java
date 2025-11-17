@@ -13,10 +13,7 @@ import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.*;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
@@ -437,13 +434,26 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.isInitialized = true;
 
-        this.setHealth(this.getMaxHealth());
-
+        initOBB();
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
         }
+        this.isInitialized = true;
+
+        this.setHealth(this.getMaxHealth());
+    }
+
+    private List<OBBInfo> obbCache = new ArrayList<>();
+
+    private void initOBB() {
+        if (!(this instanceof OBBEntity)) return;
+
+        this.obbCache = data().getDefault().copy().obb.stream().filter(Objects::nonNull).toList();
+    }
+
+    public List<OBBInfo> getOBB() {
+        return obbCache;
     }
 
     @Override
@@ -1758,6 +1768,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public void baseTick() {
+        if (this instanceof OBBEntity obbEntity) {
+            obbEntity.updateOBB();
+        }
+
         var computed = computed();
         if (this.level().isClientSide) {
             if (!this.wasEngineRunning && this.engineRunning()) {
@@ -1785,13 +1799,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // 枪数据处理
         if (!this.level().isClientSide) {
             var newMap = new HashMap<String, GunData>();
-            var selectedWeapons = new HashSet<String>();
-            for (int i = 0; i < computed().seats().size(); i++) {
-                var weapon = getGunName(i);
-                if (weapon != null) {
-                    selectedWeapons.add(weapon);
-                }
-            }
 
             for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
                 var newData = kv.getValue().copy();
@@ -3386,8 +3393,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     public boolean banHand(LivingEntity entity) {
         int index = getSeatIndex(entity);
+        if (index == -1) return false;
+
         var gunData = getGunData(index);
-        var seat = computed().seats().get(index);
+        var seats = computed().seats();
+        if (index >= seats.size()) return false;
+
+        var seat = seats.get(index);
         return gunData != null || seat.banHand;
     }
 

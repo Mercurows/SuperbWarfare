@@ -340,7 +340,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         rightWheelRotO = this.getRightWheelRot();
 
         super.baseTick();
-        updateOBB();
 
         double fluidFloat = 0.052 * VehicleVecUtils.getSubmergedHeight(this);
         this.setDeltaMovement(this.getDeltaMovement().add(0, fluidFloat, 0));
