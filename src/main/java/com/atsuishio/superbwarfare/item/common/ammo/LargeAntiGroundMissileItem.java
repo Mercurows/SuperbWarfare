@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class LargeAntiGroundItem extends Item {
+public class LargeAntiGroundMissileItem extends Item {
 
-    public LargeAntiGroundItem() {
+    public LargeAntiGroundMissileItem() {
         super(new Properties().stacksTo(2));
     }
 

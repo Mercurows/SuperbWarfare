@@ -66,7 +66,7 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.WIRE_GUIDE_MISSILE.get();
+        return ModItems.MEDIUM_ANTI_GROUND_MISSILE.get();
     }
 
     @Override

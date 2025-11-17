@@ -3,10 +3,10 @@
   "category": "equipment",
   "ingredients": [
     {
-      "item": "superbwarfare:tow_missile"
+      "item": "superbwarfare:javelin_missile"
     }
   ],
   "result": {
-    "item": "superbwarfare:saclos_missile"
+    "item": "superbwarfare:medium_anti_ground_missile"
   }
 }

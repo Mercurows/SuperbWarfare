@@ -136,7 +136,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.MEDIUM_ROCKET_AP);
         simpleItem(ModItems.MEDIUM_ROCKET_HE);
         simpleItem(ModItems.MEDIUM_ROCKET_CM);
-        simpleItem(ModItems.WIRE_GUIDE_MISSILE);
+        simpleItem(ModItems.MEDIUM_ANTI_GROUND_MISSILE);
         simpleItem(ModItems.LARGE_ANTI_GROUND_MISSILE);
         simpleItem(ModItems.SMALL_SHELL);
         simpleItem(ModItems.SWARM_DRONE);
@@ -149,9 +149,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.VEHICLE_DAMAGE_ANALYZER);
         simpleItem(ModItems.IGLA_MISSILE);
         simpleItem(ModItems.LASER_UNIT);
-        simpleItem(ModItems.TOW_MISSILE);
         simpleItem(ModItems.TOW_DEPLOYER);
-        simpleItem(ModItems.SACLOS_MISSILE);
         simpleItem(ModItems.RU_9M_336_MISSILE);
 
         simpleItem(ModItems.TUNGSTEN_ROD);

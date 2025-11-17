@@ -143,10 +143,8 @@ public class ModItems {
     public static final RegistryObject<Item> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", () -> new MediumRocketItem(500, 6, 100, 0, 0, MediumRocketEntity.Type.AP, 0));
     public static final RegistryObject<Item> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));
     public static final RegistryObject<Item> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 20));
-    public static final RegistryObject<Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
-    public static final RegistryObject<Item> SACLOS_MISSILE = AMMO.register("saclos_missile", SaclosMissileItem::new);
-    public static final RegistryObject<Item> TOW_MISSILE = AMMO.register("tow_missile", () -> new Item(new Item.Properties().stacksTo(4)));
-    public static final RegistryObject<Item> LARGE_ANTI_GROUND_MISSILE = AMMO.register("large_anti_ground_missile", LargeAntiGroundItem::new);
+    public static final RegistryObject<Item> MEDIUM_ANTI_GROUND_MISSILE = AMMO.register("medium_anti_ground_missile", MediumAntiGroundMissileItem::new);
+    public static final RegistryObject<Item> LARGE_ANTI_GROUND_MISSILE = AMMO.register("large_anti_ground_missile", LargeAntiGroundMissileItem::new);
     public static final RegistryObject<Item> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
     public static final RegistryObject<Item> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);
 

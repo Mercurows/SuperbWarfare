@@ -12,15 +12,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class SaclosMissileItem extends Item {
+public class MediumAntiGroundMissileItem extends Item {
 
-    public SaclosMissileItem() {
-        super(new Properties().stacksTo(4));
+    public MediumAntiGroundMissileItem() {
+        super(new Properties().stacksTo(2));
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        pTooltipComponents.add(Component.translatable("des.superbwarfare.saclos_missile").withStyle(ChatFormatting.GRAY));
+        pTooltipComponents.add(Component.translatable("des.superbwarfare.medium_anti_ground_missile").withStyle(ChatFormatting.GRAY));
     }
 }

@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_saclos_missile": {
+    "has_medium_anti_ground_missile": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:saclos_missile"
+              "superbwarfare:medium_anti_ground_missile"
             ]
           }
         ]
@@ -22,7 +22,7 @@
   },
   "requirements": [
     [
-      "has_saclos_missile",
+      "has_medium_anti_ground_missile",
       "has_the_recipe"
     ]
   ],
