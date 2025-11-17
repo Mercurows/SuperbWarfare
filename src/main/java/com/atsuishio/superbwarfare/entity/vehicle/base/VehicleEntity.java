@@ -3986,7 +3986,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (getTargetUuid().equals(lockingTargetO) && !getTargetUuid().equals("none")) {
             lockTime++;
         } else {
-            resetSeek(controller);
+            resetSeek(controller, gunData);
         }
 
         Entity entity = new SeekTool.Builder(this)
@@ -4005,7 +4005,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 setTargetUuid(String.valueOf(entity.getUUID()));
             }
             if (!String.valueOf(entity.getUUID()).equals(getTargetUuid())) {
-                resetSeek(controller);
+                resetSeek(controller, gunData);
                 setTargetUuid(String.valueOf(entity.getUUID()));
             }
         } else {
@@ -4026,12 +4026,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
-    public void resetSeek(Entity controller) {
+    public void resetSeek(Entity controller, GunData gunData) {
         lockTime = 0;
         locked = false;
         if (controller instanceof ServerPlayer serverPlayer) {
-            var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc("jet_lock"), SoundSource.PLAYERS);
-            serverPlayer.connection.send(clientboundstopsoundpacket);
+            var location = gunData.compute().soundInfo.locking.getLocation();
+            serverPlayer.connection.send(new ClientboundStopSoundPacket(location, SoundSource.PLAYERS));
         }
     }
 
