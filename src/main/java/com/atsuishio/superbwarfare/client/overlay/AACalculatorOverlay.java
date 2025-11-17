@@ -60,7 +60,7 @@ public class AACalculatorOverlay implements IGuiOverlay {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
             Entity naerestEntity = new SeekTool.Builder(vehicle)
                     .withinRange(512)
-                    .withinAngle(vehicle.getShootVec(vehicle.getSeatIndex(player), partialTick), 20)
+                    .withinAngle(vehicle.getZoomPos(player, partialTick), vehicle.getShootVec(vehicle.getSeatIndex(player), partialTick), 20)
                     .baseFilter()
                     .smokeFilter()
                     .noVehicle()

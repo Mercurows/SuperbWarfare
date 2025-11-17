@@ -195,8 +195,8 @@ public class SeekTool {
         return VectorTool.calculateAngle(start, end);
     }
 
-    private static double calculateAngle(Vec3 vec3, Entity entityA, Entity entityB) {
-        Vec3 start = new Vec3(entityA.getX() - entityB.getX(), entityA.getY() - entityB.getY(), entityA.getZ() - entityB.getZ());
+    private static double calculateAngle(Vec3 pos, Vec3 vec3, Entity entityA) {
+        Vec3 start = pos.vectorTo(entityA.position());
         return VectorTool.calculateAngle(start, vec3);
     }
 
@@ -428,6 +428,19 @@ public class SeekTool {
                     .orElse(null);
         }
 
+        @Nullable
+        public Entity buildWithClosest(Vec3 pos, Vec3 vec3) {
+            return StreamSupport.stream(EntityFindUtil.getEntities(entity.level()).getAll().spliterator(), false)
+                    .filter(e -> {
+                        for (var f : this.filters) {
+                            if (!f.test(e)) return false;
+                        }
+                        return true;
+                    })
+                    .min(Comparator.comparingDouble(e -> calculateAngle(pos, vec3, e)))
+                    .orElse(null);
+        }
+
         public Builder notItsVehicle() {
             this.filters.add(e -> e.getVehicle() != this.entity);
             return this;
@@ -493,8 +506,8 @@ public class SeekTool {
             return this;
         }
 
-        public Builder withinAngle(Vec3 vec3, double angle) {
-            this.filters.add(e -> SeekTool.calculateAngle(vec3, e, entity) < angle);
+        public Builder withinAngle(Vec3 pos, Vec3 vec3, double angle) {
+            this.filters.add(e -> SeekTool.calculateAngle(pos, vec3, e) < angle);
             return this;
         }
 

@@ -92,7 +92,7 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
             Entity targetEntity = EntityFindUtil.findEntity(player.level(), vehicle.getTargetUuid());
             List<Entity> entities = new SeekTool.Builder(vehicle)
                     .withinRange(seekInfo.seekRange)
-                    .withinAngle(vehicle.getSeekVec(player, partialTick), seekInfo.seekAngle)
+                    .withinAngle(vehicle.getZoomPos(player, partialTick), vehicle.getSeekVec(player, partialTick), seekInfo.seekAngle)
                     .baseFilter()
                     .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
                     .sizeBiggerThan(seekInfo.minTargetSize)
