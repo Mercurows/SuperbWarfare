@@ -13,6 +13,7 @@ import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -116,6 +117,12 @@ public final class VehicleMotionUtils {
         Vec3 eyePos = feetPos.add(0, entity.getEyeHeight(), 0);
 
         for (var obb : obbEntity.getOBBs()) {
+
+            if (entity instanceof Player player && player.onGround() && player.isCrouching() && player.level() instanceof ServerLevel) {
+                // 推车
+                vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(player.getForward()).normalize().scale(player.getDeltaMovement().length() * 3));
+            }
+
             if (obb.contains(feetPos)) {
                 if (!entity.noPhysics && !vehicle.noPhysics) {
                     double gravity = Math.max(entity.getDeltaMovement().y, 0);
@@ -167,15 +174,8 @@ public final class VehicleMotionUtils {
                     }
                     var vec = new Vec3(support).scale(force);
                     vec = new Vec3(vec.x, Math.max(0, vec.y), vec.z);
-                    if (entity instanceof Player player && player.onGround() && player.isCrouching()) {
-                        // 推车
-                        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vec.scale(-1).normalize().scale(player.getDeltaMovement().horizontalDistance() * 3)));
-                        player.setDeltaMovement(player.getDeltaMovement().add(vec.scale(1).normalize().scale(player.getDeltaMovement().horizontalDistance() * 0.5)));
-                    } else {
-                        entity.setPos(entity.position().add(vec));
-                        entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.2, 0.2, 0.2));
-                    }
-
+                    entity.setPos(entity.position().add(vec));
+                    entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.2, 0.2, 0.2));
                     vehicle.hasImpulse = true;
                 }
             }
