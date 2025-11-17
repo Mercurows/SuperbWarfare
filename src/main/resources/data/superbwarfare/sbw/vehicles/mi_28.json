@@ -346,7 +346,7 @@
     "@superbwarfare:mortar_shell * 3",
     "@#superbwarfare:at_rocket * 1.5",
     "All * 0.77",
-    "All - 2",
+    "All - 3",
     "@#superbwarfare:aerial_bomb * 2",
     "$damage * (entity.getHealth() > 0.1 ? 0.7 : 0.05)"
   ],

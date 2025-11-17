@@ -1,9 +1,10 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
-import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
@@ -63,10 +64,12 @@ public class ZoomMessage {
                 }
 
                 ItemStack stack = player.getMainHandItem();
-                String origin = stack.getItem().getDescriptionId();
-                String name = origin.substring(origin.lastIndexOf(".") + 1);
-                var clientboundstopsoundpacket = new ClientboundStopSoundPacket(Mod.loc(name + "_lock"), SoundSource.PLAYERS);
-                player.connection.send(clientboundstopsoundpacket);
+                if (stack.getItem() instanceof GunItem) {
+                    var gunData = GunData.from(stack);
+                    var location = gunData.compute().soundInfo.locking.getLocation();
+                    player.connection.send(new ClientboundStopSoundPacket(location, SoundSource.PLAYERS));
+                }
+
             }
         });
         context.setPacketHandled(true);
