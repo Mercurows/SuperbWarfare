@@ -3,7 +3,7 @@
   "category": "equipment",
   "ingredients": [
     {
-      "item": "superbwarfare:saclos_missile"
+      "item": "superbwarfare:medium_anti_ground_missile"
     }
   ],
   "result": {

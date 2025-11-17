@@ -506,24 +506,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.IGLA_MISSILE.get())));
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.WIRE_GUIDE_MISSILE.get())
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
                 .requires(ModItems.JAVELIN_MISSILE.get())
                 .unlockedBy(getHasName(ModItems.JAVELIN_MISSILE.get()), has(ModItems.JAVELIN_MISSILE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.WIRE_GUIDE_MISSILE.get())));
-
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.TOW_MISSILE.get())
-                .requires(ModItems.WIRE_GUIDE_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.WIRE_GUIDE_MISSILE.get()), has(ModItems.WIRE_GUIDE_MISSILE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.TOW_MISSILE.get())));
-
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.SACLOS_MISSILE.get())
-                .requires(ModItems.TOW_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.TOW_MISSILE.get()), has(ModItems.TOW_MISSILE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.SACLOS_MISSILE.get()) + "_convert"));
+                .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.JAVELIN_MISSILE.get())
-                .requires(ModItems.SACLOS_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.SACLOS_MISSILE.get()), has(ModItems.SACLOS_MISSILE.get()))
+                .requires(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
+                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()), has(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get()) + "_convert"));
 
 

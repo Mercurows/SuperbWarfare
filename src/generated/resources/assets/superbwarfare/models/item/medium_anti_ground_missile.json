@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/tow_missile"
+    "layer0": "superbwarfare:item/medium_anti_ground_missile"
   }
 }

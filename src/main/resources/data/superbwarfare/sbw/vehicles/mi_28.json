@@ -174,7 +174,7 @@
       "AvailableFireModes": "Semi",
       "RPM": 12,
       "EmptyReloadTime": 240,
-      "AmmoType": "superbwarfare:saclos_missile",
+      "AmmoType": "superbwarfare:medium_anti_ground_missile",
       "Projectile": "superbwarfare:wg_missile",
       "Name": "weapon.superbwarfare.9m_120_missile",
       "Damage": 750,

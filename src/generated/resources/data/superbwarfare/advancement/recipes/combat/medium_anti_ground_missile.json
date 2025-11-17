@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:wire_guide_missile"
+        "recipe": "superbwarfare:medium_anti_ground_missile"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:wire_guide_missile"
+      "superbwarfare:medium_anti_ground_missile"
     ]
   }
 }

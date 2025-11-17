@@ -9,15 +9,15 @@ import net.minecraft.world.item.TooltipFlag;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class SaclosMissileItem extends Item {
+public class MediumAntiGroundMissileItem extends Item {
 
-    public SaclosMissileItem() {
-        super(new Properties().stacksTo(4));
+    public MediumAntiGroundMissileItem() {
+        super(new Properties().stacksTo(2));
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("des.superbwarfare.saclos_missile").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.medium_anti_ground_missile").withStyle(ChatFormatting.GRAY));
     }
 }
