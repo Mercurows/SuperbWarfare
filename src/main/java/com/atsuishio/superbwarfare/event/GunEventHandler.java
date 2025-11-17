@@ -680,17 +680,12 @@ public class GunEventHandler {
         for (MissingMappingsEvent.Mapping<Item> mapping : event.getAllMappings(Registries.ITEM)) {
             if (Mod.MODID.equals(mapping.getKey().getNamespace())) {
                 var item = mapping.getKey().getPath();
-                if (item.equals("abekiri")) {
-                    mapping.remap(ModItems.HOMEMADE_SHOTGUN.get());
-                }
-                if (item.equals("m2hb_blueprint")) {
-                    mapping.remap(ModItems.M_2_HB_BLUEPRINT.get());
-                }
-                if (item.equals("rocket_70")) {
-                    mapping.remap(ModItems.SMALL_ROCKET.get());
-                }
-                if (item.equals("us_helmet_pastg")) {
-                    mapping.remap(ModItems.US_HELMET_PASGT.get());
+                switch (item) {
+                    case "abekiri" -> mapping.remap(ModItems.HOMEMADE_SHOTGUN.get());
+                    case "m2hb_blueprint" -> mapping.remap(ModItems.M_2_HB_BLUEPRINT.get());
+                    case "rocket_70" -> mapping.remap(ModItems.SMALL_ROCKET.get());
+                    case "us_helmet_pastg" -> mapping.remap(ModItems.US_HELMET_PASGT.get());
+                    case "agm" -> mapping.remap(ModItems.LARGE_ANTI_GROUND_MISSILE.get());
                 }
             }
         }
