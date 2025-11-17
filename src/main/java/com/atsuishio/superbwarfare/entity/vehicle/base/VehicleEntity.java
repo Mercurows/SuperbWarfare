@@ -91,10 +91,8 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -435,7 +433,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
 
+        registerTransforms();
         initOBB();
+
         if (this.hasEnergyStorage()) {
             this.energyStorage = new VehicleEnergyStorage(this);
         }
@@ -2380,46 +2380,75 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void passengerPos(Entity passenger, @NotNull MoveFunction callback, Vec3 vec3, String string) {
-        Vector4f worldPosition = transformPosition(getTransformFromString(string, 1), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+        Vector4f worldPosition = transformPosition(getTransformFromString(string), (float) vec3.x, (float) vec3.y, (float) vec3.z);
         passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
         callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
         copyEntityData(passenger);
     }
 
-    public Matrix4f getTransformFromString(String string, float ticks) {
-        return switch (string) {
-            case "VehicleFlat" -> getVehicleFlatTransform(ticks);
-            case "Turret" -> getTurretTransform(ticks);
-            case "Barrel" -> getBarrelTransform(ticks);
-            case "WeaponStation" -> getGunTransform(ticks);
-            case "WeaponStationBarrel" -> getPassengerWeaponStationBarrelTransform(ticks);
-            default -> getVehicleTransform(ticks);
-        };
+    protected Map<String, Function<Float, Matrix4f>> positionTransform = new HashMap<>();
+    protected Map<String, Function<Float, Vec3>> vectorTransform = new HashMap<>();
+    protected Map<String, Function<Float, Quaternionf>> rotationTransform = new HashMap<>();
+
+    protected void registerTransforms() {
+        positionTransform.put("VehicleFlat", this::getVehicleFlatTransform);
+        positionTransform.put("Turret", this::getTurretTransform);
+        positionTransform.put("Barrel", this::getBarrelTransform);
+        positionTransform.put("WeaponStation", this::getGunTransform);
+        positionTransform.put("WeaponStationBarrel", this::getPassengerWeaponStationBarrelTransform);
+        positionTransform.put("Default", this::getVehicleTransform);
+
+        vectorTransform.put("Turret", this::getTurretVector);
+        vectorTransform.put("Barrel", this::getBarrelVector);
+        vectorTransform.put("WeaponStationBarrel", this::getPassengerWeaponStationVector);
+        vectorTransform.put("DeltaMovement", tick -> getDeltaMovement().normalize());
+        vectorTransform.put("Up", this::getUpVec);
+        vectorTransform.put("Default", this::getViewVector);
+
+        rotationTransform.put("Turret", tick -> VectorTool.combineRotationsTurret(tick, this));
+        rotationTransform.put("Barrel", tick -> VectorTool.combineRotationsBarrel(tick, this));
+        rotationTransform.put("RotationsYaw", tick -> VectorTool.combineRotationsYaw(tick, this));
+        rotationTransform.put("Default", tick -> VectorTool.combineRotations(tick, this));
     }
 
-    public Vec3 getVectorFromString(String string, float ticks, int seatIndex) {
+    public @NotNull Matrix4f getTransformFromString(String string) {
+        return getTransformFromString(string, 1);
+    }
+
+    public @NotNull Matrix4f getTransformFromString(String string, float ticks) {
+        return positionTransform
+                .getOrDefault(string, positionTransform.get("Default"))
+                .apply(ticks);
+    }
+
+    public @NotNull Vec3 getVectorFromString(String string) {
+        return getVectorFromString(string, 0);
+    }
+
+    public @NotNull Vec3 getVectorFromString(String string, float ticks) {
+        return vectorTransform
+                .getOrDefault(string, vectorTransform.get("Default"))
+                .apply(ticks);
+    }
+
+    public @NotNull Vec3 getVectorFromString(String string, float ticks, int seatIndex) {
         var entity = getNthEntity(seatIndex);
         return switch (string) {
-            case "Turret" -> getTurretVector(ticks);
-            case "Barrel" -> getBarrelVector(ticks);
             case "Bomb" ->
                     bombHitPos(getNthEntity(seatIndex), ticks).subtract(getShootPosForHud(getNthEntity(seatIndex), ticks));
-            case "WeaponStationBarrel" -> getPassengerWeaponStationVector(ticks);
             case "Passenger" -> entity != null ? entity.getViewVector(ticks) : getViewVector(ticks);
-            case "DeltaMovement" -> getDeltaMovement().normalize();
-            case "Up" -> getUpVec(ticks);
-            default -> getViewVector(ticks);
+            default -> getVectorFromString(string, ticks);
         };
     }
 
-    public Vec3 getVectorFromString(String string, float ticks) {
-        return switch (string) {
-            case "Turret" -> getTurretVector(ticks);
-            case "Barrel" -> getBarrelVector(ticks);
-            case "WeaponStationBarrel" -> getPassengerWeaponStationVector(ticks);
-            case "DeltaMovement" -> getDeltaMovement().normalize();
-            default -> getViewVector(ticks);
-        };
+    public @NotNull Quaternionf getRotationFromString(String string) {
+        return getRotationFromString(string, 0);
+    }
+
+    public @NotNull Quaternionf getRotationFromString(String string, float ticks) {
+        return rotationTransform
+                .getOrDefault(string, rotationTransform.get("Default"))
+                .apply(ticks);
     }
 
     /**
@@ -3091,7 +3120,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             var vec3 = dismountInfo.position;
             if (vec3 != null) {
                 var worldPosition = transformPosition(
-                        this.getTransformFromString(dismountInfo.transform, 1),
+                        this.getTransformFromString(dismountInfo.transform),
                         (float) vec3.x, (float) vec3.y, (float) vec3.z);
                 return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
             } else {
@@ -3137,7 +3166,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 return passenger.position();
             }
             var worldPosition = transformPosition(
-                    this.getTransformFromString(dismountInfo.transform, 1),
+                    this.getTransformFromString(dismountInfo.transform),
                     (float) vec3.x, (float) vec3.y, (float) vec3.z);
 
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -3172,13 +3201,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         } else {
             var vec3 = stringOrVec3.vec3;
             Vector4f worldPosition = transformPosition(
-                    getTransformFromString(dismountInfo.transform, 1),
+                    getTransformFromString(dismountInfo.transform),
                     (float) vec3.x + (float) stringOrVec3.vec3.x,
                     (float) vec3.y + (float) stringOrVec3.vec3.y,
                     (float) vec3.z + (float) stringOrVec3.vec3.z);
 
             Vector4f worldPositionO = transformPosition(
-                    getTransformFromString(dismountInfo.transform, 1),
+                    getTransformFromString(dismountInfo.transform),
                     (float) vec3.x,
                     (float) vec3.y,
                     (float) vec3.z);
