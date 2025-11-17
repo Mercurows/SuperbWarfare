@@ -237,7 +237,7 @@
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 10,
-        "TargetHeight": 10,
+        "MaxTargetHeight": 10,
         "MinTargetSize": 0.9
       },
       "ShootPos": {

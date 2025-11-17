@@ -12,8 +12,8 @@ public class SeekWeaponInfo {
     @SerializedName("SeekAngle")
     public double seekAngle = 20;
 
-    @SerializedName("TargetHeight")
-    public double targetHeight = 10;
+    @SerializedName("MaxTargetHeight")
+    public double maxTargetHeight = 10;
 
     @SerializedName("SeekTime")
     public int seekTime = 10;

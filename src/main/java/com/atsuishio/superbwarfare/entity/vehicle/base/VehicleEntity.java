@@ -4036,7 +4036,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .withinRange(seekInfo.seekRange)
                 .withinAngle(getSeekVec(seatIndex, 1), seekInfo.seekAngle)
                 .baseFilter()
-                .onGround(seekInfo.targetHeight)
+                .onGround(seekInfo.maxTargetHeight)
                 .sizeBiggerThan(seekInfo.minTargetSize)
                 .smokeFilter()
                 .noVehicle()

@@ -37,9 +37,4 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     public double getMouseSensitivity() {
         return 0.25;
     }
-
-    @Override
-    public int getContainerSize() {
-        return 102;
-    }
 }
