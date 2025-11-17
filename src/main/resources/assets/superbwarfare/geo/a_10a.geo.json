@@ -12293,13 +12293,13 @@
 					]
 				},
 				{
-					"name": "missile1",
+					"name": "missile2",
 					"parent": "guajia",
 					"pivot": [84.51, 25.06195, -1.28517]
 				},
 				{
 					"name": "bone145",
-					"parent": "missile1",
+					"parent": "missile2",
 					"pivot": [84.51, 25.06195, -1.28517],
 					"cubes": [
 						{
@@ -12352,7 +12352,7 @@
 				},
 				{
 					"name": "bone146",
-					"parent": "missile1",
+					"parent": "missile2",
 					"pivot": [84.51, 25.06195, -38.48517],
 					"cubes": [
 						{
@@ -12412,7 +12412,7 @@
 				},
 				{
 					"name": "bone147",
-					"parent": "missile1",
+					"parent": "missile2",
 					"pivot": [84.51, 25.06195, 9.72576],
 					"rotation": [0, 0, -45],
 					"cubes": [
@@ -12549,13 +12549,13 @@
 					]
 				},
 				{
-					"name": "missile2",
+					"name": "missile3",
 					"parent": "guajia2",
 					"pivot": [-84.51, 25.06195, -1.28517]
 				},
 				{
 					"name": "bone144",
-					"parent": "missile2",
+					"parent": "missile3",
 					"pivot": [-84.51, 25.06195, -1.28517],
 					"cubes": [
 						{
@@ -12608,7 +12608,7 @@
 				},
 				{
 					"name": "bone148",
-					"parent": "missile2",
+					"parent": "missile3",
 					"pivot": [-84.51, 25.06195, -38.48517],
 					"cubes": [
 						{
@@ -12668,7 +12668,7 @@
 				},
 				{
 					"name": "bone149",
-					"parent": "missile2",
+					"parent": "missile3",
 					"pivot": [-84.51, 25.06195, 9.72576],
 					"rotation": [0, 0, 45],
 					"cubes": [
@@ -12805,13 +12805,13 @@
 					]
 				},
 				{
-					"name": "missile3",
+					"name": "missile4",
 					"parent": "guajia3",
 					"pivot": [-106.125, 25.9761, -0.57443]
 				},
 				{
 					"name": "bone153",
-					"parent": "missile3",
+					"parent": "missile4",
 					"pivot": [-106.125, 25.97609, -0.57443],
 					"cubes": [
 						{
@@ -12864,7 +12864,7 @@
 				},
 				{
 					"name": "bone154",
-					"parent": "missile3",
+					"parent": "missile4",
 					"pivot": [-106.125, 25.97609, -37.77443],
 					"cubes": [
 						{
@@ -12924,7 +12924,7 @@
 				},
 				{
 					"name": "bone155",
-					"parent": "missile3",
+					"parent": "missile4",
 					"pivot": [-106.125, 25.9761, 10.43651],
 					"rotation": [0, 0, 45],
 					"cubes": [
@@ -13061,13 +13061,13 @@
 					]
 				},
 				{
-					"name": "missile4",
+					"name": "missile1",
 					"parent": "guajia4",
 					"pivot": [106.125, 25.9761, -0.57443]
 				},
 				{
 					"name": "bone150",
-					"parent": "missile4",
+					"parent": "missile1",
 					"pivot": [106.125, 25.97609, -0.57443],
 					"cubes": [
 						{
@@ -13120,7 +13120,7 @@
 				},
 				{
 					"name": "bone151",
-					"parent": "missile4",
+					"parent": "missile1",
 					"pivot": [106.125, 25.97609, -37.77443],
 					"cubes": [
 						{
@@ -13180,7 +13180,7 @@
 				},
 				{
 					"name": "bone152",
-					"parent": "missile4",
+					"parent": "missile1",
 					"pivot": [106.125, 25.9761, 10.43651],
 					"rotation": [0, 0, -45],
 					"cubes": [

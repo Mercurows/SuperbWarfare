@@ -55,10 +55,10 @@ public class A10Model extends VehicleModel<A10Entity> {
             case "missile2" -> (bone, vehicle, state) ->
                     bone.setHidden(shouldHideMissile(vehicle, 3));
 
-            case "missile4" -> (bone, vehicle, state) ->
+            case "missile3" -> (bone, vehicle, state) ->
                     bone.setHidden(shouldHideMissile(vehicle, 2));
 
-            case "missile3" -> (bone, vehicle, state) ->
+            case "missile4" -> (bone, vehicle, state) ->
                     bone.setHidden(shouldHideMissile(vehicle, 1));
 
             default -> null;
