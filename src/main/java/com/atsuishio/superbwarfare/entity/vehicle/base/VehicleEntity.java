@@ -96,8 +96,8 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -1773,10 +1773,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public void baseTick() {
-        if (this instanceof OBBEntity obbEntity) {
-            obbEntity.updateOBB();
-        }
-
         var computed = computed();
         if (this.level().isClientSide) {
             if (!this.wasEngineRunning && this.engineRunning()) {
@@ -2065,6 +2061,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         lowHealthWarning();
         this.refreshDimensions();
+
+        if (this instanceof OBBEntity obbEntity) {
+            obbEntity.updateOBB();
+        }
     }
 
     public SoundEvent getShootSoundInstance() {

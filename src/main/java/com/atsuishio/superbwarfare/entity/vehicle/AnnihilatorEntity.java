@@ -276,6 +276,4 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-    // TODO 为什么歼灭者OBB还是不对
 }
