@@ -69,7 +69,7 @@ public class ParticleTool {
         if (level instanceof ServerLevel serverLevel) {
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 3, 0.1, 0.1, 0.1, 0.02, true);
             sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y, z, 4, 0.2, 0.2, 0.2, 0.02, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 6, 0, 0, 0, 0.2, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 4, 0, 0, 0, 0.2, true);
         }
     }
 
@@ -86,7 +86,7 @@ public class ParticleTool {
             sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y, z, 2, 0.05, 0.05, 0.05, 1, true);
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 3, 0.1, 0.1, 0.1, 0.02, true);
             sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y, z, 4, 0.2, 0.2, 0.2, 0.02, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 20, 0, 0, 0, 0.6, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 12, 0, 0, 0, 0.6, true);
             sendParticle(serverLevel, ParticleTypes.FLASH, x, y, z, 5, 0.1, 0.1, 0.1, 20, true);
         }
     }
@@ -107,10 +107,6 @@ public class ParticleTool {
             SoundTool.playDistantSound(serverLevel, ModSounds.EXPLOSION_CLOSE.get(), pos, 4, 1, null);
             SoundTool.playDistantSound(serverLevel, ModSounds.EXPLOSION_FAR.get(), pos, 16, 1, null);
             SoundTool.playDistantSound(serverLevel, ModSounds.EXPLOSION_VERY_FAR.get(), pos, 32, 1, null);
-
-            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 1, z, 30, 1, 1, 1, 1, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 1, z, 30, 1, 1, 1, 1, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 100, 0, 0, 0, 2, true);
 
             sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 1, z, 5, 0.7, 0.7, 0.7, 1, true);
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 20, 0.2, 1, 0.2, 0.02, true);
@@ -138,9 +134,9 @@ public class ParticleTool {
                 sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6, 1, 6, 0.1, true);
             }
 
-            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 3, z, 80, 3, 3, 3, 1, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 4, z, 100, 4, 4, 4, 1, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 400, 0, 0, 0, 2, true);
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 3, z, 60, 3, 3, 3, 1, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 4, z, 70, 4, 4, 4, 1, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 130, 0, 0, 0, 2, true);
 
             for (int h = 0; h < 4; h++) {
                 for (int i = 0; i < 200; i++) {

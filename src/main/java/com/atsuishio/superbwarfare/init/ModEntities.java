@@ -93,6 +93,8 @@ public class ModEntities {
             EntityType.Builder.<Ru9m336MissileEntity>of(Ru9m336MissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<Agm65Entity>> AGM_65 = register("agm_65",
             EntityType.Builder.of(Agm65Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.75f, 0.75f));
+    public static final DeferredHolder<EntityType<?>, EntityType<Kh39Entity>> KH_39 = register("kh_39",
+            EntityType.Builder.of(Kh39Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.75f, 0.75f));
     public static final DeferredHolder<EntityType<?>, EntityType<SmallRocketEntity>> SMALL_ROCKET = register("small_rocket",
             EntityType.Builder.<SmallRocketEntity>of(SmallRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final DeferredHolder<EntityType<?>, EntityType<MediumRocketEntity>> MEDIUM_ROCKET = register("medium_rocket",

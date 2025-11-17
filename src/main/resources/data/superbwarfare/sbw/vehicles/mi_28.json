@@ -206,28 +206,28 @@
     },
     "PassengerMissile": {
       "DefaultZoom": 3,
-      "Magazine": 4,
+      "Magazine": 8,
       "Template": "@Missile",
       "Crosshair": "@VehicleFixedPoint",
       "CrosshairZooming": "@VehicleCommonMissile",
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.0625, 5.625],
-        "Positions": [[2.258, 1.932, 0], [2.258, 1.67, 0], [2.446, 1.932, 0], [2.446, 1.67, 0]],
+        "Positions": [[2.258, 1.932, 0], [2.258, 1.67, 0], [2.446, 1.932, 0], [2.446, 1.67, 0], [2.806, 1.932, 0], [2.806, 1.67, 0], [2.993, 1.932, 0], [2.993, 1.67, 0]],
         "BoundUpWithAmmoAmount": true,
         "ViewDirection": "Barrel"
       }
     },
     "SeekMissile": {
       "AmmoType": "superbwarfare:agm",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/agm_65.png",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/kh_39.png",
       "DefaultZoom": 3,
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
-      "Magazine": 4,
+      "Magazine": 2,
       "EmptyReloadTime": 260,
-      "Projectile": "superbwarfare:agm_65",
-      "Name": "weapon.superbwarfare.agm_65_missile",
+      "Projectile": "superbwarfare:kh_39",
+      "Name": "weapon.superbwarfare.kh_39_missile",
       "Damage": 1100,
       "ExplosionDamage": 180,
       "ExplosionRadius": 12,
@@ -243,7 +243,7 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.0625, 5.625],
-        "Positions": [[2.806, 1.932, 0], [2.806, 1.67, 0], [2.993, 1.932, 0], [2.993, 1.67, 0]],
+        "Positions": [[-2.641, 1.1875, 0], [2.641, 1.1875, 0]],
         "ViewDirection": "Barrel",
         "BoundUpWithAmmoAmount": true
       },

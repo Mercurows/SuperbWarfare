@@ -36,11 +36,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class Agm65Entity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+public class Kh39Entity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public Agm65Entity(EntityType<? extends Agm65Entity> type, Level level) {
+    public Kh39Entity(EntityType<? extends Kh39Entity> type, Level level) {
         super(type, level);
         this.noCulling = true;
         this.damage = 1100;
@@ -179,7 +179,7 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
         destroyBlock();
     }
 
-    private PlayState movementPredicate(AnimationState<Agm65Entity> event) {
+    private PlayState movementPredicate(AnimationState<Kh39Entity> event) {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.jvm.idle"));
     }
 
