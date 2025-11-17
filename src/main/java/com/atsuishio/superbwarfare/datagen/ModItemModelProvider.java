@@ -138,7 +138,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.MEDIUM_ROCKET_HE);
         simpleItem(ModItems.MEDIUM_ROCKET_CM);
         simpleItem(ModItems.WIRE_GUIDE_MISSILE);
-        simpleItem(ModItems.AGM);
+        simpleItem(ModItems.LARGE_ANTI_GROUND_MISSILE);
         simpleItem(ModItems.SMALL_SHELL);
         simpleItem(ModItems.SWARM_DRONE);
         simpleItem(ModItems.MEDIUM_AERIAL_BOMB);

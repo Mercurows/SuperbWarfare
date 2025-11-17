@@ -147,7 +147,7 @@ public class ModItems {
     public static final DeferredHolder<Item, WireGuideMissileItem> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
     public static final DeferredHolder<Item, SaclosMissileItem> SACLOS_MISSILE = AMMO.register("saclos_missile", SaclosMissileItem::new);
     public static final DeferredHolder<Item, Item> TOW_MISSILE = AMMO.register("tow_missile", () -> new Item(new Item.Properties().stacksTo(4)));
-    public static final DeferredHolder<Item, AgmItem> AGM = AMMO.register("agm", AgmItem::new);
+    public static final DeferredHolder<Item, LargeAntiGroundItem> LARGE_ANTI_GROUND_MISSILE = AMMO.register("large_anti_ground_missile", LargeAntiGroundItem::new);
     public static final DeferredHolder<Item, SwarmDroneItem> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
     public static final DeferredHolder<Item, MediumAerialBombItem> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);
 

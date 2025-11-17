@@ -9,15 +9,15 @@ import net.minecraft.world.item.TooltipFlag;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class AgmItem extends Item {
+public class LargeAntiGroundItem extends Item {
 
-    public AgmItem() {
+    public LargeAntiGroundItem() {
         super(new Properties().stacksTo(2));
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("des.superbwarfare.agm").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.large_anti_ground_missile").withStyle(ChatFormatting.GRAY));
     }
 }

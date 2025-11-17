@@ -53,7 +53,7 @@ public class Kh39Entity extends MissileProjectile implements GeoEntity, Explosiv
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.AGM.get();
+        return ModItems.LARGE_ANTI_GROUND_MISSILE.get();
     }
 
     @Override

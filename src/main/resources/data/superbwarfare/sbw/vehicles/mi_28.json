@@ -219,7 +219,7 @@
       }
     },
     "SeekMissile": {
-      "AmmoType": "superbwarfare:agm",
+      "AmmoType": "superbwarfare:large_anti_ground_missile",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/kh_39.png",
       "DefaultZoom": 3,
       "DefaultFireMode": "Semi",

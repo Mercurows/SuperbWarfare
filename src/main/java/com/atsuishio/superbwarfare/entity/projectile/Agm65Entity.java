@@ -53,7 +53,7 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity, Explosi
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.AGM.get();
+        return ModItems.LARGE_ANTI_GROUND_MISSILE.get();
     }
 
     @Override

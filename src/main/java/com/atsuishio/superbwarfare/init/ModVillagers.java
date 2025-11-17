@@ -229,7 +229,7 @@ public class ModVillagers {
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 12),
                     new ItemStack(ModItems.WIRE_GUIDE_MISSILE.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
-                    new ItemStack(ModItems.AGM.get(), 1), 8, 10, 0.05f));
+                    new ItemStack(ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
                     new ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1), 8, 10, 0.05f));
 
@@ -249,7 +249,7 @@ public class ModVillagers {
                     new ItemStack(Items.EMERALD, 6), 32, 4, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.WIRE_GUIDE_MISSILE.get(), 1),
                     new ItemStack(Items.EMERALD, 6), 32, 4, 0.05f));
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.AGM.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 1),
                     new ItemStack(Items.EMERALD, 8), 32, 4, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1),
                     new ItemStack(Items.EMERALD, 8), 32, 4, 0.05f));

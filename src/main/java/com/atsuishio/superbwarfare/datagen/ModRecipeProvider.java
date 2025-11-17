@@ -329,7 +329,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('b', Tags.Items.DYES_GREEN)
                 .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
                 .save(writer, Mod.loc(getItemName(ModItems.AMMO_BOX.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AGM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_GROUND_MISSILE.get())
                 .pattern(" b ")
                 .pattern("ada")
                 .pattern("cec")
@@ -339,7 +339,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('d', Items.TNT)
                 .define('e', ModItems.MISSILE_ENGINE.get())
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.AGM.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
                 .pattern(" a ")
                 .pattern("bcb")

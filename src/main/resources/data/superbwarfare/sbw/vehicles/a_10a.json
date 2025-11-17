@@ -175,7 +175,7 @@
       "SoundRadius": 8
     },
     "Missile": {
-      "AmmoType": "superbwarfare:agm",
+      "AmmoType": "superbwarfare:large_anti_ground_missile",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/agm_65.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Semi",
