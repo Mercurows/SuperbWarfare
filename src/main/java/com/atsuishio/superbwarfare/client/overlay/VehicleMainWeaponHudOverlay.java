@@ -101,7 +101,7 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
                     .withinRange(seekInfo.seekRange)
                     .withinAngle(vehicle.getSeekVec(player, partialTick), seekInfo.seekAngle)
                     .baseFilter()
-                    .onGround(seekInfo.targetHeight)
+                    .onGround(seekInfo.maxTargetHeight)
                     .sizeBiggerThan(seekInfo.minTargetSize)
                     .smokeFilter()
                     .noVehicle()
