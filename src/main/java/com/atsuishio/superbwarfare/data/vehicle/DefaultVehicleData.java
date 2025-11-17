@@ -198,16 +198,16 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public CollisionLevel collisionLevel = new CollisionLevel();
 
     // 主武器位
-    @ServerOnly
+
     @SerializedName("TurretPos")
     public Vec3 turretPos = null;
-    @ServerOnly
+
     @SerializedName("TurretTurnSpeed")
     public Vec2 turretTurnSpeed = new Vec2(5, 5);
-    @ServerOnly
+
     @SerializedName("TurretYawRange")
     public Vec2 turretYawRange = new Vec2(-514, 514);
-    @ServerOnly
+
     @SerializedName("TurretPitchRange")
     public Vec2 turretPitchRange = new Vec2(-10, 30);
     @SerializedName("TurretControllerIndex")
@@ -215,26 +215,26 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("MainWeaponHudType")
     public String mainWeaponHudType = "@Empty";
 
-    @ServerOnly
+
     @SerializedName("BarrelPos")
     public Vec3 barrelPos = Vec3.ZERO;
 
-    @ServerOnly
+
     @SerializedName("PassengerWeaponStationPos")
     public Vec3 passengerWeaponStationPos = null;
-    @ServerOnly
+
     @SerializedName("PassengerWeaponStationBarrelPos")
     public Vec3 passengerWeaponStationBarrelPos = Vec3.ZERO;
-    @ServerOnly
+
     @SerializedName("PassengerWeaponStationTurnSpeed")
     public Vec2 passengerWeaponStationTurnSpeed = new Vec2(5, 5);
-    @ServerOnly
+
     @SerializedName("PassengerWeaponStationYawRange")
     public Vec2 passengerWeaponStationYawRange = new Vec2(-514, 514);
-    @ServerOnly
+
     @SerializedName("PassengerWeaponStationPitchRange")
     public Vec2 passengerWeaponStationPitchRange = new Vec2(-10, 30);
-    @ServerOnly
+
     @SerializedName("PassengerWeaponStationControllerIndex")
     public int passengerWeaponStationControllerIndex = 1;
 
