@@ -74,7 +74,7 @@
       "MaxPitch": 80,
       "MinYaw": -80,
       "MaxYaw": 80,
-      "Weapons": ["Rocket", "DriverMissile"],
+      "Weapons": ["Rocket", "DriverMissile", "DriverAAMissile"],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [2.5, 1.2, 2.5]
@@ -143,7 +143,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Magazine": 42,
-      "EmptyReloadTime": 100,
+      "EmptyReloadTime": 200,
       "Projectile": "superbwarfare:small_rocket",
       "Spread": 0.25,
       "Name": "weapon.superbwarfare.80mm_rocket",
@@ -173,7 +173,7 @@
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "RPM": 12,
-      "EmptyReloadTime": 200,
+      "EmptyReloadTime": 240,
       "AmmoType": "superbwarfare:saclos_missile",
       "Projectile": "superbwarfare:wg_missile",
       "Name": "weapon.superbwarfare.9m_120_missile",
@@ -194,13 +194,13 @@
     },
     "DriverMissile": {
       "DefaultZoom": 2,
-      "Magazine": 8,
+      "Magazine": 4,
       "Crosshair": "@AirCraftMissile",
       "Template": "@Missile",
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 3.5625, 2.25],
-        "Positions": [[-2.258, 1.932, 0], [-2.258, 1.67, 0], [-2.446, 1.932, 0], [-2.446, 1.67, 0], [-2.806, 1.932, 0], [-2.806, 1.67, 0], [-2.993, 1.932, 0], [-2.993, 1.67, 0]],
+        "Positions": [[-2.258, 1.932, 0], [-2.258, 1.67, 0], [-2.446, 1.932, 0], [-2.446, 1.67, 0]],
         "BoundUpWithAmmoAmount": true
       }
     },
@@ -225,7 +225,7 @@
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Magazine": 4,
-      "EmptyReloadTime": 200,
+      "EmptyReloadTime": 260,
       "Projectile": "superbwarfare:agm_65",
       "Name": "weapon.superbwarfare.agm_65_missile",
       "Damage": 1100,
@@ -237,7 +237,7 @@
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 10,
-        "MaxTargetHeight": 10,
+        "MaxTargetHeight": 24,
         "MinTargetSize": 0.9
       },
       "ShootPos": {
@@ -245,6 +245,47 @@
         "ShootPositionForHud": [0, 1.0625, 5.625],
         "Positions": [[2.806, 1.932, 0], [2.806, 1.67, 0], [2.993, 1.932, 0], [2.993, 1.67, 0]],
         "ViewDirection": "Barrel",
+        "BoundUpWithAmmoAmount": true
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bomb_release",
+        "Fire3P": "superbwarfare:bomb_release",
+        "ReloadEnd": "superbwarfare:bomb_reload",
+        "Change": "superbwarfare:into_missile",
+        "Locking": "superbwarfare:missile_locking",
+        "Locked": "superbwarfare:missile_locked"
+      },
+      "CrosshairColor": "0xFFC700",
+      "Crosshair": "@VehicleFixedPoint",
+      "CrosshairZooming": "@VehicleCommonMissile",
+      "SoundRadius": 8
+    },
+    "DriverAAMissile": {
+      "AmmoType": "superbwarfare:ru_9m336_missile",
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/ru_9m336.png",
+      "DefaultZoom": 2,
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Magazine": 4,
+      "EmptyReloadTime": 260,
+      "Projectile": "superbwarfare:ru_9m336_missile",
+      "Name": "weapon.superbwarfare.9m_336_missile",
+      "Damage": 310,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 6,
+      "Velocity": 3,
+      "SeekWeaponInfo": {
+        "SeekDirection": "Default",
+        "SeekRange": 384,
+        "SeekAngle": 20,
+        "SeekTime": 10,
+        "MinTargetHeight": 24,
+        "MinTargetSize": 0.1
+      },
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 1.0625, 5.625],
+        "Positions": [[-2.806, 1.932, 0], [-2.806, 1.67, 0], [-2.993, 1.932, 0], [-2.993, 1.67, 0]],
         "BoundUpWithAmmoAmount": true
       },
       "SoundInfo": {
@@ -274,7 +315,7 @@
     "EngineSoundVolume" : 2
   },
   "EngineSound": "superbwarfare:mi_28_engine",
-  "ThirdPersonCameraPos": [-2.7, 4, 12],
+  "ThirdPersonCameraPos": [2.7, 4, 12],
   "UpStep": 1.1,
   "RotateOffsetHeight": 1.8,
   "Mass": 1.2,

@@ -65,6 +65,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), VehicleAssemblingTableVehicleRenderer::new);
         event.registerEntityRenderer(ModEntities.WAVEFORCE_TOWER.get(), WaveforceTowerRenderer::new);
         event.registerEntityRenderer(ModEntities.IGLA_MISSILE.get(), IglaMissileRenderer::new);
+        event.registerEntityRenderer(ModEntities.RU_9K33_MISSILE.get(), Ru9m336MissileRenderer::new);
         event.registerEntityRenderer(ModEntities.TRUCK.get(), TruckRenderer::new);
         event.registerEntityRenderer(ModEntities.TOW.get(), TowRenderer::new);
         event.registerEntityRenderer(ModEntities.STEEL_COIL.get(), SteelCoilRenderer::new);

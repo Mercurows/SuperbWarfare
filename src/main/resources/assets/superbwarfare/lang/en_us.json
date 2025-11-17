@@ -202,6 +202,7 @@
   "des.superbwarfare.small_shell": "Suitable for 20mm ~ 40mm caliber weapons",
   "item.superbwarfare.wire_guide_missile": "Wire Guide Missile",
   "des.superbwarfare.wire_guide_missile": "Suitable for BMP-2",
+  "item.superbwarfare.ru_9m336_missile": "9M336 AA Missile",
   "item.superbwarfare.saclos_missile": "Semi-Automatic Command to Line Of Sight Missile",
   "des.superbwarfare.saclos_missile": "Suitable for Mi-28",
   "item.superbwarfare.swarm_drone": "Swarm Drone",
@@ -597,6 +598,7 @@
   "entity.superbwarfare.ptkm_projectile": "PTKM-1R Anti-tank Mine",
   "entity.superbwarfare.waveforce_tower": "Wave-Force Tower",
   "entity.superbwarfare.igla_9k38_missile": "IGLA-9K38 SAM",
+  "entity.superbwarfare.ru_9m336_missile": "9M336 AA Missile",
   "entity.superbwarfare.truck": "Truck",
   "entity.superbwarfare.tow": "TOW Anti-tank Missile Launcher",
   "entity.superbwarfare.steel_coil": "Steel Coil",
@@ -762,6 +764,7 @@
   "weapon.superbwarfare.mk_82_bomb": "MK-82 BOMB %1$s",
   "weapon.superbwarfare.agm_65_missile": "AGM-65 %1$s",
   "weapon.superbwarfare.9m_120_missile": "9M-120 %1$s",
+  "weapon.superbwarfare.9m_336_missile": "9M-336 %1$s",
   "weapon.superbwarfare.swarm_drone": "SWARM DRONE %1$s",
   "weapon.superbwarfare.laser": "LASER %1$s",
 
