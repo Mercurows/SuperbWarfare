@@ -14,7 +14,10 @@ public class OBBInfo {
     public Vec3 position;
 
     @SerializedName("Transform")
-    public String transform = "Vehicle";
+    public String transform = "Default";
+
+    @SerializedName("Rotation")
+    public String rotation = "Default";
 
     @SerializedName("Part")
     public OBB.Part part = OBB.Part.BODY;

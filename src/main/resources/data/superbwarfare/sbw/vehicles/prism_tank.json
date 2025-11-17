@@ -34,7 +34,8 @@
       "Size": [0.4375, 0.90625, 1.21875],
       "Position": [0, 1.59375, -0.390625],
       "Part": "Turret",
-      "Transform": "Turret"
+      "Transform": "Turret",
+      "Rotation": "Turret"
     }
   ],
   "Seats": [

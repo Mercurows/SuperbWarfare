@@ -9,7 +9,9 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -32,8 +34,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -43,7 +47,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
 import java.util.Locale;
 
 public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBBEntity {
@@ -52,12 +55,6 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
     public static final EntityDataAccessor<Float> LASER_RIGHT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public OBB obb;
-    public OBB obb2;
-    public OBB obb3;
-    public OBB obb4;
-    public OBB obb5;
-
     public AnnihilatorEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.ANNIHILATOR.get(), world);
     }
@@ -65,11 +62,6 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
     public AnnihilatorEntity(EntityType<AnnihilatorEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(6.4375f, 1.84375f, 4.125f), new Quaternionf(), OBB.Part.BODY);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(5.0625f, 1.40625f, 1.5f), new Quaternionf(), OBB.Part.BODY);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(5.1875f, 1.84375f, 1.96875f), new Quaternionf(), OBB.Part.BODY);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(4.125f, 1.84375f, 0.75f), new Quaternionf(), OBB.Part.BODY);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(7.75f, 0.71875f, 1.46875f), new Quaternionf(), OBB.Part.BODY);
     }
 
     @Override
@@ -285,34 +277,5 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
         return this.cache;
     }
 
-    @Override
-    public List<OBB> getOBBs() {
-        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5);
-    }
-
-    @Override
-    public void updateOBB() {
-        // TODO 这个transform该叫啥？
-        Matrix4f transform = getVehicleFlatTransform(1);
-
-        Vector4f worldPosition = transformPosition(transform, 0, 2.28125f, 0.875f);
-        this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
-        this.obb.setRotation(VectorTool.combineRotationsYaw(1, this));
-
-        Vector4f worldPosition2 = transformPosition(transform, 0, 1.84375f, 6.5f);
-        this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
-        this.obb2.setRotation(VectorTool.combineRotationsYaw(1, this));
-
-        Vector4f worldPosition3 = transformPosition(transform, 0, 2.28125f, -5.21875f);
-        this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
-        this.obb3.setRotation(VectorTool.combineRotationsYaw(1, this));
-
-        Vector4f worldPosition4 = transformPosition(transform, 0, 2.28125f, -7.9375f);
-        this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
-        this.obb4.setRotation(VectorTool.combineRotationsYaw(1, this));
-
-        Vector4f worldPosition5 = transformPosition(transform, 0, 2.46875f, -5.28125f);
-        this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
-        this.obb5.setRotation(VectorTool.combineRotationsYaw(1, this));
-    }
+    // TODO 为什么歼灭者OBB还是不对
 }
