@@ -23,6 +23,7 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.util.TriPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -259,6 +260,36 @@ public class SeekTool {
      * 判定实体是否在地面上
      */
     public static final Predicate<Entity> ON_GROUND = e -> ON_GROUND_HEIGHT.test(e, 0D);
+
+    /**
+     * 判断实体是否在离地面的一定高度范围内
+     */
+    public static final TriPredicate<Entity, Double, Double> IN_HEIGHT_RANGE = (entity, min, max) -> {
+        Level level = entity.level();
+
+        var pos = entity.getOnPos();
+        double y = pos.getY();
+        int minY = level.getMinBuildHeight();
+        int maxY = level.getMaxBuildHeight();
+
+        // 如果实体已低于世界底部或高于顶部
+        if (y < minY || y > maxY) {
+            return false;
+        }
+
+        int height = 0;
+        while (true) {
+            height++;
+
+            if (height < minY || height > maxY) return false;
+
+            var state = level.getBlockState(pos.offset(0, -height, 0));
+            if (!state.isAir()) {
+                break;
+            }
+        }
+        return height >= min && height <= max;
+    };
 
     /**
      * 判断两个实体是否在同一队伍
@@ -546,6 +577,11 @@ public class SeekTool {
 
         public Builder custom(BiPredicate<Entity, Entity> predicate) {
             this.filters.add(e -> predicate.test(entity, e));
+            return this;
+        }
+
+        public Builder heightRange(double min, double max) {
+            this.filters.add(e -> IN_HEIGHT_RANGE.test(e, min, max));
             return this;
         }
     }
