@@ -12,15 +12,15 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class AgmItem extends Item {
+public class LargeAntiGroundItem extends Item {
 
-    public AgmItem() {
+    public LargeAntiGroundItem() {
         super(new Properties().stacksTo(2));
     }
 
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, @NotNull List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
-        pTooltipComponents.add(Component.translatable("des.superbwarfare.agm").withStyle(ChatFormatting.GRAY));
+        pTooltipComponents.add(Component.translatable("des.superbwarfare.large_anti_ground_missile").withStyle(ChatFormatting.GRAY));
     }
 }

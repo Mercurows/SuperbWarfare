@@ -146,7 +146,7 @@ public class ModItems {
     public static final RegistryObject<Item> WIRE_GUIDE_MISSILE = AMMO.register("wire_guide_missile", WireGuideMissileItem::new);
     public static final RegistryObject<Item> SACLOS_MISSILE = AMMO.register("saclos_missile", SaclosMissileItem::new);
     public static final RegistryObject<Item> TOW_MISSILE = AMMO.register("tow_missile", () -> new Item(new Item.Properties().stacksTo(4)));
-    public static final RegistryObject<Item> AGM = AMMO.register("agm", AgmItem::new);
+    public static final RegistryObject<Item> LARGE_ANTI_GROUND_MISSILE = AMMO.register("large_anti_ground_missile", LargeAntiGroundItem::new);
     public static final RegistryObject<Item> SWARM_DRONE = AMMO.register("swarm_drone", SwarmDroneItem::new);
     public static final RegistryObject<Item> MEDIUM_AERIAL_BOMB = AMMO.register("medium_aerial_bomb", MediumAerialBombItem::new);
 

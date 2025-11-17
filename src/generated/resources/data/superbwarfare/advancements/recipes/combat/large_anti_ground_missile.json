@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:agm"
+        "recipe": "superbwarfare:large_anti_ground_missile"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:agm"
+      "superbwarfare:large_anti_ground_missile"
     ]
   },
   "sends_telemetry_event": false
