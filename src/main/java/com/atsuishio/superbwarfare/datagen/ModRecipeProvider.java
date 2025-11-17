@@ -493,7 +493,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.AP_HEAD.get()), has(ModItems.AP_HEAD.get()))
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.IGLA_MISSILE.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_AIR_MISSILE.get())
                 .pattern("eae")
                 .pattern("bcb")
                 .pattern(" d ")
@@ -504,7 +504,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('e', Items.IRON_BARS)
                 .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.IGLA_MISSILE.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
                 .requires(ModItems.JAVELIN_MISSILE.get())
@@ -515,17 +515,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
                 .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()), has(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get()) + "_convert"));
-
-
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.RU_9M_336_MISSILE.get())
-                .requires(ModItems.IGLA_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.IGLA_MISSILE.get()), has(ModItems.IGLA_MISSILE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.RU_9M_336_MISSILE.get())));
-
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.IGLA_MISSILE.get())
-                .requires(ModItems.RU_9M_336_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.RU_9M_336_MISSILE.get()), has(ModItems.RU_9M_336_MISSILE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.IGLA_MISSILE.get()) + "_convert"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.LUNGE_MINE.get(), 2)
                 .pattern(" ba")

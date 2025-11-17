@@ -54,7 +54,7 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.IGLA_MISSILE.get();
+        return ModItems.MEDIUM_ANTI_AIR_MISSILE.get();
     }
 
     @Override

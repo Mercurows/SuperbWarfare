@@ -148,10 +148,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.MEDICAL_KIT);
         simpleItem(ModItems.PARACHUTE);
         simpleItem(ModItems.VEHICLE_DAMAGE_ANALYZER);
-        simpleItem(ModItems.IGLA_MISSILE);
+        simpleItem(ModItems.MEDIUM_ANTI_AIR_MISSILE);
         simpleItem(ModItems.LASER_UNIT);
         simpleItem(ModItems.TOW_DEPLOYER);
-        simpleItem(ModItems.RU_9M_336_MISSILE);
 
         simpleItem(ModItems.TUNGSTEN_ROD);
 

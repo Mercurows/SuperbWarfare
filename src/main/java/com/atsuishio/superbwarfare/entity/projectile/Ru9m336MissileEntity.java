@@ -52,7 +52,7 @@ public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.RU_9M_336_MISSILE.get();
+        return ModItems.MEDIUM_ANTI_AIR_MISSILE.get();
     }
 
     @Override

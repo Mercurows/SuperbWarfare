@@ -261,7 +261,7 @@
       "SoundRadius": 8
     },
     "DriverAAMissile": {
-      "AmmoType": "superbwarfare:ru_9m336_missile",
+      "AmmoType": "superbwarfare:medium_anti_air_missile",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/ru_9m336.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Semi",
