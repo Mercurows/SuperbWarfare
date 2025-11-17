@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:igla_9k38_missile"
+        "recipe": "superbwarfare:medium_anti_air_missile"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -41,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:igla_9k38_missile"
+      "superbwarfare:medium_anti_air_missile"
     ]
   },
   "sends_telemetry_event": false
