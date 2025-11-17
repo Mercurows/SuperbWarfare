@@ -745,6 +745,8 @@
   "info.superbwarfare.speedboat": "The Speedboat is a light vessel armed with a .50 CAL heavy machine gun. It accommodates 5 crew members and achieves high speeds on water.",
   "info.superbwarfare.waveforce_tower": "The Wave-Force Tower is an advanced base defense structure for the Empire of the Rising Sun in Red Alert 3. This stationary turret eliminates ground threats with superheated energy barrages.",
   "info.superbwarfare.truck": "Trucks are civilian transport vehicles capable of carrying large quantities of cargo.",
+  "info.superbwarfare.mi_28": "The Mi-28 Attack Helicopter is a dedicated tank hunter. Its primary armament consists of a 30mm automatic cannon, 42 unguided rockets, and up to 18 various types of missiles. It is designed to destroy heavy ground targets like tanks and armored vehicles. With its heavy armor and all-weather operational capability, it can deliver a decisive blow in complex battlefield environments.",
+
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.30mm_2a42": "30MM 2A42 %1$s",
   "weapon.superbwarfare.30mm_gau_8_a": "30MM GAU-8/A %1$s",
