@@ -2,6 +2,43 @@
   "ID": "superbwarfare:yx_100",
   "MaxHealth": 500,
   "MaxEnergy": 20000000,
+  "OBB": [
+    {
+      "Size": [2.375, 0.71875, 4],
+      "Position": [0, 1.40625, -0.375]
+    },
+    {
+      "Size": [2.375, 0.59375, 0.65625],
+      "Position": [0, 1.28125, 4.28125]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.625, 0.84375, 3.875],
+      "Position": [1.8125, 0.84375, 0.0625]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.625, 0.84375, 3.875],
+      "Position": [-1.8125, 0.84375, 0.0625]
+    },
+    {
+      "Part": "MainEngine",
+      "Size": [2.0625, 0.59375, 0.625],
+      "Position": [0, 1.65625, -3.9375]
+    },
+    {
+      "Part": "Turret",
+      "Size": [2.375, 0.5625, 2.1875],
+      "Position": [0, 0.5625, -1.125],
+      "Transform": "Turret"
+    },
+    {
+      "Part": "Turret",
+      "Size": [1.625, 0.40625, 0.59375],
+      "Position": [0, 0.40625, 1.65625],
+      "Transform": "Turret"
+    }
+  ],
   "Seats": [
     {
       "HidePassenger": true,
@@ -77,7 +114,7 @@
       "Spread": 0.02,
       "ShootAnimationTime": 10,
       "Crosshair": "@VehicleUsTank",
-      "CrosshairColor": "0x00FFF6",
+      "CrosshairColor": "0x00ff66",
       "Name": "weapon.superbwarfare.cannon_ap",
       "AmmoType": [
         "superbwarfare:ap_5_inches",
@@ -148,7 +185,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.25,
-      "CrosshairColor": "0x00FFF6",
+      "CrosshairColor": "0x00ff66",
       "Projectile": "superbwarfare:projectile",
       "DefaultZoom": 3,
       "RPM": 450,
@@ -182,7 +219,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.25,
-      "CrosshairColor": "0x00FFF6",
+      "CrosshairColor": "0x00ff66",
       "Projectile": "superbwarfare:projectile",
       "DefaultZoom": 3,
       "RPM": 450,
@@ -219,7 +256,7 @@
       "Magazine": 14,
       "EmptyReloadTime": 140,
       "DefaultZoom": 2,
-      "CrosshairColor": "0x00FFF6",
+      "CrosshairColor": "0x00ff66",
       "Projectile": "superbwarfare:swarm_drone",
       "RPM": 600,
       "ExplosionDamage": 150,
@@ -257,7 +294,7 @@
       "SoundRadius": 4
     }
   },
-  "HUDColor": "0x00FFF6",
+  "HUDColor": "0x00ff66",
   "EngineType": "Track",
   "EngineInfo": {
     "Buoyancy": 0,

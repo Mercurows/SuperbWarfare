@@ -2,6 +2,51 @@
   "ID": "superbwarfare:lav_150",
   "MaxHealth": 270,
   "MaxEnergy": 5000000,
+  "OBB": [
+    {
+      "Size": [0.3, 0.75, 0.75],
+      "Position": [-1.140625, 0.75, 1.584375],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [0.3, 0.75, 0.75],
+      "Position": [1.140625, 0.75, 1.584375],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.3, 0.75, 0.75],
+      "Position": [1.140625, 0.75, -1.571875],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.3, 0.75, 0.75],
+      "Position": [-1.140625, 0.75, -1.571875],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [1.3125, 0.90625, 2.4375],
+      "Position": [0, 1.53125, -0.4375]
+    },
+    {
+      "Size": [1.3125, 0.53125, 0.34375],
+      "Position": [0, 1.90625, -3.21875]
+    },
+    {
+      "Size": [1.3125, 0.625, 0.53125],
+      "Position": [0, 1.4375, 2.53125]
+    },
+    {
+      "Size": [0.71875, 0.46875, 0.875],
+      "Position": [0.65625, 2.03125, -2.0625],
+      "Part": "MainEngine"
+    },
+    {
+      "Size": [0.875, 0.3625, 1.25],
+      "Position": [0, 0.3625, 0],
+      "Part": "Turret",
+      "Transform": "Turret"
+    }
+  ],
   "Seats": [
     {
       "HidePassenger": true,

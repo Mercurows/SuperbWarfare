@@ -1,13 +1,14 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.Optional;
 
@@ -423,13 +424,21 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     }
 
     public enum Part {
+        @SerializedName("Empty")
         EMPTY,
+        @SerializedName("WheelLeft")
         WHEEL_LEFT,
+        @SerializedName("WheelRight")
         WHEEL_RIGHT,
+        @SerializedName("Turret")
         TURRET,
+        @SerializedName("MainEngine")
         MAIN_ENGINE,
+        @SerializedName("SubEngine")
         SUB_ENGINE,
+        @SerializedName("Body")
         BODY,
+        @SerializedName("Interactive")
         INTERACTIVE
     }
 }

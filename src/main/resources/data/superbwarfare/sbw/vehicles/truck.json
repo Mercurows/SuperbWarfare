@@ -2,6 +2,42 @@
   "ID": "superbwarfare:truck",
   "MaxHealth": 250,
   "MaxEnergy": 5000000,
+  "OBB": [
+    {
+      "Size": [0.34375, 0.6875, 0.6875],
+      "Position": [-1.28125, 0.6875, 4],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.34375, 0.6875, 0.6875],
+      "Position": [1.28125, 0.6875, 4],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [0.34375, 0.6875, 0.6875],
+      "Position": [-1.28125, 0.6875, -1.328125],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.34375, 0.6875, 0.6875],
+      "Position": [1.28125, 0.6875, -1.328125],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [0.34375, 0.6875, 0.6875],
+      "Position": [-1.28125, 0.6875, -2.828125],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.34375, 0.6875, 0.6875],
+      "Position": [1.28125, 0.6875, -2.828125],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [1.625, 1.71875, 5.5],
+      "Position": [0, 2.34375, 0.875]
+    }
+  ],
   "Seats": [
     {
       "IsEnclosed": true,

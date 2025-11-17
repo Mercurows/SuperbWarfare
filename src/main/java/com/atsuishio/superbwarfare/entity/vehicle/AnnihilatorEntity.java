@@ -32,8 +32,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -71,7 +71,6 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
         this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(4.125f, 1.84375f, 0.75f), new Quaternionf(), OBB.Part.BODY);
         this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(7.75f, 0.71875f, 1.46875f), new Quaternionf(), OBB.Part.BODY);
     }
-
 
     @Override
     protected void defineSynchedData() {
@@ -115,8 +114,6 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
     public void baseTick() {
         super.baseTick();
 
-        updateOBB();
-
         String weaponName = "Main";
         var data = getGunData(weaponName);
         if (data != null) {
@@ -130,7 +127,6 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
                 this.entityData.set(CHARGE_PROGRESS, Mth.clamp(this.entityData.get(CHARGE_PROGRESS) + chargeSpeed, 0, 1));
             }
         }
-
 
 
 //        if (this.entityData.get(COOL_DOWN) == 20) {
@@ -296,6 +292,7 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
 
     @Override
     public void updateOBB() {
+        // TODO 这个transform该叫啥？
         Matrix4f transform = getVehicleFlatTransform(1);
 
         Vector4f worldPosition = transformPosition(transform, 0, 2.28125f, 0.875f);

@@ -2,6 +2,16 @@
   "ID": "superbwarfare:speedboat",
   "MaxHealth": 200,
   "MaxEnergy": 500000,
+  "OBB": [
+    {
+      "Size": [1.5625, 0.75, 3.1875],
+      "Position": [0, 0.875, 0.375]
+    },
+    {
+      "Size": [1.0625, 0.5, 1.90625],
+      "Position": [0, 2.0625, -0.71875]
+    }
+  ],
   "Seats": [
     {
       "Transform": "Vehicle",

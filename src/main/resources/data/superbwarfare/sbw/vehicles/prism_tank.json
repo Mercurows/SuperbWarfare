@@ -2,6 +2,41 @@
   "ID": "superbwarfare:prism_tank",
   "MaxHealth": 400,
   "MaxEnergy": 20000000,
+  "OBB": [
+    {
+      "Size": [2.4, 0.8125, 3.71875],
+      "Position": [0, 1.4375, 0.03125]
+    },
+    {
+      "Size": [2.4, 0.5, 0.375],
+      "Position": [0, 1.4375, 4.125]
+    },
+    {
+      "Size": [0.46875, 0.78125, 3.3125],
+      "Position": [2.09375, 0.84375, 0],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.46875, 0.78125, 3.3125],
+      "Position": [-2.09375, 0.84375, 0],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [1.375, 0.28125, 1.375],
+      "Position": [0, 2.53125, 0.765625]
+    },
+    {
+      "Size": [2.0625, 0.78125, 0.8125],
+      "Position": [0, 1.53125, -3.125],
+      "Part": "MainEngine"
+    },
+    {
+      "Size": [0.4375, 0.90625, 1.21875],
+      "Position": [0, 1.59375, -0.390625],
+      "Part": "Turret",
+      "Transform": "Turret"
+    }
+  ],
   "Seats": [
     {
       "HidePassenger": true,

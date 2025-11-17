@@ -18,10 +18,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
@@ -70,6 +67,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
 
     @SerializedName("MaxEnergy")
     public int maxEnergy = Integer.MAX_VALUE;
+
+    @SerializedName("OBB")
+    public List<OBBInfo> obb = List.of();
 
     @SerializedName("Seats")
     protected ObjectToList<SeatInfo> seats = new ObjectToList<>();
@@ -252,6 +252,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
         this.repairCooldown = Math.max(this.repairCooldown, 0);
         this.maxEnergy = Math.max(this.maxEnergy, 0);
         this.weapons = weapons == null ? Map.of() : weapons;
+
+        this.obb = this.obb == null ? List.of() : this.obb;
+        this.obb = this.obb.stream().filter(Objects::nonNull).peek(OBBInfo::limit).toList();
 
         this.collisionLevel = this.collisionLevel == null ? new CollisionLevel() : this.collisionLevel;
         this.collisionLevel.level = Mth.clamp(this.collisionLevel.level, 0, 4);

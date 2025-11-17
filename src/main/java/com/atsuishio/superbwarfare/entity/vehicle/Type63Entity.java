@@ -32,8 +32,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -340,7 +340,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity, OBBEntity 
         rightWheelRotO = this.getRightWheelRot();
 
         super.baseTick();
-        updateOBB();
 
         double fluidFloat = 0.052 * VehicleVecUtils.getSubmergedHeight(this);
         this.setDeltaMovement(this.getDeltaMovement().add(0, fluidFloat, 0));

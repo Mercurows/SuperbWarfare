@@ -2,6 +2,37 @@
   "ID": "superbwarfare:bmp_2",
   "MaxHealth": 300,
   "MaxEnergy": 5000000,
+  "OBB": [
+    {
+      "Size": [2.1875, 0.875, 3.90625],
+      "Position": [0, 1.5, -0.28125]
+    },
+    {
+      "Size": [2.1875, 0.5, 0.65625],
+      "Position": [0, 1.5625, 4.28125]
+    },
+    {
+      "Size": [0.375, 0.78125, 3.46875],
+      "Position": [1.9375, 0.84375, 0.15625],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.375, 0.78125, 3.46875],
+      "Position": [-1.9375, 0.84375, 0.15625],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [1.15625, 0.375, 1.125],
+      "Position": [-1.09375, 2.0625, 1.75],
+      "Part": "MainEngine"
+    },
+    {
+      "Size": [1.5, 0.34375, 1.5],
+      "Position": [0, 0.46875, 0],
+      "Part": "Turret",
+      "Transform": "Turret"
+    }
+  ],
   "Seats": [
     {
       "HidePassenger": true,
