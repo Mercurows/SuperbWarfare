@@ -236,7 +236,7 @@
         "SeekDirection": "Barrel",
         "SeekRange": 384,
         "SeekAngle": 20,
-        "SeekTime": 10,
+        "SeekTime": 20,
         "MaxTargetHeight": 24,
         "MinTargetSize": 0.9
       },
@@ -278,7 +278,7 @@
         "SeekDirection": "Default",
         "SeekRange": 384,
         "SeekAngle": 20,
-        "SeekTime": 10,
+        "SeekTime": 20,
         "MinTargetHeight": 24,
         "MinTargetSize": 0.1
       },
