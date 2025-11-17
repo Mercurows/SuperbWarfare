@@ -424,6 +424,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int holdPowerTick;
     public float destroyRot;
 
+    // TODO 把这几个锁定参数改为每个成员独立的
     public String lockingTargetO = "none";
     public String lockingTarget = "none";
     public int lockTime;
@@ -3992,7 +3993,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 .withinRange(seekInfo.seekRange)
                 .withinAngle(getSeekVec(seatIndex, 1), seekInfo.seekAngle)
                 .baseFilter()
-                .onGround(seekInfo.maxTargetHeight)
+                .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
                 .sizeBiggerThan(seekInfo.minTargetSize)
                 .smokeFilter()
                 .noVehicle()

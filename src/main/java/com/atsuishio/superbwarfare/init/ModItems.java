@@ -121,6 +121,7 @@ public class ModItems {
     public static final DeferredHolder<Item, Item> GRENADE_40MM = AMMO.register("grenade_40mm", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> IGLA_MISSILE = AMMO.register("igla_9k38_missile", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Ru9m336MissileItem> RU_9M_336_MISSILE = AMMO.register("ru_9m336_missile", Ru9m336MissileItem::new);
     public static final DeferredHolder<Item, MortarShell> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
     public static final DeferredHolder<Item, PotionMortarShell> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
     public static final DeferredHolder<Item, RpgRocketStandard> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);

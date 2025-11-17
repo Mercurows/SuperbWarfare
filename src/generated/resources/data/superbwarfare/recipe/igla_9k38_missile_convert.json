@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:ru_9m336_missile"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:igla_9k38_missile"
+  }
+}

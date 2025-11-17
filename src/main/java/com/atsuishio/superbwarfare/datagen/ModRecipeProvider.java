@@ -526,6 +526,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.SACLOS_MISSILE.get()), has(ModItems.SACLOS_MISSILE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get()) + "_convert"));
 
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.RU_9M_336_MISSILE.get())
+                .requires(ModItems.IGLA_MISSILE.get())
+                .unlockedBy(getHasName(ModItems.IGLA_MISSILE.get()), has(ModItems.IGLA_MISSILE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.RU_9M_336_MISSILE.get())));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.IGLA_MISSILE.get())
+                .requires(ModItems.RU_9M_336_MISSILE.get())
+                .unlockedBy(getHasName(ModItems.RU_9M_336_MISSILE.get()), has(ModItems.RU_9M_336_MISSILE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.IGLA_MISSILE.get()) + "_convert"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.LUNGE_MINE.get(), 2)
                 .pattern(" ba")
                 .pattern(" cb")

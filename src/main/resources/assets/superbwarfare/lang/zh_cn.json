@@ -202,6 +202,7 @@
   "des.superbwarfare.small_shell": "适配20mm ~ 40mm口径武器",
   "item.superbwarfare.wire_guide_missile": "线控导弹",
   "des.superbwarfare.wire_guide_missile": "适配BMP-2步兵战车",
+  "item.superbwarfare.ru_9m336_missile": "9M336对空导弹",
   "item.superbwarfare.saclos_missile": "瞄准线半自动指令指导导弹",
   "des.superbwarfare.saclos_missile": "适配Mi-28武装直升机",
   "item.superbwarfare.swarm_drone": "蜂群无人机",
@@ -597,6 +598,7 @@
   "entity.superbwarfare.ptkm_projectile": "PTKM-1R反坦克地雷",
   "entity.superbwarfare.waveforce_tower": "波能塔",
   "entity.superbwarfare.igla_9k38_missile": "IGLA-9K38对空导弹",
+  "entity.superbwarfare.ru_9m336_missile": "9M336对空导弹",
   "entity.superbwarfare.truck": "泥头车",
   "entity.superbwarfare.tow": "陶式反坦克导弹发射器",
   "entity.superbwarfare.steel_coil": "钢卷",
@@ -761,6 +763,7 @@
   "weapon.superbwarfare.mk_82_bomb": "MK-82 BOMB %1$s",
   "weapon.superbwarfare.agm_65_missile": "AGM-65 %1$s",
   "weapon.superbwarfare.9m_120_missile": "9M-120 %1$s",
+  "weapon.superbwarfare.9m_336_missile": "9M-336 %1$s",
   "weapon.superbwarfare.swarm_drone": "SWARM DRONE %1$s",
   "weapon.superbwarfare.laser": "LASER %1$s",
 

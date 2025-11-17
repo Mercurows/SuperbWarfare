@@ -9,9 +9,9 @@ import net.minecraft.world.item.TooltipFlag;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class SaclosMissileItem extends Item {
+public class Ru9m336MissileItem extends Item {
 
-    public SaclosMissileItem() {
+    public Ru9m336MissileItem() {
         super(new Properties().stacksTo(4));
     }
 
