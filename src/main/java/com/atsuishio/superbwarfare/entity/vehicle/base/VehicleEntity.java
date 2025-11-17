@@ -3991,14 +3991,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         Entity entity = new SeekTool.Builder(this)
                 .withinRange(seekInfo.seekRange)
-                .withinAngle(getSeekVec(seatIndex, 1), seekInfo.seekAngle)
+                .withinAngle(getZoomPos(controller, 1), getSeekVec(seatIndex, 1), seekInfo.seekAngle)
                 .baseFilter()
                 .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
                 .sizeBiggerThan(seekInfo.minTargetSize)
                 .smokeFilter()
                 .noVehicle()
                 .noClip()
-                .buildWithClosest();
+                .buildWithClosest(getZoomPos(controller, 1), getSeekVec(seatIndex, 1));
 
         if (entity != null) {
             if (lockTime == 0) {
