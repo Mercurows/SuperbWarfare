@@ -87,9 +87,10 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
         var gunData = vehicle.getGunData(player);
         if (gunData == null) return;
         var seekInfo = gunData.compute().seekWeaponInfo;
+        var uuid = player.getUUID();
 
         if (seekInfo != null) {
-            Entity targetEntity = EntityFindUtil.findEntity(player.level(), vehicle.getTargetUuid());
+            Entity targetEntity = EntityFindUtil.findEntity(player.level(), vehicle.getTargetUuid(uuid));
             List<Entity> entities = new SeekTool.Builder(vehicle)
                     .withinRange(seekInfo.seekRange)
                     .withinAngle(vehicle.getZoomPos(player, partialTick), vehicle.getSeekVec(player, partialTick), seekInfo.seekAngle)
@@ -107,7 +108,7 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
                 if (VectorUtil.canSee(pos3)) {
                     Vec3 point = VectorUtil.worldToScreen(pos3);
                     boolean nearest = e == targetEntity;
-                    boolean lockOn = vehicle.locked && nearest;
+                    boolean lockOn = vehicle.isTargetLocked(uuid) && nearest;
 
                     poseStack.pushPose();
                     float x = (float) point.x;
@@ -118,7 +119,7 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
                     if (lockOn) {
                         RenderHelper.blit(poseStack, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
                     } else if (nearest) {
-                        lerpLock = Mth.lerp(partialTick, lerpLock, vehicle.lockTime);
+                        lerpLock = Mth.lerp(partialTick, lerpLock, vehicle.getTargetLockingTime(uuid));
                         float lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0, 20);
                         RenderHelper.blit(poseStack, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 1f);
                         RenderHelper.blit(poseStack, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 1f);
