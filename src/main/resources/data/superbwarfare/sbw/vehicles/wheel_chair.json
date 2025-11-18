@@ -33,7 +33,7 @@
   "EngineSound": "superbwarfare:wheel_chair_engine",
   "EngineType": "WheelChair",
   "EngineInfo": {
-    "Buoyancy": 0.052,
+    "Buoyancy": 0.022,
     "EnergyCostRate": 4,
     "WheelRotSpeed": 1,
     "WheelDifferential": 1,

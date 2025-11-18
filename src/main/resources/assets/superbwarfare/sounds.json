@@ -3917,5 +3917,54 @@
         "stream": false
       }
     ]
+  },
+  "plz_05_reload": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_reload",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_far",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/plz_05/plz_05_engine"
+      }
+    ]
   }
 }

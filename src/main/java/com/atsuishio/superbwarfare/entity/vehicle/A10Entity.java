@@ -4,14 +4,19 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Math;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -32,10 +37,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     @Override
     public void baseTick() {
         super.baseTick();
-
-        if (onGround()) {
-            terrainCompactA10();
-        }
+        terrainCompactA10();
     }
 
     @Override
@@ -60,47 +62,36 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
 
     public void terrainCompactA10() {
         if (onGround()) {
-            Matrix4f transform = this.getWheelsTransform(1);
+            Matrix4f transform = this.getVehicleTransform(1);
+            // 前轮
+            Vector4f vector4f = transformPosition(transform, -0.243f, -0.02f, 4.63f);
+            Vec3 p = new Vec3(vector4f.x, vector4f.y, vector4f.z);
+            var level = level();
+            var res = level.clip(new ClipContext(p, p.add(0, -100, 0),
+                    ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
 
-            // 前
-            Vector4f positionF = transformPosition(transform, 0.141675f, 0, 4.6315125f);
-            // 左后
-            Vector4f positionLB = transformPosition(transform, 2.5752f, 0, -0.7516125f);
-            // 右后
-            Vector4f positionRB = transformPosition(transform, -2.5752f, 0, -0.7516125f);
+            double heightY;
 
-            Vec3 p1 = new Vec3(positionF.x, positionF.y, positionF.z);
-            Vec3 p2 = new Vec3(positionLB.x, positionLB.y, positionLB.z);
-            Vec3 p3 = new Vec3(positionRB.x, positionRB.y, positionRB.z);
+            BlockPos blockPos = BlockPos.containing(p);
+            BlockPos blockPosUp = BlockPos.containing(p.add(0, 1, 0));
+            if (level.getBlockState(blockPosUp).canOcclude()) {
+                blockPos = blockPosUp;
+            }
+            BlockState state = level.getBlockState(blockPos);
+            VoxelShape shape = state.getCollisionShape(level, blockPos);
 
-            // 确定点位是否在墙里来调整点位高度
-            float p1y = (float) this.traceBlockY(p1, 3);
-            float p2y = (float) this.traceBlockY(p2, 3);
-            float p3y = (float) this.traceBlockY(p3, 3);
+            if (!shape.isEmpty()) {
+                heightY = p.y - (shape.max(Direction.Axis.Y) + blockPos.getY());
+                if (heightY < -0.4) {
+                    addDeltaMovement(blockPos.getCenter().vectorTo(p).scale(0.02));
+                }
+            } else if (res.getType() == HitResult.Type.BLOCK && level.noCollision(new AABB(p, p))) {
+                heightY = Mth.clamp(p.y - res.getLocation().y, 0, 3);
+            } else {
+                heightY = 0;
+            }
 
-            p1 = new Vec3(positionF.x, p1y, positionF.z);
-            p2 = new Vec3(positionLB.x, p2y, positionLB.z);
-            p3 = new Vec3(positionRB.x, p3y, positionRB.z);
-            Vec3 p4 = p2.add(p3).scale(0.5);
-
-            // 通过点位位置获取角度
-
-            // 左后-右后
-            Vec3 v1 = p2.vectorTo(p3);
-            // 后-前
-            Vec3 v2 = p4.vectorTo(p1);
-
-            double x = VehicleVecUtils.getXRotFromVector(v2);
-            double z = VehicleVecUtils.getXRotFromVector(v1);
-
-            float diffX = Math.clamp(-5f, 5f, Mth.wrapDegrees((float) (-2 * x) - getXRot()));
-            setXRot(Mth.clamp(getXRot() + 0.05f * diffX, -45f, 45f));
-
-            float diffZ = Math.clamp(-5f, 5f, Mth.wrapDegrees((float) (-2 * z) - getRoll()));
-            setZRot(Mth.clamp(getRoll() + 0.05f * diffZ, -45f, 45f));
-        } else if (isInWater()) {
-            setXRot(getXRot() * 0.9f);
-            setZRot(getRoll() * 0.9f);
+            setXRot((float) (getXRot() + 5f * heightY));
         }
     }
 
