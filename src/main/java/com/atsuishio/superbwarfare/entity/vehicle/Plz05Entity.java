@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
+import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -8,7 +9,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Plz05Entity extends ArtilleryEntity implements GeoEntity {
+public class Plz05Entity extends ArtilleryEntity implements GeoEntity, OBBEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

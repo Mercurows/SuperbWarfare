@@ -174,5 +174,48 @@
   "MainWeaponHudType": "@Land",
   "TerrainCompat": [4.25, 5.625],
   "InertiaRotateRate": 0.8,
-  "HasDecoy": true
+  "HasDecoy": true,
+  "OBB": [
+    {
+      "Size": [2.1875, 0.34375, 3.78125],
+      "Position": [0, 1.65625, 0.34375]
+    },
+    {
+      "Size": [1.375, 0.406, 4.40625],
+      "Position": [0, 0.90625, 0.96875]
+    },
+    {
+      "Size": [2.1875, 0.21875, 0.5625],
+      "Position": [0, 1.53125, 4.6875]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.34375, 0.65625, 3.75],
+      "Position": [1.78125, 0.65625, 0.75]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.34375, 0.65625, 3.75],
+      "Position": [-1.78125, 0.65625, 0.75]
+    },
+    {
+      "Part": "MainEngine",
+      "Size": [0.65625, 0.375, 0.8125],
+      "Position": [-1.59375, 1.6875, 3.1875]
+    },
+    {
+      "Part": "Turret",
+      "Size": [2, 0.8125, 2.4375],
+      "Position": [0, 0.881875, -0.435],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Part": "Turret",
+      "Size": [0.1875, 0.1875, 5],
+      "Position": [0, 0, 5.3125],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    }
+  ]
 }
