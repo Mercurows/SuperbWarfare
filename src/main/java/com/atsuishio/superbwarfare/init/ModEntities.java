@@ -144,6 +144,8 @@ public class ModEntities {
             EntityType.Builder.<Yx100Entity>of(Yx100Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Yx100Entity::new).fireImmune().sized(4.6f, 3.25f));
     public static final RegistryObject<EntityType<PrismTankEntity>> PRISM_TANK = register("prism_tank",
             EntityType.Builder.<PrismTankEntity>of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(PrismTankEntity::new).fireImmune().sized(5f, 2.6f));
+    public static final RegistryObject<EntityType<Plz05Entity>> PLZ_05 = register("plz_05",
+            EntityType.Builder.<Plz05Entity>of(Plz05Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).setCustomClientFactory(Plz05Entity::new).fireImmune().sized(4.6f, 3.25f));
 
     // Aircraft
     public static final RegistryObject<EntityType<Tom6Entity>> TOM_6 = register("tom_6",
@@ -153,7 +155,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<Mi28Entity>> MI_28 = register("mi_28",
             EntityType.Builder.<Mi28Entity>of(Mi28Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Mi28Entity::new).fireImmune().sized(4.5f, 4.5f));
     public static final RegistryObject<EntityType<A10Entity>> A_10A = register("a_10a",
-            EntityType.Builder.<A10Entity>of(A10Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(A10Entity::new).fireImmune().sized(9f, 3.5f));
+            EntityType.Builder.<A10Entity>of(A10Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(A10Entity::new).fireImmune().sized(4.5f, 3.5f));
 
     // Special
     public static final RegistryObject<EntityType<DroneEntity>> DRONE = register("drone",

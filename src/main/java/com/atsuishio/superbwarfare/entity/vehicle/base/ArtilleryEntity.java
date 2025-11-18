@@ -45,7 +45,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
-        var gunData = getGunData(0);
+        var gunData = getGunData("Main");
         if (gunData == null) return InteractionResult.SUCCESS;
 
         ItemStack stack = player.getMainHandItem();
@@ -198,6 +198,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
         if (controller != null) {
             entityData.set(SHOOT_VEC, controller.getViewVector(1).toVector3f());
         } else {
+
             turretAutoAimFromVector(new Vec3(entityData.get(SHOOT_VEC)));
         }
     }
@@ -216,7 +217,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     public void beforeShoot(LivingEntity living) {
         var data = getGunData("Main");
-        if (data != null) {
+        if (data != null && data.ammo.get() > 0) {
             var barrelAnim = entityData.get(BARREL_ANIM).toIntArray();
             barrelAnim[data.ammo.get() - 1] = data.compute().shootAnimationTime;
             entityData.set(BARREL_ANIM, IntList.of(barrelAnim));

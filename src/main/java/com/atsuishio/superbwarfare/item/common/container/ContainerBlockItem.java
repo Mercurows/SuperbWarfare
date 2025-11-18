@@ -56,6 +56,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
         event.add(ModEntities.BMP_2);
         event.add(ModEntities.PRISM_TANK);
         event.add(ModEntities.YX_100);
+        event.add(ModEntities.PLZ_05);
         event.add(ModEntities.AH_6);
         event.add(ModEntities.MI_28);
         event.add(ModEntities.TOM_6);

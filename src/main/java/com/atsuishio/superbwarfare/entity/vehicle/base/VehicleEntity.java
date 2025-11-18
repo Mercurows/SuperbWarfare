@@ -1339,6 +1339,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
                 entityData.set(YAW_WHILE_SHOOT, (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(vo) + VehicleVecUtils.getYRotFromVector(v3)));
                 entityData.set(CANNON_RECOIL_FORCE, (float) v3.length());
+
+                gunData.shakePlayers(this);
             }
         }
 

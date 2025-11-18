@@ -192,7 +192,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
         super.tick();
 
-        largeTrail();
+        mediumTrail();
 
         destroyBlock();
 

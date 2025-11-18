@@ -71,5 +71,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.STEEL_COIL.get(), SteelCoilRenderer::new);
         event.registerEntityRenderer(ModEntities.MI_28.get(), Mi28Renderer::new);
         event.registerEntityRenderer(ModEntities.KH_39.get(), Kh39Renderer::new);
+        event.registerEntityRenderer(ModEntities.PLZ_05.get(), Plz05Renderer::new);
     }
 }

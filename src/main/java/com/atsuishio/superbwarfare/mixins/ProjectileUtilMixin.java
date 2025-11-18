@@ -32,7 +32,7 @@ public class ProjectileUtilMixin {
     @Inject(method = "getEntityHitResult(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;F)Lnet/minecraft/world/phys/EntityHitResult;",
             at = @At("HEAD"), cancellable = true)
     private static void getEntityHitResult(Level pLevel, Entity pProjectile, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, float pInflationAmount, CallbackInfoReturnable<EntityHitResult> cir) {
-        for (var entity : pLevel.getEntities(pProjectile, pBoundingBox.inflate(4), pFilter)) {
+        for (var entity : pLevel.getEntities(pProjectile, pBoundingBox.inflate(5), pFilter)) {
             if (entity instanceof OBBEntity obbEntity) {
                 if (pProjectile instanceof Projectile projectile &&
                         (projectile.getOwner() == entity || entity.getPassengers().contains(projectile.getOwner()))) {
@@ -68,7 +68,7 @@ public class ProjectileUtilMixin {
     private static void getEntityHitResult(Entity pShooter, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, double pDistance, CallbackInfoReturnable<EntityHitResult> cir) {
         Level level = pShooter.level();
 
-        for (Entity entity : level.getEntities(pShooter, pBoundingBox.inflate(4), pFilter)) {
+        for (Entity entity : level.getEntities(pShooter, pBoundingBox.inflate(5), pFilter)) {
             if (entity instanceof OBBEntity obbEntity) {
                 if (entity.getPassengers().contains(pShooter)) {
                     continue;
