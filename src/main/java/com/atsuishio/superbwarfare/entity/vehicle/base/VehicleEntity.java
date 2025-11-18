@@ -1479,7 +1479,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         checkSeatsSize();
 
         compound.putFloat("Health", this.entityData.get(HEALTH));
-        compound.putString("Override", this.entityData.get(OVERRIDE));
+
+        var overrideString = this.entityData.get(OVERRIDE);
+        if (!overrideString.isBlank()) {
+            compound.putString("Override", overrideString);
+        }
+
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));
         compound.putString("LastDriver", this.entityData.get(LAST_DRIVER_UUID));
 
