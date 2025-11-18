@@ -686,6 +686,7 @@ public class GunEventHandler {
                     case "rocket_70" -> mapping.remap(ModItems.SMALL_ROCKET.get());
                     case "us_helmet_pastg" -> mapping.remap(ModItems.US_HELMET_PASGT.get());
                     case "agm" -> mapping.remap(ModItems.LARGE_ANTI_GROUND_MISSILE.get());
+                    case "wire_guide_missile" -> mapping.remap(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get());
                 }
             }
         }
