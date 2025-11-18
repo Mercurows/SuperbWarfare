@@ -23,7 +23,7 @@
       "CameraPos": {
         "Transform": "Barrel",
         "ZoomPosition": [0, 0.626, 1.526],
-        "ZoomDirection": "Barrel"
+        "Direction": "Barrel"
       },
       "MinPitch": -3,
       "MaxPitch": 65,
@@ -64,7 +64,7 @@
       "ShootShake": [12, 14, 80],
       "Spread": 0.05,
       "ShootAnimationTime": 30,
-      "Crosshair": "@VehicleUsTank",
+      "Crosshair": "@VehicleRuApc",
       "CrosshairColor": "0x00ff66",
       "Name": "weapon.superbwarfare.cannon_ap",
       "SoundInfo": {
