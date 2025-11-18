@@ -29,6 +29,20 @@
       "MaxPitch": 65,
       "Sensitivity": [0.42, 0.7, 0.9],
       "Weapons": ["Main"]
+    },
+    {
+      "Transform": "Turret",
+      "Position": [1.1525, 0.75, -0.51145],
+      "CanRotateBody": true,
+      "MinPitch": -50,
+      "MaxPitch": 90
+    },
+    {
+      "Transform": "Turret",
+      "Position": [-1.1525, 0.75, -0.51145],
+      "CanRotateBody": true,
+      "MinPitch": -50,
+      "MaxPitch": 90
     }
   ],
   "Weapons": {
@@ -42,9 +56,9 @@
       "DefaultZoom": 3,
       "Velocity": 25,
       "Gravity": 0.06,
-      "Damage": 850,
+      "Damage": 1050,
       "ExplosionDamage": 140,
-      "ExplosionRadius": 4,
+      "ExplosionRadius": 5,
       "RecoilTime": 42,
       "RecoilForce": 1.1,
       "ShootShake": [12, 14, 80],
@@ -70,7 +84,7 @@
             "IsArmorPiercingProjectile": false,
             "IsHighExplosiveProjectile": true,
             "Damage": 450,
-            "ExplosionDamage": 180,
+            "ExplosionDamage": 260,
             "ExplosionRadius": 14,
             "Name": "weapon.superbwarfare.cannon_he"
           }
@@ -121,24 +135,24 @@
     "minecraft:player_attack 0",
     "@#superbwarfare:aerial_bomb * 3",
     "#superbwarfare:projectile 0",
-    "All * 0.2",
+    "All * 0.24",
     "superbwarfare:vehicle_strike * 2.5",
-    "minecraft:explosion * 2",
-    "superbwarfare:custom_explosion * 0.65",
-    "superbwarfare:projectile_explosion * 0.65",
-    "superbwarfare:mine * 0.5",
-    "superbwarfare:lunge_mine * 0.5",
-    "superbwarfare:projectile_hit * 1.3",
-    "superbwarfare:grapeshot_hit * 0.1",
-    "#superbwarfare:projectile_absolute * 0.15",
+    "minecraft:explosion * 2.3",
+    "superbwarfare:custom_explosion * 0.72",
+    "superbwarfare:projectile_explosion * 0.72",
+    "superbwarfare:mine * 0.65",
+    "superbwarfare:lunge_mine * 0.75",
+    "superbwarfare:projectile_hit * 1.34",
+    "superbwarfare:grapeshot_hit * 0.12",
+    "#superbwarfare:projectile_absolute * 0.18",
     "@superbwarfare:igla_9k38_missile * 0.3",
-    "@superbwarfare:small_cannon_shell * 0.25",
+    "@superbwarfare:small_cannon_shell * 0.29",
     "@superbwarfare:c4 * 4",
-    "@#superbwarfare:at_rocket * 1.1",
-    "@superbwarfare:gun_grenade * 1.25",
-    "@superbwarfare:mortar_shell * 1.25",
-    "@superbwarfare:tm_62 * 2.5",
-    "All - 9",
+    "@#superbwarfare:at_rocket * 1.4",
+    "@superbwarfare:gun_grenade * 1.45",
+    "@superbwarfare:mortar_shell * 1.45",
+    "@superbwarfare:tm_62 * 2.8",
+    "All - 8",
     "$entity.getSourceAngle(source, 0.3) * damage"
   ],
   "HUDColor": "0x00ff66",
@@ -170,6 +184,11 @@
       [0.1, 0.05, false],
       [1, 0.3, false]
     ]
+  },
+  "DestroyInfo": {
+    "ParticleType": "Giant",
+    "ExplosionDamage": 250,
+    "ExplosionRadius": 18
   },
   "MainWeaponHudType": "@Land",
   "TerrainCompat": [4.25, 5.625],
