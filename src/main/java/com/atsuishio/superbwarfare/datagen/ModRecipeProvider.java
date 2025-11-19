@@ -1413,6 +1413,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.YX_100.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.PLZ_05.get(), VehicleAssemblingRecipe.Category.LAND)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.CANNON_CORE.get(), 1)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.PLZ_05.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.SPEEDBOAT.get(), VehicleAssemblingRecipe.Category.WATER)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 2)
                 .require(ItemTags.BOATS)
