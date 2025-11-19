@@ -410,6 +410,7 @@ public final class VehicleEngineUtils {
                 vehicle.setDownInputDown(false);
                 vehicle.setZRot(vehicle.roll * 0.98f);
                 vehicle.setXRot(vehicle.getXRot() * 0.98f);
+                vehicle.getDeltaMovement().multiply(0.98, 0.99,0.98);
                 if (hasPassenger) {
                     vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.99f);
                 }
@@ -692,9 +693,10 @@ public final class VehicleEngineUtils {
 
         double flapAngle = (vehicle.getFlap1LRot() + vehicle.getFlap1RRot() + vehicle.getFlap1L2Rot() + vehicle.getFlap1R2Rot()) / 4;
 
-        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getUpVec(1).scale(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 0.022 * lift * (1 + Math.sin((vehicle.onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
-
-        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.03 * speedRate * vehicle.getEntityData().get(POWER) * (vehicle.sprintInputDown() ? 2.2 : 1))));
+        if (vehicle.engineStartOver) {
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getUpVec(1).scale(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 0.022 * lift * (1 + Math.sin((vehicle.onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.03 * speedRate * vehicle.getEntityData().get(POWER) * (vehicle.sprintInputDown() ? 2.2 : 1))));
+        }
 
         if (vehicle.getEntityData().get(POWER) > 0.2f) {
             vehicle.engineStartOver = true;

@@ -143,7 +143,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
             double dis = position().vectorTo(shooter.position()).horizontalDistance();
             double dis2 = position().distanceToSqr(targetPos);
             double disShooter = shooter.position().vectorTo(targetPos).horizontalDistance();
-            double randomPos = Mth.cos((float) Mth.clamp(dis / disShooter, 0, 1) * 1.5f * Mth.PI) * dis * 10 * randomFloat;
+            double randomPos = Mth.cos((float) Mth.clamp(dis / disShooter, 0, 1) * 1.5f * Mth.PI) * dis * 4 * randomFloat;
 
             Vec3 toVec = this.position().vectorTo(targetPos).add(new Vec3(-randomPos, Mth.abs((float) randomPos) * 0.02, randomPos).scale(1 - Mth.clamp(0.02 * (tickCount - 20), 0, 1))).normalize();
             turn(toVec, 90);
