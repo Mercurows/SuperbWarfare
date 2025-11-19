@@ -79,7 +79,6 @@ public class ClientRenderHandler {
         event.registerBelow(VehicleHudOverlay.ID, VehicleMainWeaponHudOverlay.ID, new VehicleMainWeaponHudOverlay());
         event.registerBelow(VehicleMainWeaponHudOverlay.ID, VehicleCrosshairOverlay.ID, new VehicleCrosshairOverlay());
         event.registerBelowAll(StaminaOverlay.ID, new StaminaOverlay());
-        event.registerBelowAll(Yx100SwarmDroneHudOverlay.ID, new Yx100SwarmDroneHudOverlay());
         event.registerBelowAll(AmmoCountOverlay.ID, new AmmoCountOverlay());
         event.registerBelowAll(ItemRendererFixOverlay.ID, new ItemRendererFixOverlay());
         event.registerBelowAll(CrossHairOverlay.ID, new CrossHairOverlay());
