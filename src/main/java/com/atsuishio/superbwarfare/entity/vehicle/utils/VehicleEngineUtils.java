@@ -410,7 +410,7 @@ public final class VehicleEngineUtils {
                 vehicle.setDownInputDown(false);
                 vehicle.setZRot(vehicle.roll * 0.98f);
                 vehicle.setXRot(vehicle.getXRot() * 0.98f);
-                vehicle.getDeltaMovement().multiply(0.98, 0.99,0.98);
+                vehicle.getDeltaMovement().multiply(0.96, 0.98,0.96);
                 if (hasPassenger) {
                     vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.99f);
                 }
