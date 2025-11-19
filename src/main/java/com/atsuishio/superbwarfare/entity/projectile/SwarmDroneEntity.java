@@ -20,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -120,8 +121,12 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
             if (guideType == 0 && entity != null) {
                 Vec3 targetVec = new Vec3(entity.getDeltaMovement().x, 0, entity.getDeltaMovement().z);
                 targetPos = entity.getEyePosition().add(targetVec);
-            } else {
+            } else if (this.targetPos != null) {
                 targetPos = this.targetPos;
+            } else {
+                BlockHitResult result = shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(shooter.getLookAngle().scale(512)),
+                        ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, shooter));
+                targetPos = result.getLocation();
             }
 
             if (tickCount %5 == 0) {
