@@ -1,0 +1,15 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "land",
+  "inputs": [
+    "10 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:cannon_core",
+    "superbwarfare:heavy_armament_module",
+    "superbwarfare:medium_battery_pack",
+    "2 superbwarfare:track",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:plz_05"
+  }
+}
