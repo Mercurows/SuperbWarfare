@@ -8516,7 +8516,7 @@
 				{
 					"name": "wing",
 					"parent": "propeller",
-					"pivot": [0, 59.91411, 0],
+					"pivot": [0, 61.215, -3.8046],
 					"cubes": [
 						{
 							"origin": [-0.95572, 69.50491, 17.8525],
@@ -8669,7 +8669,7 @@
 				{
 					"name": "wing2",
 					"parent": "propeller",
-					"pivot": [0, 59.91411, 0],
+					"pivot": [0, 61.215, -3.8046],
 					"rotation": [0, -72, 0],
 					"cubes": [
 						{
@@ -8823,7 +8823,7 @@
 				{
 					"name": "wing3",
 					"parent": "propeller",
-					"pivot": [0, 59.91411, 0],
+					"pivot": [0, 61.215, -3.8046],
 					"rotation": [0, -144, 0],
 					"cubes": [
 						{
@@ -8977,8 +8977,8 @@
 				{
 					"name": "wing4",
 					"parent": "propeller",
-					"pivot": [0, 59.91411, 0],
-					"rotation": [0, 144, 0],
+					"pivot": [0, 61.215, -3.8046],
+					"rotation": [-180, 36, 180],
 					"cubes": [
 						{
 							"origin": [-0.95572, 69.50491, 17.8525],
@@ -9131,7 +9131,7 @@
 				{
 					"name": "wing5",
 					"parent": "propeller",
-					"pivot": [0, 59.91411, 0],
+					"pivot": [0, 61.215, -3.8046],
 					"rotation": [0, 72, 0],
 					"cubes": [
 						{
