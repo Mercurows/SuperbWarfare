@@ -50,7 +50,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -427,11 +426,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int holdTick;
     public int holdPowerTick;
     public float destroyRot;
-
-    public Map<UUID, String> prevLockingTargets = new HashMap<>();
-    public Map<UUID, String> lockingTargets = new HashMap<>();
-    public Map<UUID, Integer> lockTimesMap = new HashMap<>();
-    public Map<UUID, Boolean> lockedMap = new HashMap<>();
 
     public int jumpCoolDown;
 
@@ -1301,19 +1295,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         playShootSound3p(living, weaponName);
     }
 
-    public Entity getTargetEntity(LivingEntity living, GunData gunData) {
-        var seekInfo = gunData.compute().seekWeaponInfo;
-        if (seekInfo == null) return null;
-        if (this.getTargetLockingTime(living.getUUID()) < seekInfo.seekTime) return null;
-        return EntityFindUtil.findEntity(level(), getTargetUuid(living.getUUID()));
-    }
-
-    public void vehicleShoot(LivingEntity living) {
+    public void vehicleShoot(LivingEntity living, @Nullable UUID uuid, @Nullable Vec3 targetPos) {
         int seatIndex = getSeatIndex(living);
         modifyGunData(seatIndex, data -> {
             if (!data.canShoot(getAmmoSupplier())) return;
             data.shoot(new ShootParameters(getAmmoSupplier(), living, (ServerLevel) this.level(), getShootPos(living, 1), getShootVec(living, 1),
-                    data, data.compute().spread, true, getTargetEntity(living, data) == null ? null : getTargetEntity(living, data).getUUID(), null));
+                    data, data.compute().spread, true, uuid, targetPos));
         });
 
         var gunData = getGunData(seatIndex);
@@ -1861,9 +1848,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         flap3RotO = this.getFlap3Rot();
         gearRotO = this.getGearRot();
         lerpBombHitPosO = lerpBombHitPos;
-//        this.lockingTargetO = getTargetUuid();
-
-        this.prevLockingTargets = this.lockingTargets;
 
         super.baseTick();
 
@@ -2064,10 +2048,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             this.terrainCompact(terrainCompat.x, terrainCompat.y);
         }
         this.inertiaRotate(this.computed().inertiaRotateRate);
-
-        for (int i = 0; i < data().compute().seats().size(); i++) {
-            seekTarget(i, getNthEntity(i));
-        }
 
         lowHealthWarning();
         this.refreshDimensions();
@@ -2279,15 +2259,15 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleWeaponUtils.adjustTurretAngle(this);
     }
 
-    public void aiTurretShoot(LivingEntity living) {
+    public void aiTurretShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
         if (this instanceof WeaponVehicleEntity && aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living);
+            vehicleShoot(living, uuid, targetPos);
         }
     }
 
-    public void aiPassengerWeaponShoot(LivingEntity living) {
+    public void aiPassengerWeaponShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
         if (this instanceof WeaponVehicleEntity && aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living);
+            vehicleShoot(living, uuid, targetPos);
         }
     }
 
@@ -2736,7 +2716,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
             int rpm = 20 / Mth.clamp((vehicleWeaponRpm(pLiving) / 60), 1, 2147483647);
             if (tickCount % rpm == 0) {
-                aiPassengerWeaponShoot(pLiving);
+                aiPassengerWeaponShoot(pLiving, UUID.fromString(uuid), null);
             }
         }
     }
@@ -4027,99 +4007,5 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @OnlyIn(Dist.CLIENT)
     public Component thirdPersonAmmoComponent(GunData data, Player player) {
         return firstPersonAmmoComponent(data, player);
-    }
-
-    public void seekTarget(int seatIndex, Entity controller) {
-        if (controller == null) return;
-        var gunData = getGunData(seatIndex);
-        if (gunData == null) return;
-        var seekInfo = gunData.compute().seekWeaponInfo;
-        if (seekInfo == null) return;
-
-        var controllerUUID = controller.getUUID();
-        var targetUUID = this.getTargetUuid(controllerUUID);
-        var prevTargetUUID = this.getPrevTargetUuid(controllerUUID);
-        var lockTime = this.getTargetLockingTime(controllerUUID);
-
-        if (targetUUID.equals(prevTargetUUID) && !targetUUID.equals("none")) {
-            this.lockTimesMap.computeIfPresent(controllerUUID, (k, v) -> v + 1);
-        } else {
-            resetSeekStatus(controller, gunData);
-        }
-
-        Entity entity = new SeekTool.Builder(this)
-                .withinRange(seekInfo.seekRange)
-                .withinAngle(getZoomPos(controller, 1), getSeekVec(seatIndex, 1), seekInfo.seekAngle)
-                .baseFilter()
-                .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
-                .sizeBiggerThan(seekInfo.minTargetSize)
-                .smokeFilter()
-                .noVehicle()
-                .noClip()
-                .buildWithClosest(getZoomPos(controller, 1), getSeekVec(seatIndex, 1));
-
-        if (entity != null) {
-            var entityUUID = entity.getStringUUID();
-            if (lockTime == 0) {
-                this.setTargetUuid(controller.getUUID(), entityUUID);
-            }
-            if (!entityUUID.equals(targetUUID)) {
-                resetSeekStatus(controller, gunData);
-                setTargetUuid(controllerUUID, entityUUID);
-            }
-        } else {
-            setTargetUuid(controllerUUID, "none");
-        }
-
-        if (lockTime == 1) {
-            if (controller instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, gunData.compute().soundInfo.locking, 2, 1);
-            }
-        }
-
-        if (lockTime > seekInfo.seekTime) {
-            if (controller instanceof ServerPlayer serverPlayer) {
-                SoundTool.playLocalSound(serverPlayer, gunData.compute().soundInfo.locked, 2, 1);
-            }
-            this.lockedMap.put(controller.getUUID(), true);
-        }
-    }
-
-    public void resetSeekStatus(Entity controller, GunData gunData) {
-        this.lockTimesMap.put(controller.getUUID(), 0);
-        this.lockedMap.put(controller.getUUID(), false);
-
-        if (controller instanceof ServerPlayer serverPlayer) {
-            var location = gunData.compute().soundInfo.locking.getLocation();
-            serverPlayer.connection.send(new ClientboundStopSoundPacket(location, SoundSource.PLAYERS));
-        }
-    }
-
-    public void setTargetUuid(UUID controllerUUID, String targetUUID) {
-        this.lockingTargets.put(controllerUUID, targetUUID);
-    }
-
-    public String getTargetUuid(UUID controllerUUID) {
-        var uuid = this.lockingTargets.get(controllerUUID);
-        if (uuid == null) return "none";
-        return uuid;
-    }
-
-    public String getPrevTargetUuid(UUID controllerUUID) {
-        var uuid = this.prevLockingTargets.get(controllerUUID);
-        if (uuid == null) return "none";
-        return uuid;
-    }
-
-    public int getTargetLockingTime(UUID controllerUUID) {
-        var time = this.lockTimesMap.get(controllerUUID);
-        if (time == null) return 0;
-        return time;
-    }
-
-    public boolean isTargetLocked(UUID controllerUUID) {
-        var flag = this.lockedMap.get(controllerUUID);
-        if (flag == null) return false;
-        return flag;
     }
 }

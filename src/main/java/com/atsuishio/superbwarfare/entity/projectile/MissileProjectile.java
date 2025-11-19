@@ -19,6 +19,8 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
 
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(MissileProjectile.class, EntityDataSerializers.STRING);
 
+    public Vec3 targetPos;
+    public int guideType = 0;
     public boolean distracted = false;
     public boolean lost = false;
     public boolean lostTarget = false;
@@ -38,6 +40,16 @@ public abstract class MissileProjectile extends DestroyableProjectile implements
 
     public void setTargetUuid(String uuid) {
         this.entityData.set(TARGET_UUID, uuid);
+    }
+
+    public void setGuideType(int guideType) {
+        this.guideType = guideType;
+    }
+
+    public void setTargetVec(Vec3 targetPos) {
+        if (targetPos != null) {
+            this.targetPos = targetPos;
+        }
     }
 
     @Override

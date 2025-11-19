@@ -43,7 +43,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -763,6 +766,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         var zoom = parameters.zoom();
         var spread = parameters.spread();
         var uuid = parameters.targetEntityUUID();
+        Vec3 targetPos = parameters.targetPos();
 
         var stack = data.stack;
 
@@ -851,38 +855,14 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 }
             }
 
-            if (entity instanceof MissileProjectile missileProjectile && !(entity instanceof SwarmDroneEntity swarmDrone)) {
-                missileProjectile.setTargetUuid(String.valueOf(uuid));
-            }
-
-            if (entity instanceof SwarmDroneEntity swarmDrone && shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle) {
-                Vec3 lookVec = shooter.getViewVector(1);
-                Entity lookingEntity = SeekTool.seekLivingEntity(shooter, 384, 6);
-
-                swarmDrone.setRotate(vehicle.getTurretVector(1));
-
-                if (shooter instanceof Mob mob && mob.getTarget() != null) {
-                    Entity target = mob.getTarget();
-                    if (target.getVehicle() != null) {
-                        target = target.getVehicle();
-                    }
-
-                    swarmDrone.setGuideType(0);
-                    swarmDrone.setTargetUuid(target.getStringUUID());
-                    swarmDrone.setTargetVec(target.getBoundingBox().getCenter());
-
-                } else if (shooter instanceof Player) {
-                    if (lookingEntity != null && !(lookingEntity instanceof SwarmDroneEntity swarm && swarm.getOwner() == shooter)) {
-                        swarmDrone.setGuideType(0);
-                        swarmDrone.setTargetUuid(lookingEntity.getStringUUID());
-                        swarmDrone.setTargetVec(lookingEntity.getEyePosition());
-                    } else {
-                        swarmDrone.setGuideType(1);
-                        BlockHitResult result = shooter.level().clip(new ClipContext(shooter.getEyePosition(), shooter.getEyePosition().add(lookVec.scale(384)),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
-                        Vec3 hitPos = result.getLocation();
-                        swarmDrone.setTargetVec(hitPos);
-                    }
+            if (entity instanceof MissileProjectile missileProjectile && shooter != null) {
+                Entity target = EntityFindUtil.findEntity(shooter.level(), String.valueOf(uuid));
+                if (target != null) {
+                    missileProjectile.setGuideType(0);
+                    missileProjectile.setTargetUuid(String.valueOf(uuid));
+                } else if (targetPos != null) {
+                    missileProjectile.setGuideType(1);
+                    missileProjectile.setTargetVec(targetPos);
                 }
             }
 

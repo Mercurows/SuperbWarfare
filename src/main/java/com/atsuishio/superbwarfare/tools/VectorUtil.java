@@ -54,6 +54,6 @@ public class VectorUtil {
         Vec3 cameraPos = camera.getPosition();
         Vec3 viewVec = new Vec3(camera.getLookVector());
         Vec3 v1 = cameraPos.vectorTo(pos);
-        return VectorTool.calculateAngle(v1, viewVec) < fov - 10;
+        return VectorTool.calculateAngle(v1, viewVec) < fov + 10;
     }
 }

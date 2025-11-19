@@ -51,6 +51,14 @@
       "CrosshairZooming": "@VehicleCnHpjZooming",
       "Name": "weapon.superbwarfare.30mm_cannon",
       "AmmoType": "superbwarfare:small_shell",
+      "SeekWeaponInfo": {
+        "SeekDirection": "Barrel",
+        "SeekRange": 384,
+        "SeekAngle": 20,
+        "SeekTime": 10,
+        "MinTargetSize": 0.1,
+        "CalculateTrajectory": true
+      },
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0, 0.4, 2.578025]],

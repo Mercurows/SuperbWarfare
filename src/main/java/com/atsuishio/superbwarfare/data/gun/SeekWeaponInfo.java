@@ -22,5 +22,11 @@ public class SeekWeaponInfo {
     public int seekTime = 10;
 
     @SerializedName("MinTargetSize")
-    public double minTargetSize = 0.9;
+    public double minTargetSize = 0;
+
+    @SerializedName("CalculateTrajectory")
+    public boolean calculateTrajectory = false;
+
+    @SerializedName("OnlyLockBlock")
+    public boolean onlyLockBlock = false;
 }

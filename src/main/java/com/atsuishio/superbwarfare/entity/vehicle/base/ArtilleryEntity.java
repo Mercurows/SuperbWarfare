@@ -28,6 +28,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
+import java.util.UUID;
+
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntity {
@@ -210,9 +212,9 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living) {
+    public void vehicleShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
         beforeShoot(living);
-        super.vehicleShoot(living);
+        super.vehicleShoot(living, uuid, targetPos);
     }
 
     public void beforeShoot(LivingEntity living) {

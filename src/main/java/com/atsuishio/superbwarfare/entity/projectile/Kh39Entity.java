@@ -135,32 +135,38 @@ public class Kh39Entity extends MissileProjectile implements GeoEntity, Explosiv
             }
         }
 
-        if (!entityData.get(TARGET_UUID).equals("none")) {
-            if (entity != null) {
-                if (entity.level() instanceof ServerLevel) {
-                    if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
-                        entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
-                    }
+        Vec3 toVec = getLookAngle();
 
-                    double dis = entity.position().vectorTo(position()).horizontalDistance();
-                    double height = dis > 30 ? 0.4 * (dis - 30) : 0;
-
-                    Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + (entity instanceof EnderDragon ? -2 : 0) + height, entity.getZ());
-                    Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
-
-                    if (this.tickCount > 8) {
-                        boolean lostTarget = (VectorTool.calculateAngle(getLookAngle(), toVec) > 170);
-                        if (!lostTarget) {
-                            turn(toVec, 14);
+        if (guideType == 0) {
+            if (!entityData.get(TARGET_UUID).equals("none")) {
+                if (entity != null) {
+                    if (level() instanceof ServerLevel) {
+                        if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
+                            entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                         }
+                        double dis = entity.position().vectorTo(position()).horizontalDistance();
+                        double height = dis > 30 ? 0.4 * (dis - 30) : 0;
+                        Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + (entity instanceof EnderDragon ? -2 : 0) + height, entity.getZ());
+                        toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
                     }
                 }
+            }
+        } else {
+            if (level() instanceof ServerLevel) {
+                double dis = targetPos.vectorTo(position()).horizontalDistance();
+                double height = dis > 30 ? 0.4 * (dis - 30) : 0;
+                Vec3 targetPos = this.targetPos.add(0, height, 0);
+                toVec = RangeTool.calculateFiringSolution(position(), targetPos, Vec3.ZERO, getDeltaMovement().length(), 0);
             }
         }
 
         if (this.tickCount > 8) {
             this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.85, 0.85, 0.85));
+            boolean lostTarget = (VectorTool.calculateAngle(getLookAngle(), toVec) > 170);
+            if (!lostTarget) {
+                turn(toVec, 14);
+            }
         } else {
             this.setDeltaMovement(this.getDeltaMovement().add(0, -0.06, 0));
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.99, 0.99, 0.99));
