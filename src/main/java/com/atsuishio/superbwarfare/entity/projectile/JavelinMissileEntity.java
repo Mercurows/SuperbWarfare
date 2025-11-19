@@ -42,11 +42,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private int guideType = 0;
-    public float targetX;
-    public float targetY;
-    public float targetZ;
-
     public JavelinMissileEntity(EntityType<? extends JavelinMissileEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
@@ -61,9 +56,7 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
         this.guideType = guideType;
         this.durability = 50;
         if (targetPos != null) {
-            this.targetX = (float) targetPos.x;
-            this.targetY = (float) targetPos.y;
-            this.targetZ = (float) targetPos.z;
+            this.targetPos = targetPos;
         }
     }
 
@@ -186,7 +179,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
                 }
             }
         } else if (guideType == 1) {
-            Vec3 targetPos = new Vec3(targetX, targetY, targetZ);
             boolean dir = position().vectorTo(targetPos).horizontalDistanceSqr() < 900;
             Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
 

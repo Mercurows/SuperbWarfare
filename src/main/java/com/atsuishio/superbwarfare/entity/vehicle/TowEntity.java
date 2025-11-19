@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -31,6 +32,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
 
@@ -110,8 +112,8 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living) {
-        super.vehicleShoot(living);
+    public void vehicleShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
+        super.vehicleShoot(living, uuid, targetPos);
 
         var barrelVector = getBarrelVector(1);
 

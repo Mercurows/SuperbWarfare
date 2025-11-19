@@ -18,6 +18,8 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
+import java.util.UUID;
+
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition;
 
@@ -121,7 +123,7 @@ public final class VehicleWeaponUtils {
 
         int rpm = 20 / Mth.clamp((vehicle.vehicleWeaponRpm(pLiving) / 60), 1, 2147483647);
         if (vehicle.tickCount % rpm == 0) {
-            vehicle.aiTurretShoot(pLiving);
+            vehicle.aiTurretShoot(pLiving, UUID.fromString(uuid), null);
         }
     }
 

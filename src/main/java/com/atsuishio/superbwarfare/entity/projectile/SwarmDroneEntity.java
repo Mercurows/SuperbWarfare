@@ -35,14 +35,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
-
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public float targetX;
-    public float targetY;
-    public float targetZ;
     public float randomFloat;
-    public int guideType = 0;
 
     public SwarmDroneEntity(EntityType<? extends SwarmDroneEntity> type, Level level) {
         super(type, level);
@@ -68,17 +62,6 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
         return ModItems.DRONE.get();
     }
 
-    public void setGuideType(int guideType) {
-        this.guideType = guideType;
-    }
-
-    public void setTargetVec(Vec3 targetPos) {
-        if (targetPos != null) {
-            this.targetX = (float) targetPos.x;
-            this.targetY = (float) targetPos.y;
-            this.targetZ = (float) targetPos.z;
-        }
-    }
 
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
@@ -138,7 +121,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
                 Vec3 targetVec = new Vec3(entity.getDeltaMovement().x, 0, entity.getDeltaMovement().z);
                 targetPos = entity.getEyePosition().add(targetVec);
             } else {
-                targetPos = new Vec3(targetX, targetY, targetZ);
+                targetPos = this.targetPos;
             }
 
             if (tickCount %5 == 0) {

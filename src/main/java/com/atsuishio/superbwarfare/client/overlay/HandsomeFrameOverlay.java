@@ -70,7 +70,7 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
             List<Entity> allEntities = SeekTool.seekLivingEntitiesThroughWall(player, 32 + 8 * (level - 1), 30);
             List<Entity> visibleEntities = SeekTool.seekLivingEntities(player, 32 + 8 * (level - 1), 30);
 
-            Entity naerestEntity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 30);
+            Entity nearestEntity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 30);
             Entity targetEntity = ClientEventHandler.lockedEntity;
 
             for (var e : allEntities) {
@@ -78,7 +78,7 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
                 Vec3 point = VectorUtil.worldToScreen(pos);
 
                 boolean lockOn = e == targetEntity;
-                boolean isNearestEntity = e == naerestEntity;
+                boolean isNearestEntity = e == nearestEntity;
 
                 poseStack.pushPose();
                 float x = (float) point.x;

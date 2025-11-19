@@ -53,11 +53,11 @@ public class Yx100SwarmDroneHudOverlay implements LayeredDraw.Layer {
 
         if (player.getVehicle() instanceof Yx100Entity yx100 && yx100.banHand(player)) {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
-                Entity naerestEntity = SeekTool.seekLivingEntity(player, 384, 6);
+                Entity nearestEntity = SeekTool.seekLivingEntity(player, 384, 6);
 
-                if (naerestEntity != null) {
+                if (nearestEntity != null) {
                     var partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
-                    Vec3 pos = new Vec3(Mth.lerp(partialTick, naerestEntity.xo, naerestEntity.getX()), Mth.lerp(partialTick, naerestEntity.yo + naerestEntity.getEyeHeight(), naerestEntity.getEyeY()), Mth.lerp(partialTick, naerestEntity.zo, naerestEntity.getZ()));
+                    Vec3 pos = new Vec3(Mth.lerp(partialTick, nearestEntity.xo, nearestEntity.getX()), Mth.lerp(partialTick, nearestEntity.yo + nearestEntity.getEyeHeight(), nearestEntity.getEyeY()), Mth.lerp(partialTick, nearestEntity.zo, nearestEntity.getZ()));
                     Vec3 point = VectorUtil.worldToScreen(pos);
 
                     poseStack.pushPose();

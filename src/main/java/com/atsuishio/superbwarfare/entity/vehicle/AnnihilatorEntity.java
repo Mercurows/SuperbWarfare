@@ -43,6 +43,7 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Locale;
+import java.util.UUID;
 
 public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBBEntity {
     public static final EntityDataAccessor<Float> LASER_LEFT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
@@ -208,7 +209,7 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living) {
+    public void vehicleShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
         var data = getGunData(living);
         shoot(living, data);
     }

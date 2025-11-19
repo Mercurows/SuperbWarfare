@@ -626,6 +626,7 @@
   "key.superbwarfare.change_ammo_backward": "Change Ammo Backward",
   "key.superbwarfare.change_fire_mode_forward": "Change Fire Mode Forward",
   "key.superbwarfare.change_fire_mode_backward": "Change Fire Mode Backward",
+  "key.superbwarfare.vehicle_seek": "Vehicle Lock Target",
 
   "effect.superbwarfare.shock": "Shock",
   "effect.superbwarfare.burn": "Burn",

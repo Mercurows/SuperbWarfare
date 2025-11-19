@@ -253,7 +253,6 @@
     "SwarmDrone": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/swarm_drone.png",
       "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
       "Spread": 0.3,
       "Magazine": 14,
       "EmptyReloadTime": 140,
@@ -286,6 +285,28 @@
         "BoundUpWithAmmoAmount": true,
         "Directions": [[0, 1, 0]]
       },
+      "SeekWeaponInfo": {
+        "SeekDirection": "Passenger",
+        "SeekRange": 384,
+        "SeekAngle": 20,
+        "SeekTime": 10
+      },
+      "AvailableFireModes": [
+        "Semi",
+        {
+          "Mode": "Auto",
+          "Name": "OnlyLockBlock",
+          "Override": {
+            "SeekWeaponInfo": {
+              "SeekDirection": "Passenger",
+              "SeekRange": 384,
+              "SeekAngle": 20,
+              "SeekTime": 10,
+              "OnlyLockBlock": true
+            }
+          }
+        }
+      ],
       "Crosshair": "@VehicleCommonMissile",
       "Name": "weapon.superbwarfare.swarm_drone",
       "SoundInfo": {

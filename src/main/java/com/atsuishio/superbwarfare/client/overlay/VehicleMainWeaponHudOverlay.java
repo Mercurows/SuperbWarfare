@@ -10,13 +10,11 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.MathTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
-import com.atsuishio.superbwarfare.tools.VectorUtil;
+import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -48,12 +46,16 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
 
     private static final ResourceLocation FRAME_GREEN = Mod.loc("textures/overlay/frame/frame_green.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target.png");
+    private static final ResourceLocation FRAME_TARGET_TRIANGLE = Mod.loc("textures/overlay/frame/frame_target_triangle.png");
     private static final ResourceLocation FRAME_LOCK = Mod.loc("textures/overlay/frame/frame_lock.png");
 
     private static final ResourceLocation IND_1 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind1.png");
     private static final ResourceLocation IND_2 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind2.png");
     private static final ResourceLocation IND_3 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind3.png");
     private static final ResourceLocation IND_4 = Mod.loc("textures/overlay/vehicle/aircraft/locking_ind4.png");
+
+    private static final ResourceLocation SHOOT_INDICATOR = Mod.loc("textures/overlay/frame/frame_diamond.png");
+    private static final ResourceLocation BLOCK = Mod.loc("textures/overlay/misc/block.png");
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -94,53 +96,107 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
         var gunData = vehicle.getGunData(player);
         if (gunData == null) return;
         var seekInfo = gunData.compute().seekWeaponInfo;
-        var uuid = player.getUUID();
 
         if (seekInfo != null) {
-            Entity targetEntity = EntityFindUtil.findEntity(player.level(), vehicle.getTargetUuid(uuid));
-            List<Entity> entities = new SeekTool.Builder(vehicle)
-                    .withinRange(seekInfo.seekRange)
-                    .withinAngle(vehicle.getZoomPos(player, partialTick), vehicle.getSeekVec(player, partialTick), seekInfo.seekAngle)
-                    .baseFilter()
-                    .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
-                    .sizeBiggerThan(seekInfo.minTargetSize)
-                    .smokeFilter()
-                    .noVehicle()
-                    .noClip()
-                    .notFriendly()
-                    .build();
+            Camera camera = mc.gameRenderer.getMainCamera();
+            Vec3 cameraPos = camera.getPosition();
+            int seekTime = seekInfo.seekTime;
 
-            for (var e : entities) {
-                Vec3 pos3 = new Vec3(Mth.lerp(partialTick, e.xo, e.getX()), Mth.lerp(partialTick, e.yo + e.getEyeHeight(), e.getEyeY()), Mth.lerp(partialTick, e.zo, e.getZ()));
-                if (VectorUtil.canSee(pos3)) {
-                    Vec3 point = VectorUtil.worldToScreen(pos3);
-                    boolean nearest = e == targetEntity;
-                    boolean lockOn = vehicle.isTargetLocked(uuid) && nearest;
+            if (ClientEventHandler.guideTypeVehicle == 0) {
+                Entity targetEntity = ClientEventHandler.lockingEntityVehicle;
+                Entity nearestEntity = ClientEventHandler.nearestEntityVehicle;
+                Vec3 seekVec = vehicle.getSeekVec(player, partialTick);
 
-                    poseStack.pushPose();
-                    float x = (float) point.x;
-                    float y = (float) point.y;
+                List<Entity> entities = new SeekTool.Builder(vehicle)
+                        .withinRange(seekInfo.seekRange)
+                        .withinAngle(cameraPos, seekVec, seekInfo.seekAngle)
+                        .baseFilter()
+                        .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
+                        .sizeBiggerThan(seekInfo.minTargetSize)
+                        .smokeFilter()
+                        .noVehicle()
+                        .noClip()
+                        .notFriendly()
+                        .build();
 
-                    int seekTime = seekInfo.seekTime;
+                for (var e : entities) {
+                    Vec3 pos3 = VectorTool.lerpGetEntityBoundingBoxCenter(e, partialTick);
+                    if (VectorUtil.canSee(pos3) && !seekInfo.onlyLockBlock) {
+                        Vec3 point = VectorUtil.worldToScreen(pos3);
+                        boolean lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e == targetEntity;
+                        boolean nearest = e == nearestEntity;
 
-                    if (lockOn) {
-                        RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                    } else if (nearest) {
-                        lerpLock = Mth.lerp(partialTick, lerpLock, vehicle.getTargetLockingTime(uuid));
-                        float lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0, 20);
-                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                        RenderHelper.preciseBlitWithColor(guiGraphics, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                        RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                    } else {
-                        RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_GREEN, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        poseStack.pushPose();
+                        float x = (float) point.x;
+                        float y = (float) point.y;
+
+                        if (lockOn) {
+                            RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                            nearestEntity = targetEntity;
+                            if (seekInfo.calculateTrajectory) {
+                                Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick), targetEntity.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
+                                Vec3 shootPos = vehicle.getShootPos(player, partialTick).add(shootVector.scale(vehicle.getShootPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick))));
+                                Vec3 point0 = VectorUtil.worldToScreen(shootPos);
+
+                                if (VectorUtil.canSee(shootPos)) {
+                                    poseStack.pushPose();
+                                    float x0 = (float) point0.x;
+                                    float y0 = (float) point0.y;
+
+                                    Vec3 targetHudPos = new Vec3(x, y, 0);
+                                    Vec3 shootHudPos = new Vec3(x0, y0, 0);
+
+                                    RenderHelper.preciseBlitWithColor(guiGraphics, SHOOT_INDICATOR, x0 - 12, y0 - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                                    poseStack.popPose();
+
+                                    double dis = targetHudPos.distanceTo(shootHudPos);
+                                    for (double i = 3; i < dis - 3; i += 3) {
+                                        Vec3 toVec = targetHudPos.vectorTo(shootHudPos).normalize();
+                                        Vec3 p0 = targetHudPos.add(toVec.scale(i));
+                                        RenderHelper.preciseBlitWithColor(guiGraphics, BLOCK, (float) (p0.x - 0.5), (float) (p0.y - 0.5), 0, 0, 1, 1, 1, 1, 0xFFFFFFFF);
+                                    }
+                                }
+                            }
+                        } else if (nearest) {
+                            lerpLock = Mth.lerp(partialTick, lerpLock, ClientEventHandler.seekingTimeVehicle);
+                            float lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0, 20);
+                            if (ClientEventHandler.seekingTimeVehicle > 0) {
+                                RenderHelper.preciseBlitWithColor(guiGraphics, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                                RenderHelper.preciseBlitWithColor(guiGraphics, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                                RenderHelper.preciseBlitWithColor(guiGraphics, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                                RenderHelper.preciseBlitWithColor(guiGraphics, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                            }
+
+                            RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_TARGET_TRIANGLE, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        } else {
+                            RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_GREEN, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        }
+                        poseStack.popPose();
                     }
-                    poseStack.popPose();
+                }
+            } else {
+                Vec3 pos = ClientEventHandler.lockingPosVehicle;
+                if (pos != null) {
+                    boolean lockOn = ClientEventHandler.lockOnVehicle;
+                    Vec3 point = VectorUtil.worldToScreen(pos);
+                    if (VectorUtil.canSee(pos)) {
+                        poseStack.pushPose();
+                        float x = (float) point.x;
+                        float y = (float) point.y;
+                        lerpLock = Mth.lerp(partialTick, lerpLock, ClientEventHandler.seekingTimeVehicle);
+                        float lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0, 20);
+                        if (ClientEventHandler.seekingTimeVehicle > 0 && !lockOn) {
+                            RenderHelper.preciseBlitWithColor(guiGraphics, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                            RenderHelper.preciseBlitWithColor(guiGraphics, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                            RenderHelper.preciseBlitWithColor(guiGraphics, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                            RenderHelper.preciseBlitWithColor(guiGraphics, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        }
+                        RenderHelper.preciseBlitWithColor(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        poseStack.popPose();
+                    }
                 }
             }
         }
-
         poseStack.popPose();
     }
 
@@ -174,5 +230,27 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
         var component = vehicle.thirdPersonAmmoComponent(data, player);
 
         guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0F, heat, 1F), false);
+    }
+
+    public static Vec3 getAroundPos(Vec3 direction, Vec3 center, double radius) {
+        direction = direction.normalize();
+
+        // 构建垂直正交基
+        Vec3 randomPerp = getRandomPerpendicular(direction);
+        Vec3 u = randomPerp.normalize();
+        Vec3 v = direction.cross(u).normalize();
+
+        double theta = 2 * Math.PI;
+        double xOffset = radius * (Math.cos(theta) * u.x + Math.sin(theta) * v.x);
+        double yOffset = radius * (Math.cos(theta) * u.y + Math.sin(theta) * v.y);
+        double zOffset = radius * (Math.cos(theta) * u.z + Math.sin(theta) * v.z);
+
+        return center.add(xOffset, yOffset, zOffset);
+    }
+
+    private static Vec3 getRandomPerpendicular(Vec3 dir) {
+        Vec3 candidate1 = new Vec3(dir.y, -dir.x, 0); // 在XY平面垂直
+        if (candidate1.lengthSqr() > 1e-4) return candidate1;
+        return new Vec3(0, dir.z, -dir.y); // 备用垂直向量
     }
 }

@@ -111,14 +111,14 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
 
             Entity targetEntity = ClientEventHandler.lockingEntity;
             List<Entity> entities = SeekTool.seekLivingEntities(player, data.compute().seekRange, data.compute().seekAngle * fovAdjust);
-            Entity naerestEntity = ClientEventHandler.naerestEntity;
+            Entity nearestEntity = ClientEventHandler.nearestEntity;
 
             if (ClientEventHandler.guideType == 0) {
                 for (var e : entities) {
                     Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(e, deltaTracker.getGameTimeDeltaPartialTick(true));
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     boolean lockOn = ClientEventHandler.lockOn && e == targetEntity;
-                    boolean nearest = e == naerestEntity;
+                    boolean nearest = e == nearestEntity;
 
                     poseStack.pushPose();
                     float x = (float) point.x;

@@ -221,7 +221,6 @@
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/kh_39.png",
       "DefaultZoom": 3,
       "DefaultFireMode": "Semi",
-      "AvailableFireModes": "Semi",
       "Magazine": 2,
       "EmptyReloadTime": 260,
       "Projectile": "superbwarfare:kh_39",
@@ -256,7 +255,25 @@
       "CrosshairColor": "0xFFC700",
       "Crosshair": "@VehicleFixedPoint",
       "CrosshairZooming": "@VehicleCommonMissile",
-      "SoundRadius": 8
+      "SoundRadius": 8,
+      "AvailableFireModes": [
+        "Semi",
+        {
+          "Mode": "Semi",
+          "Name": "OnlyLockBlock",
+          "Override": {
+            "SeekWeaponInfo": {
+              "SeekDirection": "Barrel",
+              "SeekRange": 384,
+              "SeekAngle": 20,
+              "SeekTime": 20,
+              "MaxTargetHeight": 24,
+              "MinTargetSize": 0.9,
+              "OnlyLockBlock": true
+            }
+          }
+        }
+      ]
     },
     "DriverAAMissile": {
       "AmmoType": "superbwarfare:medium_anti_air_missile",

@@ -187,9 +187,9 @@ public class AutoAimableEntity extends VehicleEntity implements WeaponVehicleEnt
         Vec3 barrelRootPos = getShootPos(weaponName, 1);
 
         if (entityData.get(TARGET_UUID).equals("none") && tickCount % seekIterative == 0) {
-            Entity naerestEntity = seekNearLivingEntity(barrelRootPos, getTurretMinPitch(), getTurretMaxPitch(), minSeekRange, maxSeekRange, minTargetSize);
-            if (naerestEntity != null) {
-                entityData.set(TARGET_UUID, naerestEntity.getStringUUID());
+            Entity nearestEntity = seekNearLivingEntity(barrelRootPos, getTurretMinPitch(), getTurretMaxPitch(), minSeekRange, maxSeekRange, minTargetSize);
+            if (nearestEntity != null) {
+                entityData.set(TARGET_UUID, nearestEntity.getStringUUID());
                 this.consumeEnergy(seekInfo.seekEnergyCost);
             }
         }
