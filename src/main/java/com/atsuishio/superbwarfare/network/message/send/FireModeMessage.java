@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -11,9 +10,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -37,28 +34,6 @@ public record FireModeMessage(boolean forward) implements CustomPacketPayload {
         ItemStack stack = player.getMainHandItem();
         var data = GunData.from(stack);
 
-        // TODO 让载具能切开火模式
-
-        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
-            vehicle.modifyGunData(vehicle.getSeatIndex(player), gunData -> {
-                var location = gunData.compute().soundInfo.locking.getLocation();
-                player.connection.send(new ClientboundStopSoundPacket(location, SoundSource.PLAYERS));
-
-                var selectedFireMode = gunData.selectedFireMode.get();
-                var fireModes = gunData.compute().availableFireModes();
-
-                if (fireModes.size() > 1) {
-                    int mode = (selectedFireMode + (message.forward() ? -1 : 1) + fireModes.size()) % fireModes.size();
-                    gunData.selectedFireMode.set(mode);
-                    SoundTool.playLocalSound(player, ModSounds.FIRE_RATE.get());
-                    return;
-                }
-
-                var sound = gunData.compute().soundInfo.change;
-                if (sound == null) return;
-                SoundTool.playLocalSound(player, ModSounds.FIRE_RATE.get());
-            });
-        } else {
             if (!(stack.getItem() instanceof GunItem)) {
                 return;
             }
@@ -72,8 +47,6 @@ public record FireModeMessage(boolean forward) implements CustomPacketPayload {
                 SoundTool.playLocalSound(player, ModSounds.FIRE_RATE.get());
                 return;
             }
-        }
-
 
         if (stack.getItem() == ModItems.SENTINEL.get()
                 && !player.isSpectator()

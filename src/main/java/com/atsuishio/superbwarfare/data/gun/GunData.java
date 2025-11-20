@@ -335,7 +335,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
             if (currentSlot == null) currentSlot = "Default";
             if (targetSlot == null) targetSlot = "Default";
 
-            if (currentSlot.equals(targetSlot) && ammoSupplier != null) {
+            if (currentSlot.equals(targetSlot) && ammoSupplier != null && targetConsumer.shouldUnload) {
                 this.withdrawAmmo(ammoSupplier);
             } else {
                 var ammo = this.ammo.get();
