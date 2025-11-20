@@ -85,7 +85,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
 
-        builder.define(SHOOT_VEC, getViewVector(1).toVector3f())
+        builder.define(SHOOT_VEC, getForward().toVector3f())
                 .define(DEPRESSED, false)
                 .define(TARGET_POS, new Vector3f())
                 .define(RADIUS, 0)
@@ -207,6 +207,9 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     @Override
     public void baseTick() {
         super.baseTick();
+        if (tickCount == 1) {
+            entityData.set(SHOOT_VEC, getForward().toVector3f());
+        }
 
         for (int i = 0; i < getMaxBarrel(); i++) {
             var animCounters = this.entityData.get(BARREL_ANIM);

@@ -70,6 +70,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -79,8 +80,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -100,6 +100,7 @@ import java.util.function.Function;
 
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
+import static com.atsuishio.superbwarfare.tools.TraceTool.pickNew;
 
 public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity {
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
@@ -2573,6 +2574,27 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public Vec3 getSeekVec(int seatIndex, float partialTicks) {
         return VehicleVecUtils.getSeekVec(this, getNthEntity(seatIndex), partialTicks);
+    }
+
+    public Entity getPlayerLookAtEntityOnVehicle(Entity shooter, double entityReach, float partialTick) {
+        Vec3 eye = getShootPosForHud(shooter, partialTick);
+        double distance = entityReach * entityReach;
+        HitResult hitResult = pickNew(eye, 512, this);
+
+        Vec3 viewVec = getViewVec(shooter, partialTick);
+        Vec3 toVec = eye.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
+        AABB aabb = getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(1);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(this, eye, toVec, aabb,
+                p -> !p.isSpectator() && p.isAlive() && SeekTool.BASIC_FILTER.test(p) && !p.getType().is(ModTags.EntityTypes.DECOY) && SeekTool.NOT_IN_SMOKE.test(p) && p != shooter && !(p instanceof Projectile), distance);
+        if (entityhitresult != null) {
+            hitResult = entityhitresult;
+        }
+        if (hitResult.getType() == HitResult.Type.ENTITY) {
+            if (entityhitresult != null) {
+                return entityhitresult.getEntity();
+            }
+        }
+        return null;
     }
 
     /**
