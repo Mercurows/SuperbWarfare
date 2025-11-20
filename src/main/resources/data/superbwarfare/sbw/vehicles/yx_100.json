@@ -169,7 +169,7 @@
         "Fire3P": "superbwarfare:yx_100_fire_3p",
         "Fire3PFar": "superbwarfare:yx_100_far",
         "Fire3PVeryFar": "superbwarfare:yx_100_veryfar",
-        "ReloadEmpty": "superbwarfare:yx_100_reload",
+        "VehicleReload": "superbwarfare:yx_100_reload",
         "Change": "superbwarfare:into_cannon",
         "CancellableSounds": [
           "superbwarfare:yx_100_reload"
@@ -312,7 +312,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:decoy_release",
         "Fire3P": "superbwarfare:decoy_release",
-        "ReloadEnd": "superbwarfare:missile_reload"
+        "VehicleReload3p": "superbwarfare:missile_reload",
+        "VehicleReloadSoundTime": 7
       },
       "SoundRadius": 4
     }

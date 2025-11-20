@@ -154,7 +154,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:small_rocket_fire_1p",
         "Fire3P": "superbwarfare:small_rocket_fire_3p",
-        "ReloadEnd": "superbwarfare:missile_reload",
+        "VehicleReload3p": "superbwarfare:missile_reload",
+        "VehicleReloadSoundTime": 7,
         "Change": "superbwarfare:into_missile"
       },
       "Crosshair": "@Empty",

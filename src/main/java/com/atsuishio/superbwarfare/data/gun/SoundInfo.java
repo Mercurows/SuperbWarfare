@@ -41,6 +41,15 @@ public class SoundInfo {
     @SerializedName("ReloadEmpty")
     public SoundEvent reloadEmpty;
 
+    @SerializedName("VehicleReload")
+    public SoundEvent vehicleReload;
+
+    @SerializedName("VehicleReload3p")
+    public SoundEvent vehicleReload3p;
+
+    @SerializedName("VehicleReloadSoundTime")
+    public int vehicleReloadSoundTime = 0;
+
     @SerializedName("ReloadPrepare")
     public SoundEvent reloadPrepare;
     @SerializedName("ReloadPrepareEmpty")

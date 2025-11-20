@@ -241,7 +241,7 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
 
             Mod.queueServerWork(reloadTime - 20, () -> {
                 if (this.isAlive()) {
-                    this.level().playSound(null, this.getOnPos(), gunData.compute().soundInfo.reloadEmpty, SoundSource.PLAYERS, 1, 1);
+                    this.level().playSound(null, this.getOnPos(), gunData.compute().soundInfo.vehicleReload, SoundSource.PLAYERS, 1, 1);
                 }
             });
 

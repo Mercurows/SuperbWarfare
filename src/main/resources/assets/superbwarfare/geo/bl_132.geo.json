@@ -16,13 +16,13 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "base",
+					"name": "dipan",
 					"parent": "root",
 					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "dizuo1",
-					"parent": "base",
+					"parent": "dipan",
 					"pivot": [0, 3, 0],
 					"cubes": [
 						{

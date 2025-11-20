@@ -236,7 +236,7 @@
       "AmmoType": "superbwarfare:medium_anti_ground_missile",
       "Projectile": "superbwarfare:wg_missile",
       "Magazine": 1,
-      "AutoIterativeReloadTime": 120,
+      "EmptyReloadTime": 120,
       "Damage": 500,
       "Velocity": 3,
       "RecoilTime": 18,
@@ -253,7 +253,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
         "Fire3P": "superbwarfare:bmp_2_missile_fire_3p",
-        "ReloadEnd": "superbwarfare:medium_missile_reload",
+        "VehicleReload3p": "superbwarfare:medium_missile_reload",
+        "VehicleReloadSoundTime": 28,
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 12,

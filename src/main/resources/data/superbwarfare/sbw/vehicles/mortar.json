@@ -14,7 +14,7 @@
       "SoundInfo": {
         "Fire3P": "superbwarfare:mortar_fire",
         "Fire3PFar": "superbwarfare:mortar_distant",
-        "ReloadEmpty": "superbwarfare:mortar_load"
+        "VehicleReload": "superbwarfare:mortar_load"
       },
       "SoundRadius": 32
     }
