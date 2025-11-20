@@ -41,7 +41,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
 
     public ArtilleryEntity(EntityType<?> type, Level world) {
         super(type, world);
-
         this.entityData.set(BARREL_ANIM, IntList.of(new int[this.getMaxBarrel()]));
     }
 
@@ -79,7 +78,7 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(SHOOT_VEC, getViewVector(1).toVector3f());
+        this.entityData.define(SHOOT_VEC, getForward().toVector3f());
         this.entityData.define(DEPRESSED, false);
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(RADIUS, 0);
@@ -185,6 +184,9 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     @Override
     public void baseTick() {
         super.baseTick();
+        if (tickCount == 1) {
+            entityData.set(SHOOT_VEC, getForward().toVector3f());
+        }
 
         for (int i = 0; i < getMaxBarrel(); i++) {
             var animCounters = entityData.get(BARREL_ANIM);

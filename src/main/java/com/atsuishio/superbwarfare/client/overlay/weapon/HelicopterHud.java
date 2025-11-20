@@ -155,10 +155,10 @@ public class HelicopterHud {
 
             double dis = shootPos.distanceTo(hitPos);
 
-            Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
+            Entity lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512, partialTick);
 
-            if (entityPos != null) {
-                dis = shootPos.distanceTo(entityPos);
+            if (lookingEntity != null) {
+                dis = shootPos.distanceTo(lookingEntity.position());
             }
 
             Vec3 pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));

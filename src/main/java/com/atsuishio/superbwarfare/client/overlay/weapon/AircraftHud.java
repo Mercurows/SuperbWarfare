@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
-import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -23,6 +22,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -96,10 +96,10 @@ public class AircraftHud {
 
         double dis = shootPos.distanceTo(hitPos);
 
-        Vec3 entityPos = TraceTool.vehicleFindLookingPos(player, vehicle, shootPos, 512, partialTick);
+        Entity lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512, partialTick);
 
-        if (entityPos != null) {
-            dis = shootPos.distanceTo(entityPos);
+        if (lookingEntity != null) {
+            dis = shootPos.distanceTo(lookingEntity.position());
         }
 
         Vec3 pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(512));

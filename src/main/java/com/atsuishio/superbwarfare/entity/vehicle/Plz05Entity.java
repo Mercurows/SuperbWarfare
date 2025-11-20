@@ -45,7 +45,7 @@ public class Plz05Entity extends ArtilleryEntity implements GeoEntity, OBBEntity
         if (getRightTrack() > 100) {
             setRightTrack(0);
         }
-        if (getNthEntity(getTurretControllerIndex()) == null && getDeltaMovement().horizontalDistanceSqr() > 0.01) {
+        if (getNthEntity(getTurretControllerIndex()) == null && getDeltaMovement().horizontalDistanceSqr() > 0.007) {
             entityData.set(SHOOT_VEC, getForwardDirection());
         }
     }

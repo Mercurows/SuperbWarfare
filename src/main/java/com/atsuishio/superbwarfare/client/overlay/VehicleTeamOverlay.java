@@ -55,11 +55,12 @@ public class VehicleTeamOverlay implements IGuiOverlay {
 
         double entityRange = 0;
         Entity lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get());
-        if (lookingEntity instanceof SmokeDecoyEntity) return;
 
-        if (TraceTool.vehicleKookingEntity != null) {
-            lookingEntity = TraceTool.vehicleKookingEntity;
+        if (player.getVehicle() instanceof VehicleEntity vehicle) {
+            lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512, partialTick);
         }
+
+        if (lookingEntity instanceof SmokeDecoyEntity) return;
 
         if (lookingEntity != null) {
             lookAtEntity = true;
