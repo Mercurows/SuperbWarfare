@@ -82,7 +82,6 @@ public class NetworkRegistry {
         playToServer(MouseMoveMessage.class, MouseMoveMessage::encode, MouseMoveMessage::decode, MouseMoveMessage::handler);
         playToServer(FiringParametersEditMessage.class, FiringParametersEditMessage::encode, FiringParametersEditMessage::decode, FiringParametersEditMessage::handler);
         playToServer(UnloadMessage.INSTANCE, UnloadMessage::handler);
-        playToServer(StopVehicleSeekSoundMessage.INSTANCE, StopVehicleSeekSoundMessage::handler);
         playToServer(AssembleVehicleMessage.class, AssembleVehicleMessage::encode, AssembleVehicleMessage::decode, AssembleVehicleMessage::handler);
         playToServer(WeaponZoomingMessage.class, WeaponZoomingMessage::encode, WeaponZoomingMessage::decode, WeaponZoomingMessage::handler);
 
