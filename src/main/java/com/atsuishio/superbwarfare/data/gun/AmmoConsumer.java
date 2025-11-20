@@ -105,8 +105,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
                 } else {
                     Mod.LOGGER.warn("consume player ammo failed: invalid player ammo type");
                 }
-            } else {
-                Mod.LOGGER.warn("consume player ammo failed: invalid shooter");
             }
         }
 
