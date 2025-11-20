@@ -162,7 +162,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:small_rocket_fire_1p",
         "Fire3P": "superbwarfare:small_rocket_fire_3p",
-        "ReloadEnd": "superbwarfare:missile_reload",
+        "VehicleReload3p": "superbwarfare:missile_reload",
+        "VehicleReloadSoundTime": 7,
         "Change": "superbwarfare:into_missile"
       },
       "Crosshair": "@Empty",
@@ -185,7 +186,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
         "Fire3P": "superbwarfare:bomb_release",
-        "ReloadEnd": "superbwarfare:bomb_reload",
+        "VehicleReload3p": "superbwarfare:bomb_reload",
+        "VehicleReloadSoundTime": 11,
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 8
@@ -267,7 +269,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
         "Fire3P": "superbwarfare:bomb_release",
-        "ReloadEnd": "superbwarfare:bomb_reload",
+        "VehicleReload3p": "superbwarfare:bomb_reload",
+        "VehicleReloadSoundTime": 11,
         "Change": "superbwarfare:into_missile",
         "Locking": "superbwarfare:javelin_locking",
         "Locked": "superbwarfare:javelin_locked"
@@ -309,7 +312,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
         "Fire3P": "superbwarfare:bomb_release",
-        "ReloadEnd": "superbwarfare:bomb_reload",
+        "VehicleReload3p": "superbwarfare:bomb_reload",
+        "VehicleReloadSoundTime": 11,
         "Change": "superbwarfare:into_missile",
         "Locking": "superbwarfare:javelin_locking",
         "Locked": "superbwarfare:javelin_locking"

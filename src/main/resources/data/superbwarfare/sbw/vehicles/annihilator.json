@@ -140,7 +140,9 @@
       "ShootAnimationTime": 12,
       "AmmoCostPerShoot": 2000000,
       "AmmoType": "FE",
-      "ShootShake": [20, 15, 25],
+      "RecoilTime": 42,
+      "RecoilForce": 1.1,
+      "ShootShake": [12, 14, 80],
       "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleLaserCannon",
       "Name": "weapon.superbwarfare.laser",
@@ -149,7 +151,7 @@
         "Fire3P": "superbwarfare:annihilator_fire_3p",
         "Fire3PFar": "superbwarfare:annihilator_far",
         "Fire3PVeryFar": "superbwarfare:annihilator_veryfar",
-        "ReloadEmpty": "superbwarfare:annihilator_reload"
+        "VehicleReload": "superbwarfare:annihilator_reload"
       },
       "SoundRadius": 32,
       "ShootPos": {

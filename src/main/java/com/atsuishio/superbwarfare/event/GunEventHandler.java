@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -238,12 +239,7 @@ public class GunEventHandler {
 
         if (data.autoIterativeReloadTimer.get() == autoIterativeReloadTime - 1) {
             var soundInfo = computed.soundInfo;
-            var sound = soundInfo.reloadPrepare;
-            var sound1p = soundInfo.reloadEmpty;
-
-            if (sound != null && ammoSupplier != null) {
-                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
-            }
+            var sound1p = soundInfo.vehicleReload;
 
             if (sound1p != null && ammoSupplier instanceof VehicleEntity vehicle) {
                 for (Entity passenger: vehicle.getPassengers()) {
@@ -261,7 +257,7 @@ public class GunEventHandler {
             iterativeLoad(ammoSupplier, data);
             data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
             var soundInfo = computed.soundInfo;
-            var sound = soundInfo.reloadEnd;
+            var sound = soundInfo.vehicleReload3p;
             if (sound != null && ammoSupplier != null) {
                 ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
             }
@@ -274,7 +270,6 @@ public class GunEventHandler {
         tickPerk(shooter, data);
         handleCooldown(shooter, data);
         redrawExtraAmmo(shooter, data);
-        autoIterativeReload(shooter, data);
         data.shootAnimationTimer.set(Math.max(data.shootAnimationTimer.get() - 1, 0));
         var computed = data.compute();
 
@@ -287,20 +282,22 @@ public class GunEventHandler {
                 startReload(shooter, data);
             }
 
-            if (data.reload.time() == data.compute().emptyReloadTime - 1) {
-                var soundInfo = computed.soundInfo;
-                var sound = soundInfo.reloadPrepare;
-                var sound1p = soundInfo.reloadEmpty;
+            var soundInfo = computed.soundInfo;
+            var sound1p = soundInfo.vehicleReload;
 
-                if (sound != null && shooter != null) {
-                    shooter.level().playSound(shooter, shooter.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
-                }
-
-                if (sound1p != null && shooter instanceof VehicleEntity vehicle) {
-                    for (Entity passenger: vehicle.getPassengers()) {
-                        if (passenger instanceof ServerPlayer serverPlayer) {
-                            SoundTool.playLocalSound(serverPlayer, sound1p, 8, 1);
+            if (data.reload.time() == (soundInfo.vehicleReloadSoundTime != 0 ? Mth.clamp(soundInfo.vehicleReloadSoundTime, 1, data.compute().emptyReloadTime - 1) : data.compute().emptyReloadTime - 1)) {
+                if (shooter instanceof VehicleEntity vehicle) {
+                    if (sound1p != null) {
+                        for (Entity passenger: vehicle.getPassengers()) {
+                            if (passenger instanceof ServerPlayer serverPlayer) {
+                                SoundTool.playLocalSound(serverPlayer, sound1p, 3, 1);
+                            }
                         }
+                    }
+
+                    var sound = soundInfo.vehicleReload3p;
+                    if (sound != null) {
+                        vehicle.level().playSound(vehicle, vehicle.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
                     }
                 }
             }
@@ -317,12 +314,6 @@ public class GunEventHandler {
             // 换弹完成
             if (data.reload.time() == 1) {
                 finishReload(shooter, data);
-
-                var soundInfo = computed.soundInfo;
-                var sound = soundInfo.reloadEnd;
-                if (sound != null && shooter instanceof VehicleEntity vehicle) {
-                    vehicle.level().playSound(vehicle, vehicle.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
-                }
             }
 
             handleGunSingleReload(shooter, data);
@@ -379,7 +370,7 @@ public class GunEventHandler {
             var sound = soundInfo.reloadEmpty;
 
             if (sound != null) {
-                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
+                SoundTool.playLocalSound(serverPlayer, sound, 8f, 1f);
             }
         }
     }
@@ -390,7 +381,7 @@ public class GunEventHandler {
             var sound = soundInfo.reloadNormal;
 
             if (sound != null) {
-                SoundTool.playLocalSound(serverPlayer, sound, 10f, 1f);
+                SoundTool.playLocalSound(serverPlayer, sound, 8f, 1f);
             }
         }
     }
