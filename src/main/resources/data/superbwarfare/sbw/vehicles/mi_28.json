@@ -217,7 +217,27 @@
       }
     },
     "SeekMissile": {
-      "AmmoType": "superbwarfare:large_anti_ground_missile",
+      "AmmoType": [
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false
+        },
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false,
+          "Override": {
+            "SeekWeaponInfo": {
+              "SeekDirection": "Barrel",
+              "SeekRange": 384,
+              "SeekAngle": 20,
+              "SeekTime": 20,
+              "MaxTargetHeight": 24,
+              "MinTargetSize": 0.9,
+              "OnlyLockBlock": true
+            }
+          }
+        }
+      ],
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/kh_39.png",
       "DefaultZoom": 3,
       "DefaultFireMode": "Semi",
@@ -256,24 +276,7 @@
       "Crosshair": "@VehicleFixedPoint",
       "CrosshairZooming": "@VehicleCommonMissile",
       "SoundRadius": 8,
-      "AvailableFireModes": [
-        "Semi",
-        {
-          "Mode": "Semi",
-          "Name": "OnlyLockBlock",
-          "Override": {
-            "SeekWeaponInfo": {
-              "SeekDirection": "Barrel",
-              "SeekRange": 384,
-              "SeekAngle": 20,
-              "SeekTime": 20,
-              "MaxTargetHeight": 24,
-              "MinTargetSize": 0.9,
-              "OnlyLockBlock": true
-            }
-          }
-        }
-      ]
+      "AvailableFireModes": ["Semi"]
     },
     "DriverAAMissile": {
       "AmmoType": "superbwarfare:medium_anti_air_missile",
