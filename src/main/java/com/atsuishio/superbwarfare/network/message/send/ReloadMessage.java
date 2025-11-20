@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +24,7 @@ public enum ReloadMessage {
     }
 
     public static void pressAction(Player player) {
-        if (player.getVehicle() instanceof VehicleEntity vehicle) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle instanceof WeaponVehicleEntity weaponVehicle && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))) {
             vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> GunEventHandler.tryStartReload(vehicle.getAmmoSupplier(), data));
             return;
         }

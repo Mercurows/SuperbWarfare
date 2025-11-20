@@ -76,6 +76,12 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     }
 
     @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        this.entityData.set(SHOOT_VEC, getForward().toVector3f());
+    }
+
+    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(SHOOT_VEC, getForward().toVector3f());
