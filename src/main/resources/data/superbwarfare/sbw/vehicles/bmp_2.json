@@ -237,7 +237,7 @@
       "Projectile": "superbwarfare:wg_missile",
       "Magazine": 1,
       "EmptyReloadTime": 120,
-      "Damage": 500,
+      "Damage": 700,
       "Velocity": 3,
       "RecoilTime": 18,
       "RecoilForce": 0.05,

@@ -347,7 +347,7 @@ public class SeekTool {
      */
     public static final Predicate<Entity> NOT_IN_SMOKE = e -> {
         var box = e.getBoundingBox().inflate(8);
-        var entities = e.level().getEntities(EntityTypeTest.forClass(Entity.class), box, entity -> entity instanceof SmokeDecoyEntity).stream().toList();
+        var entities = e.level().getEntities(EntityTypeTest.forClass(Entity.class), box, entity -> entity instanceof SmokeDecoyEntity && !(e instanceof SmokeDecoyEntity)).stream().toList();
         return entities.isEmpty();
     };
 

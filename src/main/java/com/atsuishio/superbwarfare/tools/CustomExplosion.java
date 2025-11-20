@@ -16,6 +16,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Explosion;
@@ -80,12 +81,12 @@ public class CustomExplosion extends Explosion {
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, Explosion.BlockInteraction pBlockInteraction) {
         this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
-        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, 4 * radius, 20 + 0.02 * damage, 50 + 0.05 * damage);
+        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, 4 * radius, 20 + 0.2 * radius, 50 + 0.5 * radius);
     }
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius) {
         this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, BlockInteraction.KEEP);
-        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, radius, 5 + 0.02 * damage, 2 + 0.002 * damage);
+        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, radius, 5 + 0.2 * radius, 2 + 0.02 * radius);
     }
 
     public CustomExplosion setFireTime(int fireTime) {
@@ -184,22 +185,39 @@ public class CustomExplosion extends Explosion {
                             DamageHandler.doDamage(entity, this.damageSource, (float) damageFinal);
                         }
 
-                        hit = true;
+                        if (entity instanceof LivingEntity living) {
+                            double force = damageFinal * 0.015;
 
-                        entity.invulnerableTime = 1;
+                            BlockPos blockpos = BlockPos.containing(position.x, position.y, position.z);
+                            BlockState blockstate = this.level.getBlockState(blockpos);
+                            FluidState fluidstate = this.level.getFluidState(blockpos);
 
-                        if (fireTime > 0) {
-                            entity.setRemainingFireTicks(fireTime);
+                            var optional = this.damageCalculator.getBlockExplosionResistance(this, this.level, blockpos, blockstate, fluidstate);
+                            if (optional.isPresent()) {
+                                force -= (optional.get() + 0.3F) * 0.3F;
+                            }
+
+                            Vec3 vec31 = position.vectorTo(living.getBoundingBox().getCenter()).normalize();
+                            entity.setDeltaMovement(entity.getDeltaMovement().add(vec31.scale(force)));
+
+
+                            hit = true;
+
+                            entity.invulnerableTime = 1;
+
+                            if (fireTime > 0) {
+                                entity.setRemainingFireTicks(fireTime);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        if (hit) {
-            if (this.damageSource.getEntity() instanceof ServerPlayer player) {
-                SoundTool.playLocalSound(player, ModSounds.INDICATION.get());
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+            if (hit) {
+                if (this.damageSource.getEntity() instanceof ServerPlayer player) {
+                    SoundTool.playLocalSound(player, ModSounds.INDICATION.get());
+                    PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                }
             }
         }
     }

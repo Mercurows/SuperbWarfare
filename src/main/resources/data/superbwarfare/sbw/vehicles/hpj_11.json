@@ -57,6 +57,7 @@
         "SeekAngle": 20,
         "SeekTime": 10,
         "MinTargetSize": 0.1,
+        "OnlyLockEntity": true,
         "CalculateTrajectory": true
       },
       "ShootPos": {

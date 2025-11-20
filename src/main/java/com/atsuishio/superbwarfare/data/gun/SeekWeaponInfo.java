@@ -29,4 +29,7 @@ public class SeekWeaponInfo {
 
     @SerializedName("OnlyLockBlock")
     public boolean onlyLockBlock = false;
+
+    @SerializedName("OnlyLockEntity")
+    public boolean onlyLockEntity = false;
 }

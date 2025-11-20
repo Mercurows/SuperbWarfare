@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
@@ -61,7 +62,12 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512, partialTick);
+            viewVec = vehicle.getViewVec(player, partialTick);
         }
+
+        Entity decoy = TraceTool.findLookDecoy(player, cameraPos, viewVec, 512);
+
+        if (decoy != null && decoy.getType().is(ModTags.EntityTypes.DECOY)) return;
 
         if (lookingEntity instanceof SmokeDecoyEntity) return;
 

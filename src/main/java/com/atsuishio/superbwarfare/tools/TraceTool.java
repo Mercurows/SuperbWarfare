@@ -170,6 +170,36 @@ public class TraceTool {
         return null;
     }
 
+    public static Entity findLookDecoy(Player player, Vec3 pos, Vec3 viewVec, double entityReach) {
+        double distance = entityReach * entityReach;
+        HitResult hitResult = pickNew(pos, entityReach, viewVec, player);
+
+        if (hitResult.getType() != HitResult.Type.MISS) {
+            distance = hitResult.getLocation().distanceToSqr(pos);
+            double blockReach = 5;
+            if (distance > blockReach * blockReach) {
+                hitResult = BlockHitResult.miss(hitResult.getLocation(), Direction.getNearest(pos.x, pos.y, pos.z), BlockPos.containing(hitResult.getLocation()));
+            }
+        }
+
+        Vec3 toVec = pos.add(viewVec.x * entityReach, viewVec.y * entityReach, viewVec.z * entityReach);
+        AABB aabb = player.getBoundingBox().expandTowards(viewVec.scale(entityReach)).inflate(2);
+        EntityHitResult entityhitresult = ProjectileUtil.getEntityHitResult(player, pos, toVec, aabb, p -> p.getType().is(ModTags.EntityTypes.DECOY), distance);
+        if (entityhitresult != null) {
+            Vec3 targetPos = entityhitresult.getLocation();
+            double distanceToTarget = pos.distanceToSqr(targetPos);
+            if (distanceToTarget > distance || distanceToTarget > entityReach * entityReach) {
+                hitResult = BlockHitResult.miss(targetPos, Direction.getNearest(viewVec.x, viewVec.y, viewVec.z), BlockPos.containing(targetPos));
+            } else if (distanceToTarget < distance) {
+                hitResult = entityhitresult;
+            }
+        }
+        if (hitResult.getType() == HitResult.Type.ENTITY) {
+            return ((EntityHitResult) hitResult).getEntity();
+        }
+        return null;
+    }
+
     public static HitResult pickNew(Vec3 pos, double pHitDistance, VehicleEntity vehicle) {
         Vec3 vec31 = vehicle.getBarrelVector(1);
         Vec3 vec32 = pos.add(vec31.x * pHitDistance, vec31.y * pHitDistance, vec31.z * pHitDistance);

@@ -628,6 +628,7 @@ public class ClickHandler {
                 return;
             }
             PacketDistributor.sendToServer(new PlayerStopRidingMessage(false));
+            ClientEventHandler.stopVehicleReloadSound(player);
         }
     }
 

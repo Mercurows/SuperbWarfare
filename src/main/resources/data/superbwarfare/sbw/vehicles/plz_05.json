@@ -2,6 +2,7 @@
   "ID": "superbwarfare:plz_05",
   "MaxHealth": 450,
   "MaxEnergy": 5000000,
+  "UpStep": 2.1,
   "TurretPos": [0, 1.93, -0.878],
   "TurretTurnSpeed": [2, 1.5],
   "TurretPitchRange": [-3, 65],

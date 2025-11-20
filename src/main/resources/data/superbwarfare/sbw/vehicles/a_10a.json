@@ -177,7 +177,6 @@
       "SoundRadius": 8
     },
     "Missile": {
-      "AmmoType": "superbwarfare:large_anti_ground_missile",
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/agm_65.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Semi",
@@ -196,9 +195,30 @@
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 10,
-        "MaxTargetHeight": 10,
+        "MaxTargetHeight": 32,
         "MinTargetSize": 0.9
       },
+      "AmmoType": [
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false
+        },
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false,
+          "Override": {
+            "SeekWeaponInfo": {
+              "SeekDirection": "Default",
+              "SeekRange": 384,
+              "SeekAngle": 20,
+              "SeekTime": 10,
+              "MaxTargetHeight": 32,
+              "MinTargetSize": 0.9,
+              "OnlyLockBlock": true
+            }
+          }
+        }
+      ],
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.53, 0],

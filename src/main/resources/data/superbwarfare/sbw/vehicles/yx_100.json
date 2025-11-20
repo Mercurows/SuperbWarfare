@@ -253,6 +253,7 @@
     "SwarmDrone": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/swarm_drone.png",
       "DefaultFireMode": "Auto",
+      "AvailableFireModes": ["Auto"],
       "Spread": 0.3,
       "Magazine": 14,
       "EmptyReloadTime": 140,
@@ -263,7 +264,6 @@
       "ExplosionDamage": 150,
       "ExplosionRadius": 5,
       "Velocity": 2,
-      "AmmoType": "superbwarfare:swarm_drone",
       "ShootPos": {
         "Transform": "Turret",
         "Positions": [
@@ -291,11 +291,14 @@
         "SeekAngle": 20,
         "SeekTime": 10
       },
-      "AvailableFireModes": [
-        "Semi",
+      "AmmoType": [
         {
-          "Mode": "Auto",
-          "Name": "OnlyLockBlock",
+          "Ammo": "superbwarfare:swarm_drone",
+          "ShouldUnload": false
+        },
+        {
+          "Ammo": "superbwarfare:swarm_drone",
+          "ShouldUnload": false,
           "Override": {
             "SeekWeaponInfo": {
               "SeekDirection": "Passenger",

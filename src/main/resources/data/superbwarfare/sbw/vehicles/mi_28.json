@@ -233,7 +233,7 @@
               "SeekRange": 384,
               "SeekAngle": 20,
               "SeekTime": 20,
-              "MaxTargetHeight": 24,
+              "MaxTargetHeight": 32,
               "MinTargetSize": 0.9,
               "OnlyLockBlock": true
             }
@@ -256,7 +256,7 @@
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 20,
-        "MaxTargetHeight": 24,
+        "MaxTargetHeight": 32,
         "MinTargetSize": 0.9
       },
       "ShootPos": {
@@ -300,7 +300,7 @@
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 20,
-        "MinTargetHeight": 24,
+        "MinTargetHeight": 32,
         "MinTargetSize": 0.1
       },
       "ShootPos": {
