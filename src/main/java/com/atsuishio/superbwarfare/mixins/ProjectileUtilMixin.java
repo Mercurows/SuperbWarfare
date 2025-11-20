@@ -67,35 +67,38 @@ public class ProjectileUtilMixin {
             at = @At("HEAD"), cancellable = true)
     private static void getEntityHitResult(Entity pShooter, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, double pDistance, CallbackInfoReturnable<EntityHitResult> cir) {
         Level level = pShooter.level();
+        var entities = level.getEntities(pShooter, pBoundingBox.inflate(5), pFilter);
 
-        for (Entity entity : level.getEntities(pShooter, pBoundingBox.inflate(5), pFilter)) {
-            if (entity instanceof OBBEntity obbEntity) {
-                if (entity.getPassengers().contains(pShooter)) {
-                    continue;
-                }
+        for (Entity entity : entities) {
+            if (!(entity instanceof OBBEntity obbEntity)) {
+                continue;
+            }
 
-                var obbList = obbEntity.getOBBs();
-                for (var obb : obbList) {
-                    obb = obb.inflate(entity.getPickRadius() * 2);
-                    Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
-                    if (obb.contains(pStartVec)) {
-                        if (pDistance >= 0) {
-                            cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.orElse(pStartVec.toVector3f()))));
-                            return;
-                        }
-                    } else if (optional.isPresent()) {
-                        var vec = new Vec3(optional.get());
-                        double d1 = pStartVec.distanceToSqr(vec);
-                        if (d1 < pDistance || pDistance == 0) {
-                            if (entity.getRootVehicle() == pShooter.getRootVehicle() && !entity.canRiderInteract()) {
-                                if (pDistance == 0) {
-                                    cir.setReturnValue(new EntityHitResult(entity, vec));
-                                    return;
-                                }
-                            } else {
+            if (entity.getPassengers().contains(pShooter)) {
+                continue;
+            }
+
+            var obbList = obbEntity.getOBBs();
+            for (var obb : obbList) {
+                obb = obb.inflate(entity.getPickRadius() * 2);
+                Optional<Vector3f> optional = obb.clip(pStartVec.toVector3f(), pEndVec.toVector3f());
+                if (obb.contains(pStartVec)) {
+                    if (pDistance >= 0) {
+                        cir.setReturnValue(new EntityHitResult(entity, new Vec3(optional.orElse(pStartVec.toVector3f()))));
+                        return;
+                    }
+                } else if (optional.isPresent()) {
+                    var vec = new Vec3(optional.get());
+                    double d1 = pStartVec.distanceToSqr(vec);
+                    if (d1 < pDistance || pDistance == 0) {
+                        if (entity.getRootVehicle() == pShooter.getRootVehicle() && !entity.canRiderInteract()) {
+                            if (pDistance == 0) {
                                 cir.setReturnValue(new EntityHitResult(entity, vec));
                                 return;
                             }
+                        } else {
+                            cir.setReturnValue(new EntityHitResult(entity, vec));
+                            return;
                         }
                     }
                 }
