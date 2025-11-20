@@ -71,7 +71,6 @@ public class NetworkRegistry {
         playToServer(AssembleVehicleMessage.TYPE, AssembleVehicleMessage.STREAM_CODEC, AssembleVehicleMessage::handler);
         playToServer(SeekingWeaponWarningMessage.TYPE, SeekingWeaponWarningMessage.STREAM_CODEC, SeekingWeaponWarningMessage::handler);
         playToServer(WeaponZoomingMessage.TYPE, WeaponZoomingMessage.STREAM_CODEC, WeaponZoomingMessage::handler);
-        playToServer(StopVehicleSeekSoundMessage.TYPE, StopVehicleSeekSoundMessage.STREAM_CODEC, (msg, ctx) -> StopVehicleSeekSoundMessage.handler(ctx));
     }
 
     private static PayloadRegistrar registrar;

@@ -24,7 +24,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -566,132 +568,131 @@ public class ClientEventHandler {
     }
 
     public static void vehicleWeaponSeeking(Player player) {
-        if (player.getVehicle() instanceof VehicleEntity vehicle) {
-            Minecraft mc = Minecraft.getInstance();
-            var options = mc.options;
-            var data = vehicle.getGunData(player);
-            if (data == null) return;
-            var seekWeaponInfo = data.compute().seekWeaponInfo;
-            if (seekWeaponInfo == null) return;
-            //锁定所需时间
-            int lockTime = seekWeaponInfo.seekTime;
-            //搜寻角度
-            float seekAngle = (float) seekWeaponInfo.seekAngle;
-            //搜索范围
-            double seekRange = seekWeaponInfo.seekRange;
-            //视角位置
-            Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-            //搜寻方向
-            Vec3 seekVec = vehicle.getSeekVec(player, 1);
-            //最小目标高度
-            double minTargetHeight = seekWeaponInfo.minTargetHeight;
-            //最大目标高度
-            double maxTargetHeight = seekWeaponInfo.maxTargetHeight;
-            //最小目标碰撞箱大小
-            double minTargetSize = seekWeaponInfo.minTargetSize;
+        if (!(player.getVehicle() instanceof VehicleEntity vehicle)) return;
 
-            nearestEntityVehicle = new SeekTool.Builder(player)
-                    .withinRange(seekRange)
-                    .withinAngle(cameraPos, seekVec, seekAngle)
-                    .baseFilter()
-                    .heightRange(minTargetHeight, maxTargetHeight)
-                    .sizeBiggerThan(minTargetSize)
-                    .smokeFilter()
-                    .noVehicle()
-                    .noClip()
-                    .buildWithClosest(cameraPos, seekVec);
+        var data = vehicle.getGunData(player);
+        if (data == null) return;
 
-            if (nearestEntityVehicle == null || seekWeaponInfo.onlyLockBlock) {
-                // 锁定方块
-                BlockHitResult result = player.level().clip(new ClipContext(cameraPos, cameraPos.add(seekVec.scale(seekRange)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-                seekingPosVehicle = result.getLocation();
+        var seekWeaponInfo = data.compute().seekWeaponInfo;
+        if (seekWeaponInfo == null) return;
 
-                if (seekingTimeVehicle > lockTime + 2 && !lockOnVehicle) {
-                    lockOnVehicle = true;
-                }
+        // 锁定所需时间
+        int lockTime = seekWeaponInfo.seekTime;
+        // 搜寻角度
+        float seekAngle = (float) seekWeaponInfo.seekAngle;
+        // 搜索范围
+        double seekRange = seekWeaponInfo.seekRange;
+        // 视角位置
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        // 搜寻方向
+        Vec3 seekVec = vehicle.getSeekVec(player, 1);
+        // 最小目标高度
+        double minTargetHeight = seekWeaponInfo.minTargetHeight;
+        // 最大目标高度
+        double maxTargetHeight = seekWeaponInfo.maxTargetHeight;
+        // 最小目标碰撞箱大小
+        double minTargetSize = seekWeaponInfo.minTargetSize;
 
-                //锁定失败
-                if (lockingPosVehicle != null && (VectorTool.calculateAngle(seekVec, cameraPos.vectorTo(lockingPosVehicle)) > seekAngle || !noClip(player, lockingPosVehicle))) {
-                    seekingTimeVehicle = 0;
-                    lockOnVehicle = false;
-                    lockingPosVehicle = null;
-                    PacketDistributor.sendToServer(StopVehicleSeekSoundMessage.INSTANCE);
-                }
+        nearestEntityVehicle = new SeekTool.Builder(player)
+                .withinRange(seekRange)
+                .withinAngle(cameraPos, seekVec, seekAngle)
+                .baseFilter()
+                .heightRange(minTargetHeight, maxTargetHeight)
+                .sizeBiggerThan(minTargetSize)
+                .smokeFilter()
+                .noVehicle()
+                .noClip()
+                .buildWithClosest(cameraPos, seekVec);
 
-                if (ModKeyMappings.VEHICLE_SEEK.isDown()) {
-                    if (seekingPosVehicle.distanceToSqr(cameraPos) < seekRange * seekRange) {
-                        seekingTimeVehicle++;
-                        if (seekingTimeVehicle == 1) {
-                            lockingPosVehicle = seekingPosVehicle;
-                        }
-                    } else {
-                        seekingTimeVehicle = 0;
-                        lockingPosVehicle = null;
-                    }
-                    guideTypeVehicle = 1;
-                } else {
-                    PacketDistributor.sendToServer(StopVehicleSeekSoundMessage.INSTANCE);
-                    lockOnVehicle = false;
-                    seekingTimeVehicle = 0;
-                    lockingPosVehicle = null;
-                }
+        if (nearestEntityVehicle == null || seekWeaponInfo.onlyLockBlock) {
+            // 锁定方块
+            BlockHitResult result = player.level().clip(new ClipContext(cameraPos, cameraPos.add(seekVec.scale(seekRange)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+            seekingPosVehicle = result.getLocation();
 
-            } else {
-                // 锁定实体
-                if (seekingTimeVehicle > lockTime + 2 && !lockOnVehicle) {
-                    lockingEntityVehicle = seekingEntityVehicle;
-                    lockOnVehicle = true;
-                }
-
-                if (ModKeyMappings.VEHICLE_SEEK.isDown()) {
-                    if (seekingEntityVehicle == null) {
-                        seekingEntityVehicle = nearestEntityVehicle;
-                    }
-                    if (nearestEntityVehicle != null && lockingPosVehicle == null) {
-                        seekingTimeVehicle++;
-                        if ((!seekingEntityVehicle.getPassengers().isEmpty() || seekingEntityVehicle instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOnVehicle) {
-                            PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntityVehicle.getUUID()));
-                        }
-                        guideTypeVehicle = 0;
-                    }
-                } else {
-                    PacketDistributor.sendToServer(StopVehicleSeekSoundMessage.INSTANCE);
-                    lockOnVehicle = false;
-                    seekingTimeVehicle = 0;
-                    lockingEntityVehicle = null;
-                    seekingEntityVehicle = null;
-                }
+            if (seekingTimeVehicle > lockTime + 2 && !lockOnVehicle) {
+                lockOnVehicle = true;
             }
 
-            //锁定失败
-            if (seekingEntityVehicle != null && (VectorTool.calculateAngle(seekVec, cameraPos.vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(seekingEntityVehicle, 1))) > seekAngle
-                    || !SeekTool.NOT_IN_SMOKE.test(seekingEntityVehicle)
-                    || !noClip(player, seekingEntityVehicle))) {
-                seekingTimeVehicle = 0;
-                lockingEntityVehicle = null;
-                seekingEntityVehicle = null;
-                lockOnVehicle = false;
-                PacketDistributor.sendToServer(StopVehicleSeekSoundMessage.INSTANCE);
-            }
-
-            if (lockingEntityVehicle != null && !lockingEntityVehicle.isAlive()) {
+            // 锁定失败
+            if (lockingPosVehicle != null && (VectorTool.calculateAngle(seekVec, cameraPos.vectorTo(lockingPosVehicle)) > seekAngle || !noClip(player, lockingPosVehicle))) {
                 seekingTimeVehicle = 0;
                 lockOnVehicle = false;
-                lockingEntityVehicle = null;
-                seekingEntityVehicle = null;
                 lockingPosVehicle = null;
+                stopVehicleSeekSound(player);
             }
 
-            if (seekingTimeVehicle == 2) {
-                playLockingSound(data, player);
-            }
-
-            if (seekingTimeVehicle > lockTime) {
-                playLockedSound(data, player);
-                if (guideTypeVehicle == 0 && lockingEntityVehicle != null && (!lockingEntityVehicle.getPassengers().isEmpty() || lockingEntityVehicle instanceof VehicleEntity) && player.tickCount % 2 == 0) {
-                    PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntityVehicle.getUUID()));
+            if (ModKeyMappings.VEHICLE_SEEK.isDown()) {
+                if (seekingPosVehicle.distanceToSqr(cameraPos) < seekRange * seekRange) {
+                    seekingTimeVehicle++;
+                    if (seekingTimeVehicle == 1) {
+                        lockingPosVehicle = seekingPosVehicle;
+                    }
+                } else {
+                    seekingTimeVehicle = 0;
+                    lockingPosVehicle = null;
                 }
+                guideTypeVehicle = 1;
+            } else {
+                lockOnVehicle = false;
+                seekingTimeVehicle = 0;
+                lockingPosVehicle = null;
+                stopVehicleSeekSound(player);
+            }
+        } else {
+            // 锁定实体
+            if (seekingTimeVehicle > lockTime + 2 && !lockOnVehicle) {
+                lockingEntityVehicle = seekingEntityVehicle;
+                lockOnVehicle = true;
+            }
+
+            if (ModKeyMappings.VEHICLE_SEEK.isDown()) {
+                if (seekingEntityVehicle == null) {
+                    seekingEntityVehicle = nearestEntityVehicle;
+                }
+                if (nearestEntityVehicle != null && lockingPosVehicle == null) {
+                    seekingTimeVehicle++;
+                    if ((!seekingEntityVehicle.getPassengers().isEmpty() || seekingEntityVehicle instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOnVehicle) {
+                        PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntityVehicle.getUUID()));
+                    }
+                    guideTypeVehicle = 0;
+                }
+            } else {
+                lockOnVehicle = false;
+                seekingTimeVehicle = 0;
+                lockingEntityVehicle = null;
+                seekingEntityVehicle = null;
+                stopVehicleSeekSound(player);
+            }
+        }
+
+        // 锁定失败
+        if (seekingEntityVehicle != null && (VectorTool.calculateAngle(seekVec, cameraPos.vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(seekingEntityVehicle, 1))) > seekAngle
+                || !SeekTool.NOT_IN_SMOKE.test(seekingEntityVehicle)
+                || !noClip(player, seekingEntityVehicle))) {
+            seekingTimeVehicle = 0;
+            lockingEntityVehicle = null;
+            seekingEntityVehicle = null;
+            lockOnVehicle = false;
+            stopVehicleSeekSound(player);
+        }
+
+        if (lockingEntityVehicle != null && !lockingEntityVehicle.isAlive()) {
+            seekingTimeVehicle = 0;
+            lockOnVehicle = false;
+            lockingEntityVehicle = null;
+            seekingEntityVehicle = null;
+            lockingPosVehicle = null;
+        }
+
+        if (seekingTimeVehicle == 2) {
+            playLockingSound(data, player);
+        }
+
+        if (seekingTimeVehicle > lockTime) {
+            playLockedSound(data, player);
+            if (guideTypeVehicle == 0 && lockingEntityVehicle != null && (!lockingEntityVehicle.getPassengers().isEmpty() || lockingEntityVehicle instanceof VehicleEntity) && player.tickCount % 2 == 0) {
+                PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntityVehicle.getUUID()));
             }
         }
     }
@@ -2285,5 +2286,20 @@ public class ClientEventHandler {
     public static void editModelShake() {
         movePosY = -0.8;
         fireRotTimer = 0.4;
+    }
+
+    public static void stopSoundEvent(ResourceLocation location, SoundSource source) {
+        Minecraft.getInstance().getSoundManager().stop(location, source);
+    }
+
+    public static void stopVehicleSeekSound(Player player) {
+        if (player == null) return;
+        if (player.getVehicle() instanceof VehicleEntity vehicle) {
+            var gunData = vehicle.getGunData(player);
+            if (gunData == null) return;
+
+            var location = gunData.compute().soundInfo.locking.getLocation();
+            stopSoundEvent(location, SoundSource.PLAYERS);
+        }
     }
 }
