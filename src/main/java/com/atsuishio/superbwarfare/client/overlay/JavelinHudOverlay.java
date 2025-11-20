@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
@@ -67,13 +66,6 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             return;
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
             return;
-        Minecraft mc = Minecraft.getInstance();
-        Camera camera = mc.gameRenderer.getMainCamera();
-        Vec3 cameraPos = camera.getPosition();
-
-        Entity decoy = TraceTool.findLookDecoy(player, cameraPos, player.getViewVector(partialTick), 512);
-
-        if (decoy != null && decoy.getType().is(ModTags.EntityTypes.DECOY)) return;
 
         if ((stack.getItem() == ModItems.JAVELIN.get() && ClientEventHandler.zoomPos > 0.8) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && ClientEventHandler.zoom) {
             var data = GunData.from(stack);
@@ -115,44 +107,53 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            Entity targetEntity = ClientEventHandler.lockingEntity;
-            List<Entity> entities = new SeekTool.Builder(player)
-                    .withinRange(data.compute().seekRange)
-                    .withinAngle(data.compute().seekAngle)
-                    .baseFilter()
-                    .heightRange(data.compute().minTargetHeight, data.compute().maxTargetHeight)
-                    .smokeFilter()
-                    .noVehicle()
-                    .noClip()
-                    .notFriendly()
-                    .build();
-            Entity nearestEntity = ClientEventHandler.nearestEntity;
+            Minecraft mc = Minecraft.getInstance();
+            Camera camera = mc.gameRenderer.getMainCamera();
+            Vec3 cameraPos = camera.getPosition();
 
-            if (ClientEventHandler.guideType == 0) {
-                for (var e : entities) {
-                    Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(e, deltaTracker.getGameTimeDeltaPartialTick(true));
+            Entity decoy = TraceTool.findLookDecoy(player, cameraPos, player.getViewVector(deltaTracker.getGameTimeDeltaPartialTick(true)), 512);
+
+            if (decoy == null) {
+                Entity targetEntity = ClientEventHandler.lockingEntity;
+                List<Entity> entities = new SeekTool.Builder(player)
+                        .withinRange(data.compute().seekRange)
+                        .withinAngle(data.compute().seekAngle)
+                        .baseFilter()
+                        .heightRange(data.compute().minTargetHeight, data.compute().maxTargetHeight)
+                        .smokeFilter()
+                        .noVehicle()
+                        .noClip()
+                        .notFriendly()
+                        .build();
+                Entity nearestEntity = ClientEventHandler.nearestEntity;
+
+                if (ClientEventHandler.guideType == 0) {
+                    for (var e : entities) {
+                        Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(e, deltaTracker.getGameTimeDeltaPartialTick(true));
+                        Vec3 point = VectorUtil.worldToScreen(pos);
+                        boolean lockOn = ClientEventHandler.lockOn && e == targetEntity;
+                        boolean nearest = e == nearestEntity;
+
+                        poseStack.pushPose();
+                        float x = (float) point.x;
+                        float y = (float) point.y;
+
+                        RenderHelper.preciseBlitWithColor(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        poseStack.popPose();
+                    }
+                } else {
+                    Vec3 pos = ClientEventHandler.lockingPos;
+                    boolean lockOn = ClientEventHandler.lockOn;
+
                     Vec3 point = VectorUtil.worldToScreen(pos);
-                    boolean lockOn = ClientEventHandler.lockOn && e == targetEntity;
-                    boolean nearest = e == nearestEntity;
+                    if (VectorUtil.canSee(pos)) {
+                        poseStack.pushPose();
+                        float x = (float) point.x;
+                        float y = (float) point.y;
 
-                    poseStack.pushPose();
-                    float x = (float) point.x;
-                    float y = (float) point.y;
-
-                    RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : nearest ? FRAME_TARGET : FRAME, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                }
-            } else {
-                Vec3 pos = ClientEventHandler.lockingPos;
-                boolean lockOn = ClientEventHandler.lockOn;
-
-                Vec3 point = VectorUtil.worldToScreen(pos);
-                if (VectorUtil.canSee(pos)) {
-                    poseStack.pushPose();
-                    float x = (float) point.x;
-                    float y = (float) point.y;
-
-                    RenderHelper.preciseBlit(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 24, 24, 0, 0, 24, 24, 24, 24);
-                    poseStack.popPose();
+                        RenderHelper.preciseBlitWithColor(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        poseStack.popPose();
+                    }
                 }
             }
             poseStack.popPose();
