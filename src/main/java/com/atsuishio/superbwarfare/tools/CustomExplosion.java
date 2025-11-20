@@ -12,8 +12,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
@@ -68,12 +71,12 @@ public class CustomExplosion extends Explosion {
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, Explosion.BlockInteraction pBlockInteraction) {
         this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, pBlockInteraction);
-        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, 4 * radius, 20 + 0.02 * damage, 50 + 0.05 * damage);
+        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, 4 * radius, 20 + 0.2 * radius, 50 + 0.5 * radius);
     }
 
     public CustomExplosion(Level pLevel, @Nullable Entity pSource, @Nullable DamageSource source, float damage, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius) {
         this(pLevel, pSource, source, null, damage, pToBlowX, pToBlowY, pToBlowZ, pRadius, BlockInteraction.KEEP);
-        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, radius, 5 + 0.02 * damage, 2 + 0.002 * damage);
+        ShakeClientMessage.sendToNearbyPlayers(level, pToBlowX, pToBlowY, pToBlowZ, radius, 5 + 0.2 * radius, 2 + 0.02 * radius);
     }
 
     public CustomExplosion setFireTime(int fireTime) {
@@ -170,6 +173,17 @@ public class CustomExplosion extends Explosion {
                             DamageHandler.doDamage(monster, this.damageSource, (float) damageFinal * (1 + 0.2f * this.damageMultiplier));
                         } else {
                             DamageHandler.doDamage(entity, this.damageSource, (float) damageFinal);
+                        }
+
+                        if (entity instanceof LivingEntity living) {
+                            double force = damageFinal * 0.015;
+                            force = ProtectionEnchantment.getExplosionKnockbackAfterDampener(living, force);
+                            Vec3 vec31 = position.vectorTo(living.getBoundingBox().getCenter()).normalize();
+                            if (entity instanceof Player player && !player.isCreative() && !player.isSpectator()) {
+                                entity.setDeltaMovement(entity.getDeltaMovement().add(vec31.scale(force)));
+                            } else {
+                                entity.setDeltaMovement(entity.getDeltaMovement().add(vec31.scale(force)));
+                            }
                         }
 
                         hit = true;

@@ -13,6 +13,7 @@
   "SeekTime": 30,
   "SeekAngle": 20,
   "SeekRange": 384,
+  "MinTargetHeight": 24,
   "SeekType": "HoldZoom",
   "GunType": "DirectLauncher",
   "AmmoType": "superbwarfare:medium_anti_air_missile",

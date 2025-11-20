@@ -50,16 +50,6 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
         this.noCulling = true;
     }
 
-    public WgMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        super(ModEntities.WG_MISSILE.get(), entity, level);
-        this.noCulling = true;
-        this.damage = damage;
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
-        this.durability = 50;
-        this.gravity = 0;
-    }
-
     public WgMissileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
         this(ModEntities.WG_MISSILE.get(), level);
     }
@@ -147,8 +137,8 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
                 toVec = missileVec.vectorTo(lookVec);
             }
 
-            turn(toVec, Mth.clamp(0.3f * tickCount, 0, 20));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
+            turn(toVec, Mth.clamp(0.4f * tickCount, 0, 20));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.77, 0.77, 0.77));
         }
 
         if (this.tickCount > 400 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {

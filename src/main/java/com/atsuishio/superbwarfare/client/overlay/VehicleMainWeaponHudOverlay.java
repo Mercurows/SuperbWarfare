@@ -10,6 +10,8 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModKeyMappings;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -42,6 +44,8 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
     public static final String EMPTY = "@Empty";
 
     private static float lerpLock = 1;
+
+    public static boolean lock = false;
 
     private static final ResourceLocation FRAME_GREEN = Mod.loc("textures/overlay/frame/frame_green.png");
     private static final ResourceLocation FRAME_TARGET = Mod.loc("textures/overlay/frame/frame_target.png");
@@ -114,59 +118,82 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
                         .notFriendly()
                         .build();
 
+                Entity decoy = TraceTool.findLookDecoy(player, cameraPos, seekVec, seekInfo.seekRange);
+
+                if (decoy != null && decoy.getType().is(ModTags.EntityTypes.DECOY)) return;
+
                 for (var e : entities) {
-                    Vec3 pos3 = VectorTool.lerpGetEntityBoundingBoxCenter(e, partialTick);
-                    if (VectorUtil.canSee(pos3) && !seekInfo.onlyLockBlock) {
-                        Vec3 point = VectorUtil.worldToScreen(pos3);
-                        boolean lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e == targetEntity;
-                        boolean nearest = e == nearestEntity;
+                    if (!e.getType().is(ModTags.EntityTypes.DECOY)) {
+                        Vec3 pos3 = VectorTool.lerpGetEntityBoundingBoxCenter(e, partialTick);
+                        if (VectorUtil.canSee(pos3) && !seekInfo.onlyLockBlock) {
+                            Vec3 point = VectorUtil.worldToScreen(pos3);
+                            boolean lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e == targetEntity;
+                            boolean nearest = e == (ClientEventHandler.seekingEntityVehicle == null ? nearestEntity : ClientEventHandler.seekingEntityVehicle);
 
-                        poseStack.pushPose();
-                        float x = (float) point.x;
-                        float y = (float) point.y;
+                            poseStack.pushPose();
+                            float x = (float) point.x;
+                            float y = (float) point.y;
 
-                        if (lockOn) {
-                            RenderHelper.blit(poseStack, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                            nearestEntity = targetEntity;
-                            if (seekInfo.calculateTrajectory) {
-                                Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick), targetEntity.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
-                                Vec3 shootPos = vehicle.getShootPos(player, partialTick).add(shootVector.scale(vehicle.getShootPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick))));
-                                Vec3 point0 = VectorUtil.worldToScreen(shootPos);
+                            if (lockOn) {
+                                lock = true;
+                                RenderHelper.blit(poseStack, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                                nearestEntity = targetEntity;
+                                if (seekInfo.calculateTrajectory) {
+                                    Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick), targetEntity.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
+                                    Vec3 shootPos = vehicle.getShootPos(player, partialTick).add(shootVector.scale(vehicle.getShootPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick))));
+                                    Vec3 point0 = VectorUtil.worldToScreen(shootPos);
 
-                                if (VectorUtil.canSee(shootPos)) {
-                                    poseStack.pushPose();
-                                    float x0 = (float) point0.x;
-                                    float y0 = (float) point0.y;
+                                    if (VectorUtil.canSee(shootPos)) {
+                                        poseStack.pushPose();
+                                        float x0 = (float) point0.x;
+                                        float y0 = (float) point0.y;
 
-                                    Vec3 targetHudPos = new Vec3(x, y, 0);
-                                    Vec3 shootHudPos = new Vec3(x0, y0, 0);
+                                        Vec3 targetHudPos = new Vec3(x, y, 0);
+                                        Vec3 shootHudPos = new Vec3(x0, y0, 0);
 
-                                    RenderHelper.blit(poseStack, SHOOT_INDICATOR, x0 - 12, y0 - 12, 0, 0, 24, 24, 24, 24, 1f);
-                                    poseStack.popPose();
+                                        RenderHelper.blit(poseStack, SHOOT_INDICATOR, x0 - 12, y0 - 12, 0, 0, 24, 24, 24, 24, 1f);
+                                        poseStack.popPose();
 
-                                    double dis = targetHudPos.distanceTo(shootHudPos);
-                                    for (double i = 3; i < dis - 3; i += 3) {
-                                        Vec3 toVec = targetHudPos.vectorTo(shootHudPos).normalize();
-                                        Vec3 p0 = targetHudPos.add(toVec.scale(i));
-                                        RenderHelper.blit(poseStack, BLOCK, (float) (p0.x - 0.5), (float) (p0.y - 0.5), 0, 0, 1, 1, 1, 1, 1f);
+                                        double dis = targetHudPos.distanceTo(shootHudPos);
+                                        for (double i = 3; i < dis - 3; i += 3) {
+                                            Vec3 toVec = targetHudPos.vectorTo(shootHudPos).normalize();
+                                            Vec3 p0 = targetHudPos.add(toVec.scale(i));
+                                            RenderHelper.blit(poseStack, BLOCK, (float) (p0.x - 0.5), (float) (p0.y - 0.5), 0, 0, 1, 1, 1, 1, 1f);
+                                        }
                                     }
                                 }
-                            }
-                        } else if (nearest) {
-                            lerpLock = Mth.lerp(partialTick, lerpLock, ClientEventHandler.seekingTimeVehicle);
-                            float lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0, 20);
-                            if (ClientEventHandler.seekingTimeVehicle > 0) {
-                                RenderHelper.blit(poseStack, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 1f);
-                                RenderHelper.blit(poseStack, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 1f);
-                                RenderHelper.blit(poseStack, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                                RenderHelper.blit(poseStack, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                            }
+                            } else if (nearest && !lock) {
+                                lerpLock = Mth.lerp(partialTick, lerpLock, ClientEventHandler.seekingTimeVehicle);
+                                float lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0, 20);
+                                if (ClientEventHandler.seekingTimeVehicle > 0) {
+                                    RenderHelper.blit(poseStack, IND_1, x - 12, y - 12 - lockTime, 0, 0, 24, 24, 24, 24, 1f);
+                                    RenderHelper.blit(poseStack, IND_2, x - 12, y - 12 + lockTime, 0, 0, 24, 24, 24, 24, 1f);
+                                    RenderHelper.blit(poseStack, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                                    RenderHelper.blit(poseStack, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                                }
 
-                            RenderHelper.blit(poseStack, FRAME_TARGET_TRIANGLE, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        } else {
-                            RenderHelper.blit(poseStack, FRAME_GREEN, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                                if (ClientEventHandler.seekingTimeVehicle == 0) {
+                                    poseStack.pushPose();
+                                    poseStack.translate(x, y, 0);
+                                    String string = "[" + ModKeyMappings.VEHICLE_SEEK.getKey().getDisplayName().getString() + "]";
+                                    int width = Minecraft.getInstance().font.width(string);
+                                    guiGraphics.drawString(
+                                            mc.font,
+                                            string,
+                                            -width / 2,
+                                            10,
+                                            0xFFBD7F,
+                                            false
+                                    );
+                                    poseStack.popPose();
+                                }
+
+                                RenderHelper.blit(poseStack, ClientEventHandler.seekingTimeVehicle > 0 ? FRAME_TARGET : FRAME_TARGET_TRIANGLE, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                            } else {
+                                RenderHelper.blit(poseStack, FRAME_GREEN, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                            }
+                            poseStack.popPose();
                         }
-                        poseStack.popPose();
                     }
                 }
             } else {
@@ -186,6 +213,23 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
                             RenderHelper.blit(poseStack, IND_3, x - 12 - lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
                             RenderHelper.blit(poseStack, IND_4, x - 12 + lockTime, y - 12, 0, 0, 24, 24, 24, 24, 1f);
                         }
+
+                        if (ClientEventHandler.seekingTimeVehicle == 0) {
+                            poseStack.pushPose();
+                            poseStack.translate(x, y, 0);
+                            String string = "[" + ModKeyMappings.VEHICLE_SEEK.getKey().getDisplayName().getString() + "]";
+                            int width = Minecraft.getInstance().font.width(string);
+                            guiGraphics.drawString(
+                                    mc.font,
+                                    string,
+                                    -width / 2,
+                                    10,
+                                    0xFFBD7F,
+                                    false
+                            );
+                            poseStack.popPose();
+                        }
+
                         RenderHelper.blit(poseStack, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
                         poseStack.popPose();
                     }

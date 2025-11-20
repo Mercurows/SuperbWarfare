@@ -6,7 +6,9 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -61,6 +63,12 @@ public class IglaHudOverlay implements IGuiOverlay {
             return;
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
             return;
+        Minecraft mc = Minecraft.getInstance();
+        Vec3 cameraPos = camera.getPosition();
+
+        Entity decoy = TraceTool.findLookDecoy(player, cameraPos, player.getViewVector(partialTick), 512);
+
+        if (decoy != null && decoy.getType().is(ModTags.EntityTypes.DECOY)) return;
 
         if ((stack.getItem() == ModItems.IGLA_9K38.get() && ClientEventHandler.zoomPos > 0.83) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && ClientEventHandler.zoom) {
             var data = GunData.from(stack);

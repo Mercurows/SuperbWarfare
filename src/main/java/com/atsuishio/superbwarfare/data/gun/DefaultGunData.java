@@ -300,6 +300,12 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("SeekRange")
     public double seekRange = 384;
 
+    @SerializedName("MinTargetHeight")
+    public double minTargetHeight = 0;
+
+    @SerializedName("MaxTargetHeight")
+    public double maxTargetHeight = 114514;
+
     @SerializedName("SoundInfo")
     public SoundInfo soundInfo = new SoundInfo();
 

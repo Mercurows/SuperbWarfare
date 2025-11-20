@@ -6,12 +6,15 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -60,6 +63,13 @@ public class JavelinHudOverlay implements IGuiOverlay {
             return;
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
             return;
+        Minecraft mc = Minecraft.getInstance();
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.getPosition();
+
+        Entity decoy = TraceTool.findLookDecoy(player, cameraPos, player.getViewVector(partialTick), 512);
+
+        if (decoy != null && decoy.getType().is(ModTags.EntityTypes.DECOY)) return;
 
         if ((stack.getItem() == ModItems.JAVELIN.get() && ClientEventHandler.zoomPos > 0.8) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && ClientEventHandler.zoom) {
             var data = GunData.from(stack);
@@ -99,10 +109,17 @@ public class JavelinHudOverlay implements IGuiOverlay {
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
-
             Entity targetEntity = ClientEventHandler.lockingEntity;
-            List<Entity> entities = SeekTool.seekLivingEntities(player, data.compute().seekRange, data.compute().seekAngle * fovAdjust);
+            List<Entity> entities = new SeekTool.Builder(player)
+                    .withinRange(data.compute().seekRange)
+                    .withinAngle(data.compute().seekAngle)
+                    .baseFilter()
+                    .heightRange(data.compute().minTargetHeight, data.compute().maxTargetHeight)
+                    .smokeFilter()
+                    .noVehicle()
+                    .noClip()
+                    .notFriendly()
+                    .build();
             Entity nearestEntity = ClientEventHandler.nearestEntity;
 
             if (ClientEventHandler.guideType == 0) {

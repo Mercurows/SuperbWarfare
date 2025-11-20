@@ -184,10 +184,6 @@ public class ArtilleryEntity extends VehicleEntity implements WeaponVehicleEntit
     @Override
     public void baseTick() {
         super.baseTick();
-        if (tickCount == 1) {
-            entityData.set(SHOOT_VEC, getForward().toVector3f());
-        }
-
         for (int i = 0; i < getMaxBarrel(); i++) {
             var animCounters = entityData.get(BARREL_ANIM);
             if (i < animCounters.size() && animCounters.getInt(i) > 0) {

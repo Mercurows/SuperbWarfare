@@ -634,6 +634,7 @@ public class ClickHandler {
                 return;
             }
             NetworkRegistry.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(false));
+            ClientEventHandler.stopVehicleReloadSound(player);
         }
 
     }

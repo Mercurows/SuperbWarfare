@@ -13,6 +13,7 @@
   "SeekTime": 20,
   "SeekAngle": 10,
   "SeekRange": 384,
+  "MaxTargetHeight": 72,
   "SeekType": "HoldFire",
   "GunType": "DirectLauncher",
   "AvailableFireModes": [

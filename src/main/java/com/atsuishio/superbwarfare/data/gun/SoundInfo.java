@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 
 public class SoundInfo {
 
@@ -42,10 +43,10 @@ public class SoundInfo {
     public SoundEvent reloadEmpty;
 
     @SerializedName("VehicleReload")
-    public SoundEvent vehicleReload;
+    public SoundEvent vehicleReload = SoundEvents.EMPTY;;
 
     @SerializedName("VehicleReload3p")
-    public SoundEvent vehicleReload3p;
+    public SoundEvent vehicleReload3p = SoundEvents.EMPTY;;
 
     @SerializedName("VehicleReloadSoundTime")
     public int vehicleReloadSoundTime = 0;
@@ -68,9 +69,9 @@ public class SoundInfo {
     public SoundEvent change;
 
     @SerializedName("Locking")
-    public SoundEvent locking;
+    public SoundEvent locking = SoundEvents.EMPTY;
     @SerializedName("Locked")
-    public SoundEvent locked;
+    public SoundEvent locked = SoundEvents.EMPTY;
 
     @SerializedName("FireSoundInstances")
     public SoundEvent fireSoundInstances;
