@@ -314,7 +314,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
             // 相对于最左边的偏移量
             float xOffset;
             // 向右偏移的最长长度
-            var maxXOffset = 35;
+            var maxXOffset = 37;
 
             var currentSlotTimer = WEAPON_SLOTS_TIMER[i];
             var progress = currentSlotTimer.getProgress(currentTime);
@@ -391,7 +391,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 String string = "[" + ModKeyMappings.FIRE_MODE.getKey().getDisplayName().getString() + "]";
                 int width = Minecraft.getInstance().font.width(string);
                 pose.pushPose();
-                pose.translate(w - 9.5 + xOffset, h - frameIndex * 18 - 14, 0);
+                pose.translate(w - 10.5 + xOffset, h - frameIndex * 18 - 14, 0);
 
                 pose.pushPose();
                 pose.scale(0.6f, 0.6f, 0);
