@@ -176,8 +176,8 @@
       "SoundInfo": {
         "Fire1P": "superbwarfare:bmp_2_cannon_fire_1p",
         "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
-        "Fire3PFar": "superbwarfare:lav_150_cannon_far",
-        "Fire3PVeryFar": "superbwarfare:lav_150_cannon_veryfar",
+        "Fire3PFar": "superbwarfare:mi_28_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,

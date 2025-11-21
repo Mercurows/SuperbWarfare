@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -158,7 +159,7 @@ public class Kh39Entity extends MissileProjectile implements GeoEntity, Explosiv
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.85, 0.85, 0.85));
             boolean lostTarget = (VectorTool.calculateAngle(getLookAngle(), toVec) > 170);
             if (!lostTarget) {
-                turn(toVec, 14);
+                turn(toVec, Mth.clamp((tickCount - 8) * 0.5f, 0, 15));
             }
         } else {
             this.setDeltaMovement(this.getDeltaMovement().add(0, -0.06, 0));

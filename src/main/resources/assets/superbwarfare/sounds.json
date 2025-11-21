@@ -3894,14 +3894,6 @@
       }
     ]
   },
-  "mi_28_cannon_fire_3p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_fire_3p",
-        "stream": false
-      }
-    ]
-  },
   "mi_28_cannon_far": {
     "sounds": [
       {

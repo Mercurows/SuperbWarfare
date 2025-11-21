@@ -289,7 +289,8 @@
         "SeekDirection": "Passenger",
         "SeekRange": 384,
         "SeekAngle": 20,
-        "SeekTime": 10
+        "SeekTime": 10,
+        "OnlyLockEntity": true
       },
       "AmmoType": [
         {

@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
@@ -39,15 +42,6 @@ public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity
     public Ru9m336MissileEntity(EntityType<? extends Ru9m336MissileEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-    }
-
-    public Ru9m336MissileEntity(Entity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        super(ModEntities.RU_9K33_MISSILE.get(), entity, level);
-        this.noCulling = true;
-        this.damage = damage;
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
-        this.durability = 0;
     }
 
     @Override
@@ -128,39 +122,37 @@ public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity
             }
         }
 
-        if (level() instanceof ServerLevel) {
-            if (entity != null && !entityData.get(TARGET_UUID).equals("none")) {
-                if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
-                    entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
+        if (entity != null && !entityData.get(TARGET_UUID).equals("none")) {
+            if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
+                entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
+            }
+
+
+            Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
+            Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
+
+            if (this.tickCount > 1) {
+
+                lostTarget = VectorTool.calculateAngle(getDeltaMovement(), toVec) > 120 && !lostTarget;
+
+                if (!lostTarget) {
+                    turn(toVec, Mth.clamp((tickCount - 1) * 0.5f, 0, 15));
+                    this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
+
+                    //近炸
+                    if (position().distanceToSqr(entity.position()) < 25) {
+                        DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+                        if (entity instanceof LivingEntity) {
+                            entity.invulnerableTime = 0;
+                        }
+                        causeExplode(position());
+                        this.discard();
+                    }
+
                 }
 
-
-                Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
-                Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
-
-                if (this.tickCount > 1) {
-
-                    lostTarget = VectorTool.calculateAngle(getDeltaMovement(), toVec) > 120 && !lostTarget;
-
-                    if (!lostTarget) {
-                        turn(toVec, Mth.clamp(tickCount, 0, 40));
-                        this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(Mth.clamp(0.3 * tickCount, 1, 8))));
-
-                        //近炸
-                        if (position().distanceToSqr(entity.position()) < 25) {
-                            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
-                            if (entity instanceof LivingEntity) {
-                                entity.invulnerableTime = 0;
-                            }
-                            causeExplode(position());
-                            this.discard();
-                        }
-
-                    }
-
-                    if (lostTarget) {
-                        this.entityData.set(TARGET_UUID, "none");
-                    }
+                if (lostTarget) {
+                    this.entityData.set(TARGET_UUID, "none");
                 }
             }
         }

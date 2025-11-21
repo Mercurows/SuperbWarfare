@@ -116,11 +116,13 @@
       "ExplosionRadius": 4,
       "HeatPerShoot": 7,
       "NaturalCooldown": 1,
+      "RecoilTime": 31,
+      "RecoilForce": 0.62,
       "Spread": 0.25,
       "Name": "weapon.superbwarfare.30mm_2a42",
       "SoundInfo": {
         "Fire1P": "superbwarfare:mi_28_cannon_fire_1p",
-        "Fire3P": "superbwarfare:mi_28_cannon_fire_3p",
+        "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
         "Fire3PFar": "superbwarfare:mi_28_cannon_far",
         "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
         "Change": "superbwarfare:into_cannon"
@@ -257,7 +259,8 @@
         "SeekAngle": 20,
         "SeekTime": 20,
         "MaxTargetHeight": 32,
-        "MinTargetSize": 0.9
+        "MinTargetSize": 0.9,
+        "OnlyLockEntity": true
       },
       "ShootPos": {
         "Transform": "Vehicle",
@@ -301,7 +304,8 @@
         "SeekAngle": 20,
         "SeekTime": 20,
         "MinTargetHeight": 32,
-        "MinTargetSize": 0.1
+        "MinTargetSize": 0.1,
+        "OnlyLockEntity": true
       },
       "ShootPos": {
         "Transform": "Vehicle",

@@ -221,7 +221,6 @@ public class ClientEventHandler {
     public static Vec3 seekingPosVehicle;
     public static Vec3 lockingPosVehicle;
     public static int seekingTimeVehicle;
-    public static int guideTypeVehicle;
     public static boolean lockOnVehicle;
 
     public static UUID lastOperatingGunUUID = null;
@@ -612,7 +611,7 @@ public class ClientEventHandler {
             seekFailure(player);
         }
 
-        if ((nearestEntityVehicle == null || seekWeaponInfo.onlyLockBlock) && !seekWeaponInfo.onlyLockEntity) {
+        if (seekWeaponInfo.onlyLockBlock) {
             // 锁定方块
             BlockHitResult result = player.level().clip(new ClipContext(cameraPos, cameraPos.add(seekVec.scale(seekRange)),
                     ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
@@ -636,11 +635,10 @@ public class ClientEventHandler {
                 } else {
                     seekFailure(player);
                 }
-                guideTypeVehicle = 1;
             } else {
                 seekFailure(player);
             }
-        } else {
+        } else if (seekWeaponInfo.onlyLockEntity) {
             // 锁定实体
             if (seekingTimeVehicle > lockTime + 2 && !lockOnVehicle) {
                 lockingEntityVehicle = seekingEntityVehicle;
@@ -656,7 +654,6 @@ public class ClientEventHandler {
                     if ((!seekingEntityVehicle.getPassengers().isEmpty() || seekingEntityVehicle instanceof VehicleEntity) && player.tickCount % 3 == 0 && !lockOnVehicle) {
                         PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(false, seekingEntityVehicle.getUUID()));
                     }
-                    guideTypeVehicle = 0;
                 }
             } else {
                 seekFailure(player);
@@ -680,7 +677,7 @@ public class ClientEventHandler {
 
         if (seekingTimeVehicle > lockTime) {
             playLockedSound(data, player);
-            if (guideTypeVehicle == 0 && lockingEntityVehicle != null && (!lockingEntityVehicle.getPassengers().isEmpty() || lockingEntityVehicle instanceof VehicleEntity) && player.tickCount % 2 == 0) {
+            if (seekWeaponInfo.onlyLockEntity && lockingEntityVehicle != null && (!lockingEntityVehicle.getPassengers().isEmpty() || lockingEntityVehicle instanceof VehicleEntity) && player.tickCount % 2 == 0) {
                 PacketDistributor.sendToServer(new SeekingWeaponWarningMessage(true, lockingEntityVehicle.getUUID()));
             }
         }

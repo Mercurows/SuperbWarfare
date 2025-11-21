@@ -73,7 +73,10 @@
         "Fire3P": "superbwarfare:plz_05_fire_3p",
         "Fire3PFar": "superbwarfare:plz_05_far",
         "Fire3PVeryFar": "superbwarfare:plz_05_veryfar",
-        "VehicleReload": "superbwarfare:plz_05_reload"
+        "VehicleReload": "superbwarfare:plz_05_reload",
+        "CancellableSounds": [
+          "superbwarfare:plz_05_reload"
+        ]
       },
       "SoundRadius": 32,
       "AmmoType": [
