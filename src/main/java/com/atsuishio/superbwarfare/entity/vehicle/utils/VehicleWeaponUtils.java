@@ -165,7 +165,8 @@ public final class VehicleWeaponUtils {
     public static void releaseDecoy(VehicleEntity vehicle) {
         if (vehicle.decoyInputDown()) {
             if (vehicle.getEntityData().get(DECOY_READY) && vehicle.level() instanceof ServerLevel) {
-                for (int i = 0; i < 48; i += 4) {
+                for (int i = 0; i < 54; i += 6) {
+                    int finalI = i;
                     Mod.queueServerWork(i, () -> {
                         Matrix4f transform = vehicle.getVehicleTransform(1);
 
@@ -177,8 +178,8 @@ public final class VehicleWeaponUtils {
                         Vec3 shootVec1 = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
                         Vec3 shootVec2 = new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z);
 
-                        shootDecoy(vehicle, shootVecO.vectorTo(shootVec1).normalize());
-                        shootDecoy(vehicle, shootVecO.vectorTo(shootVec2).normalize());
+                        shootDecoy(vehicle, shootVecO.vectorTo(shootVec1).normalize(), finalI == 6);
+                        shootDecoy(vehicle, shootVecO.vectorTo(shootVec2).normalize(), finalI == 6);
                     });
                 }
 
@@ -194,13 +195,13 @@ public final class VehicleWeaponUtils {
         }
     }
 
-    public static void shootDecoy(VehicleEntity vehicle, Vec3 shootVec) {
+    public static void shootDecoy(VehicleEntity vehicle, Vec3 shootVec, boolean first) {
         FlareDecoyEntity flareDecoyEntity = new FlareDecoyEntity(vehicle.level());
 
         flareDecoyEntity.setPos(vehicle.getX() + vehicle.getDeltaMovement().x, vehicle.getY() + 0.5 + vehicle.getDeltaMovement().y, vehicle.getZ() + vehicle.getDeltaMovement().z);
         flareDecoyEntity.decoyShoot(vehicle, shootVec, (float) (vehicle.getDeltaMovement().length() * 0.3f + 0.7), 8);
 
         vehicle.level().addFreshEntity(flareDecoyEntity);
-        vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELEASE.get(), vehicle.getSoundSource(), 2, 1);
+        vehicle.level().playSound(null, vehicle, first ? ModSounds.DECOY_RELEASE_FIRST.get(): ModSounds.DECOY_RELEASE.get(), vehicle.getSoundSource(), 2, 1);
     }
 }

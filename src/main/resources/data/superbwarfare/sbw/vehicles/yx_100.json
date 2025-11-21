@@ -314,8 +314,8 @@
       "Crosshair": "@VehicleCommonSeekMissile",
       "Name": "weapon.superbwarfare.swarm_drone",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:decoy_release",
-        "Fire3P": "superbwarfare:decoy_release",
+        "Fire1P": "superbwarfare:yx_100_swarm_drone_release",
+        "Fire3P": "superbwarfare:yx_100_swarm_drone_release",
         "VehicleReload3p": "superbwarfare:missile_reload",
         "VehicleReloadSoundTime": 7
       },

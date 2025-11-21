@@ -137,6 +137,7 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> SMALL_ROCKET_FIRE_3P = REGISTRY.register("small_rocket_fire_3p", () -> SoundEvent.createVariableRangeEvent(Mod.loc("small_rocket_fire_3p")));
     public static final RegistryObject<SoundEvent> DECOY_RELEASE = REGISTRY.register("decoy_release", () -> SoundEvent.createVariableRangeEvent(Mod.loc("decoy_release")));
+    public static final RegistryObject<SoundEvent> DECOY_RELEASE_FIRST = REGISTRY.register("decoy_release_first", () -> SoundEvent.createVariableRangeEvent(Mod.loc("decoy_release_first")));
     public static final RegistryObject<SoundEvent> DECOY_RELOAD = REGISTRY.register("decoy_reload", () -> SoundEvent.createVariableRangeEvent(Mod.loc("decoy_reload")));
 
     public static final RegistryObject<SoundEvent> WHEEL_VEHICLE_STEP = REGISTRY.register("wheel_vehicle_step", () -> SoundEvent.createVariableRangeEvent(Mod.loc("wheel_vehicle_step")));
