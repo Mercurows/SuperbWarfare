@@ -3653,16 +3653,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleMotionUtils.collideBlocks(this);
     }
 
-    @Deprecated(forRemoval = true, since = "0.8.9")
-    public boolean canCollideHardBlock() {
-        return false;
-    }
-
-    @Deprecated(forRemoval = true, since = "0.8.9")
-    public boolean canCollideBlockBeastly() {
-        return false;
-    }
-
     @Override
     public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
         if (!this.level().isClientSide()) {

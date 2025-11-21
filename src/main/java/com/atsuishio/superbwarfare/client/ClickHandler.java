@@ -95,7 +95,7 @@ public class ClickHandler {
 
     private static boolean cancelZoomKey(Player player, ItemStack stack) {
         return stack.getItem() instanceof GunItem
-                || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.getFirstPassenger() == player && !stack.has(DataComponents.FOOD));
+                || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && !stack.has(DataComponents.FOOD));
     }
 
     @SubscribeEvent
