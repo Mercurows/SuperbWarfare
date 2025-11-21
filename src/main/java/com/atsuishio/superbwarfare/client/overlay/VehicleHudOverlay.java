@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -50,6 +51,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
     private static final ResourceLocation PASSENGER = Mod.loc("textures/overlay/vehicle/base/passenger.png");
 
     private static final ResourceLocation SELECTED = Mod.loc("textures/overlay/vehicle/weapon/frame/selected.png");
+    private static final ResourceLocation SWITCH_AMMO = Mod.loc("textures/overlay/vehicle/weapon/frame/switch_ammo.png");
     private static final ResourceLocation NUMBER = Mod.loc("textures/overlay/vehicle/weapon/frame/number.png");
 
     private static final ResourceLocation[] FRAMES = {
@@ -333,6 +335,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
                 );
 
                 preciseBlit(guiGraphics, SELECTED, w - 95, startY, 100, 0, 0, 8, 8, 8, 8);
+
                 var ammoCount = vehicle.getAmmoCount(player);
 
                 if (ammoCount == Integer.MAX_VALUE) {
@@ -381,6 +384,32 @@ public class VehicleHudOverlay implements IGuiOverlay {
                             true
                     );
                 }
+            }
+
+            int size = data.getDefault().getAmmoConsumers().size();
+            if (size > 1) {
+                String string = "[" + ModKeyMappings.FIRE_MODE.getKey().getDisplayName().getString() + "]";
+                int width = Minecraft.getInstance().font.width(string);
+                pose.pushPose();
+                pose.translate(w - 9.5 + xOffset, h - frameIndex * 18 - 14, 0);
+
+                pose.pushPose();
+                pose.scale(0.6f, 0.6f, 0);
+
+                guiGraphics.drawString(
+                        Minecraft.getInstance().font,
+                        string,
+                        0,
+                        0,
+                        0xFFFFFF,
+                        false
+                );
+
+                preciseBlit(guiGraphics, SWITCH_AMMO, -14 + ((float) width / 2), -10.5f, 100, 0, 0, 28, 28, 28, 28);
+
+                pose.popPose();
+
+                pose.popPose();
             }
 
             RenderSystem.disableDepthTest();

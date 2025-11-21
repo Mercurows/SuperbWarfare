@@ -46,6 +46,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
             Map.entry("@VehicleUsTank", Mod.loc("textures/overlay/vehicle/crosshair/us_tank.png")),
             Map.entry("@VehicleRuApc", Mod.loc("textures/overlay/vehicle/crosshair/ru_apc.png")),
             Map.entry("@VehicleCommonMissile", Mod.loc("textures/overlay/vehicle/crosshair/common_missile.png")),
+            Map.entry("@VehicleCommonSeekMissile", Mod.loc("textures/overlay/vehicle/crosshair/common_seek_missile.png")),
             Map.entry("@VehicleCommonGun", Mod.loc("textures/overlay/vehicle/crosshair/common_gun.png")),
             Map.entry("@VehicleCommonGunDynamic", Mod.loc("textures/overlay/vehicle/crosshair/common_gun.png")),
             Map.entry("@VehicleCommonCannon", Mod.loc("textures/overlay/vehicle/crosshair/common_cannon.png")),
@@ -176,6 +177,15 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                     int l = (screenHeight - j) / 2;
                     preciseBlit(guiGraphics, texture, k, l, 0, 0, i, j, i, j);
                     VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
+                } else if (crosshairPath.equals("@VehicleCommonSeekMissile") && data.compute().seekWeaponInfo != null && data.compute().seekWeaponInfo.onlyLockBlock) {
+                    Vec3 vec3 = ClientEventHandler.seekingPosVehicle;
+                    if (ClientEventHandler.seekingTimeVehicle > 0) {
+                        vec3 = ClientEventHandler.lockingPosVehicle;
+                    }
+                    String string = "[ " + FormatTool.format0D(vec3.x) + ", " + FormatTool.format0D(vec3.y) + ", " + FormatTool.format0D(vec3.z) + " ]";
+                    int width = Minecraft.getInstance().font.width(string);
+                    RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                    guiGraphics.drawString(Minecraft.getInstance().font, string, (float) screenWidth / 2 - (float) width / 2, (float) screenHeight / 2 + 78, color, false);
                 } else {
                     RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
