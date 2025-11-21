@@ -127,8 +127,7 @@
         "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
-      "Crosshair": "@VehicleFixedPoint",
-      "CrosshairZooming": "@VehicleCommonGunDynamic",
+      "Crosshair": "@VehicleCommonGunDynamic",
       "CrosshairColor": "0xFFC700",
       "SoundRadius": 24,
       "AmmoType": "superbwarfare:small_shell",
@@ -210,8 +209,7 @@
       "DefaultZoom": 3,
       "Magazine": 8,
       "Template": "@Missile",
-      "Crosshair": "@VehicleFixedPoint",
-      "CrosshairZooming": "@VehicleCommonMissile",
+      "Crosshair": "@VehicleCommonMissile",
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.0625, 5.625],
@@ -279,8 +277,7 @@
         "Locked": "superbwarfare:javelin_locked"
       },
       "CrosshairColor": "0xFFC700",
-      "Crosshair": "@VehicleFixedPoint",
-      "CrosshairZooming": "@VehicleCommonMissile",
+      "Crosshair": "@VehicleCommonSeekMissile",
       "SoundRadius": 8,
       "AvailableFireModes": ["Semi"]
     },
@@ -323,8 +320,7 @@
         "Locked": "superbwarfare:javelin_locking"
       },
       "CrosshairColor": "0xFFC700",
-      "Crosshair": "@VehicleFixedPoint",
-      "CrosshairZooming": "@VehicleCommonMissile",
+      "Crosshair": "@VehicleCommonSeekMissile",
       "SoundRadius": 8
     }
   },
