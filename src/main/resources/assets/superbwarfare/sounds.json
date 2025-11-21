@@ -2646,6 +2646,14 @@
       }
     ]
   },
+  "decoy_release_first": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/common/decoy_release_first",
+        "stream": false
+      }
+    ]
+  },
   "decoy_release": {
     "sounds": [
       {
@@ -2909,6 +2917,14 @@
         "attenuation_distance": 64,
         "stream": true,
         "name": "superbwarfare:vehicle/yx_100/yx_100_engine"
+      }
+    ]
+  },
+  "yx_100_swarm_drone_release": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/yx_100/yx_100_swarm_drone_release",
+        "stream": false
       }
     ]
   },

@@ -3628,11 +3628,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleWeaponUtils.releaseDecoy(this);
     }
 
-    @SuppressWarnings("unused")
-    @Deprecated(forRemoval = true, since = "0.8.9")
-    public void shootDecoy(Vec3 shootVec) {
-    }
-
     // 惯性倾斜
     public void inertiaRotate(float multiplier) {
         this.setXRot(this.getXRot() - 0.5f * (float) (this.getAcceleration() * multiplier));
@@ -3640,10 +3635,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void terrainCompact(float width, float length) {
         VehicleMotionUtils.terrainCompact(this, width, length);
-    }
-
-    public float[] terrainCompactTrack(float width, float length) {
-        return VehicleMotionUtils.terrainCompactTrack(this, width, length);
     }
 
     public Matrix4f getWheelsTransform(float partialTicks) {
