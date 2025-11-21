@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -146,7 +147,13 @@ public class LandVehicleHud {
             gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(100 - heal)), screenWidth / 2 - 165, screenHeight / 2 - 46, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2), false);
 
             // 诱饵
-            gui.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), screenWidth / 2 - 165, screenHeight / 2 - 36, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
+            if (vehicle.hasDecoy() && player == vehicle.getFirstPassenger()) {
+                if (vehicle.getDecoyState().equals("READY")) {
+                    gui.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.smoke.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), screenWidth / 2 - 165, screenHeight / 2 - 36, color, false);
+                } else {
+                    gui.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.smoke.reloading"), screenWidth / 2 - 165, screenHeight / 2 - 36, 0xFF0000, false);
+                }
+            }
 
             VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(gui, vehicle, player, vehicle.getGunData(player), mc.font, screenWidth, screenHeight, color);
         }

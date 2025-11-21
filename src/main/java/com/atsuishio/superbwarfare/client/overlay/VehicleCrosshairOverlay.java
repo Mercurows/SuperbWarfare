@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ResourceOnceLogger;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
@@ -219,12 +220,12 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                 VehicleMainWeaponHudOverlay.renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font);
 
                 if (player == vehicle.getFirstPassenger()) {
-                    double health = 1 - vehicle.getHealth() / vehicle.getMaxHealth();
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("HP " +
-                            FormatTool.format0D(100 * vehicle.getHealth() / vehicle.getMaxHealth())), 30, 1, Mth.hsvToRgb(0F, (float) health, 1F), false);
-
                     if (vehicle.hasDecoy()) {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SMOKE " + vehicle.getDecoyState()), 30, 11, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
+                        if (vehicle.getDecoyState().equals("READY")) {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.smoke.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), 30, 1, -1, false);
+                        } else {
+                            guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.smoke.reloading"), 30, 1, 0xFF0000, false);
+                        }
                     }
                 }
 

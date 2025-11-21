@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -207,7 +208,13 @@ public class HelicopterHud {
                 gui.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72, "km/h")),
                         screenWidth / 2 - 140, screenHeight / 2, color, false);
 
-                gui.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), screenWidth / 2 - 160, screenHeight / 2 - 50, vehicle.getDecoyState().equals("READY") ? color : 0xFF0000, false);
+                if (vehicle.hasDecoy()) {
+                    if (vehicle.getDecoyState().equals("READY")) {
+                        gui.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), screenWidth / 2 - 160, screenHeight / 2 - 50, color, false);
+                    } else {
+                        gui.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.reloading"), screenWidth / 2 - 160, screenHeight / 2 - 50, 0xFF0000, false);
+                    }
+                }
                 var component = vehicle.firstPersonAmmoComponent(data, player);
 
                 int heat = vehicle.getWeaponHeat(player);
@@ -241,7 +248,11 @@ public class HelicopterHud {
                 VehicleMainWeaponHudOverlay.renderWeaponInfoThird(gui, vehicle, player, data, mc.font);
 
                 if (vehicle.hasDecoy()) {
-                    gui.drawString(Minecraft.getInstance().font, Component.literal("FLARE " + vehicle.getDecoyState()), 30, 1, vehicle.getDecoyState().equals("READY") ? -1 : 0xFF0000, false);
+                    if (vehicle.getDecoyState().equals("READY")) {
+                        gui.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), 30, 1, -1, false);
+                    } else {
+                        gui.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.reloading"), 30, 1, 0xFF0000, false);
+                    }
                 }
 
                 poseStack.popPose();

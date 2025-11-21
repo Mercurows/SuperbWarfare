@@ -770,6 +770,10 @@
   "weapon.superbwarfare.kh_39_missile": "KH-39产品305对地导弹 %1$s",
   "weapon.superbwarfare.swarm_drone": "蜂群无人机 %1$s",
   "weapon.superbwarfare.laser": "激光炮 %1$s",
+  "superbwarfare.flare.ready": "干扰弹 就绪",
+  "superbwarfare.flare.reloading": "干扰弹 装填中",
+  "superbwarfare.smoke.ready": "烟幕 就绪",
+  "superbwarfare.smoke.reloading": "烟幕 装填中",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",
