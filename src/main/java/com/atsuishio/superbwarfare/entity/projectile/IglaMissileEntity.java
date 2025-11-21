@@ -140,52 +140,50 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity, E
             }
         }
 
-        if (level() instanceof ServerLevel) {
-            if (entity != null && !entityData.get(TARGET_UUID).equals("none")) {
-                if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
-                    entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
+        if (entity != null && !entityData.get(TARGET_UUID).equals("none")) {
+            if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
+                entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : ModSounds.MISSILE_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
+            }
+
+
+            Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
+            Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
+
+            if (this.tickCount > 1) {
+
+                lostTarget = VectorTool.calculateAngle(getDeltaMovement(), toVec) > 120 && !lostTarget;
+
+                if (getOwner() instanceof Player player && player.getMainHandItem().is(ModItems.IGLA_9K38.get()) && !lost) {
+                    var handItem = player.getMainHandItem();
+                    var data = GunData.from(handItem);
+                    lost = !data.zooming.get();
                 }
 
+                if (!lostTarget && !lost) {
+                    turn(toVec, Mth.clamp((tickCount - 1) * 0.5f, 0, 15));
+                    this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
 
-                Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
-                Vec3 toVec = RangeTool.calculateFiringSolution(position(), targetPos, entity.getDeltaMovement(), getDeltaMovement().length(), 0);
-
-                if (this.tickCount > 1) {
-
-                    lostTarget = VectorTool.calculateAngle(getDeltaMovement(), toVec) > 120 && !lostTarget;
-
-                    if (getOwner() instanceof Player player && player.getMainHandItem().is(ModItems.IGLA_9K38.get()) && !lost) {
-                        var handItem = player.getMainHandItem();
-                        var data = GunData.from(handItem);
-                        lost = !data.zooming.get();
-                    }
-
-                    if (!lostTarget && !lost) {
-                        turn(toVec, Mth.clamp(tickCount, 0, 40));
-                        this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
-
-                        //近炸
-                        if (position().distanceToSqr(entity.position()) < 25) {
-                            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
-                            if (entity instanceof LivingEntity) {
-                                entity.invulnerableTime = 0;
-                            }
-                            causeExplode(position());
-                            this.discard();
+                    //近炸
+                    if (position().distanceToSqr(entity.position()) < 25) {
+                        DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+                        if (entity instanceof LivingEntity) {
+                            entity.invulnerableTime = 0;
                         }
-
+                        causeExplode(position());
+                        this.discard();
                     }
 
-                    if (lostTarget) {
-                        this.entityData.set(TARGET_UUID, "none");
-                    }
+                }
+
+                if (lostTarget) {
+                    this.entityData.set(TARGET_UUID, "none");
                 }
             }
+        }
 
-            if (lost) {
-                setDeltaMovement(getDeltaMovement().add(0, 0.05, 0));
-                this.entityData.set(TARGET_UUID, "none");
-            }
+        if (lost) {
+            setDeltaMovement(getDeltaMovement().add(0, 0.05, 0));
+            this.entityData.set(TARGET_UUID, "none");
         }
 
         if (this.tickCount > 200 || this.isInWater()) {

@@ -101,7 +101,7 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
             Vec3 cameraPos = camera.getPosition();
             int seekTime = seekInfo.seekTime;
 
-            if (ClientEventHandler.guideTypeVehicle == 0) {
+            if (seekInfo.onlyLockEntity) {
                 Entity targetEntity = ClientEventHandler.lockingEntityVehicle;
                 Entity nearestEntity = ClientEventHandler.nearestEntityVehicle;
                 Vec3 seekVec = vehicle.getSeekVec(player, partialTick);

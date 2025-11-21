@@ -531,7 +531,7 @@ public final class VehicleEngineUtils {
         float lift = engineInfo.liftSpeed;
         float speedRate = engineInfo.speedRate;
         float gearRotateAngle = engineInfo.gearRotateAngle;
-        int energyCost = (int) (engineInfo.energyCostRate);
+        int energyCost = (int) (engineInfo.energyCostRate * Mth.abs(vehicle.getEntityData().get(POWER)));
 
         float f = (float) Mth.clamp(Math.max((vehicle.onGround() ? 0.819f : 0.82f) - 0.005 * vehicle.getDeltaMovement().length(), 0.5) + 0.001f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90, 0.01, 0.99);
 
@@ -561,18 +561,20 @@ public final class VehicleEngineUtils {
                     vehicle.setXRot(Mth.clamp(vehicle.getXRot() + 0.1f, -89, 89));
                 }
             } else if (passenger instanceof Player) {
-                if (!vehicle.engineStart && vehicle.forwardInputDown()) {
-                    vehicle.engineStart = true;
-                    vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
-                }
+                if (vehicle.getEnergy() > energyCost) {
+                    if (!vehicle.engineStart && vehicle.forwardInputDown()) {
+                        vehicle.engineStart = true;
+                        if (vehicle.getEntityData().get(POWER) > 0) {
+                            vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
+                        }
+                    }
 
-                if (vehicle.getEnergy() > 0) {
                     if (vehicle.forwardInputDown()) {
-                        vehicle.getEntityData().set(POWER, (float) Mth.clamp(vehicle.getEntityData().get(POWER) + 0.0035f * powerAdd, -0.1, 1));
+                        vehicle.getEntityData().set(POWER, (float) Mth.clamp(vehicle.getEntityData().get(POWER) + 0.0045f * powerAdd, -0.1, 1));
                     }
 
                     if (vehicle.backInputDown()) {
-                        vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.002f * powerReduce, vehicle.onGround() ? -0.2f : 0.4f));
+                        vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.006f * powerReduce, vehicle.onGround() ? -0.2f : 0.4f));
                     }
                 }
 
@@ -591,8 +593,8 @@ public final class VehicleEngineUtils {
                 // 刹车
                 if (vehicle.downInputDown()) {
                     if (vehicle.onGround()) {
-                        vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.93f);
-                        vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.985, 1, 0.985));
+                        vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.92f);
+                        vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.97, 1, 0.97));
                     } else {
                         vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.97f);
                         vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.994, 1, 0.994));
@@ -602,7 +604,7 @@ public final class VehicleEngineUtils {
             }
 
             if (vehicle.engineStart) {
-                vehicle.consumeEnergy((int) (energyCost * Mth.abs(vehicle.getEntityData().get(POWER))));
+                vehicle.consumeEnergy(energyCost);
             }
 
             float rotSpeed = 1.5f + 1.2f * Mth.abs(VectorTool.calculateY(vehicle.getRoll()));
@@ -692,11 +694,8 @@ public final class VehicleEngineUtils {
         }
 
         double flapAngle = (vehicle.getFlap1LRot() + vehicle.getFlap1RRot() + vehicle.getFlap1L2Rot() + vehicle.getFlap1R2Rot()) / 4;
-
-        if (vehicle.engineStartOver) {
-            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getUpVec(1).scale(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 0.022 * lift * (1 + Math.sin((vehicle.onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
-            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.03 * speedRate * vehicle.getEntityData().get(POWER) * (vehicle.sprintInputDown() ? 2.2 : 1))));
-        }
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getUpVec(1).scale(vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)) * 0.022 * lift * (1 + Math.sin((vehicle.onGround() ? 25 : flapAngle + 25) * Mth.DEG_TO_RAD)))));
+        vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.03 * speedRate * vehicle.getEntityData().get(POWER) * (vehicle.sprintInputDown() ? 2.2 : 1))));
 
         if (vehicle.getEntityData().get(POWER) > 0.2f) {
             vehicle.engineStartOver = true;

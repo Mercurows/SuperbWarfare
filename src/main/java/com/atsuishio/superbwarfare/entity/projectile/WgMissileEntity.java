@@ -121,24 +121,22 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
         largeTrail();
 
         if (tickCount > 0 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {
-            this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
             Entity shooter = this.getOwner();
-
             Vec3 toVec = getDeltaMovement();
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.5).add(getLookAngle().scale(2)));
 
             if (launcherVehicle == vehicle.getUUID()) {
                 Vec3 lookVec;
                 if ((vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER) && shooter == vehicle.getFirstPassenger()) {
-                    lookVec = vehicle.getViewVector(1).scale(1.45);
+                    lookVec = vehicle.getViewVector(1).scale(1.6);
                 } else {
-                    lookVec = vehicle.getBarrelVector(1).scale(1.45);
+                    lookVec = vehicle.getBarrelVector(1).scale(1.6);
                 }
                 Vec3 missileVec = vehicle.getShootPosForHud(shooter, 1).vectorTo(position()).normalize();
                 toVec = missileVec.vectorTo(lookVec);
             }
 
-            turn(toVec, Mth.clamp(0.4f * tickCount, 0, 20));
-            this.setDeltaMovement(this.getDeltaMovement().multiply(0.77, 0.77, 0.77));
+            turn(toVec, Mth.clamp((tickCount - 1) * 0.4f, 0, 6));
         }
 
         if (this.tickCount > 400 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
