@@ -775,6 +775,8 @@
   "superbwarfare.flare.reloading": "FLARE RELOADING",
   "superbwarfare.smoke.ready": "SMOKE READY",
   "superbwarfare.smoke.reloading": "SMOKE RELOADING",
+  "superbWarfare.autoaimableentity.active": "ACTIVE",
+  "superbWarfare.autoaimableentity.deactive": "DEACTIVE",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -31,6 +32,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.CONTROLLER;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity.ACTIVE;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleTeamOverlay implements LayeredDraw.Layer {
@@ -84,8 +86,10 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         if (lookAtEntity && lookingEntity instanceof VehicleEntity vehicle && !usingDrone && !outOfRange) {
             if (entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()) return;
 
-            Vec3 pos = new Vec3(Mth.lerp(partialTick, lookingEntity.xo, lookingEntity.getX()), Mth.lerp(partialTick, lookingEntity.yo, lookingEntity.getY()) + lookingEntity.getBbHeight() / 2, Mth.lerp(partialTick, lookingEntity.zo, lookingEntity.getZ()))
+            Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(lookingEntity, partialTick)
                     .add(new Vec3(0, lookingEntity.getBbHeight() / 2 + 0.5, 0));
+
+            Vec3 centerPos = VectorTool.lerpGetEntityBoundingBoxCenter(lookingEntity, partialTick);
 
             if (VectorUtil.canSee(pos)) {
                 Vec3 point = VectorUtil.worldToScreen(pos);
@@ -143,6 +147,35 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, 2, 40.5f, 3, 0, argb);
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), 40.5f, -3, 41.5f, 3, 0, argb);
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40, -1.5f, -40 + 80 * (vehicle.getHealth() / vehicle.getMaxHealth()), 1.5f, 0, argb);
+
+                poseStack.popPose();
+            }
+
+            if (vehicle instanceof AutoAimableEntity autoAimableEntity && VectorUtil.canSee(centerPos) && player.distanceTo(autoAimableEntity) < 4) {
+                Vec3 point = VectorUtil.worldToScreen(centerPos);
+
+                float x = (float) point.x;
+                float y = (float) point.y;
+
+                poseStack.pushPose();
+                poseStack.translate(x, y - 12, 0);
+
+                var font = gui.getMinecraft().font;
+                Entity entity = autoAimableEntity.getOwner();
+
+                if (entity != null) {
+                    int color = autoAimableEntity.getOwner().getTeamColor();
+                    boolean active = autoAimableEntity.getEntityData().get(ACTIVE);
+
+                    // TODO 为啥错位了（恼
+                    String info = active ? "superbWarfare.autoaimableentity.active" : "superbWarfare.autoaimableentity.deactive";
+                    Component component = Component.translatable(info);
+                    int width = component.getString().length();
+                    guiGraphics.drawString(font, component, -width / 2, -5, color, false);
+
+                    String ownerInfo = entity.getDisplayName().getString();
+                    guiGraphics.drawString(font, Component.literal("[" + ownerInfo + "]"), -font.width(ownerInfo) / 2, 5, color, false);
+                }
 
                 poseStack.popPose();
             }
