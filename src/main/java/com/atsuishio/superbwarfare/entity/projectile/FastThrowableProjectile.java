@@ -40,9 +40,9 @@ import static com.atsuishio.superbwarfare.tools.TraceTool.getBlocksAlongRay;
 
 public abstract class FastThrowableProjectile extends ThrowableItemProjectile implements CustomSyncMotionEntity, IEntityWithComplexSpawn {
 
-    public static Consumer<FastThrowableProjectile> flySound = projectile -> {
+    public static Consumer<FastThrowableProjectile> playFlySound = projectile -> {
     };
-    public static Consumer<FastThrowableProjectile> nearFlySound = projectile -> {
+    public static Consumer<FastThrowableProjectile> playNearFlySound = projectile -> {
     };
 
     private static final int CHUNK_RADIUS = 1; // 3x3区块
@@ -114,8 +114,8 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         super.tick();
 
         if (!this.isFastMoving && this.isFastMoving() && this.level().isClientSide) {
-            flySound.accept(this);
-            nearFlySound.accept(this);
+            playFlySound.accept(this);
+            playNearFlySound.accept(this);
         }
         this.isFastMoving = this.isFastMoving();
 

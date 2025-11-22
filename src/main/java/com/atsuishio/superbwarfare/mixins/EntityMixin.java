@@ -51,7 +51,7 @@ public abstract class EntityMixin implements OBBHitter {
 
     @Inject(method = "collide", at = @At("HEAD"))
     private void sbw$spoofGroundStart(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-        if (VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING) {
+        if (VehicleEntity.ignoreEntityGroundCheckStepping) {
             this.sbw$cacheOnGround = this.onGround;
             this.onGround = true;
         }
@@ -59,9 +59,9 @@ public abstract class EntityMixin implements OBBHitter {
 
     @Inject(method = "collide", at = @At("TAIL"))
     private void sbw$spoofGroundEnd(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-        if (VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING) {
+        if (VehicleEntity.ignoreEntityGroundCheckStepping) {
             this.onGround = this.sbw$cacheOnGround;
-            VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
+            VehicleEntity.ignoreEntityGroundCheckStepping = false;
         }
     }
 

@@ -360,7 +360,7 @@ public final class VehicleEngineUtils {
             }
         }
 
-        vehicle.setZRot(vehicle.roll * 0.85f);
+        vehicle.setZRot(vehicle.getRoll() * 0.85f);
     }
 
     public static void helicopterEngine(VehicleEntity vehicle, EngineInfo.Helicopter engineInfo) {
@@ -408,7 +408,7 @@ public final class VehicleEngineUtils {
                 vehicle.setBackInputDown(false);
                 vehicle.setUpInputDown(false);
                 vehicle.setDownInputDown(false);
-                vehicle.setZRot(vehicle.roll * 0.98f);
+                vehicle.setZRot(vehicle.getRoll() * 0.98f);
                 vehicle.setXRot(vehicle.getXRot() * 0.98f);
                 vehicle.getDeltaMovement().multiply(0.96, 0.98,0.96);
                 if (hasPassenger) {
@@ -622,12 +622,12 @@ public final class VehicleEngineUtils {
             // 自动回正
             if (!vehicle.onGround()) {
                 float xSpeed = 1 + 20 * Mth.abs(vehicle.getXRot() / 180);
-                float speed = Mth.clamp(Mth.abs(vehicle.roll) / (90 / xSpeed), 0, 1);
+                float speed = Mth.clamp(Mth.abs(vehicle.getRoll()) / (90 / xSpeed), 0, 1);
 
-                if (vehicle.roll > 0) {
-                    vehicle.setZRot(vehicle.roll - Math.min(speed, vehicle.roll));
-                } else if (vehicle.roll < 0) {
-                    vehicle.setZRot(vehicle.roll + Math.min(speed, -vehicle.roll));
+                if (vehicle.getRoll() > 0) {
+                    vehicle.setZRot(vehicle.getRoll() - Math.min(speed, vehicle.getRoll()));
+                } else if (vehicle.getRoll() < 0) {
+                    vehicle.setZRot(vehicle.getRoll() + Math.min(speed, -vehicle.getRoll()));
                 }
             }
 

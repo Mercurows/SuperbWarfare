@@ -182,7 +182,7 @@ public class AircraftHud {
             //垂直速度
             guiGraphics.drawString(mc.font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, color, false);
             //加速度
-            lerpG = (float) Mth.lerp(0.1f * partialTick, lerpG, vehicle.acceleration / 9.8);
+            lerpG = (float) Mth.lerp(0.1f * partialTick, lerpG, vehicle.getAcceleration() / 9.8);
             guiGraphics.drawString(mc.font, Component.literal("M"), (int) x - 105, (int) y + 70, color, false);
             guiGraphics.drawString(mc.font, Component.literal("0.2"), (int) x - 96, (int) y + 70, color, false);
             guiGraphics.drawString(mc.font, Component.literal("G"), (int) x - 105, (int) y + 78, color, false);

@@ -132,20 +132,20 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public static final EntityDataAccessor<Float> HORN_VOLUME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
-    public static Consumer<VehicleEntity> trackSound = vehicle -> {
+    public static Consumer<VehicleEntity> playTrackSound = vehicle -> {
     };
-    public static Consumer<VehicleEntity> engineSound = vehicle -> {
+    public static Consumer<VehicleEntity> playEngineSound = vehicle -> {
     };
-    public static Consumer<VehicleEntity> swimSound = vehicle -> {
+    public static Consumer<VehicleEntity> playSwimSound = vehicle -> {
     };
-    public static Consumer<VehicleEntity> hornSound = vehicle -> {
+    public static Consumer<VehicleEntity> playHornSound = vehicle -> {
     };
-    public static Consumer<VehicleEntity> inCarMusic = vehicle -> {
+    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
     };
-    public static Consumer<VehicleEntity> fireSound = vehicle -> {
+    public static Consumer<VehicleEntity> playFireSound = vehicle -> {
     };
 
-    public static boolean IGNORE_ENTITY_GROUND_CHECK_STEPPING = false;
+    public static boolean ignoreEntityGroundCheckStepping = false;
 
     public static final EntityDataAccessor<Float> SERVER_YAW = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SERVER_PITCH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -333,38 +333,43 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public VehicleWeapon[][] availableWeapons;
 
     protected int interpolationSteps;
-    protected double x;
-    protected double y;
-    protected double z;
+    protected double xO;
+    protected double yO;
+    protected double zO;
 
-    public float roll;
+    protected float roll;
     public float prevRoll;
     public int repairCoolDown = maxRepairCoolDown();
-    public boolean crash;
 
-    public float turretYRot;
-    public float turretXRot;
+    public void setCrash(boolean crash) {
+        this.crash = crash;
+    }
+
+    private boolean crash;
+
+    private float turretYRot;
+    private float turretXRot;
     public float turretYRotO;
     public float turretXRotO;
     public float turretYRotLock;
-    public float gunYRot;
-    public float gunXRot;
+    private float gunYRot;
+    private float gunXRot;
     public float gunYRotO;
     public float gunXRotO;
 
-    public int noPassengerTime;
+    protected int noPassengerTime;
 
     public double aiTurretDiff;
-    public double aiPassengerDiff;
+    protected double aiPassengerDiff;
 
-    public @Nullable Player damageDebugResultReceiver = null;
+    protected @Nullable Player damageDebugResultReceiver = null;
 
     private Vec3 previousVelocity = Vec3.ZERO;
 
-    public double acceleration;
+    protected double acceleration;
     public int decoyReloadCoolDown;
     public double lastTickSpeed;
-    public double lastTickVerticalSpeed;
+    protected double lastTickVerticalSpeed;
     public int collisionCoolDown;
 
     private boolean wasEngineRunning = false;
@@ -375,49 +380,47 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public float rudderRot;
     public float rudderRotO;
 
-    public float leftWheelRot;
-    public float rightWheelRot;
+    private float leftWheelRot;
+    private float rightWheelRot;
     public float leftWheelRotO;
     public float rightWheelRotO;
 
     public float leftTrackO;
     public float rightTrackO;
-    public float leftTrack;
-    public float rightTrack;
+    private float leftTrack;
+    private float rightTrack;
 
-    public float propellerRot;
+    private float propellerRot;
     public float propellerRotO;
 
-    public double recoilShake;
+    protected double recoilShake;
     public double recoilShakeO;
 
     public double velocityO;
-    public double velocity;
+    private double velocity;
 
-    public float flap1LRot;
+    private float flap1LRot;
     public float flap1LRotO;
-    public float flap1RRot;
+    private float flap1RRot;
     public float flap1RRotO;
-    public float flap1L2Rot;
+    private float flap1L2Rot;
     public float flap1L2RotO;
-    public float flap1R2Rot;
+    private float flap1R2Rot;
     public float flap1R2RotO;
-    public float flap2LRot;
+    private float flap2LRot;
     public float flap2LRotO;
-    public float flap2RRot;
+    private float flap2RRot;
     public float flap2RRotO;
-    public float flap3Rot;
+    private float flap3Rot;
     public float flap3RotO;
-    public float gearRotO;
-    public float gearRot;
-    public Vec3 lerpBombHitPosO;
-    public Vec3 lerpBombHitPos;
+    private float gearRotO;
+    private float gearRot;
     public boolean engineStart;
     public boolean engineStartOver;
 
-    public double bombHitPosX;
-    public double bombHitPosY;
-    public double bombHitPosZ;
+    protected double bombHitPosX;
+    protected double bombHitPosY;
+    protected double bombHitPosZ;
 
     public int holdTick;
     public int holdPowerTick;
@@ -1774,23 +1777,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var computed = computed();
         if (this.level().isClientSide) {
             if (!this.wasEngineRunning && this.engineRunning()) {
-                engineSound.accept(this);
-                swimSound.accept(this);
+                playEngineSound.accept(this);
+                playSwimSound.accept(this);
                 if (computed.engineType == EngineType.TRACK) {
-                    trackSound.accept(this);
+                    playTrackSound.accept(this);
                 }
             }
 
             if (!this.wasHornWorking && this.hornWorking()) {
-                hornSound.accept(this);
+                playHornSound.accept(this);
             }
 
             if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
-                inCarMusic.accept(this);
+                playInCarMusic.accept(this);
             }
 
-            if (fireSound != null && !this.wasFiring && this.isFiring() && this.level().isClientSide()) {
-                fireSound.accept(this);
+            if (playFireSound != null && !this.wasFiring && this.isFiring() && this.level().isClientSide()) {
+                playFireSound.accept(this);
             }
             this.wasFiring = this.isFiring();
         }
@@ -1850,7 +1853,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         flap2RRotO = this.getFlap2RRot();
         flap3RotO = this.getFlap3Rot();
         gearRotO = this.getGearRot();
-        lerpBombHitPosO = lerpBombHitPos;
 
         super.baseTick();
 
@@ -3104,9 +3106,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             return;
         }
 
-        double interpolatedX = getX() + (x - getX()) / (double) interpolationSteps;
-        double interpolatedY = getY() + (y - getY()) / (double) interpolationSteps;
-        double interpolatedZ = getZ() + (z - getZ()) / (double) interpolationSteps;
+        double interpolatedX = getX() + (xO - getX()) / (double) interpolationSteps;
+        double interpolatedY = getY() + (yO - getY()) / (double) interpolationSteps;
+        double interpolatedZ = getZ() + (zO - getZ()) / (double) interpolationSteps;
 
         float diffY = Mth.wrapDegrees(entityData.get(SERVER_YAW) - this.getYRot());
         float diffX = Mth.wrapDegrees(entityData.get(SERVER_PITCH) - this.getXRot());
@@ -3121,9 +3123,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.xO = x;
+        this.yO = y;
+        this.zO = z;
         this.interpolationSteps = 10;
     }
 
@@ -3679,7 +3681,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @Override
     public void move(@NotNull MoverType movementType, @NotNull Vec3 movement) {
         if (!this.level().isClientSide()) {
-            VehicleEntity.IGNORE_ENTITY_GROUND_CHECK_STEPPING = true;
+            VehicleEntity.ignoreEntityGroundCheckStepping = true;
         }
 
         super.move(movementType, movement);
