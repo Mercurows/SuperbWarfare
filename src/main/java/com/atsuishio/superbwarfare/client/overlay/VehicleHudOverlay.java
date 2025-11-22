@@ -18,6 +18,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -185,6 +186,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
             preciseBlit(guiGraphics, KILL_MARKER_4, posX2, posY2, 0, 0, 16, 16, 16, 16);
         }
     }
+
     public static void renderKillIndicatorDynamic(GuiGraphics guiGraphics, float posX, float posY) {
         float rate = (40 - killIndicator * 5) / 5.5f;
 
@@ -325,10 +327,14 @@ public class VehicleHudOverlay implements IGuiOverlay {
             preciseBlit(guiGraphics, frame, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
             var data = vehicle.getGunData(vehicle.getSeatIndex(player), i);
-            if (data == null) continue;
+            if (data == null) {
+                pose.popPose();
+                continue;
+            }
 
+            boolean selected = i == weaponIndex;
             // 当前选中武器
-            if (weaponIndex == i) {
+            if (selected) {
                 var startY = Mth.lerp(progress,
                         h - (weapons.size() - 1 - oldRenderWeaponIndex) * 18 - 16,
                         h - (weapons.size() - 1 - weaponIndex) * 18 - 16
@@ -350,6 +356,39 @@ public class VehicleHudOverlay implements IGuiOverlay {
             }
 
             preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+
+            // 这里不知道为什么不能合并，会导致上面那个渲染出错
+            int size = data.getDefault().getAmmoConsumers().size();
+            if (selected && size > 1) {
+                preciseBlit(guiGraphics, SWITCH_AMMO, w - 13 + xOffset, h - frameIndex * 18 - 20, 0, 0, 0, 16, 16, 16, 16);
+
+                String string = "[" + ModKeyMappings.FIRE_MODE.getKey().getDisplayName().getString() + "]";
+                int width = Minecraft.getInstance().font.width(string);
+
+                pose.pushPose();
+                pose.scale(0.6f, 0.6f, 1.0f);
+                float xPos = w - 6f + xOffset;
+
+                if (width >= 7 / 0.6f) {
+                    RenderHelper.renderScrollingString(guiGraphics, Minecraft.getInstance().font,
+                            Component.literal(string),
+                            0.6f,
+                            (int) ((xPos - 3f) / 0.6f), (int) ((h - frameIndex * 18 - 14f) / 0.6f),
+                            (int) ((xPos + 5f) / 0.6f), (int) ((h - frameIndex * 18 - 4f) / 0.6f),
+                            0xFFFFFF);
+                } else {
+                    guiGraphics.drawString(
+                            Minecraft.getInstance().font,
+                            string,
+                            (xPos + 3f - width / 2f) / 0.6f,
+                            (h - frameIndex * 18 - 14f) / 0.6f,
+                            0xFFFFFF,
+                            false
+                    );
+                }
+
+                pose.popPose();
+            }
 
             var computed = data.compute();
             if (data.autoIterativeReloadTimer.get() > 0 || data.reloading()) {
@@ -384,32 +423,6 @@ public class VehicleHudOverlay implements IGuiOverlay {
                             true
                     );
                 }
-            }
-
-            int size = data.getDefault().getAmmoConsumers().size();
-            if (size > 1) {
-                String string = "[" + ModKeyMappings.FIRE_MODE.getKey().getDisplayName().getString() + "]";
-                int width = Minecraft.getInstance().font.width(string);
-                pose.pushPose();
-                pose.translate(w - 10.5 + xOffset, h - frameIndex * 18 - 14, 0);
-
-                pose.pushPose();
-                pose.scale(0.6f, 0.6f, 0);
-
-                guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        string,
-                        0,
-                        0,
-                        0xFFFFFF,
-                        false
-                );
-
-                preciseBlit(guiGraphics, SWITCH_AMMO, -14 + ((float) width / 2), -10.5f, 100, 0, 0, 28, 28, 28, 28);
-
-                pose.popPose();
-
-                pose.popPose();
             }
 
             RenderSystem.disableDepthTest();

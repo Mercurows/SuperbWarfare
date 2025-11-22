@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource;
@@ -50,6 +51,10 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
 
     @Override
     public ResourceLocation getModelResource(T vehicle) {
+        if (RenderHelper.isInGui()) {
+            return getDefault(vehicle).getModel().model;
+        }
+
         int lodLevel = getLODLevel(vehicle);
         var lodModel = getDefault(vehicle).getModel().getLODModel(lodLevel);
 
@@ -72,6 +77,10 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
 
     @Override
     public ResourceLocation getTextureResource(T vehicle) {
+        if (RenderHelper.isInGui()) {
+            return getDefault(vehicle).getModel().texture;
+        }
+
         int lodLevel = getLODLevel(vehicle);
         var lodTexture = getDefault(vehicle).getModel().getLODTexture(lodLevel);
 
