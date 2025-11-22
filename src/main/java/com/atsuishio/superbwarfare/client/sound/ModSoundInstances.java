@@ -11,11 +11,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ModSoundInstances {
 
     public static void init() {
-        VehicleEntity.trackSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(vehicle));
-        VehicleEntity.engineSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(vehicle));
-        VehicleEntity.swimSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(vehicle));
-        VehicleEntity.hornSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new HornSoundInstance.VehicleHornSound(vehicle));
-        VehicleEntity.inCarMusic = vehicle -> {
+        VehicleEntity.playTrackSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.TrackSound(vehicle));
+        VehicleEntity.playEngineSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.EngineSound(vehicle));
+        VehicleEntity.playSwimSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleSoundInstance.SwimSound(vehicle));
+        VehicleEntity.playHornSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new HornSoundInstance.VehicleHornSound(vehicle));
+        VehicleEntity.playInCarMusic = vehicle -> {
             if (NetMusicCompatHolder.canPlayMusic(vehicle)) {
                 NetMusicCompatHolder.playMusic(vehicle);
             } else {
@@ -23,9 +23,9 @@ public class ModSoundInstances {
             }
         };
 
-        VehicleEntity.fireSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.VehicleFireSound(vehicle));
+        VehicleEntity.playFireSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.VehicleFireSound(vehicle));
 
-        FastThrowableProjectile.flySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.FlySound(entity));
-        FastThrowableProjectile.nearFlySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.NearFlySound(entity));
+        FastThrowableProjectile.playFlySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.FlySound(entity));
+        FastThrowableProjectile.playNearFlySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.NearFlySound(entity));
     }
 }

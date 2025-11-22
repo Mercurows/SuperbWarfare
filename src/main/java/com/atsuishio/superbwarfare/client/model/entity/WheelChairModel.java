@@ -8,10 +8,10 @@ public class WheelChairModel extends VehicleModel<WheelChairEntity> {
     @Override
     public @Nullable TransformContext<WheelChairEntity> collectTransform(String boneName) {
         return switch (boneName) {
-            case "w_rb" -> (bone, vehicle, state) -> bone.setRotX(vehicle.rightWheelRot);
-            case "w_lb" -> (bone, vehicle, state) -> bone.setRotX(vehicle.leftWheelRot);
-            case "w_rr" -> (bone, vehicle, state) -> bone.setRotX(4 * vehicle.rightWheelRot);
-            case "w_lr" -> (bone, vehicle, state) -> bone.setRotX(4 * vehicle.leftWheelRot);
+            case "w_rb" -> (bone, vehicle, state) -> bone.setRotX(vehicle.getRightWheelRot());
+            case "w_lb" -> (bone, vehicle, state) -> bone.setRotX(vehicle.getLeftWheelRot());
+            case "w_rr" -> (bone, vehicle, state) -> bone.setRotX(4 * vehicle.getRightWheelRot());
+            case "w_lr" -> (bone, vehicle, state) -> bone.setRotX(4 * vehicle.getLeftWheelRot());
             default -> super.collectTransform(boneName);
         };
     }
