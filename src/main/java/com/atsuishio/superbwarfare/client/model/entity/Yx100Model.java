@@ -11,11 +11,6 @@ public class Yx100Model extends VehicleModel<Yx100Entity> {
     }
 
     @Override
-    public int getDefaultWrapRange() {
-        return 80;
-    }
-
-    @Override
     public float getBoneRotX(float t) {
         if (t <= 34.75) return 0F;
         if (t <= 35.5) return Mth.lerp((t - 34.75F) / (35.5F - 34.75F), 0F, -45F);

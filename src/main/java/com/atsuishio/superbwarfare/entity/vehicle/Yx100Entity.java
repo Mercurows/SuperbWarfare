@@ -17,27 +17,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         super(type, world);
     }
 
-    @Override
-    public void baseTick() {
-        super.baseTick();
-
-        if (getLeftTrack() < 0) {
-            setLeftTrack(80);
-        }
-
-        if (getLeftTrack() > 80) {
-            setLeftTrack(0);
-        }
-
-        if (getRightTrack() < 0) {
-            setRightTrack(80);
-        }
-
-        if (getRightTrack() > 80) {
-            setRightTrack(0);
-        }
-    }
-
     private PlayState cannonFirePredicate(AnimationState<Yx100Entity> event) {
         if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire"));
@@ -72,6 +51,11 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public int getTrackAnimationLength() {
+        return 80;
     }
 
     @Override
