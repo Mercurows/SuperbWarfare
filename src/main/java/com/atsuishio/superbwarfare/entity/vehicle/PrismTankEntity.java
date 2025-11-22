@@ -46,29 +46,7 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
 
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);
-        this.setMaxUpStep(2.25f);
         this.noCulling = true;
-    }
-
-    @Override
-    public void baseTick() {
-        super.baseTick();
-
-        if (getLeftTrack() < 0) {
-            setLeftTrack(100);
-        }
-
-        if (getLeftTrack() > 100) {
-            setLeftTrack(0);
-        }
-
-        if (getRightTrack() < 0) {
-            setRightTrack(100);
-        }
-
-        if (getRightTrack() > 100) {
-            setRightTrack(0);
-        }
     }
 
     public void hitBlock(Vec3 pos, GunData gunData, Entity shooter) {

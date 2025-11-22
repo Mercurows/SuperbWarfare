@@ -255,25 +255,25 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
             if (isRot) {
                 if (isL) {
                     return (bone, vehicle, state) -> {
-                        float t = wrap(leftTrack + 2 * index);
+                        float t = wrap(leftTrack + 2 * index, vehicle);
                         bone.setRotX(-getBoneRotX(t) * Mth.DEG_TO_RAD);
                     };
                 } else {
                     return (bone, vehicle, state) -> {
-                        float t2 = wrap(rightTrack + 2 * index);
+                        float t2 = wrap(rightTrack + 2 * index, vehicle);
                         bone.setRotX(-getBoneRotX(t2) * Mth.DEG_TO_RAD);
                     };
                 }
             } else {
                 if (isL) {
                     return (bone, vehicle, state) -> {
-                        float t = wrap(leftTrack + 2 * index);
+                        float t = wrap(leftTrack + 2 * index, vehicle);
                         bone.setPosY(getBoneMoveY(t));
                         bone.setPosZ(getBoneMoveZ(t));
                     };
                 } else {
                     return (bone, vehicle, state) -> {
-                        float t2 = wrap(rightTrack + 2 * index);
+                        float t2 = wrap(rightTrack + 2 * index, vehicle);
                         bone.setPosY(getBoneMoveY(t2));
                         bone.setPosZ(getBoneMoveZ(t2));
                     };
@@ -369,11 +369,11 @@ public class VehicleModel<T extends VehicleEntity & GeoAnimatable> extends GeoMo
         return ((value % range) + range) % range;
     }
 
-    protected float wrap(float value) {
-        return wrap(value, getDefaultWrapRange());
+    protected float wrap(float value, VehicleEntity vehicle) {
+        return wrap(value, getDefaultWrapRange(vehicle));
     }
 
-    public int getDefaultWrapRange() {
-        return 100;
+    public int getDefaultWrapRange(VehicleEntity vehicle) {
+        return vehicle.getTrackAnimationLength();
     }
 }

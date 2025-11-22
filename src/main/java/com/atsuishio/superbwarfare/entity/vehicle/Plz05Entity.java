@@ -30,21 +30,6 @@ public class Plz05Entity extends ArtilleryEntity implements GeoEntity, OBBEntity
     @Override
     public void baseTick() {
         super.baseTick();
-        if (getLeftTrack() < 0) {
-            setLeftTrack(100);
-        }
-
-        if (getLeftTrack() > 100) {
-            setLeftTrack(0);
-        }
-
-        if (getRightTrack() < 0) {
-            setRightTrack(100);
-        }
-
-        if (getRightTrack() > 100) {
-            setRightTrack(0);
-        }
         if (getNthEntity(getTurretControllerIndex()) == null && getDeltaMovement().horizontalDistanceSqr() > 0.007) {
             entityData.set(SHOOT_VEC, getForwardDirection());
         }

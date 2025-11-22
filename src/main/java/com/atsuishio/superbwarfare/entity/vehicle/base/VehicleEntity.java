@@ -2050,6 +2050,22 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
         this.inertiaRotate(this.computed().inertiaRotateRate);
 
+        if (getLeftTrack() < 0) {
+            setLeftTrack(getTrackAnimationLength());
+        }
+
+        if (getLeftTrack() > getTrackAnimationLength()) {
+            setLeftTrack(0);
+        }
+
+        if (getRightTrack() < 0) {
+            setRightTrack(getTrackAnimationLength());
+        }
+
+        if (getRightTrack() > getTrackAnimationLength()) {
+            setRightTrack(0);
+        }
+
         lowHealthWarning();
         this.refreshDimensions();
 
@@ -3825,6 +3841,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void setRightWheelRot(float pRightWheelRot) {
         this.rightWheelRot = pRightWheelRot;
+    }
+
+    public int getTrackAnimationLength() {
+        return 100;
     }
 
     public float getLeftTrack() {
