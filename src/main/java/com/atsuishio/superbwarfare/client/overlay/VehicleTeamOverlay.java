@@ -160,21 +160,19 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
                 poseStack.pushPose();
                 poseStack.translate(x, y - 12, 0);
 
-                var font = gui.getMinecraft().font;
+                var font = Minecraft.getInstance().font;
                 Entity entity = autoAimableEntity.getOwner();
 
                 if (entity != null) {
                     int color = autoAimableEntity.getOwner().getTeamColor();
                     boolean active = autoAimableEntity.getEntityData().get(ACTIVE);
 
-                    // TODO 为啥错位了（恼
-                    String info = active ? "superbWarfare.autoaimableentity.active" : "superbWarfare.autoaimableentity.deactive";
+                    String info = active ? "tips.superbwarfare.auto_aimable_entity.active" : "tips.superbwarfare.auto_aimable_entity.inactive";
                     Component component = Component.translatable(info);
-                    int width = component.getString().length();
-                    guiGraphics.drawString(font, component, -width / 2, -5, color, false);
+                    guiGraphics.drawString(font, component, -font.width(component) / 2, -5, color, false);
 
-                    String ownerInfo = entity.getDisplayName().getString();
-                    guiGraphics.drawString(font, Component.literal("[" + ownerInfo + "]"), -font.width(ownerInfo) / 2, 5, color, false);
+                    Component ownerInfo = Component.literal("[" + entity.getDisplayName().getString() + "]");
+                    guiGraphics.drawString(font, ownerInfo, -font.width(ownerInfo) / 2, 5, color, false);
                 }
 
                 poseStack.popPose();

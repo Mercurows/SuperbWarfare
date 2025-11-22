@@ -191,9 +191,9 @@ public class AircraftHud {
             // 热诱弹
             if (vehicle.hasDecoy()) {
                 if (vehicle.getDecoyState().equals("READY")) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), (int) x + 72, (int) y, color, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.flare.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), (int) x + 72, (int) y, color, false);
                 } else {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.reloading"), (int) x + 72, (int) y, 0xFF0000, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.flare.reloading"), (int) x + 72, (int) y, 0xFF0000, false);
                 }
             }
             guiGraphics.drawString(mc.font, Component.literal("TGT"), (int) x + 76, (int) y + 78, color, false);
@@ -279,9 +279,9 @@ public class AircraftHud {
                 guiGraphics.drawString(mc.font, component, 25, -9, Mth.hsvToRgb(0F, heat, 1F), false);
                 if (vehicle.hasDecoy()) {
                     if (vehicle.getDecoyState().equals("READY")) {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), 25, 1, -1, false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.flare.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), 25, 1, -1, false);
                     } else {
-                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.flare.reloading"), 25, 1, 0xFF0000, false);
+                        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.flare.reloading"), 25, 1, 0xFF0000, false);
                     }
                 }
 
