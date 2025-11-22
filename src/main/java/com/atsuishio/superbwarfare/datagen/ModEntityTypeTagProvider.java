@@ -82,7 +82,8 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 .addOptional(new ResourceLocation("create", "carriage_contraption"))
                 .addOptional(new ResourceLocation("create", "stationary_contraption"))
                 .addOptional(new ResourceLocation("create", "gantry_contraption"))
-                .addOptional(new ResourceLocation("create", "super_glue"));
+                .addOptional(new ResourceLocation("create", "super_glue"))
+                .addOptional(new ResourceLocation("zombiekit", "flares"));
     }
 
     public static TagKey<EntityType<?>> forgeTag(String name) {
