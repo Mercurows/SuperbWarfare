@@ -137,11 +137,13 @@ public class RpgRocketTBG extends Item implements GeoItem, ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        return new RpgRocketTBGEntity(ModEntities.RPG_ROCKET_TBG.get(), pos.x(), pos.y(), pos.z(), level, 270, 130, 10, 0.03f);
+        return new RpgRocketTBGEntity(ModEntities.RPG_ROCKET_TBG.get(), pos.x(), pos.y(), pos.z(), level, 270, 130, 10);
     }
 
     @Override
     public @NotNull DispenseConfig createDispenseConfig() {
-        return DispenseConfig.builder().power(1.5F).build();
+        return DispenseConfig.builder()
+                .power(1.5F)
+                .build();
     }
 }

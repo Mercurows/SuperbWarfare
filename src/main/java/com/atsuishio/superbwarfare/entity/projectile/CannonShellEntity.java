@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -37,7 +36,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class CannonShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class CannonShellEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -51,23 +50,10 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private Type type = Type.AP;
     private int sparedAmount = 50;
     private int sparedAngle = 15;
-    private int sparedTime = 7;
 
     public CannonShellEntity(EntityType<? extends CannonShellEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-    }
-
-    public CannonShellEntity(LivingEntity entity, Level world, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, float gravity, int sparedTime) {
-        super(ModEntities.CANNON_SHELL.get(), entity, world);
-        this.noCulling = true;
-        this.damage = damage;
-        this.explosionRadius = radius;
-        this.explosionDamage = explosionDamage;
-        this.fireProbability = fireProbability;
-        this.fireTime = fireTime;
-        this.gravity = gravity;
-        this.sparedTime = sparedTime;
     }
 
     public CannonShellEntity durability(int durability) {
@@ -195,6 +181,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
         if (type == Type.CM && tickCount > 3) {
             // 使用Minecraft内置的光线追踪进行碰撞检测
+            int sparedTime = 7;
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
                     position().add(getDeltaMovement().scale(sparedTime)),

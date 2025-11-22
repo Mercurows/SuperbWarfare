@@ -37,14 +37,12 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     public GrapeshotEntity(EntityType<? extends GrapeshotEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-        this.gravity = 0.06f;
     }
 
     public GrapeshotEntity(@Nullable Entity entity, Level level, float damage) {
         super(ModEntities.GRAPESHOT.get(), entity, level);
         this.noCulling = true;
         this.damage = damage;
-        this.gravity = 0.06f;
     }
 
     @Override

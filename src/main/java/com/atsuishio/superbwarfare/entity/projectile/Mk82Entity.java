@@ -17,7 +17,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Mk82Entity extends DestroyableProjectile implements GeoEntity, ExplosiveProjectile {
+public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -26,7 +26,6 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity, Expl
         this.noCulling = true;
         this.explosionRadius = 22;
         this.explosionDamage = 650;
-        this.gravity = 0.06f;
     }
 
     public Mk82Entity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
@@ -34,7 +33,6 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity, Expl
         this.noCulling = true;
         this.explosionRadius = 22;
         this.explosionDamage = 650;
-        this.gravity = 0.06f;
     }
 
     @Override

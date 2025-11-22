@@ -37,7 +37,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class Kh39Entity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+public class Kh39Entity extends MissileProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -48,7 +48,6 @@ public class Kh39Entity extends MissileProjectile implements GeoEntity, Explosiv
         this.explosionDamage = 180;
         this.explosionRadius = 12;
         this.distracted = false;
-        this.gravity = 0.15f;
         this.durability = 25;
     }
 
@@ -192,7 +191,7 @@ public class Kh39Entity extends MissileProjectile implements GeoEntity, Explosiv
 
     @Override
     public double getDefaultGravity() {
-        return tickCount > 8 ? 0 : this.gravity;
+        return tickCount < 8 ? 0.15F : super.getGravity();
     }
 
     @Override

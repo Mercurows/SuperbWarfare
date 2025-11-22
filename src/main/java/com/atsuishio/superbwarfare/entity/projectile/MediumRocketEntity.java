@@ -36,7 +36,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class MediumRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class MediumRocketEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -55,7 +55,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.noCulling = true;
     }
 
-    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount, float gravity, int sparedAngle) {
+    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount, int sparedAngle) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.damage = damage;
@@ -65,7 +65,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.fireTime = fireTime;
         this.type = type;
         this.sparedAmount = sparedAmount;
-        this.gravity = gravity;
         this.sparedAngle = sparedAngle;
     }
 

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -38,7 +37,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Comparator;
 import java.util.Optional;
 
-public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -50,20 +49,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.damage = 40f;
         this.explosionDamage = 80f;
         this.explosionRadius = 5f;
-        this.gravity = 0.03f;
-    }
-
-    public SmallCannonShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, boolean aa) {
-        super(ModEntities.SMALL_CANNON_SHELL.get(), entity, level);
-        this.noCulling = true;
-        this.damage = damage;
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
-        this.gravity = 0.03f;
-        this.aa = aa;
-        if (aa) {
-            crushProjectile(getDeltaMovement());
-        }
     }
 
     @Override

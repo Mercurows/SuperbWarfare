@@ -136,11 +136,13 @@ public class RpgRocketStandard extends Item implements GeoItem, ProjectileItem {
     @Override
     @ParametersAreNonnullByDefault
     public @NotNull Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
-        return new RpgRocketStandardEntity(ModEntities.RPG_ROCKET_STANDARD.get(), pos.x(), pos.y(), pos.z(), level, 340, 80, 5, 0.015f);
+        return new RpgRocketStandardEntity(ModEntities.RPG_ROCKET_STANDARD.get(), pos.x(), pos.y(), pos.z(), level, 340, 80, 5);
     }
 
     @Override
     public @NotNull DispenseConfig createDispenseConfig() {
-        return DispenseConfig.builder().power(2).build();
+        return DispenseConfig.builder()
+                .power(2)
+                .build();
     }
 }

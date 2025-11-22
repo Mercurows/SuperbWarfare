@@ -40,7 +40,7 @@ public class MediumRocketItem extends Item implements ProjectileItem {
     }
 
     public MediumRocketEntity createProjectile(Level level, Position pos) {
-        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount, 0.1f, 15);
+        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount, 15);
     }
 
     public static class MediumRocketDispenseBehavior extends ProjectileDispenseBehavior {
