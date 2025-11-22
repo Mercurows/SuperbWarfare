@@ -776,6 +776,8 @@
   "superbwarfare.flare.reloading": "干扰弹 装填中",
   "superbwarfare.smoke.ready": "烟幕 就绪",
   "superbwarfare.smoke.reloading": "烟幕 装填中",
+  "superbWarfare.autoaimableentity.active": "已激活",
+  "superbWarfare.autoaimableentity.deactive": "未激活",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

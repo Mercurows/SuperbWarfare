@@ -220,7 +220,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     public void findTarget() {
-        int range = 60;
+        int range = 40;
         Entity target = null;
 
         var list = new SeekTool.Builder(this)
@@ -247,9 +247,9 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
 
 
             if (distance < range) {
-                targetXRot = -60;
+                targetXRot = -40;
                 this.look(target.position());
-                if (distance < range - 10) {
+                if (distance < range - 5) {
                     aimingTime++;
 
                 } else if (aimingTime > 0) {
