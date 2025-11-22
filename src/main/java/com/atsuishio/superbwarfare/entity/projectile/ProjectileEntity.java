@@ -121,6 +121,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private final ArrayList<MobEffectInstance> mobEffects = new ArrayList<>();
     // 发射子弹的武器ID
     private String gunItemId;
+    // 重力
+    private float gravity = 0.05f;
 
     public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, Level level) {
         super(entityType, level);
@@ -341,7 +343,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             this.setPosRaw(this.getX() + vec.x, this.getY() + vec.y, this.getZ() + vec.z);
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -this.gravity, 0));
 
         if (this.tickCount > (fireLevel > 0 ? 10 : 40)) {
             this.discard();
@@ -374,7 +376,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
         this.syncMotion();
     }
-
 
     @Override
     public void syncMotion() {
@@ -817,6 +818,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     @Override
     public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 
     @Override
