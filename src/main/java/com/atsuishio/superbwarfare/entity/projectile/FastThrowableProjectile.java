@@ -358,7 +358,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     public void largeTrail() {
-        if (level().isClientSide && tickCount > 1) {
+        if (level().isClientSide && tickCount > 2) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i += 2) {
                 Vec3 startPos = new Vec3(xo, yo, zo);
@@ -369,7 +369,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     public void mediumTrail() {
-        if (level().isClientSide && tickCount > 1) {
+        if (level().isClientSide && tickCount > 2) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i += 2) {
                 Vec3 startPos = new Vec3(xo, yo, zo);
@@ -381,7 +381,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     public void smallTrail() {
-        if (level().isClientSide && tickCount > 1) {
+        if (level().isClientSide && tickCount > 2) {
             double l = getDeltaMovement().length();
             for (double i = 0; i < l; i += 2) {
                 Vec3 startPos = new Vec3(xo, yo, zo);

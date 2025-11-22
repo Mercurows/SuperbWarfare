@@ -52,6 +52,7 @@
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_tow.png"
     }
   },
+  "ThirdPersonCameraPos": [-0.3, 1, -1],
   "Mass": 0.05,
   "DamageModifiers": [
     "All * 0.75"

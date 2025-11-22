@@ -118,7 +118,7 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity, Exp
     @Override
     public void tick() {
         super.tick();
-        largeTrail();
+        mediumTrail();
 
         if (tickCount > 0 && this.getOwner() != null && getOwner().getVehicle() instanceof VehicleEntity vehicle) {
             Entity shooter = this.getOwner();
