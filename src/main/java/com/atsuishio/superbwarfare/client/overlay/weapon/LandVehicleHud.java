@@ -150,9 +150,9 @@ public class LandVehicleHud {
             // 诱饵
             if (vehicle.hasDecoy() && player == vehicle.getFirstPassenger()) {
                 if (vehicle.getDecoyState().equals("READY")) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.smoke.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), screenWidth / 2 - 165, screenHeight / 2 - 36, color, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.smoke.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), screenWidth / 2 - 165, screenHeight / 2 - 36, color, false);
                 } else {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("superbwarfare.smoke.reloading"), screenWidth / 2 - 165, screenHeight / 2 - 36, 0xFF0000, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.smoke.reloading"), screenWidth / 2 - 165, screenHeight / 2 - 36, 0xFF0000, false);
                 }
             }
 
