@@ -644,8 +644,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    // TODO 0.8.9重置物品栏
     @Override
     public int getContainerSize() {
+        var type = computed().vehicleContainerType;
+        if (type == null) return 0;
+        if (type.hasMenu()) return 102;
         return computed().vehicleContainerType.getSize();
     }
 
@@ -775,23 +779,26 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (!pPlayer.isSpectator() && this.hasMenu()) {
             var computed = computed();
             var type = computed.vehicleContainerType;
-            var upgrade = computed.hasUpgradeSlots;
-            var menu = switch (type) {
-                case MINI ->
-                        upgrade ? ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MINI.get();
-                case SMALL ->
-                        upgrade ? ModMenuTypes.VEHICLE_MENU_SMALL_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_SMALL.get();
-                case MEDIUM ->
-                        upgrade ? ModMenuTypes.VEHICLE_MENU_MEDIUM_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MEDIUM.get();
-                case LARGE ->
-                        upgrade ? ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_LARGE.get();
-                case HUGE ->
-                        upgrade ? ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_HUGE.get();
-                default -> null;
-            };
-            if (menu == null) return null;
+            if (type == null || !type.hasMenu()) return null;
 
-            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol(), upgrade);
+//            var upgrade = computed.hasUpgradeSlots;
+//            var menu = switch (type) {
+//                case MINI ->
+//                        upgrade ? ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MINI.get();
+//                case SMALL ->
+//                        upgrade ? ModMenuTypes.VEHICLE_MENU_SMALL_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_SMALL.get();
+//                case MEDIUM ->
+//                        upgrade ? ModMenuTypes.VEHICLE_MENU_MEDIUM_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MEDIUM.get();
+//                case LARGE ->
+//                        upgrade ? ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_LARGE.get();
+//                case HUGE ->
+//                        upgrade ? ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_HUGE.get();
+//                default -> null;
+//            };
+//            if (menu == null) return null;
+//
+//            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol(), upgrade);
+            return new VehicleMenu(ModMenuTypes.VEHICLE_MENU_HUGE.get(), pContainerId, pPlayerInventory, this, 6, 17, false);
         }
         return null;
     }
