@@ -38,6 +38,10 @@
     {
       "id": "create:super_glue",
       "required": false
+    },
+    {
+      "id": "zombiekit:flares",
+      "required": false
     }
   ]
 }

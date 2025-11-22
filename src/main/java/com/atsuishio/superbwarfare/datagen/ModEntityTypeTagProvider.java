@@ -82,7 +82,8 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 .addOptional(ResourceLocation.fromNamespaceAndPath("create", "carriage_contraption"))
                 .addOptional(ResourceLocation.fromNamespaceAndPath("create", "stationary_contraption"))
                 .addOptional(ResourceLocation.fromNamespaceAndPath("create", "gantry_contraption"))
-                .addOptional(ResourceLocation.fromNamespaceAndPath("create", "super_glue"));
+                .addOptional(ResourceLocation.fromNamespaceAndPath("create", "super_glue"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("zombiekit", "flares"));
     }
 
     public static TagKey<EntityType<?>> cTag(String name) {
