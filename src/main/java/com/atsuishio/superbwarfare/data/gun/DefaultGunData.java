@@ -238,7 +238,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("ExplosionRadius")
     public double explosionRadius;
     @SerializedName("Gravity")
-    public double gravity = Double.NaN;
+    public double gravity = 0.05;
 
     @SerializedName("ShootDelay")
     public int shootDelay = 0;
