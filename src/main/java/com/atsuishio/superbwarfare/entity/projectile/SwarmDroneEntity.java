@@ -120,6 +120,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
             if (guideType == 0 && entity != null) {
                 Vec3 targetVec = new Vec3(entity.getDeltaMovement().x, 0, entity.getDeltaMovement().z);
                 targetPos = entity.getEyePosition().add(targetVec);
+                this.targetPos = targetPos;
             } else if (this.targetPos != null) {
                 targetPos = this.targetPos;
             } else {

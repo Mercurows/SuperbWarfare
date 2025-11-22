@@ -108,7 +108,7 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
             var projectileInfo = data.compute().projectile();
             var projectileType = projectileInfo.type;
             var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
-            int rpm = (int) Mth.clamp(20 / ((float) Math.max(vehicleWeaponRpm(weaponName), 1) / 60), 1, 2147483647);
+            int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(weaponName) / 60));
 
             if (projectileTypeStr.equals("ray") && this.entityData.get(CHARGE_PROGRESS) < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
                 float chargeSpeed = 1f / rpm;

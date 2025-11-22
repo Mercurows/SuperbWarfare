@@ -860,6 +860,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 }
             }
 
+            if (entity instanceof SwarmDroneEntity swarmDrone && shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle) {
+                swarmDrone.setRotate(vehicle.getTurretVector(1));
+            }
+
             // 填充其他自定义NBT数据
             if (projectileInfo.data != null) {
                 var tag = LaunchableEntityTool.getModifiedTag(projectileInfo,

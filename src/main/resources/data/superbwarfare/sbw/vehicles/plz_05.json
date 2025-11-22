@@ -28,7 +28,7 @@
       },
       "MinPitch": -3,
       "MaxPitch": 65,
-      "Sensitivity": [0.42, 0.7, 0.9],
+      "Sensitivity": [0.42, 0.55, 0.9],
       "Weapons": ["Main"]
     },
     {
