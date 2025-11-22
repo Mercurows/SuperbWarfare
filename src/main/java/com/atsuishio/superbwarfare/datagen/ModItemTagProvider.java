@@ -86,6 +86,9 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ModTags.Items.HAMMER).add(ModItems.HAMMER.get(), ModItems.GOLDEN_HAMMER.get(), ModItems.STEEL_HAMMER.get(), ModItems.DIAMOND_HAMMER.get(),
                 ModItems.CEMENTED_CARBIDE_HAMMER.get(), ModItems.NETHERITE_HAMMER.get());
         this.tag(ModTags.Items.TOOLS_HAMMER).addTag(ModTags.Items.HAMMER);
+        
+        this.tag(Tags.Items.ARMORS_HELMETS).add(ModItems.RU_HELMET_6B47.get(), ModItems.US_HELMET_PASGT.get(), ModItems.GE_HELMET_M_35.get());
+        this.tag(Tags.Items.ARMORS_CHESTPLATES).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
 
         // 专门给其他模组添加动画用的枪械武器分类 tag
         this.tag(ModTags.Items.ANIMATED_PISTOL).add(
