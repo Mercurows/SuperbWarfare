@@ -364,9 +364,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     protected int noPassengerTime;
 
-    public double aiTurretDiff;
-    protected double aiPassengerDiff;
-
     protected @Nullable Player damageDebugResultReceiver = null;
 
     private Vec3 previousVelocity = Vec3.ZERO;
@@ -1243,19 +1240,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      */
     public int vehicleWeaponRpm(LivingEntity living) {
         var data = getGunData(getSeatIndex(living));
-        if (data == null) return 0;
+        if (data == null || data.compute().rpm <= 0) return 60;
         return data.compute().rpm;
     }
 
     public int vehicleWeaponRpm(int seatIndex) {
         var data = getGunData(seatIndex);
-        if (data == null) return 0;
+        if (data == null || data.compute().rpm <= 0) return 60;
         return data.compute().rpm;
     }
 
     public int vehicleWeaponRpm(String weaponName) {
         var data = getGunData(weaponName);
-        if (data == null) return 0;
+        if (data == null || data.compute().rpm <= 0) return 1;
         return data.compute().rpm;
     }
 
@@ -1971,6 +1968,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         }
 
+        for (int i = 0; i < data().getDefault().seats().size(); i++) {
+            if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null && getGunData(mob) != null && mob.level() instanceof ServerLevel) {
+                mob.lookAt(mob.getTarget(), 30F, 30F);
+                int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(mob) / 60));
+                if (tickCount %rpm == 0 && canShoot(mob) && VectorTool.calculateAngle(getShootDirectionForHud(mob, 1), getShootPos(mob, 1).vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(mob.getTarget(), 1))) < 4) {
+                    vehicleShoot(mob, mob.getTarget().getUUID(), null);
+                }
+            }
+        }
+
         // 获取当前速度（deltaMovement 是当前速度向量）
         Vec3 currentVelocity = this.getDeltaMovement();
 
@@ -2283,18 +2290,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public void adjustTurretAngle() {
         VehicleWeaponUtils.adjustTurretAngle(this);
-    }
-
-    public void aiTurretShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
-        if (aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living, uuid, targetPos);
-        }
-    }
-
-    public void aiPassengerWeaponShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
-        if (aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
-            vehicleShoot(living, uuid, targetPos);
-        }
     }
 
     public int getSelectedWeapon(int seatIndex) {
@@ -2758,13 +2753,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 targetVel = targetVel.multiply(2, 1, 2);
             }
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(getShootPos(pLiving, 1), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
+            Vec3 targetVec = RangeTool.calculateFiringSolution(getShootPos(pLiving, 1).subtract(getShootVec(pLiving, 1).scale(getShootPos(pLiving, 1).distanceTo(pLiving.position()))), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
             passengerWeaponAutoAimFormVector(targetVec);
-
-            int rpm = 20 / Mth.clamp((vehicleWeaponRpm(pLiving) / 60), 1, 2147483647);
-            if (tickCount % rpm == 0) {
-                aiPassengerWeaponShoot(pLiving, UUID.fromString(uuid), null);
-            }
         }
     }
 
@@ -2783,8 +2773,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -passengerWeaponMaxPitch(), -passengerWeaponMinPitch()));
         this.setGunYRot(Mth.clamp(this.getGunYRot() - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed), -passengerWeaponMaxYaw(), -passengerWeaponMinYaw()));
-
-        this.aiPassengerDiff = VectorTool.calculateAngle(shootVec, getPassengerWeaponStationVector(1));
     }
 
     public void gunnerAngle() {

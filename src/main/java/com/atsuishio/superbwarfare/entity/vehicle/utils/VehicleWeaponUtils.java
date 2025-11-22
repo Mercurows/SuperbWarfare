@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.RangeTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -17,8 +16,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-
-import java.util.UUID;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 import static com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition;
@@ -89,7 +86,6 @@ public final class VehicleWeaponUtils {
         vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.99f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
         vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.99f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
         vehicle.turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
-        vehicle.aiTurretDiff = VectorTool.calculateAngle(shootVec, barrelVector);
     }
 
     /**
@@ -118,13 +114,8 @@ public final class VehicleWeaponUtils {
             targetVel = targetVel.multiply(2, 1, 2);
         }
 
-        Vec3 targetVec = RangeTool.calculateFiringSolution(vehicle.getShootPos(pLiving, 1), targetPos, targetVel, vehicle.projectileVelocity(pLiving), vehicle.projectileGravity(pLiving));
+        Vec3 targetVec = RangeTool.calculateFiringSolution(vehicle.getShootPos(pLiving, 1).subtract(vehicle.getShootVec(pLiving, 1).scale(vehicle.getShootPos(pLiving, 1).distanceTo(pLiving.position()))), targetPos, targetVel, vehicle.projectileVelocity(pLiving), vehicle.projectileGravity(pLiving));
         vehicle.turretAutoAimFromVector(targetVec);
-
-        int rpm = 20 / Mth.clamp((vehicle.vehicleWeaponRpm(pLiving) / 60), 1, 2147483647);
-        if (vehicle.tickCount % rpm == 0) {
-            vehicle.aiTurretShoot(pLiving, UUID.fromString(uuid), null);
-        }
     }
 
     /**
