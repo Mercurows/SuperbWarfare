@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
-public class MelonBombEntity extends DestroyableProjectile implements ExplosiveProjectile {
+public class MelonBombEntity extends DestroyableProjectile {
 
     public MelonBombEntity(EntityType<? extends MelonBombEntity> type, Level level) {
         super(type, level);

@@ -39,7 +39,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
 
-public class WgMissileEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+public class WgMissileEntity extends MissileProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

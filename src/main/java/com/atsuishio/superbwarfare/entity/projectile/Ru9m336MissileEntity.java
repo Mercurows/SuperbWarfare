@@ -38,7 +38,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

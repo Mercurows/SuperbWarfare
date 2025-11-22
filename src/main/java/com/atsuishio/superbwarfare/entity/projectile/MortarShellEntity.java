@@ -41,7 +41,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
-public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -55,7 +55,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         this.damage = 60;
         this.explosionDamage = 100;
         this.explosionRadius = 8;
-        this.gravity = 0.13f;
     }
 
     public MortarShellEntity(EntityType<? extends MortarShellEntity> type, double x, double y, double z, Level level, float gravity) {
@@ -67,13 +66,12 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         this.gravity = gravity;
     }
 
-    public MortarShellEntity(LivingEntity entity, Level level, float gravity, float explosionDamage, float explosionRadius) {
+    public MortarShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
         super(ModEntities.MORTAR_SHELL.get(), entity, level);
         this.noCulling = true;
-        this.damage = 50;
+        this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
-        this.gravity = gravity;
     }
 
     public MortarShellEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {

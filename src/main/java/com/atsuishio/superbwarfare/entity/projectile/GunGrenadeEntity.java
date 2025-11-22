@@ -30,7 +30,7 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

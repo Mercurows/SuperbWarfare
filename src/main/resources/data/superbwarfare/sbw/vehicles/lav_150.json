@@ -115,6 +115,8 @@
       "RPM": 300,
       "Velocity": 20,
       "Damage": 45,
+      "ExplosionDamage": 12,
+      "ExplosionRadius": 4,
       "RecoilTime": 29,
       "RecoilForce": 0.55,
       "Spread": 0.5,
@@ -137,9 +139,7 @@
         "Transform": "Barrel",
         "Positions": [[0.02, 0.0517, 3.2]],
         "Directions": ["Barrel"]
-      },
-      "ExplosionDamage": 12,
-      "ExplosionRadius": 4
+      }
     },
     "MachineGun": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png",

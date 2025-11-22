@@ -40,7 +40,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Comparator;
 import java.util.Optional;
 
-public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class SmallCannonShellEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -52,20 +52,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.damage = 40f;
         this.explosionDamage = 80f;
         this.explosionRadius = 5f;
-        this.gravity = 0.03f;
-    }
-
-    public SmallCannonShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius, boolean aa) {
-        super(ModEntities.SMALL_CANNON_SHELL.get(), entity, level);
-        this.noCulling = true;
-        this.damage = damage;
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
-        this.gravity = 0.03f;
-        this.aa = aa;
-        if (aa) {
-            crushProjectile(getDeltaMovement());
-        }
     }
 
     public SmallCannonShellEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
@@ -85,7 +71,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
         if (this.level() instanceof ServerLevel) {
-
             if (this.getOwner() instanceof LivingEntity living) {
                 if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                     living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);

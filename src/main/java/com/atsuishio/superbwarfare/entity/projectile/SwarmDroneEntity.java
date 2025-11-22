@@ -38,7 +38,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public float randomFloat;
 
@@ -47,7 +47,6 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity, Ex
         this.noCulling = true;
         this.explosionDamage = 80f;
         this.explosionRadius = 5f;
-        this.gravity = 0.1f;
         randomFloat = random.nextFloat();
     }
 

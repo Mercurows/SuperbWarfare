@@ -37,7 +37,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -51,14 +51,14 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
         this.gravity = 0.03f;
     }
 
-    public RpgRocketTBGEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float explosionDamage, float explosionRadius, float gravity) {
+    public RpgRocketTBGEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float explosionDamage, float explosionRadius) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.durability = 20;
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
-        this.gravity = gravity;
+        this.gravity = 0.03f;
     }
 
     public RpgRocketTBGEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {

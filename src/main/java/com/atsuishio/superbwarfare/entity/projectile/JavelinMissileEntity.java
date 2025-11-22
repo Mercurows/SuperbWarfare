@@ -42,7 +42,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class JavelinMissileEntity extends MissileProjectile implements GeoEntity, ExplosiveProjectile {
+public class JavelinMissileEntity extends MissileProjectile implements GeoEntity {
 
     public static final EntityDataAccessor<Boolean> TOP = SynchedEntityData.defineId(JavelinMissileEntity.class, EntityDataSerializers.BOOLEAN);
 

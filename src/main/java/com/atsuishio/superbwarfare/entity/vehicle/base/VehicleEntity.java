@@ -95,8 +95,8 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -2286,13 +2286,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void aiTurretShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
-        if (this instanceof WeaponVehicleEntity && aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
+        if (aiTurretDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
             vehicleShoot(living, uuid, targetPos);
         }
     }
 
     public void aiPassengerWeaponShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
-        if (this instanceof WeaponVehicleEntity && aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
+        if (aiPassengerDiff < 2 && canShoot(living) && living.level() instanceof ServerLevel) {
             vehicleShoot(living, uuid, targetPos);
         }
     }

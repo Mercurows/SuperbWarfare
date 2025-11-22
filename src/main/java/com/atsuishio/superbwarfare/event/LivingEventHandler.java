@@ -66,7 +66,7 @@ public class LivingEventHandler {
     @SubscribeEvent
     public static void onLivingChangeTargetEvent(LivingChangeTargetEvent event) {
         if (event.getEntity() instanceof Mob mob && mob.getVehicle() instanceof VehicleEntity vehicle) {
-            if (mob == vehicle.getFirstPassenger()) {
+            if (mob == vehicle.getNthEntity(vehicle.getTurretControllerIndex())) {
                 if (event.getNewTarget() != null) {
                     vehicle.getEntityData().set(AI_TURRET_TARGET_UUID, event.getNewTarget().getStringUUID());
                 } else {
@@ -74,7 +74,7 @@ public class LivingEventHandler {
                 }
             }
 
-            if (mob == vehicle.getNthEntity(1)) {
+            if (mob == vehicle.getNthEntity(vehicle.getPassengerWeaponStationControllerIndex())) {
                 if (event.getNewTarget() != null) {
                     vehicle.getEntityData().set(AI_PASSENGER_WEAPON_TARGET_UUID, event.getNewTarget().getStringUUID());
                 } else {

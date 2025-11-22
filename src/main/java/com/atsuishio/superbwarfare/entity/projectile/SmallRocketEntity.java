@@ -40,7 +40,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public class SmallRocketEntity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
+public class SmallRocketEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -51,7 +51,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
         this.explosionDamage = 60f;
         this.explosionRadius = 5f;
         this.durability = 20;
-        this.gravity = 0;
     }
 
     public SmallRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
@@ -61,16 +60,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
         this.explosionDamage = 60f;
         this.explosionRadius = 5f;
         this.durability = 20;
-        this.gravity = 0;
-    }
-
-    public SmallRocketEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        super(ModEntities.SMALL_ROCKET.get(), entity, level);
-        this.damage = damage;
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
-        this.durability = 20;
-        this.gravity = 0;
     }
 
     public SmallRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {

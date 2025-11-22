@@ -820,7 +820,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 customDamageProjectile.setDamage((float) damage);
             }
 
-            if (entity instanceof CustomGravityEntity customGravityEntity && !Double.isNaN(data.compute().gravity)) {
+            if (entity instanceof CustomGravityEntity customGravityEntity) {
                 customGravityEntity.setGravity((float) data.compute().gravity);
             }
 

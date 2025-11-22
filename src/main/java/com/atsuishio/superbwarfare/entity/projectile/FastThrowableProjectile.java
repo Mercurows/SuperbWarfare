@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.tools.TraceTool.getBlocksAlongRay;
 
-public abstract class FastThrowableProjectile extends ThrowableItemProjectile implements CustomSyncMotionEntity, IEntityAdditionalSpawnData {
+public abstract class FastThrowableProjectile extends ThrowableItemProjectile implements CustomSyncMotionEntity, IEntityAdditionalSpawnData, ExplosiveProjectile {
 
     public static Consumer<FastThrowableProjectile> playFlySound = projectile -> {
     };
