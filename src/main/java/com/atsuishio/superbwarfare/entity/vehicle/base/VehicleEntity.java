@@ -92,8 +92,8 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -1584,18 +1584,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
                 VehicleVecUtils.setDriverAngle(this, player);
                 player.setSprinting(false);
-                return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
+                if (player.level() instanceof ServerLevel) {
+                    return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
+                }
             } else if (!(this.getFirstPassenger() instanceof Player)) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
                 this.getFirstPassenger().stopRiding();
                 VehicleVecUtils.setDriverAngle(this, player);
                 player.setSprinting(false);
-                return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
+                if (player.level() instanceof ServerLevel) {
+                    return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
+                }
             }
             if (this.canAddPassenger(player)) {
                 if (player instanceof FakePlayer) return InteractionResult.PASS;
                 player.setSprinting(false);
-                return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
+                if (player.level() instanceof ServerLevel) {
+                    return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
+                }
             }
         }
         return InteractionResult.PASS;
@@ -1699,11 +1705,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 }
             }
 
-            if ((getVehicleType() == VehicleType.AIRPLANE || getVehicleType() == VehicleType.HELICOPTER) && !onGround()) {
-                this.setHealth(Math.max(this.getHealth() - pHealAmount, 1));
-            } else {
-                this.setHealth(this.getHealth() - pHealAmount);
-            }
+            this.setHealth(this.getHealth() - pHealAmount);
         }
     }
 
@@ -3712,21 +3714,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (verticalCollision) {
             if (this.getVehicleType() == VehicleType.AIRPLANE && ((entityData.get(GEAR_ROT) > 0.15 && !(this instanceof Tom6Entity)) || Mth.abs(getRoll()) > 20 || Mth.abs(getXRot()) > 30)) {
-                if (getHealth() < 0.1 * getMaxHealth()) {
-                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, getLastAttacker() == null ? this : getLastAttacker()), (float) ((8 + Mth.abs(getRoll() * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)));
-                } else {
-                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) ((8 + Mth.abs(getRoll() * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)));
-                }
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) ((8 + Mth.abs(getRoll() * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)));
                 if (!this.level().isClientSide) {
                     this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);
                 }
                 this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
             } else if (this.getVehicleType() == VehicleType.HELICOPTER) {
-                if (getHealth() < 0.1 * getMaxHealth()) {
-                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, getLastAttacker() == null ? this : getLastAttacker()), (float) (60 * ((lastTickSpeed - 0.5) * (lastTickSpeed - 0.5))));
-                } else {
-                    this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (60 * ((lastTickSpeed - 0.5) * (lastTickSpeed - 0.5))));
-                }
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (60 * ((lastTickSpeed - 0.5) * (lastTickSpeed - 0.5))));
                 this.bounceVertical(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
             } else if (Mth.abs((float) lastTickVerticalSpeed) > 0.4) {
                 this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (96 * ((Mth.abs((float) lastTickVerticalSpeed) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))));
@@ -3738,11 +3732,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (this.horizontalCollision) {
-            if (getHealth() < 0.1 * getMaxHealth()) {
-                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, getLastAttacker() == null ? this : getLastAttacker()), (float) (126 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
-            } else {
-                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (126 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
-            }
+            this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, driver == null ? this : driver), (float) (126 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
             this.bounceHorizontal(Direction.getNearest(this.getDeltaMovement().x(), this.getDeltaMovement().y(), this.getDeltaMovement().z()).getOpposite());
             if (!this.level().isClientSide) {
                 this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.getSoundSource(), 1, 1);

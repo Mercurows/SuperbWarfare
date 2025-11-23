@@ -98,6 +98,7 @@
     "All - 8"
   ],
   "ThirdPersonCameraPos": [0, 1, 2],
+  "EngineType": "Fixed",
   "DestroyInfo": {
     "ParticleType": "Medium",
     "ExplosionDamage": 100,
