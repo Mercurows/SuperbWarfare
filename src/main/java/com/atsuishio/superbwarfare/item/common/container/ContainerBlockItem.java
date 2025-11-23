@@ -7,9 +7,12 @@ import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -67,6 +70,11 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
 
     public ContainerBlockItem() {
         super(ModBlocks.CONTAINER.get(), new Item.Properties().stacksTo(1).fireResistant());
+    }
+
+    @Override
+    public boolean canBeHurtBy(DamageSource pDamageSource) {
+        return super.canBeHurtBy(pDamageSource) && !pDamageSource.is(DamageTypeTags.IS_EXPLOSION) && !pDamageSource.is(DamageTypes.CACTUS);
     }
 
     @Override
