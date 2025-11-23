@@ -328,7 +328,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         data.save();
         map.put(name, data);
 
-        entityData.set(GUN_DATA_MAP, map);
+        entityData.set(GUN_DATA_MAP, map, true);
     }
 
     public VehicleWeapon[][] availableWeapons;
@@ -1408,7 +1408,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             ItemStack.parse(this.level().registryAccess(), tag)
                     .ifPresent(is -> gunDataMap.put(key, GunData.from(is)));
         }
-        entityData.set(GUN_DATA_MAP, gunDataMap);
+        entityData.set(GUN_DATA_MAP, gunDataMap, true);
 
         if (compound.contains("Health")) {
             this.entityData.set(HEALTH, compound.getFloat("Health"));
@@ -1809,7 +1809,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 newData.tick(this, true);
                 newMap.put(kv.getKey(), newData);
             }
-            entityData.set(GUN_DATA_MAP, newMap);
+            entityData.set(GUN_DATA_MAP, newMap, true);
         }
 
         this.wasEngineRunning = this.engineRunning();
@@ -1972,7 +1972,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             if (getNthEntity(i) instanceof Mob mob && canShoot(mob) && mob.getTarget() != null && getGunData(mob) != null && mob.level() instanceof ServerLevel) {
                 mob.lookAt(mob.getTarget(), 30F, 30F);
                 int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(mob) / 60));
-                if (tickCount %rpm == 0 && canShoot(mob) && VectorTool.calculateAngle(getShootDirectionForHud(mob, 1), getShootPos(mob, 1).vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(mob.getTarget(), 1))) < 4) {
+                if (tickCount % rpm == 0 && canShoot(mob) && VectorTool.calculateAngle(getShootDirectionForHud(mob, 1), getShootPos(mob, 1).vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(mob.getTarget(), 1))) < 4) {
                     vehicleShoot(mob, mob.getTarget().getUUID(), null);
                 }
             }
@@ -3693,7 +3693,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         VehicleMotionUtils.collideBlocks(this);
     }
 
-    public Entity getLastAttacker(){
+    public Entity getLastAttacker() {
         return EntityFindUtil.findEntity(level(), entityData.get(LAST_ATTACKER_UUID));
     }
 
