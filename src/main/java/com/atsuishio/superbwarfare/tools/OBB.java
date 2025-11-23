@@ -331,7 +331,7 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     @Nullable
     public static OBB getLookingObb(Player player, double range) {
         Entity lookingEntity = TraceTool.findLookingEntity(player, range);
-        if (!(lookingEntity instanceof OBBEntity obbEntity)) {
+        if (!(lookingEntity instanceof OBBEntity obbEntity) || obbEntity.enableAABB()) {
             return null;
         }
 

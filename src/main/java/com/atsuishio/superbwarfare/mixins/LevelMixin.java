@@ -30,7 +30,7 @@ public abstract class LevelMixin {
 
         StreamSupport.stream(this.getEntities().getAll().spliterator(), false).filter(e -> pPredicate.test(e) && e != pEntity)
                 .forEach(entity -> {
-                            if (entity instanceof OBBEntity obbEntity) {
+                    if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
                                 for (OBB obb : obbEntity.getOBBs()) {
                                     if (OBB.isColliding(obb, pBoundingBox) && !cir.getReturnValue().contains(entity)) {
                                         cir.getReturnValue().add(entity);

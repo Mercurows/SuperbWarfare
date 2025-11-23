@@ -204,7 +204,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0;
 
         Vec3 hitPos = null;
-        if (entity instanceof OBBEntity obbEntity) {
+        if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
             for (OBB obb : obbEntity.getOBBs()) {
                 var obbVec = obb.clip(startVec.toVector3f(), endVec.toVector3f()).orElse(null);
                 if (obbVec != null) {

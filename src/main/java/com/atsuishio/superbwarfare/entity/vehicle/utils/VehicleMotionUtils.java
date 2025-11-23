@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
-import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -74,7 +73,7 @@ public final class VehicleMotionUtils {
      */
     public static void supportEntities(VehicleEntity vehicle) {
         if (vehicle.isRemoved()) return;
-        if (!(vehicle instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty() || vehicle instanceof Type63Entity) {
+        if (vehicle.enableAABB() || vehicle instanceof Type63Entity) {
             return;
         }
 
@@ -82,7 +81,7 @@ public final class VehicleMotionUtils {
         List<Entity> entities = vehicle.level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
                         entity -> entity != vehicle && entity != vehicle.getFirstPassenger() && entity.getVehicle() == null)
                 .stream().filter(entity -> {
-                            if (entity.isAlive() && obbEntity.isInObb(entity, vehicle.getDeltaMovement())) {
+                    if (entity.isAlive() && vehicle.isInObb(entity, vehicle.getDeltaMovement())) {
                                 var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
                                 return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
                             }
@@ -107,7 +106,7 @@ public final class VehicleMotionUtils {
      * @author YWZJ Ranpoes
      */
     public static void support(VehicleEntity vehicle, Entity entity) {
-        if (!(vehicle instanceof OBBEntity obbEntity)) return;
+        if (vehicle.enableAABB()) return;
         if (entity.noPhysics || vehicle.noPhysics) {
             return;
         }
@@ -116,8 +115,7 @@ public final class VehicleMotionUtils {
         Vec3 midPos = feetPos.add(0, entity.getEyeHeight() / 2, 0);
         Vec3 eyePos = feetPos.add(0, entity.getEyeHeight(), 0);
 
-        for (var obb : obbEntity.getOBBs()) {
-
+        for (var obb : vehicle.getOBBs()) {
             if (entity instanceof Player player && player.onGround() && player.isCrouching() && player.level() instanceof ServerLevel) {
                 // 推车
                 vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(player.getForward()).normalize().scale(player.getDeltaMovement().length() * 3));
@@ -136,6 +134,7 @@ public final class VehicleMotionUtils {
                     continue;
                 }
             }
+
             if (obb.contains(eyePos)) {
                 double dx = entity.getX() - obb.center().x;
                 double dz = entity.getZ() - obb.center().z;
@@ -194,12 +193,12 @@ public final class VehicleMotionUtils {
         var vec3 = vehicle.getDeltaMovement();
 
         List<Entity> entities;
-        if (vehicle instanceof OBBEntity obbEntity) {
+        if (!vehicle.enableAABB()) {
             var frontBox = vehicle.getBoundingBox().move(vec3).inflate(6);
             entities = vehicle.level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox,
                             entity -> entity != vehicle && entity != vehicle.getFirstPassenger() && entity.getVehicle() == null)
                     .stream().filter(entity -> {
-                                if (entity.isAlive() && obbEntity.isInObb(entity, vec3)) {
+                        if (entity.isAlive() && vehicle.isInObb(entity, vec3)) {
                                     var type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
                                     return (entity instanceof VehicleEntity || entity instanceof Boat || entity instanceof Minecart || (entity instanceof LivingEntity living && !(living instanceof Player player && player.isSpectator()))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString());
                                 }
@@ -271,14 +270,14 @@ public final class VehicleMotionUtils {
             if (entity instanceof VehicleEntity mobileVehicle) {
                 vehicle.hurt(ModDamageTypes.causeVehicleStrikeDamage(vehicle.level().registryAccess(), entity, entity.getFirstPassenger() == null ? entity : entity.getFirstPassenger()), (float) (f * 40 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)));
 
-                if (vehicle instanceof OBBEntity obbEntity) {
-                    if (obbEntity.isInObb(entity, Vec3.ZERO)) {
+                if (!vehicle.enableAABB()) {
+                    if (vehicle.isInObb(entity, Vec3.ZERO)) {
                         Vec3 thisPos = vehicle.position();
                         Vec3 otherPos = entity.position();
 
-                        for (OBB obb : obbEntity.getOBBs()) {
-                            if (entity instanceof OBBEntity obbEntity2) {
-                                var obbList2 = obbEntity2.getOBBs();
+                        for (OBB obb : vehicle.getOBBs()) {
+                            if (!mobileVehicle.enableAABB()) {
+                                var obbList2 = mobileVehicle.getOBBs();
                                 for (var obb2 : obbList2) {
                                     if (OBB.isColliding(obb, obb2)) {
                                         thisPos = new Vec3(obb.center());
@@ -309,11 +308,11 @@ public final class VehicleMotionUtils {
 
     // TODO 实现正确的AABB包围箱
     public static AABB calculateCombinedAABBOptimized(VehicleEntity vehicle) {
-        if (!(vehicle instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty()) {
+        if (vehicle.enableAABB()) {
             return vehicle.getBoundingBox();
         }
 
-        var obbList = obbEntity.getOBBs();
+        var obbList = vehicle.getOBBs();
 
         Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
         Vector3f max = new Vector3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
@@ -359,11 +358,11 @@ public final class VehicleMotionUtils {
             flags[i] &= limit.equals() ? power >= limit.power() || motion >= limit.motion() : power > limit.power() || motion > limit.motion();
         }
 
-        if (vehicle instanceof OBBEntity obbEntity) {
+        if (!vehicle.enableAABB()) {
             AABB aabb = vehicle.getBoundingBox().move(vehicle.getDeltaMovement()).inflate(5);
             BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
                 BlockState blockstate = vehicle.level().getBlockState(pos);
-                if (obbEntity.isInObb(pos, vehicle.getDeltaMovement())) {
+                if (vehicle.isInObb(pos, vehicle.getDeltaMovement())) {
                     if ((flags[0] && blockstate.is(ModTags.Blocks.SOFT_COLLISION)) ||
                             (flags[1] && blockstate.is(ModTags.Blocks.NORMAL_COLLISION)) ||
                             (flags[2] && blockstate.is(ModTags.Blocks.HARD_COLLISION)) ||

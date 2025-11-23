@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.client.renderer.special.OBBRenderer;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
-import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,8 +19,8 @@ public class EntityRenderDispatcherMixin {
 
     @Inject(method = "renderHitbox", at = @At("RETURN"))
     private static void renderHitbox(PoseStack poseStack, VertexConsumer buffer, Entity p_entity, float red, float green, float blue, float alpha, CallbackInfo ci) {
-        if (p_entity instanceof OBBEntity obbEntity && p_entity instanceof VehicleEntity vehicle) {
-            OBBRenderer.INSTANCE.render(vehicle, obbEntity.getOBBs(), poseStack, buffer, 0, 1, 0, 1, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
+        if (p_entity instanceof VehicleEntity vehicle && !vehicle.enableAABB()) {
+            OBBRenderer.INSTANCE.render(vehicle, vehicle.getOBBs(), poseStack, buffer, 0, 1, 0, 1, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
         }
     }
 

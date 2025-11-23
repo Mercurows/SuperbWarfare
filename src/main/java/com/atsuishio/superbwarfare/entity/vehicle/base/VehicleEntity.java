@@ -92,8 +92,8 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -104,7 +104,7 @@ import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPit
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 import static com.atsuishio.superbwarfare.tools.TraceTool.pickNew;
 
-public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity {
+public abstract class VehicleEntity extends Entity implements VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity, OBBEntity {
     public static final String TAG_SEAT_INDEX = "SBWSeatIndex";
 
     public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
@@ -333,6 +333,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public VehicleWeapon[][] availableWeapons;
+    private List<OBB> obbCache;
+    private List<OBBInfo> obbInfoCache = new ArrayList<>();
 
     protected int interpolationSteps;
     protected double xO;
@@ -441,16 +443,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.setHealth(this.getMaxHealth());
     }
 
-    private List<OBBInfo> obbCache = new ArrayList<>();
-
     private void initOBB() {
-        if (!(this instanceof OBBEntity)) return;
-
-        this.obbCache = data().getDefault().copy().obb.stream().filter(Objects::nonNull).toList();
+        this.obbInfoCache = data().getDefault().copy().obb.stream().filter(Objects::nonNull).toList();
     }
 
     public List<OBBInfo> getOBB() {
-        return obbCache;
+        return obbInfoCache;
     }
 
     @Override
@@ -1741,7 +1739,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public boolean canBeCollidedWith() {
-        return !(this instanceof OBBEntity obbEntity) || obbEntity.getOBBs().isEmpty();
+        return this.enableAABB();
     }
 
     @Override
@@ -1945,13 +1943,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.clearArrow();
 
-        if (this instanceof OBBEntity obbEntity) {
-            this.handlePartDamaged(obbEntity);
-
-            // 处理部件血量
-            this.handlePartHealth();
-        }
-
         entityData.set(MOUSE_SPEED_X, getMouseMoveSpeedX() * 0.95f);
         entityData.set(MOUSE_SPEED_Y, getMouseMoveSpeedY() * 0.95f);
 
@@ -2105,9 +2096,24 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         lowHealthWarning();
         this.refreshDimensions();
 
-        if (this instanceof OBBEntity obbEntity) {
-            obbEntity.updateOBB();
+        if (!this.enableAABB()) {
+            this.handlePartDamaged(this);
+            // 处理部件血量
+            this.handlePartHealth();
+            this.updateOBB();
         }
+    }
+
+    public void updateOBB() {
+        this.getOBB().forEach(obbInfo -> {
+            var transform = this.getTransformFromString(obbInfo.transform);
+
+            var obb = obbInfo.getOBB();
+            var worldPos = this.transformPosition(transform, (float) obbInfo.position.x, (float) obbInfo.position.y, (float) obbInfo.position.z);
+
+            obb.center().set(new Vector3f(worldPos.x, worldPos.y, worldPos.z));
+            obb.setRotation(this.getRotationFromString(obbInfo.rotation));
+        });
     }
 
     public SoundEvent getShootSoundInstance() {
@@ -4018,5 +4024,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     @OnlyIn(Dist.CLIENT)
     public Component thirdPersonAmmoComponent(GunData data, Player player) {
         return firstPersonAmmoComponent(data, player);
+    }
+
+    @Override
+    public List<OBB> getOBBs() {
+        if (this.obbCache == null) {
+            this.obbCache = this.getOBB().stream().filter(Objects::nonNull).map(OBBInfo::getOBB).toList();
+        }
+        return this.obbCache;
     }
 }

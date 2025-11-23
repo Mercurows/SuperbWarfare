@@ -33,7 +33,7 @@ public class ProjectileUtilMixin {
             at = @At("HEAD"), cancellable = true)
     private static void getEntityHitResult(Level pLevel, Entity pProjectile, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, float pInflationAmount, CallbackInfoReturnable<EntityHitResult> cir) {
         for (var entity : pLevel.getEntities(pProjectile, pBoundingBox, pFilter)) {
-            if (entity instanceof OBBEntity obbEntity) {
+            if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
                 if (pProjectile instanceof Projectile projectile &&
                         (projectile.getOwner() == entity || entity.getPassengers().contains(projectile.getOwner()))) {
                     continue;
@@ -86,7 +86,7 @@ public class ProjectileUtilMixin {
         var entities = level.getEntities(pShooter, pBoundingBox.inflate(5), pFilter);
 
         for (Entity entity : entities) {
-            if (!(entity instanceof OBBEntity obbEntity)) {
+            if (!(entity instanceof OBBEntity obbEntity) || obbEntity.enableAABB()) {
                 continue;
             }
 
