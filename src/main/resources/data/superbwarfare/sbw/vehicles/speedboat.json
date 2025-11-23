@@ -71,7 +71,7 @@
       "NaturalCooldown": 1,
       "ShootAnimationTime": 1,
       "Name": "weapon.superbwarfare.50_cal_gun",
-      "AmmoType": "@HeavyAmmo",
+      "AmmoType": "superbwarfare:heavy_ammo",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0, 0.2, 1]],

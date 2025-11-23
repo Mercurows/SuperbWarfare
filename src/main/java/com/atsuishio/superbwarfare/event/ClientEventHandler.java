@@ -25,6 +25,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -1279,7 +1280,14 @@ public class ClientEventHandler {
             var gunData = pVehicle.getGunData(pVehicle.getSeatIndex(player));
             if (gunData == null) return;
 
+
             if (!pVehicle.canShoot(player)) {
+                if (pVehicle.getAmmoCount(player) < gunData.compute().ammoCostPerShoot) {
+                    ItemStack stack = gunData.selectedAmmoConsumer().stack();
+                    if (stack != ItemStack.EMPTY) {
+                        player.displayClientMessage(Component.translatable("tips.superbwarfare.need.ammo").append(stack.getHoverName()), true);
+                    }
+                }
                 holdFireVehicle = false;
                 return;
             }
@@ -1314,13 +1322,15 @@ public class ClientEventHandler {
 
                     clientTimerVehicle.setProgress(newProgress);
                 }
+
+                if (gunData.compute().defaultFireMode.equals("Semi")) {
+                    holdFireVehicle = false;
+                }
+
             } else if (clientTimerVehicle.getProgress() >= cooldown) {
                 clientTimerVehicle.stop();
             }
 
-            if (gunData.compute().defaultFireMode.equals("Semi")) {
-                holdFireVehicle = false;
-            }
         } else {
             clientTimerVehicle.stop();
         }
