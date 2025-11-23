@@ -38,7 +38,7 @@ public class SeekingWeaponWarningMessage {
                 Entity entity = EntityFindUtil.findEntity(player.level(), String.valueOf(message.uuid));
 
                 if (entity != null) {
-                    entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : message.lockOn ? ModSounds.LOCKED_WARNING.get() : ModSounds.LOCKING_WARNING.get(), SoundSource.PLAYERS, 1, 1f);
+                    entity.level().playSound(null, entity.getOnPos(), entity instanceof Pig ? SoundEvents.PIG_HURT : message.lockOn ? ModSounds.LOCKED_WARNING.get() : ModSounds.LOCKING_WARNING.get(), SoundSource.PLAYERS, 2, 1f);
                 }
             }
 
