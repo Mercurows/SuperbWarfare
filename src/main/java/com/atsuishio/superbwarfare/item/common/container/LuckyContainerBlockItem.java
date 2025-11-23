@@ -45,7 +45,7 @@ public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public LuckyContainerBlockItem() {
-        super(ModBlocks.LUCKY_CONTAINER.get(), new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(ModBlocks.LUCKY_CONTAINER.get(), new Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant());
     }
 
     @Override

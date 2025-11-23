@@ -32,7 +32,7 @@ public class SmallContainerBlockItem extends BlockItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SmallContainerBlockItem() {
-        super(ModBlocks.SMALL_CONTAINER.get(), new Properties().stacksTo(1));
+        super(ModBlocks.SMALL_CONTAINER.get(), new Properties().stacksTo(1).fireResistant());
     }
 
     private PlayState predicate(AnimationState<SmallContainerBlockItem> event) {
