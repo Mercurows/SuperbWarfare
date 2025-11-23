@@ -391,23 +391,10 @@ public class VehicleHudOverlay implements IGuiOverlay {
             }
 
             var computed = data.compute();
-            if (data.autoIterativeReloadTimer.get() > 0 || data.reloading()) {
+            if (data.reloading()) {
                 int totalReloadTime, currentReloadTime;
-                if (data.reloading()) {
-                    if (data.reload.iterativeLoadTimer.get() > 0) {
-                        // 单发装填时长
-                        totalReloadTime = computed.iterativeAmmoLoadTime;
-                        currentReloadTime = totalReloadTime - data.reload.iterativeLoadTimer.get();
-                    } else {
-                        // 普通换弹时长
-                        totalReloadTime = data.reload.empty() ? computed.emptyReloadTime : computed.normalReloadTime;
-                        currentReloadTime = data.reload.reloadTimer.get();
-                    }
-                } else {
-                    // 自动单发装填时长
-                    totalReloadTime = computed.autoIterativeReloadTime;
-                    currentReloadTime = data.autoIterativeReloadTimer.get();
-                }
+                totalReloadTime = data.reload.empty() ? computed.emptyReloadTime : computed.normalReloadTime;
+                currentReloadTime = data.reload.reloadTimer.get();
 
                 float reloadProgress = (float) (totalReloadTime - currentReloadTime) / totalReloadTime;
                 float alpha = Mth.lerp(progress, 0.4f, 1);

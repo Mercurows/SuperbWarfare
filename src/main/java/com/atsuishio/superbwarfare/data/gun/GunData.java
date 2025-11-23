@@ -92,7 +92,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         ammo = new IntValue(gunDataTag, "Ammo");
         virtualAmmo = new IntValue(gunDataTag, "VirtualAmmo");
         backupAmmoCount = new IntValue(gunDataTag, "BackupAmmoCount");
-        autoIterativeReloadTimer = new Timer(gunDataTag, "AutoIterativeReload");
         ammoSlot = new AmmoSlot(gunDataTag);
         burstAmount = new IntValue(gunDataTag, "BurstAmount");
 
@@ -371,10 +370,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         this.reload.reloadStarter.finish();
         this.reload.singleReloadStarter.finish();
         this.reload.singleReloadStarter.finish();
-
-        // TODO 是否应该改改这玩意的计算方式？
-        this.autoIterativeReloadTimer.set(compute().autoIterativeReloadTime);
-
         this.bolt.actionTimer.reset();
         this.bolt.needed.reset();
         this.charge.starter.finish();
@@ -825,8 +820,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     // backup ammo count override
     public final IntValue backupAmmoCount;
-
-    public final Timer autoIterativeReloadTimer;
 
     public final AmmoSlot ammoSlot;
 
