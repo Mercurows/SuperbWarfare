@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage;
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
-import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
@@ -147,8 +146,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     };
     public static Consumer<VehicleEntity> playHornSound = vehicle -> {
     };
-    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
-    };
+//    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
+//    };
     public static Consumer<VehicleEntity> playFireSound = vehicle -> {
     };
 
@@ -380,7 +379,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     private boolean wasEngineRunning = false;
     private boolean wasHornWorking = false;
-    private boolean wasInCarMusicPlaying = false;
+//    private boolean wasInCarMusicPlaying = false;
     private boolean wasFiring = false;
     public double targetSpeed;
     public float rudderRot;
@@ -1796,9 +1795,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 playHornSound.accept(this);
             }
 
-            if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
-                playInCarMusic.accept(this);
-            }
+//            if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
+//                playInCarMusic.accept(this);
+//            }
 
             if (playFireSound != null && !this.wasFiring && this.isFiring() && this.level().isClientSide()) {
                 playFireSound.accept(this);
@@ -1820,7 +1819,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.wasEngineRunning = this.engineRunning();
         this.wasHornWorking = this.hornWorking();
-        this.wasInCarMusicPlaying = this.inCarMusicPlaying();
+//        this.wasInCarMusicPlaying = this.inCarMusicPlaying();
 
         turretYRotO = this.getTurretYRot();
         turretXRotO = this.getTurretXRot();
@@ -4032,12 +4031,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
-    public boolean inCarMusicPlaying() {
-        if (!this.level().isClientSide) return false;
-        if (!(this.getFirstPassenger() instanceof Player player)) return false;
-        var stack = player.getOffhandItem();
-        return stack.getItem() instanceof RecordItem || NetMusicCompatHolder.canPlayMusic(stack);
-    }
+//    public boolean inCarMusicPlaying() {
+//        if (!this.level().isClientSide) return false;
+//        if (!(this.getFirstPassenger() instanceof Player player)) return false;
+//        var stack = player.getOffhandItem();
+//        return stack.getItem() instanceof RecordItem || NetMusicCompatHolder.canPlayMusic(stack);
+//    }
 
     public VehicleType getVehicleType() {
         return computed().type;
