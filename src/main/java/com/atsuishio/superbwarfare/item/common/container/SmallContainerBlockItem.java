@@ -9,6 +9,9 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.SeededContainerLoot;
@@ -26,6 +29,7 @@ import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -41,6 +45,12 @@ public class SmallContainerBlockItem extends BlockItem implements GeoItem {
 
     public SmallContainerBlockItem() {
         super(ModBlocks.SMALL_CONTAINER.get(), new Properties().stacksTo(1).fireResistant());
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public boolean canBeHurtBy(ItemStack stack, DamageSource source) {
+        return super.canBeHurtBy(stack, source) && !source.is(DamageTypeTags.IS_EXPLOSION) && !source.is(DamageTypes.CACTUS);
     }
 
     private PlayState predicate(AnimationState<SmallContainerBlockItem> event) {
