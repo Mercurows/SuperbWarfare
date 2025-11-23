@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -25,17 +25,12 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class PrismTankEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
 
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);
@@ -105,15 +100,6 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
                 }
             }
         }
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

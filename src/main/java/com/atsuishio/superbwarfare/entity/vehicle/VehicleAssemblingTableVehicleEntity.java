@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
 import net.minecraft.ChatFormatting;
@@ -27,17 +27,11 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implements GeoEntity, HasCustomInventoryScreen, MenuProvider {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implements HasCustomInventoryScreen, MenuProvider {
 
     public float deltaXo;
     public float deltaYo;
@@ -52,7 +46,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     public VehicleAssemblingTableVehicleEntity(Level world) {
         this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), world);
     }
-
 
     // 变回方块
     @Override
@@ -214,16 +207,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
             this.level().addFreshEntity(item);
         }
     }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
 
     @Override
     public @NotNull List<ItemStack> getRetrieveItems() {

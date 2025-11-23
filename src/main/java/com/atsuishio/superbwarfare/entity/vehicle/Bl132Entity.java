@@ -5,13 +5,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Bl132Entity extends ArtilleryEntity implements GeoEntity, WeaponVehicleEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class Bl132Entity extends ArtilleryEntity implements WeaponVehicleEntity {
 
     public Bl132Entity(EntityType<Bl132Entity> type, Level world) {
         super(type, world);
@@ -57,10 +53,5 @@ public class Bl132Entity extends ArtilleryEntity implements GeoEntity, WeaponVeh
         data.add(new AnimationController<>(this, "fire2", 0, this::fire2Predicate));
         data.add(new AnimationController<>(this, "fire3", 0, this::fire3Predicate));
         data.add(new AnimationController<>(this, "fire4", 0, this::fire4Predicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

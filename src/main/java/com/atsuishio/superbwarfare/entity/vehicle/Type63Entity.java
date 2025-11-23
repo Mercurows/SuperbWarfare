@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem;
@@ -30,15 +30,11 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 import org.joml.Math;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Type63Entity extends VehicleEntity implements GeoEntity {
+public class Type63Entity extends GeoVehicleEntity {
 
     public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
@@ -46,8 +42,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity {
     public static final EntityDataAccessor<Float> SHOOT_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public OBB[] barrel = new OBB[12];
     public OBB pitchController;
@@ -393,15 +387,6 @@ public class Type63Entity extends VehicleEntity implements GeoEntity {
         Matrix4f transform = getBarrelTransform(pPartialTicks);
         Vector4f rootPosition = transformPosition(transform, 0, 0.000625f, -0.44625f);
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z);
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

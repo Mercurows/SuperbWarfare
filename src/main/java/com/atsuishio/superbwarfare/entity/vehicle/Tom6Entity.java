@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.DestroyInfo;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -34,20 +34,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
-public class Tom6Entity extends VehicleEntity implements GeoEntity {
+public class Tom6Entity extends GeoVehicleEntity {
 
     public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public float deltaXo;
     public float deltaYo;
@@ -244,15 +238,6 @@ public class Tom6Entity extends VehicleEntity implements GeoEntity {
     @Override
     public float getEngineSoundVolume() {
         return (float) getDeltaMovement().length();
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -15,17 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class TruckEntity extends VehicleEntity implements GeoEntity {
+public class TruckEntity extends GeoVehicleEntity {
 
     public static final EntityDataAccessor<Boolean> GREEN = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.BOOLEAN);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
 
     public TruckEntity(EntityType<TruckEntity> type, Level world) {
         super(type, world);
@@ -85,14 +78,4 @@ public class TruckEntity extends VehicleEntity implements GeoEntity {
             horn();
         }
     }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
 }

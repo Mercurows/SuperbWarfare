@@ -1,17 +1,12 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SpeedboatEntity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class SpeedboatEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
 
     public SpeedboatEntity(EntityType<SpeedboatEntity> type, Level world) {
         super(type, world);
@@ -28,10 +23,4 @@ public class SpeedboatEntity extends VehicleEntity implements GeoEntity, WeaponV
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "machineGun", 0, this::machineGunFirePredicate));
     }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
 }

@@ -37,19 +37,15 @@ import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Locale;
 import java.util.UUID;
 
-public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity {
+public class AnnihilatorEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Float> LASER_LEFT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_MIDDLE_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_RIGHT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public AnnihilatorEntity(EntityType<AnnihilatorEntity> type, Level world) {
         super(type, world);
@@ -121,11 +117,6 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity {
                 this.entityData.set(CHARGE_PROGRESS, Mth.clamp(this.entityData.get(CHARGE_PROGRESS) + chargeSpeed, 0, 1));
             }
         }
-
-
-//        if (this.entityData.get(COOL_DOWN) == 20) {
-//            this.level().playSound(null, this.getOnPos(), ModSounds.ANNIHILATOR_RELOAD.get(), SoundSource.PLAYERS, 1, 1);
-//        }
     }
 
     private float laserLength(Vec3 pos, LivingEntity living, GunData data) {
@@ -133,13 +124,13 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity {
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
 
         Vec3 hitPos = result.getLocation();
-        BlockPos _pos = result.getBlockPos();
+        BlockPos blockPos = result.getBlockPos();
 
-        float hardness = this.level().getBlockState(_pos).getBlock().defaultDestroyTime();
+        float hardness = this.level().getBlockState(blockPos).getBlock().defaultDestroyTime();
 
         if (ExplosionConfig.EXPLOSION_DESTROY.get() && hardness != -1) {
-            Block.dropResources(this.level().getBlockState(_pos), this.level(), _pos, null);
-            this.level().destroyBlock(_pos, true);
+            Block.dropResources(this.level().getBlockState(blockPos), this.level(), blockPos, null);
+            this.level().destroyBlock(blockPos, true);
         }
 
         causeLaserExplode(hitPos, data, living);
@@ -272,10 +263,5 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

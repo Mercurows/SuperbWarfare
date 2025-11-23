@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import net.minecraft.world.entity.EntityType;
@@ -10,7 +10,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
+public class Yx100Entity extends GeoVehicleEntity implements GeoEntity, WeaponVehicleEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public Yx100Entity(EntityType<Yx100Entity> type, Level world) {
@@ -27,7 +27,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         if (getShootAnimationTimer(0, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire"));
         }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle"));
     }
 
@@ -35,7 +34,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         if (getShootAnimationTimer(0, 1) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire_coax"));
         }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle_coax"));
     }
 
@@ -43,7 +41,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         if (getShootAnimationTimer(1, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.yx_100.fire_weapon_station"));
         }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.yx_100.idle_weapon_station"));
     }
 
@@ -52,11 +49,6 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
         data.add(new AnimationController<>(this, "cannon", 0, this::cannonFirePredicate));
         data.add(new AnimationController<>(this, "coax", 0, this::coaxFirePredicate));
         data.add(new AnimationController<>(this, "passengerWeaponStation", 0, this::passengerWeaponStationFirePredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override
@@ -78,5 +70,4 @@ public class Yx100Entity extends VehicleEntity implements GeoEntity, WeaponVehic
     public float getEngineMaxHealth() {
         return 150;
     }
-
 }

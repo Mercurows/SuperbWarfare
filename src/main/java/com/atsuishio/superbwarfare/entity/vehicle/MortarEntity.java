@@ -40,23 +40,19 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends ArtilleryEntity implements GeoEntity {
+public class MortarEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
-    private LivingEntity shooter = null;
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private LivingEntity shooter = null;
 
     public MortarEntity(EntityType<MortarEntity> type, Level level) {
         super(type, level);
@@ -120,7 +116,6 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
             SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), (float) gunData.compute().soundRadius, random.nextFloat() * 0.1f + 1, null);
         }
     }
-
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
@@ -319,11 +314,6 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

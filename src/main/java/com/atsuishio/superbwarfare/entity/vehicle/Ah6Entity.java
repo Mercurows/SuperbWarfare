@@ -1,19 +1,13 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class Ah6Entity extends GeoVehicleEntity implements WeaponVehicleEntity {
 
     public Ah6Entity(EntityType<Ah6Entity> type, Level world) {
         super(type, world);
@@ -30,15 +24,6 @@ public class Ah6Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
                     damage *= getHealth() > 0.1f ? 0.7f : 0.05f;
                     return damage;
                 });
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

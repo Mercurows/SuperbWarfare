@@ -4,14 +4,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Mle1934Entity extends ArtilleryEntity implements GeoEntity {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class Mle1934Entity extends ArtilleryEntity {
 
     public Mle1934Entity(EntityType<Mle1934Entity> type, Level world) {
         super(type, world);
@@ -41,10 +36,5 @@ public class Mle1934Entity extends ArtilleryEntity implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
         data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

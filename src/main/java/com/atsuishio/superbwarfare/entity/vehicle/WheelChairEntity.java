@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,15 +13,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class WheelChairEntity extends VehicleEntity implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class WheelChairEntity extends GeoVehicleEntity {
 
     public WheelChairEntity(EntityType<WheelChairEntity> type, Level world) {
         super(type, world);
@@ -76,14 +71,5 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         ) {
             ModCriteriaTriggers.OTTO_SPRINT.get().trigger(player);
         }
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }
