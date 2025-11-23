@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun.vehicle;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.ChatFormatting;
@@ -55,13 +56,17 @@ public class VehicleGun extends GunItem {
 
     @Override
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
-        return data.compute().projectileAmount > 0
-                && !data.overHeat.get()
-                && data.compute().heatPerShoot <= (100 + data.compute().heatPerShoot - data.heat.get())
-                && !data.reloading()
-                && !data.charging()
-                && !data.bolt.needed.get()
-                && (data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get()) >= data.compute().ammoCostPerShoot;
+        if (shooter instanceof VehicleEntity vehicle) {
+            return data.compute().projectileAmount > 0
+                    && !data.overHeat.get()
+                    && data.compute().heatPerShoot <= (100 + data.compute().heatPerShoot - data.heat.get())
+                    && !data.reloading()
+                    && !data.charging()
+                    && !data.bolt.needed.get()
+                    && vehicle.getAmmo(data) >= data.compute().ammoCostPerShoot;
+        } else {
+            return false;
+        }
     }
 
     @Override

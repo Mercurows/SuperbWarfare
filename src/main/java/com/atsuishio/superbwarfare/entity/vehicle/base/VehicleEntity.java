@@ -3499,18 +3499,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public int getAmmoCount(LivingEntity living) {
         var data = getGunData(getSeatIndex(living));
         if (data == null) return 0;
-        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
+        return getAmmo(data);
     }
 
     public int getAmmoCount(int seatIndex) {
         var data = getGunData(seatIndex);
         if (data == null) return 0;
-        return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
+        return getAmmo(data);
     }
 
     public int getAmmoCount(String weaponName) {
         var data = getGunData(weaponName);
         if (data == null) return 0;
+        return getAmmo(data);
+    }
+
+    // TODO 如何在客户端也能正确读取弹药
+    public int getAmmo(GunData data) {
         return data.useBackpackAmmo() ? data.backupAmmoCount.get() : data.ammo.get();
     }
 
