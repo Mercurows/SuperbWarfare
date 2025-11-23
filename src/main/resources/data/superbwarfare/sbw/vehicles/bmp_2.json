@@ -198,7 +198,7 @@
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
       "CrosshairColor": "0xFFC700",
-      "AmmoType": "superbwarfare:rifle_ammo",
+      "AmmoType": "@RifleAmmo",
       "Projectile": "superbwarfare:projectile",
       "RPM": 600,
       "Damage": 9.5,
@@ -281,7 +281,7 @@
         "Fire3PVeryFar": "superbwarfare:m_60_veryfar"
       },
       "SoundRadius": 12,
-      "AmmoType": "superbwarfare:rifle_ammo",
+      "AmmoType": "@RifleAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "Positions": [[1.803125, 1.9765625, -0.8125]],
