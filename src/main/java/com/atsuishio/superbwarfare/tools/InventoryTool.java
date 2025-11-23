@@ -76,8 +76,16 @@ public class InventoryTool {
         int count = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             var stack = handler.getStackInSlot(i);
+
+            // AmmoSupplier Item
             if (stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type) {
                 count += ammoSupplierItem.ammoToAdd * stack.getCount();
+            }
+
+            // AmmoBox
+            var stackAmmo = type.get(stack);
+            if (stackAmmo > 0) {
+                count += stackAmmo;
             }
         }
 
@@ -106,6 +114,17 @@ public class InventoryTool {
         int initialCount = count;
         for (int i = 0; i < handler.getSlots(); i++) {
             var stack = handler.getStackInSlot(i);
+
+            // AmmoBox
+            var stackAmmo = type.get(stack);
+            if (stackAmmo > 0) {
+                var maxConsumable = Math.min(stackAmmo, count);
+                type.set(stack, stackAmmo - maxConsumable);
+                count -= maxConsumable;
+                continue;
+            }
+
+            // AmmoSupplier Item
             if (!(stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type))
                 continue;
 
