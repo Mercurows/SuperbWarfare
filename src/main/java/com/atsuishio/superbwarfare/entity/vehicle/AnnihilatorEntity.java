@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -96,6 +97,12 @@ public class AnnihilatorEntity extends ArtilleryEntity implements GeoEntity, OBB
         int targetY = pos.getY();
         int targetZ = pos.getZ();
         entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+    }
+
+    @Override
+    public DamageModifier getDamageModifier() {
+        return super.getDamageModifier()
+                .custom((source, damage) -> getSourceAngle(source, 3) * damage);
     }
 
     @Override

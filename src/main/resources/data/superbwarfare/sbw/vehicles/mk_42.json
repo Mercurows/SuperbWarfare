@@ -121,8 +121,7 @@
     "#superbwarfare:projectile_absolute * 0.85",
     "superbwarfare:vehicle_strike * 5",
     "@superbwarfare:gun_grenade * 1.5",
-    "All - 8",
-    "$entity.getSourceAngle(source, 0.25) * damage"
+    "All - 8"
   ],
   "ThirdPersonCameraPos": [0, 1, 8],
   "EngineType": "Fixed",

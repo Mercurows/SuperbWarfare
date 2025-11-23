@@ -9,13 +9,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class DamageModifier {
@@ -23,12 +23,7 @@ public class DamageModifier {
     private final List<DamageModify> immuneList = new ArrayList<>();
     private final List<DamageModify> reduceList = new ArrayList<>();
     private final List<DamageModify> multiplyList = new ArrayList<>();
-    private final List<DamageModify> customList = new ArrayList<>();
-
-    @FunctionalInterface
-    public interface CustomDamageModifier {
-        float compute(Entity entity, DamageSource source, float damage);
-    }
+    private final List<BiFunction<DamageSource, Float, Float>> customList = new ArrayList<>();
 
     public static DamageModifier createDefaultModifier() {
         return new DamageModifier()
@@ -232,11 +227,8 @@ public class DamageModifier {
      *
      * @param damageModifyFunction 自定义伤害值计算函数
      */
-    public DamageModifier custom(CustomDamageModifier damageModifyFunction) {
-        var modifier = new DamageModify();
-        modifier.type = DamageModify.ModifyType.CUSTOM;
-        modifier.modifyFunction = damageModifyFunction;
-        customList.add(modifier);
+    public DamageModifier custom(BiFunction<DamageSource, Float, Float> damageModifyFunction) {
+        customList.add(damageModifyFunction);
         return this;
     }
 
@@ -246,7 +238,6 @@ public class DamageModifier {
                 case IMMUNITY -> immuneList.add(damageModify);
                 case REDUCE -> reduceList.add(damageModify);
                 case MULTIPLY -> multiplyList.add(damageModify);
-                case CUSTOM -> customList.add(damageModify);
             }
         }
         return this;
@@ -309,7 +300,6 @@ public class DamageModifier {
                 case MULTIPLY -> Component.literal(" * ").withStyle(ChatFormatting.YELLOW)
                         .append(Component.literal("" + modify.value).withStyle(ChatFormatting.RESET))
                         .append(Component.literal(" = " + FormatTool.format2D(damage)).withStyle(ChatFormatting.WHITE));
-                case CUSTOM -> Component.empty();
                 case INVALID -> Component.literal("INVALID!").withStyle(ChatFormatting.RED);
             };
             var component = Component.translatable("tips.superbwarfare.modify_result." + modify.sourceType.name().toLowerCase(Locale.ROOT), sourceString)
@@ -321,19 +311,19 @@ public class DamageModifier {
     /**
      * 获取调试用的详细减伤结果
      */
-    public List<ModifyResult> matchResult(Entity entity, DamageSource source, float damage) {
+    public List<ModifyResult> matchResult(DamageSource source, float damage) {
         var matchList = match(source);
         var list = new ArrayList<ModifyResult>();
 
         for (var damageModify : matchList) {
-            damage = damageModify.compute(entity, source, damage);
+            damage = damageModify.compute(damage);
             list.add(new ModifyResult(damageModify, damage));
 
             if (damage <= 0) return list;
         }
 
         for (var func : customList) {
-            damage = func.compute(entity, source, damage);
+            damage = func.apply(source, damage);
             list.add(new ModifyResult(null, damage));
 
             if (damage <= 0) break;
@@ -349,17 +339,17 @@ public class DamageModifier {
      * @param damage 原伤害值
      * @return 减伤后的伤害值
      */
-    public float compute(Entity entity, DamageSource source, float damage) {
+    public float compute(DamageSource source, float damage) {
         var matchList = match(source);
 
         for (var damageModify : matchList) {
-            damage = damageModify.compute(entity, source, damage);
+            damage = damageModify.compute(damage);
             if (damage <= 0) return 0;
         }
 
         // 最后计算自定义伤害
         for (var func : customList) {
-            damage = func.compute(entity, source, damage);
+            damage = func.apply(source, damage);
             if (damage <= 0) return 0;
         }
 

@@ -76,7 +76,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
-        amount = DAMAGE_MODIFIER.compute(this, source, amount);
+        amount = DAMAGE_MODIFIER.compute(source, amount);
 
         if (source.getEntity() != null) {
             this.entityData.set(LAST_ATTACKER_UUID, source.getEntity().getStringUUID());

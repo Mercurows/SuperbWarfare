@@ -1632,7 +1632,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // 计算减伤后的伤害
         float computedAmount = amount;
         if (!source.is(ModTags.DamageTypes.BYPASSES_VEHICLE)) {
-            computedAmount = this.getDamageModifier().compute(this, source, amount);
+            computedAmount = this.getDamageModifier().compute(source, amount);
         }
 
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);

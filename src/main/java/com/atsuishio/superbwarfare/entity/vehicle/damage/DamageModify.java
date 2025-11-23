@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle.damage;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.DeserializeFromString;
-import com.atsuishio.superbwarfare.js.ScriptManager;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -10,11 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.ScriptableObject;
 
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -22,48 +17,8 @@ import java.util.regex.Pattern;
 public class DamageModify implements DeserializeFromString {
     private static final Pattern MODIFY_PATTERN = Pattern.compile("^(?<prefix>(@#|#|@)?)(?<id>\\w+(:\\w+)?)\\s*(?<operator>[-*]?)\\s*(?<value>([+-]?\\d+(\\.\\d*)?)?)$");
 
-    private transient Context context;
-    private transient Script script;
-    private transient ScriptableObject scope;
-
     @Override
     public void deserializeFromString(String str) {
-        if (str.trim().startsWith("$")) {
-            var trimmed = str.trim().substring(1);
-            this.context = ScriptManager.getContext();
-
-            if (!context.stringIsCompilableUnit(trimmed)) {
-                this.type = ModifyType.INVALID;
-                Mod.LOGGER.warn("invalid damage modify: {}", str);
-                return;
-            }
-
-            this.scope = this.context.initSafeStandardObjects();
-            this.script = this.context.compileString(trimmed, "damageModifier", 1, null);
-            this.type = ModifyType.CUSTOM;
-
-            this.modifyFunction = (entity, source, damage) -> {
-                try {
-                    ScriptableObject.putProperty(scope, "entity", entity);
-                    ScriptableObject.putProperty(scope, "source", source);
-                    ScriptableObject.putProperty(scope, "damage", damage);
-
-                    var result = script.exec(context, scope);
-                    if (result instanceof Number num) {
-                        return num.floatValue();
-                    } else {
-                        throw new IllegalArgumentException("damage modifier script result(" + result + ") is not a number!");
-                    }
-                } catch (Exception exception) {
-                    Mod.LOGGER.error("error computing damage", exception);
-                }
-
-                return damage;
-            };
-
-            return;
-        }
-
         var matcher = MODIFY_PATTERN.matcher(str.trim());
         if (!matcher.matches()) {
             Mod.LOGGER.warn("invalid damage modify: {}", str);
@@ -99,8 +54,6 @@ public class DamageModify implements DeserializeFromString {
         REDUCE,     // 固定数值减伤
         @SerializedName("Multiply")
         MULTIPLY,   // 乘以指定倍数
-        @SerializedName("Custom")
-        CUSTOM,     // 脚本计算
         @SerializedName("Invalid")
         INVALID     // 解析无效
     }
@@ -109,8 +62,6 @@ public class DamageModify implements DeserializeFromString {
     public float value = 0;
     @SerializedName("Type")
     public ModifyType type = ModifyType.IMMUNITY;
-
-    public transient DamageModifier.CustomDamageModifier modifyFunction;
 
     @SerializedName("Source")
     public String source = "All";
@@ -243,7 +194,7 @@ public class DamageModify implements DeserializeFromString {
      * @param damage 原伤害值
      * @return 计算后的伤害值
      */
-    public float compute(Entity entity, DamageSource source, float damage) {
+    public float compute(float damage) {
         // 类型出错默认视为免疫
         if (type == null) return 0;
 
@@ -251,12 +202,6 @@ public class DamageModify implements DeserializeFromString {
             case IMMUNITY -> 0;
             case REDUCE -> Math.max(damage - value, 0);
             case MULTIPLY -> damage * value;
-            case CUSTOM -> {
-                if (this.modifyFunction != null) {
-                    yield this.modifyFunction.compute(entity, source, damage);
-                }
-                yield damage;
-            }
             case INVALID -> damage;
         };
     }

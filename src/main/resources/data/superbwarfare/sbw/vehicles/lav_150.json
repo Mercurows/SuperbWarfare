@@ -220,8 +220,7 @@
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
     "@superbwarfare:igla_9k38_missile * 0.75",
-    "All - 7",
-    "$entity.getSourceAngle(source, 0.25) * damage"
+    "All - 7"
   ],
   "VehicleContainerType": "Medium",
   "DestroyInfo": {

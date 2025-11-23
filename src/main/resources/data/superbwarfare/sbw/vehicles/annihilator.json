@@ -185,8 +185,7 @@
     "@superbwarfare:c4 * 10",
     "@superbwarfare:gun_grenade * 3",
     "@superbwarfare:cannon_shell * 3",
-    "All - 12",
-    "$entity.getSourceAngle(source, 3) * damage"
+    "All - 12"
   ],
   "VehicleContainerType": "Empty",
   "EngineType": "Fixed",
