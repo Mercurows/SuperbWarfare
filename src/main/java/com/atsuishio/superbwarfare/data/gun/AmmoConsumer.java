@@ -306,7 +306,6 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
     @SuppressWarnings("invalid")
     public void init() {
-
         if (ammo == null) return;
 
         var matcher = AMMO_PATTERN.matcher(ammo.trim());
@@ -341,6 +340,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
                 return;
             }
             this.type = AmmoConsumeType.PLAYER_AMMO;
+            this.stack = this.playerAmmoType.getItemStack();
         } else {
             // Item
             var location = ResourceLocation.tryParse(id);

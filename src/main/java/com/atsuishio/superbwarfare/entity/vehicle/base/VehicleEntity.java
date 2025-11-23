@@ -35,6 +35,7 @@ import com.atsuishio.superbwarfare.world.TDMSavedData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -1987,7 +1988,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                         if (getAmmoCount(player) < gunData.compute().ammoCostPerShoot) {
                             ItemStack stack = gunData.selectedAmmoConsumer().stack();
                             if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
-                                player.displayClientMessage(Component.translatable("tips.superbwarfare.need.ammo").append(stack.getHoverName()), true);
+                                player.displayClientMessage(Component.translatable("tips.superbwarfare.need.ammo")
+                                        .append(Component.literal("[").append(stack.getHoverName()).append("]").withStyle(ChatFormatting.YELLOW)), true);
                             }
                         }
                     }
