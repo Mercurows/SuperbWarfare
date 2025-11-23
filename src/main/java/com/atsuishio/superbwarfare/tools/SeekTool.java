@@ -274,7 +274,7 @@ public class SeekTool {
 
         // 如果实体已低于世界底部或高于顶部
         if (y < minY || y > maxY) {
-            return false;
+            return true;
         }
 
         int height = 0;
