@@ -68,17 +68,20 @@ public class BufferSerializer {
         fieldValuesList(object).forEach(fieldValue -> {
             var value = fieldValue.getFirst();
             var field = fieldValue.getSecond();
+            if (value == null) {
+                buffer.writeUtf(GSON.toJson(null, field.getGenericType()));
+            } else {
+                switch (value) {
+                    case Byte b -> buffer.writeByte(b);
+                    case Integer i -> buffer.writeVarInt(i);
+                    case Long l -> buffer.writeLong(l);
+                    case Float f -> buffer.writeFloat(f);
+                    case Double d -> buffer.writeDouble(d);
+                    case String s -> buffer.writeUtf(s);
+                    case Boolean b -> buffer.writeBoolean(b);
 
-            switch (value) {
-                case Byte b -> buffer.writeByte(b);
-                case Integer i -> buffer.writeVarInt(i);
-                case Long l -> buffer.writeLong(l);
-                case Float f -> buffer.writeFloat(f);
-                case Double d -> buffer.writeDouble(d);
-                case String s -> buffer.writeUtf(s);
-                case Boolean b -> buffer.writeBoolean(b);
-
-                default -> buffer.writeUtf(GSON.toJson(value, field.getGenericType()));
+                    default -> buffer.writeUtf(GSON.toJson(value, field.getGenericType()));
+                }
             }
         });
 

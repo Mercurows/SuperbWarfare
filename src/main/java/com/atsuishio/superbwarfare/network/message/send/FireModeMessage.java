@@ -11,7 +11,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
@@ -31,22 +30,20 @@ public record FireModeMessage(boolean forward) implements CustomPacketPayload {
     }
 
     public static void changeFireMode(FireModeMessage message, ServerPlayer player) {
-        ItemStack stack = player.getMainHandItem();
+        var stack = player.getMainHandItem();
+
+        if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-            if (!(stack.getItem() instanceof GunItem)) {
-                return;
-            }
+        var selectedFireMode = data.selectedFireMode.get();
+        var fireModes = data.compute().availableFireModes();
 
-            var selectedFireMode = data.selectedFireMode.get();
-            var fireModes = data.compute().availableFireModes();
-
-            if (fireModes.size() > 1) {
-                int mode = (selectedFireMode + (message.forward() ? -1 : 1) + fireModes.size()) % fireModes.size();
-                data.selectedFireMode.set(mode);
-                SoundTool.playLocalSound(player, ModSounds.FIRE_RATE.get());
-                return;
-            }
+        if (fireModes.size() > 1) {
+            int mode = (selectedFireMode + (message.forward() ? -1 : 1) + fireModes.size()) % fireModes.size();
+            data.selectedFireMode.set(mode);
+            SoundTool.playLocalSound(player, ModSounds.FIRE_RATE.get());
+            return;
+        }
 
         if (stack.getItem() == ModItems.SENTINEL.get()
                 && !player.isSpectator()
