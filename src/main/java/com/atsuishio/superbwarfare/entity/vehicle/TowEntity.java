@@ -96,10 +96,10 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         return InteractionResult.SUCCESS;
     }
 
-    @Override
-    public Entity getAmmoSupplier() {
-        return getFirstPassenger();
-    }
+//    @Override
+//    public Entity getAmmoSupplier() {
+//        return getFirstPassenger();
+//    }
 
     @Override
     public @NotNull List<ItemStack> getRetrieveItems() {

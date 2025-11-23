@@ -17,7 +17,8 @@ import net.minecraftforge.common.ForgeMod;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.DECOY_READY;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.TURRET_DAMAGED;
 import static com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition;
 
 /**
@@ -50,8 +51,8 @@ public final class VehicleWeaponUtils {
                 xSpeed *= 0.2f;
             }
 
-            float min = -ySpeed + (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
-            float max = ySpeed + (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
+            float min = -ySpeed;
+            float max = ySpeed;
 
             vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed), -89.5f, 89.5f));
             vehicle.setTurretYRot(vehicle.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
@@ -79,9 +80,8 @@ public final class VehicleWeaponUtils {
             xSpeed *= 0.2f;
         }
 
-        float v = (float) (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT);
-        float min = -ySpeed + v;
-        float max = ySpeed + v;
+        float min = -ySpeed;
+        float max = ySpeed;
 
         vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.99f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
         vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.99f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
