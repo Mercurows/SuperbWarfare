@@ -52,7 +52,7 @@ public final class VehicleEngineUtils {
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.05 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f0, 0.99, f0));
-        } else if (vehicle.isInWater()) {
+        } else if (vehicle.isInFluidType()) {
             float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.04 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f1, 0.85, f1));
@@ -141,9 +141,9 @@ public final class VehicleEngineUtils {
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.96f);
         }
 
-        vehicle.setYRot((float) (vehicle.getYRot() - (vehicle.isInWater() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT) - i * s0));
-        if (vehicle.isInWater() || vehicle.onGround()) {
-            double water = (!vehicle.isInWater() && !vehicle.onGround() ? 0.05f : (vehicle.isInWater() && !vehicle.onGround() ? 0.3f : 1));
+        vehicle.setYRot((float) (vehicle.getYRot() - (vehicle.isInFluidType() && !vehicle.onGround() ? 2.5 : 6) * vehicle.getEntityData().get(DELTA_ROT) - i * s0));
+        if (vehicle.isInFluidType() || vehicle.onGround()) {
+            double water = (!vehicle.isInFluidType() && !vehicle.onGround() ? 0.05f : (vehicle.isInFluidType() && !vehicle.onGround() ? 0.3f : 1));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.15 * water * vehicle.targetSpeed * vehicle.getEntityData().get(POWER))));
         }
     }
@@ -168,7 +168,7 @@ public final class VehicleEngineUtils {
             float f0 = 0.54f + 0.25f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.05 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f0, 0.99, f0));
-        } else if (vehicle.isInWater()) {
+        } else if (vehicle.isInFluidType()) {
             float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.04 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f1, 0.85, f1));
@@ -176,7 +176,7 @@ public final class VehicleEngineUtils {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
 
-        if (vehicle.level() instanceof ServerLevel serverLevel && vehicle.isInWater() && vehicle.getDeltaMovement().length() > 0.1) {
+        if (vehicle.level() instanceof ServerLevel serverLevel && vehicle.isInFluidType() && vehicle.getDeltaMovement().length() > 0.1) {
             sendParticle(serverLevel, ParticleTypes.CLOUD, vehicle.getX() + 0.5 * vehicle.getDeltaMovement().x, vehicle.getY() + VehicleVecUtils.getSubmergedHeight(vehicle) - 0.2, vehicle.getZ() + 0.5 * vehicle.getDeltaMovement().z, (int) (2 + 4 * vehicle.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
             sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, vehicle.getX() + 0.5 * vehicle.getDeltaMovement().x, vehicle.getY() + VehicleVecUtils.getSubmergedHeight(vehicle) - 0.2, vehicle.getZ() + 0.5 * vehicle.getDeltaMovement().z, (int) (2 + 10 * vehicle.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
@@ -256,10 +256,10 @@ public final class VehicleEngineUtils {
 
         vehicle.setRudderRot(Mth.clamp(vehicle.getRudderRot() - vehicle.getEntityData().get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
 
-        vehicle.setYRot((float) (vehicle.getYRot() - Math.max((vehicle.isInWater() && !vehicle.onGround() ? 6 : 12) * vehicle.getDeltaMovement().horizontalDistance(), 0) * vehicle.getRudderRot() * (vehicle.getEntityData().get(POWER) > 0 ? 1 : -1) - i * s0));
+        vehicle.setYRot((float) (vehicle.getYRot() - Math.max((vehicle.isInFluidType() && !vehicle.onGround() ? 6 : 12) * vehicle.getDeltaMovement().horizontalDistance(), 0) * vehicle.getRudderRot() * (vehicle.getEntityData().get(POWER) > 0 ? 1 : -1) - i * s0));
 
-        if (vehicle.isInWater() || vehicle.onGround()) {
-            double water = (!vehicle.isInWater() && !vehicle.onGround() ? 0.05f : (vehicle.isInWater() && !vehicle.onGround() ? 0.3f : 1));
+        if (vehicle.isInFluidType() || vehicle.onGround()) {
+            double water = (!vehicle.isInFluidType() && !vehicle.onGround() ? 0.05f : (vehicle.isInFluidType() && !vehicle.onGround() ? 0.3f : 1));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.15 * water * vehicle.targetSpeed * vehicle.getEntityData().get(POWER))));
         }
     }
@@ -282,7 +282,7 @@ public final class VehicleEngineUtils {
 
         if (vehicle.onGround()) {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.2, 0.99, 0.2));
-        } else if (vehicle.isInWater()) {
+        } else if (vehicle.isInFluidType()) {
             float f = (float) (0.75f - (0.04f * java.lang.Math.min(VehicleVecUtils.getSubmergedHeight(vehicle), vehicle.getBbHeight())) + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90);
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.04 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f, 0.85, f));
@@ -290,7 +290,7 @@ public final class VehicleEngineUtils {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.99, 0.99, 0.99));
         }
 
-        if (vehicle.level() instanceof ServerLevel serverLevel && vehicle.isInWater() && vehicle.getDeltaMovement().length() > 0.1) {
+        if (vehicle.level() instanceof ServerLevel serverLevel && vehicle.isInFluidType() && vehicle.getDeltaMovement().length() > 0.1) {
             double y = vehicle.getY() + VehicleVecUtils.getSubmergedHeight(vehicle) - 0.2;
             sendParticle(serverLevel, ParticleTypes.CLOUD, vehicle.getX() + 0.5 * vehicle.getDeltaMovement().x, y, vehicle.getZ() + 0.5 * vehicle.getDeltaMovement().z, (int) (2 + 4 * vehicle.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
             sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, vehicle.getX() + 0.5 * vehicle.getDeltaMovement().x, y, vehicle.getZ() + 0.5 * vehicle.getDeltaMovement().z, (int) (2 + 10 * vehicle.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
@@ -348,7 +348,7 @@ public final class VehicleEngineUtils {
             vehicle.setPropellerRot(vehicle.getPropellerRot() + 2 * vehicle.getEntityData().get(POWER));
             vehicle.setRudderRot(Mth.clamp(vehicle.getRudderRot() - vehicle.getEntityData().get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
 
-            if (vehicle.isInWater() || vehicle.isUnderWater()) {
+            if (vehicle.isInFluidType() || vehicle.isUnderWater()) {
                 vehicle.setXRot(vehicle.getXRot() * 0.85f);
                 float direct = (90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
                 vehicle.setXRot((float) (vehicle.getXRot() - direct * (vehicle.onGround() ? 0 : 1) * bodyPitchRate * vehicle.getDeltaMovement().horizontalDistance()));
@@ -381,7 +381,7 @@ public final class VehicleEngineUtils {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f, 0.95, f));
         }
 
-        if (vehicle.isInWater() && vehicle.tickCount % 4 == 0 && VehicleVecUtils.getSubmergedHeight(vehicle) > 0.5 * vehicle.getBbHeight()) {
+        if (vehicle.isInFluidType() && vehicle.tickCount % 4 == 0 && VehicleVecUtils.getSubmergedHeight(vehicle) > 0.5 * vehicle.getBbHeight()) {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.6, 0.6, 0.6));
             vehicle.hurt(ModDamageTypes.causeVehicleStrikeDamage(vehicle.level().registryAccess(), vehicle, vehicle.getFirstPassenger() == null ? vehicle : vehicle.getFirstPassenger()), 6 + (float) (20 * ((vehicle.lastTickSpeed - 0.4) * (vehicle.lastTickSpeed - 0.4))));
         }
@@ -539,7 +539,7 @@ public final class VehicleEngineUtils {
         vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale((forward ? 0.227 : 0.1) * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
         vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f, f, f));
 
-        if (vehicle.isInWater() && vehicle.tickCount % 4 == 0) {
+        if (vehicle.isInFluidType() && vehicle.tickCount % 4 == 0) {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.6, 0.6, 0.6));
             if (vehicle.lastTickSpeed > 0.4) {
                 vehicle.hurt(ModDamageTypes.causeVehicleStrikeDamage(vehicle.level().registryAccess(), vehicle, vehicle.getFirstPassenger() == null ? vehicle : vehicle.getFirstPassenger()), (float) (20 * ((vehicle.lastTickSpeed - 0.4) * (vehicle.lastTickSpeed - 0.4))));
@@ -549,7 +549,7 @@ public final class VehicleEngineUtils {
         Entity passenger = vehicle.getFirstPassenger();
 
         if (vehicle.getHealth() > 0.1f * vehicle.getMaxHealth()) {
-            if (passenger == null || vehicle.isInWater()) {
+            if (passenger == null || vehicle.isInFluidType()) {
                 vehicle.setLeftInputDown(false);
                 vehicle.setRightInputDown(false);
                 vehicle.setForwardInputDown(false);
@@ -729,7 +729,7 @@ public final class VehicleEngineUtils {
             float f0 = 0.63f + 0.25f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.05 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f0, 0.99, f0));
-        } else if (vehicle.isInWater()) {
+        } else if (vehicle.isInFluidType()) {
             float f1 = 0.74f + 0.09f * Mth.abs(90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).normalize().scale(0.04 * vehicle.getDeltaMovement().dot(vehicle.getViewVector(1)))));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(f1, 0.85, f1));
@@ -798,8 +798,8 @@ public final class VehicleEngineUtils {
         vehicle.setLeftWheelRot((float) (vehicle.getLeftWheelRot() - 1.25 * wheelRotSpeed * s0) - 0.015f * wheelDifferential * Mth.clamp(0.4f * diffY, -5f, 5f));
         vehicle.setRightWheelRot((float) (vehicle.getRightWheelRot() - 1.25 * wheelRotSpeed * s0) + 0.015f * wheelDifferential * Mth.clamp(0.4f * diffY, -5f, 5f));
 
-        if (vehicle.isInWater() || vehicle.onGround()) {
-            double water = (!vehicle.isInWater() && !vehicle.onGround() ? 0.05f : (vehicle.isInWater() && !vehicle.onGround() ? 0.3f : 1));
+        if (vehicle.isInFluidType() || vehicle.onGround()) {
+            double water = (!vehicle.isInFluidType() && !vehicle.onGround() ? 0.05f : (vehicle.isInFluidType() && !vehicle.onGround() ? 0.3f : 1));
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.08 * water * vehicle.targetSpeed * vehicle.getEntityData().get(POWER))));
         }
     }

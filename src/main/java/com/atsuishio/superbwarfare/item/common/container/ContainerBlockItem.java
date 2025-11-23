@@ -76,7 +76,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        BlockHitResult playerPOVHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.WATER);
+        BlockHitResult playerPOVHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
         if (playerPOVHitResult.getType() == HitResult.Type.MISS) {
             return super.use(level, player, hand);
         }
