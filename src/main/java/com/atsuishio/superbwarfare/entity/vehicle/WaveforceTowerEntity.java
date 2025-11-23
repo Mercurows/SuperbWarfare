@@ -14,7 +14,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class WaveforceTowerEntity extends AutoAimableEntity implements GeoEntity{
+public class WaveforceTowerEntity extends AutoAimableEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 

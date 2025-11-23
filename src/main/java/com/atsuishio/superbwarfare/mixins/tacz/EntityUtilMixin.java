@@ -28,7 +28,7 @@ public class EntityUtilMixin {
     @Inject(method = "getHitResult(Lnet/minecraft/world/entity/projectile/Projectile;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;)Lcom/tacz/guns/entity/EntityKineticBullet$EntityResult;",
             at = @At("HEAD"), cancellable = true, remap = false)
     private static void getHitResult(Projectile bulletEntity, Entity entity, Vec3 startVec, Vec3 endVec, CallbackInfoReturnable<EntityKineticBullet.EntityResult> cir) {
-        if (entity instanceof OBBEntity obbEntity) {
+        if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
             var obbList = obbEntity.getOBBs();
             for (var obb : obbList) {
                 Optional<Vector3f> optional = obb.clip(startVec.toVector3f(), endVec.toVector3f());
