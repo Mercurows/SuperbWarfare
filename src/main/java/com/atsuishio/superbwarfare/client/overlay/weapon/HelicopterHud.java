@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -23,6 +24,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
@@ -190,22 +192,24 @@ public class HelicopterHud {
 
                 double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(100)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
-                double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y + 0.06, vehicle.getDeltaMovement().z).normalize().scale(100)),
+                double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(vehicle.getDeltaMovement().add(0, 0.06, 0).normalize().scale(100)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
 
                 float power = vehicle.getPower();
                 lerpPower = Mth.lerp(0.001f * partialTick, lerpPower, power);
                 RenderHelper.preciseBlitWithColor(guiGraphics, HELI_POWER, (float) screenWidth / 2 + 130f, ((float) screenHeight / 2 - 64 + 124 - power * 980), 0, 0, 4, power * 980, 4, power * 980, color);
 
-                lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, vehicle.getDeltaMovement().y());
-                RenderHelper.preciseBlitWithColor(guiGraphics, HELI_VY_MOVE, (float) screenWidth / 2 + 138, ((float) screenHeight / 2 - 3 - Math.max(lerpVy * 20, -24) * 2.5f), 0, 0, 8, 8, 8, 8, color);
+                lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, vehicle.getDeltaMovement().y() * 20);
+                RenderHelper.preciseBlitWithColor(guiGraphics, HELI_VY_MOVE, (float) screenWidth / 2 + 138, ((float) screenHeight / 2 - 3 - Math.max(lerpVy, -24) * 2.5f), 0, 0, 8, 8, 8, 8, color);
 
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(lerpVy * 20, "m/s")),
-                        screenWidth / 2 + 146, (int) (screenHeight / 2F - 3 - Math.max(lerpVy * 20, -24) * 2.5), (lerpVy * 20 < -24 || ((lerpVy * 20 < -10 || (lerpVy * 20 < -1 && length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 100)) && height < 36) || (length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 40 && blockInWay < 72) ? -65536 : color), false);
+                double speed = vehicle.getDeltaMovement().length() * 72;
+
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(lerpVy, "m/s")),
+                        screenWidth / 2 + 146, (int) (screenHeight / 2F - 3 - Math.max(lerpVy, -24) * 2.5), (lerpVy < -24 || ((lerpVy < -10 || (lerpVy < -1 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72) ? -65536 : color), false);
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(vehicle.getY())),
                         screenWidth / 2 + 104, screenHeight / 2, color, false);
                 RenderHelper.preciseBlitWithColor(guiGraphics, SPEED_FRAME, (float) screenWidth / 2 - 144, (float) screenHeight / 2 - 6, 0, 0, 50, 18, 50, 18, color);
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72, "km/h")),
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(speed, "km/h")),
                         screenWidth / 2 - 140, screenHeight / 2, color, false);
 
                 if (vehicle.hasDecoy()) {
@@ -221,13 +225,18 @@ public class HelicopterHud {
                 guiGraphics.drawString(mc.font, component, screenWidth / 2 - 160, screenHeight / 2 - 59,
                         MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
 
-                if (lerpVy * 20 < -24) {
+                if (lerpVy < -18) {
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
                             screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
-                } else if (((lerpVy * 20 < -10 || (lerpVy * 20 < -1 && length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 100)) && height < 36)
-                        || (length(vehicle.getDeltaMovement().x, vehicle.getDeltaMovement().y, vehicle.getDeltaMovement().z) * 72 > 40 && blockInWay < 72)) {
+                    if (player.tickCount % 30 == 0) {
+                        player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
+                    }
+                } else if (((lerpVy < -10 || (lerpVy < -1 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72)) {
                     guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
                             screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
+                    if (player.tickCount % 30 == 0) {
+                        player.level().playLocalSound(player.getOnPos(), ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3, 1, false);
+                    }
                 }
 
                 VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
