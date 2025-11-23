@@ -95,8 +95,7 @@
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
     "@superbwarfare:igla_9k38_missile * 0.75",
-    "All - 8",
-    "$entity.getSourceAngle(source, 0.5) * damage"
+    "All - 8"
   ],
   "ThirdPersonCameraPos": [0, 1, 2],
   "DestroyInfo": {

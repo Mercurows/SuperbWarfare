@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -35,6 +36,12 @@ public class TruckEntity extends VehicleEntity implements GeoEntity, OBBEntity {
 
     public TruckEntity(EntityType<TruckEntity> type, Level world) {
         super(type, world);
+    }
+
+    @Override
+    public DamageModifier getDamageModifier() {
+        return super.getDamageModifier()
+                .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage);
     }
 
     @Override

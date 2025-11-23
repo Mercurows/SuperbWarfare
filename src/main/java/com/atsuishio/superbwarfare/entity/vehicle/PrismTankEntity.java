@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -47,6 +48,12 @@ public class PrismTankEntity extends VehicleEntity implements GeoEntity, WeaponV
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
+    }
+
+    @Override
+    public DamageModifier getDamageModifier() {
+        return super.getDamageModifier()
+                .custom((source, damage) -> getSourceAngle(source, 0.4f) * damage);
     }
 
     public void hitBlock(Vec3 pos, GunData gunData, Entity shooter) {

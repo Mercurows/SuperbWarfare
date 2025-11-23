@@ -97,8 +97,8 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -1637,7 +1637,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         // 计算减伤后的伤害
         float computedAmount = amount;
         if (!source.is(ModTags.DamageTypes.BYPASSES_VEHICLE)) {
-            computedAmount = this.getDamageModifier().compute(this, source, amount);
+            computedAmount = this.getDamageModifier().compute(source, amount);
         }
 
         this.crash = source.is(ModDamageTypes.VEHICLE_STRIKE);
@@ -2318,8 +2318,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int getSelectedWeapon(int seatIndex) {
         var selectedWeapon = this.entityData.get(SELECTED_WEAPON);
-        if (seatIndex < 0 || seatIndex >= selectedWeapon.size()) return -1;
-
         return selectedWeapon.getInt(seatIndex);
     }
 

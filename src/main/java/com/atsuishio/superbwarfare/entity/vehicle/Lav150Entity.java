@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -25,6 +26,12 @@ public class Lav150Entity extends VehicleEntity implements GeoEntity, WeaponVehi
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
         super(type, world);
+    }
+
+    @Override
+    public DamageModifier getDamageModifier() {
+        return super.getDamageModifier()
+                .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage);
     }
 
     private PlayState cannonFirePredicate(AnimationState<Lav150Entity> event) {

@@ -104,7 +104,7 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
             return super.hurt(source, amount);
         }
 
-        amount = DAMAGE_MODIFIER.compute(this, source, amount);
+        amount = DAMAGE_MODIFIER.compute(source, amount);
         if (amount <= 0 || this.entityData.get(DOWN_TIME) > 0) {
             return false;
         }
