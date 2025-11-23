@@ -166,9 +166,9 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> PARACHUTE_OPEN = REGISTRY.register("parachute_open", () -> SoundEvent.createVariableRangeEvent(Mod.loc("parachute_open")));
     public static final RegistryObject<SoundEvent> PARACHUTE_CLOSE = REGISTRY.register("parachute_close", () -> SoundEvent.createVariableRangeEvent(Mod.loc("parachute_close")));
 
-
     public static final RegistryObject<SoundEvent> PTKM_1R_DEPLOY = REGISTRY.register("ptkm_1r_deploy", () -> SoundEvent.createVariableRangeEvent(Mod.loc("ptkm_1r_deploy")));
 
-
+    public static final RegistryObject<SoundEvent> TERRAIN = REGISTRY.register("terrain", () -> SoundEvent.createVariableRangeEvent(Mod.loc("terrain")));
+    public static final RegistryObject<SoundEvent> PULL_UP = REGISTRY.register("pull_up", () -> SoundEvent.createVariableRangeEvent(Mod.loc("pull_up")));
 }
 

@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.MathTool;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
@@ -22,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -85,7 +87,7 @@ public class AircraftHud {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, vehicle.getDeltaMovement().y());
+        lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, vehicle.getDeltaMovement().y() * 20);
         diffY = (float) Mth.lerp(partialTick, diffY, ClientMouseHandler.lerpSpeedX);
         diffX = (float) Mth.lerp(partialTick, diffX, ClientMouseHandler.lerpSpeedY);
 
@@ -181,7 +183,7 @@ public class AircraftHud {
             RenderHelper.blit(poseStack, HELICOPTER_SPEED_FRAME, x - 108, y - 64, 0, 0, 36, 12, 36, 12, color);
             RenderHelper.blit(poseStack, HELICOPTER_SPEED_FRAME, x + 108 - 36, y - 64, 0, 0, 36, 12, 36, 12, color);
             //垂直速度
-            guiGraphics.drawString(mc.font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy * 20)), (int) x - 96, (int) y + 60, color, false);
+            guiGraphics.drawString(mc.font, Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy)), (int) x - 96, (int) y + 60, color, false);
             //加速度
             lerpG = (float) Mth.lerp(0.1f * partialTick, lerpG, vehicle.getAcceleration() / 9.8);
             guiGraphics.drawString(mc.font, Component.literal("M"), (int) x - 105, (int) y + 70, color, false);
@@ -206,6 +208,26 @@ public class AircraftHud {
 
             guiGraphics.drawString(mc.font, component, (int) x - mc.font.width(component) / 2 , (int) y + 67,
                     MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+
+            double speed = vehicle.getDeltaMovement().length() * 72;
+            double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(128)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+            double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(vehicle.getDeltaMovement().add(0, 0.06, 0).normalize().scale(128)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+
+            if (lerpVy < -48) {
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
+                        screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
+                if (player.tickCount % 30 == 0) {
+                    player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
+                }
+            } else if (((lerpVy < -10 || (lerpVy < -1 && speed > 140)) && height < 48) || (speed > 140 && blockInWay < 100)) {
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
+                        screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
+                if (player.tickCount % 30 == 0) {
+                    player.level().playLocalSound(player.getOnPos(), ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3, 1, false);
+                }
+            }
 
             //角度
             poseStack.pushPose();

@@ -3974,5 +3974,23 @@
         "name": "superbwarfare:vehicle/plz_05/plz_05_engine"
       }
     ]
+  },
+  "terrain": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/common/terrain"
+      }
+    ]
+  },
+  "pull_up": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/common/pull_up"
+      }
+    ]
   }
 }
