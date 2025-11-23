@@ -5,18 +5,13 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PlayMessages;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class Plz05Entity extends ArtilleryEntity implements GeoEntity {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class Plz05Entity extends ArtilleryEntity {
 
     public Plz05Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.PLZ_05.get(), world);
@@ -34,7 +29,7 @@ public class Plz05Entity extends ArtilleryEntity implements GeoEntity {
         }
     }
 
-        private PlayState shootPredicate(AnimationState<Plz05Entity> event) {
+    private PlayState shootPredicate(AnimationState<Plz05Entity> event) {
         if (getShootAnimationTimer(1, 0) > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.plz_05.shoot"));
         }
@@ -44,10 +39,5 @@ public class Plz05Entity extends ArtilleryEntity implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "shoot", 0, this::shootPredicate));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

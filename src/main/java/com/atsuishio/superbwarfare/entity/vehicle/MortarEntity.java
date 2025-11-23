@@ -37,28 +37,23 @@ import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class MortarEntity extends ArtilleryEntity implements GeoEntity {
+public class MortarEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
+
     private LivingEntity shooter = null;
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
 
     public MortarEntity(PlayMessages.SpawnEntity packet, Level level) {
         this(ModEntities.MORTAR.get(), level);
@@ -108,7 +103,7 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
     public void vehicleShoot(@Nullable LivingEntity living, String weaponName) {
         if (!(this.items.get(0).getItem() instanceof MortarShell)) return;
         var gunData = getGunData(weaponName);
-        if  (gunData == null) return;
+        if (gunData == null) return;
         if (entityData.get(FIRE_TIME) != 0) return;
         var soundInfo = gunData.compute().soundInfo;
 
@@ -124,7 +119,6 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
             SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), (float) gunData.compute().soundRadius, random.nextFloat() * 0.1f + 1, null);
         }
     }
-
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
@@ -330,11 +324,6 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
     }
 
     @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    @Override
     public int getMaxStackSize() {
         return 1;
     }
@@ -342,7 +331,7 @@ public class MortarEntity extends ArtilleryEntity implements GeoEntity {
     @Override
     public void setChanged() {
         if (!entityData.get(INTELLIGENT)) {
-            vehicleShoot(null , "Main");
+            vehicleShoot(null, "Main");
         }
     }
 

@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -27,20 +27,15 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
+public class TowEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
 
     // 是否已装填弹药
     public static final EntityDataAccessor<Boolean> LOADED = SynchedEntityData.defineId(TowEntity.class, EntityDataSerializers.BOOLEAN);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public TowEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.TOW.get(), world);
@@ -96,11 +91,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
         return InteractionResult.SUCCESS;
     }
 
-//    @Override
-//    public Entity getAmmoSupplier() {
-//        return getFirstPassenger();
-//    }
-
     @Override
     public @NotNull List<ItemStack> getRetrieveItems() {
         var list = new ArrayList<ItemStack>();
@@ -140,15 +130,6 @@ public class TowEntity extends VehicleEntity implements GeoEntity, WeaponVehicle
             ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector.scale(-1), pos, serverLevel, this);
             ParticleTool.spawnMediumCannonMuzzleParticles(barrelVector, pos, serverLevel, this);
         }
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override

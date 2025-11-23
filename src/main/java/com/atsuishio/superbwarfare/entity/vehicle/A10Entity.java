@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -21,16 +21,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.PlayMessages;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
-public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicleEntity {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class A10Entity extends GeoVehicleEntity implements WeaponVehicleEntity {
 
     public A10Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.A_10A.get(), world);
@@ -108,17 +102,7 @@ public class A10Entity extends VehicleEntity implements GeoEntity, WeaponVehicle
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    @Override
     public double getMouseSensitivity() {
         return zoomVehicle ? 0.03 : 0.07;
     }
-
 }

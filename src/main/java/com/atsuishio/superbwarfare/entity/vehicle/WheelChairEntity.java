@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.advancement.CriteriaRegister;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,15 +15,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class WheelChairEntity extends VehicleEntity implements GeoEntity {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+public class WheelChairEntity extends GeoVehicleEntity {
 
     public WheelChairEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.WHEEL_CHAIR.get(), world);
@@ -35,7 +30,8 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
 
     @Override
     public void playerTouch(Player pPlayer) {
-        if (this.position().distanceTo(pPlayer.position()) > 1.4 || pPlayer == this.getFirstPassenger() && pPlayer.position().y > position().y) return;
+        if (this.position().distanceTo(pPlayer.position()) > 1.4 || pPlayer == this.getFirstPassenger() && pPlayer.position().y > position().y)
+            return;
         if (!this.level().isClientSide
                 && pPlayer.getY() < this.getY() + this.getBbHeight()
                 && pPlayer.getY() + pPlayer.getBbHeight() > this.getY()
@@ -81,14 +77,5 @@ public class WheelChairEntity extends VehicleEntity implements GeoEntity {
         ) {
             CriteriaRegister.OTTO_SPRINT.trigger(player);
         }
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }
