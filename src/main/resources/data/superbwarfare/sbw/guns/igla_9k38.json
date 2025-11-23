@@ -6,7 +6,7 @@
   "Weight": 8,
   "EmptyReloadTime": 88,
   "Damage": 250,
-  "ExplosionDamage": 100,
+  "ExplosionDamage": 95,
   "ExplosionRadius": 6,
   "Headshot": 0,
   "ZoomReload": false,

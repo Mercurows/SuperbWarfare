@@ -197,7 +197,6 @@
     "#superbwarfare:projectile * 0.16",
     "superbwarfare:vehicle_strike * 7",
     "superbwarfare:laser * 0.4",
-    "@superbwarfare:igla_9k38_missile * 1.2",
     "@superbwarfare:cannon_shell * 0.9",
     "@superbwarfare:small_cannon_shell * 1.1",
     "@superbwarfare:gun_grenade * 2.2",
