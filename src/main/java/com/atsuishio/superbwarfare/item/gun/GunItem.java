@@ -582,8 +582,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             data.fireIndex.reset();
         }
 
-        data.autoIterativeReloadTimer.set(data.compute().autoIterativeReloadTime);
-
         // TODO 这样搞会在远程遥控火炮的时候，无论隔多远都会摇晃屏幕（恼
 //        data.shakePlayers(shooter);
 

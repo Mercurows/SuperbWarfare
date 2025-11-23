@@ -217,49 +217,6 @@ public class GunEventHandler {
         }
     }
 
-    // 自动单发装填
-    public static void autoIterativeReload(@Nullable Entity ammoSupplier, @NotNull GunData data) {
-        var computed = data.compute();
-        var autoIterativeReloadTime = computed.autoIterativeReloadTime;
-
-        if (autoIterativeReloadTime <= 0
-                || data.bolt.needed.get()
-                || data.reloading()
-                || data.charging()
-                || data.ammo.get() >= computed.magazine
-                || !data.hasBackupAmmo(ammoSupplier)
-        ) {
-            data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
-            return;
-        }
-
-        if (data.autoIterativeReloadTimer.get() == autoIterativeReloadTime - 1) {
-            var soundInfo = computed.soundInfo;
-            var sound1p = soundInfo.vehicleReload;
-
-            if (sound1p != null && ammoSupplier instanceof VehicleEntity vehicle) {
-                for (Entity passenger : vehicle.getPassengers()) {
-                    if (passenger instanceof ServerPlayer serverPlayer) {
-                        SoundTool.playLocalSound(serverPlayer, sound1p, 8, 1);
-                    }
-                }
-            }
-        }
-
-
-        data.autoIterativeReloadTimer.reduce();
-
-        if (data.autoIterativeReloadTimer.get() == 0) {
-            iterativeLoad(ammoSupplier, data);
-            data.autoIterativeReloadTimer.set(autoIterativeReloadTime);
-            var soundInfo = computed.soundInfo;
-            var sound = soundInfo.vehicleReload3p;
-            if (sound != null && ammoSupplier != null) {
-                ammoSupplier.level().playSound(ammoSupplier, ammoSupplier.getOnPos(), sound, SoundSource.PLAYERS, 2, 1);
-            }
-        }
-    }
-
     public static void gunTick(@Nullable Entity shooter, @NotNull GunData data, boolean inMainHand) {
         init(shooter, data);
         autoReload(shooter, data, inMainHand);

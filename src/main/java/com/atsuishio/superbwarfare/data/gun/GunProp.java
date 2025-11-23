@@ -75,8 +75,7 @@ public final class GunProp<T> extends com.atsuishio.superbwarfare.data.Prop<GunD
     public static final GunProp<GunType> GUN_TYPE = new GunProp<>("GunType");
 
     public static final GunProp<Boolean> AUTO_RELOAD = new GunProp<>("AutoReload");
-    public static final GunProp<Integer> AUTO_ITERATIVE_RELOAD_TIME = new GunProp<Integer>("AutoIterativeReloadTime")
-            .withLimiter(v -> Math.max(0, v));
+
     public static final GunProp<Boolean> WITHDRAW_AMMO_WHEN_CHANGE_SLOT = new GunProp<>("WithdrawAmmoWhenChangeSlot");
 
     public static final GunProp<Boolean> ZOOM_RELOAD = new GunProp<>("ZoomReload");
