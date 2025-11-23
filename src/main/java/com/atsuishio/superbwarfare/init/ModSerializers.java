@@ -48,7 +48,13 @@ public class ModSerializers {
                 var length = buf.readVarInt();
                 var map = new HashMap<String, GunData>();
                 for (int i = 0; i < length; i++) {
-                    map.put(buf.readUtf(), GunData.from(new ItemStack(ModItems.VEHICLE_GUN.get(), 1, buf.readNbt())));
+                    var weaponName = buf.readUtf();
+
+                    var tag = buf.readNbt();
+                    var gunItemStack = new ItemStack(ModItems.VEHICLE_GUN.get());
+                    gunItemStack.setTag(tag);
+
+                    map.put(weaponName, GunData.from(gunItemStack));
                 }
 
                 return map;
