@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.common.ammo.AmmoBoxItem;
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.tags.TagKey;
@@ -83,9 +84,11 @@ public class InventoryTool {
             }
 
             // AmmoBox
-            var stackAmmo = type.get(stack);
-            if (stackAmmo > 0) {
-                count += stackAmmo;
+            if (stack.getItem() instanceof AmmoBoxItem) {
+                var stackAmmo = type.get(stack);
+                if (stackAmmo > 0) {
+                    count += stackAmmo;
+                }
             }
         }
 
@@ -116,12 +119,14 @@ public class InventoryTool {
             var stack = handler.getStackInSlot(i);
 
             // AmmoBox
-            var stackAmmo = type.get(stack);
-            if (stackAmmo > 0) {
-                var maxConsumable = Math.min(stackAmmo, count);
-                type.set(stack, stackAmmo - maxConsumable);
-                count -= maxConsumable;
-                continue;
+            if (stack.getItem() instanceof AmmoBoxItem) {
+                var stackAmmo = type.get(stack);
+                if (stackAmmo > 0) {
+                    var maxConsumable = Math.min(stackAmmo, count);
+                    type.set(stack, stackAmmo - maxConsumable);
+                    count -= maxConsumable;
+                    continue;
+                }
             }
 
             // AmmoSupplier Item
