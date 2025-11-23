@@ -70,7 +70,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public ContainerBlockItem() {
-        super(ModBlocks.CONTAINER.get(), new Properties().stacksTo(1));
+        super(ModBlocks.CONTAINER.get(), new Properties().stacksTo(1).fireResistant());
     }
 
     @Override
