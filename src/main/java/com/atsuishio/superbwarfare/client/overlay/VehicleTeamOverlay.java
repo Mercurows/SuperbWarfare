@@ -15,6 +15,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.RenderType;
@@ -26,6 +27,8 @@ import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Team;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -108,32 +111,11 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
 
                 if (vehicle instanceof DroneEntity drone) {
                     Player controller = EntityFindUtil.findPlayer(drone.level(), drone.getEntityData().get(CONTROLLER));
-                    if (controller != null) {
-                        color = controller.getTeamColor();
-                        String info = controller.getDisplayName().getString() + (controller.getTeam() == null ? "" : " <" + (controller.getTeam().getName()) + ">");
-                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
-                    } else {
-                        String info = lookingEntity.getDisplayName().getString();
-                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
-                    }
+                    teamInfo(controller, vehicle, guiGraphics, font);
                 } else if (vehicle instanceof OwnableEntity ownableEntity) {
-                    if (ownableEntity.getOwner() instanceof Player player1) {
-                        color = player1.getTeamColor();
-                        String info = player1.getDisplayName().getString() + (player1.getTeam() == null ? "" : " <" + (player1.getTeam().getName()) + ">");
-                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
-                    } else {
-                        String info = lookingEntity.getDisplayName().getString();
-                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
-                    }
+                    teamInfo(ownableEntity.getOwner(), vehicle, guiGraphics, font);
                 } else {
-                    if (vehicle.getMaxPassengers() > 0 && vehicle.getFirstPassenger() instanceof Player player1) {
-                        color = player1.getTeamColor();
-                        String info = player1.getDisplayName().getString() + (player1.getTeam() == null ? "" : " <" + (player1.getTeam().getName()) + ">");
-                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
-                    } else {
-                        String info = vehicle.getDisplayName().getString();
-                        guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
-                    }
+                    teamInfo(vehicle.getFirstPassenger(), vehicle, guiGraphics, font);
                 }
 
                 String range = FormatTool.format1D(entityRange, "M");
@@ -177,6 +159,21 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
 
                 poseStack.popPose();
             }
+        }
+    }
+
+    public static void teamInfo(Entity entity, VehicleEntity vehicle, GuiGraphics guiGraphics, Font font) {
+        if (entity instanceof Player player) {
+            int color = player.getTeamColor();
+
+            Team team = player.getTeam();
+            if (team instanceof PlayerTeam playerTeam) {
+                String info = player.getDisplayName().getString() + (player.getTeam() == null ? "" : " <" + playerTeam.getDisplayName().getString() + ">");
+                guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false);
+            }
+        } else {
+            String info = vehicle.getDisplayName().getString();
+            guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, -1, false);
         }
     }
 }
