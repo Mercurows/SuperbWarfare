@@ -278,7 +278,8 @@
         "Locked": "superbwarfare:javelin_locked"
       },
       "CrosshairColor": "0xFFC700",
-      "Crosshair": "@VehicleCommonSeekMissile",
+      "Crosshair": "@VehicleCommonMissile",
+      "CrosshairZooming": "@VehicleCommonSeekMissile",
       "SoundRadius": 8,
       "AvailableFireModes": ["Semi"]
     },
