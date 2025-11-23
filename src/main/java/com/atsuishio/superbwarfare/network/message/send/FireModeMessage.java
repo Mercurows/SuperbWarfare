@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -27,12 +26,11 @@ public record FireModeMessage(boolean forward) {
         context.enqueueWork(() -> {
             var player = context.getSender();
             if (player == null) return;
-            ItemStack stack = player.getMainHandItem();
-            var data = GunData.from(stack);
 
-            if (!(stack.getItem() instanceof GunItem)) {
-                return;
-            }
+            var stack = player.getMainHandItem();
+
+            if (!(stack.getItem() instanceof GunItem)) return;
+            var data = GunData.from(stack);
 
             var selectedFireMode = data.selectedFireMode.get();
             var fireModes = data.compute().availableFireModes();
