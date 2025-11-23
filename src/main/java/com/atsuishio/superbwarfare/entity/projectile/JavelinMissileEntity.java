@@ -151,7 +151,9 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
         if (guideType == 0 || !entityData.get(TARGET_UUID).equals("none")) {
             if (entity != null) {
                 boolean dir = position().vectorTo(entity.position()).horizontalDistanceSqr() < 900;
-                Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0), entity.getZ());
+                double dis = entity.position().vectorTo(position()).horizontalDistance();
+                double height = dis > 30 ? 0.2 * (dis - 30) : 0;
+                Vec3 targetPos = new Vec3(entity.getX(), entity.getY() + 0.5f * entity.getBbHeight() + (entity instanceof EnderDragon ? -3 : 0) + height, entity.getZ());
                 Vec3 targetVec = new Vec3(entity.getDeltaMovement().x, 0, entity.getDeltaMovement().z);
                 Vec3 toVec = position().vectorTo(targetPos.add(targetVec)).normalize();
                 if ((!entity.getPassengers().isEmpty() || entity instanceof VehicleEntity) && entity.tickCount % ((int) Math.max(0.04 * this.distanceTo(entity), 2)) == 0) {
@@ -166,7 +168,7 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
                         } else {
                             boolean lostTarget = this.getY() < entity.getY();
                             if (!lostTarget) {
-                                turn(toVec, 45);
+                                turn(toVec, 90);
                                 this.setDeltaMovement(this.getDeltaMovement().scale(0.1).add(getLookAngle().scale(8)));
                             }
                         }
@@ -179,8 +181,10 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
                 }
             }
         } else if (guideType == 1) {
+            double dis = targetPos.vectorTo(position()).horizontalDistance();
+            double height = dis > 30 ? 0.2 * (dis - 30) : 0;
             boolean dir = position().vectorTo(targetPos).horizontalDistanceSqr() < 900;
-            Vec3 toVec = getEyePosition().vectorTo(targetPos).normalize();
+            Vec3 toVec = getEyePosition().vectorTo(targetPos.add(0, height, 0)).normalize();
 
             if (this.tickCount > 3) {
                 if (entityData.get(TOP)) {
@@ -191,7 +195,7 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
                     } else {
                         boolean lostTarget = this.getY() < targetPos.y;
                         if (!lostTarget) {
-                            turn(toVec, 45);
+                            turn(toVec, 90);
                             this.setDeltaMovement(this.getDeltaMovement().scale(0.1).add(getLookAngle().scale(8)));
                         }
                     }

@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.compat.netmusic.NetMusicCompatHolder;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.StringOrVec3;
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData;
@@ -1969,6 +1970,23 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(mob) / 60));
                 if (tickCount %rpm == 0 && canShoot(mob) && VectorTool.calculateAngle(getShootDirectionForHud(mob, 1), getShootPos(mob, 1).vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(mob.getTarget(), 1))) < 4) {
                     vehicleShoot(mob, mob.getTarget().getUUID(), null);
+                }
+            }
+            if (getNthEntity(i) instanceof Player player && level() instanceof ServerLevel) {
+                var gunData = getGunData(player);
+                if (gunData != null) {
+                    if (gunData.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
+                        if (!canConsume(gunData.compute().ammoCostPerShoot)) {
+                            player.displayClientMessage(Component.translatable("tips.superbwarfare.not.enough.energy"), true);
+                        }
+                    } else {
+                        if (getAmmoCount(player) < gunData.compute().ammoCostPerShoot) {
+                            ItemStack stack = gunData.selectedAmmoConsumer().stack();
+                            if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
+                                player.displayClientMessage(Component.translatable("tips.superbwarfare.need.ammo").append(stack.getHoverName()), true);
+                            }
+                        }
+                    }
                 }
             }
         }

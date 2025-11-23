@@ -313,7 +313,8 @@
           }
         }
       ],
-      "Crosshair": "@VehicleCommonSeekMissile",
+      "Crosshair": "@VehicleCommonMissile",
+      "CrosshairZooming": "@VehicleCommonSeekMissile",
       "Name": "weapon.superbwarfare.swarm_drone",
       "SoundInfo": {
         "Fire1P": "superbwarfare:yx_100_swarm_drone_release",

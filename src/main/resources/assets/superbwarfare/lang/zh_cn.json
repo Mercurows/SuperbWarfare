@@ -772,6 +772,7 @@
   "tips.superbwarfare.auto_aimable_entity.active": "已激活",
   "tips.superbwarfare.auto_aimable_entity.inactive": "未激活",
   "tips.superbwarfare.need.ammo": "弹药不足！需要",
+  "tips.superbwarfare.not.enough.energy": "能量不足",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

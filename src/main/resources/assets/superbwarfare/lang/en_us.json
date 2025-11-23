@@ -772,6 +772,7 @@
   "tips.superbwarfare.auto_aimable_entity.active": "ACTIVE",
   "tips.superbwarfare.auto_aimable_entity.inactive": "INACTIVE",
   "tips.superbwarfare.need.ammo": "Not Enough Ammo! Need ",
+  "tips.superbwarfare.not.enough.energy": "Not Enough Energy",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",
