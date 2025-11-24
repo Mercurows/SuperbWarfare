@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -133,20 +133,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
 
         renderWeaponInfo(guiGraphics, vehicle, screenWidth, screenHeight);
         renderPassengerInfo(guiGraphics, vehicle, screenWidth, screenHeight);
-
-        if (vehicle.getVehicleType() == VehicleType.AIRPLANE) {
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.enableBlend();
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            float angle = vehicle.gearRot(partialTick);
-            poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
-            preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
-            poseStack.popPose();
-        }
+        renderGearInfo(guiGraphics, vehicle, screenWidth, screenHeight, partialTick);
 
         poseStack.popPose();
     }
@@ -252,7 +239,29 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         }
     }
 
-    private static void renderWeaponInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int screenWidth, int screenHeight) {
+    private static void renderGearInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h, float partialTick) {
+        var engineType = vehicle.computed().engineType;
+        if (engineType != EngineType.AIRCRAFT) return;
+
+        var poseStack = guiGraphics.pose();
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        poseStack.pushPose();
+        float angle = vehicle.gearRot(partialTick);
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, h - 20, 0);
+
+        preciseBlit(guiGraphics, GEAR, 86, h - 36, 0, 0, 32, 32, 32, 32);
+
+        poseStack.popPose();
+    }
+
+    private static void renderWeaponInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h) {
         Player player = Minecraft.getInstance().player;
 
         if (!vehicle.banHand(player)) return;
@@ -325,7 +334,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             RenderSystem.setShaderColor(1, 1, 1, Mth.lerp(progress, 0.2f, 1));
             xOffset = Mth.lerp(progress, maxXOffset, 0);
 
-            preciseBlit(guiGraphics, frame, screenWidth - 85 + xOffset, screenHeight - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+            preciseBlit(guiGraphics, frame, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
             var data = vehicle.getGunData(vehicle.getSeatIndex(player), i);
             if (data == null) {
@@ -337,52 +346,52 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
             // 当前选中武器
             if (selected) {
                 var startY = Mth.lerp(progress,
-                        screenHeight - (weapons.size() - 1 - oldRenderWeaponIndex) * 18 - 16,
-                        screenHeight - (weapons.size() - 1 - weaponIndex) * 18 - 16
+                        h - (weapons.size() - 1 - oldRenderWeaponIndex) * 18 - 16,
+                        h - (weapons.size() - 1 - weaponIndex) * 18 - 16
                 );
 
-                preciseBlit(guiGraphics, SELECTED, screenWidth - 95, startY, 100, 0, 0, 8, 8, 8, 8);
+                preciseBlit(guiGraphics, SELECTED, w - 95, startY, 100, 0, 0, 8, 8, 8, 8);
 
                 var ammoCount = vehicle.getAmmoCount(player);
 
                 if (ammoCount == Integer.MAX_VALUE) {
-                    preciseBlit(guiGraphics, NUMBER, screenWidth - 28 + xOffset, screenHeight - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
+                    preciseBlit(guiGraphics, NUMBER, w - 28 + xOffset, h - frameIndex * 18 - 15, 100, 58, 0, 10, 7.5f, 75, 7.5f);
                 } else {
                     boolean percent = data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY;
                     if (percent) {
                         ammoCount /= (int) Math.max(1, (double) vehicle.getMaxEnergy() / 100);
                     }
-                    renderNumber(guiGraphics, ammoCount, percent, screenWidth - 20 + xOffset, screenHeight - frameIndex * 18 - 15.5f, 0.25f);
+                    renderNumber(guiGraphics, ammoCount, percent, w - 20 + xOffset, h - frameIndex * 18 - 15.5f, 0.25f);
                 }
             }
 
-            preciseBlit(guiGraphics, weapon.icon, screenWidth - 85 + xOffset, screenHeight - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+            preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
             // 这里不知道为什么不能合并，会导致上面那个渲染出错
             int size = data.getDefault().getAmmoConsumers().size();
             if (selected && size > 1) {
-                preciseBlit(guiGraphics, SWITCH_AMMO, screenWidth - 13 + xOffset, screenHeight - frameIndex * 18 - 20, 0, 0, 0, 16, 16, 16, 16);
+                preciseBlit(guiGraphics, SWITCH_AMMO, w - 13 + xOffset, h - frameIndex * 18 - 20, 0, 0, 0, 16, 16, 16, 16);
 
                 String string = "[" + ModKeyMappings.FIRE_MODE.getKey().getDisplayName().getString() + "]";
                 int width = Minecraft.getInstance().font.width(string);
 
                 pose.pushPose();
                 pose.scale(0.6f, 0.6f, 1.0f);
-                float xPos = screenWidth - 6f + xOffset;
+                float xPos = w - 6f + xOffset;
 
                 if (width >= 7 / 0.6f) {
                     RenderHelper.renderScrollingString(guiGraphics, Minecraft.getInstance().font,
                             Component.literal(string),
                             0.6f,
-                            (int) ((xPos - 3f) / 0.6f), (int) ((screenHeight - frameIndex * 18 - 14f) / 0.6f),
-                            (int) ((xPos + 5f) / 0.6f), (int) ((screenHeight - frameIndex * 18 - 4f) / 0.6f),
+                            (int) ((xPos - 3f) / 0.6f), (int) ((h - frameIndex * 18 - 14f) / 0.6f),
+                            (int) ((xPos + 5f) / 0.6f), (int) ((h - frameIndex * 18 - 4f) / 0.6f),
                             0xFFFFFF);
                 } else {
                     guiGraphics.drawString(
                             Minecraft.getInstance().font,
                             string,
                             (xPos + 3f - width / 2f) / 0.6f,
-                            (screenHeight - frameIndex * 18 - 14f) / 0.6f,
+                            (h - frameIndex * 18 - 14f) / 0.6f,
                             0xFFFFFF,
                             false
                     );
@@ -403,7 +412,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 if (currentReloadTime > 0 && currentReloadTime < totalReloadTime) {
                     RenderHelper.renderCircularRing(
                             guiGraphics,
-                            screenWidth - 102 + xOffset, screenHeight - frameIndex * 18 - 12,
+                            w - 102 + xOffset, h - frameIndex * 18 - 12,
                             0.014f, 0.010f,
                             new float[]{0f, 0f, 0f, 0.4f * alpha},
                             new float[]{1f, 1f, 1f, alpha},
