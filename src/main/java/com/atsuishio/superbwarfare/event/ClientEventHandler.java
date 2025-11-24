@@ -2140,8 +2140,12 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void setPlayerInvisible(RenderPlayerEvent.Pre event) {
+        var player = Minecraft.getInstance().player;
         var otherPlayer = event.getEntity();
         if (otherPlayer.getVehicle() instanceof VehicleEntity vehicle && vehicle.hidePassenger(otherPlayer)) {
+            event.setCanceled(true);
+        }
+        if (player != null && player.getVehicle() instanceof VehicleEntity && player == otherPlayer && zoomVehicle) {
             event.setCanceled(true);
         }
     }
