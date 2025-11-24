@@ -902,7 +902,7 @@ public final class VehicleEngineUtils {
     }
 
     // 角度线性插值方法
-    private static float lerpAngle(float current, float target, float factor) {
+    public static float lerpAngle(float current, float target, float factor) {
         // 处理角度环绕
         float diff = target - current;
         while (diff < -180) diff += 360;

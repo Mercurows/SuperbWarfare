@@ -2066,8 +2066,8 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         var terrainCompat = this.computed().terrainCompat;
-        if (terrainCompat.x > 0 && terrainCompat.y > 0) {
-            this.terrainCompact(terrainCompat.x, terrainCompat.y);
+        if (terrainCompat != null) {
+            this.terrainCompact(terrainCompat);
         }
         this.inertiaRotate(this.computed().inertiaRotateRate);
 
@@ -3672,16 +3672,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.setXRot(this.getXRot() - 0.5f * (float) (this.getAcceleration() * multiplier));
     }
 
-    public void terrainCompact(float width, float length) {
-        VehicleMotionUtils.terrainCompact(this, width, length);
+    public void terrainCompact(List<Vec3> positions) {
+        VehicleMotionUtils.terrainCompact(this, positions);
     }
 
     public Matrix4f getWheelsTransform(float partialTicks) {
         return VehicleMotionUtils.getWheelsTransform(this, partialTicks);
-    }
-
-    public double traceBlockY(Vec3 pos, double maxLength) {
-        return VehicleMotionUtils.traceBlockYPos(this, pos, maxLength);
     }
 
     public void moveOnDragonTeeth() {

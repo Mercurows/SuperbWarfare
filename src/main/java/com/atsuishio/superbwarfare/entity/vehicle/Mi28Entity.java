@@ -61,7 +61,7 @@ public class Mi28Entity extends GeoVehicleEntity implements WeaponVehicleEntity 
                 heightY = 0;
             }
 
-            setXRot((float) (getXRot() - 5f * heightY));
+            setXRot((float) (getXRot() - 2.2f * heightY));
         }
     }
 
