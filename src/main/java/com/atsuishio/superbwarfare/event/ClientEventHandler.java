@@ -49,13 +49,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -2323,6 +2321,17 @@ public class ClientEventHandler {
 
             var location = gunData.compute().soundInfo.vehicleReload.getLocation();
             stopSoundEvent(location, SoundSource.PLAYERS);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderNameTag(RenderNameTagEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        var self = Minecraft.getInstance().player;
+        if (self == null || self == player) return;
+        if (!(self.getVehicle() instanceof VehicleEntity)) return;
+        if (self.isPassengerOfSameVehicle(player)) {
+            event.setResult(Event.Result.DENY);
         }
     }
 }
