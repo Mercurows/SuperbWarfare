@@ -303,6 +303,9 @@
   "des.superbwarfare.vehicle_damage_analyzer.unbind": "停止追踪%1$s的损伤情况",
   "des.superbwarfare.vehicle_damage_analyzer.info.raw": "原始值：%1$s",
   "des.superbwarfare.vehicle_damage_analyzer.info.final": "最终值：%1$s",
+  "item.superbwarfare.vehicle_reset_kit": "载具重置套件",
+  "des.superbwarfare.vehicle_reset_kit_1": "将其与装有载具的集装箱一起合成，能够完全重置载具状态",
+  "des.superbwarfare.vehicle_reset_kit_2": "一个神秘的油纸包，里面是一些小零件",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

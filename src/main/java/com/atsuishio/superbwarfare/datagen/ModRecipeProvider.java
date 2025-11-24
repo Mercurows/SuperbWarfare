@@ -1463,6 +1463,11 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(Items.IRON_INGOT, 144)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get()) + "_assembling"));
+        VehicleAssemblingRecipeBuilder.item(ModItems.VEHICLE_RESET_KIT.get(), 1, VehicleAssemblingRecipe.Category.MISC)
+                .require(ModTags.Items.INGOTS_STEEL)
+                .require(Items.PAPER, 4)
+                .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_RESET_KIT.get()) + "_assembling"));
     }
 
     private static void buildGunRecipes(Consumer<FinishedRecipe> writer) {
@@ -1832,6 +1837,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_ADD_AMMO_SERIALIZER.get()).save(writer, "ammo_box_add_ammo");
         SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_EXTRACT_AMMO_SERIALIZER.get()).save(writer, "ammo_box_extract_ammo");
         SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye");
+        SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get()).save(writer, "vehicle_reset");
     }
 
     public static void copyBlueprint(Consumer<FinishedRecipe> writer, ItemLike result) {

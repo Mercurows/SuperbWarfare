@@ -303,6 +303,9 @@
   "des.superbwarfare.vehicle_damage_analyzer.unbind": "Stop analyzing damage situation of %1$s",
   "des.superbwarfare.vehicle_damage_analyzer.info.raw": "Raw Value: %1$s",
   "des.superbwarfare.vehicle_damage_analyzer.info.final": "Final Value: %1$s",
+  "item.superbwarfare.vehicle_reset_kit": "Vehicle Reset Kit",
+  "des.superbwarfare.vehicle_reset_kit_1": "Craft with a vehicle container can completely reset the status of the vehicle",
+  "des.superbwarfare.vehicle_reset_kit_2": "A mysterious oil paper bag with some small parts inside",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 
