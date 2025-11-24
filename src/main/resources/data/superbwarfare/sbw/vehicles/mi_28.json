@@ -77,7 +77,7 @@
       "Weapons": ["Rocket", "DriverMissile", "DriverAAMissile"],
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [2.5, 1.2, 2.5]
+        "Position": [-2.5, 0.5, 2.5]
       }
     },
     {
@@ -98,7 +98,7 @@
       "Weapons": ["Cannon", "PassengerMissile", "SeekMissile"],
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [2.5, 1.2, 3.5625]
+        "Position": [-2.5, 0.5, 3.5625]
       }
     }
   ],
@@ -229,6 +229,7 @@
           "Ammo": "superbwarfare:large_anti_ground_missile",
           "ShouldUnload": false,
           "Override": {
+            "Name": "weapon.superbwarfare.kh_39_missile_block",
             "SeekWeaponInfo": {
               "SeekDirection": "Barrel",
               "SeekRange": 384,
@@ -247,7 +248,7 @@
       "Magazine": 2,
       "EmptyReloadTime": 260,
       "Projectile": "superbwarfare:kh_39",
-      "Name": "weapon.superbwarfare.kh_39_missile",
+      "Name": "weapon.superbwarfare.kh_39_missile_entity",
       "Damage": 1100,
       "ExplosionDamage": 180,
       "ExplosionRadius": 12,
@@ -370,8 +371,7 @@
     "@#superbwarfare:at_rocket * 1.5",
     "All * 0.77",
     "All - 3",
-    "@#superbwarfare:aerial_bomb * 2",
-    "$damage * (entity.getHealth() > 0.1 ? 0.7 : 0.05)"
+    "@#superbwarfare:aerial_bomb * 2"
   ],
   "DestroyInfo": {
     "ParticleType": "Giant",

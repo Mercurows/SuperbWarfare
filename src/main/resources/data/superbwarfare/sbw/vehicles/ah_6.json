@@ -170,7 +170,7 @@
     "Decrement": 1,
     "PitchSpeed": 1,
     "YawSpeed": 1,
-    "RollSpeed": 1,
+    "RollSpeed": 0.75,
     "LiftSpeed": 1,
     "EngineStartSound": "superbwarfare:ah_6_engine_start",
     "EngineSoundVolume" : 2

@@ -166,6 +166,12 @@ public class HelicopterHud {
 
             Vec3 pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));
             Vec3 screenPos = VectorUtil.worldToScreen(pos);
+            double speed = vehicle.getDeltaMovement().length() * 72;
+            double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(100)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+            double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(vehicle.getDeltaMovement().add(0, 0.06, 0).normalize().scale(100)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+
             float x = (float) screenPos.x;
             float y = (float) screenPos.y;
 
@@ -191,19 +197,12 @@ public class HelicopterHud {
 
                 RenderHelper.blit(poseStack, HELI_POWER_RULER, (float) screenWidth / 2 + 100, (float) screenHeight / 2 - 64, 0, 0, 64, 128, 64, 128, color);
 
-                double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(100)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
-                double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(vehicle.getDeltaMovement().add(0, 0.06, 0).normalize().scale(100)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
-
                 float power = vehicle.getPower();
                 lerpPower = Mth.lerp(0.001f * partialTick, lerpPower, power);
                 RenderHelper.blit(poseStack, HELI_POWER, (float) screenWidth / 2 + 130f, ((float) screenHeight / 2 - 64 + 124 - power * 980), 0, 0, 4, power * 980, 4, power * 980, color);
 
                 lerpVy = (float) Mth.lerp(0.021f * partialTick, lerpVy, vehicle.getDeltaMovement().y() * 20);
                 RenderHelper.blit(poseStack, HELI_VY_MOVE, (float) screenWidth / 2 + 138, ((float) screenHeight / 2 - 3 - Math.max(lerpVy, -24) * 2.5f), 0, 0, 8, 8, 8, 8, color);
-
-                double speed = vehicle.getDeltaMovement().length() * 72;
 
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(lerpVy, "m/s")),
                         screenWidth / 2 + 146, (int) (screenHeight / 2F - 3 - Math.max(lerpVy, -24) * 2.5), (lerpVy < -24 || ((lerpVy < -10 || (lerpVy < -1 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72) ? -65536 : color), false);
@@ -225,20 +224,6 @@ public class HelicopterHud {
                 int heat = vehicle.getWeaponHeat(player);
                 guiGraphics.drawString(mc.font, component, screenWidth / 2 - 160, screenHeight / 2 - 59,
                         MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-
-                if (lerpVy < -18) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
-                            screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
-                    if (player.tickCount % 30 == 0) {
-                        player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
-                    }
-                } else if (((lerpVy < -10 || (lerpVy < -1 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72)) {
-                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
-                            screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
-                    if (player.tickCount % 30 == 0) {
-                        player.level().playLocalSound(player.getOnPos(), ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3, 1, false);
-                    }
-                }
 
                 VehicleMainWeaponHudOverlay.renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font);
 
@@ -269,13 +254,20 @@ public class HelicopterHud {
                 poseStack.popPose();
             }
 
+            if (lerpVy < -18) {
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
+                        screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
+                if (player.tickCount % 30 == 0) {
+                    player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
+                }
+            } else if (((lerpVy < -10 || (lerpVy < -1 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72)) {
+                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
+                        screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
+                if (player.tickCount % 30 == 0) {
+                    player.level().playLocalSound(player.getOnPos(), ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3, 1, false);
+                }
+            }
             poseStack.popPose();
         }
-
-
-    }
-
-    private static double length(double x, double y, double z) {
-        return Math.sqrt(x * x + y * y + z * z);
     }
 }

@@ -422,11 +422,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     private float gearRot;
     public boolean engineStart;
     public boolean engineStartOver;
-
-    protected double bombHitPosX;
-    protected double bombHitPosY;
-    protected double bombHitPosZ;
-
     public int holdTick;
     public int holdPowerTick;
     public float destroyRot;
@@ -2481,7 +2476,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var entity = getNthEntity(seatIndex);
         return switch (string) {
             case "Bomb" ->
-                    bombHitPos(getNthEntity(seatIndex), ticks).subtract(getShootPosForHud(getNthEntity(seatIndex), ticks));
+                    bombHitPos(getNthEntity(seatIndex)).subtract(getShootPosForHud(getNthEntity(seatIndex), 1));
             case "Passenger" -> entity != null ? entity.getViewVector(ticks) : getViewVector(ticks);
             default -> getVectorFromString(string, ticks);
         };
@@ -2504,14 +2499,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return getShootPos(getNthEntity(seatIndex), ticks);
     }
 
-    public Vec3 bombHitPos(Entity entity, float ticks) {
+    public Vec3 bombHitPos(Entity entity) {
         var gunData = getGunData(entity);
         if (gunData != null) {
-            Vec3 bombHitPos = ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPosForHud(entity, ticks), getShootVec(entity, ticks), getDeltaMovement().length() * gunData.compute().velocity, -projectileGravity(entity));
-            bombHitPosX = Mth.lerp(0.2 * ticks, bombHitPosX, bombHitPos.x);
-            bombHitPosY = Mth.lerp(0.2 * ticks, bombHitPosY, bombHitPos.y);
-            bombHitPosZ = Mth.lerp(0.2 * ticks, bombHitPosZ, bombHitPos.z);
-            return new Vec3(bombHitPosX, bombHitPosY, bombHitPosZ);
+            return ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPosForHud(entity, 1), getShootVec(entity, 1), getDeltaMovement().length() * gunData.compute().velocity, -projectileGravity(entity));
         } else {
             return Vec3.ZERO;
         }

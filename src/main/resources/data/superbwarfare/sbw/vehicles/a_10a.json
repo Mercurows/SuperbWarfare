@@ -66,7 +66,7 @@
     },
     "DismountInfo": {
       "Transform": "Vehicle",
-      "Position": [1.6, 0, 3.8],
+      "Position": [1.6, 0.5, 3.8],
       "CanEject": true,
       "EjectPosition": [0, 4.2, 3.7],
       "EjectDirection": "Up",
@@ -185,7 +185,7 @@
       "Magazine": 4,
       "EmptyReloadTime": 200,
       "Projectile": "superbwarfare:agm_65",
-      "Name": "weapon.superbwarfare.agm_65_missile",
+      "Name": "weapon.superbwarfare.agm_65_missile_entity",
       "Damage": 1100,
       "ExplosionDamage": 180,
       "ExplosionRadius": 12,
@@ -197,7 +197,8 @@
         "SeekAngle": 20,
         "SeekTime": 10,
         "MaxTargetHeight": 32,
-        "MinTargetSize": 0.9
+        "MinTargetSize": 0.9,
+        "OnlyLockEntity": true
       },
       "AmmoType": [
         {
@@ -208,6 +209,7 @@
           "Ammo": "superbwarfare:large_anti_ground_missile",
           "ShouldUnload": false,
           "Override": {
+            "Name": "weapon.superbwarfare.agm_65_missile_block",
             "SeekWeaponInfo": {
               "SeekDirection": "Default",
               "SeekRange": 384,

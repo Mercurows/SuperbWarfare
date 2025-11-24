@@ -23,6 +23,10 @@ import org.joml.Vector4f;
  */
 public final class VehicleVecUtils {
 
+    public static double bombHitPosX;
+    public static double bombHitPosY;
+    public static double bombHitPosZ;
+
     public static Vector4f transformPosition(Matrix4f transform, float x, float y, float z) {
         return transform.transform(new Vector4f(x, y, z, 1));
     }
@@ -249,7 +253,10 @@ public final class VehicleVecUtils {
             return vehicle.getShootVec(entity, partialTicks);
         } else if (stringOrVec3.isString()) {
             if (stringOrVec3.string.equals("Bomb")) {
-                return getViewPos(vehicle, entity, partialTicks).vectorTo(vehicle.bombHitPos(entity, partialTicks));
+                bombHitPosX = Mth.lerp(0.1 * partialTicks, bombHitPosX, vehicle.bombHitPos(entity).x);
+                bombHitPosY = Mth.lerp(0.1 * partialTicks, bombHitPosY, vehicle.bombHitPos(entity).y);
+                bombHitPosZ = Mth.lerp(0.1 * partialTicks, bombHitPosZ, vehicle.bombHitPos(entity).z);
+                return getViewPos(vehicle, entity, partialTicks).vectorTo(new Vec3(bombHitPosX, bombHitPosY, bombHitPosZ));
             }
             return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
         } else {
