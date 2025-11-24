@@ -21,6 +21,7 @@
     "ProjectileUtilMixin",
     "SteelPipeFallMixin",
     "VillagerMixin",
+    "rhino.SpecialRhinoMixin",
     "tacz.EntityUtilMixin"
   ],
   "client": [
