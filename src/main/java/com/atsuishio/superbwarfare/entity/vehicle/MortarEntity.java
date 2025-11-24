@@ -191,9 +191,9 @@ public class MortarEntity extends ArtilleryEntity {
             Level level = this.level();
             var gunData = getGunData("Main");
             if (level instanceof ServerLevel server && gunData != null) {
-                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0), projectileGravity("Main"), (float) gunData.compute().damage, (float) gunData.compute().explosionDamage, (float) gunData.compute().explosionRadius);
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0), getProjectileGravity("Main"), (float) gunData.compute().damage, (float) gunData.compute().explosionDamage, (float) gunData.compute().explosionRadius);
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
-                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, projectileVelocity("Main"), projectileSpread("Main"));
+                entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, getProjectileVelocity("Main"), getProjectileSpread("Main"));
                 level.addFreshEntity(entityToSpawn);
 
                 ParticleTool.spawnMediumCannonMuzzleParticles(getLookAngle(), new Vec3(this.getX(), this.getEyeY(), this.getZ()).add(getLookAngle().scale(1.5)), server, this);
@@ -220,8 +220,8 @@ public class MortarEntity extends ArtilleryEntity {
         entityData.set(DEPRESSED, stack.getOrCreateTag().getBoolean("IsDepressed"));
         entityData.set(RADIUS, stack.getOrCreateTag().getInt("Radius"));
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
-        Vec3 launchVector2 = calculateLaunchVector(getEyePosition(), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), !entityData.get(DEPRESSED));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), entityData.get(DEPRESSED));
+        Vec3 launchVector2 = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), !entityData.get(DEPRESSED));
 
         Component component = Component.literal("");
         Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
@@ -264,7 +264,7 @@ public class MortarEntity extends ArtilleryEntity {
     @Override
     public void resetTarget(String weaponName) {
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
+        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), entityData.get(DEPRESSED));
         this.look(randomPos);
 
         if (launchVector == null) {

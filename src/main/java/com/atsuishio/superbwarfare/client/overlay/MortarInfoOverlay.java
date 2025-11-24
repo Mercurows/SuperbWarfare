@@ -32,7 +32,7 @@ public class MortarInfoOverlay implements IGuiOverlay {
                             .append(Component.literal(FormatTool.format1D(mortar.getYRot(), "°"))),
                     screenWidth / 2 - 90, screenHeight / 2 - 16, -1, false);
             guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.range")
-                            .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(-mortar.getXRot(), mortar.projectileVelocity("Main"), mortar.projectileGravity("Main")), "m"))),
+                            .append(Component.literal(FormatTool.format1D((int) RangeTool.getRange(-mortar.getXRot(), mortar.getProjectileVelocity("Main"), mortar.getProjectileGravity("Main")), "m"))),
                     screenWidth / 2 - 90, screenHeight / 2 - 6, -1, false);
         }
     }

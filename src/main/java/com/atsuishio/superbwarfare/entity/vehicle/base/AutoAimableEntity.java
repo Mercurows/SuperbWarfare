@@ -227,7 +227,7 @@ public class AutoAimableEntity extends GeoVehicleEntity implements WeaponVehicle
             if (projectileTypeStr.equals("ray")) {
                 targetVec = barrelRootPos.vectorTo(targetPos).normalize();
             } else {
-                targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel.scale(1.1 + random.nextFloat() * 0.2f), projectileVelocity(weaponName), projectileGravity(weaponName));
+                targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel.scale(1.1 + random.nextFloat() * 0.2f), getProjectileVelocity(weaponName), getProjectileGravity(weaponName));
             }
 
             if (entityData.get(LASER_SCALE) == 0) {

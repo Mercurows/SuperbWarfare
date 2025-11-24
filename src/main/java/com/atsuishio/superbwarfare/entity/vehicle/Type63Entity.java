@@ -285,9 +285,9 @@ public class Type63Entity extends GeoVehicleEntity {
         var gunData = getGunData(rocketItem.type.toString());
         if (gunData == null) return;
 
-        float shootVelocity = projectileVelocity(gunData);
-        float shootSpread = projectileSpread(gunData);
-        float shootGravity = projectileGravity(gunData);
+        float shootVelocity = getProjectileVelocity(gunData);
+        float shootSpread = getProjectileSpread(gunData);
+        float shootGravity = getProjectileGravity(gunData);
 
         OBB obb = this.barrel[i];
         Vec3 shootPos = new Vec3(obb.center());

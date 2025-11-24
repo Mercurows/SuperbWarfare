@@ -565,7 +565,7 @@ public final class VehicleVecUtils {
         Matrix4f transform = new Matrix4f();
         transform.translate(
                 (float) Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
-                (float) Mth.lerp(partialTicks, vehicle.yo + vehicle.rotateOffsetHeight(), vehicle.getY() + vehicle.rotateOffsetHeight()),
+                (float) Mth.lerp(partialTicks, vehicle.yo + vehicle.getRotateOffsetHeight(), vehicle.getY() + vehicle.getRotateOffsetHeight()),
                 (float) Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
         );
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot())));
@@ -589,7 +589,7 @@ public final class VehicleVecUtils {
         Matrix4f transform = new Matrix4f();
         transform.translate(
                 (float) Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
-                (float) Mth.lerp(partialTicks, vehicle.yo + vehicle.rotateOffsetHeight(), vehicle.getY() + vehicle.rotateOffsetHeight()),
+                (float) Mth.lerp(partialTicks, vehicle.yo + vehicle.getRotateOffsetHeight(), vehicle.getY() + vehicle.getRotateOffsetHeight()),
                 (float) Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
         );
         transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot()) + ClientMouseHandler.freeCameraYaw)));

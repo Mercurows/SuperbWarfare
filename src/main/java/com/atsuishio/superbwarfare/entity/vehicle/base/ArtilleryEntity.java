@@ -135,7 +135,7 @@ public class ArtilleryEntity extends GeoVehicleEntity implements WeaponVehicleEn
         entityData.set(DEPRESSED, stack.getOrCreateTag().getBoolean("IsDepressed"));
         entityData.set(RADIUS, stack.getOrCreateTag().getInt("Radius"));
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getShootPos(weaponName, 1), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
+        Vec3 launchVector = calculateLaunchVector(getShootPos(weaponName, 1), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), entityData.get(DEPRESSED));
 
         Component component = Component.literal("");
         Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
@@ -167,7 +167,7 @@ public class ArtilleryEntity extends GeoVehicleEntity implements WeaponVehicleEn
         if (data == null) return;
 
         Vec3 randomPos = VectorTool.randomPos(new Vec3(entityData.get(TARGET_POS)), entityData.get(RADIUS));
-        Vec3 launchVector = calculateLaunchVector(getShootPos(weaponName, 1), randomPos, projectileVelocity(weaponName), projectileGravity(weaponName), entityData.get(DEPRESSED));
+        Vec3 launchVector = calculateLaunchVector(getShootPos(weaponName, 1), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), entityData.get(DEPRESSED));
 
         if (launchVector == null) {
             return;
