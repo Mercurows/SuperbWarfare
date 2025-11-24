@@ -21,6 +21,7 @@
     "ReloadableServerResourcesMixin",
     "SteelPipeFallMixin",
     "VillagerMixin",
+    "rhino.SpecialRhinoMixin",
     "tacz.EntityUtilMixin"
   ],
   "client": [

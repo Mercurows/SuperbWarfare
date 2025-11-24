@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.io.ByteArrayOutputStream
 import java.time.Instant
 
@@ -7,6 +8,8 @@ plugins {
     id("net.minecraftforge.gradle") version "[6.0.16,6.2)"
     id("org.spongepowered.mixin") version "0.7.+"
     id("org.parchmentmc.librarian.forgegradle") version "1.+"
+
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 fun getGitCommitHash(): String {
@@ -125,9 +128,8 @@ repositories {
 //jarJar.enable()
 
 dependencies {
-//    implementation("org.mozilla:rhino:1.8.0")
-//    minecraftLibrary("org.mozilla:rhino:1.8.0")
-//    jarJar(group = "org.mozilla", name = "rhino", version = "[1.8.0,2.0.0)")
+    implementation("org.mozilla:rhino:1.8.0")
+    minecraftLibrary("org.mozilla:rhino:1.8.0")
 
     minecraft("net.minecraftforge:forge:1.20.1-47.2.0")
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
@@ -226,6 +228,21 @@ tasks.named<Jar>("jar") {
         )
     }
     finalizedBy("reobfJar")
+}
+
+reobf {
+    create("shadowJar")
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    dependsOn("reobfJarJar")
+
+    dependencies {
+        include(dependency("org.mozilla:rhino"))
+        relocate("org.mozilla", "com.atsuishio.superbwarfare.rhino")
+    }
+
+    finalizedBy("reobfShadowJar")
 }
 
 java {
