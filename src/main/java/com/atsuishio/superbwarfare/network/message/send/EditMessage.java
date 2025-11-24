@@ -47,7 +47,7 @@ public record EditMessage(int type, boolean add, boolean isVehicle) {
 
                     var sound = data.compute().soundInfo.change;
                     if (sound == null) return;
-                    SoundTool.playLocalSound(player, sound, 1f, 1f);
+                    SoundTool.playLocalSound(player, sound, 4f, 1f);
                 });
             } else {
                 ItemStack stack = player.getMainHandItem();
