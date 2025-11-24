@@ -37,6 +37,7 @@
       "DefaultZoom": 3,
       "Magazine": 1,
       "Damage": 500,
+      "RPM": 8,
       "Velocity": 3,
       "ShootShake": [6, 6, 14],
       "ShootPos": {
