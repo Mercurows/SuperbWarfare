@@ -96,6 +96,7 @@
         {
           "Ammo": "FE",
           "Override": {
+            "Name": "weapon.superbwarfare.laser_auto",
             "DefaultFireMode": "Auto",
             "RPM": 1200,
             "Velocity": 6000000000,
@@ -117,7 +118,7 @@
       ],
       "Crosshair": "@VehicleCommonMissile",
       "CrosshairColor": "0x00FFF6",
-      "Name": "weapon.superbwarfare.laser",
+      "Name": "weapon.superbwarfare.laser_semi",
       "SoundInfo": {
         "Fire1P": "superbwarfare:prism_tank_fire_high_1p",
         "Fire3P": "superbwarfare:prism_tank_fire_high_3p",
