@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
-import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
-import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
-import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe;
+import com.atsuishio.superbwarfare.recipe.*;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipeSerializer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -34,6 +31,8 @@ public class ModRecipes {
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<VehicleAssemblingRecipe>> VEHICLE_ASSEMBLING_SERIALIZER =
             RECIPE_SERIALIZERS.register("vehicle_assembling", VehicleAssemblingRecipeSerializer::new);
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<VehicleResetRecipe>> VEHICLE_RESET_SERIALIZER =
+            RECIPE_SERIALIZERS.register("vehicle_reset", () -> new SimpleCraftingRecipeSerializer<>(VehicleResetRecipe::new));
 
     public static final DeferredHolder<RecipeType<?>, RecipeType<VehicleAssemblingRecipe>> VEHICLE_ASSEMBLING_TYPE =
             RECIPE_TYPES.register("vehicle_assembling", () -> new RecipeType<>() {

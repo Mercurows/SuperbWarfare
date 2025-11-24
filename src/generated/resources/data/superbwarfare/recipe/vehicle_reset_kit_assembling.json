@@ -1,0 +1,11 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "misc",
+  "inputs": [
+    "#superbwarfare:ingots/steel",
+    "4 minecraft:paper"
+  ],
+  "result": {
+    "item": "superbwarfare:vehicle_reset_kit"
+  }
+}

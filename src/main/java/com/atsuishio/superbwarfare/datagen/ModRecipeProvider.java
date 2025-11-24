@@ -7,10 +7,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.perk.Perk;
-import com.atsuishio.superbwarfare.recipe.AmmoBoxAddAmmoRecipe;
-import com.atsuishio.superbwarfare.recipe.AmmoBoxExtractAmmoRecipe;
-import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe;
-import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe;
+import com.atsuishio.superbwarfare.recipe.*;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import net.minecraft.core.Holder;
@@ -1489,6 +1486,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .require(Items.IRON_INGOT, 144)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get()) + "_assembling"));
+        VehicleAssemblingRecipeBuilder.item(ModItems.VEHICLE_RESET_KIT.get(), 1, VehicleAssemblingRecipe.Category.MISC)
+                .require(ModTags.Items.INGOTS_STEEL)
+                .require(Items.PAPER, 4)
+                .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_RESET_KIT.get()) + "_assembling"));
     }
 
     private static void buildGunRecipes(@NotNull RecipeOutput writer) {
@@ -1858,6 +1860,7 @@ public class ModRecipeProvider extends RecipeProvider {
         SpecialRecipeBuilder.special(AmmoBoxAddAmmoRecipe::new).save(writer, "ammo_box_add_ammo");
         SpecialRecipeBuilder.special(AmmoBoxExtractAmmoRecipe::new).save(writer, "ammo_box_extract_ammo");
         SpecialRecipeBuilder.special(SmokeDyeRecipe::new).save(writer, "smoke_dye");
+        SpecialRecipeBuilder.special(VehicleResetRecipe::new).save(writer, "vehicle_reset");
     }
 
     public static void copyBlueprint(RecipeOutput writer, ItemLike result) {
