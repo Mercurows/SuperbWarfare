@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animation.*;
@@ -9,6 +10,12 @@ public class Plz05Entity extends ArtilleryEntity {
 
     public Plz05Entity(EntityType<Plz05Entity> type, Level world) {
         super(type, world);
+    }
+
+    @Override
+    public DamageModifier getDamageModifier() {
+        return super.getDamageModifier()
+                .custom((source, damage) -> getSourceAngle(source, 0.3f) * damage);
     }
 
     @Override
