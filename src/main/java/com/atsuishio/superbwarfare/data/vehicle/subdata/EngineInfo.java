@@ -93,5 +93,7 @@ public class EngineInfo {
         public float speedRate = 1;
         @SerializedName("GearRotateAngle")
         public float gearRotateAngle = 85;
+        @SerializedName("HasGear")
+        public boolean hasGear = true;
     }
 }

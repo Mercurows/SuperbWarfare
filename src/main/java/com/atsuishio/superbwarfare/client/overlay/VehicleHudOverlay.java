@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -126,20 +126,7 @@ public class VehicleHudOverlay implements IGuiOverlay {
 
         renderWeaponInfo(guiGraphics, vehicle, screenWidth, screenHeight);
         renderPassengerInfo(guiGraphics, vehicle, screenWidth, screenHeight);
-
-        if (vehicle.getVehicleType() == VehicleType.AIRPLANE) {
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-            RenderSystem.enableBlend();
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            float angle = vehicle.gearRot(partialTick);
-            poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, screenHeight - 20, 0);
-            preciseBlit(guiGraphics, GEAR, 86, screenHeight - 36, 0, 0, 32, 32, 32, 32);
-            poseStack.popPose();
-        }
+        renderGearInfo(guiGraphics, vehicle, screenWidth, screenHeight, partialTick);
 
         poseStack.popPose();
     }
@@ -249,6 +236,28 @@ public class VehicleHudOverlay implements IGuiOverlay {
             preciseBlit(guiGraphics, index == passengers.size() - 1 ? DRIVER : PASSENGER, 30, y, 100, 0, 0, 8, 8, 8, 8);
             index++;
         }
+    }
+
+    private static void renderGearInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h, float partialTick) {
+        var engineType = vehicle.computed().engineType;
+        if (engineType != EngineType.AIRCRAFT) return;
+
+        var poseStack = guiGraphics.pose();
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        poseStack.pushPose();
+        float angle = vehicle.gearRot(partialTick);
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102, h - 20, 0);
+
+        preciseBlit(guiGraphics, GEAR, 86, h - 36, 0, 0, 32, 32, 32, 32);
+
+        poseStack.popPose();
     }
 
     private static void renderWeaponInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h) {
