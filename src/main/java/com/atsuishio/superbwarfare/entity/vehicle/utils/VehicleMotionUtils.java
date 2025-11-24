@@ -469,7 +469,7 @@ public final class VehicleMotionUtils {
         AABB aabb1 = new AABB(aabb.minX, aabb.minY - 1.0E-6D, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ);
         Optional<BlockPos> optional = entity.level().findSupportingBlock(entity, aabb1);
         if (optional.isPresent()) {
-            currentPos = currentPos.add(currentPos.vectorTo(optional.get().getCenter()).scale(0.4));
+            currentPos = currentPos.add(currentPos.vectorTo(optional.get().getCenter()).scale(0.6));
         }
         Vec3 horizontalOffset = new Vec3(
                 landingTarget.x - currentPos.x,
@@ -484,7 +484,7 @@ public final class VehicleMotionUtils {
 
         float tiltSmoothingFactor = 0.03f;
 
-        float targetTilt = (float) Math.min(heightY * 7 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45);
+        float targetTilt = (float) Math.min(heightY * 9 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45);
 
         float yawRad = Math.toRadians(-entity.getYRot());
         Vec3 localDirection = new Vec3(
