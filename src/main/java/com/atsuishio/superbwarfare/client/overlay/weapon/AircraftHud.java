@@ -47,6 +47,9 @@ public class AircraftHud {
     private static float diffY;
     private static float diffX;
 
+    public static double bombHitPosX;
+    public static double bombHitPosY;
+    public static double bombHitPosZ;
 
     private static final ResourceLocation BOMB_SCOPE = Mod.loc("textures/overlay/vehicle/aircraft/bomb_scope.png");
     private static final ResourceLocation BOMB_SCOPE_PITCH = Mod.loc("textures/overlay/vehicle/aircraft/bomb_scope_pitch.png");
@@ -108,7 +111,10 @@ public class AircraftHud {
         Vec3 posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis));
 
         if (bomb) {
-            posCross = vehicle.bombHitPos(player, partialTick);
+            bombHitPosX = Mth.lerp(partialTick, bombHitPosX, vehicle.bombHitPos(player).x);
+            bombHitPosY = Mth.lerp(partialTick, bombHitPosY, vehicle.bombHitPos(player).y);
+            bombHitPosZ = Mth.lerp(partialTick, bombHitPosZ, vehicle.bombHitPos(player).z);
+            posCross = new Vec3(bombHitPosX, bombHitPosY, bombHitPosZ);
         }
 
         Vec3 p = VectorUtil.worldToScreen(pos);
@@ -122,8 +128,8 @@ public class AircraftHud {
                 int i = Mth.floor(f * f1);
                 int j = Mth.floor(f * f1);
 
-                float x = (float) pCross.x;
-                float y = (float) pCross.y;
+                float x = (float) screenWidth / 2;
+                float y = (float) screenHeight / 2;
 
 
                 poseStack.pushPose();
@@ -205,28 +211,8 @@ public class AircraftHud {
             int heat = vehicle.getWeaponHeat(player);
             var component = vehicle.firstPersonAmmoComponent(gunData, player);
 
-            guiGraphics.drawString(mc.font, component, (int) x - mc.font.width(component) / 2, (int) y + 67,
+            guiGraphics.drawString(mc.font, component, (int) x - mc.font.width(component) / 2, (int) y + 91,
                     MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
-
-            double speed = vehicle.getDeltaMovement().length() * 72;
-            double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(128)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
-            double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(vehicle.getDeltaMovement().add(0, 0.06, 0).normalize().scale(128)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
-
-            if (lerpVy < -48) {
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
-                        screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
-                if (player.tickCount % 30 == 0) {
-                    player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
-                }
-            } else if (((lerpVy < -10 || (lerpVy < -1 && speed > 140)) && height < 48) || (speed > 140 && blockInWay < 100)) {
-                guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
-                        screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
-                if (player.tickCount % 30 == 0) {
-                    player.level().playLocalSound(player.getOnPos(), ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3, 1, false);
-                }
-            }
 
             //角度
             poseStack.pushPose();
@@ -314,11 +300,27 @@ public class AircraftHud {
             }
         }
 
-        poseStack.popPose();
-        poseStack.popPose();
-    }
+        double speed = vehicle.getDeltaMovement().length() * 72;
+        double height = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(new Vec3(0, -1, 0).scale(160)),
+                ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
+        double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(vehicle.getDeltaMovement().add(0, 0.06, 0).normalize().scale(160)),
+                ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
 
-    public static double length(double x, double y, double z) {
-        return Math.sqrt(x * x + y * y + z * z);
+        if (lerpVy < -24) {
+            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
+                    screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
+            if (player.tickCount % 30 == 0) {
+                player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
+            }
+        } else if (((lerpVy < -10 || (lerpVy < -3 && speed > 140)) && height < 30) || (speed > 100 && blockInWay < 144)) {
+            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
+                    screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
+            if (player.tickCount % 30 == 0) {
+                player.level().playLocalSound(player.getOnPos(), ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3, 1, false);
+            }
+        }
+
+        poseStack.popPose();
+        poseStack.popPose();
     }
 }

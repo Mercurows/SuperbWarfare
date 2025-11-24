@@ -104,7 +104,7 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
                     var tag = tags.getCompound(m);
                     Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
                     if (entity != null) {
-                        Vec3 posF = entity.getBoundingBox().getCenter();
+                        Vec3 posF = VectorTool.lerpGetEntityBoundingBoxCenter(entity, deltaFrame);
                         Vec3 pointF = VectorUtil.worldToScreen(posF);
                         if (VectorUtil.canSee(posF)) {
                             float xf = (float) pointF.x;

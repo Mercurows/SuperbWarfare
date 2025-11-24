@@ -91,7 +91,7 @@ public class IFFOverlay implements LayeredDraw.Layer {
                         RenderSystem.setShaderColor(1, 1, 1, 0.4f);
                     }
 
-                    Vec3 pos = new Vec3(Mth.lerp(partialTick, team.xo, team.getX()), Mth.lerp(partialTick, team.yo + team.getBbHeight() / 2, team.getY() + team.getBbHeight() / 2), Mth.lerp(partialTick, team.zo, team.getZ()));
+                    Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick);
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     float xf = (float) point.x;
                     float yf = (float) point.y;

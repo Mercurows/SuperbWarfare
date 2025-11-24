@@ -218,7 +218,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                             var t = tags.getCompound(m);
                             Entity e = EntityFindUtil.findEntity(player.level(), t.getString("UUID"));
                             if (e != null && VectorUtil.canSee(e.position())) {
-                                Vec3 posF = e.getBoundingBox().getCenter();
+                                Vec3 posF = VectorTool.lerpGetEntityBoundingBoxCenter(e, partialTick);
                                 Vec3 pointF = VectorUtil.worldToScreen(posF);
                                 float xf = (float) pointF.x;
                                 float yf = (float) pointF.y;
@@ -234,7 +234,7 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                     if (player.getVehicle() != null) {
                         team = player.getVehicle();
                     }
-                    Vec3 pos = new Vec3(Mth.lerp(partialTick, team.xo, team.getX()), Mth.lerp(partialTick, team.yo + team.getBbHeight() / 2, team.getY() + team.getBbHeight() / 2), Mth.lerp(partialTick, team.zo, team.getZ()));
+                    Vec3 pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick);
                     Vec3 point = VectorUtil.worldToScreen(pos);
                     float xf = (float) point.x;
                     float yf = (float) point.y;
