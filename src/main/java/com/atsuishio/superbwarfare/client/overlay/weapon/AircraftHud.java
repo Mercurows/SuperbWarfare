@@ -67,7 +67,7 @@ public class AircraftHud {
     private static final ResourceLocation COMPASS = Mod.loc("textures/overlay/vehicle/base/compass.png");
     private static final ResourceLocation CROSSHAIR_3P = Mod.loc("textures/overlay/vehicle/crosshair/third_camera.png");
     private static final ResourceLocation BOMB_RING = Mod.loc("textures/overlay/crosshair/rex_circle.png");
-    
+
     public static void render(VehicleEntity vehicle, Player player, ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         if (player != vehicle.getFirstPassenger()) return;
         Minecraft mc = gui.getMinecraft();
@@ -77,7 +77,7 @@ public class AircraftHud {
         GunData gunData = vehicle.getGunData(player);
 
         if (gunData == null) return;
-        
+
         poseStack.pushPose();
 
         boolean bomb = gunData.compute().crosshair.equals("@AirBomb");
@@ -131,7 +131,6 @@ public class AircraftHud {
 
                 float x = (float) screenWidth / 2;
                 float y = (float) screenHeight / 2;
-
 
                 poseStack.pushPose();
                 poseStack.translate(x, y, 0);
@@ -212,7 +211,7 @@ public class AircraftHud {
             int heat = vehicle.getWeaponHeat(player);
             var component = vehicle.firstPersonAmmoComponent(gunData, player);
 
-            guiGraphics.drawString(mc.font, component, (int) x - mc.font.width(component) / 2 , (int) y + 91,
+            guiGraphics.drawString(mc.font, component, (int) x - mc.font.width(component) / 2, (int) y + 91,
                     MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
 
             //角度
@@ -263,9 +262,7 @@ public class AircraftHud {
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
                 RenderHelper.blit(poseStack, HUD_BASE2, x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
-
             } else if (mc.options.getCameraType() != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
-
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
                 poseStack.pushPose();
@@ -306,7 +303,7 @@ public class AircraftHud {
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
 
         if (lerpVy < -24) {
-            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
+            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE, PULL UP!"),
                     screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
             if (player.tickCount % 30 == 0) {
                 player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);

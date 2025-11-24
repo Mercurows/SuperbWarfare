@@ -145,7 +145,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                 texture = ResourceLocation.tryParse(crosshairPath);
             }
 
-            if (texture == null) {
+            if (texture == null && !crosshairPath.startsWith("@")) {
                 String finalCrosshairPath = crosshairPath;
                 LOGGER.log(crosshairPath, logger -> logger.error("Failed to load crosshair texture for {}", finalCrosshairPath));
             } else {
@@ -192,11 +192,6 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                     VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
                 }
             }
-
-            poseStack.popPose();
-            poseStack.pushPose();
-
-
 
             poseStack.popPose();
         } else if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
