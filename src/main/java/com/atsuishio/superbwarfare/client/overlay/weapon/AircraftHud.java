@@ -312,7 +312,7 @@ public class AircraftHud {
             if (player.tickCount % 30 == 0) {
                 player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
             }
-        } else if (((lerpVy < -10 || (lerpVy < -3 && speed > 140)) && height < 30) || (speed > 100 && blockInWay < 144)) {
+        } else if (((lerpVy < -10 || (lerpVy < -3 && speed > 170)) && height < 30) || (speed > 100 && blockInWay < 144)) {
             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
                     screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
             if (player.tickCount % 30 == 0) {
