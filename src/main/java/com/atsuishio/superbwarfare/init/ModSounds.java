@@ -90,7 +90,6 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> BOMB_RELEASE = REGISTRY.register("bomb_release", () -> SoundEvent.createVariableRangeEvent(Mod.loc("bomb_release")));
     public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_START = REGISTRY.register("missile_start", () -> SoundEvent.createVariableRangeEvent(Mod.loc("missile_start")));
 
-    // TODO 如果测试没问题，上线前把注释掉的注册项都删了
     // Guns
     // Common Gun Sounds
     public static final DeferredHolder<SoundEvent, SoundEvent> OVERHEAT = REGISTRY.register("overheat", () -> SoundEvent.createVariableRangeEvent(Mod.loc("overheat")));

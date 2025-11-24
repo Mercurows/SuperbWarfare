@@ -131,7 +131,6 @@ public class AircraftHud {
                 float x = (float) screenWidth / 2;
                 float y = (float) screenHeight / 2;
 
-
                 poseStack.pushPose();
                 poseStack.translate(x, y, 0);
                 var component = vehicle.thirdPersonAmmoComponent(gunData, player);
@@ -264,9 +263,7 @@ public class AircraftHud {
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
                 RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE2, x - 72 + diffY, y - 72 + diffX, 0, 0, 144, 144, 144, 144, color);
-
             } else if (mc.options.getCameraType() != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
-
                 poseStack.pushPose();
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0);
                 poseStack.pushPose();
@@ -307,7 +304,7 @@ public class AircraftHud {
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
 
         if (lerpVy < -24) {
-            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
+            guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE, PULL UP!"),
                     screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
             if (player.tickCount % 30 == 0) {
                 player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
