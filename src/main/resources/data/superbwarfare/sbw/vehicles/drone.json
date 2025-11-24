@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:drone",
   "MaxHealth": 5,
+  "MaxEnergy": 0,
   "Mass": 0.0005,
   "VehicleContainerType": "Empty",
   "SendHitParticles": false,

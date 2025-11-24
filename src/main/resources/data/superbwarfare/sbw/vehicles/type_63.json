@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:type_63",
   "MaxHealth": 100,
+  "MaxEnergy": 0,
   "Mass": 0.45,
   "TurretPos": [0, 0.45703125, -0.1625],
   "TurretYawRange": [-15, 15],

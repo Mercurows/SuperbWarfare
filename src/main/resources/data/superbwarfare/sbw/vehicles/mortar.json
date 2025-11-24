@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:mortar",
   "MaxHealth": 40,
+  "MaxEnergy": 0,
   "TurretPitchRange": [20, 89],
   "Weapons": {
     "Main": {

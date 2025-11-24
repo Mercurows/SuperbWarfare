@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:tow",
   "MaxHealth": 60,
+  "MaxEnergy": 0,
   "TurretPos": [0, 0.9689, 0],
   "TurretTurnSpeed": [10, 10],
   "TurretPitchRange": [-40, 40],

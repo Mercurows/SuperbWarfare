@@ -33,7 +33,7 @@ public class VehicleEnergyStorage extends SyncedEntityEnergyStorage {
 
     @Override
     public boolean canReceive() {
-        return !VehicleData.getDefault(vehicle).isDefaultData && super.canReceive();
+        return !VehicleData.getDefault(vehicle).isDefaultData && super.canReceive() && vehicle.computed().maxEnergy > 0;
     }
 
     @Override
