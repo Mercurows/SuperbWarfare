@@ -20,7 +20,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.entity.vehicle.utils.*;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -146,7 +149,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     };
     public static Consumer<VehicleEntity> playHornSound = vehicle -> {
     };
-//    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
+    //    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
 //    };
     public static Consumer<VehicleEntity> playFireSound = vehicle -> {
     };
@@ -339,6 +342,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public VehicleWeapon[][] availableWeapons;
     private List<OBB> obbCache;
     private List<OBBInfo> obbInfoCache = new ArrayList<>();
+    private EngineInfo engineCache;
 
     protected int interpolationSteps;
     protected double xO;
@@ -379,7 +383,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     private boolean wasEngineRunning = false;
     private boolean wasHornWorking = false;
-//    private boolean wasInCarMusicPlaying = false;
+    //    private boolean wasInCarMusicPlaying = false;
     private boolean wasFiring = false;
     public double targetSpeed;
     public float rudderRot;
@@ -970,7 +974,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entity.getPersistentData().putInt(TAG_SEAT_INDEX, index);
 
         // 在服务端运行时，向所有玩家同步载具座位信息
-        if (!this.level().isClientSide && this.level() instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             serverLevel.getPlayers(s -> true).forEach(p -> p.connection.send(new ClientboundSetPassengersPacket(this)));
         }
 
@@ -2475,8 +2479,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public @NotNull Vec3 getVectorFromString(String string, float ticks, int seatIndex) {
         var entity = getNthEntity(seatIndex);
         return switch (string) {
-            case "Bomb" ->
-                    bombHitPos(getNthEntity(seatIndex)).subtract(getShootPosForHud(getNthEntity(seatIndex), 1));
+            case "Bomb" -> bombHitPos(getNthEntity(seatIndex)).subtract(getShootPosForHud(getNthEntity(seatIndex), 1));
             case "Passenger" -> entity != null ? entity.getViewVector(ticks) : getViewVector(ticks);
             default -> getVectorFromString(string, ticks);
         };
@@ -2886,55 +2889,50 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         var engineType = computed.engineType;
         if (engineType == EngineType.EMPTY) return;
-
-        var engineInfo = computed.engineInfo;
-        try {
-            switch (engineType) {
-                case FIXED -> this.fixedEngine();
-                case WHEEL -> {
-                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Wheel.class);
-                    this.wheelEngine(info);
-                }
-                case TRACK -> {
-                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Track.class);
-                    this.trackEngine(info);
-                }
-                case HELICOPTER -> {
-                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Helicopter.class);
-                    this.helicopterEngine(info);
-                }
-                case SHIP -> {
-                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.Ship.class);
-                    this.shipEngine(info);
-                }
-                case AIRCRAFT -> {
-                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.AirCraft.class);
-                    this.airCraftEngine(info);
-                }
-                case WHEELCHAIR -> {
-                    var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.WheelChair.class);
-                    this.wheelChairEngine(info);
-                }
-            }
-        } catch (Exception e) {
-            Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e);
+        if (engineType == EngineType.FIXED) {
+            this.fixedEngine();
+            return;
         }
+
+        if (this.engineCache == null) {
+            var engineInfo = computed.engineInfo;
+            try {
+                this.engineCache = switch (engineType) {
+                    case WHEEL -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Wheel.class);
+                    case TRACK -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Track.class);
+                    case HELICOPTER -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Helicopter.class);
+                    case SHIP -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Ship.class);
+                    case AIRCRAFT -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Aircraft.class);
+                    case WHEELCHAIR -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.WheelChair.class);
+                    default -> null;
+                };
+            } catch (Exception e) {
+                Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e);
+            }
+        } else {
+            this.engineCache.work(this);
+        }
+    }
+
+    @Nullable
+    public EngineInfo getEngineInfo() {
+        return this.engineCache;
     }
 
     public float getEngineSoundVolume() {
         var computed = computed();
 
         var engineType = computed.engineType;
-        if (engineType == EngineType.EMPTY) return 0;
+        if (engineType == EngineType.EMPTY || engineType == EngineType.FIXED) return 0;
 
-        var engineInfo = computed.engineInfo;
-        var info = DataLoader.GSON.fromJson(engineInfo, EngineInfo.class);
+        var engineInfo = this.getEngineInfo();
+        if (engineInfo == null) return 0;
+
         return switch (engineType) {
-            case FIXED -> 0;
             case TRACK ->
-                    Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * info.engineSoundVolume;
-            case HELICOPTER -> entityData.get(PROPELLER_ROT) * info.engineSoundVolume;
-            default -> Mth.abs(entityData.get(POWER)) * info.engineSoundVolume;
+                    Math.max(Mth.abs(entityData.get(POWER)), Mth.abs(1.4f * this.entityData.get(DELTA_ROT))) * engineInfo.engineSoundVolume;
+            case HELICOPTER -> entityData.get(PROPELLER_ROT) * engineInfo.engineSoundVolume;
+            default -> Mth.abs(entityData.get(POWER)) * engineInfo.engineSoundVolume;
         };
     }
 
@@ -3679,30 +3677,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         } else {
             this.setDeltaMovement(new Vec3(0, this.getDeltaMovement().y, 0));
         }
-    }
-
-    public void trackEngine(EngineInfo.Track engineInfo) {
-        VehicleEngineUtils.trackEngine(this, engineInfo);
-    }
-
-    public void wheelEngine(EngineInfo.Wheel engineInfo) {
-        VehicleEngineUtils.wheelEngine(this, engineInfo);
-    }
-
-    public void helicopterEngine(EngineInfo.Helicopter engineInfo) {
-        VehicleEngineUtils.helicopterEngine(this, engineInfo);
-    }
-
-    public void shipEngine(EngineInfo.Ship engineInfo) {
-        VehicleEngineUtils.shipEngine(this, engineInfo);
-    }
-
-    public void airCraftEngine(EngineInfo.AirCraft engineInfo) {
-        VehicleEngineUtils.aircraftEngine(this, engineInfo);
-    }
-
-    public void wheelChairEngine(EngineInfo.WheelChair engineInfo) {
-        VehicleEngineUtils.wheelChairEngine(this, engineInfo);
     }
 
     public void releaseSmokeDecoy(Vec3 vec3) {

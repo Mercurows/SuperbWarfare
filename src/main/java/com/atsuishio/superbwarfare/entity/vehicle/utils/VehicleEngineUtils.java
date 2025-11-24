@@ -27,7 +27,6 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-// TODO 等一个优化方案
 public final class VehicleEngineUtils {
 
     public static void trackEngine(VehicleEntity vehicle, EngineInfo.Track engineInfo) {
@@ -522,7 +521,7 @@ public final class VehicleEngineUtils {
         }
     }
 
-    public static void aircraftEngine(VehicleEntity vehicle, EngineInfo.AirCraft engineInfo) {
+    public static void aircraftEngine(VehicleEntity vehicle, EngineInfo.Aircraft engineInfo) {
         float powerAdd = engineInfo.increment;
         float powerReduce = engineInfo.decrement;
         float pitchSpeed = engineInfo.pitchSpeed;
@@ -634,26 +633,28 @@ public final class VehicleEngineUtils {
             vehicle.setPropellerRot(vehicle.getPropellerRot() + 30 * vehicle.getEntityData().get(POWER));
 
             // 起落架
-            if (vehicle.upInputDown()) {
-                vehicle.setUpInputDown(false);
-                if (vehicle.getEntityData().get(GEAR_ROT) == 0 && !vehicle.onGround()) {
-                    vehicle.getEntityData().set(GEAR_UP, true);
-                } else if (vehicle.getEntityData().get(GEAR_ROT) == 1) {
+            if (engineInfo.hasGear) {
+                if (vehicle.upInputDown()) {
+                    vehicle.setUpInputDown(false);
+                    if (vehicle.getEntityData().get(GEAR_ROT) == 0 && !vehicle.onGround()) {
+                        vehicle.getEntityData().set(GEAR_UP, true);
+                    } else if (vehicle.getEntityData().get(GEAR_ROT) == 1) {
+                        vehicle.getEntityData().set(GEAR_UP, false);
+                    }
+                }
+
+                if (vehicle.onGround()) {
                     vehicle.getEntityData().set(GEAR_UP, false);
                 }
-            }
 
-            if (vehicle.onGround()) {
-                vehicle.getEntityData().set(GEAR_UP, false);
-            }
+                if (vehicle.getEntityData().get(GEAR_UP)) {
+                    vehicle.getEntityData().set(GEAR_ROT, Math.min(vehicle.getEntityData().get(GEAR_ROT) + 0.05f, 1));
+                } else {
+                    vehicle.getEntityData().set(GEAR_ROT, Math.max(vehicle.getEntityData().get(GEAR_ROT) - 0.05f, 0));
+                }
 
-            if (vehicle.getEntityData().get(GEAR_UP)) {
-                vehicle.getEntityData().set(GEAR_ROT, Math.min(vehicle.getEntityData().get(GEAR_ROT) + 0.05f, 1));
-            } else {
-                vehicle.getEntityData().set(GEAR_ROT, Math.max(vehicle.getEntityData().get(GEAR_ROT) - 0.05f, 0));
+                vehicle.setGearRot(vehicle.getEntityData().get(GEAR_ROT) * gearRotateAngle);
             }
-
-            vehicle.setGearRot(vehicle.getEntityData().get(GEAR_ROT) * gearRotateAngle);
 
             float flapX = (1 - (Mth.abs(vehicle.getRoll())) / 90) * Mth.clamp(vehicle.getMouseMoveSpeedY(), -22.5f, 22.5f) - VectorTool.calculateY(vehicle.getRoll()) * Mth.clamp(vehicle.getMouseMoveSpeedX(), -22.5f, 22.5f);
 
