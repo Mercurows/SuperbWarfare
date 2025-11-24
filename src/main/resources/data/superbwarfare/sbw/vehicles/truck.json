@@ -4,38 +4,44 @@
   "MaxEnergy": 5000000,
   "OBB": [
     {
-      "Size": [0.34375, 0.6875, 0.6875],
-      "Position": [-1.28125, 0.6875, 4],
+      "Size": [0.2656, 0.547, 0.547],
+      "Position": [1.0156, 0.547, 3.203],
       "Part": "WheelLeft"
     },
     {
-      "Size": [0.34375, 0.6875, 0.6875],
-      "Position": [1.28125, 0.6875, 4],
+      "Size": [0.2656, 0.547, 0.547],
+      "Position": [-1.0156, 0.547, 3.203],
       "Part": "WheelRight"
     },
     {
-      "Size": [0.34375, 0.6875, 0.6875],
-      "Position": [-1.28125, 0.6875, -1.328125],
+      "Size": [0.2656, 0.547, 1.1563],
+      "Position": [1.0156, 0.547, -1.66],
       "Part": "WheelLeft"
     },
     {
-      "Size": [0.34375, 0.6875, 0.6875],
-      "Position": [1.28125, 0.6875, -1.328125],
+      "Size": [0.2656, 0.547, 1.1563],
+      "Position": [-1.0156, 0.547, -1.66],
       "Part": "WheelRight"
     },
     {
-      "Size": [0.34375, 0.6875, 0.6875],
-      "Position": [-1.28125, 0.6875, -2.828125],
-      "Part": "WheelLeft"
+      "Size": [1.25, 0.6875, 4.2188],
+      "Position": [0, 1.1875, 0.8438]
     },
     {
-      "Size": [0.34375, 0.6875, 0.6875],
-      "Position": [1.28125, 0.6875, -2.828125],
-      "Part": "WheelRight"
+      "Size": [1.25, 0.6875, 1.4375],
+      "Position": [0, 2.5625, 3.5]
     },
     {
-      "Size": [1.625, 1.71875, 5.5],
-      "Position": [0, 2.34375, 0.875]
+      "Size": [1.25, 0.625, 0.15625],
+      "Position": [0, 2.5, -3.53125]
+    },
+    {
+      "Size": [0.15625, 0.5, 2.7188],
+      "Position": [1.1563, 2.375, -0.6563]
+    },
+    {
+      "Size": [0.15625, 0.5, 2.7188],
+      "Position": [-1.1563, 2.375, -0.6563]
     }
   ],
   "Seats": [
@@ -43,9 +49,9 @@
       "IsEnclosed": true,
       "Transform": "Vehicle",
       "Position": [
-        0.834375,
-        1.65,
-        4.63
+        0.6625,
+        1.025,
+        3.6375
       ],
       "MinPitch": -60,
       "MaxPitch": 60,
@@ -56,9 +62,9 @@
       "IsEnclosed": true,
       "Transform": "Vehicle",
       "Position": [
-        -0.834375,
-        1.65,
-        4.63
+        -0.6625,
+        1.025,
+        3.6375
       ],
       "MinPitch": -60,
       "MaxPitch": 60,
@@ -127,6 +133,6 @@
   },
   "EngineSound": "superbwarfare:truck_engine",
   "HornSound": "superbwarfare:truck_horn",
-  "TerrainCompat": [2.7, 7.5],
-  "InertiaRotateRate": 0.5
+  "TerrainCompat": [2.5, 5],
+  "InertiaRotateRate": 0.3
 }

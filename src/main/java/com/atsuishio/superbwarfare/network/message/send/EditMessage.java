@@ -50,13 +50,13 @@ public record EditMessage(int msgType, boolean add, boolean isVehicle) implement
 
                 var sound = data.compute().soundInfo.change;
                 if (sound == null) return;
-                SoundTool.playLocalSound(player, sound, 1f, 1f);
+                SoundTool.playLocalSound(player, sound, 4f, 1f);
             });
         } else {
             ItemStack stack = player.getMainHandItem();
             if (!(stack.getItem() instanceof GunItem gunItem)) return;
-            var data = GunData.from(stack);
 
+            var data = GunData.from(stack);
             switch (message.msgType) {
                 case 0 -> {
                     int att = data.attachment.get(AttachmentType.BARREL);
