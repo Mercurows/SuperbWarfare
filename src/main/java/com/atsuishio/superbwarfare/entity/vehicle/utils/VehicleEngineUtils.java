@@ -436,6 +436,11 @@ public final class VehicleEngineUtils {
                 if (pilot instanceof Player player && vehicle.level().isClientSide && landingPos != null && !vehicle.onGround()) {
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.press_s_to_landing"), true);
                 }
+
+                if (vehicle.onGround()) {
+                    vehicle.setZRot(vehicle.getRoll() * 0.98f);
+                    vehicle.setXRot(vehicle.getXRot() * 0.98f);
+                }
             }
 
             if (vehicle.getEnergy() > energyCost) {

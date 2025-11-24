@@ -32,7 +32,7 @@
       "EmptyReloadTime": 90,
       "DefaultZoom": 5,
       "Velocity": 15,
-      "Gravity": 0.1,
+      "Gravity": 0.06,
       "Damage": 470,
       "ExplosionDamage": 125,
       "ExplosionRadius": 3.7,
