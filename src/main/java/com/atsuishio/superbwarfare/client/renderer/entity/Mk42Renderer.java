@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.Mk42Entity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class Mk42Renderer extends VehicleRenderer<Mk42Entity> {
-
     public Mk42Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Mk42Model());
     }

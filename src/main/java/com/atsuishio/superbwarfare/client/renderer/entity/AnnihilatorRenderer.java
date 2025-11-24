@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class AnnihilatorRenderer extends VehicleRenderer<AnnihilatorEntity> {
-
     public AnnihilatorRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new AnnihilatorModel());
         this.addRenderLayer(new AnnihilatorLayer(this));

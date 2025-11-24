@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class WaveforceTowerRenderer extends VehicleRenderer<WaveforceTowerEntity> {
-
     public WaveforceTowerRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new WaveforceTowerModel());
         this.addRenderLayer(new WaveforceTowerGlowLayer(this));
