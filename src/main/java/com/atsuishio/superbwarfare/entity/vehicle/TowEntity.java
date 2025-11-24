@@ -5,8 +5,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ public class TowEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
 
     // 是否已装填弹药
     public static final EntityDataAccessor<Boolean> LOADED = SynchedEntityData.defineId(TowEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> RELOAD_COOLDOWN = SynchedEntityData.defineId(TowEntity.class, EntityDataSerializers.INT);
 
     public TowEntity(EntityType<TowEntity> type, Level world) {
         super(type, world);
@@ -42,25 +46,30 @@ public class TowEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(LOADED, false);
+        builder.define(LOADED, false)
+                .define(RELOAD_COOLDOWN, 0);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("State", this.entityData.get(LOADED));
+        compound.putInt("ReloadCoolDown", this.entityData.get(RELOAD_COOLDOWN));
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.entityData.set(LOADED, compound.getBoolean("State"));
+        this.entityData.set(RELOAD_COOLDOWN, compound.getInt("ReloadCoolDown"));
     }
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         var gunData = getGunData(0);
         if (gunData == null) return InteractionResult.SUCCESS;
+
+        int coolDown = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(0) / 60));
 
         var stack = player.getMainHandItem();
         if (gunData.hasEnoughAmmoToShoot(player)) {
@@ -73,16 +82,26 @@ public class TowEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
                 return super.interact(player, hand);
             }
 
-            if (level() instanceof ServerLevel serverLevel) {
+            if (level() instanceof ServerLevel serverLevel && entityData.get(RELOAD_COOLDOWN) == 0) {
                 modifyGunData(0, data -> data.reloadAmmo(player));
-                entityData.set(LOADED, true);
 
+                entityData.set(LOADED, true);
                 serverLevel.playSound(null, getOnPos(), ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
+            } else {
+                player.displayClientMessage(Component.literal(FormatTool.format1DZ((double) (coolDown - entityData.get(RELOAD_COOLDOWN)) / 20) + " / " + FormatTool.format1DZ((double) coolDown / 20)), true);
             }
         } else {
             entityData.set(LOADED, false);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void baseTick() {
+        super.baseTick();
+        if (entityData.get(RELOAD_COOLDOWN) > 0) {
+            entityData.set(RELOAD_COOLDOWN, entityData.get(RELOAD_COOLDOWN) - 1);
+        }
     }
 
     @Override
@@ -106,9 +125,10 @@ public class TowEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
         super.vehicleShoot(living, uuid, targetPos);
 
         var barrelVector = getBarrelVector(1);
-
         var pos = getShootPos(living, 1).add(barrelVector.scale(-0.5));
         var ab = new AABB(pos, pos).inflate(0.75).move(barrelVector.scale(-2)).expandTowards(barrelVector.scale(-5));
+        int coolDown = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(0) / 60));
+        entityData.set(RELOAD_COOLDOWN, coolDown);
 
         // 尾焰伤害
         for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
