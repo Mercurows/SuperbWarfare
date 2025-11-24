@@ -40,6 +40,7 @@
   "Type": "Airplane",
   "EngineSound": "superbwarfare:tom_6_engine",
   "HasLowHealthWarning": false,
-  "SelfHurtPercent": 0,
-  "TerrainCompat": [1, 1.2]
+  "TerrainCompat": [[0.562, 0, 0.6375], [-0.562, 0, 0.6375], [0.562, 0, -0.6375], [-0.562, 0, -0.6375]],
+  "TerrainCompatRotateRate" : 6,
+  "SelfHurtPercent": 0
 }

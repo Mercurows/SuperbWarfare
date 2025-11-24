@@ -29,6 +29,6 @@
   "SelfHurtPercent": 0,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/vehicle_assembling_table_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
-  "Type": "Car",
-  "TerrainCompat": [1.95, 1.95]
+  "TerrainCompat": [[-0.4375, 0, 0.4375], [1.4375, 0, 0.4375], [-0.4375, 0, -1.4375], [1.4375, 0, -1.4375]],
+  "Type": "Car"
 }

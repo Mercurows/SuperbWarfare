@@ -153,7 +153,7 @@
   "BarrelPos": [0, 1.484375, -0.2375],
   "HasDecoy": true,
   "UpStep": 2.25,
-  "RotateOffsetHeight": 3.5,
+  "RotateOffsetHeight": 4,
   "Mass": 25,
   "DamageModifiers": [
     "All * 0.17",
@@ -199,6 +199,6 @@
   },
   "EngineSound": "superbwarfare:prism_tank_engine",
   "MainWeaponHudType": "@Land",
-  "TerrainCompat": [4.6375, 5.171875],
+  "TerrainCompat": [[2, 0, 2.375], [-2, 0, 2.375], [2, 0, 1.156], [-2, 0, 1.156], [2, 0, 0], [-2, 0, 0], [2, 0, -1.156], [-2, 0, -1.156], [2, 0, -2.375], [-2, 0, -2.375]],
   "InertiaRotateRate": 1
 }

@@ -241,6 +241,6 @@
   },
   "EngineSound": "superbwarfare:lav_150_engine",
   "MainWeaponHudType": "@Land",
-  "TerrainCompat": [2.7, 3.61],
+  "TerrainCompat": [[1.156, 0, 1.594], [-1.156, 0, 1.594], [1.156, 0, -1.594], [-1.156, 0, -1.594]],
   "InertiaRotateRate": 1.25
 }

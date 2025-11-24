@@ -238,7 +238,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("Gravity")
     public double gravity = 0.06;
     @SerializedName("TerrainCompat")
-    public Vec2 terrainCompat = Vec2.ZERO;
+    public List<Vec3> terrainCompat = null;
+    @SerializedName("TerrainCompatRotateRate")
+    public float terrainCompatRotateRate = 1;
     // 受惯性影响的旋转幅度
     @SerializedName("InertiaRotateRate")
     public float inertiaRotateRate = 0f;
