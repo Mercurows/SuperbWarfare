@@ -31,6 +31,7 @@
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/otto.png",
   "Type": "Car",
   "EngineSound": "superbwarfare:wheel_chair_engine",
+  "EngineSoundVolume" : 0.1,
   "EngineType": "WheelChair",
   "EngineInfo": {
     "Buoyancy": 0.022,

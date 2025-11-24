@@ -260,7 +260,7 @@ public class HelicopterHud {
                 if (player.tickCount % 30 == 0) {
                     player.level().playLocalSound(player.getOnPos(), ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3, 1, false);
                 }
-            } else if (((lerpVy < -10 || (lerpVy < -1 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72)) {
+            } else if (((lerpVy < -10 || (lerpVy < -3 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72)) {
                 guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
                         screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false);
                 if (player.tickCount % 30 == 0) {
