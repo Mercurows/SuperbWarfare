@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
@@ -186,7 +187,9 @@ public class CustomExplosion extends Explosion {
                             }
                         }
 
-                        hit = true;
+                        if (entity instanceof LivingEntity || entity instanceof VehicleEntity) {
+                            hit = true;
+                        }
 
                         entity.invulnerableTime = 1;
 
