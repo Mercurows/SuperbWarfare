@@ -114,7 +114,7 @@ public final class VehicleWeaponUtils {
             targetVel = targetVel.multiply(2, 1, 2);
         }
 
-        Vec3 targetVec = RangeTool.calculateFiringSolution(vehicle.getShootPos(pLiving, 1).subtract(vehicle.getShootVec(pLiving, 1).scale(vehicle.getShootPos(pLiving, 1).distanceTo(pLiving.position()))), targetPos, targetVel, vehicle.projectileVelocity(pLiving), vehicle.projectileGravity(pLiving));
+        Vec3 targetVec = RangeTool.calculateFiringSolution(vehicle.getShootPos(pLiving, 1).subtract(vehicle.getShootVec(pLiving, 1).scale(vehicle.getShootPos(pLiving, 1).distanceTo(pLiving.position()))), targetPos, targetVel, vehicle.getProjectileVelocity(pLiving), vehicle.getProjectileGravity(pLiving));
         vehicle.turretAutoAimFromVector(targetVec);
     }
 

@@ -149,7 +149,7 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
                         RenderHelper.preciseBlitWithColor(guiGraphics, FRAME_LOCK, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
                         nearestEntity = targetEntity;
                         if (seekInfo.calculateTrajectory) {
-                            Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick), targetEntity.getDeltaMovement().scale(1.25), vehicle.projectileVelocity(player), vehicle.projectileGravity(player)).normalize();
+                            Vec3 shootVector = RangeTool.calculateFiringSolution(vehicle.getShootPos(player, partialTick), VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick), targetEntity.getDeltaMovement().scale(1.25), vehicle.getProjectileVelocity(player), vehicle.getProjectileGravity(player)).normalize();
                             Vec3 shootPos = vehicle.getShootPos(player, partialTick).add(shootVector.scale(vehicle.getShootPos(player, partialTick).distanceTo(VectorTool.lerpGetEntityBoundingBoxCenter(targetEntity, partialTick))));
                             Vec3 point0 = VectorUtil.worldToScreen(shootPos);
 

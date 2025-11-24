@@ -1954,7 +1954,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         if (hasPassengerWeaponStation()) {
             if (getNthEntity(getPassengerWeaponStationControllerIndex()) instanceof Player || getNthEntity(getPassengerWeaponStationControllerIndex()) == null) {
-                this.gunnerAngle();
+                this.adjustWeaponControllerAngle();
             } else if (getNthEntity(getPassengerWeaponStationControllerIndex()) instanceof Mob mob) {
                 this.passengerWeaponAutoAimFormUuid(entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID), mob);
             }
@@ -2501,7 +2501,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Vec3 bombHitPos(Entity entity) {
         var gunData = getGunData(entity);
         if (gunData != null) {
-            return ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPosForHud(entity, 1), getShootVec(entity, 1), getDeltaMovement().length() * gunData.compute().velocity, -projectileGravity(entity));
+            return ProjectileCalculator.calculatePreciseImpactPoint(level(), getShootPosForHud(entity, 1), getShootVec(entity, 1), getDeltaMovement().length() * gunData.compute().velocity, -getProjectileGravity(entity));
         } else {
             return Vec3.ZERO;
         }
@@ -2646,8 +2646,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param entity 操控载具的实体
      * @return 炮弹发射时的初始速度
      */
-
-    public float projectileVelocity(Entity entity) {
+    public float getProjectileVelocity(Entity entity) {
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData == null) return 25;
         if (gunData.compute().addShooterDeltaMovement) {
@@ -2657,7 +2656,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return (float) gunData.compute().velocity;
     }
 
-    public float projectileVelocity(int seatIndex) {
+    public float getProjectileVelocity(int seatIndex) {
         var gunData = getGunData(seatIndex);
         if (gunData == null) return 25;
         if (gunData.compute().addShooterDeltaMovement) {
@@ -2667,7 +2666,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return (float) gunData.compute().velocity;
     }
 
-    public float projectileVelocity(String weaponName) {
+    public float getProjectileVelocity(String weaponName) {
         var gunData = getGunData(weaponName);
         if (gunData == null) return 25;
         if (gunData.compute().addShooterDeltaMovement) {
@@ -2677,7 +2676,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return (float) gunData.compute().velocity;
     }
 
-    public float projectileVelocity(GunData gunData) {
+    public float getProjectileVelocity(GunData gunData) {
         if (gunData == null) return 25;
         if (gunData.compute().addShooterDeltaMovement) {
             return (float) (getDeltaMovement().length() * gunData.compute().velocity);
@@ -2689,29 +2688,28 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param entity 操控载具的实体
      * @return 炮弹重力
      */
-
-    public float projectileGravity(Entity entity) {
+    public float getProjectileGravity(Entity entity) {
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData == null) return 0;
 
         return (float) gunData.compute().gravity;
     }
 
-    public float projectileGravity(int seatIndex) {
+    public float getProjectileGravity(int seatIndex) {
         var gunData = getGunData(seatIndex);
         if (gunData == null) return 0;
 
         return (float) gunData.compute().gravity;
     }
 
-    public float projectileGravity(String weaponName) {
+    public float getProjectileGravity(String weaponName) {
         var gunData = getGunData(weaponName);
         if (gunData == null) return 0;
 
         return (float) gunData.compute().gravity;
     }
 
-    public float projectileGravity(GunData gunData) {
+    public float getProjectileGravity(GunData gunData) {
         if (gunData == null) return 0;
         return (float) gunData.compute().gravity;
     }
@@ -2720,29 +2718,28 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param entity 操控载具的实体
      * @return 炮弹发射时的散布
      */
-
-    public float projectileSpread(Entity entity) {
+    public float getProjectileSpread(Entity entity) {
         var gunData = getGunData(getSeatIndex(entity));
         if (gunData == null) return 0.5f;
 
         return (float) gunData.compute().spread;
     }
 
-    public float projectileSpread(int seatIndex) {
+    public float getProjectileSpread(int seatIndex) {
         var gunData = getGunData(seatIndex);
         if (gunData == null) return 0.5f;
 
         return (float) gunData.compute().spread;
     }
 
-    public float projectileSpread(String weaponName) {
+    public float getProjectileSpread(String weaponName) {
         var gunData = getGunData(weaponName);
         if (gunData == null) return 0.5f;
 
         return (float) gunData.compute().spread;
     }
 
-    public float projectileSpread(GunData gunData) {
+    public float getProjectileSpread(GunData gunData) {
         if (gunData == null) return 0.5f;
         return (float) gunData.compute().spread;
     }
@@ -2772,7 +2769,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 targetVel = targetVel.multiply(2, 1, 2);
             }
 
-            Vec3 targetVec = RangeTool.calculateFiringSolution(getShootPos(pLiving, 1).subtract(getShootVec(pLiving, 1).scale(getShootPos(pLiving, 1).distanceTo(pLiving.position()))), targetPos, targetVel, projectileVelocity(pLiving), projectileGravity(pLiving));
+            Vec3 targetVec = RangeTool.calculateFiringSolution(getShootPos(pLiving, 1).subtract(getShootVec(pLiving, 1).scale(getShootPos(pLiving, 1).distanceTo(pLiving.position()))), targetPos, targetVel, getProjectileVelocity(pLiving), getProjectileGravity(pLiving));
             passengerWeaponAutoAimFormVector(targetVec);
         }
     }
@@ -2783,31 +2780,31 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
      * @param shootVec 需要让武器站以这个角度发射的向量
      */
     public void passengerWeaponAutoAimFormVector(Vec3 shootVec) {
-        float ySpeed = passengerWeaponYSpeed();
-        float xSpeed = passengerWeaponXSpeed();
+        float ySpeed = getPassengerWeaponYSpeed();
+        float xSpeed = getPassengerWeaponXSpeed();
         float diffY = (float) Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(getPassengerWeaponStationVector(1)));
         float diffX = (float) Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(getPassengerWeaponStationVector(1)));
 
         this.turretTurnSound(diffX, diffY, 0.95f);
 
-        this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -passengerWeaponMaxPitch(), -passengerWeaponMinPitch()));
-        this.setGunYRot(Mth.clamp(this.getGunYRot() - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed), -passengerWeaponMaxYaw(), -passengerWeaponMinYaw()));
+        this.setGunXRot(Mth.clamp(this.getGunXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -getPassengerWeaponMaxPitch(), -getPassengerWeaponMinPitch()));
+        this.setGunYRot(Mth.clamp(this.getGunYRot() - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed), -getPassengerWeaponMaxYaw(), -getPassengerWeaponMinYaw()));
     }
 
-    public void gunnerAngle() {
-        float ySpeed = passengerWeaponYSpeed();
-        float xSpeed = passengerWeaponXSpeed();
+    public void adjustWeaponControllerAngle() {
+        float ySpeed = getPassengerWeaponYSpeed();
+        float xSpeed = getPassengerWeaponXSpeed();
 
-        Entity gunner = this.getNthEntity(getPassengerWeaponStationControllerIndex());
+        Entity entity = this.getNthEntity(getPassengerWeaponStationControllerIndex());
 
         float diffY = 0;
         float diffX = 0;
         float speed = 1;
 
-        if (gunner instanceof Player) {
-            float gunAngle = -Mth.wrapDegrees(gunner.getYHeadRot() - this.getYRot());
+        if (entity instanceof Player) {
+            float gunAngle = -Mth.wrapDegrees(entity.getYHeadRot() - this.getYRot());
             diffY = Mth.wrapDegrees(gunAngle - getGunYRot());
-            diffX = Mth.wrapDegrees(gunner.getXRot() - this.getGunXRot());
+            diffX = Mth.wrapDegrees(entity.getXRot() - this.getGunXRot());
             turretTurnSound(diffX, diffY, 0.95f);
             speed = 0;
         }
@@ -2935,7 +2932,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transformV = this.getVehicleYOffsetTransform(ticks);
         Matrix4f transform = new Matrix4f();
-        Vector4f worldPosition = transformPosition(transform, 0, -rotateOffsetHeight(), 0);
+        Vector4f worldPosition = transformPosition(transform, 0, -getRotateOffsetHeight(), 0);
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
         return transformV;
     }
@@ -2945,7 +2942,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return VehicleVecUtils.getVehicleYOffsetTransform(this, partialTicks);
     }
 
-    public float rotateOffsetHeight() {
+    public float getRotateOffsetHeight() {
         return computed().rotateOffsetHeight;
     }
 
@@ -3034,42 +3031,42 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     /**
      * @return 乘客武器站最大偏航速度
      */
-    public float passengerWeaponYSpeed() {
+    public float getPassengerWeaponYSpeed() {
         return computed().passengerWeaponStationTurnSpeed.y;
     }
 
     /**
      * @return 乘客武器站最大俯仰速度
      */
-    public float passengerWeaponXSpeed() {
+    public float getPassengerWeaponXSpeed() {
         return computed().passengerWeaponStationTurnSpeed.x;
     }
 
     /**
      * @return 乘客武器站最小仰角
      */
-    public float passengerWeaponMinPitch() {
+    public float getPassengerWeaponMinPitch() {
         return computed().passengerWeaponStationPitchRange.x;
     }
 
     /**
      * @return 乘客武器站最大仰角
      */
-    public float passengerWeaponMaxPitch() {
+    public float getPassengerWeaponMaxPitch() {
         return computed().passengerWeaponStationPitchRange.y;
     }
 
     /**
      * @return 炮塔最小偏航
      */
-    public float passengerWeaponMinYaw() {
+    public float getPassengerWeaponMinYaw() {
         return computed().passengerWeaponStationYawRange.x;
     }
 
     /**
      * @return 炮塔最大偏航
      */
-    public float passengerWeaponMaxYaw() {
+    public float getPassengerWeaponMaxYaw() {
         return computed().passengerWeaponStationYawRange.y;
     }
 
