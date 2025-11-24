@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata;
 
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
-public class EngineInfo {
+public abstract class EngineInfo {
 
     // 能量消耗比例
     @SerializedName("EnergyCostRate")
@@ -21,6 +23,8 @@ public class EngineInfo {
     @SerializedName("EngineSoundVolume")
     public float engineSoundVolume = 0.4f;
 
+    abstract public void work(VehicleEntity vehicle);
+
     public static class Wheel extends EngineInfo {
         @SerializedName("WheelRotSpeed")
         public double wheelRotSpeed = 0;
@@ -35,6 +39,11 @@ public class EngineInfo {
         // 最大后退速度系数
         @SerializedName("MaxBackwardSpeedRate")
         public float maxBackwardSpeedRate = -0.1f;
+
+        @Override
+        public void work(VehicleEntity vehicle) {
+            VehicleEngineUtils.wheelEngine(vehicle, this);
+        }
     }
 
     public static class Track extends Wheel {
@@ -42,6 +51,11 @@ public class EngineInfo {
         public double trackRotSpeed = 0;
         @SerializedName("TrackDifferential")
         public double trackDifferential = 0;
+
+        @Override
+        public void work(VehicleEntity vehicle) {
+            VehicleEngineUtils.trackEngine(vehicle, this);
+        }
     }
 
     public static class WheelChair extends Wheel {
@@ -55,6 +69,11 @@ public class EngineInfo {
         public int jumpCoolDown = 3;
         @SerializedName("JumpForce")
         public double jumpForce = 0.6;
+
+        @Override
+        public void work(VehicleEntity vehicle) {
+            VehicleEngineUtils.wheelChairEngine(vehicle, this);
+        }
     }
 
     public static class Ship extends EngineInfo {
@@ -71,6 +90,11 @@ public class EngineInfo {
         // 最大后退速度系数
         @SerializedName("MaxBackwardSpeedRate")
         public float maxBackwardSpeedRate = -0.1f;
+
+        @Override
+        public void work(VehicleEntity vehicle) {
+            VehicleEngineUtils.shipEngine(vehicle, this);
+        }
     }
 
     public static class Helicopter extends EngineInfo {
@@ -86,14 +110,24 @@ public class EngineInfo {
         // 引擎启动音效
         @SerializedName("EngineStartSound")
         public SoundEvent engineStartSound = SoundEvents.EMPTY;
+
+        @Override
+        public void work(VehicleEntity vehicle) {
+            VehicleEngineUtils.helicopterEngine(vehicle, this);
+        }
     }
 
-    public static class AirCraft extends Helicopter {
+    public static class Aircraft extends Helicopter {
         @SerializedName("SpeedRate")
         public float speedRate = 1;
         @SerializedName("GearRotateAngle")
         public float gearRotateAngle = 85;
         @SerializedName("HasGear")
         public boolean hasGear = true;
+
+        @Override
+        public void work(VehicleEntity vehicle) {
+            VehicleEngineUtils.aircraftEngine(vehicle, this);
+        }
     }
 }

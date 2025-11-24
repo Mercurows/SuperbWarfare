@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
@@ -242,6 +243,9 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
     private static void renderGearInfo(GuiGraphics guiGraphics, VehicleEntity vehicle, int w, int h, float partialTick) {
         var engineType = vehicle.computed().engineType;
         if (engineType != EngineType.AIRCRAFT) return;
+        var engineInfo = vehicle.getEngineInfo();
+        if (engineInfo == null) return;
+        if (!(engineInfo instanceof EngineInfo.Aircraft aircraft) || !aircraft.hasGear) return;
 
         var poseStack = guiGraphics.pose();
 
