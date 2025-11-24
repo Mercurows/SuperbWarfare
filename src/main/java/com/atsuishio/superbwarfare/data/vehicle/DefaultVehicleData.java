@@ -235,6 +235,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("PassengerWeaponStationControllerIndex")
     public int passengerWeaponStationControllerIndex = 1;
 
+    @SerializedName("UsePassengerCreativeAmmoBox")
+    public boolean usePassengerCreativeAmmoBox = true;
+
     @SerializedName("Gravity")
     public double gravity = 0.06;
     @SerializedName("TerrainCompat")

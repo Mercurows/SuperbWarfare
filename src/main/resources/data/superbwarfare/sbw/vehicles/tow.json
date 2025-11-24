@@ -26,6 +26,7 @@
       "Position": [0.3, -0.8, -0.6]
     }
   },
+  "UsePassengerCreativeAmmoBox": false,
   "Weapons": {
     "Missile": {
       "DefaultFireMode": "Semi",

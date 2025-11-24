@@ -227,7 +227,7 @@ public class InventoryTool {
 
     public static boolean hasCreativeAmmoBoxForVehicle(@NotNull VehicleEntity vehicle) {
         var passengers = vehicle.getPassengers();
-        boolean flag = passengers.stream().anyMatch(e -> InventoryTool.hasItem(e, ModItems.CREATIVE_AMMO_BOX.get()));
+        boolean flag = passengers.stream().anyMatch(e -> InventoryTool.hasItem(e, ModItems.CREATIVE_AMMO_BOX.get())) && vehicle.data().compute().usePassengerCreativeAmmoBox;
         return flag || hasItem(vehicle, ModItems.CREATIVE_AMMO_BOX.get());
     }
 

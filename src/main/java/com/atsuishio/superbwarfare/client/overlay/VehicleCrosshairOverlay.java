@@ -145,7 +145,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                 texture = ResourceLocation.tryParse(crosshairPath);
             }
 
-            if (texture == null && !crosshairPath.startsWith("@")) {
+            if (texture == null) {
                 String finalCrosshairPath = crosshairPath;
                 LOGGER.log(crosshairPath, logger -> logger.error("Failed to load crosshair texture for {}", finalCrosshairPath));
             } else {
@@ -169,7 +169,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                     RenderHelper.blit(poseStack, dynamicTexture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     VehicleHudOverlay.renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (float) (2 * (Math.random() - 0.5f)), y - 7.5f + (float) (2 * (Math.random() - 0.5f)));
                 } else if (crosshairPath.equals("@VehicleCommonCannonZooming")) {
-                    float fovAdjust = 70F / Minecraft.getInstance().options.fov().get();
+                    float fovAdjust = 60F / Minecraft.getInstance().options.fov().get();
                     float f = (float) Math.min(screenWidth, screenHeight);
                     float f1 = Math.min((float) screenWidth / f, (float) screenHeight / f) * fovAdjust;
                     int i = Mth.floor(f * f1);
