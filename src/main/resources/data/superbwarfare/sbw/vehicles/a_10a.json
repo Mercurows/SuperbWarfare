@@ -59,7 +59,6 @@
     "CameraPos": {
       "Transform": "Vehicle",
       "Position": [0, 3.725, 3.7],
-      "ZoomPosition": [0, 3.725, 4],
       "UseFixedCameraPos": true,
       "AircraftCamera": true,
       "AircraftCameraPos": [0, 4, -14]
