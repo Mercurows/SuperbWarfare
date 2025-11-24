@@ -156,8 +156,7 @@
     "@superbwarfare:gun_grenade * 1.45",
     "@superbwarfare:mortar_shell * 1.45",
     "@superbwarfare:tm_62 * 2.8",
-    "All - 8",
-    "$entity.getSourceAngle(source, 0.3) * damage"
+    "All - 8"
   ],
   "HUDColor": "0x00ff66",
   "EngineType": "Track",
