@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class PrismTankRenderer extends VehicleRenderer<PrismTankEntity> {
-
     public PrismTankRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new PrismTankModel());
         this.addRenderLayer(new PrismTankLaserLayer(this));

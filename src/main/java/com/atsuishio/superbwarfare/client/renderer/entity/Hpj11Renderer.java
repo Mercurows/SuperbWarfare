@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class Hpj11Renderer extends VehicleRenderer<Hpj11Entity> {
-
     public Hpj11Renderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new Hpj11Model());
         this.addRenderLayer(new Hpj11Layer(this));

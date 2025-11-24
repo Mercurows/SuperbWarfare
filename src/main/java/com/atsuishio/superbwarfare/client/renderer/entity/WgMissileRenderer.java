@@ -36,9 +36,4 @@ public class WgMissileRenderer extends GeoEntityRenderer<WgMissileEntity> {
 
         poseStack.popPose();
     }
-
-    @Override
-    protected float getDeathMaxRotation(WgMissileEntity entityLivingBaseIn) {
-        return 0;
-    }
 }

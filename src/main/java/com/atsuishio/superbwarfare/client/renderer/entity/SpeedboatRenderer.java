@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.SpeedboatEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class SpeedboatRenderer extends VehicleRenderer<SpeedboatEntity> {
-
     public SpeedboatRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new SpeedboatModel());
         this.addRenderLayer(new SpeedBoatLayer(this));
