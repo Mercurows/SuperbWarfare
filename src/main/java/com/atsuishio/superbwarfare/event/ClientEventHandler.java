@@ -54,6 +54,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.animation.AnimationProcessor;
@@ -2311,6 +2312,17 @@ public class ClientEventHandler {
 
             var location = gunData.compute().soundInfo.vehicleReload.getLocation();
             stopSoundEvent(location, SoundSource.PLAYERS);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderNameTag(RenderNameTagEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        var self = Minecraft.getInstance().player;
+        if (self == null || self == player) return;
+        if (!(self.getVehicle() instanceof VehicleEntity)) return;
+        if (self.isPassengerOfSameVehicle(player)) {
+            event.setCanRender(TriState.FALSE);
         }
     }
 }
