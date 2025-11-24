@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:mk_42",
   "MaxHealth": 350,
+  "MaxEnergy": 0,
   "TurretPos": [0, 0.413125, 0],
   "TurretTurnSpeed": [1.75, 1.75],
   "TurretPitchRange": [-15, 85],

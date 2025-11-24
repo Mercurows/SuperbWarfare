@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:mle_1934",
   "MaxHealth": 350,
+  "MaxEnergy": 0,
   "TurretPos": [0, 0.196925, 0],
   "TurretTurnSpeed": [1.25, 2],
   "TurretPitchRange": [-5, 30],
