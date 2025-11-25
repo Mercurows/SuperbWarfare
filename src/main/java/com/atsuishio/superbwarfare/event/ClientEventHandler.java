@@ -1279,16 +1279,16 @@ public class ClientEventHandler {
             holdFireVehicle = false;
         }
 
-        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
-            var gunData = pVehicle.getGunData(pVehicle.getSeatIndex(player));
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+            var gunData = vehicle.getGunData(vehicle.getSeatIndex(player));
             if (gunData == null) return;
 
-            if (!pVehicle.canShoot(player)) {
+            if (!vehicle.canShoot(player)) {
                 holdFireVehicle = false;
                 return;
             }
 
-            int rpm = pVehicle.vehicleWeaponRpm(player);
+            int rpm = vehicle.vehicleWeaponRpm(player);
             if (rpm == 0) {
                 rpm = 240;
             }
@@ -1310,7 +1310,7 @@ public class ClientEventHandler {
                     do {
                         PacketDistributor.sendToServer(new VehicleFireMessage(lockingEntityVehicle != null ? Optional.of(lockingEntityVehicle.getUUID()) : Optional.empty(), lockingPosVehicle != null ? Optional.of(lockingPosVehicle.toVector3f()) : Optional.empty()));
                         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle) {
-                            playVehicleClientSounds(player, pVehicle);
+                            playVehicleClientSounds(player, vehicle);
                         }
 
                         newProgress -= cooldown;
@@ -2173,7 +2173,7 @@ public class ClientEventHandler {
             event.setCanceled(true);
         }
 
-        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
             event.setCanceled(true);
         }
 

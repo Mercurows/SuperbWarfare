@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.network.message.send.ChangeVehicleSeatMessage;
 import com.atsuishio.superbwarfare.network.message.send.SwitchVehicleWeaponMessage;
@@ -67,15 +66,13 @@ public class MinecraftMixin {
             ci.cancel();
             options.keyHotbarSlots[index].consumeClick();
 
-            if (vehicle instanceof WeaponVehicleEntity weaponVehicle) {
-                // 数字键 武器切换
-                if (!options.keyShift.isDown()
-                        && weaponVehicle.hasWeapon(seatIndex)
-                        && weaponVehicle.getWeaponIndex(seatIndex) != index) {
-                    if (ClientEventHandler.switchVehicleWeaponCooldown <= 0) {
-                        PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, false));
-                        ClientEventHandler.switchVehicleWeaponCooldown = 3;
-                    }
+            // 数字键 武器切换
+            if (!options.keyShift.isDown()
+                    && vehicle.hasWeapon(seatIndex)
+                    && vehicle.getWeaponIndex(seatIndex) != index) {
+                if (ClientEventHandler.switchVehicleWeaponCooldown <= 0) {
+                    PacketDistributor.sendToServer(new SwitchVehicleWeaponMessage(seatIndex, index, false));
+                    ClientEventHandler.switchVehicleWeaponCooldown = 3;
                 }
             }
         }

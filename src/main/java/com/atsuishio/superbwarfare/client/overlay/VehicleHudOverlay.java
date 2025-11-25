@@ -282,7 +282,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         var weapons = weaponVehicle.getAvailableWeapons(index);
         if (weapons.isEmpty()) return;
 
-        int weaponIndex = weaponVehicle.getWeaponIndex(index);
+        int weaponIndex = vehicle.getWeaponIndex(index);
         if (weaponIndex == -1) return;
 
         wasRenderingWeapons = temp;
