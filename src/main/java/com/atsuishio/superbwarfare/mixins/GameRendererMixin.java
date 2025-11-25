@@ -54,9 +54,7 @@ public class GameRendererMixin {
                                           @Local(name = "posestack") PoseStack matrices,
                                           @Local(name = "f") float tickDelta) {
         Entity entity = mainCamera.getEntity();
-
         matrices.mulPose(Axis.ZP.rotationDegrees(ClientEventHandler.cameraRoll));
-
 
         if (entity instanceof Player player && !player.isSpectator() && player.hasEffect(ModMobEffects.SHOCK)) {
             float shakeStrength = (float) DisplayConfig.SHOCK_SCREEN_SHAKE.get() / 100.0f;
