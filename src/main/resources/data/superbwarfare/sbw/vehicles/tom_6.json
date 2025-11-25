@@ -40,6 +40,17 @@
   "Type": "Airplane",
   "EngineSound": "superbwarfare:tom_6_engine",
   "HasLowHealthWarning": false,
+  "EngineType": "Tom6",
+  "EngineInfo": {
+    "EnergyCostRate": 16,
+    "Increment": 1,
+    "Decrement": 1,
+    "PitchSpeed": 1,
+    "YawSpeed": 1,
+    "RollSpeed": 1,
+    "LiftSpeed": 1,
+    "SpeedRate": 1
+  },
   "TerrainCompat": [[0.562, 0, 0.6375], [-0.562, 0, 0.6375], [0.562, 0, -0.6375], [-0.562, 0, -0.6375]],
   "TerrainCompatRotateRate" : 6,
   "SelfHurtPercent": 0
