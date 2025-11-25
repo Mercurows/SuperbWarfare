@@ -808,6 +808,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return this.item.getEnergyProvider(this, ammoSupplier);
     }
 
+    // TODO 歼灭者和VehicleEntity好像没有发送成功
     public void shakePlayers(@Nullable Entity source) {
         if (source == null) return;
 
