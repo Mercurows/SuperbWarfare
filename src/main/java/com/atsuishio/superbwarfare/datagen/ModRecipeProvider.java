@@ -1466,7 +1466,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         VehicleAssemblingRecipeBuilder.item(ModItems.VEHICLE_RESET_KIT.get(), 1, VehicleAssemblingRecipe.Category.MISC)
                 .require(ModTags.Items.INGOTS_STEEL)
                 .require(Items.PAPER, 4)
-                .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
+                .unlockedBy(getHasName(Items.PAPER), has(Items.PAPER))
                 .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_RESET_KIT.get()) + "_assembling"));
     }
 
