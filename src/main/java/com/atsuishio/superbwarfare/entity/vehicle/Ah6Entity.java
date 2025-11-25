@@ -1,13 +1,12 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 
-public class Ah6Entity extends GeoVehicleEntity implements WeaponVehicleEntity {
+public class Ah6Entity extends GeoVehicleEntity {
 
     public Ah6Entity(EntityType<Ah6Entity> type, Level world) {
         super(type, world);

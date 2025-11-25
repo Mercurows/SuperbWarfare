@@ -37,7 +37,7 @@ import java.util.UUID;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
-public class ArtilleryEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
+public class ArtilleryEntity extends GeoVehicleEntity {
     public static final EntityDataAccessor<List<Integer>> BARREL_ANIM = SynchedEntityData.defineId(ArtilleryEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     public static final EntityDataAccessor<Vector3f> SHOOT_VEC = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.BOOLEAN);

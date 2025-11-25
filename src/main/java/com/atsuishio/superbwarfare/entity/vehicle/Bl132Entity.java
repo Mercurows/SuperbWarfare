@@ -1,13 +1,12 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animation.*;
 
-public class Bl132Entity extends ArtilleryEntity implements WeaponVehicleEntity {
+public class Bl132Entity extends ArtilleryEntity {
 
     public Bl132Entity(EntityType<Bl132Entity> type, Level world) {
         super(type, world);

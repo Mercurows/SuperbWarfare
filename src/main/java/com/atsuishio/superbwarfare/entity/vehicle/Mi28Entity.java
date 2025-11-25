@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -16,7 +15,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-public class Mi28Entity extends GeoVehicleEntity implements WeaponVehicleEntity {
+public class Mi28Entity extends GeoVehicleEntity {
 
     public Mi28Entity(EntityType<Mi28Entity> type, Level world) {
         super(type, world);

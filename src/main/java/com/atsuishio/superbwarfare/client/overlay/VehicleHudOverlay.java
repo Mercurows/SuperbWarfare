@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -269,7 +268,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         Player player = Minecraft.getInstance().player;
 
         if (!vehicle.banHand(player)) return;
-        if (!(vehicle instanceof WeaponVehicleEntity weaponVehicle)) return;
+        if (!vehicle.hasWeapon()) return;
 
         var temp = wasRenderingWeapons;
         wasRenderingWeapons = false;
@@ -279,7 +278,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
         int index = vehicle.getSeatIndex(player);
         if (index == -1) return;
 
-        var weapons = weaponVehicle.getAvailableWeapons(index);
+        var weapons = vehicle.computed().seats().get(index).weapons().stream().map(vehicle::getGunData).toList();
         if (weapons.isEmpty()) return;
 
         int weaponIndex = vehicle.getWeaponIndex(index);
@@ -369,7 +368,7 @@ public class VehicleHudOverlay implements LayeredDraw.Layer {
                 }
             }
 
-            preciseBlit(guiGraphics, weapon.icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
+            preciseBlit(guiGraphics, weapon.compute().icon, w - 85 + xOffset, h - frameIndex * 18 - 20, 100, 0, 0, 75, 16, 75, 16);
 
             // 这里不知道为什么不能合并，会导致上面那个渲染出错
             int size = data.getDefault().getAmmoConsumers().size();

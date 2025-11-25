@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud;
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -271,7 +270,7 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
     }
 
     public static void renderWeaponInfoThird(GuiGraphics guiGraphics, VehicleEntity vehicle, Player player, GunData data, Font font) {
-        if (!(vehicle instanceof WeaponVehicleEntity)) return;
+        if (!vehicle.hasWeapon()) return;
 
         float heat = vehicle.getWeaponHeat(player) / 100F;
         var component = vehicle.thirdPersonAmmoComponent(data, player);
