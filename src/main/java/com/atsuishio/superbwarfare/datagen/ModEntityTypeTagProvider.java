@@ -49,7 +49,7 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
 
         this.tag(ModTags.EntityTypes.CAN_REPAIR).add(
                 EntityType.IRON_GOLEM
-        );
+        ).addOptional(ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "maid"));
 
         this.tag(ModTags.EntityTypes.MINE).add(
                 ModEntities.BLU_43.get(),

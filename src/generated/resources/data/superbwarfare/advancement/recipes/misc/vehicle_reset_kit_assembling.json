@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_copper_plate": {
+    "has_paper": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:copper_plate"
+            "items": "minecraft:paper"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_copper_plate"
+      "has_paper"
     ]
   ],
   "rewards": {
