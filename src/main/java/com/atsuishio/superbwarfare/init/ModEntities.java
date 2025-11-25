@@ -99,8 +99,8 @@ public class ModEntities {
             EntityType.Builder.<SmallRocketEntity>of(SmallRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(SmallRocketEntity::new).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<MediumRocketEntity>> MEDIUM_ROCKET = register("medium_rocket",
             EntityType.Builder.<MediumRocketEntity>of(MediumRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MediumRocketEntity::new).noSave().sized(0.5f, 0.5f));
-    public static final RegistryObject<EntityType<WgMissileEntity>> WG_MISSILE = register("wg_missile",
-            EntityType.Builder.<WgMissileEntity>of(WgMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(WgMissileEntity::new).noSave().fireImmune().sized(0.5f, 0.5f));
+    public static final RegistryObject<EntityType<WireGuideMissileEntity>> WIRE_GUIDE_MISSILE = register("wire_guide_missile",
+            EntityType.Builder.<WireGuideMissileEntity>of(WireGuideMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(WireGuideMissileEntity::new).noSave().fireImmune().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<SwarmDroneEntity>> SWARM_DRONE = register("swarm_drone",
             EntityType.Builder.<SwarmDroneEntity>of(SwarmDroneEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(SwarmDroneEntity::new).noSave().fireImmune().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<Mk82Entity>> MK_82 = register("mk_82",

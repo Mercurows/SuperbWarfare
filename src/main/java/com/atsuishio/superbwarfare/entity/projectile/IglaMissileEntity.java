@@ -163,15 +163,15 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity {
                     turn(toVec, Mth.clamp((tickCount - 1) * 0.5f, 0, 15));
                     this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
 
-                    //近炸
-                    if (position().distanceToSqr(entity.position()) < 25) {
-                        DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
-                        if (entity instanceof LivingEntity) {
-                            entity.invulnerableTime = 0;
-                        }
-                        causeExplode(position());
-                        this.discard();
-                    }
+//                    //近炸
+//                    if (position().distanceToSqr(entity.position()) < 25) {
+//                        DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+//                        if (entity instanceof LivingEntity) {
+//                            entity.invulnerableTime = 0;
+//                        }
+//                        causeExplode(position());
+//                        this.discard();
+//                    }
 
                 }
 

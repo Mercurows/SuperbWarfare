@@ -33,10 +33,12 @@
       "AvailableFireModes": "Semi",
       "Name": "weapon.superbwarfare.tow_missile",
       "AmmoType": "superbwarfare:medium_anti_ground_missile",
-      "Projectile": "superbwarfare:wg_missile",
+      "Projectile": "superbwarfare:wire_guide_missile",
       "DefaultZoom": 3,
       "Magazine": 1,
-      "Damage": 500,
+      "Damage": 600,
+      "ExplosionDamage": 60,
+      "ExplosionRadius": 6,
       "RPM": 8,
       "Velocity": 3,
       "ShootShake": [6, 6, 14],
@@ -45,8 +47,6 @@
         "Positions": [[0, 0.035, 0]],
         "Directions": ["Barrel"]
       },
-      "ExplosionDamage": 60,
-      "ExplosionRadius": 6,
       "SoundInfo": {
         "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
         "Fire3P": "superbwarfare:bmp_2_missile_fire_3p"
