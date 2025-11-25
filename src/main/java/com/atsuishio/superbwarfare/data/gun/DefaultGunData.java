@@ -90,7 +90,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
 
     @ServerOnly
     @SerializedName("Projectile")
-    protected StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
+    public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
 
     public ProjectileInfo projectile() {
         return projectile.value;
@@ -244,7 +244,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public double heatPerShoot = 0;
 
     @SerializedName("AvailablePerks")
-    protected ObjectToList<String> availablePerks = new ObjectToList<>(
+    public ObjectToList<String> availablePerks = new ObjectToList<>(
             "@Ammo",
             "superbwarfare:field_doctor",
             "superbwarfare:powerful_attraction",
