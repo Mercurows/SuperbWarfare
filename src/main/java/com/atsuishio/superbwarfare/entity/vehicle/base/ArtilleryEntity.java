@@ -200,14 +200,8 @@ public class ArtilleryEntity extends GeoVehicleEntity implements WeaponVehicleEn
         if (data != null) {
             return data.compute().magazine;
         } else {
-            return 0;
+            return 1;
         }
-    }
-
-    @Override
-    public Entity getAmmoSupplier() {
-        var entity = this.getNthEntity(this.getTurretControllerIndex());
-        return entity == null ? this : entity;
     }
 
     @Override
@@ -266,26 +260,6 @@ public class ArtilleryEntity extends GeoVehicleEntity implements WeaponVehicleEn
         }
         if (living.level() instanceof ServerLevel level) {
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec("Main", 1), getShootPos("Main", 1), level, this);
-        }
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return getMaxBarrel();
-    }
-
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        var gunData = getGunData("Main");
-        if (gunData != null) {
-            return super.canPlaceItem(slot, stack) && gunData.selectedAmmoConsumer().isAmmoItem(stack);
-        } else {
-            return false;
         }
     }
 }
