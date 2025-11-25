@@ -77,16 +77,16 @@ public class HelicopterHud {
 
                 VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(guiGraphics, vehicle, player, vehicle.getGunData(player), mc.font, screenWidth, screenHeight, color);
 
+                // 指南针
+                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, (float) screenWidth / 2 - 128, 10F, (float) (128 - (64F / 45 * VehicleVecUtils.getYRotFromVector(vehicle.getBarrelVector(partialTick)))), 0, 256, 16, 512, 16, color);
+                RenderHelper.preciseBlitWithColor(guiGraphics, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0F, 16, 16, 16, 16, color);
+
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
                 RenderSystem.enableBlend();
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
-
-                // 指南针
-                RenderHelper.preciseBlitWithColor(guiGraphics, COMPASS, (float) screenWidth / 2 - 128, 10F, (float) (128 - (64F / 45 * VehicleVecUtils.getYRotFromVector(vehicle.getBarrelVector(partialTick)))), 0, 256, 16, 512, 16, color);
-                RenderHelper.preciseBlitWithColor(guiGraphics, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0F, 16, 16, 16, 16, color);
 
                 // 电视
                 int addW = (screenWidth / screenHeight) * 48;
