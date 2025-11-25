@@ -302,7 +302,7 @@ public class AircraftHud {
         double blockInWay = vehicle.position().distanceTo((Vec3.atLowerCornerOf(vehicle.level().clip(new ClipContext(vehicle.position(), vehicle.position().add(vehicle.getDeltaMovement().add(0, 0.06, 0).normalize().scale(160)),
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle)).getBlockPos())));
 
-        if (lerpVy < -24) {
+        if (lerpVy < -42) {
             guiGraphics.drawString(Minecraft.getInstance().font, Component.literal("SINK RATE, PULL UP!"),
                     screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false);
             if (player.tickCount % 30 == 0) {
