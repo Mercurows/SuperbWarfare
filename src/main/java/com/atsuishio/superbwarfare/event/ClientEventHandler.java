@@ -18,6 +18,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -25,6 +26,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -55,6 +57,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.animation.AnimationProcessor;
@@ -2328,5 +2331,22 @@ public class ClientEventHandler {
         if (self.isPassengerOfSameVehicle(player)) {
             event.setCanRender(TriState.FALSE);
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!DisplayConfig.ENABLE_VERSION_CHECK_WARNING.get()) return;
+
+        var player = event.getEntity();
+        if (ModVersionEventHandler.currentVersion == null || ModVersionEventHandler.previousVersion == null) return;
+
+        player.displayClientMessage(Component.translatable("tips.superbwarfare.vehicle_reset_kit_1",
+                        Component.literal("" + ModVersionEventHandler.previousVersion).withStyle(ChatFormatting.YELLOW),
+                        Component.literal("" + ModVersionEventHandler.currentVersion).withStyle(ChatFormatting.YELLOW))
+                .withStyle(ChatFormatting.RED), false);
+        player.displayClientMessage(Component.translatable("tips.superbwarfare.vehicle_reset_kit_2",
+                Component.literal("[").append(ModItems.VEHICLE_RESET_KIT.get().getDefaultInstance().getHoverName()).append("]").withStyle(ChatFormatting.GREEN)), false);
+        player.displayClientMessage(Component.translatable("tips.superbwarfare.vehicle_reset_kit_3")
+                .withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.UNDERLINE), false);
     }
 }

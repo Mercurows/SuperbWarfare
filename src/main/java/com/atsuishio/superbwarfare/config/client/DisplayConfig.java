@@ -23,6 +23,7 @@ public class DisplayConfig {
     public static ModConfigSpec.IntValue WEAPON_SCREEN_SHAKE;
     public static ModConfigSpec.IntValue EXPLOSION_SCREEN_SHAKE;
     public static ModConfigSpec.IntValue SHOCK_SCREEN_SHAKE;
+    public static ModConfigSpec.BooleanValue ENABLE_VERSION_CHECK_WARNING;
 
     public static void init(ModConfigSpec.Builder builder) {
         builder.push("display");
@@ -83,6 +84,9 @@ public class DisplayConfig {
 
         builder.comment("The strength of screen shaking when shocked");
         SHOCK_SCREEN_SHAKE = builder.defineInRange("shock_screen_shake", 100, 0, 100);
+
+        builder.comment("Set true to enable version check warning when version of this mod has been changed");
+        ENABLE_VERSION_CHECK_WARNING = builder.define("enable_version_check_warning", true);
 
         builder.pop();
     }
