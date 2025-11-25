@@ -2897,6 +2897,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     case SHIP -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Ship.class);
                     case AIRCRAFT -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Aircraft.class);
                     case WHEELCHAIR -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.WheelChair.class);
+                    case TOM6 -> DataLoader.GSON.fromJson(engineInfo, EngineInfo.Tom6.class);
                     default -> null;
                 };
             } catch (Exception e) {

@@ -130,4 +130,11 @@ public abstract class EngineInfo {
             VehicleEngineUtils.aircraftEngine(vehicle, this);
         }
     }
+
+    public static class Tom6 extends Aircraft {
+        @Override
+        public void work(VehicleEntity vehicle) {
+            VehicleEngineUtils.tomEngine(vehicle, this);
+        }
+    }
 }
