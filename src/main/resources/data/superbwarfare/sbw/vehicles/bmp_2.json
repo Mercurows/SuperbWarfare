@@ -241,7 +241,9 @@
       "Projectile": "superbwarfare:wire_guide_missile",
       "Magazine": 1,
       "EmptyReloadTime": 120,
-      "Damage": 700,
+      "Damage": 600,
+      "ExplosionDamage": 60,
+      "ExplosionRadius": 6,
       "Velocity": 3,
       "RecoilTime": 18,
       "RecoilForce": 0.05,
@@ -251,8 +253,6 @@
         "Directions": ["Turret"],
         "ViewDirection": "Barrel"
       },
-      "ExplosionDamage": 60,
-      "ExplosionRadius": 6,
       "Crosshair": "@VehicleCommonMissile",
       "SoundInfo": {
         "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
