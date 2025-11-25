@@ -126,8 +126,8 @@ public class ModEntities {
             EntityType.Builder.of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.75f, 3.3f));
     public static final DeferredHolder<EntityType<?>, EntityType<TowEntity>> TOW = register("tow",
             EntityType.Builder.of(TowEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(0.5f, 1.35f));
-    public static final DeferredHolder<EntityType<?>, EntityType<SteelCoilEntity>> STEEL_COIL = register("steel_coil",
-            EntityType.Builder.of(SteelCoilEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2, 2));
+//    public static final DeferredHolder<EntityType<?>, EntityType<SteelCoilEntity>> STEEL_COIL = register("steel_coil",
+//            EntityType.Builder.of(SteelCoilEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2, 2));
 
     // Boats
     public static final DeferredHolder<EntityType<?>, EntityType<SpeedboatEntity>> SPEEDBOAT = register("speedboat",
