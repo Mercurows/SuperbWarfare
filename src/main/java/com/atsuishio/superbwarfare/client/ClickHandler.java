@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
@@ -212,8 +211,7 @@ public class ClickHandler {
         // 未按下shift时，为有武器的载具切换武器
         if (!Screen.hasShiftDown()
                 && player.getVehicle() instanceof VehicleEntity vehicle
-                && vehicle instanceof WeaponVehicleEntity weaponVehicle
-                && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))
+                && vehicle.hasWeapon(vehicle.getSeatIndex(player))
                 && vehicle.banHand(player)
         ) {
             if (switchVehicleWeaponCooldown <= 0) {
@@ -437,8 +435,8 @@ public class ClickHandler {
 
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return;
 
-        if (player.getVehicle() instanceof VehicleEntity pVehicle && pVehicle.banHand(player)) {
-            if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
+            if (vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
                 ClientEventHandler.holdFireVehicle = true;
             }
             return;
@@ -559,7 +557,7 @@ public class ClickHandler {
 
         isEditing = false;
 
-        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player)) && pVehicle.banHand(player)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player)) && vehicle.banHand(player)) {
             ClientEventHandler.zoomVehicle = true;
             return;
         }

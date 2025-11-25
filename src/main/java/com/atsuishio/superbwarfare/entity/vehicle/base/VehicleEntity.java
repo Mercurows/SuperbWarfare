@@ -80,7 +80,6 @@ import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -1394,6 +1393,28 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    /**
+     * 获取该槽位当前的武器编号，返回-1则表示该位置没有可用武器
+     *
+     * @param seatIndex 槽位
+     * @return 武器类型
+     */
+    public int getWeaponIndex(int seatIndex) {
+        var selectedWeapons = this.getEntityData().get(VehicleEntity.SELECTED_WEAPON);
+        if (selectedWeapons.size() <= seatIndex) return -1;
+        return selectedWeapons.getInt(seatIndex);
+    }
+
+    /**
+     * 检测该槽位是否有可用武器
+     *
+     * @param seatIndex 武器槽位
+     * @return 武器是否可用
+     */
+    public boolean hasWeapon(int seatIndex) {
+        if (seatIndex < 0 || seatIndex >= this.getMaxPassengers()) return false;
+        return this.getGunData(seatIndex) != null;
+    }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
@@ -3968,17 +3989,17 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return this.computed().hornSound;
     }
 
-    @NotNull
-    public SoundEvent getInCarMusicSound() {
-        var passenger = this.getFirstPassenger();
-        if (passenger instanceof Player player) {
-            var stack = player.getOffhandItem();
-            if (stack.getItem() instanceof RecordItem recordItem) {
-                return recordItem.getSound();
-            }
-        }
-        return SoundEvents.EMPTY;
-    }
+//    @NotNull
+//    public SoundEvent getInCarMusicSound() {
+//        var passenger = this.getFirstPassenger();
+//        if (passenger instanceof Player player) {
+//            var stack = player.getOffhandItem();
+//            if (stack.getItem() instanceof RecordItem recordItem) {
+//                return recordItem.getSound();
+//            }
+//        }
+//        return SoundEvents.EMPTY;
+//    }
 
     public void horn() {
         entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) + 0.7f);

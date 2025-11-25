@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -37,29 +36,17 @@ public class ZoomMessage {
             ServerPlayer player = context.getSender();
             if (player == null) return;
 
-            var vehicle = player.getVehicle();
+            if (!(player.getVehicle() instanceof VehicleEntity vehicle)) return;
+
             // 缩放音效播放条件: 载具是武器载具，且该位置有可用武器
-
             if (message.type == 0) {
-
-                if (player.isPassenger()
-                        && vehicle instanceof WeaponVehicleEntity weaponEntity
-                        && vehicle instanceof VehicleEntity vehicleEntity
-                        && weaponEntity.hasWeapon(vehicleEntity.getSeatIndex(player))
-                        && vehicleEntity.banHand(player)
-                ) {
+                if (vehicle.hasWeapon(vehicle.getSeatIndex(player)) && vehicle.banHand(player)) {
                     SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
                 }
-
             }
 
             if (message.type == 1) {
-                if (player.isPassenger()
-                        && vehicle instanceof WeaponVehicleEntity weaponEntity
-                        && vehicle instanceof VehicleEntity vehicleEntity
-                        && weaponEntity.hasWeapon(vehicleEntity.getSeatIndex(player))
-                        && vehicleEntity.banHand(player)
-                ) {
+                if (vehicle.hasWeapon(vehicle.getSeatIndex(player)) && vehicle.banHand(player)) {
                     SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get(), 2, 1);
                 }
 
@@ -69,7 +56,6 @@ public class ZoomMessage {
                     var location = gunData.compute().soundInfo.locking.getLocation();
                     player.connection.send(new ClientboundStopSoundPacket(location, SoundSource.PLAYERS));
                 }
-
             }
         });
         context.setPacketHandled(true);
