@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.world.entity.EntityType;
@@ -13,7 +12,7 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
-public class Lav150Entity extends GeoVehicleEntity implements WeaponVehicleEntity {
+public class Lav150Entity extends GeoVehicleEntity {
 
     public Lav150Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.LAV_150.get(), world);

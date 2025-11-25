@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
@@ -2023,7 +2022,7 @@ public class ClientEventHandler {
 
         ItemStack stack = player.getMainHandItem();
 
-        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && player.getVehicle() instanceof WeaponVehicleEntity && zoomVehicle) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && zoomVehicle) {
             event.setFOV(event.getFOV() / vehicle.getDefaultZoom(player));
             fov = event.getFOV();
             return;

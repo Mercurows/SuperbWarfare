@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
@@ -14,7 +13,7 @@ import net.minecraftforge.network.PlayMessages;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
-public class A10Entity extends GeoVehicleEntity implements WeaponVehicleEntity {
+public class A10Entity extends GeoVehicleEntity {
 
     public A10Entity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.A_10A.get(), world);

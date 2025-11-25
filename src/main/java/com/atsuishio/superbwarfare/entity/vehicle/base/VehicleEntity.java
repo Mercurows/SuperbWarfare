@@ -24,8 +24,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
-import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
@@ -338,7 +336,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         entityData.set(GUN_DATA_MAP, map, true);
     }
 
-    public VehicleWeapon[][] availableWeapons;
     private List<OBB> obbCache;
     private List<OBBInfo> obbInfoCache = new ArrayList<>();
     private EngineInfo engineCache;
@@ -1193,32 +1190,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     // energy end
 
-    // TODO 正确实现武器信息
-    public List<VehicleWeapon> getAvailableWeapons(int seatIndex) {
-        var weapons = getAllWeapons();
-        if (seatIndex < 0 || seatIndex >= weapons.length) return List.of();
-
-        return List.of(weapons[seatIndex]);
-    }
-
-    protected VehicleWeapon[][] getAllWeapons() {
-        return computed().seats().stream().map(seat -> {
-            if (seat == null || seat.weapons().isEmpty()) return new ProjectileWeapon[0];
-
-            return seat.weapons().stream().map(name -> {
-                var data = getGunData(name);
-                if (data == null) return new ProjectileWeapon();
-
-                var sound = data.compute().soundInfo;
-                var icon = data.compute().icon;
-                return new ProjectileWeapon()
-                        .zoom(false)
-                        .sound(sound.change)
-                        .icon(icon);
-            }).toArray(VehicleWeapon[]::new);
-        }).toArray(VehicleWeapon[][]::new);
-    }
-
     /**
      * 当前情况载具是否可以开火
      *
@@ -1406,6 +1377,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     /**
+     * 检测载具是否有武器
+     *
+     * @return 是否有武器
+     */
+    public boolean hasWeapon() {
+        return this.computed().seats().stream()
+                .filter(seat -> !seat.weapons().isEmpty())
+                .flatMap(seat -> seat.weapons().stream())
+                .filter(name -> name != null && !name.isEmpty())
+                .anyMatch(name -> this.getGunData(name) != null);
+    }
+
+    /**
      * 检测该槽位是否有可用武器
      *
      * @param seatIndex 武器槽位
@@ -1414,6 +1398,59 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public boolean hasWeapon(int seatIndex) {
         if (seatIndex < 0 || seatIndex >= this.getMaxPassengers()) return false;
         return this.getGunData(seatIndex) != null;
+    }
+
+    /**
+     * 设置该槽位当前的武器编号
+     *
+     * @param seatIndex      武器槽位
+     * @param selectedWeapon 武器类型
+     */
+    public void setWeaponIndex(int seatIndex, int selectedWeapon) {
+        var selectedWeapons = this.getEntityData().get(VehicleEntity.SELECTED_WEAPON).toIntArray();
+
+        var oldIndex = selectedWeapons[seatIndex];
+        if (oldIndex == selectedWeapon) return;
+
+        this.modifyGunData(seatIndex, oldIndex, gunData -> {
+            if (gunData.compute().withdrawAmmoWhenChangeSlot) {
+                gunData.withdrawAmmo(this.getAmmoSupplier());
+            }
+        });
+
+        selectedWeapons[seatIndex] = selectedWeapon;
+        this.getEntityData().set(VehicleEntity.SELECTED_WEAPON, IntList.of(selectedWeapons));
+    }
+
+    /**
+     * 切换武器事件
+     *
+     * @param seatIndex 武器槽位
+     * @param value     数值（可能为-1~1之间的滚动，或绝对数值）
+     * @param isScroll  是否是滚动事件
+     */
+    public void changeWeapon(int seatIndex, int value, boolean isScroll) {
+        if (seatIndex < 0 || seatIndex >= this.getMaxPassengers()) return;
+
+        var weapons = this.computed().seats().get(seatIndex).weapons();
+        if (weapons.isEmpty()) return;
+        var count = weapons.size();
+
+        var currentIndex = this.getWeaponIndex(seatIndex);
+        var typeIndex = Mth.clamp(isScroll ? (value + currentIndex + count) % count : value, 0, count - 1);
+        if (typeIndex == currentIndex) return;
+
+        var weapon = this.getGunData(weapons.get(typeIndex));
+        if (weapon == null) return;
+
+        // 修改该槽位选择的武器
+        this.setWeaponIndex(seatIndex, typeIndex);
+
+        // 播放武器切换音效
+        var sound = weapon.compute().soundInfo.change;
+        if (sound != null) {
+            this.level().playSound(null, this, sound, this.getSoundSource(), 1, 1);
+        }
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -33,7 +32,7 @@ import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class PrismTankEntity extends GeoVehicleEntity implements WeaponVehicleEntity {
+public class PrismTankEntity extends GeoVehicleEntity {
 
     public PrismTankEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.PRISM_TANK.get(), world);

@@ -48,7 +48,7 @@ import java.util.UUID;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class AutoAimableEntity extends GeoVehicleEntity implements WeaponVehicleEntity, OwnableEntity {
+public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity {
     public static final EntityDataAccessor<Boolean> ACTIVE = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final EntityDataAccessor<String> TARGET_UUID = SynchedEntityData.defineId(AutoAimableEntity.class, EntityDataSerializers.STRING);
