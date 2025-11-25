@@ -1,5 +1,9 @@
 {
   "values": [
-    "minecraft:iron_golem"
+    "minecraft:iron_golem",
+    {
+      "id": "touhou_little_maid:maid",
+      "required": false
+    }
   ]
 }
