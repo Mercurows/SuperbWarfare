@@ -33,19 +33,19 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
 
-public class WgMissileEntity extends MissileProjectile implements GeoEntity {
+public class WireGuideMissileEntity extends MissileProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public UUID launcherVehicle;
 
-    public WgMissileEntity(EntityType<? extends WgMissileEntity> type, Level level) {
+    public WireGuideMissileEntity(EntityType<? extends WireGuideMissileEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
     }
 
-    public WgMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        super(ModEntities.WG_MISSILE.get(), entity, level);
+    public WireGuideMissileEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+        super(ModEntities.WIRE_GUIDE_MISSILE.get(), entity, level);
         this.noCulling = true;
         this.damage = damage;
         this.explosionDamage = explosionDamage;
@@ -148,7 +148,7 @@ public class WgMissileEntity extends MissileProjectile implements GeoEntity {
         destroyBlock();
     }
 
-    private PlayState movementPredicate(AnimationState<WgMissileEntity> event) {
+    private PlayState movementPredicate(AnimationState<WireGuideMissileEntity> event) {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.jvm.idle"));
     }
 

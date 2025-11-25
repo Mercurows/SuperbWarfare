@@ -35,7 +35,7 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.MELON_BOMB.get(),
                 ModEntities.MK_82.get(),
                 ModEntities.SWARM_DRONE.get(),
-                ModEntities.WG_MISSILE.get()
+                ModEntities.WIRE_GUIDE_MISSILE.get()
         );
 
         this.tag(ModTags.EntityTypes.DECOY).add(

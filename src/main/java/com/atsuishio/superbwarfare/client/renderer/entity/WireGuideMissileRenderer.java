@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.projectile.WgMissileLayer;
-import com.atsuishio.superbwarfare.client.model.entity.WgMissileModel;
-import com.atsuishio.superbwarfare.entity.projectile.WgMissileEntity;
+import com.atsuishio.superbwarfare.client.layer.projectile.WireGuideMissileLayer;
+import com.atsuishio.superbwarfare.client.model.entity.WireGuideMissileModel;
+import com.atsuishio.superbwarfare.entity.projectile.WireGuideMissileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -14,19 +14,19 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class WgMissileRenderer extends GeoEntityRenderer<WgMissileEntity> {
-    public WgMissileRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new WgMissileModel());
-        this.addRenderLayer(new WgMissileLayer(this));
+public class WireGuideMissileRenderer extends GeoEntityRenderer<WireGuideMissileEntity> {
+    public WireGuideMissileRenderer(EntityRendererProvider.Context renderManager) {
+        super(renderManager, new WireGuideMissileModel());
+        this.addRenderLayer(new WireGuideMissileLayer(this));
     }
 
     @Override
-    public RenderType getRenderType(WgMissileEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+    public RenderType getRenderType(WireGuideMissileEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
     }
 
     @Override
-    public void defaultRender(PoseStack poseStack, WgMissileEntity entityIn, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTicks, int packedLight) {
+    public void defaultRender(PoseStack poseStack, WireGuideMissileEntity entityIn, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTicks, int packedLight) {
         poseStack.pushPose();
 
         poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));

@@ -46,7 +46,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TOM_6.get(), Tom6Renderer::new);
         event.registerEntityRenderer(ModEntities.MELON_BOMB.get(), MelonBombEntityRenderer::new);
         event.registerEntityRenderer(ModEntities.BMP_2.get(), Bmp2Renderer::new);
-        event.registerEntityRenderer(ModEntities.WG_MISSILE.get(), WgMissileRenderer::new);
+        event.registerEntityRenderer(ModEntities.WIRE_GUIDE_MISSILE.get(), WireGuideMissileRenderer::new);
         event.registerEntityRenderer(ModEntities.LASER_TOWER.get(), LaserTowerRenderer::new);
         event.registerEntityRenderer(ModEntities.YX_100.get(), Yx100Renderer::new);
         event.registerEntityRenderer(ModEntities.PRISM_TANK.get(), PrismTankRenderer::new);

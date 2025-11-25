@@ -821,8 +821,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 explosive.setExplosionRadius((float) data.compute().explosionRadius);
             }
 
-            if (entity instanceof WgMissileEntity wgMissileEntity && shooter != null && shooter.getVehicle() != null) {
-                wgMissileEntity.setLauncherVehicle(shooter.getVehicle().getUUID());
+            if (entity instanceof WireGuideMissileEntity wireGuideMissileEntity && shooter != null && shooter.getVehicle() != null) {
+                wireGuideMissileEntity.setLauncherVehicle(shooter.getVehicle().getUUID());
             }
 
             if (entity instanceof SmallCannonShellEntity smallCannonShell && data.compute().isAntiAirProjectile) {
