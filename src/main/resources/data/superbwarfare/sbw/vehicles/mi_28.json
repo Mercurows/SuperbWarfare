@@ -179,9 +179,9 @@
       "AmmoType": "superbwarfare:medium_anti_ground_missile",
       "Projectile": "superbwarfare:wire_guide_missile",
       "Name": "weapon.superbwarfare.9m_120_missile",
-      "Damage": 750,
-      "ExplosionDamage": 140,
-      "ExplosionRadius": 10,
+      "Damage": 650,
+      "ExplosionDamage": 80,
+      "ExplosionRadius": 7,
       "Velocity": 3,
       "CrosshairColor": "0xFFC700",
       "SoundInfo": {
