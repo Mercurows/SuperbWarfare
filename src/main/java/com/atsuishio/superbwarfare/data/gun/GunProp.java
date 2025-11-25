@@ -102,7 +102,7 @@ public final class GunProp<T> extends com.atsuishio.superbwarfare.data.Prop<GunD
     public static final GunProp<Integer> ITERATIVE_LOAD_AMOUNT = new GunProp<>("IterativeLoadAmount");
     public static final GunProp<Integer> FINISH_TIME = new GunProp<>("FinishTime");
     public static final GunProp<Integer> BURST_COOLDOWN = new GunProp<>("BurstCooldown");
-    public static final GunProp<Boolean> AUTO_LOAD_WHILE_EMPTY = new GunProp<>("AutoLoadWhileEmpty");
+//    public static final GunProp<Boolean> AUTO_LOAD_WHILE_EMPTY = new GunProp<>("AutoLoadWhileEmpty");
 
     public static final GunProp<Double> SOUND_RADIUS = new GunProp<>("SoundRadius");
 
@@ -123,9 +123,9 @@ public final class GunProp<T> extends com.atsuishio.superbwarfare.data.Prop<GunD
 
     public static final GunProp<List<String>> AVAILABLE_PERKS = new GunProp<>("AvailablePerks");
 
-    public static final GunProp<Integer> SEEK_TIME = new GunProp<>("SeekTime");
-    public static final GunProp<Double> SEEK_ANGLE = new GunProp<>("SeekAngle");
-    public static final GunProp<Double> SEEK_RANGE = new GunProp<>("SeekRange");
+//    public static final GunProp<Integer> SEEK_TIME = new GunProp<>("SeekTime");
+//    public static final GunProp<Double> SEEK_ANGLE = new GunProp<>("SeekAngle");
+//    public static final GunProp<Double> SEEK_RANGE = new GunProp<>("SeekRange");
 
     public static final GunProp<String> ICON = new GunProp<>("Icon");
     public static final GunProp<String> CROSSHAIR = new GunProp<>("Crosshair");
