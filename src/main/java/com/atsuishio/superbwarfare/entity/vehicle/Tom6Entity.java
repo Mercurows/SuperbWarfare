@@ -21,8 +21,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.Matrix4d;
+import org.joml.Vector4d;
 
 public class Tom6Entity extends GeoVehicleEntity {
 
@@ -85,9 +85,9 @@ public class Tom6Entity extends GeoVehicleEntity {
         if (upInputDown() && !onGround() && entityData.get(MELON) && passenger instanceof Player player) {
             entityData.set(MELON, false);
 
-            Matrix4f transform = getVehicleTransform(1);
-            Vector4f worldPosition;
-            worldPosition = transformPosition(transform, 0, 0.3f, 0);
+            Matrix4d transform = getVehicleTransform(1);
+            Vector4d worldPosition;
+            worldPosition = transformPosition(transform, 0, 0.3, 0);
 
             MelonBombEntity melonBomb = new MelonBombEntity(player, player.level());
             melonBomb.setExplosionDamage(getMelonExplosionDamage());

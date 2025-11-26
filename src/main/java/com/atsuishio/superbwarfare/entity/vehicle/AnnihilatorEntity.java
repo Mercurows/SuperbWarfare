@@ -34,9 +34,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.*;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
-import org.joml.Matrix4f;
+import org.joml.Matrix4d;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.Vector4d;
 import software.bernie.geckolib.animation.*;
 
 import java.util.Locale;
@@ -217,10 +217,10 @@ public class AnnihilatorEntity extends ArtilleryEntity {
             this.entityData.set(CHARGE_PROGRESS, 0f);
             this.consumeEnergy(gunData.compute().ammoCostPerShoot);
 
-            Matrix4f transform = getBarrelTransform(1);
-            Vector4f worldPosition1 = transformPosition(transform, 2.703f, -0.045f, 15.75f);
-            Vector4f worldPosition2 = transformPosition(transform, 0, -0.045f, 15.75f);
-            Vector4f worldPosition3 = transformPosition(transform, -2.703f, -0.045f, 15.75f);
+            Matrix4d transform = getBarrelTransform(1);
+            Vector4d worldPosition1 = transformPosition(transform, 2.703, -0.045, 15.75);
+            Vector4d worldPosition2 = transformPosition(transform, 0, -0.045, 15.75);
+            Vector4d worldPosition3 = transformPosition(transform, -2.703, -0.045, 15.75);
             Vec3 barrelLeftPos = new Vec3(worldPosition1.x, worldPosition1.y, worldPosition1.z);
             Vec3 barrelMiddlePos = new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z);
             Vec3 barrelRightPos = new Vec3(worldPosition3.x, worldPosition3.y, worldPosition3.z);

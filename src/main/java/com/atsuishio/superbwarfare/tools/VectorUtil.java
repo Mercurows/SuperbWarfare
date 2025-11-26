@@ -9,7 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.Vector4d;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class VectorUtil {
@@ -25,8 +25,7 @@ public class VectorUtil {
         var mc = Minecraft.getInstance();
         var window = mc.getWindow();
         var camera = mc.gameRenderer.getMainCamera();
-
-        var worldPosRel = new Vector4f(camera.getPosition().reverse().add(pos).toVector3f(), 1f);
+        var worldPosRel = new Vector4d(camera.getPosition().reverse().add(pos).toVector3f(), 1f);
         worldPosRel.mul(modelViewMatrix);
         worldPosRel.mul(projectionMatrix);
 

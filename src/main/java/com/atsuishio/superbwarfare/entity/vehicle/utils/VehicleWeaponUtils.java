@@ -14,8 +14,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.Matrix4d;
+import org.joml.Vector4d;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.DECOY_READY;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.TURRET_DAMAGED;
@@ -159,11 +159,11 @@ public final class VehicleWeaponUtils {
                 for (int i = 0; i < 54; i += 6) {
                     int finalI = i;
                     Mod.queueServerWork(i, () -> {
-                        Matrix4f transform = vehicle.getVehicleTransform(1);
+                        Matrix4d transform = vehicle.getVehicleTransform(1);
 
-                        Vector4f worldPositionO = transformPosition(transform, 0, 0, 0);
-                        Vector4f worldPosition = transformPosition(transform, 1, -0.2f, 0.6f);
-                        Vector4f worldPosition2 = transformPosition(transform, -1, -0.2f, 0.6f);
+                        Vector4d worldPositionO = transformPosition(transform, 0, 0, 0);
+                        Vector4d worldPosition = transformPosition(transform, 1, -0.2, 0.6);
+                        Vector4d worldPosition2 = transformPosition(transform, -1, -0.2, 0.6);
 
                         Vec3 shootVecO = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
                         Vec3 shootVec1 = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);

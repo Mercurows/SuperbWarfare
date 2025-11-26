@@ -48,9 +48,9 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
+import org.joml.Matrix4d;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.Vector4d;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -748,8 +748,8 @@ public class DroneEntity extends GeoVehicleEntity {
     @OnlyIn(Dist.CLIENT)
     @Override
     public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        Matrix4f transform = getClientVehicleTransform(partialTicks);
-        Vector4f maxCameraPosition = transformPosition(transform, 0, 0.75f, -2 - 0.2f * (float) ClientMouseHandler.custom3pDistanceLerp);
+        Matrix4d transform = getClientVehicleTransform(partialTicks);
+        Vector4d maxCameraPosition = transformPosition(transform, 0, 0.75, -2 - 0.2 * ClientMouseHandler.custom3pDistanceLerp);
         return CameraTool.getMaxZoom(transform, maxCameraPosition);
     }
 

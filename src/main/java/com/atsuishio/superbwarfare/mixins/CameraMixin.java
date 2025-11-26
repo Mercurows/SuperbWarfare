@@ -58,12 +58,12 @@ public abstract class CameraMixin implements ICustomCamera {
             if (drone != null) {
                 boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
                 if (firstPerson) {
-                    Matrix4f transform = superbWarfare$getDroneTransform(drone, partialTicks);
-                    float x0 = 0f;
-                    float y0 = 0.075f;
-                    float z0 = 0.18f;
+                    Matrix4d transform = superbWarfare$getDroneTransform(drone, partialTicks);
+                    double x0 = 0;
+                    double y0 = 0.075;
+                    double z0 = 0.18;
 
-                    Vector4f worldPosition = superbWarfare$transformPosition(transform, x0, y0, z0);
+                    Vector4d worldPosition = superbWarfare$transformPosition(transform, x0, y0, z0);
 
                     setRotation(drone.getYaw(partialTicks), drone.getPitch(partialTicks));
                     setPosition(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -119,8 +119,8 @@ public abstract class CameraMixin implements ICustomCamera {
     }
 
     @Unique
-    private static Matrix4f superbWarfare$getDroneTransform(DroneEntity vehicle, float ticks) {
-        Matrix4f transform = new Matrix4f();
+    private static Matrix4d superbWarfare$getDroneTransform(DroneEntity vehicle, float ticks) {
+        Matrix4d transform = new Matrix4d();
         transform.translate((float) Mth.lerp(ticks, vehicle.xo, vehicle.getX()), (float) Mth.lerp(ticks, vehicle.yo, vehicle.getY()), (float) Mth.lerp(ticks, vehicle.zo, vehicle.getZ()));
         transform.rotate(Axis.YP.rotationDegrees(-vehicle.getYaw(ticks)));
         transform.rotate(Axis.XP.rotationDegrees(vehicle.getBodyPitch(ticks)));
@@ -129,8 +129,8 @@ public abstract class CameraMixin implements ICustomCamera {
     }
 
     @Unique
-    private static Vector4f superbWarfare$transformPosition(Matrix4f transform, float x, float y, float z) {
-        return transform.transform(new Vector4f(x, y, z, 1));
+    private static Vector4d superbWarfare$transformPosition(Matrix4d transform, double x, double y, double z) {
+        return transform.transform(new Vector4d(x, y, z, 1));
     }
 
     @Inject(method = "setup", at = @At("TAIL"))

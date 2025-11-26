@@ -12,8 +12,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.Matrix4d;
+import org.joml.Vector4d;
 
 public class Mi28Entity extends GeoVehicleEntity {
 
@@ -29,10 +29,10 @@ public class Mi28Entity extends GeoVehicleEntity {
 
     public void mi28TerrainCompact() {
         if (onGround()) {
-            Matrix4f transform = getVehicleTransform(1);
+            Matrix4d transform = getVehicleTransform(1);
 
             // 后轮
-            Vector4f position = transformPosition(transform, 0, 0.58f, -11.1f);
+            Vector4d position = transformPosition(transform, 0, 0.58, -11.1);
             Vec3 p = new Vec3(position.x, position.y, position.z);
 
             var level = level();

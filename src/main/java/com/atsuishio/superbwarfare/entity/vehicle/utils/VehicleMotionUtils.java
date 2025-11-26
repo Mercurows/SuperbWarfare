@@ -27,9 +27,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Math;
-import org.joml.Matrix4f;
+import org.joml.Matrix4d;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.Vector4d;
 
 import java.util.List;
 import java.util.Optional;
@@ -429,10 +429,10 @@ public final class VehicleMotionUtils {
 
     public static void terrainCompact(VehicleEntity vehicle, List<Vec3> positions) {
         if (vehicle.onGround()) {
-            Matrix4f transform = vehicle.getWheelsTransform(1);
+            Matrix4d transform = vehicle.getWheelsTransform(1);
             for (Vec3 vec3 : positions) {
-                Vector4f vector4f = transformPosition(transform, (float) vec3.x, (float) vec3.y - 0.02f, (float) vec3.z);
-                Vec3 p = new Vec3(vector4f.x, vector4f.y, vector4f.z);
+                Vector4d Vector4d = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z);
+                Vec3 p = new Vec3(Vector4d.x, Vector4d.y, Vector4d.z);
                 var level = vehicle.level();
                 var res = level.clip(new ClipContext(p, p.add(0, -512, 0),
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle));
@@ -500,8 +500,8 @@ public final class VehicleMotionUtils {
         entity.setZRot(lerpAngle(entity.getRoll(), -targetZRot, tiltSmoothingFactor));
     }
 
-    public static Matrix4f getWheelsTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transform = new Matrix4f();
+    public static Matrix4d getWheelsTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transform = new Matrix4d();
         transform.translate(
                 (float) Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
                 (float) Mth.lerp(partialTicks, vehicle.yo, vehicle.getY()),
