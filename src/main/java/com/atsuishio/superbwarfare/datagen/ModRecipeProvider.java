@@ -753,7 +753,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.MISC,
                         ModItems.CEMENTED_CARBIDE_INGOT.get(),
                         8,
-                        800,
+                        200,
                         RecipeSerializer.BLASTING_RECIPE,
                         BlastingRecipe::new)
                 .unlockedBy(getHasName(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()), has(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()))
@@ -1105,7 +1105,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.MISC,
                         ModItems.STEEL_INGOT.get(),
                         0.7f,
-                        400,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE,
                         BlastingRecipe::new)
                 .unlockedBy(getHasName(ModItems.COAL_IRON_POWDER.get()), has(ModItems.COAL_IRON_POWDER.get()))
@@ -1126,7 +1126,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        400,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE,
                         BlastingRecipe::new)
                 .unlockedBy(getHasName(ModItems.SCHEELITE.get()), has(ModItems.SCHEELITE.get()))
@@ -1135,7 +1135,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        600,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE,
                         BlastingRecipe::new)
                 .unlockedBy(getHasName(ModItems.SCHEELITE_ORE.get()), has(commonItemTag("ores/tungsten")))
@@ -1144,7 +1144,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        200,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE,
                         BlastingRecipe::new)
                 .unlockedBy(getHasName(ModItems.TUNGSTEN_POWDER.get()), has(ModItems.TUNGSTEN_POWDER.get()))

@@ -1,7 +1,7 @@
 {
   "type": "minecraft:blasting",
   "category": "misc",
-  "cookingtime": 800,
+  "cookingtime": 200,
   "experience": 8.0,
   "ingredient": {
     "item": "superbwarfare:raw_cemented_carbide_powder"
