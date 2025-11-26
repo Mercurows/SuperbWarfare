@@ -160,7 +160,7 @@ public class PlayerEventHandler {
             ItemStack output = left.copy();
 
             var data = GunData.from(output);
-            data.upgradePoint.set(data.upgradePoint.get() + 1);
+            data.level.add(1);
             data.save();
 
             event.setOutput(output);

@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.item.PerkItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
-import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -39,7 +38,6 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
     public final DataSlot ammoPerkLevel = DataSlot.standalone();
     public final DataSlot funcPerkLevel = DataSlot.standalone();
     public final DataSlot damagePerkLevel = DataSlot.standalone();
-    public final DataSlot upgradePoint = DataSlot.standalone();
 
     public static final int X_OFFSET = 0;
     public static final int Y_OFFSET = 11;
@@ -63,12 +61,10 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         this.ammoPerkLevel.set(0);
         this.funcPerkLevel.set(0);
         this.damagePerkLevel.set(0);
-        this.upgradePoint.set(0);
 
         this.addDataSlot(ammoPerkLevel);
         this.addDataSlot(funcPerkLevel);
         this.addDataSlot(damagePerkLevel);
-        this.addDataSlot(upgradePoint);
 
         this.addSlot(new InputSlot(container, INPUT_SLOT, 20, 22));
         this.addSlot(new PerkSlot(container, AMMO_PERK_SLOT, Perk.Type.AMMO, 80, 25));
@@ -154,11 +150,25 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                 && pPlayer.distanceToSqr((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64, true);
     }
 
+    public @Nullable ItemStack getGunStack() {
+        var gun = this.container.getItem(INPUT_SLOT);
+        if (gun.getItem() instanceof GunItem) {
+            return gun;
+        }
+
+        return null;
+    }
+
+    public @Nullable GunData getGunData() {
+        var gun = getGunStack();
+        return gun == null ? null : GunData.from(gun);
+    }
+
     @Override
     public void removed(@NotNull Player pPlayer) {
         this.access.execute((level, pos) -> {
-            ItemStack gun = this.container.getItem(INPUT_SLOT);
-            ItemStack copy = gun.copy();
+            var gun = this.container.getItem(INPUT_SLOT);
+            var copy = gun.copy();
 
             for (int i = 0; i < this.container.getContainerSize(); ++i) {
                 ItemStack itemstack = this.container.getItem(i);
@@ -169,11 +179,6 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                         && GunData.from(copy).perk.getLevel(perkItem) > 0
                 ) continue;
 
-                if (itemstack.getItem() instanceof GunItem) {
-                    var data = GunData.from(itemstack);
-                    data.upgradePoint.set(Math.min(MAX_UPGRADE_POINT, this.upgradePoint.get()));
-                }
-
                 if (!itemstack.isEmpty()) {
                     pPlayer.getInventory().placeItemBackInInventory(itemstack);
                 }
@@ -183,12 +188,24 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         });
     }
 
+    public int availableLevel() {
+        var data = getGunData();
+        if (data == null) return 0;
+
+        var totalLevel = data.level.get();
+        totalLevel -= Math.max(0, this.ammoPerkLevel.get() - 1);
+        totalLevel -= Math.max(0, this.funcPerkLevel.get() - 1);
+        totalLevel -= Math.max(0, this.damagePerkLevel.get() - 1);
+
+        return Math.max(0, totalLevel);
+    }
+
     public void setPerkLevel(Perk.Type type, boolean upgrade, boolean isCreative) {
-        if (upgrade && this.upgradePoint.get() <= 0 && !isCreative) {
+        if (upgrade && availableLevel() <= 0 && !isCreative) {
             return;
         }
 
-        if (!upgrade && this.upgradePoint.get() >= MAX_UPGRADE_POINT && !isCreative) {
+        if (!upgrade && availableLevel() >= MAX_UPGRADE_POINT && !isCreative) {
             return;
         }
 
@@ -200,37 +217,14 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             case DAMAGE ->
                     this.damagePerkLevel.set(upgrade ? Math.min(MAX_PERK_LEVEL, this.damagePerkLevel.get() + 1) : Math.max(1, this.damagePerkLevel.get() - 1));
         }
-
-        if (!isCreative) {
-            this.upgradePoint.set(Mth.clamp(this.upgradePoint.get() + (upgrade ? -1 : 1), 0, MAX_UPGRADE_POINT));
-        }
-    }
-
-    public void handleUpgradePoint(ItemStack stack) {
-        if (!(stack.getItem() instanceof GunItem)) {
-            return;
-        }
-        var data = GunData.from(stack);
-
-        double oldPoint = data.upgradePoint.get();
-        int point = (int) oldPoint;
-        int newPoint = this.upgradePoint.get();
-        int delta = newPoint - point;
-
-        if (delta != 0) {
-            data.upgradePoint.set(oldPoint + delta);
-            data.save();
-        }
     }
 
     /**
      * 根据输入槽的枪械和Perk槽中的物品与等级，生成重铸后的武器，并放入输出槽中
      */
     public void generateResult() {
-        ItemStack gun = this.container.getItem(INPUT_SLOT);
-        if (!(gun.getItem() instanceof GunItem)) {
-            return;
-        }
+        var gun = getGunStack();
+        if (gun == null) return;
 
         ItemStack ammo = this.container.getItem(AMMO_PERK_SLOT);
         ItemStack func = this.container.getItem(FUNC_PERK_SLOT);
@@ -239,7 +233,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             return;
         }
 
-        ItemStack result = gun.copy();
+        var result = gun.copy();
         var data = GunData.from(result);
 
         List.of(ammo, func, damage).forEach(item -> {
@@ -261,12 +255,10 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         });
 
         data.save();
-        handleUpgradePoint(result);
 
         this.ammoPerkLevel.set(0);
         this.funcPerkLevel.set(0);
         this.damagePerkLevel.set(0);
-        this.upgradePoint.set(0);
 
         this.container.setItem(INPUT_SLOT, ItemStack.EMPTY);
         this.container.setItem(RESULT_SLOT, result);
@@ -294,17 +286,11 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             var inputData = GunData.from(gun);
             int level = inputData.perk.getLevel(perkItem);
 
-            if (level <= 0) {
-                this.upgradePoint.set((int) inputData.upgradePoint.get());
-                return;
-            }
+            if (level <= 0) return;
 
             ItemStack output = gun.copy();
             var outputData = GunData.from(output);
             outputData.perk.remove(perkItem.getPerk());
-
-            inputData.upgradePoint.set(Math.min(MAX_UPGRADE_POINT, level - 1 + inputData.upgradePoint.get()));
-            this.upgradePoint.set((int) inputData.upgradePoint.get());
 
             outputData.save();
             inputData.save();
@@ -338,9 +324,6 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
     private void onPlaceGun(ItemStack stack) {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
-
-        int point = (int) data.upgradePoint.get();
-        this.upgradePoint.set(Mth.clamp(point, 0, MAX_UPGRADE_POINT));
 
         for (var type : Perk.Type.values()) {
             var perkInstance = data.perk.getInstance(type);
@@ -391,9 +374,6 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             }
         }
 
-        data.upgradePoint.set(Math.min(MAX_UPGRADE_POINT, this.upgradePoint.get()));
-
-        this.upgradePoint.set(0);
         this.ammoPerkLevel.set(0);
         this.funcPerkLevel.set(0);
         this.damagePerkLevel.set(0);

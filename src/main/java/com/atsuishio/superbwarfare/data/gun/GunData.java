@@ -102,7 +102,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
         level = new IntValue(gunDataTag, "Level");
         exp = new DoubleValue(gunDataTag, "Exp");
-        upgradePoint = new DoubleValue(gunDataTag, "UpgradePoint");
 
         isEmpty = new BooleanValue(gunDataTag, "IsEmpty");
         closeHammer = new BooleanValue(gunDataTag, "CloseHammer");
@@ -835,7 +834,6 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
 
     public final IntValue level;
     public final DoubleValue exp;
-    public final DoubleValue upgradePoint;
 
     // Max: 100
     public final DoubleValue heat;

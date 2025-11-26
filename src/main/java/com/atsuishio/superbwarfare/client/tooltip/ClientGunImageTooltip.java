@@ -186,7 +186,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器强化点数文本组件
      */
     protected Component getUpgradePointComponent() {
-        int upgradePoint = Mth.floor(data.upgradePoint.get());
+        int upgradePoint = data.level.get();
         return Component.translatable("des.superbwarfare.guns.upgrade_point").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
                 .append(Component.literal(String.valueOf(upgradePoint)).withStyle(ChatFormatting.WHITE).withStyle(ChatFormatting.BOLD));
