@@ -745,7 +745,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.CEMENTED_CARBIDE_INGOT.get(),
                         8,
-                        800,
+                        200,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()), has(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.CEMENTED_CARBIDE_INGOT.get()) + "_blasting"));
@@ -1086,7 +1086,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.STEEL_INGOT.get(),
                         0.7f,
-                        400,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.COAL_IRON_POWDER.get()), has(ModItems.COAL_IRON_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_INGOT.get()) + "_blasting"));
@@ -1106,7 +1106,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        400,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.SCHEELITE.get()), has(ModItems.SCHEELITE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_blasting"));
@@ -1114,7 +1114,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        600,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.SCHEELITE_ORE.get()), has(commonItemTag("ores/tungsten")))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_blasting_from_ore"));
