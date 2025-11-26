@@ -44,7 +44,7 @@
   "HasLowHealthWarning": false,
   "EngineType": "Tom6",
   "EngineInfo": {
-    "EnergyCostRate": 16,
+    "EnergyCostRate": 8,
     "Increment": 1,
     "Decrement": 1,
     "PitchSpeed": 1,
