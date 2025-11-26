@@ -186,7 +186,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
                     String string = "[ " + FormatTool.format0D(vec3.x) + ", " + FormatTool.format0D(vec3.y) + ", " + FormatTool.format0D(vec3.z) + " ]";
                     int width = Minecraft.getInstance().font.width(string);
                     RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-                    guiGraphics.drawString(Minecraft.getInstance().font, string, (float) screenWidth / 2 - (float) width / 2, (float) screenHeight / 2 + 78, color, false);
+                    guiGraphics.drawString(Minecraft.getInstance().font, string, (float) screenWidth / 2 - (float) width / 2, (float) screenHeight - 73, color, false);
                 } else {
                     RenderHelper.blit(poseStack, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
