@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 public class AmmoPerk extends Perk {
 
     public double bypassArmorRate;
-    public double damageRate;
-    public double speedRate;
+    public double damageRate = 1;
+    public double speedRate = 1;
     public boolean slug;
     public float[] rgb;
     public Supplier<ArrayList<MobEffect>> mobEffects;
