@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.data.vehicle.subdata;
 import com.atsuishio.superbwarfare.tools.OBB;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
+import org.joml.Quaterniond;
 
 public class OBBInfo {
 
@@ -26,7 +26,7 @@ public class OBBInfo {
 
     public OBB getOBB() {
         if (this.obb == null) {
-            this.obb = new OBB(Vec3.ZERO.toVector3f(), this.size.toVector3f(), new Quaternionf(), this.part);
+            this.obb = new OBB(OBB.vec3ToVector3d(Vec3.ZERO), OBB.vec3ToVector3d(this.size), new Quaterniond(), this.part);
         }
         return this.obb;
     }

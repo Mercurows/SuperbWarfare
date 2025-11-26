@@ -2167,7 +2167,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             var obb = obbInfo.getOBB();
             var worldPos = this.transformPosition(transform, obbInfo.position.x, obbInfo.position.y, obbInfo.position.z);
 
-            obb.center().set(new Vector3f((float) worldPos.x, (float) worldPos.y, (float) worldPos.z));
+            obb.center().set(OBB.vec3ToVector3d(new Vec3(worldPos.x, worldPos.y, worldPos.z)));
             obb.setRotation(this.getRotationFromString(obbInfo.rotation));
         });
     }
@@ -2220,7 +2220,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public void handlePartDamaged(OBBEntity obbEntity) {
         var obbList = obbEntity.getOBBs();
         for (var obb : obbList) {
-            Vec3 pos = new Vec3(obb.center());
+            Vec3 pos = OBB.vector3dToVec3(obb.center());
             switch (obb.part()) {
                 case TURRET -> {
                     if (entityData.get(TURRET_DAMAGED)) {
@@ -2487,7 +2487,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     protected Map<String, Function<Float, Matrix4d>> positionTransform = new HashMap<>();
     protected Map<String, Function<Float, Vec3>> vectorTransform = new HashMap<>();
-    protected Map<String, Function<Float, Quaternionf>> rotationTransform = new HashMap<>();
+    protected Map<String, Function<Float, Quaterniond>> rotationTransform = new HashMap<>();
 
     protected void registerTransforms() {
         positionTransform.put("VehicleFlat", this::getVehicleFlatTransform);
@@ -2539,11 +2539,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         };
     }
 
-    public @NotNull Quaternionf getRotationFromString(String string) {
+    public @NotNull Quaterniond getRotationFromString(String string) {
         return getRotationFromString(string, 0);
     }
 
-    public @NotNull Quaternionf getRotationFromString(String string, float ticks) {
+    public @NotNull Quaterniond getRotationFromString(String string, float ticks) {
         return rotationTransform
                 .getOrDefault(string, rotationTransform.get("Default"))
                 .apply(ticks);
