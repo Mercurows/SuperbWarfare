@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "a": {
-      "item": "superbwarfare:ancient_cpu"
+      "item": "superbwarfare:empty_perk"
     },
     "b": {
       "tag": "c:gems/diamond"
@@ -18,7 +18,7 @@
     "bcb"
   ],
   "result": {
-    "count": 2,
+    "count": 1,
     "id": "superbwarfare:ancient_cpu"
   }
 }
