@@ -676,15 +676,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
         generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ANCIENT_CPU.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ANCIENT_CPU.get())
                 .pattern("bcb")
                 .pattern("cac")
                 .pattern("bcb")
-                .define('a', ModItems.ANCIENT_CPU.get())
+                .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Tags.Items.GEMS_DIAMOND)
                 .define('c', Tags.Items.ORES_NETHERITE_SCRAP)
-                .unlockedBy(getHasName(ModItems.ANCIENT_CPU.get()), has(ModItems.ANCIENT_CPU.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.ANCIENT_CPU.get()) + "_copy"));
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.ANCIENT_CPU.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AP_HEAD.get(), 2)
                 .pattern(" b ")
                 .pattern("bdb")

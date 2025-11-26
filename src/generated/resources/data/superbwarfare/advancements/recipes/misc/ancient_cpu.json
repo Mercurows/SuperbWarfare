@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_ancient_cpu": {
+    "has_empty_perk": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:ancient_cpu"
+              "superbwarfare:empty_perk"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:ancient_cpu_copy"
+        "recipe": "superbwarfare:ancient_cpu"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_ancient_cpu",
+      "has_empty_perk",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:ancient_cpu_copy"
+      "superbwarfare:ancient_cpu"
     ]
   },
   "sends_telemetry_event": false
