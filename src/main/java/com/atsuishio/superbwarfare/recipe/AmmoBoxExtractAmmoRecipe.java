@@ -106,6 +106,6 @@ public class AmmoBoxExtractAmmoRecipe extends CustomRecipe {
 
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipes.AMMO_BOX_ADD_AMMO_SERIALIZER.get();
+        return ModRecipes.AMMO_BOX_EXTRACT_AMMO_SERIALIZER.get();
     }
 }
