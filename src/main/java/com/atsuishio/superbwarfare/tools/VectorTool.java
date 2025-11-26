@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 
 public class VectorTool {
@@ -32,38 +33,38 @@ public class VectorTool {
     }
 
     // 合并三个旋转（Yaw -> Pitch -> Roll）
-    public static Quaternionf combineRotations(float partialTicks, VehicleEntity entity) {
+    public static Quaterniond combineRotations(float partialTicks, VehicleEntity entity) {
         // 1. 获取三个独立的旋转四元数
         Quaternionf yawRot = Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()));
         Quaternionf pitchRot = Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()));
         Quaternionf rollRot = Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.prevRoll, entity.getRoll()));
 
         // 2. 按照正确顺序合并：先Yaw，再Pitch，最后Roll
-        Quaternionf combined = new Quaternionf(yawRot);   // 初始化为Yaw旋转
-        combined.mul(pitchRot);  // 应用Pitch旋转
-        combined.mul(rollRot);   // 应用Roll旋转
+        Quaterniond combined = new Quaterniond(yawRot);   // 初始化为Yaw旋转
+        combined.mul(new Quaterniond(pitchRot));  // 应用Pitch旋转
+        combined.mul(new Quaterniond(rollRot));   // 应用Roll旋转
 
         return combined;
     }
 
     // 仅水平旋转
-    public static Quaternionf combineRotationsYaw(float partialTicks, VehicleEntity entity) {
+    public static Quaterniond combineRotationsYaw(float partialTicks, VehicleEntity entity) {
         Quaternionf yawRot = Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()));
-        return new Quaternionf(yawRot);
+        return new Quaterniond(yawRot);
     }
 
-    public static Quaternionf combineRotationsTurret(float partialTicks, VehicleEntity entity) {
+    public static Quaterniond combineRotationsTurret(float partialTicks, VehicleEntity entity) {
         Quaternionf turretYawRot = Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.turretYRotO, entity.getTurretYRot()));
-        Quaternionf combined = combineRotations(partialTicks, entity);
-        combined.mul(turretYawRot);
+        Quaterniond combined = combineRotations(partialTicks, entity);
+        combined.mul(new Quaterniond(turretYawRot));
 
         return combined;
     }
 
-    public static Quaternionf combineRotationsBarrel(float partialTicks, VehicleEntity entity) {
+    public static Quaterniond combineRotationsBarrel(float partialTicks, VehicleEntity entity) {
         Quaternionf turretPitchRot = Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entity.turretXRotO, entity.getTurretXRot()));
-        Quaternionf combined = combineRotationsTurret(partialTicks, entity);
-        combined.mul(turretPitchRot);
+        Quaterniond combined = combineRotationsTurret(partialTicks, entity);
+        combined.mul(new Quaterniond(turretPitchRot));
 
         return combined;
     }

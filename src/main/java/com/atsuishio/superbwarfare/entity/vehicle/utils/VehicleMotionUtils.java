@@ -28,7 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.joml.Math;
 import org.joml.Matrix4d;
-import org.joml.Vector3f;
+import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 import java.util.List;
@@ -174,7 +174,7 @@ public final class VehicleMotionUtils {
                     if (vehicle.getDeltaMovement().length() > 0.01 && Math.abs(face) != 2) {
                         force = 0.2f;
                     }
-                    var vec = new Vec3(support).scale(force);
+                    var vec = OBB.vector3dToVec3(support).scale(force);
                     vec = new Vec3(vec.x, Math.max(0, vec.y), vec.z);
                     entity.setPos(entity.position().add(vec));
                     entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.2, 0.2, 0.2));
@@ -285,13 +285,13 @@ public final class VehicleMotionUtils {
                                 var obbList2 = mobileVehicle.getOBBs();
                                 for (var obb2 : obbList2) {
                                     if (OBB.isColliding(obb, obb2)) {
-                                        thisPos = new Vec3(obb.center());
-                                        otherPos = new Vec3(obb2.center());
+                                        thisPos = OBB.vector3dToVec3(obb.center());
+                                        otherPos = OBB.vector3dToVec3(obb2.center());
                                     }
                                 }
                             } else {
                                 if (OBB.isColliding(obb, entity.getBoundingBox())) {
-                                    thisPos = new Vec3(obb.center());
+                                    thisPos = OBB.vector3dToVec3(obb.center());
                                 }
                             }
                         }
@@ -319,13 +319,13 @@ public final class VehicleMotionUtils {
 
         var obbList = vehicle.getOBBs();
 
-        Vector3f min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-        Vector3f max = new Vector3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+        Vector3d min = new Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        Vector3d max = new Vector3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE);
 
         for (OBB obb : obbList) {
-            Vector3f[] vertices = obb.getVertices();
+            Vector3d[] vertices = obb.getVertices();
 
-            for (Vector3f vertex : vertices) {
+            for (Vector3d vertex : vertices) {
                 min.x = Math.min(min.x, vertex.x);
                 min.y = Math.min(min.y, vertex.y);
                 min.z = Math.min(min.z, vertex.z);
@@ -336,7 +336,7 @@ public final class VehicleMotionUtils {
             }
         }
 
-        return new AABB(new Vec3(min), new Vec3(max));
+        return new AABB(OBB.vector3dToVec3(min), OBB.vector3dToVec3(max));
     }
 
     /**

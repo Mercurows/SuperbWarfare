@@ -6,8 +6,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaterniond;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.joml.Vector3d;
 
 import java.util.List;
 
@@ -21,13 +22,13 @@ public class OBBRenderer {
     public void render(VehicleEntity entity, List<OBB> obbList, PoseStack poseStack, VertexConsumer buffer, float red, float green, float blue, float alpha, float pPartialTicks) {
         Vec3 position = entity.position();
         for (OBB obb : obbList) {
-            Vector3f center = obb.center();
-            Vector3f halfExtents = obb.extents();
-            Quaternionf rotation = obb.rotation();
+            Vector3d center = obb.center();
+            Vector3d halfExtents = obb.extents();
+            Quaterniond rotation = obb.rotation();
             if (obb.part().equals(OBB.Part.INTERACTIVE)) {
                 renderOBB(
                         poseStack, buffer,
-                        (float) (center.x() - position.x()), (float) (center.y() - position.y()), (float) (center.z() - position.z()),
+                        center.x() - position.x(), center.y() - position.y(), center.z() - position.z(),
                         rotation,
                         halfExtents.x(), halfExtents.y(), halfExtents.z(),
                         1, 0.8f, 0, 1
@@ -35,7 +36,7 @@ public class OBBRenderer {
             } else {
                 renderOBB(
                         poseStack, buffer,
-                        (float) (center.x() - position.x()), (float) (center.y() - position.y()), (float) (center.z() - position.z()),
+                        center.x() - position.x(), center.y() - position.y(), center.z() - position.z(),
                         rotation,
                         halfExtents.x(), halfExtents.y(), halfExtents.z(),
                         red, green, blue, alpha
@@ -44,10 +45,10 @@ public class OBBRenderer {
         }
     }
 
-    public static void renderOBB(PoseStack poseStack, VertexConsumer buffer, float centerX, float centerY, float centerZ, Quaternionf rotation, float halfX, float halfY, float halfZ, float red, float green, float blue, float alpha) {
+    public static void renderOBB(PoseStack poseStack, VertexConsumer buffer, double centerX, double centerY, double centerZ, Quaterniond rotation, double halfX, double halfY, double halfZ, float red, float green, float blue, float alpha) {
         poseStack.pushPose();
         poseStack.translate(centerX, centerY, centerZ);
-        poseStack.mulPose(rotation);
+        poseStack.mulPose(new Quaternionf(rotation.x, rotation.y, rotation.z, rotation.w));
         LevelRenderer.renderLineBox(poseStack, buffer, -halfX, -halfY, -halfZ, halfX, halfY, halfZ, red, green, blue, alpha);
         poseStack.popPose();
     }

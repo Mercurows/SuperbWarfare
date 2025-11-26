@@ -215,9 +215,9 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         Vec3 hitPos = null;
         if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
             for (OBB obb : obbEntity.getOBBs()) {
-                var obbVec = obb.clip(startVec.toVector3f(), endVec.toVector3f()).orElse(null);
+                var obbVec = obb.clip(OBB.vec3ToVector3d(startVec), OBB.vec3ToVector3d(endVec)).orElse(null);
                 if (obbVec != null) {
-                    hitPos = new Vec3(obbVec);
+                    hitPos = OBB.vector3dToVec3(obbVec);
                     if (this.level() instanceof ServerLevel serverLevel) {
                         this.level().playSound(null, BlockPos.containing(hitPos), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
                         sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);

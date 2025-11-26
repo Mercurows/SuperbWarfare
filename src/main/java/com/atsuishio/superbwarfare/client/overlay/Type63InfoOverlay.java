@@ -68,7 +68,7 @@ public class Type63InfoOverlay implements IGuiOverlay {
                     default -> ItemStack.EMPTY;
                 };
 
-                Vec3 pos = new Vec3(type63Entity.barrel[i].center());
+                Vec3 pos = OBB.vector3dToVec3(type63Entity.barrel[i].center());
                 Vec3 point = VectorUtil.worldToScreen(pos);
 
                 poseStack.pushPose();

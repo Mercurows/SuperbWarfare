@@ -64,27 +64,27 @@ public class Type63Entity extends GeoVehicleEntity {
 
     public Type63Entity(EntityType<Type63Entity> type, Level world) {
         super(type, world);
-        this.wheel1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_LEFT);
-        this.wheel2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.390625f, 0.390625f), new Quaternionf(), OBB.Part.WHEEL_RIGHT);
-        this.body1 = new OBB(this.position().toVector3f(), new Vector3f(0.4765625f, 0.3515625f, 0.7578125f), new Quaternionf(), OBB.Part.BODY);
-        this.body2 = new OBB(this.position().toVector3f(), new Vector3f(0.771875f, 0.109375f, 0.296875f), new Quaternionf(), OBB.Part.BODY);
+        this.wheel1 = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.125f, 0.390625f, 0.390625f), new Quaterniond(), OBB.Part.WHEEL_LEFT);
+        this.wheel2 = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.125f, 0.390625f, 0.390625f), new Quaterniond(), OBB.Part.WHEEL_RIGHT);
+        this.body1 = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.4765625f, 0.3515625f, 0.7578125f), new Quaterniond(), OBB.Part.BODY);
+        this.body2 = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.771875f, 0.109375f, 0.296875f), new Quaterniond(), OBB.Part.BODY);
 
-        this.barrel[0] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[1] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[2] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[3] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[4] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[5] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[6] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[7] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[8] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[9] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[10] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.barrel[11] = new OBB(this.position().toVector3f(), new Vector3f(0.09375f, 0.09375f, 0.0625f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.pitchController = new OBB(this.position().toVector3f(), new Vector3f(0.15625f, 0.21875f, 0.21875f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.yawController = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.125f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.hoe1 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.INTERACTIVE);
-        this.hoe2 = new OBB(this.position().toVector3f(), new Vector3f(0.125f, 0.125f, 0.875f), new Quaternionf(), OBB.Part.INTERACTIVE);
+        this.barrel[0] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[1] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[2] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[3] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[4] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[5] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[6] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[7] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[8] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[9] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[10] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.barrel[11] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.pitchController = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.15625f, 0.21875f, 0.21875f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.yawController = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.125f, 0.125f, 0.125f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.hoe1 = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.125f, 0.125f, 0.875f), new Quaterniond(), OBB.Part.INTERACTIVE);
+        this.hoe2 = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.125f, 0.125f, 0.875f), new Quaterniond(), OBB.Part.INTERACTIVE);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class Type63Entity extends GeoVehicleEntity {
                         interactionTick++;
                         if (cooldown == 0) {
                             cooldown = 6;
-                            Vec3 vec3 = new Vec3(hoe1.center());
+                            Vec3 vec3 = OBB.vector3dToVec3(hoe1.center());
                             serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_VEHICLE_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
                         }
                     }
@@ -168,7 +168,7 @@ public class Type63Entity extends GeoVehicleEntity {
                         interactionTick++;
                         if (cooldown == 0) {
                             cooldown = 6;
-                            Vec3 vec3 = new Vec3(hoe1.center());
+                            Vec3 vec3 = OBB.vector3dToVec3(hoe1.center());
                             serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.WHEEL_VEHICLE_STEP.get(), SoundSource.PLAYERS, 0.5f, random.nextFloat() * 0.05f + 0.975f);
                         }
                     }
@@ -182,7 +182,7 @@ public class Type63Entity extends GeoVehicleEntity {
                     for (int i = 0; i < this.barrel.length; i++) {
                         if (lookingObb == this.barrel[i] && !items.get(i).isEmpty()) {
                             player.addItem(items.get(i).copyWithCount(1));
-                            Vec3 vec3 = new Vec3(this.barrel[i].center());
+                            Vec3 vec3 = OBB.vector3dToVec3(this.barrel[i].center());
                             serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
                             cooldown = 5;
                             items.set(i, ItemStack.EMPTY);
@@ -193,13 +193,13 @@ public class Type63Entity extends GeoVehicleEntity {
             }
 
             if (lookingObb == yawController) {
-                interactEvent(new Vec3(yawController.center()));
+                interactEvent(OBB.vector3dToVec3(yawController.center()));
                 entityData.set(TARGET_YAW, Mth.clamp(entityData.get(TARGET_YAW) + (player.isShiftKeyDown() ? -0.02f : 0.02f) * (float) interactionTick, -getTurretMaxYaw(), -getTurretMinYaw()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
 
             if (lookingObb == pitchController) {
-                interactEvent(new Vec3(pitchController.center()));
+                interactEvent(OBB.vector3dToVec3(pitchController.center()));
                 entityData.set(TARGET_PITCH, Mth.clamp(entityData.get(TARGET_PITCH) + (player.isShiftKeyDown() ? 0.02f : -0.02f) * (float) interactionTick, -getTurretMaxPitch(), -getTurretMinPitch()));
                 player.swing(InteractionHand.MAIN_HAND);
             }
@@ -213,7 +213,7 @@ public class Type63Entity extends GeoVehicleEntity {
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
-                    Vec3 vec3 = new Vec3(this.barrel[i].center());
+                    Vec3 vec3 = OBB.vector3dToVec3(this.barrel[i].center());
                     serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
                     cooldown = 5;
                     setChanged();
@@ -290,7 +290,7 @@ public class Type63Entity extends GeoVehicleEntity {
         float shootGravity = getProjectileGravity(gunData);
 
         OBB obb = this.barrel[i];
-        Vec3 shootPos = new Vec3(obb.center());
+        Vec3 shootPos = OBB.vector3dToVec3(obb.center());
 
         var computed = gunData.compute();
         var entityToSpawn = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), shootPos.x, shootPos.y, shootPos.z, level(),
