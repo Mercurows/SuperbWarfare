@@ -938,4 +938,20 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         data.defaultDataSupplier = this.defaultDataSupplier;
         return data;
     }
+
+    // TODO 删了这个，这个是为了临时适配女仆mod用的
+    @Deprecated(forRemoval = true, since = "0.8.9")
+    public final StringEnumValue<FireMode> fireMode = new FireModeGetter();
+
+    @Deprecated(forRemoval = true, since = "0.8.9")
+    public class FireModeGetter extends StringEnumValue<FireMode> {
+        public FireModeGetter() {
+            super(new CompoundTag(), "DeprecatedFireMode", FireMode.SEMI, (str) -> FireMode.SEMI);
+        }
+
+        @Override
+        public FireMode get() {
+            return GunData.this.selectedFireModeInfo().mode;
+        }
+    }
 }
