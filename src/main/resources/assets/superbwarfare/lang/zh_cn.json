@@ -480,7 +480,7 @@
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",
   "des.superbwarfare.shortcut_pack_1": "真的吗?",
-  "des.superbwarfare.shortcut_pack_2": "将枪械和捷径包在铁砧合成，可直接获得一个升级点数",
+  "des.superbwarfare.shortcut_pack_2": "将枪械和捷径包在铁砧处合成，可直接提升1级枪械等级",
 
   "perk.superbwarfare.tips": "[武器模组]",
   "perk.superbwarfare.slot": "类型: ",
