@@ -142,4 +142,9 @@ public class Tom6Entity extends GeoVehicleEntity {
     public boolean useAircraftCamera(int seatIndex) {
         return (ModKeyMappings.FREE_CAMERA.isDown() || Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) && !ClientEventHandler.zoom;
     }
+
+    @Override
+    public double getMouseSensitivity() {
+        return 0.4;
+    }
 }
