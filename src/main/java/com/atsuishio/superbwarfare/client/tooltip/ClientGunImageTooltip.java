@@ -186,6 +186,13 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      */
     protected Component getUpgradePointComponent() {
         int upgradePoint = data.level.get();
+        for (var type : Perk.Type.values()) {
+            var perkInstance = data.perk.getInstance(type);
+            if (perkInstance == null) continue;
+            upgradePoint -= perkInstance.level() - 1;
+        }
+        upgradePoint = Math.max(upgradePoint, 0);
+
         return Component.translatable("des.superbwarfare.guns.upgrade_point").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
                 .append(Component.literal(String.valueOf(upgradePoint)).withStyle(ChatFormatting.WHITE).withStyle(ChatFormatting.BOLD));

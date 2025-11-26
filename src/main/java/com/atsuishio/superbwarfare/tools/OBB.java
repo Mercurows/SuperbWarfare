@@ -441,12 +441,12 @@ public record OBB(Vector3d center, Vector3d extents, Quaterniond rotation, Part 
         @SerializedName("Interactive")
         INTERACTIVE
     }
-    
-    public static Vector3d vec3ToVector3d (Vec3 vec3) {
+
+    public static Vector3d vec3ToVector3d(Vec3 vec3) {
         return new Vector3d(vec3.x, vec3.y, vec3.z);
     }
 
-    public static Vec3 vector3dToVec3 (Vector3d vector3d) {
+    public static Vec3 vector3dToVec3(Vector3d vector3d) {
         return new Vec3(vector3d.x, vector3d.y, vector3d.z);
     }
 }
