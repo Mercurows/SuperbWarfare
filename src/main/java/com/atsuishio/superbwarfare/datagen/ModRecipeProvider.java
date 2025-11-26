@@ -1122,7 +1122,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        200,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.TUNGSTEN_POWDER.get()), has(ModItems.TUNGSTEN_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_blasting_from_powder"));
