@@ -5,8 +5,12 @@ import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.DestroyInfo;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -133,5 +137,15 @@ public class Tom6Entity extends GeoVehicleEntity {
     @Override
     public float getEngineSoundVolume() {
         return (float) getDeltaMovement().length();
+    }
+
+    @Override
+    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
+        return ModKeyMappings.FREE_CAMERA.isDown() ? 0 : 0.6;
+    }
+
+    @Override
+    public boolean useAircraftCamera(int seatIndex) {
+        return (ModKeyMappings.FREE_CAMERA.isDown() || Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) && !ClientEventHandler.zoom;
     }
 }

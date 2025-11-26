@@ -3588,6 +3588,16 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return ContainerBlockItem.createInstance(this.getType());
     }
 
+    public boolean useAircraftCamera(int seatIndex) {
+        var seat = computed().seats().get(seatIndex);
+        if (seat != null) {
+            var data = seat.cameraPos;
+            return data.aircraftCamera;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * 获取视角旋转
      *
@@ -3605,7 +3615,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 if (zoom && gunData != null && gunData.compute().shootPos.viewDirection != null) {
                     return new Vec2((float) -VehicleVecUtils.getYRotFromVector(getViewVec(player, partialTicks)), (float) -VehicleVecUtils.getXRotFromVector(getViewVec(player, partialTicks)));
                 }
-                if (data.aircraftCamera) {
+                if (useAircraftCamera(index)) {
                     return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
                 }
                 if (zoom || isFirstPerson) {
@@ -3642,7 +3652,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                     } else {
                         return getCameraPos(player, partialTicks);
                     }
-                } else if (data.aircraftCamera) {
+                } else if (useAircraftCamera(index)) {
                     Matrix4d transform = getClientVehicleTransform(partialTicks);
                     Vector4d maxCameraPosition = transformPosition(transform, data.aircraftCameraPos.x, data.aircraftCameraPos.y + 0.1 * ClientMouseHandler.custom3pDistanceLerp, data.aircraftCameraPos.z - ClientMouseHandler.custom3pDistanceLerp);
                     return CameraTool.getMaxZoom(transform, maxCameraPosition);
