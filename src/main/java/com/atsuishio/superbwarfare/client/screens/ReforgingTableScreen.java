@@ -63,7 +63,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
             renderNumber(pGuiGraphics, this.leftPos + 156, this.topPos + 31, 1, 190, damagePerkLevel);
         }
 
-        var upgradePoint = ReforgingTableScreen.this.menu.upgradePoint.get();
+        var upgradePoint = ReforgingTableScreen.this.menu.availableLevel();
         renderNumber(pGuiGraphics, this.leftPos + 43, this.topPos + 20, 51, 178, upgradePoint);
 
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);

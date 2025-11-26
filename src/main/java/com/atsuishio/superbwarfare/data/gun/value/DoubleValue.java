@@ -32,6 +32,10 @@ public class DoubleValue {
         }
     }
 
+    public void add(double value) {
+        set(get() + value);
+    }
+
     public void reset() {
         set(defaultValue);
     }

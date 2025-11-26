@@ -254,13 +254,13 @@ public class LivingEventHandler {
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
             if (data.compute().explosionDamage > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
-                data.exp.set(data.exp.get() + amount);
+                data.exp.add(amount);
             }
         }
 
         // 再判断是不是枪械能造成的伤害
         if (DamageTypeTool.isGunDamage(source)) {
-            data.exp.set(data.exp.get() + amount);
+            data.exp.add(amount);
         }
 
         // 提升武器等级
@@ -274,7 +274,6 @@ public class LivingEventHandler {
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
             data.exp.set(exp);
             data.level.set(level);
-            data.upgradePoint.set(data.upgradePoint.get() + 0.5);
         }
         data.save();
     }
@@ -299,7 +298,6 @@ public class LivingEventHandler {
             upgradeExpNeeded = 20 * Math.pow(level, 2) + 160 * level + 20;
             data.exp.set(exp);
             data.level.set(level);
-            data.upgradePoint.set(data.upgradePoint.get() + 0.5);
         }
         data.save();
     }
