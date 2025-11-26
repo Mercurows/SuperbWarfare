@@ -1496,7 +1496,7 @@ public class ClientEventHandler {
             event.setCanceled(true);
         }
 
-        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && (vehicle.banHand(player) || (!zoom && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && ModKeyMappings.FREE_CAMERA.isDown()))) {
             event.setCanceled(true);
         }
     }
