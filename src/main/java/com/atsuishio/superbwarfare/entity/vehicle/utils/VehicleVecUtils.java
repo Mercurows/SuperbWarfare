@@ -14,9 +14,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Math;
-import org.joml.Matrix4f;
+import org.joml.Matrix4d;
 import org.joml.Quaternionf;
-import org.joml.Vector4f;
+import org.joml.Vector4d;
 
 /**
  * 处理载具相关动量、向量和旋转等数据的工具类
@@ -27,8 +27,8 @@ public final class VehicleVecUtils {
     public static double bombHitPosY;
     public static double bombHitPosZ;
 
-    public static Vector4f transformPosition(Matrix4f transform, float x, float y, float z) {
-        return transform.transform(new Vector4f(x, y, z, 1));
+    public static Vector4d transformPosition(Matrix4d transform, double x, double y, double z) {
+        return transform.transform(new Vector4d(x, y, z, 1));
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
@@ -261,17 +261,17 @@ public final class VehicleVecUtils {
             return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
         } else {
             var vec3 = stringOrVec3.vec3;
-            Vector4f worldPosition = transformPosition(
+            Vector4d worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x + (float) stringOrVec3.vec3.x,
-                    (float) vec3.y + (float) stringOrVec3.vec3.y,
-                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+                    vec3.x + stringOrVec3.vec3.x,
+                    vec3.y + stringOrVec3.vec3.y,
+                    vec3.z + stringOrVec3.vec3.z);
 
-            Vector4f worldPositionO = transformPosition(
+            Vector4d worldPositionO = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x,
-                    (float) vec3.y,
-                    (float) vec3.z);
+                    vec3.x,
+                    vec3.y,
+                    vec3.z);
 
             Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
             Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -290,7 +290,7 @@ public final class VehicleVecUtils {
         if (vec3 == null) {
             return vehicle.getCameraPos(entity, partialTicks);
         } else {
-            Vector4f worldPosition = transformPosition(vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            Vector4d worldPosition = transformPosition(vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks), vec3.x, vec3.y, vec3.z);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
     }
@@ -317,17 +317,17 @@ public final class VehicleVecUtils {
             return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
         } else {
             var vec3 = stringOrVec3.vec3;
-            Vector4f worldPosition = transformPosition(
+            Vector4d worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x + (float) stringOrVec3.vec3.x,
-                    (float) vec3.y + (float) stringOrVec3.vec3.y,
-                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+                    vec3.x + stringOrVec3.vec3.x,
+                    vec3.y + stringOrVec3.vec3.y,
+                    vec3.z + stringOrVec3.vec3.z);
 
-            Vector4f worldPositionO = transformPosition(
+            Vector4d worldPositionO = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x,
-                    (float) vec3.y,
-                    (float) vec3.z);
+                    vec3.x,
+                    vec3.y,
+                    vec3.z);
 
             Vec3 startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
             Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -358,15 +358,15 @@ public final class VehicleVecUtils {
 
             var worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x + (float) stringOrVec3.vec3.x,
-                    (float) vec3.y + (float) stringOrVec3.vec3.y,
-                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+                    vec3.x + stringOrVec3.vec3.x,
+                    vec3.y + stringOrVec3.vec3.y,
+                    vec3.z + stringOrVec3.vec3.z);
 
             var worldPositionO = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x,
-                    (float) vec3.y,
-                    (float) vec3.z);
+                    vec3.x,
+                    vec3.y,
+                    vec3.z);
 
             var startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
             var endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -389,15 +389,15 @@ public final class VehicleVecUtils {
 
             var worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x + (float) stringOrVec3.vec3.x,
-                    (float) vec3.y + (float) stringOrVec3.vec3.y,
-                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+                    vec3.x + stringOrVec3.vec3.x,
+                    vec3.y + stringOrVec3.vec3.y,
+                    vec3.z + stringOrVec3.vec3.z);
 
             var worldPositionO = transformPosition(
                     vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
-                    (float) vec3.x,
-                    (float) vec3.y,
-                    (float) vec3.z);
+                    vec3.x,
+                    vec3.y,
+                    vec3.z);
 
             var startPos = new Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z);
             var endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -431,7 +431,7 @@ public final class VehicleVecUtils {
         }
         if (data.useFixedCameraPos) {
             var vec3 = data.position;
-            Vector4f worldPosition = transformPosition(vehicle.getTransformFromString(data.transform, partialTicks), (float) vec3.x, (float) vec3.y, (float) vec3.z);
+            Vector4d worldPosition = transformPosition(vehicle.getTransformFromString(data.transform, partialTicks), vec3.x, vec3.y, vec3.z);
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         }
 
@@ -477,11 +477,11 @@ public final class VehicleVecUtils {
         } else {
             var vec3 = data.position;
 
-            Vector4f worldPosition = transformPosition(
+            Vector4d worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.transform, partialTicks),
-                    (float) vec3.x + (float) stringOrVec3.vec3.x,
-                    (float) vec3.y + (float) stringOrVec3.vec3.y,
-                    (float) vec3.z + (float) stringOrVec3.vec3.z);
+                    vec3.x + stringOrVec3.vec3.x,
+                    vec3.y + stringOrVec3.vec3.y,
+                    vec3.z + stringOrVec3.vec3.z);
 
             Vec3 startPos = getCameraPos(vehicle, entity, partialTicks);
             Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -511,8 +511,8 @@ public final class VehicleVecUtils {
 
         var vec3 = data.zoomPosition;
         if (vec3 != null) {
-            Vector4f worldPosition = transformPosition(
-                    vehicle.getTransformFromString(data.transform, partialTicks), (float) vec3.x, (float) vec3.y, (float) vec3.z
+            Vector4d worldPosition = transformPosition(
+                    vehicle.getTransformFromString(data.transform, partialTicks), vec3.x, vec3.y, vec3.z
             );
             return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
         } else {
@@ -546,11 +546,11 @@ public final class VehicleVecUtils {
                 return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity));
             } else {
                 var vec3 = data.zoomPosition;
-                Vector4f worldPosition = transformPosition(
+                Vector4d worldPosition = transformPosition(
                         vehicle.getTransformFromString(data.transform, partialTicks),
-                        (float) vec3.x + (float) stringOrVec3.vec3.x,
-                        (float) vec3.y + (float) stringOrVec3.vec3.y,
-                        (float) vec3.z + (float) stringOrVec3.vec3.z);
+                        vec3.x + stringOrVec3.vec3.x,
+                        vec3.y + stringOrVec3.vec3.y,
+                        vec3.z + stringOrVec3.vec3.z);
 
                 Vec3 startPos = vehicle.getShootPos(entity, partialTicks);
                 Vec3 endPos = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -561,12 +561,12 @@ public final class VehicleVecUtils {
     }
 
     // From Immersive_Aircraft
-    public static Matrix4f getVehicleYOffsetTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transform = new Matrix4f();
+    public static Matrix4d getVehicleYOffsetTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transform = new Matrix4d();
         transform.translate(
-                (float) Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
-                (float) Mth.lerp(partialTicks, vehicle.yo + vehicle.getRotateOffsetHeight(), vehicle.getY() + vehicle.getRotateOffsetHeight()),
-                (float) Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
+                Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
+                Mth.lerp(partialTicks, vehicle.yo + vehicle.getRotateOffsetHeight(), vehicle.getY() + vehicle.getRotateOffsetHeight()),
+                Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
         );
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot())));
         transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, vehicle.xRotO, vehicle.getXRot())));
@@ -574,23 +574,23 @@ public final class VehicleVecUtils {
         return transform;
     }
 
-    public static Matrix4f getVehicleFlatTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transform = new Matrix4f();
+    public static Matrix4d getVehicleFlatTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transform = new Matrix4d();
         transform.translate(
-                (float) Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
-                (float) Mth.lerp(partialTicks, vehicle.yo, vehicle.getY()),
-                (float) Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
+                Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
+                Mth.lerp(partialTicks, vehicle.yo, vehicle.getY()),
+                Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
         );
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot())));
         return transform;
     }
 
-    public static Matrix4f getClientVehicleTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transform = new Matrix4f();
+    public static Matrix4d getClientVehicleTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transform = new Matrix4d();
         transform.translate(
-                (float) Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
-                (float) Mth.lerp(partialTicks, vehicle.yo + vehicle.getRotateOffsetHeight(), vehicle.getY() + vehicle.getRotateOffsetHeight()),
-                (float) Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
+                Mth.lerp(partialTicks, vehicle.xo, vehicle.getX()),
+                Mth.lerp(partialTicks, vehicle.yo + vehicle.getRotateOffsetHeight(), vehicle.getY() + vehicle.getRotateOffsetHeight()),
+                Mth.lerp(partialTicks, vehicle.zo, vehicle.getZ())
         );
         transform.rotate(Axis.YP.rotationDegrees((float) (-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot()) + ClientMouseHandler.freeCameraYaw)));
         transform.rotate(Axis.XP.rotationDegrees((float) (Mth.lerp(partialTicks, vehicle.xRotO, vehicle.getXRot()) + ClientMouseHandler.freeCameraPitch)));
@@ -604,17 +604,17 @@ public final class VehicleVecUtils {
      * @param partialTicks 客户端ticks
      * @return 旋转矩阵
      */
-    public static Matrix4f getTurretTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transformV = vehicle.getVehicleTransform(partialTicks);
+    public static Matrix4d getTurretTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transformV = vehicle.getVehicleTransform(partialTicks);
 
-        Matrix4f transform = new Matrix4f();
+        Matrix4d transform = new Matrix4d();
         var pos = vehicle.getTurretPos();
         if (pos == null) return transformV;
-        Vector4f worldPosition = transformPosition(
+        Vector4d worldPosition = transformPosition(
                 transform,
-                (float) pos.x,
-                (float) pos.y,
-                (float) pos.z
+                pos.x,
+                pos.y,
+                pos.z
         );
 
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -630,22 +630,22 @@ public final class VehicleVecUtils {
      * @return 炮塔向量
      */
     public static Vec3 getTurretVector(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transform = getTurretTransform(vehicle, partialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        Matrix4d transform = getTurretTransform(vehicle, partialTicks);
+        Vector4d rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4d targetPosition = transformPosition(transform, 0, 0, 1);
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 
-    public static Matrix4f getBarrelTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transformT = getTurretTransform(vehicle, partialTicks);
+    public static Matrix4d getBarrelTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transformT = getTurretTransform(vehicle, partialTicks);
 
-        Matrix4f transform = new Matrix4f();
+        Matrix4d transform = new Matrix4d();
         var pos = vehicle.getBarrelPosition();
-        Vector4f worldPosition = transformPosition(
+        Vector4d worldPosition = transformPosition(
                 transform,
-                (float) pos.x,
-                (float) pos.y,
-                (float) pos.z
+                pos.x,
+                pos.y,
+                pos.z
         );
 
         transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -672,16 +672,16 @@ public final class VehicleVecUtils {
         return transformT;
     }
 
-    public static Matrix4f getGunTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transformT = getTurretTransform(vehicle, partialTicks);
+    public static Matrix4d getGunTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transformT = getTurretTransform(vehicle, partialTicks);
 
-        Matrix4f transform = new Matrix4f();
+        Matrix4d transform = new Matrix4d();
         var pos = vehicle.getPassengerWeaponStationPosition();
-        Vector4f worldPosition = transformPosition(
+        Vector4d worldPosition = transformPosition(
                 transform,
-                (float) pos.x,
-                (float) pos.y,
-                (float) pos.z
+                pos.x,
+                pos.y,
+                pos.z
         );
 
         transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -689,16 +689,16 @@ public final class VehicleVecUtils {
         return transformT;
     }
 
-    public static Matrix4f getPassengerWeaponStationBarrelTransform(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transformG = getGunTransform(vehicle, partialTicks);
+    public static Matrix4d getPassengerWeaponStationBarrelTransform(VehicleEntity vehicle, float partialTicks) {
+        Matrix4d transformG = getGunTransform(vehicle, partialTicks);
 
-        Matrix4f transform = new Matrix4f();
+        Matrix4d transform = new Matrix4d();
         var pos = vehicle.getPassengerWeaponStationBarrelPosition();
-        Vector4f worldPosition = transformPosition(
+        Vector4d worldPosition = transformPosition(
                 transform,
-                (float) pos.x,
-                (float) pos.y,
-                (float) pos.z
+                pos.x,
+                pos.y,
+                pos.z
         );
 
         transformG.translate(worldPosition.x, worldPosition.y, worldPosition.z);
@@ -726,9 +726,9 @@ public final class VehicleVecUtils {
     }
 
     public static Vec3 getPassengerWeaponStationVector(VehicleEntity vehicle, float partialTicks) {
-        Matrix4f transform = getPassengerWeaponStationBarrelTransform(vehicle, partialTicks);
-        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
-        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        Matrix4d transform = getPassengerWeaponStationBarrelTransform(vehicle, partialTicks);
+        Vector4d rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4d targetPosition = transformPosition(transform, 0, 0, 1);
         return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z).vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z));
     }
 }
