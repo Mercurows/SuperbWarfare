@@ -364,6 +364,8 @@
   "RotateOffsetHeight": 3.5,
   "Mass": 70,
   "DamageModifiers": [
+    "minecraft:lava - -20",
+    "minecraft:lava * 10",
     "minecraft:arrow 0",
     "minecraft:trident 0",
     "minecraft:mob_attack 0",
@@ -389,7 +391,7 @@
     "@superbwarfare:gun_grenade * 1.25",
     "@superbwarfare:mortar_shell * 1.25",
     "@superbwarfare:tm_62 * 2.5",
-    "All - 9"
+    "All - 20"
   ],
   "DestroyInfo": {
     "ParticleType": "Giant",

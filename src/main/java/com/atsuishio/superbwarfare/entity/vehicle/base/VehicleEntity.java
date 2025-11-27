@@ -3695,7 +3695,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public void fixedEngine() {
-        this.move(MoverType.SELF, this.getDeltaMovement());
+        this.move(MoverType.SELF, new Vec3(0, this.getDeltaMovement().y, 0));
         if (this.onGround()) {
             this.setDeltaMovement(Vec3.ZERO);
         } else {

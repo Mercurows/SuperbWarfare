@@ -40,13 +40,14 @@
   },
   "Mass": 10,
   "DamageModifiers": [
+    "minecraft:lava - -9",
+    "minecraft:lava * 10",
     "All * 0.2",
     "minecraft:arrow * 1.5",
     "minecraft:trident * 1.5",
     "minecraft:mob_attack * 2.5",
     "minecraft:mob_attack_no_aggro * 2",
     "minecraft:mob_projectile * 1.5",
-    "minecraft:lava * 12.5",
     "minecraft:explosion * 6",
     "minecraft:player_explosion * 6",
     "superbwarfare:custom_explosion * 2",
@@ -70,6 +71,7 @@
     "ExplosionDamage": 120,
     "ExplosionRadius": 6
   },
+  "EngineType": "Fixed",
   "HasLowHealthWarning": false,
   "SelfHurtPercent": 0,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/waveforce_tower_icon.png",

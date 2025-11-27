@@ -58,6 +58,7 @@
   "ThirdPersonCameraPos": [-0.3, 1, -1],
   "Mass": 0.05,
   "DamageModifiers": [
+    "minecraft:lava * 2.667",
     "All * 0.75"
   ],
   "EngineType": "Fixed",
