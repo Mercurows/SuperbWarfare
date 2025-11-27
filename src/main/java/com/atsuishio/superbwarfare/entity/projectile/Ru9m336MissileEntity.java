@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
@@ -25,7 +28,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -45,10 +47,6 @@ public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity
     public Ru9m336MissileEntity(EntityType<? extends Ru9m336MissileEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-    }
-
-    public Ru9m336MissileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.RU_9K33_MISSILE.get(), level);
     }
 
     @Override
@@ -186,11 +184,6 @@ public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
     }
 
     @Override

@@ -1181,7 +1181,7 @@ public class ClientEventHandler {
                 shakePos[2] = z * shakeStrength;
                 shakeType = 2 * (Math.random() - 0.5);
             } else {
-                Mod.queueClientWork((int) (distance / 17), () -> {
+                Mod.queueClientWork(time2, () -> {
                     float shakeStrength = (float) DisplayConfig.EXPLOSION_SCREEN_SHAKE.get() / 100.0f;
                     if (shakeStrength <= 0.0f) return;
                     shakeTime = time;

@@ -17,7 +17,6 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class SmokeDecoyEntity extends Entity {
@@ -37,10 +36,6 @@ public class SmokeDecoyEntity extends Entity {
 
     public SmokeDecoyEntity(Level level) {
         super(ModEntities.SMOKE_DECOY.get(), level);
-    }
-
-    public SmokeDecoyEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.SMOKE_DECOY.get(), level, true);
     }
 
     @Override

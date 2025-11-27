@@ -28,7 +28,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,10 +44,6 @@ public class GrapeshotEntity extends FastThrowableProjectile {
         super(ModEntities.GRAPESHOT.get(), entity, level);
         this.noCulling = true;
         this.damage = damage;
-    }
-
-    public GrapeshotEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.GRAPESHOT.get(), level);
     }
 
     @Override
@@ -192,5 +187,10 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
     public Vec3 randomVec(Vec3 vec3, double spread) {
         return vec3.normalize().add(this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread));
+    }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
     }
 }

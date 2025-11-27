@@ -27,7 +27,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -56,10 +55,6 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity {
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
         this.durability = 0;
-    }
-
-    public IglaMissileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.IGLA_MISSILE.get(), level);
     }
 
     @Override
@@ -210,10 +205,6 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity {
         return this.cache;
     }
 
-    @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
 
     @Override
     public @NotNull SoundEvent getSound() {

@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -13,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class MelonBombEntity extends DestroyableProjectile {
@@ -30,10 +31,6 @@ public class MelonBombEntity extends DestroyableProjectile {
         this.noCulling = true;
         this.explosionRadius = 10;
         this.explosionDamage = 500;
-    }
-
-    public MelonBombEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.MELON_BOMB.get(), level);
     }
 
     @Override
@@ -74,5 +71,15 @@ public class MelonBombEntity extends DestroyableProjectile {
     @Override
     public float getMaxHealth() {
         return 15;
+    }
+
+    @Override
+    public @NotNull SoundEvent getSound() {
+        return ModSounds.SHELL_FLY.get();
+    }
+
+    @Override
+    public float getVolume() {
+        return 0.7f;
     }
 }

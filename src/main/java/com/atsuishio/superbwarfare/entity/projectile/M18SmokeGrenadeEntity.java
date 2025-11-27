@@ -28,7 +28,6 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -59,10 +58,6 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
         super(ModEntities.M18_SMOKE_GRENADE.get(), entity, level);
         this.noCulling = true;
         this.fuse = fuse;
-    }
-
-    public M18SmokeGrenadeEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.M18_SMOKE_GRENADE.get(), level);
     }
 
     @Override
@@ -231,5 +226,10 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
         this.gColor = g;
         this.bColor = b;
         return this;
+    }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
     }
 }

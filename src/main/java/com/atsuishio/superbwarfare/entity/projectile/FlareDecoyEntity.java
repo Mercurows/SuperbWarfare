@@ -12,7 +12,6 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class FlareDecoyEntity extends Entity {
@@ -23,10 +22,6 @@ public class FlareDecoyEntity extends Entity {
 
     public FlareDecoyEntity(Level level) {
         super(ModEntities.FLARE_DECOY.get(), level);
-    }
-
-    public FlareDecoyEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.FLARE_DECOY.get(), level);
     }
 
     @Override

@@ -28,7 +28,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -64,10 +63,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
         if (targetPos != null) {
             this.targetPos = targetPos;
         }
-    }
-
-    public JavelinMissileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.JAVELIN_MISSILE.get(), level);
     }
 
     @Override
@@ -247,11 +242,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
     }
 
     @Override

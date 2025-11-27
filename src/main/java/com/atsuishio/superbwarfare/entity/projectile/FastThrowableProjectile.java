@@ -322,11 +322,6 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     @NotNull
-    public SoundEvent getCloseSound() {
-        return SoundEvents.EMPTY;
-    }
-
-    @NotNull
     public SoundEvent getSound() {
         return SoundEvents.EMPTY;
     }

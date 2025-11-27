@@ -26,7 +26,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -54,10 +53,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Geo
         this.damage = 500;
         this.explosionDamage = 80;
         this.explosionRadius = 7;
-    }
-
-    public PtkmProjectileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.PTKM_PROJECTILE.get(), level);
     }
 
     @Override
@@ -244,5 +239,10 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Geo
                 level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
             }
         }
+    }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
     }
 }

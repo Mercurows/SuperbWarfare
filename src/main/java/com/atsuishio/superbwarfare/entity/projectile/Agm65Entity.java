@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.*;
@@ -26,7 +29,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -52,10 +54,6 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity {
         this.explosionRadius = 12;
         this.distracted = false;
         this.durability = 25;
-    }
-
-    public Agm65Entity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.AGM_65.get(), level);
     }
 
     @Override
@@ -211,10 +209,6 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity {
         return this.cache;
     }
 
-    @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
 
     @Override
     public @NotNull SoundEvent getSound() {

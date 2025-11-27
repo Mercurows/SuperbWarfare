@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
@@ -30,7 +29,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -61,10 +59,6 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public CannonShellEntity(EntityType<? extends CannonShellEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-    }
-
-    public CannonShellEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.CANNON_SHELL.get(), level);
     }
 
     public CannonShellEntity durability(int durability) {

@@ -91,27 +91,4 @@ public abstract class FastProjectileSoundInstance extends AbstractTickableSoundI
             return (float) Math.min(entity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
         }
     }
-
-    @OnlyIn(Dist.CLIENT)
-    public static class NearFlySound extends FastProjectileSoundInstance {
-
-        public NearFlySound(FastThrowableProjectile entity) {
-            super(entity.getCloseSound(), Minecraft.getInstance(), entity);
-        }
-
-        @Override
-        protected boolean canPlay(FastThrowableProjectile entity) {
-            return entity.isFastMoving();
-        }
-
-        @Override
-        protected float getPitch(FastThrowableProjectile entity) {
-            return 1;
-        }
-
-        @Override
-        protected float getVolume(FastThrowableProjectile entity) {
-            return (float) Math.min(entity.getVolume() * 0.1 * entity.getDeltaMovement().length(), 1.5);
-        }
-    }
 }

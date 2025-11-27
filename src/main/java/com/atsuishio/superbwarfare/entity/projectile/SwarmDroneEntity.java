@@ -1,6 +1,9 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -24,7 +27,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -48,10 +50,6 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
         this.explosionDamage = 80f;
         this.explosionRadius = 5f;
         randomFloat = random.nextFloat();
-    }
-
-    public SwarmDroneEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.SWARM_DRONE.get(), level);
     }
 
     @Override
@@ -200,7 +198,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
     }
 
     @Override
-    public @NotNull SoundEvent getCloseSound() {
+    public @NotNull SoundEvent getSound() {
         return ModSounds.DRONE_ENGINE.get();
     }
 

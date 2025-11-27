@@ -26,7 +26,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -59,10 +58,6 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
         this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
         this.fuse = fuse;
-    }
-
-    public RgoGrenadeEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.RGO_GRENADE.get(), level);
     }
 
     @Override

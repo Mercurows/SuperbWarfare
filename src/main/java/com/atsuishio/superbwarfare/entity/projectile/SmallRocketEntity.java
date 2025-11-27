@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
@@ -27,7 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -60,10 +58,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
         this.explosionDamage = 60f;
         this.explosionRadius = 5f;
         this.durability = 20;
-    }
-
-    public SmallRocketEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.SMALL_ROCKET.get(), level);
     }
 
     @Override
@@ -178,22 +172,12 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }
 
     @Override
     public float getVolume() {
-        return 0.1f;
-    }
-
-    @Override
-    public boolean forceLoadChunk() {
-        return true;
+        return 0.2f;
     }
 }

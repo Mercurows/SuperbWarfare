@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
@@ -26,7 +25,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -48,10 +46,6 @@ public class WireGuideMissileEntity extends MissileProjectile implements GeoEnti
     public WireGuideMissileEntity(EntityType<? extends WireGuideMissileEntity> type, Level level) {
         super(type, level);
         this.noCulling = true;
-    }
-
-    public WireGuideMissileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.WIRE_GUIDE_MISSILE.get(), level);
     }
 
     @Override
@@ -160,11 +154,6 @@ public class WireGuideMissileEntity extends MissileProjectile implements GeoEnti
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
     }
 
     @Override

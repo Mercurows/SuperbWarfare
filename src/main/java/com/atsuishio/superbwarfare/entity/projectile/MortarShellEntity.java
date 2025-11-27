@@ -29,7 +29,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -72,10 +71,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         this.damage = damage;
         this.explosionDamage = explosionDamage;
         this.explosionRadius = explosionRadius;
-    }
-
-    public MortarShellEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.MORTAR_SHELL.get(), level);
     }
 
     public void setEffectsFromItem(ItemStack pStack) {

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
@@ -30,7 +29,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -52,10 +50,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         this.damage = 40f;
         this.explosionDamage = 80f;
         this.explosionRadius = 5f;
-    }
-
-    public SmallCannonShellEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.SMALL_CANNON_SHELL.get(), level);
     }
 
     @Override
@@ -193,5 +187,10 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
     public void antiAir(boolean antiAir) {
         this.aa = antiAir;
+    }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
     }
 }

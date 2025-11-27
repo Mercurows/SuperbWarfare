@@ -26,7 +26,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -62,10 +61,6 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
         this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
         this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
         this.fuse = fuse;
-    }
-
-    public HandGrenadeEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.HAND_GRENADE.get(), level);
     }
 
     @Override
@@ -157,5 +152,10 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
+    }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
     }
 }
