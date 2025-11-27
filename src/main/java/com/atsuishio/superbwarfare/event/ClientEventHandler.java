@@ -600,6 +600,7 @@ public class ClientEventHandler {
                 .smokeFilter()
                 .noVehicle()
                 .noClip()
+                .notFriendly()
                 .buildWithClosest(cameraPos, seekVec);
 
         Entity decoy = TraceTool.findLookDecoy(player, cameraPos, seekVec, seekRange);

@@ -1634,8 +1634,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
                 }
             }
 
-            Entity lastDriver = EntityFindUtil.findEntity(level(), entityData.get(LAST_DRIVER_UUID));
-            if (lastDriver != null && !SeekTool.IN_SAME_TEAM.test(player, lastDriver) && lastDriver.getTeam() != null) {
+            if (getLastDriver() != null && !SeekTool.IN_SAME_TEAM.test(player, getLastDriver()) && getLastDriver().getTeam() != null) {
                 return InteractionResult.PASS;
             }
 
@@ -1666,6 +1665,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         return InteractionResult.PASS;
     }
 
+    public Entity getLastDriver() {
+        return EntityFindUtil.findEntity(level(), entityData.get(LAST_DRIVER_UUID));
+    }
+
     @Deprecated(forRemoval = true)
     public void setDriverAngle(Player player) {
         VehicleVecUtils.setDriverAngle(this, player);
@@ -1681,12 +1684,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         if (source.getEntity() != null
-                && getFirstPassenger() != null
-                && SeekTool.IS_FRIENDLY.test(source.getEntity(), source.getEntity())
-                && getFirstPassenger().getTeam() != null
+                && getLastDriver() != null
+                && SeekTool.IS_FRIENDLY.test(getLastDriver(), source.getEntity())
+                && getLastDriver().getTeam() != null
                 && source.getEntity().getTeam() != null
-                && source.getEntity().getTeam() == getFirstPassenger().getTeam()
-                && !source.getEntity().getTeam().isAllowFriendlyFire()) {
+                && source.getEntity().getTeam() == getLastDriver().getTeam()
+                && !source.getEntity().getTeam().isAllowFriendlyFire()
+                && (source.getEntity() == getLastDriver() && !source.is(ModDamageTypes.VEHICLE_STRIKE))
+        ) {
             return false;
         }
 
@@ -1706,7 +1711,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             this.entityData.set(LAST_ATTACKER_UUID, source.getEntity().getStringUUID());
         }
 
-        if (source.getDirectEntity() instanceof Projectile projectile && this instanceof OBBEntity) {
+        if (source.getDirectEntity() instanceof Projectile projectile) {
             OBBHitter accessor = OBBHitter.getInstance(projectile);
             var part = accessor.sbw$getCurrentHitPart();
 
@@ -1790,6 +1795,13 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public float getEngineMaxHealth() {
         return 50;
+    }
+
+    @Override
+    public void lavaHurt() {
+        if (tickCount % 10 == 0) {
+            this.hurt(this.damageSources().lava(), 4.0F);
+        }
     }
 
     @Override
@@ -1977,11 +1989,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
         this.travel();
 
-        Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
 
         if (this.getHealth() <= computed.selfHurtPercent * this.getMaxHealth()) {
             // 血量过低时自动扣血
-            this.onHurt(computed.selfHurtAmount, attacker, false);
+            this.onHurt(computed.selfHurtAmount, getLastAttacker(), false);
         } else {
             // 呼吸回血
             if (repairCoolDown == 0) {
@@ -2906,18 +2917,14 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public CustomExplosion.Builder createCustomExplosion() {
         return new CustomExplosion.Builder(this)
-                .attacker(getAttacker());
-    }
-
-    protected Entity getAttacker() {
-        return EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
+                .attacker(getLastAttacker());
     }
 
     protected void crashPassengers() {
         for (var entity : this.getPassengers()) {
             if (entity instanceof LivingEntity living) {
                 for (int i = 0; i < VehicleConfig.AIR_CRASH_EXPLOSION_COUNT.get(); i++) {
-                    var tempAttacker = living == getAttacker() ? null : getAttacker();
+                    var tempAttacker = living == getLastAttacker() ? null : getLastAttacker();
                     living.invulnerableTime = 0;
                     living.hurt(ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker), VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get());
                 }
@@ -2929,7 +2936,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         for (var entity : this.getPassengers()) {
             if (entity instanceof LivingEntity living) {
                 for (int i = 0; i < VehicleConfig.SELF_EXPLOSION_COUNT.get(); i++) {
-                    var tempAttacker = living == getAttacker() ? null : getAttacker();
+                    var tempAttacker = living == getLastAttacker() ? null : getLastAttacker();
                     living.invulnerableTime = 0;
                     living.hurt(ModDamageTypes.causeVehicleExplosionDamage(this.level().registryAccess(), null, tempAttacker), VehicleConfig.SELF_EXPLOSION_DAMAGE.get());
                 }
@@ -3785,7 +3792,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         super.move(movementType, movement);
 
         if (lastTickSpeed < 0.3 || collisionCoolDown > 0 || this instanceof DroneEntity) return;
-        Entity driver = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_DRIVER_UUID));
+        Entity driver = getLastDriver();
 
         if (verticalCollision) {
             if (this.getVehicleType() == VehicleType.AIRPLANE && ((entityData.get(GEAR_ROT) > 0.15 && !(this instanceof Tom6Entity)) || Mth.abs(getRoll()) > 20 || Mth.abs(getXRot()) > 30)) {
