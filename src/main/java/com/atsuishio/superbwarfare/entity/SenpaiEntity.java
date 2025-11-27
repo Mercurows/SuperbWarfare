@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity;
 
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +30,6 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -49,10 +47,6 @@ public class SenpaiEntity extends Monster implements GeoEntity {
 
     public static final EntityDataAccessor<Boolean> RUNNER = SynchedEntityData.defineId(SenpaiEntity.class, EntityDataSerializers.BOOLEAN);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    public SenpaiEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.SENPAI.get(), world);
-    }
 
     public SenpaiEntity(EntityType<SenpaiEntity> type, Level world) {
         super(type, world);

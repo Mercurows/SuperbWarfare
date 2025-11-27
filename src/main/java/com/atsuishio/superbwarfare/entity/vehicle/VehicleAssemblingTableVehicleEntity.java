@@ -24,7 +24,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -42,10 +41,6 @@ public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implem
 
     public VehicleAssemblingTableVehicleEntity(EntityType<?> type, Level world) {
         super(type, world);
-    }
-
-    public VehicleAssemblingTableVehicleEntity(PlayMessages.SpawnEntity packet, Level level) {
-        this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), level);
     }
 
     public VehicleAssemblingTableVehicleEntity(Level world) {

@@ -2,10 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -13,10 +11,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
 public class Lav150Entity extends GeoVehicleEntity {
-
-    public Lav150Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.LAV_150.get(), world);
-    }
 
     public Lav150Entity(EntityType<Lav150Entity> type, Level world) {
         super(type, world);

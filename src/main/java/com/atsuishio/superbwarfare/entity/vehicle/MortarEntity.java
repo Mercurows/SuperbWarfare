@@ -33,7 +33,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -54,10 +53,6 @@ public class MortarEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
 
     private LivingEntity shooter = null;
-
-    public MortarEntity(PlayMessages.SpawnEntity packet, Level level) {
-        this(ModEntities.MORTAR.get(), level);
-    }
 
     public MortarEntity(EntityType<MortarEntity> type, Level level) {
         super(type, level);

@@ -45,7 +45,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -85,10 +84,6 @@ public class DroneEntity extends GeoVehicleEntity {
     public int holdTickX;
     public int holdTickY;
     public int holdTickZ;
-
-    public DroneEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.DRONE.get(), world);
-    }
 
     public DroneEntity(EntityType<DroneEntity> type, Level world) {
         super(type, world);

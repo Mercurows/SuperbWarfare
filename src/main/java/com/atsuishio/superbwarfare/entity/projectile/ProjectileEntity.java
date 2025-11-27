@@ -57,7 +57,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -135,10 +134,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public ProjectileEntity(Level level) {
         this(ModEntities.PROJECTILE.get(), level);
-    }
-
-    public ProjectileEntity(PlayMessages.SpawnEntity packet, Level level) {
-        super(ModEntities.PROJECTILE.get(), level);
     }
 
     @Nullable

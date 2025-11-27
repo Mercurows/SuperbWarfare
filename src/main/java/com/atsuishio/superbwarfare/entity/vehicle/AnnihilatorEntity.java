@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
@@ -32,7 +31,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4d;
@@ -51,10 +49,6 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Float> LASER_LEFT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_MIDDLE_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_RIGHT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
-
-    public AnnihilatorEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.ANNIHILATOR.get(), world);
-    }
 
     public AnnihilatorEntity(EntityType<AnnihilatorEntity> type, Level world) {
         super(type, world);

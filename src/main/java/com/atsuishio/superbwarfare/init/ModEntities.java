@@ -23,20 +23,20 @@ public class ModEntities {
 
     // Living Entities
     public static final RegistryObject<EntityType<TargetEntity>> TARGET = register("target",
-            EntityType.Builder.<TargetEntity>of(TargetEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(TargetEntity::new).fireImmune().sized(0.875f, 2f));
+            EntityType.Builder.of(TargetEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(0.875f, 2f));
     public static final RegistryObject<EntityType<DPSGeneratorEntity>> DPS_GENERATOR = register("dps_generator",
-            EntityType.Builder.<DPSGeneratorEntity>of(DPSGeneratorEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(DPSGeneratorEntity::new).fireImmune().sized(0.875f, 2f));
+            EntityType.Builder.of(DPSGeneratorEntity::new, MobCategory.CREATURE).setTrackingRange(64).setUpdateInterval(3).fireImmune().sized(0.875f, 2f));
     public static final RegistryObject<EntityType<SenpaiEntity>> SENPAI = register("senpai",
-            EntityType.Builder.<SenpaiEntity>of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3).setCustomClientFactory(SenpaiEntity::new)
+            EntityType.Builder.of(SenpaiEntity::new, MobCategory.MONSTER).setTrackingRange(64).setUpdateInterval(3)
                     .sized(0.6f, 2f));
 
     // Misc Entities
     public static final RegistryObject<EntityType<LaserEntity>> LASER = register("laser",
             EntityType.Builder.<LaserEntity>of(LaserEntity::new, MobCategory.MISC).sized(0.1f, 0.1f).fireImmune().setUpdateInterval(1));
     public static final RegistryObject<EntityType<FlareDecoyEntity>> FLARE_DECOY = register("flare_decoy",
-            EntityType.Builder.<FlareDecoyEntity>of(FlareDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().setCustomClientFactory(FlareDecoyEntity::new).sized(1f, 1f));
+            EntityType.Builder.<FlareDecoyEntity>of(FlareDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().sized(1f, 1f));
     public static final RegistryObject<EntityType<SmokeDecoyEntity>> SMOKE_DECOY = register("smoke_decoy",
-            EntityType.Builder.<SmokeDecoyEntity>of(SmokeDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().setCustomClientFactory(SmokeDecoyEntity::new).sized(4.5f, 4.5f));
+            EntityType.Builder.<SmokeDecoyEntity>of(SmokeDecoyEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().sized(4.5f, 4.5f));
     public static final RegistryObject<EntityType<ClaymoreEntity>> CLAYMORE = register("claymore",
             EntityType.Builder.<ClaymoreEntity>of(ClaymoreEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).sized(0.25f, 0.25f));
 
@@ -55,119 +55,119 @@ public class ModEntities {
 
     // Projectiles
     public static final RegistryObject<EntityType<TaserBulletEntity>> TASER_BULLET = register("taser_bullet",
-            EntityType.Builder.<TaserBulletEntity>of(TaserBulletEntity::new, MobCategory.MISC).setCustomClientFactory(TaserBulletEntity::new).setTrackingRange(64).noSave()
+            EntityType.Builder.<TaserBulletEntity>of(TaserBulletEntity::new, MobCategory.MISC).setTrackingRange(64).noSave()
                     .setUpdateInterval(1).sized(0.25f, 0.25f));
 
     // Fast Projectiles
     public static final RegistryObject<EntityType<SmallCannonShellEntity>> SMALL_CANNON_SHELL = register("small_cannon_shell",
-            EntityType.Builder.<SmallCannonShellEntity>of(SmallCannonShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(SmallCannonShellEntity::new).noSave().sized(0.25f, 0.25f));
+            EntityType.Builder.<SmallCannonShellEntity>of(SmallCannonShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.25f, 0.25f));
     public static final RegistryObject<EntityType<RpgRocketTBGEntity>> RPG_ROCKET_TBG = register("rpg_rocket_tbg",
-            EntityType.Builder.<RpgRocketTBGEntity>of(RpgRocketTBGEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(RpgRocketTBGEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<RpgRocketTBGEntity>of(RpgRocketTBGEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<RpgRocketStandardEntity>> RPG_ROCKET_STANDARD = register("rpg_rocket_standard",
-            EntityType.Builder.<RpgRocketStandardEntity>of(RpgRocketStandardEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(RpgRocketStandardEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<RpgRocketStandardEntity>of(RpgRocketStandardEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<MortarShellEntity>> MORTAR_SHELL = register("mortar_shell",
-            EntityType.Builder.<MortarShellEntity>of(MortarShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MortarShellEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<MortarShellEntity>of(MortarShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<ProjectileEntity>> PROJECTILE = register("projectile",
-            EntityType.Builder.<ProjectileEntity>of(ProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setCustomClientFactory(ProjectileEntity::new).setTrackingRange(64).noSave().noSummon().sized(0.25f, 0.25f));
+            EntityType.Builder.<ProjectileEntity>of(ProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).noSave().noSummon().sized(0.25f, 0.25f));
     public static final RegistryObject<EntityType<CannonShellEntity>> CANNON_SHELL = register("cannon_shell",
-            EntityType.Builder.<CannonShellEntity>of(CannonShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(CannonShellEntity::new).noSave().sized(0.75f, 0.75f));
+            EntityType.Builder.<CannonShellEntity>of(CannonShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.75f, 0.75f));
     public static final RegistryObject<EntityType<GunGrenadeEntity>> GUN_GRENADE = register("gun_grenade",
-            EntityType.Builder.<GunGrenadeEntity>of(GunGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(GunGrenadeEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<GunGrenadeEntity>of(GunGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<GrapeshotEntity>> GRAPESHOT = register("grapeshot",
-            EntityType.Builder.<GrapeshotEntity>of(GrapeshotEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(GrapeshotEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<GrapeshotEntity>of(GrapeshotEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<MelonBombEntity>> MELON_BOMB = register("melon_bomb",
-            EntityType.Builder.<MelonBombEntity>of(MelonBombEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MelonBombEntity::new).noSave().sized(1f, 1f));
+            EntityType.Builder.<MelonBombEntity>of(MelonBombEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(1f, 1f));
     public static final RegistryObject<EntityType<PtkmProjectileEntity>> PTKM_PROJECTILE = register("ptkm_projectile",
-            EntityType.Builder.<PtkmProjectileEntity>of(PtkmProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(PtkmProjectileEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<PtkmProjectileEntity>of(PtkmProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<HandGrenadeEntity>> HAND_GRENADE = register("hand_grenade",
-            EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(HandGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
+            EntityType.Builder.<HandGrenadeEntity>of(HandGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.3f, 0.3f));
     public static final RegistryObject<EntityType<RgoGrenadeEntity>> RGO_GRENADE = register("rgo_grenade",
-            EntityType.Builder.<RgoGrenadeEntity>of(RgoGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(RgoGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
+            EntityType.Builder.<RgoGrenadeEntity>of(RgoGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.3f, 0.3f));
     public static final RegistryObject<EntityType<M18SmokeGrenadeEntity>> M18_SMOKE_GRENADE = register("m18_smoke_grenade",
-            EntityType.Builder.<M18SmokeGrenadeEntity>of(M18SmokeGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(M18SmokeGrenadeEntity::new).noSave().sized(0.3f, 0.3f));
+            EntityType.Builder.<M18SmokeGrenadeEntity>of(M18SmokeGrenadeEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.3f, 0.3f));
     public static final RegistryObject<EntityType<JavelinMissileEntity>> JAVELIN_MISSILE = register("javelin_missile",
-            EntityType.Builder.<JavelinMissileEntity>of(JavelinMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(JavelinMissileEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<JavelinMissileEntity>of(JavelinMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<IglaMissileEntity>> IGLA_MISSILE = register("igla_9k38_missile",
-            EntityType.Builder.<IglaMissileEntity>of(IglaMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(IglaMissileEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<IglaMissileEntity>of(IglaMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<Ru9m336MissileEntity>> RU_9K33_MISSILE = register("ru_9m336_missile",
-            EntityType.Builder.<Ru9m336MissileEntity>of(Ru9m336MissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(Ru9m336MissileEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<Ru9m336MissileEntity>of(Ru9m336MissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<Agm65Entity>> AGM_65 = register("agm_65",
-            EntityType.Builder.<Agm65Entity>of(Agm65Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(Agm65Entity::new).noSave().sized(0.75f, 0.75f));
+            EntityType.Builder.<Agm65Entity>of(Agm65Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.75f, 0.75f));
     public static final RegistryObject<EntityType<Kh39Entity>> KH_39 = register("kh_39",
-            EntityType.Builder.<Kh39Entity>of(Kh39Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(Kh39Entity::new).noSave().sized(0.75f, 0.75f));
+            EntityType.Builder.<Kh39Entity>of(Kh39Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.75f, 0.75f));
     public static final RegistryObject<EntityType<SmallRocketEntity>> SMALL_ROCKET = register("small_rocket",
-            EntityType.Builder.<SmallRocketEntity>of(SmallRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(SmallRocketEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<SmallRocketEntity>of(SmallRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<MediumRocketEntity>> MEDIUM_ROCKET = register("medium_rocket",
-            EntityType.Builder.<MediumRocketEntity>of(MediumRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(MediumRocketEntity::new).noSave().sized(0.5f, 0.5f));
+            EntityType.Builder.<MediumRocketEntity>of(MediumRocketEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<WireGuideMissileEntity>> WIRE_GUIDE_MISSILE = register("wire_guide_missile",
-            EntityType.Builder.<WireGuideMissileEntity>of(WireGuideMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(WireGuideMissileEntity::new).noSave().fireImmune().sized(0.5f, 0.5f));
+            EntityType.Builder.<WireGuideMissileEntity>of(WireGuideMissileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().fireImmune().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<SwarmDroneEntity>> SWARM_DRONE = register("swarm_drone",
-            EntityType.Builder.<SwarmDroneEntity>of(SwarmDroneEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(SwarmDroneEntity::new).noSave().fireImmune().sized(0.5f, 0.5f));
+            EntityType.Builder.<SwarmDroneEntity>of(SwarmDroneEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().fireImmune().sized(0.5f, 0.5f));
     public static final RegistryObject<EntityType<Mk82Entity>> MK_82 = register("mk_82",
-            EntityType.Builder.<Mk82Entity>of(Mk82Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).setCustomClientFactory(Mk82Entity::new).noSave().sized(0.8f, 0.8f));
+            EntityType.Builder.<Mk82Entity>of(Mk82Entity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.8f, 0.8f));
 
     // Vehicles
     // Turrets
     public static final RegistryObject<EntityType<Type63Entity>> TYPE_63 = register("type_63",
-            EntityType.Builder.<Type63Entity>of(Type63Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Type63Entity::new).fireImmune().sized(1f, 1.5f));
+            EntityType.Builder.of(Type63Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1f, 1.5f));
     public static final RegistryObject<EntityType<Mk42Entity>> MK_42 = register("mk_42",
-            EntityType.Builder.<Mk42Entity>of(Mk42Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).setCustomClientFactory(Mk42Entity::new).fireImmune().sized(3.4f, 3.5f));
+            EntityType.Builder.of(Mk42Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(3.4f, 3.5f));
     public static final RegistryObject<EntityType<Hpj11Entity>> HPJ_11 = register("hpj_11",
-            EntityType.Builder.<Hpj11Entity>of(Hpj11Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).setCustomClientFactory(Hpj11Entity::new).fireImmune().sized(2.8f, 2.4f));
+            EntityType.Builder.of(Hpj11Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(2.8f, 2.4f));
     public static final RegistryObject<EntityType<Mle1934Entity>> MLE_1934 = register("mle_1934",
-            EntityType.Builder.<Mle1934Entity>of(Mle1934Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).setCustomClientFactory(Mle1934Entity::new).fireImmune().sized(4.5f, 2.8f));
+            EntityType.Builder.of(Mle1934Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(4.5f, 2.8f));
     public static final RegistryObject<EntityType<Bl132Entity>> BL_132 = register("bl_132",
-            EntityType.Builder.<Bl132Entity>of(Bl132Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).setCustomClientFactory(Bl132Entity::new).fireImmune().sized(7f, 4.4375f));
+            EntityType.Builder.of(Bl132Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(7f, 4.4375f));
     public static final RegistryObject<EntityType<AnnihilatorEntity>> ANNIHILATOR = register("annihilator",
-            EntityType.Builder.<AnnihilatorEntity>of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).setCustomClientFactory(AnnihilatorEntity::new).fireImmune().sized(13f, 4.2f));
+            EntityType.Builder.of(AnnihilatorEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(13f, 4.2f));
     public static final RegistryObject<EntityType<LaserTowerEntity>> LASER_TOWER = register("laser_tower",
-            EntityType.Builder.<LaserTowerEntity>of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(LaserTowerEntity::new).fireImmune().sized(0.9f, 1.65f));
+            EntityType.Builder.of(LaserTowerEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(0.9f, 1.65f));
     public static final RegistryObject<EntityType<WaveforceTowerEntity>> WAVEFORCE_TOWER = register("waveforce_tower",
-            EntityType.Builder.<WaveforceTowerEntity>of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(WaveforceTowerEntity::new).fireImmune().sized(1.75f, 3.3f));
+            EntityType.Builder.of(WaveforceTowerEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.75f, 3.3f));
     public static final RegistryObject<EntityType<TowEntity>> TOW = register("tow",
-            EntityType.Builder.<TowEntity>of(TowEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(TowEntity::new).fireImmune().sized(0.5f, 1.35f));
+            EntityType.Builder.of(TowEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(0.5f, 1.35f));
 //    public static final RegistryObject<EntityType<SteelCoilEntity>> STEEL_COIL = register("steel_coil",
 //            EntityType.Builder.of(SteelCoilEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2, 2));
 
     // Boats
     public static final RegistryObject<EntityType<SpeedboatEntity>> SPEEDBOAT = register("speedboat",
-            EntityType.Builder.<SpeedboatEntity>of(SpeedboatEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(SpeedboatEntity::new).fireImmune().sized(3.0f, 2.0f));
+            EntityType.Builder.of(SpeedboatEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(3.0f, 2.0f));
 
     // Land Vehicles
     public static final RegistryObject<EntityType<WheelChairEntity>> WHEEL_CHAIR = register("wheel_chair",
-            EntityType.Builder.<WheelChairEntity>of(WheelChairEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(WheelChairEntity::new).fireImmune().sized(1.0f, 1.0f));
+            EntityType.Builder.of(WheelChairEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.0f, 1.0f));
     public static final RegistryObject<EntityType<Lav150Entity>> LAV_150 = register("lav_150",
-            EntityType.Builder.<Lav150Entity>of(Lav150Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Lav150Entity::new).fireImmune().sized(2.8f, 3.1f));
+            EntityType.Builder.of(Lav150Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.8f, 3.1f));
     public static final RegistryObject<EntityType<Bmp2Entity>> BMP_2 = register("bmp_2",
-            EntityType.Builder.<Bmp2Entity>of(Bmp2Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Bmp2Entity::new).fireImmune().sized(4f, 3f));
+            EntityType.Builder.of(Bmp2Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4f, 3f));
     public static final RegistryObject<EntityType<Yx100Entity>> YX_100 = register("yx_100",
-            EntityType.Builder.<Yx100Entity>of(Yx100Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Yx100Entity::new).fireImmune().sized(4.6f, 3.25f));
+            EntityType.Builder.of(Yx100Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4.6f, 3.25f));
     public static final RegistryObject<EntityType<PrismTankEntity>> PRISM_TANK = register("prism_tank",
-            EntityType.Builder.<PrismTankEntity>of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(PrismTankEntity::new).fireImmune().sized(5f, 2.6f));
+            EntityType.Builder.of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(5f, 2.6f));
     public static final RegistryObject<EntityType<Plz05Entity>> PLZ_05 = register("plz_05",
-            EntityType.Builder.<Plz05Entity>of(Plz05Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).setCustomClientFactory(Plz05Entity::new).fireImmune().sized(4.6f, 3.25f));
+            EntityType.Builder.of(Plz05Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(4.6f, 3.25f));
 
     // Aircraft
     public static final RegistryObject<EntityType<Tom6Entity>> TOM_6 = register("tom_6",
-            EntityType.Builder.<Tom6Entity>of(Tom6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Tom6Entity::new).fireImmune().sized(1.05f, 1.0f));
+            EntityType.Builder.of(Tom6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.05f, 1.0f));
     public static final RegistryObject<EntityType<Ah6Entity>> AH_6 = register("ah_6",
-            EntityType.Builder.<Ah6Entity>of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Ah6Entity::new).fireImmune().sized(3f, 2.9f));
+            EntityType.Builder.of(Ah6Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(3f, 2.9f));
     public static final RegistryObject<EntityType<Mi28Entity>> MI_28 = register("mi_28",
-            EntityType.Builder.<Mi28Entity>of(Mi28Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(Mi28Entity::new).fireImmune().sized(4.5f, 4.5f));
+            EntityType.Builder.of(Mi28Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4.5f, 4.5f));
     public static final RegistryObject<EntityType<A10Entity>> A_10A = register("a_10a",
-            EntityType.Builder.<A10Entity>of(A10Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(A10Entity::new).fireImmune().sized(4.5f, 3.5f));
+            EntityType.Builder.of(A10Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4.5f, 3.5f));
 
     // Special
     public static final RegistryObject<EntityType<DroneEntity>> DRONE = register("drone",
-            EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(DroneEntity::new).sized(0.6f, 0.2f));
+            EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).sized(0.6f, 0.2f));
     public static final RegistryObject<EntityType<MortarEntity>> MORTAR = register("mortar",
-            EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(MortarEntity::new).fireImmune().sized(0.8f, 1.4f));
+            EntityType.Builder.<MortarEntity>of(MortarEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(0.8f, 1.4f));
 
     public static final RegistryObject<EntityType<VehicleAssemblingTableVehicleEntity>> VEHICLE_ASSEMBLING_TABLE = register("vehicle_assembling_table",
-            EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(VehicleAssemblingTableVehicleEntity::new).fireImmune().sized(2, 1.875f));
+            EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2, 1.875f));
 
     public static final RegistryObject<EntityType<TruckEntity>> TRUCK = register("truck",
-            EntityType.Builder.<TruckEntity>of(TruckEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).setCustomClientFactory(TruckEntity::new).fireImmune().sized(2.6f, 3f));
+            EntityType.Builder.of(TruckEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.6f, 3f));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> entityTypeBuilder) {
         return REGISTRY.register(name, () -> entityTypeBuilder.build(name));

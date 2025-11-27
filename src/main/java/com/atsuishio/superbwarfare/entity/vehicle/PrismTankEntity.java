@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -26,17 +25,12 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class PrismTankEntity extends GeoVehicleEntity {
-
-    public PrismTankEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.PRISM_TANK.get(), world);
-    }
 
     public PrismTankEntity(EntityType<PrismTankEntity> type, Level world) {
         super(type, world);

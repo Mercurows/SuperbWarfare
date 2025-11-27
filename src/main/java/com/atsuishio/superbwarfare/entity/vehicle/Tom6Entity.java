@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.DestroyInfo;
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.client.CameraType;
@@ -24,7 +23,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4d;
@@ -33,11 +31,6 @@ import org.joml.Vector4d;
 public class Tom6Entity extends GeoVehicleEntity {
 
     public static final EntityDataAccessor<Boolean> MELON = SynchedEntityData.defineId(Tom6Entity.class, EntityDataSerializers.BOOLEAN);
-
-
-    public Tom6Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.TOM_6.get(), world);
-    }
 
     public Tom6Entity(EntityType<Tom6Entity> type, Level world) {
         super(type, world);

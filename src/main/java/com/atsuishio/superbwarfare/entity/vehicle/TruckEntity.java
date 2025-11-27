@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -15,16 +14,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class TruckEntity extends GeoVehicleEntity {
 
     public static final EntityDataAccessor<Boolean> GREEN = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.BOOLEAN);
-
-    public TruckEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.TRUCK.get(), world);
-    }
 
     public TruckEntity(EntityType<TruckEntity> type, Level world) {
         super(type, world);

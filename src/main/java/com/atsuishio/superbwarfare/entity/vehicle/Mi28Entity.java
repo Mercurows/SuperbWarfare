@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -13,15 +12,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.PlayMessages;
 import org.joml.Matrix4d;
 import org.joml.Vector4d;
 
 public class Mi28Entity extends GeoVehicleEntity {
-
-    public Mi28Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.MI_28.get(), world);
-    }
 
     public Mi28Entity(EntityType<Mi28Entity> type, Level world) {
         super(type, world);

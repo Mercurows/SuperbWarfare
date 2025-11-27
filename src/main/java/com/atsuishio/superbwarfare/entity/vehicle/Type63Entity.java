@@ -29,10 +29,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.List;
 
@@ -57,10 +56,6 @@ public class Type63Entity extends GeoVehicleEntity {
 
     public double interactionTick;
     public int cooldown;
-
-    public Type63Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.TYPE_63.get(), world);
-    }
 
     public Type63Entity(EntityType<Type63Entity> type, Level world) {
         super(type, world);

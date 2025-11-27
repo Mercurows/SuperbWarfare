@@ -2,10 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -13,10 +11,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
 public class Mle1934Entity extends ArtilleryEntity {
-
-    public Mle1934Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.MLE_1934.get(), world);
-    }
 
     public Mle1934Entity(EntityType<Mle1934Entity> type, Level world) {
         super(type, world);

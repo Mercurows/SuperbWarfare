@@ -3,21 +3,15 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 public class A10Entity extends GeoVehicleEntity {
-
-    public A10Entity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.A_10A.get(), world);
-    }
 
     public A10Entity(EntityType<A10Entity> type, Level world) {
         super(type, world);

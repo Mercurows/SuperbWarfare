@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.advancement.CriteriaRegister;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -12,17 +11,12 @@ import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
 import java.util.List;
 
 public class WheelChairEntity extends GeoVehicleEntity {
-
-    public WheelChairEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.WHEEL_CHAIR.get(), world);
-    }
 
     public WheelChairEntity(EntityType<WheelChairEntity> type, Level world) {
         super(type, world);
