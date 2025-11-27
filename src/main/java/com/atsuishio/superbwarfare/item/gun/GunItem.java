@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool;
 import com.atsuishio.superbwarfare.data.launchable.ShootData;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.projectile.*;
-import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -74,6 +73,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity.LASER_LENGTH;
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LASER_SCALE;
 import static com.atsuishio.superbwarfare.tools.EntityFindUtil.findEntity;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
@@ -985,7 +985,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         double distance = range * range;
 
         BlockHitResult blockHitResult = shooter.level().clip(new ClipContext(shootPosition, shootPosition.add(shootDirection.scale(range)),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
+                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, shooter));
 
         BlockPos blockPos = blockHitResult.getBlockPos();
         BlockState state = level.getBlockState(blockPos);
@@ -1014,6 +1014,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 this.rayHitEntity(shooter, target, level, data, hitPos, shootPosition, shootDirection);
             }
             return true;
+        } else if (shooter.getVehicle() instanceof VehicleEntity vehicle) {
+            vehicle.getEntityData().set(LASER_LENGTH, (float) range);
+            vehicle.getEntityData().set(LASER_SCALE, (float) data.compute().shootAnimationTime);
         }
 
         if (hitPos != null) {
@@ -1026,9 +1029,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             return true;
         }
 
-        if (shooter.getVehicle() instanceof PrismTankEntity prismTank) {
-            prismTank.getEntityData().set(LASER_LENGTH, 512f);
-        }
+
 
         return true;
     }
