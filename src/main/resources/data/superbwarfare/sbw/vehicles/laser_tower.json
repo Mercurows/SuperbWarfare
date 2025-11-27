@@ -59,6 +59,8 @@
     "superbwarfare:vehicle_strike * 5",
     "minecraft:lava - -1",
     "minecraft:lava * 2",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
     "All - 1"
   ],
   "HasLowHealthWarning": false,

@@ -28,7 +28,9 @@
   "DamageModifiers": [
     "minecraft:lava * 2",
     "superbwarfare:vehicle_strike * 2",
-    "superbwarfare:grapeshot_hit * 0.5"
+    "superbwarfare:grapeshot_hit * 0.5",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3"
   ],
   "VehicleContainerType": "Empty",
   "DestroyInfo": {
