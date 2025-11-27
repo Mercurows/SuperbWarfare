@@ -2311,12 +2311,21 @@ public class ClientEventHandler {
         }
     }
 
+    public static void stopWeaponSeekSound(Player player) {
+        if (player == null) return;
+        ItemStack stack = player.getMainHandItem();
+        if (stack.getItem() instanceof GunItem) {
+            var gunData = GunData.from(stack);
+            var location = gunData.compute().soundInfo.locking.getLocation();
+            stopSoundEvent(location, SoundSource.PLAYERS);
+        }
+    }
+
     public static void stopVehicleReloadSound(Player player) {
         if (player == null) return;
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             var gunData = vehicle.getGunData(player);
             if (gunData == null) return;
-
             var location = gunData.compute().soundInfo.vehicleReload.getLocation();
             stopSoundEvent(location, SoundSource.PLAYERS);
         }

@@ -1,19 +1,14 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,13 +36,6 @@ public record ZoomMessage(int msgType) implements CustomPacketPayload {
         if (message.msgType == 1) {
             if (vehicle.hasWeapon(vehicle.getSeatIndex(player)) && vehicle.banHand(player)) {
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get(), 2, 1);
-            }
-
-            ItemStack stack = player.getMainHandItem();
-            if (stack.getItem() instanceof GunItem) {
-                var gunData = GunData.from(stack);
-                var location = gunData.compute().soundInfo.locking.getLocation();
-                player.connection.send(new ClientboundStopSoundPacket(location, SoundSource.PLAYERS));
             }
         }
     }
