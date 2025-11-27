@@ -9,13 +9,7 @@
       "tag": "minecraft:wool_carpets"
     },
     "c": {
-      "type": "neoforge:components",
-      "components": {
-        "minecraft:potion_contents": {
-          "potion": "minecraft:regeneration"
-        }
-      },
-      "items": "minecraft:potion"
+      "item": "minecraft:golden_apple"
     }
   },
   "pattern": [
@@ -24,7 +18,7 @@
     "aba"
   ],
   "result": {
-    "count": 2,
+    "count": 4,
     "id": "superbwarfare:medical_kit"
   }
 }
