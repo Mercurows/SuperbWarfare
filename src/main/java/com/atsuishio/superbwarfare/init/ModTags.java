@@ -93,6 +93,8 @@ public class ModTags {
         public static final TagKey<DamageType> VEHICLE_IGNORE = modDamageTag("vehicle_ignore");
         // 在载具上的实体受到带有此标签的伤害类型的伤害时，只会受到伤害减免，而不会转移到载具上
         public static final TagKey<DamageType> VEHICLE_NOT_ABSORB = modDamageTag("vehicle_not_absorb");
+        // 载具直接免疫的伤害类型
+        public static final TagKey<DamageType> VEHICLE_IMMUNE = modDamageTag("vehicle_immune");
 
         // 能够由枪械造成的伤害，可用于perk效果判定
         public static final TagKey<DamageType> GUN_DAMAGE = modDamageTag("gun_damage");
