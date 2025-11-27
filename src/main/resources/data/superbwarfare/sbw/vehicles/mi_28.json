@@ -352,7 +352,8 @@
     "minecraft:mob_attack_no_aggro * 0.3",
     "minecraft:mob_projectile * 0.2",
     "minecraft:player_attack * 0.2",
-    "minecraft:lava * 4",
+    "minecraft:lava - -10",
+    "minecraft:lava * 2.6",
     "minecraft:explosion * 3.5",
     "minecraft:player_explosion * 3.5",
     "superbwarfare:projectile_hit * 0.6",
@@ -369,7 +370,7 @@
     "@superbwarfare:mortar_shell * 3",
     "@#superbwarfare:at_rocket * 1.5",
     "All * 0.77",
-    "All - 3",
+    "All - 10",
     "@#superbwarfare:aerial_bomb * 2"
   ],
   "DestroyInfo": {

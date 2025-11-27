@@ -366,13 +366,14 @@
   "RotateOffsetHeight": 2.7,
   "Mass": 14.6,
   "DamageModifiers": [
+    "minecraft:lava - -13",
+    "minecraft:lava * 10",
     "All * 0.2",
     "minecraft:arrow * 1.5",
     "minecraft:trident * 1.5",
     "minecraft:mob_attack * 2.5",
     "minecraft:mob_attack_no_aggro * 2",
     "minecraft:mob_projectile * 1.5",
-    "minecraft:lava * 12.5",
     "minecraft:explosion * 6",
     "minecraft:player_explosion * 6",
     "superbwarfare:custom_explosion * 2",
@@ -390,7 +391,7 @@
     "@superbwarfare:mortar_shell * 1.1",
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
-    "All - 8"
+    "All - 13"
   ],
   "ThirdPersonCameraPos": [0, 1, 3],
   "VehicleContainerType": "Medium",

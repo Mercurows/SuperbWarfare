@@ -43,6 +43,8 @@
     }
   },
   "DamageModifiers": [
+    "minecraft:lava - -1",
+    "minecraft:lava * 2",
     "minecraft:arrow * 0.1",
     "minecraft:trident * 0.2",
     "minecraft:mob_attack * 0.2",

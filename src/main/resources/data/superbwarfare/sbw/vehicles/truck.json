@@ -96,6 +96,7 @@
     "minecraft:mob_attack_no_aggro * 0.4",
     "minecraft:mob_projectile * 0.4",
     "minecraft:player_attack * 0.4",
+    "minecraft:lava - -4",
     "minecraft:lava * 4",
     "minecraft:explosion * 4",
     "minecraft:player_explosion * 4",

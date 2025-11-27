@@ -15,7 +15,8 @@
   "Mass": 1,
   "DamageModifiers": [
     "superbwarfare:vehicle_strike * 0.5",
-    "superbwarfare:grapeshot_hit * 0.5"
+    "superbwarfare:grapeshot_hit * 0.5",
+    "minecraft:lava * 2"
   ],
   "DestroyInfo": {
     "ParticleType": "Small",

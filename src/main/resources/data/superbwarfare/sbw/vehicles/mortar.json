@@ -20,6 +20,7 @@
       "SoundRadius": 32
     }
   },
+  "EngineType": "Fixed",
   "Mass": 0.05,
   "HasLowHealthWarning": false,
   "SelfHurtPercent": 0,
