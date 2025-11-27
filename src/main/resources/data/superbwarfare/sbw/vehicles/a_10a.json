@@ -254,6 +254,8 @@
     "minecraft:mob_projectile * 1.5",
     "minecraft:lava - -7",
     "minecraft:lava * 2.66",
+    "@minecraft:tnt * 5",
+    "@minecraft:tnt_minecart * 5",
     "minecraft:explosion * 6",
     "minecraft:player_explosion * 6",
     "superbwarfare:custom_explosion * 3.4",

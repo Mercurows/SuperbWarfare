@@ -106,6 +106,8 @@
   "DamageModifiers": [
     "minecraft:lava - -8",
     "minecraft:lava * 10",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
     "All * 0.2",
     "minecraft:arrow * 1.5",
     "minecraft:trident * 1.5",

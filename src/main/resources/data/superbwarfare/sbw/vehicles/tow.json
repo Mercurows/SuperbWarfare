@@ -59,7 +59,9 @@
   "Mass": 0.05,
   "DamageModifiers": [
     "minecraft:lava * 2.667",
-    "All * 0.75"
+    "All * 0.75",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3"
   ],
   "EngineType": "Fixed",
   "VehicleContainerType": "Empty",

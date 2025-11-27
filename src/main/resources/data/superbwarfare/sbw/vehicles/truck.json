@@ -98,6 +98,8 @@
     "minecraft:player_attack * 0.4",
     "minecraft:lava - -4",
     "minecraft:lava * 4",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
     "minecraft:explosion * 4",
     "minecraft:player_explosion * 4",
     "superbwarfare:projectile_hit * 0.8",
