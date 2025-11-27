@@ -169,7 +169,7 @@ public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity
         double maxSeekRange = seekInfo.maxSeekRange;
         double minSeekRange = seekInfo.minSeekRange;
         int changeTargetTime = seekInfo.changeTargetTime;
-        int seekIterative = seekInfo.seekIterative;
+        int seekIterative = Math.max(1, seekInfo.seekIterative);
         double minTargetSize = seekInfo.minTargetSize;
 
         if (this.getEnergy() < seekInfo.seekEnergyCost) return;
