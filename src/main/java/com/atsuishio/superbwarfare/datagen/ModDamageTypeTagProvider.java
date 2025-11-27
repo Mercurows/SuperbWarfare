@@ -43,6 +43,9 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 .addOptional(ResourceLocation.fromNamespaceAndPath("sona", "injury"));
         this.tag(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)
                 .add(DamageTypes.EXPLOSION, DamageTypes.PLAYER_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.MINE, ModDamageTypes.PROJECTILE_EXPLOSION);
+        this.tag(ModTags.DamageTypes.VEHICLE_IMMUNE)
+                .add(DamageTypes.CACTUS, DamageTypes.SWEET_BERRY_BUSH, DamageTypes.IN_WALL)
+                .addOptional(ResourceLocation.fromNamespaceAndPath("iceandfire", "gorgon"));
         this.tag(ModTags.DamageTypes.GUN_DAMAGE).add(
                 ModDamageTypes.GUN_FIRE,
                 ModDamageTypes.GUN_FIRE_HEADSHOT,

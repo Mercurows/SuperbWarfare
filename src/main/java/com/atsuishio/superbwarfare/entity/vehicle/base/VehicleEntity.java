@@ -63,7 +63,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -1671,7 +1670,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
-        if (source.is(DamageTypes.CACTUS) || source.is(DamageTypes.SWEET_BERRY_BUSH) || source.is(DamageTypes.IN_WALL))
+        if (source.is(ModTags.DamageTypes.VEHICLE_IMMUNE))
             return false;
 
         if (DamageTypeTool.isGunDamage(source) && source.getEntity() != null && source.getEntity().getVehicle() == this) {
