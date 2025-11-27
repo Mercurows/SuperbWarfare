@@ -961,8 +961,11 @@ public class ClientEventHandler {
             burstFireAmount = 0;
         }
 
-        if (!gunItem.canShoot(data, player) && !data.meleeOnly()) {
-            holdingFireKey = false;
+        if (!gunItem.canShoot(data, player)){
+            if (!data.meleeOnly()) {
+                holdingFireKey = false;
+            }
+            burstFireAmount = 0;
         }
 
         // 精准度
@@ -977,7 +980,6 @@ public class ClientEventHandler {
         double ride = player.onGround() ? -0.25 * basicDev : 0;
 
         double zoomSpread = 1 - (1 - computed.zoomSpreadRate) * zoomTime;
-
         double spread = data.isShotgun() || stack.is(ModItems.MINIGUN.get()) ? 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread) : zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread);
 
         gunSpread = Mth.lerp(0.14 * times, gunSpread, spread);
