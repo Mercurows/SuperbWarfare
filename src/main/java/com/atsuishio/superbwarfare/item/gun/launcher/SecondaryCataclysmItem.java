@@ -149,11 +149,11 @@ public class SecondaryCataclysmItem extends GunGeoItem {
         boolean isChargedFire = zoom && hasEnoughEnergy;
 
         if (isChargedFire) {
-            data.tempModifications = rawData -> {
+            data.setTempModifications(rawData -> {
                 rawData.damage *= 1.25F;
                 rawData.velocity *= 4;
                 return rawData;
-            };
+            });
         }
 
         if (!super.shootBullet(parameters)) return false;

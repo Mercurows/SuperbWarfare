@@ -762,7 +762,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
         var stack = data.stack;
 
-        var projectileInfo = data.compute().projectile();
+        var computed = data.compute();
+        var projectileInfo = computed.projectile();
         var projectileType = projectileInfo.type;
         var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
 
@@ -772,10 +773,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             return this.shootRay(parameters);
         }
 
-        var headshot = data.compute().headshot;
-        var damage = data.compute().damage;
-        float velocity = (float) data.compute().velocity;
-        var bypassArmorRate = data.compute().bypassesArmor;
+        var headshot = computed.headshot;
+        var damage = computed.damage;
+        float velocity = (float) computed.velocity;
+        var bypassArmorRate = computed.bypassesArmor;
 
         if (VectorTool.isInLiquid(level, shootPosition)) {
             velocity = 2 + 0.05f * velocity;
@@ -813,24 +814,24 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             }
 
             if (entity instanceof CustomGravityEntity customGravityEntity) {
-                customGravityEntity.setGravity((float) data.compute().gravity);
+                customGravityEntity.setGravity((float) computed.gravity);
             }
 
             if (entity instanceof ExplosiveProjectile explosive) {
-                explosive.setExplosionDamage((float) data.compute().explosionDamage);
-                explosive.setExplosionRadius((float) data.compute().explosionRadius);
+                explosive.setExplosionDamage((float) computed.explosionDamage);
+                explosive.setExplosionRadius((float) computed.explosionRadius);
             }
 
             if (entity instanceof WireGuideMissileEntity wireGuideMissileEntity && shooter != null && shooter.getVehicle() != null) {
                 wireGuideMissileEntity.setLauncherVehicle(shooter.getVehicle().getUUID());
             }
 
-            if (entity instanceof SmallCannonShellEntity smallCannonShell && data.compute().isAntiAirProjectile) {
+            if (entity instanceof SmallCannonShellEntity smallCannonShell && computed.isAntiAirProjectile) {
                 smallCannonShell.antiAir(true);
             }
 
             if (entity instanceof CannonShellEntity cannonShell) {
-                var compute = data.compute();
+                var compute = computed;
                 if (compute.isArmorPiercingProjectile) {
                     cannonShell.setType(CannonShellEntity.Type.AP);
                     cannonShell.durability(100);
@@ -865,7 +866,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             // 填充其他自定义NBT数据
             if (projectileInfo.data != null) {
                 var tag = LaunchableEntityTool.getModifiedTag(projectileInfo,
-                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.compute().explosionDamage, data.compute().explosionRadius, data.compute().spread)
+                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, computed.explosionDamage, computed.explosionRadius, computed.spread)
                 );
                 if (tag != null) {
                     entity.load(tag);
@@ -877,7 +878,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
                 var tag = LaunchableEntityTool.getModifiedTag(
                         newInfo,
-                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, data.compute().explosionDamage, data.compute().explosionRadius, data.compute().spread)
+                        new ShootData(shooter != null ? shooter.getUUID() : null, damage, computed.explosionDamage, computed.explosionRadius, computed.spread)
                 );
                 if (tag != null) {
                     entity.load(tag);
@@ -900,8 +901,8 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             }
         }
 
-        if (shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle && data.compute().addShooterDeltaMovement) {
-            velocity = (float) (vehicle.getDeltaMovement().length() * data.compute().velocity);
+        if (shooter != null && shooter.getVehicle() instanceof VehicleEntity vehicle && computed.addShooterDeltaMovement) {
+            velocity = (float) (vehicle.getDeltaMovement().length() * computed.velocity);
         }
 
         // 发射任意实体
@@ -919,7 +920,7 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                 Vec3 targetVec = target.getEyePosition();
                 Vec3 playerVec = shooter.getEyePosition();
                 var hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0;
-                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, data.compute().velocity, hasGravity ? 0.03 : 0);
+                Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, Vec3.ZERO, computed.velocity, hasGravity ? 0.03 : 0);
                 x = toVec.x;
                 y = toVec.y;
                 z = toVec.z;

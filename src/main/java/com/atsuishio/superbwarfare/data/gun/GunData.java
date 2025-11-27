@@ -204,6 +204,11 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return id;
     }
 
+    public void setTempModifications(Function<DefaultGunData, DefaultGunData> modification) {
+        tempModifications = modification;
+        this.update();
+    }
+
     public void clearTempModifications() {
         tempModifications = null;
     }
@@ -216,7 +221,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         return GunData.from(stack).compute();
     }
 
-    public Function<DefaultGunData, DefaultGunData> tempModifications = null;
+    private Function<DefaultGunData, DefaultGunData> tempModifications = null;
 
     public DefaultGunData compute() {
         return compute(true);
