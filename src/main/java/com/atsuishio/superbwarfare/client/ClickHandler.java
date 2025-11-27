@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.SeekType;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -543,6 +544,14 @@ public class ClickHandler {
 
         if (stack.is(ModItems.BOCEK.get())) {
             PacketDistributor.sendToServer(ReloadMessage.INSTANCE);
+        }
+
+        if (stack.getItem() instanceof GunItem) {
+            var data = GunData.from(stack);
+            var computed = data.compute();
+            if (computed.seekType == SeekType.HOLD_FIRE) {
+                ClientEventHandler.stopWeaponSeekSound(Minecraft.getInstance().player);
+            }
         }
     }
 
