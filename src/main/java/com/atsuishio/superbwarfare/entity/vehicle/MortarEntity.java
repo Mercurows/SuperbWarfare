@@ -119,13 +119,16 @@ public class MortarEntity extends ArtilleryEntity {
 
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+        var result = super.interact(player, hand);
+        if (result != InteractionResult.PASS) return result;
+
         ItemStack mainHandItem = player.getMainHandItem();
 
         if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && this.entityData.get(INTELLIGENT)) {
             return indicator.bind(mainHandItem, player, this);
         }
 
-        if (mainHandItem.getItem() instanceof Monitor && player.isShiftKeyDown() && !this.entityData.get(INTELLIGENT)) {
+        if (mainHandItem.getItem() instanceof Monitor && !this.entityData.get(INTELLIGENT)) {
             entityData.set(INTELLIGENT, true);
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);
@@ -133,6 +136,7 @@ public class MortarEntity extends ArtilleryEntity {
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
+            return InteractionResult.SUCCESS;
         }
 
         if (mainHandItem.is(ModTags.Items.TOOLS_CROWBAR)) {
@@ -148,6 +152,7 @@ public class MortarEntity extends ArtilleryEntity {
                 mainHandItem.shrink(1);
             }
             vehicleShoot(player, "Main");
+            return InteractionResult.SUCCESS;
         }
 
         if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get()) {
@@ -171,6 +176,10 @@ public class MortarEntity extends ArtilleryEntity {
         list.add(new ItemStack(ModItems.MORTAR_DEPLOYER.get()));
         if (entityData.get(INTELLIGENT)) {
             list.add(new ItemStack(ModItems.MONITOR.get()));
+        }
+
+        if (items.get(0) != ItemStack.EMPTY) {
+            list.add(items.get(0));
         }
 
         return list;

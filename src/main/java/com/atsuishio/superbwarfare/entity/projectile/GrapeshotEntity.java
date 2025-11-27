@@ -188,4 +188,9 @@ public class GrapeshotEntity extends FastThrowableProjectile {
     public Vec3 randomVec(Vec3 vec3, double spread) {
         return vec3.normalize().add(this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread));
     }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
+    }
 }

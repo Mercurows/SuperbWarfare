@@ -167,22 +167,12 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }
 
     @Override
     public float getVolume() {
-        return 0.1f;
-    }
-
-    @Override
-    public boolean forceLoadChunk() {
-        return true;
+        return 0.2f;
     }
 }

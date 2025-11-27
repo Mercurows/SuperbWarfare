@@ -225,4 +225,9 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
         this.bColor = b;
         return this;
     }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
+    }
 }

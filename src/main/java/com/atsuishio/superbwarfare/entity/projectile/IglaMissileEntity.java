@@ -199,10 +199,6 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity {
         return this.cache;
     }
 
-    @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
 
     @Override
     public @NotNull SoundEvent getSound() {

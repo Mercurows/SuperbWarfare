@@ -193,7 +193,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
     }
 
     @Override
-    public @NotNull SoundEvent getCloseSound() {
+    public @NotNull SoundEvent getSound() {
         return ModSounds.DRONE_ENGINE.get();
     }
 

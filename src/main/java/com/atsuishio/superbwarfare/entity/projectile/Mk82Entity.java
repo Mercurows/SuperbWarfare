@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -23,13 +22,6 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
 
     public Mk82Entity(EntityType<? extends Mk82Entity> type, Level level) {
         super(type, level);
-        this.noCulling = true;
-        this.explosionRadius = 22;
-        this.explosionDamage = 650;
-    }
-
-    public Mk82Entity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
-        super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.explosionRadius = 22;
         this.explosionDamage = 650;

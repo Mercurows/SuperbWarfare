@@ -182,11 +182,6 @@ public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity
     }
 
     @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }

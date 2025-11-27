@@ -121,4 +121,9 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
+    }
 }

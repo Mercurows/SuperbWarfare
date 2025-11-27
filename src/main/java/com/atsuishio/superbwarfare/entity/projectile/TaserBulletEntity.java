@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
@@ -45,14 +44,6 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity, Custo
     private int volt = 0;
     private int wireLength = 0;
     private boolean stopped = false;
-
-    public TaserBulletEntity(LivingEntity entity, Level level, float damage, int volt, int wireLength) {
-        super(ModEntities.TASER_BULLET.get(), level);
-        this.damage = damage;
-        this.volt = volt;
-        this.wireLength = wireLength;
-        this.pickup = AbstractArrow.Pickup.DISALLOWED;
-    }
 
     public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level level) {
         super(type, level);

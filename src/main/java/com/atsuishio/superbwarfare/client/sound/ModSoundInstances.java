@@ -25,6 +25,5 @@ public class ModSoundInstances {
         VehicleEntity.playFireSound = vehicle -> Minecraft.getInstance().getSoundManager().play(new VehicleFireSoundInstance.VehicleFireSound(vehicle));
 
         FastThrowableProjectile.playFlySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.FlySound(entity));
-        FastThrowableProjectile.playNearFlySound = entity -> Minecraft.getInstance().getSoundManager().play(new FastProjectileSoundInstance.NearFlySound(entity));
     }
 }

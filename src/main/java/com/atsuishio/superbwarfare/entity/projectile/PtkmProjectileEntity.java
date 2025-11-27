@@ -240,4 +240,9 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Geo
             }
         }
     }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
+    }
 }

@@ -152,4 +152,9 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
+    }
 }

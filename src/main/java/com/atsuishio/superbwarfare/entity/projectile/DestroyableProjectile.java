@@ -32,10 +32,6 @@ public abstract class DestroyableProjectile extends FastThrowableProjectile impl
         }
     }
 
-    public DestroyableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
-        super(pEntityType, pX, pY, pZ, pLevel);
-    }
-
     @Override
     public boolean isPickable() {
         return !this.isRemoved();

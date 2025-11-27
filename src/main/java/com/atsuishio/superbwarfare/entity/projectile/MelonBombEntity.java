@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -69,5 +71,15 @@ public class MelonBombEntity extends DestroyableProjectile {
     @Override
     public float getMaxHealth() {
         return 15;
+    }
+
+    @Override
+    public @NotNull SoundEvent getSound() {
+        return ModSounds.SHELL_FLY.get();
+    }
+
+    @Override
+    public float getVolume() {
+        return 0.7f;
     }
 }

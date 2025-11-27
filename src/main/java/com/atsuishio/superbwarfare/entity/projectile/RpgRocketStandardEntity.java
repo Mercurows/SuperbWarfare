@@ -164,11 +164,6 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     }
 
     @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }
@@ -176,10 +171,5 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     @Override
     public float getVolume() {
         return 0.2f;
-    }
-
-    @Override
-    public boolean forceLoadChunk() {
-        return true;
     }
 }

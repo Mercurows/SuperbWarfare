@@ -54,7 +54,6 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
         this.gravity = 0.03f;
     }
 
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.RPG_ROCKET_TBG.get();
@@ -165,17 +164,7 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     }
 
     @Override
-    public @NotNull SoundEvent getCloseSound() {
-        return ModSounds.ROCKET_ENGINE.get();
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
-    }
-
-    @Override
-    public boolean forceLoadChunk() {
-        return true;
     }
 }

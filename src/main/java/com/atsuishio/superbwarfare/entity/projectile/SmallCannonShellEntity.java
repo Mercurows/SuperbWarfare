@@ -187,4 +187,9 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     public void antiAir(boolean antiAir) {
         this.aa = antiAir;
     }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
+    }
 }
