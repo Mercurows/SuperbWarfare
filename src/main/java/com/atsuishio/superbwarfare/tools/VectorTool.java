@@ -118,6 +118,6 @@ public class VectorTool {
 
     public static boolean checkNoClip(Vec3 pos1, Vec3 pos2, Level level) {
         return level.clip(new ClipContext(pos1, pos2,
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, (Entity) null)).getType() != HitResult.Type.BLOCK;
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, (Entity) null)).getType() != HitResult.Type.BLOCK;
     }
 }
