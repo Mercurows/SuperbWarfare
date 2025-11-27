@@ -75,7 +75,6 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         this.entityData.define(LASER_RIGHT_LENGTH, 0f);
     }
 
-
     @Override
     public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
@@ -133,7 +132,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
 
         float hardness = this.level().getBlockState(blockPos).getBlock().defaultDestroyTime();
 
-        if (ExplosionConfig.EXPLOSION_DESTROY.get() && hardness != -1) {
+        if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get() && hardness != -1) {
             Block.dropResources(this.level().getBlockState(blockPos), this.level(), blockPos, null);
             this.level().destroyBlock(blockPos, true);
         }
@@ -229,7 +228,6 @@ public class AnnihilatorEntity extends ArtilleryEntity {
             Vec3 barrelLeftPos = new Vec3(worldPosition1.x, worldPosition1.y, worldPosition1.z);
             Vec3 barrelMiddlePos = new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z);
             Vec3 barrelRightPos = new Vec3(worldPosition3.x, worldPosition3.y, worldPosition3.z);
-
 
             for (int i = 0; i < 10; i++) {
                 Mod.queueServerWork(i, () -> {
