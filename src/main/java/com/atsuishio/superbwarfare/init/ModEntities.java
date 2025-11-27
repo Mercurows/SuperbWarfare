@@ -145,7 +145,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<PrismTankEntity>> PRISM_TANK = register("prism_tank",
             EntityType.Builder.of(PrismTankEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(5f, 2.6f));
     public static final RegistryObject<EntityType<Plz05Entity>> PLZ_05 = register("plz_05",
-            EntityType.Builder.of(Plz05Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(3).fireImmune().sized(4.6f, 3.25f));
+            EntityType.Builder.of(Plz05Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4.6f, 3.25f));
 
     // Aircraft
     public static final RegistryObject<EntityType<Tom6Entity>> TOM_6 = register("tom_6",
