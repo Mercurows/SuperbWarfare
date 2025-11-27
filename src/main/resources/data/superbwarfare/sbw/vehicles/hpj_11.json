@@ -27,7 +27,7 @@
     "ChangeTargetTime": 60,
     "SeekIterative": 20,
     "MinTargetSize": 0.25,
-    "seekEnergyCost": 5000
+    "SeekEnergyCost": 5000
   },
   "Weapons": {
     "Main": {
