@@ -76,14 +76,14 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.STEEL_MATERIALS.barrel().get())
                 .unlockedBy(getHasName(ModItems.STEEL_MATERIALS.barrel().get()), has(ModItems.STEEL_MATERIALS.barrel().get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_PIPE.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDICAL_KIT.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDICAL_KIT.get(), 4)
                 .pattern("aba")
                 .pattern("bcb")
                 .pattern("aba")
                 .define('a', Items.STRING)
                 .define('b', ItemTags.WOOL_CARPETS)
-                .define('c', getPotionIngredient(Potions.REGENERATION))
-                .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
+                .define('c', Items.GOLDEN_APPLE)
+                .unlockedBy(getHasName(Items.GOLDEN_APPLE), has(Items.GOLDEN_APPLE))
                 .save(writer, Mod.loc(getItemName(ModItems.MEDICAL_KIT.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ARMOR_PLATE.get(), 4)
                 .pattern("aba")
