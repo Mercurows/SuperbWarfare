@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.menu;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyDataSlot;
 import com.atsuishio.superbwarfare.network.message.receive.ContainerDataMessage;
@@ -52,6 +53,10 @@ public abstract class EnergyMenu extends AbstractContainerMenu {
 
     public void setData(int id, int data) {
         super.setData(id, data);
+        if (id < 0 || id >= this.containerEnergyDataSlots.size()) {
+            Mod.LOGGER.error("EnergyMenu.setData id out of bounds: {}", id);
+            return;
+        }
         this.containerEnergyDataSlots.get(id).set(data);
     }
 
