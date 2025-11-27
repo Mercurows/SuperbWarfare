@@ -168,6 +168,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
                     DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) data.compute().damage);
                     target.invulnerableTime = 0;
                     causeLaserExplode(targetPos, data, living);
+                    return (float) pos.distanceTo(hitResult.getLocation());
                 }
             }
         }
