@@ -586,6 +586,7 @@ public class ClickHandler {
         ClientEventHandler.zoom = false;
         ClientEventHandler.zoomVehicle = false;
         ClientEventHandler.lockedEntity = null;
+        ClientEventHandler.stopWeaponSeekSound(Minecraft.getInstance().player);
         breath = false;
     }
 
