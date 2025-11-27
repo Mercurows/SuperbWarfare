@@ -12,8 +12,8 @@
   "ZoomReload": false,
   "SeekTime": 20,
   "SeekAngle": 10,
-  "SeekRange": 384,
-  "MaxTargetHeight": 72,
+  "SeekRange": 256,
+  "MaxTargetHeight": 64,
   "SeekType": "HoldFire",
   "GunType": "DirectLauncher",
   "AvailableFireModes": [

@@ -151,7 +151,7 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity {
                 if (getOwner() instanceof Player player && player.getMainHandItem().is(ModItems.IGLA_9K38.get()) && !lost) {
                     var handItem = player.getMainHandItem();
                     var data = GunData.from(handItem);
-                    lost = !data.zooming.get();
+                    lost = !data.zooming.get() || !VectorTool.checkNoClip(player.getEyePosition(), targetPos, this.level());
                 }
 
                 if (!lostTarget && !lost) {
@@ -177,7 +177,7 @@ public class IglaMissileEntity extends MissileProjectile implements GeoEntity {
         }
 
         if (lost) {
-            setDeltaMovement(getDeltaMovement().add(0, 0.05, 0));
+            setDeltaMovement(getDeltaMovement().add(0, 0.03, 0));
             this.entityData.set(TARGET_UUID, "none");
         }
 

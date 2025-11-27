@@ -5,8 +5,10 @@ import com.mojang.math.Axis;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaterniond;
 import org.joml.Quaternionf;
@@ -112,5 +114,10 @@ public class VectorTool {
     
     public static Vec3 lerpGetEntityBoundingBoxCenter(Entity entity, float partialTick) {
         return new Vec3(Mth.lerp(partialTick, entity.xo, entity.getX()), Mth.lerp(partialTick, entity.yo + entity.getBbHeight() / 2, entity.getY() + entity.getBbHeight() / 2), Mth.lerp(partialTick, entity.zo, entity.getZ()));
+    }
+
+    public static boolean checkNoClip(Vec3 pos1, Vec3 pos2, Level level) {
+        return level.clip(new ClipContext(pos1, pos2,
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, null)).getType() != HitResult.Type.BLOCK;
     }
 }

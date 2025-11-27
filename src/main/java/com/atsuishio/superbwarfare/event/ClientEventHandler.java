@@ -408,7 +408,6 @@ public class ClientEventHandler {
     public static void lockWeaponSeeking(Player player, ItemStack stack) {
         if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
-            //锁定所需时间
             var computed = data.compute();
             int lockTime = computed.seekTime;
             //搜寻角度
@@ -438,7 +437,7 @@ public class ClientEventHandler {
                     if (nearestEntity == null || player.isShiftKeyDown()) {
                         // 锁定方块
                         BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
-                                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+                                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, player));
                         seekingPos = result.getLocation();
 
                         if (seekingTime > lockTime + 2 && !lockOn) {
@@ -612,7 +611,7 @@ public class ClientEventHandler {
         if (seekWeaponInfo.onlyLockBlock) {
             // 锁定方块
             BlockHitResult result = player.level().clip(new ClipContext(cameraPos, cameraPos.add(seekVec.scale(seekRange)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+                    ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, player));
             seekingPosVehicle = result.getLocation();
 
             if (seekingTimeVehicle > lockTime + 2 && !lockOnVehicle) {
