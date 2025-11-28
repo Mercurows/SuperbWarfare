@@ -1,3 +1,5 @@
+// NOTE: Not updated for 0.8.8, wait for future documentation
+
 // Example gun data, check out DefaultGunData.java and GunProp.java for more info
 {
   // Gun item's registry ID, MUST NOT be null and MUST be GunItem
