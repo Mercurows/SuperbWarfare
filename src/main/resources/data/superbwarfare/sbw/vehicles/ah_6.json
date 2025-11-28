@@ -207,7 +207,7 @@
     "@superbwarfare:mortar_shell * 3",
     "@#superbwarfare:at_rocket * 3",
     "@#superbwarfare:aerial_bomb * 2",
-    "All * 0.8",
+    "All * 0.7",
     "All - 2"
   ],
   "DestroyInfo": {
