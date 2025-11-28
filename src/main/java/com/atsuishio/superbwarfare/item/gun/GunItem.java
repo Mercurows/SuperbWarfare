@@ -651,11 +651,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         // 添加热量
         data.heat.set(Math.max(data.heat.get() + data.compute().heatPerShoot, 0));
 
-        // 射击动画时长
-        data.shootAnimationTimer.set(data.compute().shootAnimationTime);
-
-        // 载具射击后的一个特殊记时器
         if (data.item.enableShootTimer()) {
+            // 射击动画时长
+            data.shootAnimationTimer.set(data.compute().shootAnimationTime);
+            // 载具射击后的一个特殊记时器
             data.shootTimer.set(Math.min(data.shootTimer.get() + 3, 5));
         }
 
