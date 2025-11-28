@@ -527,9 +527,9 @@ public class DroneEntity extends GeoVehicleEntity {
     }
 
     public void hitEntityCrash(Player player, Entity target) {
-        if (lastTickSpeed > 0.12) {
+        if (lastTickSpeed > 0.05) {
             var attachedEntity = this.entityData.get(DISPLAY_ENTITY);
-            if (!attachedEntity.isEmpty() && 20 * lastTickSpeed > this.getHealth()) {
+            if (!attachedEntity.isEmpty() && 50 * lastTickSpeed > this.getHealth()) {
                 var data = CustomData.DRONE_ATTACHMENT.get(getItemId(this.currentItem));
                 if (data != null) {
                     if (data.isKamikaze) {
@@ -547,7 +547,7 @@ public class DroneEntity extends GeoVehicleEntity {
                     Monitor.disLink(player.getMainHandItem(), player);
                 }
             }
-            this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), Objects.requireNonNullElse(player, this)), (float) ((!this.entityData.get(DISPLAY_ENTITY).isEmpty() ? 20 : 4) * lastTickSpeed));
+            this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), Objects.requireNonNullElse(player, this)), (float) ((!this.entityData.get(DISPLAY_ENTITY).isEmpty() ? 50 : 4) * lastTickSpeed));
         }
     }
 
