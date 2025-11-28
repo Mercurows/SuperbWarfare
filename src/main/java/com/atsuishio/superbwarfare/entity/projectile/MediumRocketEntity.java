@@ -198,7 +198,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
             ));
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
-                releaseClusterMunitions((LivingEntity) getOwner());
+                releaseClusterMunitions(getOwner());
             }
         }
     }
@@ -215,7 +215,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         return true;
     }
 
-    private void releaseClusterMunitions(LivingEntity shooter) {
+    private void releaseClusterMunitions(Entity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
             ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
             for (int index0 = 0; index0 < spreadAmount; index0++) {
