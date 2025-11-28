@@ -52,15 +52,15 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     private Type type = Type.AP;
     private float fireProbability = 0;
     private int fireTime = 0;
-    private int sparedAmount = 50;
-    private int sparedAngle = 15;
+    private int spreadAmount = 50;
+    private int spreadAngle = 15;
 
     public MediumRocketEntity(EntityType<? extends MediumRocketEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
     }
 
-    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int sparedAmount, int sparedAngle) {
+    public MediumRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel, float damage, float radius, float explosionDamage, float fireProbability, int fireTime, Type type, int spreadAmount, int spreadAngle) {
         super(pEntityType, pX, pY, pZ, pLevel);
         this.noCulling = true;
         this.damage = damage;
@@ -69,8 +69,8 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
         this.type = type;
-        this.sparedAmount = sparedAmount;
-        this.sparedAngle = sparedAngle;
+        this.spreadAmount = spreadAmount;
+        this.spreadAngle = spreadAngle;
     }
 
     public MediumRocketEntity durability(int durability) {
@@ -218,16 +218,16 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     private void releaseClusterMunitions(LivingEntity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
             ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
-            for (int index0 = 0; index0 < sparedAmount; index0++) {
+            for (int index0 = 0; index0 < spreadAmount; index0++) {
                 GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
-                        6 * damage / sparedAmount,
-                        5 * explosionDamage / sparedAmount,
+                        6 * damage / spreadAmount,
+                        5 * explosionDamage / spreadAmount,
                         explosionRadius / 2
                 );
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
                 gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
-                        sparedAngle);
+                        spreadAngle);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }
             discard();

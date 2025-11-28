@@ -318,12 +318,12 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public boolean isClusterMunitionsProjectile = false;
 
     @ServerOnly
-    @SerializedName("SparedAmount")
-    public int sparedAmount = 10;
+    @SerializedName("SpreadAmount")
+    public int spreadAmount = 10;
 
     @ServerOnly
-    @SerializedName("SparedAngle")
-    public int sparedAngle = 15;
+    @SerializedName("SpreadAngle")
+    public int spreadAngle = 15;
 
     @ServerOnly
     @SerializedName("IsArmorPiercingProjectile")

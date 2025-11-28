@@ -24,9 +24,9 @@ public class MediumRocketItem extends Item implements DispenserLaunchable {
     private final float fireProbability;
     private final int fireTime;
     public final MediumRocketEntity.Type type;
-    private final int sparedAmount;
+    private final int spreadAmount;
 
-    public MediumRocketItem(float damage, float radius, float explosionDamage, float fireProbability, int fireTime, MediumRocketEntity.Type type, int sparedAmount) {
+    public MediumRocketItem(float damage, float radius, float explosionDamage, float fireProbability, int fireTime, MediumRocketEntity.Type type, int spreadAmount) {
         super(new Properties());
 
         this.damage = damage;
@@ -35,11 +35,11 @@ public class MediumRocketItem extends Item implements DispenserLaunchable {
         this.fireProbability = fireProbability;
         this.fireTime = fireTime;
         this.type = type;
-        this.sparedAmount = sparedAmount;
+        this.spreadAmount = spreadAmount;
     }
 
     public MediumRocketEntity createProjectile(Level level, Position pos) {
-        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, sparedAmount, 15);
+        return new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), pos.x(), pos.y(), pos.z(), level, damage, radius, explosionDamage, fireProbability, fireTime, type, spreadAmount, 15);
     }
 
     @Override

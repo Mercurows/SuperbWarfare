@@ -39,7 +39,7 @@
       "ExplosionDamage": 300,
       "ExplosionRadius": 6,
       "IsClusterMunitionsProjectile": true,
-      "SparedAmount": 12
+      "SpreadAmount": 12
     }
   },
   "DamageModifiers": [
