@@ -48,6 +48,7 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class MortarEntity extends ArtilleryEntity {
+    public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
@@ -69,9 +70,8 @@ public class MortarEntity extends ArtilleryEntity {
         super.defineSynchedData(builder);
         builder.define(INTELLIGENT, false)
                 .define(TARGET_PITCH, -70f)
-                .define(TARGET_YAW, this.getYRot());
-
-
+                .define(TARGET_YAW, this.getYRot())
+                .define(FIRE_TIME, 0);
     }
 
     @Override
@@ -188,6 +188,10 @@ public class MortarEntity extends ArtilleryEntity {
     @Override
     public void baseTick() {
         super.baseTick();
+        if (entityData.get(FIRE_TIME) > 0) {
+            entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
+        }
+
         if (entityData.get(FIRE_TIME) == 5 && this.items.getFirst().getItem() instanceof MortarShell) {
             Level level = this.level();
             var gunData = getGunData("Main");

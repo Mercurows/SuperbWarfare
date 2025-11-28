@@ -114,6 +114,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
         sensitivity = new IntValue(gunDataTag, "Sensitivity");
         heat = new DoubleValue(gunDataTag, "Heat");
         shootAnimationTimer = new IntValue(gunDataTag, "ShootAnimationTimer");
+        shootTimer = new IntValue(gunDataTag, "ShootTimer");
         overHeat = new BooleanValue(gunDataTag, "OverHeat");
         zooming = new BooleanValue(gunDataTag, "Zooming");
 
@@ -843,6 +844,7 @@ public class GunData implements DefaultDataSupplier<DefaultGunData> {
     // Max: 100
     public final DoubleValue heat;
     public final IntValue shootAnimationTimer;
+    public final IntValue shootTimer;
     public final BooleanValue overHeat;
 
     public boolean canAdjustZoom() {

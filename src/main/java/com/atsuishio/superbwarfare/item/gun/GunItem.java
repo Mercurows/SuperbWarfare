@@ -65,6 +65,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoItem;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -652,6 +653,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
         // 射击动画时长
         data.shootAnimationTimer.set(data.compute().shootAnimationTime);
+
+        // 载具射击后的一个特殊记时器
+        data.shootTimer.set(Math.min(data.shootTimer.get() + 3, 5));
 
         // 过热
         if (data.heat.get() >= 100 && !data.overHeat.get()) {

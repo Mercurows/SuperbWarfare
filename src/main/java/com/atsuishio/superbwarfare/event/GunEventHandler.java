@@ -224,6 +224,7 @@ public class GunEventHandler {
         handleCooldown(shooter, data);
         redrawExtraAmmo(shooter, data);
         data.shootAnimationTimer.set(Math.max(data.shootAnimationTimer.get() - 1, 0));
+        data.shootTimer.set(Math.max(data.shootTimer.get() - 1, 0));
         var computed = data.compute();
 
         if (inMainHand) {

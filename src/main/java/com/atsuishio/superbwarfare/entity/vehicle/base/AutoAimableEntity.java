@@ -350,7 +350,6 @@ public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity
 
         entityData.set(LASER_SCALE, (float) gunData.compute().shootAnimationTime);
         this.entityData.set(CHARGE_PROGRESS, 0f);
-        entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
         playShootSound3p(living, "Main");
 
         this.consumeEnergy(gunData.compute().ammoCostPerShoot);
