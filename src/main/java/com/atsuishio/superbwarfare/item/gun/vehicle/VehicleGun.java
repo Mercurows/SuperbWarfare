@@ -52,6 +52,11 @@ public class VehicleGun extends GunItem {
     }
 
     @Override
+    public boolean enableShootTimer() {
+        return true;
+    }
+
+    @Override
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
         if (shooter instanceof VehicleEntity vehicle) {
             return data.compute().projectileAmount > 0

@@ -655,7 +655,9 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         data.shootAnimationTimer.set(data.compute().shootAnimationTime);
 
         // 载具射击后的一个特殊记时器
-        data.shootTimer.set(Math.min(data.shootTimer.get() + 3, 5));
+        if (data.item.enableShootTimer()) {
+            data.shootTimer.set(Math.min(data.shootTimer.get() + 3, 5));
+        }
 
         // 过热
         if (data.heat.get() >= 100 && !data.overHeat.get()) {
@@ -835,20 +837,19 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
             }
 
             if (entity instanceof CannonShellEntity cannonShell) {
-                var compute = computed;
-                if (compute.isArmorPiercingProjectile) {
+                if (computed.isArmorPiercingProjectile) {
                     cannonShell.setType(CannonShellEntity.Type.AP);
                     cannonShell.durability(100);
-                } else if (compute.isHighExplosiveProjectile) {
+                } else if (computed.isHighExplosiveProjectile) {
                     cannonShell.setType(CannonShellEntity.Type.HE);
-                } else if (compute.isClusterMunitionsProjectile) {
+                } else if (computed.isClusterMunitionsProjectile) {
                     cannonShell.setType(CannonShellEntity.Type.CM);
-                    cannonShell.setSparedAmount(compute.sparedAmount);
-                    cannonShell.setSparedAngle(compute.sparedAngle);
-                } else if (compute.isGrapeShotProjectile) {
+                    cannonShell.setSparedAmount(computed.sparedAmount);
+                    cannonShell.setSparedAngle(computed.sparedAngle);
+                } else if (computed.isGrapeShotProjectile) {
                     cannonShell.setType(CannonShellEntity.Type.GRAPE);
-                    cannonShell.setSparedAmount(compute.sparedAmount);
-                    cannonShell.setSparedAngle(compute.sparedAngle);
+                    cannonShell.setSparedAmount(computed.sparedAmount);
+                    cannonShell.setSparedAngle(computed.sparedAngle);
                 }
             }
 
@@ -1034,7 +1035,6 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
         }
 
 
-
         return true;
     }
 
@@ -1134,6 +1134,10 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
 
     public boolean canEditAttachments(GunData data) {
         return data.compute().getAmmoConsumers().size() > 1;
+    }
+
+    public boolean enableShootTimer() {
+        return false;
     }
 
     /**
