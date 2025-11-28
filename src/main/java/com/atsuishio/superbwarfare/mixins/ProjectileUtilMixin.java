@@ -33,7 +33,7 @@ public class ProjectileUtilMixin {
     @Inject(method = "getEntityHitResult(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;F)Lnet/minecraft/world/phys/EntityHitResult;",
             at = @At("HEAD"), cancellable = true)
     private static void getEntityHitResult(Level pLevel, Entity pProjectile, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, float pInflationAmount, CallbackInfoReturnable<EntityHitResult> cir) {
-        for (var entity : pLevel.getEntities(pProjectile, pBoundingBox, pFilter)) {
+        for (var entity : pLevel.getEntities(pProjectile, pBoundingBox.inflate(8), pFilter)) {
             Vector3d startVec = OBB.vec3ToVector3d(pStartVec);
             if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
                 if (pProjectile instanceof Projectile projectile &&
@@ -85,7 +85,7 @@ public class ProjectileUtilMixin {
             at = @At("HEAD"), cancellable = true)
     private static void getEntityHitResult(Entity pShooter, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, double pDistance, CallbackInfoReturnable<EntityHitResult> cir) {
         Level level = pShooter.level();
-        var entities = level.getEntities(pShooter, pBoundingBox.inflate(5), pFilter);
+        var entities = level.getEntities(pShooter, pBoundingBox.inflate(8), pFilter);
         Vector3d startVec = OBB.vec3ToVector3d(pStartVec);
 
         for (Entity entity : entities) {
