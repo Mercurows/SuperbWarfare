@@ -843,12 +843,12 @@ public abstract class GunItem extends Item implements ItemScreenProvider, GunPro
                     cannonShell.setType(CannonShellEntity.Type.HE);
                 } else if (computed.isClusterMunitionsProjectile) {
                     cannonShell.setType(CannonShellEntity.Type.CM);
-                    cannonShell.setSparedAmount(computed.sparedAmount);
-                    cannonShell.setSparedAngle(computed.sparedAngle);
+                    cannonShell.setSpreadAmount(computed.spreadAmount);
+                    cannonShell.setSpreadAngle(computed.spreadAngle);
                 } else if (computed.isGrapeShotProjectile) {
                     cannonShell.setType(CannonShellEntity.Type.GRAPE);
-                    cannonShell.setSparedAmount(computed.sparedAmount);
-                    cannonShell.setSparedAngle(computed.sparedAngle);
+                    cannonShell.setSpreadAmount(computed.spreadAmount);
+                    cannonShell.setSpreadAngle(computed.spreadAngle);
                 }
             }
 

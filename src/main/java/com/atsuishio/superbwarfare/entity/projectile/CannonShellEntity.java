@@ -48,8 +48,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     private Type type = Type.AP;
-    private int sparedAmount = 50;
-    private int sparedAngle = 15;
+    private int spreadAmount = 50;
+    private int spreadAngle = 15;
 
     public CannonShellEntity(EntityType<? extends CannonShellEntity> type, Level level) {
         super(type, level);
@@ -181,10 +181,10 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
         if (type == Type.CM && tickCount > 3) {
             // 使用Minecraft内置的光线追踪进行碰撞检测
-            int sparedTime = 7;
+            int spreadTime = 7;
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
-                    position().add(getDeltaMovement().scale(sparedTime)),
+                    position().add(getDeltaMovement().scale(spreadTime)),
                     ClipContext.Block.OUTLINE,
                     ClipContext.Fluid.ANY,
                     this
@@ -194,7 +194,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 releaseClusterMunitions((LivingEntity) getOwner());
             }
 
-            Entity target = TraceTool.findLookingEntity(this, getDeltaMovement().scale(sparedTime).length());
+            Entity target = TraceTool.findLookingEntity(this, getDeltaMovement().scale(spreadTime).length());
 
             if (target != null && target != this) {
                 releaseClusterMunitions((LivingEntity) getOwner());
@@ -205,16 +205,16 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public void releaseClusterMunitions(LivingEntity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
             ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
-            for (int index0 = 0; index0 < sparedAmount; index0++) {
+            for (int index0 = 0; index0 < spreadAmount; index0++) {
                 GunGrenadeEntity gunGrenadeEntity = new GunGrenadeEntity(shooter, serverLevel,
-                        6 * damage / sparedAmount,
-                        5 * explosionDamage / sparedAmount,
+                        6 * damage / spreadAmount,
+                        5 * explosionDamage / spreadAmount,
                         explosionRadius / 2
                 );
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z);
                 gunGrenadeEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.4f * getDeltaMovement().length()),
-                        sparedAngle);
+                        spreadAngle);
                 serverLevel.addFreshEntity(gunGrenadeEntity);
             }
             discard();
@@ -223,11 +223,11 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     public void releaseGrapeShot(LivingEntity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
-            for (int index0 = 0; index0 < sparedAmount; index0++) {
-                GrapeshotEntity grapeProjectileEntity = new GrapeshotEntity(shooter, serverLevel, damage / sparedAmount);
+            for (int index0 = 0; index0 < spreadAmount; index0++) {
+                GrapeshotEntity grapeProjectileEntity = new GrapeshotEntity(shooter, serverLevel, damage / spreadAmount);
                 grapeProjectileEntity.setPos(this.xo, this.yo, this.zo);
                 grapeProjectileEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.9f * getDeltaMovement().length()),
-                        sparedAngle);
+                        spreadAngle);
                 serverLevel.addFreshEntity(grapeProjectileEntity);
             }
             discard();
@@ -279,11 +279,11 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         this.type = type;
     }
 
-    public void setSparedAmount(int sparedAmount) {
-        this.sparedAmount = sparedAmount;
+    public void setSpreadAmount(int spreadAmount) {
+        this.spreadAmount = spreadAmount;
     }
 
-    public void setSparedAngle(int sparedAngle) {
-        this.sparedAngle = sparedAngle;
+    public void setSpreadAngle(int spreadAngle) {
+        this.spreadAngle = spreadAngle;
     }
 }

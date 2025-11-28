@@ -28,8 +28,8 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -294,7 +294,7 @@ public class Type63Entity extends GeoVehicleEntity {
         var computed = gunData.compute();
         var entityToSpawn = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), shootPos.x, shootPos.y, shootPos.z, level(),
                 (float) computed.damage, (float) computed.explosionRadius, (float) computed.explosionDamage,
-                0, 0, rocketItem.type, computed.sparedAmount, computed.sparedAngle);
+                0, 0, rocketItem.type, computed.spreadAmount, computed.spreadAngle);
         entityToSpawn.setGravity(shootGravity);
 
         entityToSpawn.setOwner(player);
