@@ -121,7 +121,7 @@ public abstract class CameraMixin implements ICustomCamera {
     @Unique
     private static Matrix4d superbWarfare$getDroneTransform(DroneEntity vehicle, float ticks) {
         Matrix4d transform = new Matrix4d();
-        transform.translate((float) Mth.lerp(ticks, vehicle.xo, vehicle.getX()), (float) Mth.lerp(ticks, vehicle.yo, vehicle.getY()), (float) Mth.lerp(ticks, vehicle.zo, vehicle.getZ()));
+        transform.translate(Mth.lerp(ticks, vehicle.xo, vehicle.getX()), Mth.lerp(ticks, vehicle.yo, vehicle.getY()), Mth.lerp(ticks, vehicle.zo, vehicle.getZ()));
         transform.rotate(Axis.YP.rotationDegrees(-vehicle.getYaw(ticks)));
         transform.rotate(Axis.XP.rotationDegrees(vehicle.getBodyPitch(ticks)));
         transform.rotate(Axis.ZP.rotationDegrees(vehicle.getRoll(ticks)));
