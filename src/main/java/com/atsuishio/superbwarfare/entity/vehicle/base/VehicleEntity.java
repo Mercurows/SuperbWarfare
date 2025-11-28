@@ -420,6 +420,12 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
     public int jumpCoolDown;
 
+//    @Override
+//    public void onAddedToWorld() {
+//        super.onAddedToWorld();
+//        this.setYRot(this.entityData.get(SERVER_YAW));
+//    }
+
     public VehicleEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
 

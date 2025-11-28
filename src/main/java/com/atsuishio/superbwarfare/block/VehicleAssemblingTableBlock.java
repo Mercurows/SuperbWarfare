@@ -43,6 +43,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.SERVER_YAW;
+
 @EventBusSubscriber(modid = Mod.MODID)
 public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
@@ -189,6 +191,7 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
         vehicle.yRotO = deg;
         vehicle.setYRot(deg);
+        vehicle.getEntityData().set(SERVER_YAW, deg);
 
         return vehicle;
     }
