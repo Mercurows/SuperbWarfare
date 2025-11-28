@@ -39,6 +39,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.SERVER_YAW;
+
 @SuppressWarnings("deprecation")
 public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
@@ -162,6 +164,7 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
 
         vehicle.yRotO = deg;
         vehicle.setYRot(deg);
+        vehicle.getEntityData().set(SERVER_YAW, deg);
 
         return vehicle;
     }
@@ -179,6 +182,7 @@ public class VehicleAssemblingTableBlock extends BaseEntityBlock {
                 var originalPos = part.relativeNegative(pPos, facing);
 
                 var vehicle = createVehicle(serverLevel, facing, originalPos);
+
                 serverLevel.addFreshEntity(vehicle);
 
                 for (var p : BlockPart.values()) {

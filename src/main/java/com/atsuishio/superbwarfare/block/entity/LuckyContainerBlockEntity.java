@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.block.entity;
 
 import com.atsuishio.superbwarfare.block.LuckyContainerBlock;
 import com.atsuishio.superbwarfare.data.container.ContainerDataManager;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import it.unimi.dsi.fastutil.Pair;
@@ -32,6 +33,8 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
+
+import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.SERVER_YAW;
 
 public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEntity {
 
@@ -69,6 +72,9 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
                 if (entity != null) {
                     entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
                     entity.setYRot(direction.toYRot());
+                    if (entity instanceof VehicleEntity vehicle) {
+                        vehicle.getEntityData().set(SERVER_YAW, direction.toYRot());
+                    }
                     pLevel.addFreshEntity(entity);
                 }
             }
