@@ -44,7 +44,7 @@
       "ExplosionDamage": 5,
       "ExplosionRadius": 2,
       "Spread": 0.35,
-      "HeatPerShoot": 2,
+      "HeatPerShoot": 1.6,
       "NaturalCooldown": 0.5,
       "ShootAnimationTime": 3,
       "Crosshair": "@VehicleDynamicCross",

@@ -87,7 +87,7 @@
       "Damage": 35,
       "ExplosionDamage": 10,
       "ExplosionRadius": 4,
-      "HeatPerShoot": 2,
+      "HeatPerShoot": 1.5,
       "NaturalCooldown": 0.5,
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.30mm_gau_8_a",

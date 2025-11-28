@@ -41,9 +41,4 @@ public class AnnihilatorModel extends VehicleModel<AnnihilatorEntity> {
             }
         };
     }
-
-//    @Override
-//    public boolean hideForTurretControllerWhileZooming() {
-//        return true;
-//    }
 }

@@ -161,8 +161,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     public static final EntityDataAccessor<Float> POWER = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> YAW_WHILE_SHOOT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
 
-    public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
-
     public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Boolean> DECOY_READY = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -1094,7 +1092,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.entityData.define(SERVER_YAW, getYRot());
         this.entityData.define(SERVER_PITCH, getXRot());
         this.entityData.define(AMMO, 0);
-        this.entityData.define(FIRE_TIME, 0);
         this.entityData.define(DECOY_READY, false);
         this.entityData.define(GEAR_ROT, 0f);
         this.entityData.define(GEAR_UP, false);
@@ -1304,22 +1301,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 
                 gunData.shakePlayers(this);
             }
-        }
-
-        entityData.set(FIRE_TIME, Math.min(entityData.get(FIRE_TIME) + 3, 5));
-
-    }
-
-    public float shootingVolume() {
-        return entityData.get(FIRE_TIME) * 0.25f;
-    }
-
-    public float shootingPitch() {
-        var gunData = getGunData(0);
-        if (gunData != null) {
-            return (float) (0.98f + entityData.get(FIRE_TIME) * 0.01f - (gunData.heat.get() > 80 ? (gunData.heat.get() - 80) * 0.01 : 0));
-        } else {
-            return 1;
         }
     }
 
@@ -1867,9 +1848,10 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
 //                playInCarMusic.accept(this);
 //            }
 
-            if (playFireSound != null && !this.wasFiring && this.isFiring() && this.level().isClientSide()) {
+            if (playFireSound != null && !this.wasFiring && this.isFiring()) {
                 playFireSound.accept(this);
             }
+
             this.wasFiring = this.isFiring();
         }
 
@@ -2131,9 +2113,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
 
         entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) * 0.5f);
-        if (entityData.get(FIRE_TIME) > 0) {
-            entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
-        }
 
         if (hasDecoy()) {
             if (getVehicleType() == VehicleType.AIRPLANE || getVehicleType() == VehicleType.HELICOPTER) {
@@ -2211,7 +2190,35 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public boolean isFiring() {
-        return this.entityData.get(FIRE_TIME) > 0;
+        var gunData = getGunData(0);
+        if (gunData != null) {
+            var instance = gunData.compute().soundInfo.fireSoundInstances;
+            if (instance != null) {
+                return gunData.shootTimer.get() > 0;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public float shootingVolume() {
+        var gunData = getGunData(0);
+        if (gunData != null) {
+            return gunData.shootTimer.get() * 0.25f;
+        } else {
+            return 0;
+        }
+    }
+
+    public float shootingPitch() {
+        var gunData = getGunData(0);
+        if (gunData != null) {
+            return (float) (0.98f + gunData.shootTimer.get() * 0.01f - (gunData.heat.get() > 80 ? (gunData.heat.get() - 80) * 0.01 : 0));
+        } else {
+            return 1;
+        }
     }
 
     protected void updateBackupAmmoCount() {
