@@ -3060,7 +3060,7 @@
   "hpj_11_fire": {
     "sounds": [
       {
-        "attenuation_distance": 192,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:hpj11/hpj_11_fire"
       }
@@ -3132,7 +3132,7 @@
   "a_10a_fire": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 512,
         "stream": true,
         "name": "superbwarfare:vehicle/a_10a/a_10a_fire"
       }
