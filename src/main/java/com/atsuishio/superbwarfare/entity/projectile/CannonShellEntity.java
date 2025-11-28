@@ -164,7 +164,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void tick() {
         if (type == Type.GRAPE) {
-            releaseGrapeShot((LivingEntity) getOwner());
+            releaseGrapeShot(getOwner());
         }
         super.tick();
 
@@ -191,18 +191,18 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             ));
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
-                releaseClusterMunitions((LivingEntity) getOwner());
+                releaseClusterMunitions(getOwner());
             }
 
             Entity target = TraceTool.findLookingEntity(this, getDeltaMovement().scale(spreadTime).length());
 
             if (target != null && target != this) {
-                releaseClusterMunitions((LivingEntity) getOwner());
+                releaseClusterMunitions(getOwner());
             }
         }
     }
 
-    public void releaseClusterMunitions(LivingEntity shooter) {
+    public void releaseClusterMunitions(Entity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
             ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
             for (int index0 = 0; index0 < spreadAmount; index0++) {
@@ -221,7 +221,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
     }
 
-    public void releaseGrapeShot(LivingEntity shooter) {
+    public void releaseGrapeShot(Entity shooter) {
         if (level() instanceof ServerLevel serverLevel) {
             for (int index0 = 0; index0 < spreadAmount; index0++) {
                 GrapeshotEntity grapeProjectileEntity = new GrapeshotEntity(shooter, serverLevel, damage / spreadAmount);
