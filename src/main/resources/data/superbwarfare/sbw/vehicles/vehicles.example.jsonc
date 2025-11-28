@@ -1,3 +1,5 @@
+// NOTE: Not updated for 0.8.8, wait for future documentation
+
 // Vehicle data example, check out DefaultVehicleData.java for more info
 {
   // Vehicle entity's ID, MUST not be null or empty and MUST be VehicleEntity.java
