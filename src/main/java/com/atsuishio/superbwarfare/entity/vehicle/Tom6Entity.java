@@ -8,8 +8,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -140,11 +138,11 @@ public class Tom6Entity extends GeoVehicleEntity {
 
     @Override
     public boolean useAircraftCamera(int seatIndex) {
-        return (ModKeyMappings.FREE_CAMERA.isDown() || Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) && !ClientEventHandler.zoom;
+        return ModKeyMappings.FREE_CAMERA.isDown() && !ClientEventHandler.zoom;
     }
 
     @Override
     public double getMouseSensitivity() {
-        return 0.4;
+        return ModKeyMappings.FREE_CAMERA.isDown() ? 0.3 : 0;
     }
 }
