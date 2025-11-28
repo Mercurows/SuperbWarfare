@@ -15,7 +15,7 @@ public class Ah6Entity extends GeoVehicleEntity {
     public DamageModifier getDamageModifier() {
         return super.getDamageModifier()
                 .custom((source, damage) -> {
-                    damage *= getHealth() > 0.1f ? 0.7f : 0.05f;
+                    damage *= getHealth() > 0.1f ? 1 : 0.05f;
                     return damage;
                 });
     }
