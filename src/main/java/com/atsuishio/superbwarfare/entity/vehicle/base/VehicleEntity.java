@@ -1391,8 +1391,9 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             }
         });
 
-        selectedWeapons.set(seatIndex, selectedWeapon);
-        this.getEntityData().set(VehicleEntity.SELECTED_WEAPON, selectedWeapons, true);
+        var newList = new ArrayList<>(List.copyOf(selectedWeapons));
+        newList.set(seatIndex, selectedWeapon);
+        this.getEntityData().set(VehicleEntity.SELECTED_WEAPON, newList, true);
     }
 
     /**
