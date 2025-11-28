@@ -44,7 +44,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 
         this.tag(ModTags.Blocks.SOFT_COLLISION)
                 .addTag(BlockTags.LEAVES)
-                .add(Blocks.LILY_PAD, Blocks.COBWEB, Blocks.CACTUS);
+                .add(Blocks.LILY_PAD, Blocks.COBWEB, Blocks.CACTUS, Blocks.MANGROVE_ROOTS);
         this.tag(ModTags.Blocks.NORMAL_COLLISION)
                 .addTags(BlockTags.FENCES, BlockTags.FENCE_GATES, BlockTags.DOORS, BlockTags.TRAPDOORS, BlockTags.WALLS, BlockTags.WOOL,
                         BlockTags.STAIRS, BlockTags.SLABS, Tags.Blocks.GLASS_PANES)
