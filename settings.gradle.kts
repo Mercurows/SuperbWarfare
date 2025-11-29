@@ -4,6 +4,9 @@ pluginManagement {
         gradlePluginPortal()
         maven { url = uri("https://maven.neoforged.net/releases") }
     }
+    plugins {
+        id("org.jetbrains.kotlin.jvm") version "2.2.20"
+    }
 }
 
 plugins {

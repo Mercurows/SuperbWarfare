@@ -3,6 +3,7 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("net.neoforged.moddev") version "2.0.80"
+    id("org.jetbrains.kotlin.jvm") version "2.2.20"
 }
 
 tasks.named<Wrapper>("wrapper") {
@@ -53,6 +54,12 @@ repositories {
             includeGroup("curse.maven")
         }
     }
+
+    maven {
+        name = "Kotlin for Forge"
+        url = uri("https://thedarkcolour.github.io/KotlinForForge/")
+    }
+    mavenCentral()
 }
 
 base {
@@ -171,6 +178,7 @@ dependencies {
 //    implementation("org.mozilla:rhino:1.8.0")
 //    add("additionalRuntimeClasspath", "org.mozilla:rhino:1.8.0")
 //    jarJar(group = "org.mozilla", name = "rhino", version = "[1.8.0,2.0.0)")
+    implementation("thedarkcolour:kotlinforforge-neoforge:5.10.0")
 
     implementation("software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5")
 
@@ -269,4 +277,8 @@ idea {
         isDownloadSources = true
         isDownloadJavadoc = true
     }
+}
+
+kotlin {
+    jvmToolchain(21)
 }

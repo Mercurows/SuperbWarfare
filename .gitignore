@@ -124,3 +124,5 @@ run/
 *.bbmodel
 
 .cache
+
+.kotlin
