@@ -1,140 +1,142 @@
-package com.atsuishio.superbwarfare;
+package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
-import com.atsuishio.superbwarfare.client.MouseMovementHandler;
-import com.atsuishio.superbwarfare.client.molang.MolangVariable;
-import com.atsuishio.superbwarfare.client.sound.ModSoundInstances;
-import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler;
-import com.atsuishio.superbwarfare.compat.tacz.TACZGunEventHandler;
-import com.atsuishio.superbwarfare.config.ClientConfig;
-import com.atsuishio.superbwarfare.config.CommonConfig;
-import com.atsuishio.superbwarfare.config.ServerConfig;
-import com.atsuishio.superbwarfare.data.CustomData;
-import com.atsuishio.superbwarfare.init.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import software.bernie.geckolib.network.SerializableDataTicket;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
+import com.atsuishio.superbwarfare.client.MouseMovementHandler
+import com.atsuishio.superbwarfare.client.molang.MolangVariable
+import com.atsuishio.superbwarfare.client.sound.ModSoundInstances
+import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
+import com.atsuishio.superbwarfare.compat.tacz.TACZGunEventHandler
+import com.atsuishio.superbwarfare.config.ClientConfig
+import com.atsuishio.superbwarfare.config.CommonConfig
+import com.atsuishio.superbwarfare.config.ServerConfig
+import com.atsuishio.superbwarfare.data.CustomData
+import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.network.NetworkRegistry
+import com.tacz.guns.api.event.common.EntityHurtByGunEvent
+import net.minecraft.client.Minecraft
+import net.minecraft.resources.ResourceLocation
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.TickEvent
+import net.minecraftforge.event.TickEvent.ClientTickEvent
+import net.minecraftforge.event.TickEvent.PlayerTickEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.ModLoadingContext
+import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.config.ModConfig
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import software.bernie.geckolib.network.SerializableDataTicket
+import software.bernie.geckolib.util.GeckoLibUtil
+import thedarkcolour.kotlinforforge.forge.MOD_BUS
+import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+val MC: Minecraft by lazy { Minecraft.getInstance() }
+val BUS get() = MOD_BUS
 
-@net.minecraftforge.fml.common.Mod(Mod.MODID)
-public class Mod {
+private typealias Task = AbstractMap.SimpleEntry<Runnable, Int>
 
-    public static final String MODID = "superbwarfare";
-    public static final String ATTRIBUTE_MODIFIER = "superbwarfare_attribute_modifier";
+@Mod(com.atsuishio.superbwarfare.Mod.MODID)
+class Mod {
+    init {
+        with(ModLoadingContext.get()) {
+            registerConfig(ModConfig.Type.CLIENT, ClientConfig.init())
+            registerConfig(ModConfig.Type.COMMON, CommonConfig.init())
+            registerConfig(ModConfig.Type.SERVER, ServerConfig.init())
+        }
 
-    public static final Logger LOGGER = LogManager.getLogger(Mod.class);
+        val bus = MOD_BUS
+        manuallyRegisterEventSubscribers(bus)
 
-    public Mod() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.init());
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.init());
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
+        ModPerks.register(bus)
+        ModSerializers.REGISTRY.register(bus)
+        ModSounds.REGISTRY.register(bus)
+        ModBlocks.REGISTRY.register(bus)
+        ModBlockEntities.REGISTRY.register(bus)
+        ModItems.register(bus)
+        ModEntities.REGISTRY.register(bus)
+        ModTabs.TABS.register(bus)
+        ModMobEffects.REGISTRY.register(bus)
+        ModParticleTypes.REGISTRY.register(bus)
+        ModPotions.POTIONS.register(bus)
+        ModMenuTypes.REGISTRY.register(bus)
+        ModVillagers.register(bus)
+        ModRecipes.register(bus)
+        ModCommandArguments.COMMAND_ARGUMENT_TYPES.register(bus)
 
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener<FMLCommonSetupEvent> { onCommonSetup() }
+        bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
+        bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior(it) }
 
-        ModPerks.register(bus);
-        ModSerializers.REGISTRY.register(bus);
-        ModSounds.REGISTRY.register(bus);
-        ModBlocks.REGISTRY.register(bus);
-        ModBlockEntities.REGISTRY.register(bus);
-        ModItems.register(bus);
-        ModEntities.REGISTRY.register(bus);
-        ModTabs.TABS.register(bus);
-        ModMobEffects.REGISTRY.register(bus);
-        ModParticleTypes.REGISTRY.register(bus);
-        ModPotions.POTIONS.register(bus);
-        ModMenuTypes.REGISTRY.register(bus);
-        ModVillagers.register(bus);
-        ModRecipes.register(bus);
-        ModCommandArguments.COMMAND_ARGUMENT_TYPES.register(bus);
-
-        bus.addListener(this::onCommonSetup);
-        bus.addListener(this::onClientSetup);
-        bus.addListener(ModItems::registerDispenserBehavior);
-
-        registerDataTickets();
+        registerDataTickets()
 
         if (TACZGunEventHandler.compatCondition()) {
-            MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun);
+            MinecraftForge.EVENT_BUS.addListener<EntityHurtByGunEvent.Pre> { TACZGunEventHandler.entityHurtByTACZGun(it) }
         }
         if (ColdSweatCompatHandler.hasMod()) {
-            MinecraftForge.EVENT_BUS.addListener(ColdSweatCompatHandler::onPlayerInVehicle);
+            MinecraftForge.EVENT_BUS.addListener<PlayerTickEvent> { ColdSweatCompatHandler.onPlayerInVehicle(it) }
         }
 
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(this)
 
-        CustomData.load();
-    }
-
-    public static ResourceLocation loc(String path) {
-        return new ResourceLocation(MODID, path);
-    }
-
-    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> SERVER_QUEUE = new ConcurrentLinkedQueue<>();
-    private static final Collection<AbstractMap.SimpleEntry<Runnable, Integer>> CLIENT_QUEUE = new ConcurrentLinkedQueue<>();
-
-    public static void queueServerWork(int tick, Runnable action) {
-        SERVER_QUEUE.add(new AbstractMap.SimpleEntry<>(action, tick));
-    }
-
-    public static void queueClientWork(int tick, Runnable action) {
-        CLIENT_QUEUE.add(new AbstractMap.SimpleEntry<>(action, tick));
+        CustomData.load()
     }
 
     @SubscribeEvent
-    public void tick(TickEvent.ServerTickEvent event) {
+    fun tick(event: TickEvent.ServerTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
-            List<AbstractMap.SimpleEntry<Runnable, Integer>> actions = new ArrayList<>();
-            SERVER_QUEUE.forEach(work -> {
-                work.setValue(work.getValue() - 1);
-                if (work.getValue() == 0)
-                    actions.add(work);
-            });
-            actions.forEach(e -> e.getKey().run());
-            SERVER_QUEUE.removeAll(actions);
+            executeWork(SERVER_QUEUE)
         }
     }
 
     @SubscribeEvent
-    public void tick(TickEvent.ClientTickEvent event) {
+    fun tick(event: ClientTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
-            List<AbstractMap.SimpleEntry<Runnable, Integer>> actions = new ArrayList<>();
-            CLIENT_QUEUE.forEach(work -> {
-                work.setValue(work.getValue() - 1);
-                if (work.getValue() == 0)
-                    actions.add(work);
-            });
-            actions.forEach(e -> e.getKey().run());
-            CLIENT_QUEUE.removeAll(actions);
+            executeWork(CLIENT_QUEUE)
         }
     }
 
-    public void onCommonSetup(final FMLCommonSetupEvent event) {
-        com.atsuishio.superbwarfare.network.NetworkRegistry.register();
+    private fun executeWork(workQueueC: MutableCollection<Task>) {
+        workQueueC.removeAll(
+            workQueueC
+                .onEach { it.setValue(it.value - 1) }
+                .filter { it.value <= 0 }
+                .onEach { it.key.run() }
+                .toSet()
+        )
     }
 
-    public void onClientSetup(final FMLClientSetupEvent event) {
-        MouseMovementHandler.init();
-        MolangVariable.register();
-        event.enqueueWork(ModSoundInstances::init);
+    private fun onCommonSetup() = NetworkRegistry.register()
+
+    private fun onClientSetup(event: FMLClientSetupEvent) {
+        MouseMovementHandler.init()
+        MolangVariable.register()
+        event.enqueueWork { ModSoundInstances.init() }
     }
 
-    private void registerDataTickets() {
-        FuMO25BlockEntity.FUMO25_TICK = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofInt(loc("fumo25_tick")));
+    private fun registerDataTickets() {
+        FuMO25BlockEntity.FUMO25_TICK = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofInt(loc("fumo25_tick")))
+    }
+
+    companion object {
+        const val MODID = "superbwarfare"
+        const val ATTRIBUTE_MODIFIER = "superbwarfare_attribute_modifier"
+
+        @JvmField
+        val LOGGER: Logger = LogManager.getLogger(Mod::class.java)
+
+        @JvmStatic
+        fun loc(path: String): ResourceLocation = ResourceLocation(MODID, path)
+
+        private val SERVER_QUEUE = ConcurrentLinkedQueue<Task>()
+        private val CLIENT_QUEUE = ConcurrentLinkedQueue<Task>()
+
+        @JvmStatic
+        fun queueServerWork(tick: Int, action: Runnable) = SERVER_QUEUE.add(Task(action, tick))
+
+        @JvmStatic
+        fun queueClientWork(tick: Int, action: Runnable) = CLIENT_QUEUE.add(Task(action, tick))
     }
 }

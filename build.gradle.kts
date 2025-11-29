@@ -7,6 +7,7 @@ plugins {
     id("net.minecraftforge.gradle") version "[6.0.16,6.2)"
     id("org.spongepowered.mixin") version "0.7.+"
     id("org.parchmentmc.librarian.forgegradle") version "1.+"
+    id("org.jetbrains.kotlin.jvm") version "2.0.0"
 }
 
 fun getGitCommitHash(): String {
@@ -120,6 +121,12 @@ repositories {
             includeGroup("curse.maven")
         }
     }
+
+    maven {
+        name = "Kotlin for Forge"
+        url = uri("https://thedarkcolour.github.io/KotlinForForge/")
+    }
+    mavenCentral()
 }
 
 //jarJar.enable()
@@ -128,6 +135,8 @@ dependencies {
 //    implementation("org.mozilla:rhino:1.8.0")
 //    minecraftLibrary("org.mozilla:rhino:1.8.0")
 //    jarJar(group = "org.mozilla", name = "rhino", version = "[1.8.0,2.0.0)")
+
+    implementation("thedarkcolour:kotlinforforge:4.11.0")
 
     minecraft("net.minecraftforge:forge:1.20.1-47.2.0")
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
@@ -243,4 +252,8 @@ idea {
         isDownloadSources = true
         isDownloadJavadoc = true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

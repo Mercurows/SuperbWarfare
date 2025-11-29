@@ -56,7 +56,7 @@ public class DataLoader {
     }
 
     @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID, bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD)
-    static class ClientReloadListener {
+    public static class ClientReloadListener {
         @SubscribeEvent
         public static void addResourceReloadListener(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener(CLIENT_LISTENER);

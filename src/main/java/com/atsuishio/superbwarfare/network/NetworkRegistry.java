@@ -6,10 +6,10 @@ import com.atsuishio.superbwarfare.network.message.receive.*;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.simple.SimpleChannel;
+import thedarkcolour.kotlinforforge.forge.ForgeKt;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -86,7 +86,7 @@ public class NetworkRegistry {
         playToServer(WeaponZoomingMessage.class, WeaponZoomingMessage::encode, WeaponZoomingMessage::decode, WeaponZoomingMessage::handler);
 
         var registerContainerEvent = new RegisterContainersEvent();
-        FMLJavaModLoadingContext.get().getModEventBus().post(registerContainerEvent);
+        ForgeKt.getMOD_BUS().post(registerContainerEvent);
     }
 
     public static <T> void playToClient(Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder, BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {

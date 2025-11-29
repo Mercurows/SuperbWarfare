@@ -1,99 +1,126 @@
-package com.atsuishio.superbwarfare.capability;
+package com.atsuishio.superbwarfare.capability
 
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
-import com.atsuishio.superbwarfare.data.gun.Ammo;
-import com.atsuishio.superbwarfare.network.NetworkRegistry;
-import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.atsuishio.superbwarfare.capability.player.PlayerVariable
+import com.atsuishio.superbwarfare.data.gun.Ammo
+import com.atsuishio.superbwarfare.network.NetworkRegistry
+import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage
+import net.minecraft.core.Direction
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
+import net.minecraftforge.common.capabilities.Capability
+import net.minecraftforge.common.capabilities.ICapabilitySerializable
+import net.minecraftforge.common.util.FakePlayer
+import net.minecraftforge.common.util.INBTSerializable
+import net.minecraftforge.common.util.LazyOptional
+import net.minecraftforge.event.AttachCapabilitiesEvent
+import net.minecraftforge.event.entity.player.PlayerEvent
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber
+import net.minecraftforge.network.PacketDistributor
 
-@Mod.EventBusSubscriber
-public class CapabilityHandler {
-
+@EventBusSubscriber
+object CapabilityHandler {
     @SubscribeEvent
-    public static void registerCapabilities(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof Player player) {
-            event.addCapability(LaserCapability.ID, createProvider(LazyOptional.of(LaserCapability.LaserCapabilityImpl::new), ModCapabilities.LASER_CAPABILITY));
-            if (!(player instanceof FakePlayer)) {
-                event.addCapability(PlayerVariable.ID, createProvider(LazyOptional.of(PlayerVariable::new), ModCapabilities.PLAYER_VARIABLE));
-            }
+    fun registerCapabilities(event: AttachCapabilitiesEvent<Entity>) {
+        val player = event.getObject()
+        if (player !is Player) return
+
+        event.addCapability(
+            LaserCapability.ID,
+            createProvider(
+                LazyOptional.of { LaserCapability.LaserCapabilityImpl() },
+                ModCapabilities.LASER_CAPABILITY
+            )
+        )
+
+        if (player !is FakePlayer) {
+            event.addCapability(
+                PlayerVariable.ID,
+                createProvider(
+                    LazyOptional.of { PlayerVariable() },
+                    ModCapabilities.PLAYER_VARIABLE
+                )
+            )
         }
     }
 
     @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    fun onPlayerLoggedIn(event: PlayerLoggedInEvent) {
+        val player = event.entity
+        if (player !is ServerPlayer) return
 
-        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
-                new PlayerVariablesSyncMessage(player.getId(), PlayerVariable.getOrDefault(player).compareAndUpdate()));
+        NetworkRegistry.PACKET_HANDLER.send(
+            PacketDistributor.PLAYER.with { player },
+            PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).compareAndUpdate())
+        )
     }
 
     @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    fun onPlayerRespawn(event: PlayerEvent.PlayerRespawnEvent) {
+        val player = event.entity
+        if (player !is ServerPlayer) return
 
-        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
-                new PlayerVariablesSyncMessage(player.getId(), PlayerVariable.getOrDefault(player).compareAndUpdate()));
+        NetworkRegistry.PACKET_HANDLER.send(
+            PacketDistributor.PLAYER.with { player },
+            PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).compareAndUpdate())
+        )
     }
 
     @SubscribeEvent
-    public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    fun onPlayerChangeDimension(event: PlayerChangedDimensionEvent) {
+        val player = event.entity
+        if (player !is ServerPlayer) return
 
-        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player),
-                new PlayerVariablesSyncMessage(player.getId(), PlayerVariable.getOrDefault(player).forceUpdate()));
+        NetworkRegistry.PACKET_HANDLER.send(
+            PacketDistributor.PLAYER.with { player },
+            PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).forceUpdate())
+        )
     }
 
     @SubscribeEvent
-    public static void clonePlayer(PlayerEvent.Clone event) {
-        event.getOriginal().revive();
-        if (event.getEntity().level().isClientSide()) return;
-        var original = PlayerVariable.getOrDefault(event.getOriginal());
-        var clone = event.getEntity().getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable());
+    fun clonePlayer(event: PlayerEvent.Clone) {
+        event.original.revive()
+        if (event.entity.level().isClientSide()) return
 
-        for (var type : Ammo.values()) {
-            type.set(clone, type.get(original));
+        val original = PlayerVariable.getOrDefault(event.original)
+        val clone = event.entity.getCapability(ModCapabilities.PLAYER_VARIABLE, null)
+            .orElse(PlayerVariable())
+
+        for (type in Ammo.entries) {
+            type.set(clone, type.get(original))
         }
 
-        clone.tacticalSprint = original.tacticalSprint;
+        clone.tacticalSprint = original.tacticalSprint
 
-        if (event.getEntity().level().isClientSide()) return;
+        val player = event.entity
+        if (player.level().isClientSide()) return
 
-        var player = event.getEntity();
-        player.getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable()).sync(player);
+        player.getCapability(ModCapabilities.PLAYER_VARIABLE, null)
+            .orElse(PlayerVariable())
+            .sync(player)
     }
 
-    public static <T extends INBTSerializable<CompoundTag>> ICapabilitySerializable<CompoundTag> createProvider(LazyOptional<T> instance, Capability<T> capability) {
-        return new ICapabilitySerializable<>() {
-            @Override
-            public @NotNull <C> LazyOptional<C> getCapability(@NotNull Capability<C> cap, @Nullable Direction side) {
-                return capability.orEmpty(cap, instance.cast());
+    fun <T : INBTSerializable<CompoundTag>> createProvider(
+        instance: LazyOptional<T>,
+        capability: Capability<T>,
+    ): ICapabilitySerializable<CompoundTag> {
+        return object : ICapabilitySerializable<CompoundTag> {
+            override fun <C> getCapability(cap: Capability<C>, side: Direction?) =
+                capability.orEmpty(cap, instance.cast())
+
+            override fun serializeNBT(): CompoundTag {
+                return instance.orElseThrow { NullPointerException() }
+                    .serializeNBT()
             }
 
-            @Override
-            public CompoundTag serializeNBT() {
-                return instance.orElseThrow(NullPointerException::new).serializeNBT();
+            override fun deserializeNBT(nbt: CompoundTag) {
+                instance.orElseThrow { NullPointerException() }
+                    .deserializeNBT(nbt)
             }
-
-            @Override
-            public void deserializeNBT(CompoundTag nbt) {
-                instance.orElseThrow(NullPointerException::new).deserializeNBT(nbt);
-            }
-        };
+        }
     }
 }
