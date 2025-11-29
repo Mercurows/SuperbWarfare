@@ -207,8 +207,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public int turretControllerIndex = 0;
     @SerializedName("TurretHudType")
     public String turretHudType = "@Empty";
-    @SerializedName("TurretBarrelPos")
-    public Vec3 turretBarrelPos = Vec3.ZERO;
+    
+    @SerializedName("BarrelPos")
+    public Vec3 barrelPos = Vec3.ZERO;
 
     // 乘客位武器
     @SerializedName("PassengerWeaponStationPos")

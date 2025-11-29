@@ -5,7 +5,7 @@
   "TurretPos": [0, 2.052, -0.05995],
   "TurretTurnSpeed": [10, 10],
   "TurretPitchRange": [-30, 30],
-  "TurretBarrelPos": [0, 0.4271, -0.02626],
+  "BarrelPos": [0, 0.4271, -0.02626],
   "SeekInfo": {
     "MinSeekRange": 3.5,
     "MaxSeekRange": 128,

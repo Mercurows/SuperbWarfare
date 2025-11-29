@@ -6,7 +6,7 @@
   "TurretPos": [0, 0.375, 0],
   "TurretTurnSpeed": [1.25, 2],
   "TurretPitchRange": [-5, 85],
-  "TurretBarrelPos": [0, 2.25, -0.39375],
+  "BarrelPos": [0, 2.25, -0.39375],
   "Seats": {
     "HidePassenger": true,
     "Transform": "Turret",

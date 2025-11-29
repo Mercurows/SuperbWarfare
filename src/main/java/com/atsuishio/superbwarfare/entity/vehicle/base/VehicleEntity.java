@@ -3086,7 +3086,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
     }
 
     public Vec3 getBarrelPosition() {
-        return computed().turretBarrelPos;
+        return computed().barrelPos;
     }
 
     public boolean hasPassengerWeaponStation() {

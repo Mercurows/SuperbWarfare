@@ -6,7 +6,7 @@
   "TurretPos": [0, 0.45703125, -0.1625],
   "TurretYawRange": [-15, 15],
   "TurretPitchRange": [-5, 60],
-  "TurretBarrelPos": [0, 0.65, -0.203125],
+  "BarrelPos": [0, 0.65, -0.203125],
   "Weapons": {
     "@Rocket": {
       "Velocity": 10,
