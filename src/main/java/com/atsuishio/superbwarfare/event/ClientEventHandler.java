@@ -1688,7 +1688,7 @@ public class ClientEventHandler {
     }
 
     private static void handleWeaponFire(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {
-        float times = (float) (customAnimSpeed * Math.min(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), 0.48f));
+        float times = (float) (customAnimSpeed * 2 * Math.min(getDelta(), 0.48f));
         ItemStack stack = entity.getMainHandItem();
 
         var data = GunData.from(stack);
