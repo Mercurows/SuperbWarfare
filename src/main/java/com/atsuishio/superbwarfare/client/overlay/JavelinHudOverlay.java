@@ -138,15 +138,16 @@ public class JavelinHudOverlay implements IGuiOverlay {
                 } else {
                     Vec3 pos = ClientEventHandler.lockingPos;
                     boolean lockOn = ClientEventHandler.lockOn;
+                    if (pos != null) {
+                        Vec3 point = VectorUtil.worldToScreen(pos);
+                        if (VectorUtil.canSee(pos)) {
+                            poseStack.pushPose();
+                            float x = (float) point.x;
+                            float y = (float) point.y;
 
-                    Vec3 point = VectorUtil.worldToScreen(pos);
-                    if (VectorUtil.canSee(pos)) {
-                        poseStack.pushPose();
-                        float x = (float) point.x;
-                        float y = (float) point.y;
-
-                        RenderHelper.blit(poseStack, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
-                        poseStack.popPose();
+                            RenderHelper.blit(poseStack, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 1f);
+                            poseStack.popPose();
+                        }
                     }
                 }
             }
