@@ -414,7 +414,7 @@
     ]
   },
   "EngineSound": "superbwarfare:bmp_2_engine",
-  "TurretHudType": "@Land",
+  "HudType": "@Land",
   "TerrainCompat": [
     [1.875, 0, 2.375], [-1.875, 0, 2.375],
     [1.875, 0, 1.438], [-1.875, 0, 1.438],

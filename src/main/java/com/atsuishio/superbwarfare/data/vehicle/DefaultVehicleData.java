@@ -205,9 +205,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public Vec2 turretPitchRange = new Vec2(-10, 30);
     @SerializedName("TurretControllerIndex")
     public int turretControllerIndex = 0;
-    @SerializedName("TurretHudType")
-    public String turretHudType = "@Empty";
-    
+
+    @SerializedName("HudType")
+    public String hudType = "@Empty";
     @SerializedName("BarrelPos")
     public Vec3 barrelPos = Vec3.ZERO;
 

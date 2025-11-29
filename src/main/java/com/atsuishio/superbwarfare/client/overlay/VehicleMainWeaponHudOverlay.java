@@ -68,7 +68,7 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
         if (!(player.getVehicle() instanceof VehicleEntity vehicle)) return;
         if (ClientEventHandler.isEditing) return;
 
-        var type = vehicle.computed().turretHudType;
+        var type = vehicle.computed().hudType;
         if (type.equals(EMPTY)) return;
 
         var gunData = vehicle.getGunData(player);

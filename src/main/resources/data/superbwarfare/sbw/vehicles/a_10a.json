@@ -73,7 +73,7 @@
     },
     "Weapons": ["Cannon", "Rocket", "Bomb", "Missile"]
   },
-  "TurretHudType": "@Aircraft",
+  "HudType": "@Aircraft",
   "Weapons": {
     "Cannon": {
       "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
