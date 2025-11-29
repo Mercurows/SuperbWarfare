@@ -5,7 +5,7 @@
   "TurretPos": [0, 1.107375, 4.2125],
   "TurretTurnSpeed": [15, 15],
   "TurretPitchRange": [-40, 10],
-  "TurretBarrelPos": [0, -0.55, -0.051],
+  "BarrelPos": [0, -0.55, -0.051],
   "TurretControllerIndex": 1,
   "OBB": [
     {

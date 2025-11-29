@@ -352,7 +352,7 @@
     "EngineSoundVolume" : 0.6
   },
   "TurretPos": [0, 2.1059375, -0.43125],
-  "TurretBarrelPos": [0, 0.56345, 0.6477125],
+  "BarrelPos": [0, 0.56345, 0.6477125],
   "TurretTurnSpeed": [7, 6],
   "TurretPitchRange": [-10, 30],
   "PassengerWeaponStationPos": [-0.75805625, 1.1446375, -0.57275625],
