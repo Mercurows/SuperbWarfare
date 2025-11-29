@@ -5,7 +5,7 @@
   "TurretPos": [0, 1.107375, 4.2125],
   "TurretTurnSpeed": [15, 15],
   "TurretPitchRange": [-40, 10],
-  "BarrelPos": [0, -0.55, -0.051],
+  "TurretBarrelPos": [0, -0.55, -0.051],
   "TurretControllerIndex": 1,
   "OBB": [
     {
@@ -394,7 +394,7 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/mi_28_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Helicopter",
-  "MainWeaponHudType": "@Helicopter",
+  "TurretHudType": "@Helicopter",
   "TerrainCompat": [[-1.284, 0, 1.728], [1.284, 0, 1.728], [0, 0.58, -11.1]],
   "TerrainCompatRotateRate": 0.18
 }

@@ -227,5 +227,5 @@
     [1.156, 0, -0.875],
     [-1.156, 0, -0.875]
   ],
-  "MainWeaponHudType": "@Helicopter"
+  "TurretHudType": "@Helicopter"
 }

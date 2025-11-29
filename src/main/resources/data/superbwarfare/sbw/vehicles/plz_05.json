@@ -6,7 +6,7 @@
   "TurretPos": [0, 1.93, -0.878],
   "TurretTurnSpeed": [2, 1.5],
   "TurretPitchRange": [-3, 65],
-  "BarrelPos": [0, 0.878, 0.965],
+  "TurretBarrelPos": [0, 0.878, 0.965],
   "TurretControllerIndex": 1,
   "Seats": [
     {
@@ -197,7 +197,7 @@
     "ExplosionDamage": 250,
     "ExplosionRadius": 18
   },
-  "MainWeaponHudType": "@Land",
+  "TurretHudType": "@Land",
   "InertiaRotateRate": 0.8,
   "HasDecoy": true,
   "OBB": [

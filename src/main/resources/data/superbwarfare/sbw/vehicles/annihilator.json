@@ -4,7 +4,7 @@
   "TurretPos": [0, 0.453, 0],
   "TurretTurnSpeed": [0.9, 0.9],
   "TurretPitchRange": [-5, 45],
-  "BarrelPos": [0, 1.797, 4.95],
+  "TurretBarrelPos": [0, 1.797, 4.95],
   "MaxEnergy": 20000000,
   "OBB": [
     {
@@ -197,5 +197,5 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/annihilator_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
   "Type": "Artillery",
-  "MainWeaponHudType": "@Artillery"
+  "TurretHudType": "@Artillery"
 }

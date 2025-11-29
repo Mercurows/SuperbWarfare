@@ -6,7 +6,7 @@
   "TurretPos": [0, 0.375, 0],
   "TurretTurnSpeed": [1.25, 2],
   "TurretPitchRange": [-5, 85],
-  "BarrelPos": [0, 2.25, -0.39375],
+  "TurretBarrelPos": [0, 2.25, -0.39375],
   "Seats": {
     "HidePassenger": true,
     "Transform": "Turret",
@@ -144,5 +144,5 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/bl_132_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
   "Type": "Artillery",
-  "MainWeaponHudType": "@Artillery"
+  "TurretHudType": "@Artillery"
 }
