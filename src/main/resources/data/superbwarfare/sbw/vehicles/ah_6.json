@@ -97,7 +97,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm.png",
       "DefaultZoom": 2,
       "RPM": 500,
       "Velocity": 30,
@@ -128,7 +128,7 @@
     },
     "Rocket": {
       "AmmoType": "superbwarfare:small_rocket",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/small_rocket.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",

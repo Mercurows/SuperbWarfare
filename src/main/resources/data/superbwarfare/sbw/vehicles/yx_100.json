@@ -108,7 +108,7 @@
   ],
   "Weapons": {
     "Cannon": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/ap_shell.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ap_shell.png",
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
@@ -133,7 +133,7 @@
         {
           "Ammo": "superbwarfare:he_5_inches",
           "Override": {
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/he_shell.png",
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
             "IsArmorPiercingProjectile": false,
             "IsHighExplosiveProjectile": true,
             "Velocity": 25,
@@ -146,7 +146,7 @@
         {
           "Ammo": "superbwarfare:cm_5_inches",
           "Override": {
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/cm_shell.png",
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cm_shell.png",
             "IsArmorPiercingProjectile": false,
             "IsClusterMunitionsProjectile": true,
             "SpreadAmount": 18,
@@ -161,7 +161,7 @@
         {
           "Ammo": "superbwarfare:gs_5_inches",
           "Override": {
-            "Icon": "superbwarfare:textures/screens/vehicle_weapon/grape_shell.png",
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
             "IsArmorPiercingProjectile": false,
             "IsGrapeShotProjectile": true,
             "SpreadAmount": 36,
@@ -193,7 +193,7 @@
       }
     },
     "MachineGun": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_12_7mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.25,
@@ -227,7 +227,7 @@
       "SoundRadius": 16
     },
     "PassengerMachineGun": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_12_7mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.25,
@@ -261,7 +261,7 @@
       "SoundRadius": 16
     },
     "SwarmDrone": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/swarm_drone.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/swarm_drone.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": ["Auto"],
       "Spread": 0.3,
