@@ -3603,7 +3603,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var seat = computed().seats().get(seatIndex);
         if (seat != null) {
             var data = seat.cameraPos;
-            return data.aircraftCamera;
+            return data.useAircraftCamera;
         } else {
             return false;
         }
