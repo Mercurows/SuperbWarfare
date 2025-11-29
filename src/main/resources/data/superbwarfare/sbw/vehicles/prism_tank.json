@@ -75,7 +75,7 @@
   ],
   "Weapons": {
     "Laser": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/laser.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/laser.png",
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Projectile": "ray",

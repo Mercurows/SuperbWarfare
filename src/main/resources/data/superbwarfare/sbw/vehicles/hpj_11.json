@@ -31,7 +31,7 @@
   },
   "Weapons": {
     "Main": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",

@@ -106,7 +106,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm.png",
       "DefaultZoom": 3,
       "RPM": 300,
       "Velocity": 30,
@@ -138,7 +138,7 @@
     },
     "Rocket": {
       "AmmoType": "superbwarfare:small_rocket",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/small_rocket.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
@@ -171,7 +171,7 @@
       "SoundRadius": 12
     },
     "@Missile": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_9m120.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/missile_9m120.png",
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "RPM": 12,
@@ -250,7 +250,7 @@
           }
         }
       ],
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/kh_39.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/kh_39.png",
       "DefaultZoom": 3,
       "DefaultFireMode": "Semi",
       "Magazine": 2,
@@ -294,7 +294,7 @@
     },
     "DriverAAMissile": {
       "AmmoType": "superbwarfare:medium_anti_air_missile",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/ru_9m336.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ru_9m336.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",

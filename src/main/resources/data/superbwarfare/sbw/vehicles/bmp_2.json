@@ -186,7 +186,7 @@
       },
       "SoundRadius": 24,
       "AmmoType": "superbwarfare:small_shell",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm.png",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [
@@ -227,7 +227,7 @@
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 12,
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_7_62mm.png"
     },
     "Missile": {
       "DefaultFireMode": "Semi",
@@ -262,7 +262,7 @@
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 12,
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_9m113.png"
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/missile_9m113.png"
     },
     "@MG": {
       "DefaultFireMode": "Auto",
@@ -291,7 +291,7 @@
         "Positions": [[1.803125, 1.9765625, -0.8125]],
         "Directions": ["Passenger"]
       },
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_7_62mm.png"
     },
     "MG1": {
       "Template": "@MG",

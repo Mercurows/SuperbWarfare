@@ -76,7 +76,7 @@
   "HudType": "@Aircraft",
   "Weapons": {
     "Cannon": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_30mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "AmmoType": "superbwarfare:small_shell",
@@ -106,7 +106,7 @@
     },
     "Rocket": {
       "AmmoType": "superbwarfare:small_rocket",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/small_rocket.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/small_rocket.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Semi",
@@ -141,7 +141,7 @@
     },
     "Bomb": {
       "AmmoType": "superbwarfare:medium_aerial_bomb",
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/mk_82.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/mk_82.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Semi",
@@ -177,7 +177,7 @@
       "SoundRadius": 8
     },
     "Missile": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/agm_65.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/agm_65.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",

@@ -42,7 +42,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     public JsonObject override = null;
 
     @SerializedName("Icon")
-    public String icon = Mod.loc("textures/screens/vehicle_weapon/empty.png").toString();
+    public String icon = Mod.loc("textures/overlay/vehicle/weapon/icons/empty.png").toString();
 
     @SerializedName("ShouldUnload")
     public boolean shouldUnload = true;

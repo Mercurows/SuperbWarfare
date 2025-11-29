@@ -107,7 +107,7 @@
   ],
   "Weapons": {
     "Cannon": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/cannon_20mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
@@ -142,7 +142,7 @@
       }
     },
     "MachineGun": {
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/gun_7_62mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_7_62mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.5,
