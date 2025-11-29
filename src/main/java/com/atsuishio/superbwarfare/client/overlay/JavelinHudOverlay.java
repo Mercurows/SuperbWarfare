@@ -145,15 +145,16 @@ public class JavelinHudOverlay implements LayeredDraw.Layer {
                 } else {
                     Vec3 pos = ClientEventHandler.lockingPos;
                     boolean lockOn = ClientEventHandler.lockOn;
+                    if (pos != null) {
+                        Vec3 point = VectorUtil.worldToScreen(pos);
+                        if (VectorUtil.canSee(pos)) {
+                            poseStack.pushPose();
+                            float x = (float) point.x;
+                            float y = (float) point.y;
 
-                    Vec3 point = VectorUtil.worldToScreen(pos);
-                    if (VectorUtil.canSee(pos)) {
-                        poseStack.pushPose();
-                        float x = (float) point.x;
-                        float y = (float) point.y;
-
-                        RenderHelper.preciseBlitWithColor(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                        poseStack.popPose();
+                            RenderHelper.preciseBlitWithColor(guiGraphics, lockOn ? FRAME_LOCK : FRAME_TARGET, x - 12, y - 12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                            poseStack.popPose();
+                        }
                     }
                 }
             }
