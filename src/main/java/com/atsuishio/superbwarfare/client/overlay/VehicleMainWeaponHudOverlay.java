@@ -66,7 +66,7 @@ public class VehicleMainWeaponHudOverlay implements IGuiOverlay {
         if (!(player.getVehicle() instanceof VehicleEntity vehicle)) return;
         if (ClientEventHandler.isEditing) return;
 
-        var type = vehicle.computed().mainWeaponHudType;
+        var type = vehicle.computed().turretHudType;
         if (type.equals(EMPTY)) return;
 
         var gunData = vehicle.getGunData(player);
