@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 
@@ -118,6 +119,6 @@ public class VectorTool {
 
     public static boolean checkNoClip(Vec3 pos1, Vec3 pos2, Level level) {
         return level.clip(new ClipContext(pos1, pos2,
-                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, (Entity) null)).getType() != HitResult.Type.BLOCK;
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty())).getType() != HitResult.Type.BLOCK;
     }
 }
