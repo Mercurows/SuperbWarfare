@@ -1328,7 +1328,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         var soundInfo = computedGunData.soundInfo;
         float pitch = getWeaponHeat(living) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - getWeaponHeat(living)));
 
-        Entity listener = living.getVehicle() == this ? living : null;
+        Entity listener = getGunData(living) == gunData ? living : null;
 
         if (soundInfo.fire3P != null) {
             SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, pos, (float) (computedGunData.soundRadius * 0.4f), pitch, listener);
