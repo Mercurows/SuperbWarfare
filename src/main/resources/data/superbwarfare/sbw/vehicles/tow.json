@@ -52,7 +52,8 @@
         "Fire3P": "superbwarfare:bmp_2_missile_fire_3p"
       },
       "SoundRadius": 12,
-      "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_tow.png"
+      "Icon": "superbwarfare:textures/screens/vehicle_weapon/missile_tow.png",
+      "Crosshair": "@Custom"
     }
   },
   "ThirdPersonCameraPos": [-0.3, 1, -1],

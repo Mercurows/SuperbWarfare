@@ -152,7 +152,9 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
             if (texture == null) {
                 String finalCrosshairPath = crosshairPath;
-                LOGGER.log(crosshairPath, logger -> logger.error("Failed to load crosshair texture for {}", finalCrosshairPath));
+                if (!finalCrosshairPath.equals("@Custom")) {
+                    LOGGER.log(crosshairPath, logger -> logger.error("Failed to load crosshair texture for {}", finalCrosshairPath));
+                }
             } else {
                 float minWH = (float) Math.min(screenWidth, screenHeight);
                 float scaledMinWH = Mth.floor(minWH * scale);
