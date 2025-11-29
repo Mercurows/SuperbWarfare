@@ -26,6 +26,7 @@ public class MortarInfoOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         int w = guiGraphics.guiWidth();
         int h = guiGraphics.guiHeight();
         Player player = Minecraft.getInstance().player;

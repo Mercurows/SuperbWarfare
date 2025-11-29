@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -52,9 +51,10 @@ public class SpyglassRangeOverlay implements LayeredDraw.Layer {
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.options.hideGui) return;
+
         PoseStack poseStack = guiGraphics.pose();
         Player player = mc.player;
-        Camera camera = mc.gameRenderer.getMainCamera();
         var screenWidth = guiGraphics.guiWidth();
         var screenHeight = guiGraphics.guiHeight();
 

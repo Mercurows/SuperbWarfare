@@ -86,6 +86,7 @@ public class AmmoBarOverlay implements LayeredDraw.Layer {
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!DisplayConfig.AMMO_HUD.get()) return;
+        if (Minecraft.getInstance().options.hideGui) return;
 
         int screenWidth = guiGraphics.guiWidth();
         int screenHeight = guiGraphics.guiHeight();

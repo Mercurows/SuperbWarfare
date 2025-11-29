@@ -50,6 +50,8 @@ public class AmmoCountOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
+
         boolean startRenderingAmmoInfo = false;
         Player player = Minecraft.getInstance().player;
         if (player == null || player.isSpectator()) return;

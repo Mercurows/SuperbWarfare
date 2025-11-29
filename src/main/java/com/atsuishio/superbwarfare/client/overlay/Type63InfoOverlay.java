@@ -41,6 +41,7 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.options.hideGui) return;
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();
 

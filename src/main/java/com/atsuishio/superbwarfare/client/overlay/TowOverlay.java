@@ -31,6 +31,7 @@ public class TowOverlay implements LayeredDraw.Layer {
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         PoseStack poseStack = guiGraphics.pose();

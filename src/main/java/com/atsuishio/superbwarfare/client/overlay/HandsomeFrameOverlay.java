@@ -42,6 +42,8 @@ public class HandsomeFrameOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
+
         Player player = Minecraft.getInstance().player;
         PoseStack poseStack = guiGraphics.pose();
 

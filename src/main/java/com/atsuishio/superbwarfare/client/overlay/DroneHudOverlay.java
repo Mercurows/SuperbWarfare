@@ -66,6 +66,8 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
         int screenHeight = guiGraphics.guiHeight();
 
         Minecraft mc = Minecraft.getInstance();
+        if (mc.options.hideGui) return;
+
         Player player = mc.player;
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();

@@ -63,6 +63,8 @@ public class VehicleMainWeaponHudOverlay implements LayeredDraw.Layer {
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         var mc = Minecraft.getInstance();
+        if (mc.options.hideGui) return;
+
         var player = mc.player;
         if (player == null) return;
         if (!(player.getVehicle() instanceof VehicleEntity vehicle)) return;

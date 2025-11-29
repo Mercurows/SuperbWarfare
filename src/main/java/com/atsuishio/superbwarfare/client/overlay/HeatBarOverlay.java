@@ -36,6 +36,7 @@ public class HeatBarOverlay implements LayeredDraw.Layer {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         if (!DisplayConfig.ENABLE_HEAT_BAR_HUD.get()) return;
 
         Minecraft mc = Minecraft.getInstance();

@@ -59,6 +59,7 @@ public class KillMessageOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         if (!KillMessageConfig.SHOW_KILL_MESSAGE.get()) {
             return;
         }

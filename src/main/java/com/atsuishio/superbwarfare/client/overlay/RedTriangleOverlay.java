@@ -35,6 +35,7 @@ public class RedTriangleOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         Minecraft mc = Minecraft.getInstance();
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = mc.gameRenderer.getMainCamera();

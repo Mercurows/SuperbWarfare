@@ -71,6 +71,8 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
         int screenHeight = guiGraphics.guiHeight();
         float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
         Minecraft mc = Minecraft.getInstance();
+        if (mc.options.hideGui) return;
+
         var player = mc.player;
         if (player == null || player.isSpectator()) {
             resetScale();

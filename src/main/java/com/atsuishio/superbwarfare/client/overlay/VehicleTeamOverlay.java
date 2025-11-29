@@ -47,6 +47,8 @@ public class VehicleTeamOverlay implements LayeredDraw.Layer {
         if (!DisplayConfig.VEHICLE_INFO.get()) return;
 
         Minecraft mc = Minecraft.getInstance();
+        if (mc.options.hideGui) return;
+
         Player player = mc.player;
         if (player == null) return;
 

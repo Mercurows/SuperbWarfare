@@ -52,6 +52,7 @@ public class IglaHudOverlay implements LayeredDraw.Layer {
 
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         Player player = Minecraft.getInstance().player;
         PoseStack poseStack = guiGraphics.pose();
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();

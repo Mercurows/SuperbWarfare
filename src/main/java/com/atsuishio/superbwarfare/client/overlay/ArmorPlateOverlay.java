@@ -33,6 +33,7 @@ public class ArmorPlateOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         if (!DisplayConfig.ARMOR_PLATE_HUD.get()) return;
 
         int h = guiGraphics.guiHeight();

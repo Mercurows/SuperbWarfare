@@ -29,6 +29,7 @@ public class StaminaOverlay implements LayeredDraw.Layer {
     @Override
     @ParametersAreNonnullByDefault
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return;
         if (!DisplayConfig.STAMINA_HUD.get()) return;
 
         Player player = Minecraft.getInstance().player;
