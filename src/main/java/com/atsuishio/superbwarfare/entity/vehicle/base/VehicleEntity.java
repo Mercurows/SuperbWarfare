@@ -2172,6 +2172,11 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         }
     }
 
+    @Override
+    public boolean canFreeze() {
+        return false;
+    }
+
     public void updateOBB() {
         this.getOBB().forEach(obbInfo -> {
             var transform = this.getTransformFromString(obbInfo.transform);
