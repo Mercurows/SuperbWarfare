@@ -43,7 +43,7 @@
         "Transform": "Vehicle",
         "Position": [0.45, 2.45, 1],
         "UseFixedCameraPos": true,
-        "AircraftCamera": true,
+        "UseAircraftCamera": true,
         "AircraftCameraPos": [-2.1, 2.45, -10]
       },
       "CanRotateHead": false,

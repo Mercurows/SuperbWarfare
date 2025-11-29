@@ -23,16 +23,16 @@ public class CameraPos {
     public StringOrVec3 zoomDirection = null;
 
     @SerializedName("UseFixedCameraPos")
-    public Boolean useFixedCameraPos = false;
+    public boolean useFixedCameraPos = false;
 
     @SerializedName("UseSimulate3P")
-    public Boolean useSimulate3P = false;
+    public boolean useSimulate3P = false;
 
     @SerializedName("Simulate3PPos")
     public Vec2 simulate3PPos = new Vec2(6, 1);
 
-    @SerializedName("AircraftCamera")
-    public Boolean aircraftCamera = false;
+    @SerializedName("UseAircraftCamera")
+    public boolean useAircraftCamera = false;
 
     @SerializedName("AircraftCameraPos")
     public Vec3 aircraftCameraPos = new Vec3(0, 3, -10);
