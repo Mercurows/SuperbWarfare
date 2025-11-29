@@ -38,7 +38,7 @@ import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-val mc: Minecraft by lazy { Minecraft.getInstance() }
+val MC: Minecraft by lazy { Minecraft.getInstance() }
 
 private typealias Task = AbstractMap.SimpleEntry<Runnable, Int>
 
@@ -101,15 +101,13 @@ class Mod(bus: IEventBus, container: ModContainer) {
 
 
     private fun executeWork(workQueueC: MutableCollection<Task>) {
-        val actions: MutableList<Task> = ArrayList()
-
-        workQueueC.forEach { work ->
-            work.setValue(work.value - 1)
-            if (work.value <= 0) actions.add(work)
-        }
-
-        actions.forEach { it.key.run() }
-        workQueueC.removeAll(actions.toSet())
+        workQueueC.removeAll(
+            workQueueC
+                .onEach { it.setValue(it.value - 1) }
+                .filter { it.value <= 0 }
+                .onEach { it.key.run() }
+                .toSet()
+        )
     }
 
     private fun onCommonSetup(bus: IEventBus) {
