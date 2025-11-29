@@ -220,5 +220,5 @@
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Helicopter",
   "TerrainCompat": [[1.156, 0, 1.875], [-1.156, 0, 1.875], [1.156, 0, 0.875], [-1.156, 0, 0.875], [1.156, 0, -0.875], [-1.156, 0, -0.875]],
-  "TurretHudType": "@Helicopter"
+  "HudType": "@Helicopter"
 }

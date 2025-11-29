@@ -144,5 +144,5 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/bl_132_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
   "Type": "Artillery",
-  "TurretHudType": "@Artillery"
+  "HudType": "@Artillery"
 }

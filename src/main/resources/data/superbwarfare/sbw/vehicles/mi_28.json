@@ -385,7 +385,7 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/mi_28_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Helicopter",
-  "TurretHudType": "@Helicopter",
+  "HudType": "@Helicopter",
   "TerrainCompat": [[-1.284, 0, 1.728], [1.284, 0, 1.728], [0, 0.58, -11.1]],
   "TerrainCompatRotateRate" : 0.18
 }

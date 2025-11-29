@@ -201,7 +201,7 @@
     ]
   },
   "EngineSound": "superbwarfare:prism_tank_engine",
-  "TurretHudType": "@Land",
+  "HudType": "@Land",
   "TerrainCompat": [[2, 0, 2.375], [-2, 0, 2.375], [2, 0, 1.156], [-2, 0, 1.156], [2, 0, 0], [-2, 0, 0], [2, 0, -1.156], [-2, 0, -1.156], [2, 0, -2.375], [-2, 0, -2.375]],
   "InertiaRotateRate": 1
 }

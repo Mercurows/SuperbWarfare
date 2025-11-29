@@ -241,7 +241,7 @@
     ]
   },
   "EngineSound": "superbwarfare:lav_150_engine",
-  "TurretHudType": "@Land",
+  "HudType": "@Land",
   "TerrainCompat": [[1.156, 0, 1.594], [-1.156, 0, 1.594], [1.156, 0, -1.594], [-1.156, 0, -1.594]],
   "InertiaRotateRate": 1.25
 }

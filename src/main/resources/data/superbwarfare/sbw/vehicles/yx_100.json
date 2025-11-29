@@ -414,7 +414,7 @@
     ]
   },
   "EngineSound": "superbwarfare:yx_100_engine",
-  "TurretHudType": "@Land",
+  "HudType": "@Land",
   "InertiaRotateRate": 1.2,
   "TerrainCompat": [
     [2, 0, 3.0625], [-2, 0, 3.0625],

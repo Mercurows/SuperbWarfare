@@ -197,7 +197,7 @@
     "ExplosionDamage": 250,
     "ExplosionRadius": 18
   },
-  "TurretHudType": "@Land",
+  "HudType": "@Land",
   "InertiaRotateRate": 0.8,
   "HasDecoy": true,
   "OBB": [
