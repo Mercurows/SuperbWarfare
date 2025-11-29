@@ -131,7 +131,7 @@ public final class VehicleMotionUtils {
                         entity.setOnGround(true);
                     }
                     double depth = obb.getEmbeddingDepth(feetPos);
-                    entity.setDeltaMovement(vehicle.getDeltaMovement().add(0, gravity + depth <= 0.2f ? 0 : depth * 1.1, 0));
+                    entity.setDeltaMovement(vehicle.getDeltaMovement().add(0, gravity + depth <= 0.4f ? 0 : depth * 1.1, 0));
                     entity.fallDistance = 0;
 
                     continue;
