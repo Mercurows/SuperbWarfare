@@ -121,19 +121,19 @@ public class IglaHudOverlay implements LayeredDraw.Layer {
 
                     poseStack.translate(x, y, 0);
                     //框
-                    RenderHelper.preciseBlit(guiGraphics, FRAME, -12, -12, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                    RenderHelper.preciseBlit(guiGraphics, FRAME, -12, -12, 0, 0, 24, 24, 24, 24);
 
                     //锁定进度
-                    RenderHelper.preciseBlit(guiGraphics, PART_1, -12 - lerpSeeking, -12 - lerpSeeking, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                    RenderHelper.preciseBlit(guiGraphics, PART_2, -12 + lerpSeeking, -12 - lerpSeeking, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                    RenderHelper.preciseBlit(guiGraphics, PART_3, -12 - lerpSeeking, -12 + lerpSeeking, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
-                    RenderHelper.preciseBlit(guiGraphics, PART_4, -12 + lerpSeeking, -12 + lerpSeeking, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                    RenderHelper.preciseBlit(guiGraphics, PART_1, -12 - lerpSeeking, -12 - lerpSeeking, 0, 0, 24, 24, 24, 24);
+                    RenderHelper.preciseBlit(guiGraphics, PART_2, -12 + lerpSeeking, -12 - lerpSeeking, 0, 0, 24, 24, 24, 24);
+                    RenderHelper.preciseBlit(guiGraphics, PART_3, -12 - lerpSeeking, -12 + lerpSeeking, 0, 0, 24, 24, 24, 24);
+                    RenderHelper.preciseBlit(guiGraphics, PART_4, -12 + lerpSeeking, -12 + lerpSeeking, 0, 0, 24, 24, 24, 24);
 
                     //状态
                     if (seekingTime >= data.compute().seekTime && data.ammo.get() > 0) {
-                        RenderHelper.preciseBlit(guiGraphics, SHOOT, -12, -26, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        RenderHelper.preciseBlit(guiGraphics, SHOOT, -12, -26, 0, 0, 24, 24, 24, 24);
                     } else {
-                        RenderHelper.preciseBlit(guiGraphics, HOLD, -12, -26, 0, 0, 24, 24, 24, 24, 0xFFFFFFFF);
+                        RenderHelper.preciseBlit(guiGraphics, HOLD, -12, -26, 0, 0, 24, 24, 24, 24);
                     }
 
                     //测距
