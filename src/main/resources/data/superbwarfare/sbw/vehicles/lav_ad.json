@@ -155,7 +155,7 @@
       "RPM": 1200,
       "Velocity": 30,
       "Gravity": 0.03,
-      "Damage": 21,
+      "Damage": 23,
       "ExplosionDamage": 2,
       "ExplosionRadius": 1,
       "Spread": 0.75,
@@ -166,7 +166,7 @@
       "ShootAnimationTime": 3,
       "Crosshair": "@VehicleCommonGunDynamic",
       "CrosshairColor": "0x66FF00",
-      "Name": "weapon.superbwarfare.20mm_cannon",
+      "Name": "weapon.superbwarfare.25mm_cannon",
       "SoundInfo": {
         "FireSoundInstances": "superbwarfare:lav_ad_fire",
         "Change": "superbwarfare:into_cannon"
