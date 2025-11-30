@@ -9,13 +9,14 @@ import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
-import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.*
 import com.atsuishio.superbwarfare.entity.OBBEntity
+import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
@@ -256,13 +257,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     var roll = 0f
 
     var prevRoll = 0f
-    var repairCoolDown: Int = maxRepairCoolDown()
+    var repairCoolDown = maxRepairCoolDown()
 
-    open fun setCrash(crash: Boolean) {
-        this.crash = crash
-    }
-
-    private var crash = false
+    var crash = false
 
     var turretYRot = 0f
     var turretXRot = 0f
@@ -291,7 +288,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     private var wasEngineRunning = false
     private var wasHornWorking = false
 
-    //    private boolean wasInCarMusicPlaying = false;
+    //    private var wasInCarMusicPlaying = false;
     private var wasFiring = false
 
     var targetSpeed = 0.0
@@ -355,99 +352,60 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun processInput(keys: Short) {
-        setLeftInputDown((keys.toInt() and 1) > 0)
-        setRightInputDown((keys.toInt() and 2) > 0)
-        setForwardInputDown((keys.toInt() and 4) > 0)
-        setBackInputDown((keys.toInt() and 8) > 0)
-        setUpInputDown((keys.toInt() and 16) > 0)
-        setDownInputDown((keys.toInt() and 32) > 0)
-        setDecoyInputDown((keys.toInt() and 64) > 0)
-        setFireInputDown((keys.toInt() and 128) > 0)
-        setSprintInputDown((keys.toInt() and 256) > 0)
+        leftInputDown =
+            (keys.toInt() and 0b00000001) > 0
+        rightInputDown =
+            (keys.toInt() and 0b00000010) > 0
+        forwardInputDown =
+            (keys.toInt() and 0b00000100) > 0
+        backInputDown =
+            (keys.toInt() and 0b00001000) > 0
+        upInputDown =
+            (keys.toInt() and 0b00010000) > 0
+        downInputDown =
+            (keys.toInt() and 0b00100000) > 0
+        decoyInputDown =
+            (keys.toInt() and 0b01000000) > 0
+        fireInputDown =
+            (keys.toInt() and 0b10000000) > 0
+        sprintInputDown =
+            (keys.toInt() and 256) > 0
     }
 
-    open fun forwardInputDown(): Boolean {
-        return entityData.get(FORWARD_INPUT_DOWN)
-    }
+    @get:JvmName("forwardInputDown")
+    var forwardInputDown by FORWARD_INPUT_DOWN
 
-    open fun backInputDown(): Boolean {
-        return entityData.get(BACK_INPUT_DOWN)
-    }
+    @get:JvmName("backInputDown")
+    var backInputDown by BACK_INPUT_DOWN
 
-    open fun leftInputDown(): Boolean {
-        return entityData.get(LEFT_INPUT_DOWN)
-    }
+    @get:JvmName("leftInputDown")
+    var leftInputDown by LEFT_INPUT_DOWN
 
-    open fun rightInputDown(): Boolean {
-        return entityData.get(RIGHT_INPUT_DOWN)
-    }
+    @get:JvmName("rightInputDown")
+    var rightInputDown by RIGHT_INPUT_DOWN
 
-    open fun upInputDown(): Boolean {
-        return entityData.get(UP_INPUT_DOWN)
-    }
+    @get:JvmName("upInputDown")
+    var upInputDown by UP_INPUT_DOWN
 
-    open fun downInputDown(): Boolean {
-        return entityData.get(DOWN_INPUT_DOWN)
-    }
+    @get:JvmName("downInputDown")
+    var downInputDown by DOWN_INPUT_DOWN
 
-    open fun fireInputDown(): Boolean {
-        return entityData.get(FIRE_INPUT_DOWN)
-    }
+    @get:JvmName("fireInputDown")
+    var fireInputDown by FIRE_INPUT_DOWN
 
-    open fun decoyInputDown(): Boolean {
-        return entityData.get(DECOY_INPUT_DOWN)
-    }
+    @get:JvmName("decoyInputDown")
+    var decoyInputDown by DECOY_INPUT_DOWN
 
-    open fun sprintInputDown(): Boolean {
-        return entityData.get(SPRINT_INPUT_DOWN)
-    }
-
-    open fun setForwardInputDown(set: Boolean) {
-        entityData.set(FORWARD_INPUT_DOWN, set)
-    }
-
-    open fun setBackInputDown(set: Boolean) {
-        entityData.set(BACK_INPUT_DOWN, set)
-    }
-
-    open fun setLeftInputDown(set: Boolean) {
-        entityData.set(LEFT_INPUT_DOWN, set)
-    }
-
-    open fun setRightInputDown(set: Boolean) {
-        entityData.set(RIGHT_INPUT_DOWN, set)
-    }
-
-    open fun setUpInputDown(set: Boolean) {
-        entityData.set(UP_INPUT_DOWN, set)
-    }
-
-    open fun setDownInputDown(set: Boolean) {
-        entityData.set(DOWN_INPUT_DOWN, set)
-    }
-
-    open fun setFireInputDown(set: Boolean) {
-        entityData.set(FIRE_INPUT_DOWN, set)
-    }
-
-    open fun setDecoyInputDown(set: Boolean) {
-        entityData.set(DECOY_INPUT_DOWN, set)
-    }
-
-    open fun setSprintInputDown(set: Boolean) {
-        entityData.set(SPRINT_INPUT_DOWN, set)
-    }
+    @get:JvmName("sprintInputDown")
+    var sprintInputDown by SPRINT_INPUT_DOWN
 
     open fun mouseInput(x: Double, y: Double) {
-        entityData.set(MOUSE_SPEED_X, x.toFloat())
-        entityData.set(MOUSE_SPEED_Y, y.toFloat())
+        mouseMoveSpeedX = x.toFloat()
+        mouseMoveSpeedY = y.toFloat()
     }
 
-    val mouseMoveSpeedY: Float
-        get() = entityData.get(MOUSE_SPEED_Y)
-
-    val mouseMoveSpeedX: Float
-        get() = entityData.get(MOUSE_SPEED_X)
+    var mouseMoveSpeedX by MOUSE_SPEED_X
+    var mouseMoveSpeedY by MOUSE_SPEED_Y
 
     // container start
     private var itemHandler = LazyOptional.of { InvWrapper(this) }
@@ -584,8 +542,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.items[slot] = pStack
     }
 
-    override fun setChanged() {
-    }
+    override fun setChanged() {}
 
     override fun stillValid(pPlayer: Player): Boolean {
         return this.hasContainer() && !this.isRemoved && this.position().closerThan(pPlayer.position(), 8.0)
@@ -595,13 +552,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.items.clear()
     }
 
-    override fun isEmpty(): Boolean {
-        return this.items.stream().allMatch { obj -> obj!!.isEmpty }
-    }
+    override fun isEmpty() = this.items.all { obj -> obj!!.isEmpty }
 
-    open fun hasContainer(): Boolean {
-        return this.getContainerSize() > 0
-    }
+    open fun hasContainer() = this.getContainerSize() > 0
 
     override fun canPlaceItem(slot: Int, stack: ItemStack): Boolean {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false
@@ -682,9 +635,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer))
     }
 
-    override fun getItemStacks(): NonNullList<ItemStack> {
-        return this.items
-    }
+    override fun getItemStacks() = this.items
 
     override fun clearItemStacks() {
         this.items.clear()
@@ -697,7 +648,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     private fun generatePassengersList() = MutableList(maxPassengers) { null as Entity? }
 
     protected fun initSeatData(targetSize: Int) {
-        padList<Entity?>(orderedPassengers, targetSize, null, null)
+        padList(orderedPassengers, targetSize, null, null)
     }
 
     protected fun <T> padList(list: MutableList<T?>, targetSize: Int, defaultValue: T?, onRemove: Consumer<T?>?) {
@@ -731,7 +682,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     // 仅在客户端存在的实体顺序获取，用于在客户端正确同步实体座位顺序
-    var entityIndexOverride: Function<Entity?, Int?>? = null
+    var entityIndexOverride: Function<Entity, Int>? = null
 
     override fun addPassenger(pPassenger: Entity) {
         check(pPassenger.vehicle === this) { "Use x.startRiding(y), not y.addPassenger(x)" }
@@ -739,8 +690,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         var index: Int
 
-        if (entityIndexOverride != null && entityIndexOverride!!.apply(pPassenger) != -1) {
-            index = entityIndexOverride!!.apply(pPassenger)!!
+        val indexOverride = entityIndexOverride
+        if (indexOverride != null && indexOverride.apply(pPassenger) != -1) {
+            index = indexOverride.apply(pPassenger)
         } else {
             index = 0
             for (passenger in orderedPassengers) {
@@ -752,13 +704,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
         if (index >= this.maxPassengers || index < 0) return
 
-        orderedPassengers.set(index, pPassenger)
+        orderedPassengers[index] = pPassenger
 
         pPassenger.getPersistentData().putInt(TAG_SEAT_INDEX, index)
 
         this.passengers =
-            ImmutableList.copyOf<Entity?>(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }
-                .toList())
+            ImmutableList.copyOf(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }.toList())
         this.gameEvent(GameEvent.ENTITY_MOUNT, pPassenger)
     }
 
@@ -778,13 +729,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.gameEvent(GameEvent.ENTITY_DISMOUNT, pPassenger)
     }
 
-    open fun data(): VehicleData {
-        return VehicleData.from(this)
-    }
-
-    open fun computed(): DefaultVehicleData {
-        return VehicleData.compute(this)
-    }
+    open fun data() = VehicleData.from(this)
+    open fun computed() = VehicleData.compute(this)
 
     override fun getStepHeight() = computed().upStep
 
@@ -856,9 +802,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * @param entity 乘客
      * @return 座位索引
      */
-    open fun getTagSeatIndex(entity: Entity): Int {
-        return entity.getPersistentData().getInt(TAG_SEAT_INDEX)
-    }
+    open fun getTagSeatIndex(entity: Entity) = entity.getPersistentData().getInt(TAG_SEAT_INDEX)
 
     val thirdPersonCameraPosition: Vec3
         get() {
@@ -869,17 +813,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             return Vec3(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x)
         }
 
-    open fun getRoll(tickDelta: Float): Float {
-        return Mth.lerp(tickDelta, prevRoll, this.roll)
-    }
-
-    open fun getYaw(tickDelta: Float): Float {
-        return Mth.lerp(tickDelta, yRotO, yRot)
-    }
-
-    open fun getPitch(tickDelta: Float): Float {
-        return Mth.lerp(tickDelta, xRotO, xRot)
-    }
+    open fun getRoll(tickDelta: Float) = Mth.lerp(tickDelta, prevRoll, roll)
+    open fun getYaw(tickDelta: Float) = Mth.lerp(tickDelta, yRotO, yRot)
+    open fun getPitch(tickDelta: Float) = Mth.lerp(tickDelta, xRotO, xRot)
 
     open fun setZRot(rot: Float) {
         roll = rot
@@ -904,16 +840,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     /**
      * 受击时是否出现粒子效果
      */
-    open fun shouldSendHitParticles(): Boolean {
-        return computed().sendHitParticles
-    }
+    open fun shouldSendHitParticles() = computed().sendHitParticles
 
     /**
      * 受击时是否出现音效
      */
-    open fun shouldSendHitSounds(): Boolean {
-        return true
-    }
+    open fun shouldSendHitSounds() = true
 
     protected lateinit var energyStorage: SyncedEntityEnergyStorage
     protected var energyOptional: LazyOptional<IEnergyStorage> = LazyOptional.of<IEnergyStorage> { energyStorage }
@@ -1044,20 +976,16 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     val maxEnergy: Int
-        get() {
-            if (!this.hasEnergyStorage()) {
-                Mod.LOGGER.warn(
-                    "Trying to get max energy of vehicle {}, but it has no energy storage",
-                    this.getName()
-                )
-                return Int.MAX_VALUE
-            }
-            return computed().maxEnergy
-        }
+        get() = if (!this.hasEnergyStorage()) {
+            Mod.LOGGER.warn(
+                "Trying to get max energy of vehicle {}, but it has no energy storage",
+                this.getName()
+            )
+            Int.MAX_VALUE
+        } else computed().maxEnergy
 
-    open fun hasEnergyStorage(): Boolean {
-        return this.computed().maxEnergy > 0
-    }
+
+    open fun hasEnergyStorage() = this.computed().maxEnergy > 0
 
     // energy end
     /**
@@ -1379,36 +1307,37 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
         entityData.set(GUN_DATA_MAP, gunDataMap, true)
 
-        if (compound.contains("Health")) {
-            this.entityData.set(HEALTH, compound.getFloat("Health"))
+        health = if (compound.contains("Health")) {
+            compound.getFloat("Health")
         } else {
-            this.entityData.set(HEALTH, this.getMaxHealth())
+            this.getMaxHealth()
         }
 
-        this.entityData.set(TURRET_HEALTH, compound.getFloat("TurretHealth"))
-        this.entityData.set(L_WHEEL_HEALTH, compound.getFloat("LeftWheelHealth"))
-        this.entityData.set(R_WHEEL_HEALTH, compound.getFloat("RightWheelHealth"))
-        this.entityData.set(MAIN_ENGINE_HEALTH, compound.getFloat("MainEngineHealth"))
-        this.entityData.set(SUB_ENGINE_HEALTH, compound.getFloat("SubEngineHealth"))
+        with(entityData) {
+            set(TURRET_HEALTH, compound.getFloat("TurretHealth"))
+            set(L_WHEEL_HEALTH, compound.getFloat("LeftWheelHealth"))
+            set(R_WHEEL_HEALTH, compound.getFloat("RightWheelHealth"))
+            set(MAIN_ENGINE_HEALTH, compound.getFloat("MainEngineHealth"))
+            set(SUB_ENGINE_HEALTH, compound.getFloat("SubEngineHealth"))
 
-        this.entityData.set(TURRET_DAMAGED, compound.getBoolean("TurretDamaged"))
-        this.entityData.set(L_WHEEL_DAMAGED, compound.getBoolean("LeftWheelDamaged"))
-        this.entityData.set(R_WHEEL_DAMAGED, compound.getBoolean("RightWheelDamaged"))
-        this.entityData.set(MAIN_ENGINE_DAMAGED, compound.getBoolean("MainEngineDamaged"))
-        this.entityData.set(SUB_ENGINE_DAMAGED, compound.getBoolean("SubEngineDamaged"))
+            set(TURRET_DAMAGED, compound.getBoolean("TurretDamaged"))
+            set(L_WHEEL_DAMAGED, compound.getBoolean("LeftWheelDamaged"))
+            set(R_WHEEL_DAMAGED, compound.getBoolean("RightWheelDamaged"))
+            set(MAIN_ENGINE_DAMAGED, compound.getBoolean("MainEngineDamaged"))
+            set(SUB_ENGINE_DAMAGED, compound.getBoolean("SubEngineDamaged"))
 
-        this.entityData.set(POWER, compound.getFloat("Power"))
-        this.entityData.set(DECOY_READY, compound.getBoolean("DecoyReady"))
-        this.entityData.set(GEAR_ROT, compound.getFloat("GearRot"))
-        this.entityData.set(GEAR_UP, compound.getBoolean("GearUp"))
-        this.entityData.set(PROPELLER_ROT, compound.getFloat("PropellerRot"))
-        this.entityData.set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"))
-        this.entityData.set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"))
-        this.entityData.set(LAST_DRIVER_UUID, compound.getString("LastDriver"))
+            set(POWER, compound.getFloat("Power"))
+            set(DECOY_READY, compound.getBoolean("DecoyReady"))
+            set(GEAR_ROT, compound.getFloat("GearRot"))
+            set(GEAR_UP, compound.getBoolean("GearUp"))
+            set(PROPELLER_ROT, compound.getFloat("PropellerRot"))
+            set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"))
+            set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"))
+            set(LAST_DRIVER_UUID, compound.getString("LastDriver"))
 
-        this.entityData.set(SERVER_YAW, compound.getFloat("ServerYaw"))
-        this.entityData.set(SERVER_PITCH, compound.getFloat("ServerPitch"))
-
+            set(SERVER_YAW, compound.getFloat("ServerYaw"))
+            set(SERVER_PITCH, compound.getFloat("ServerPitch"))
+        }
 
         val selectedWeaponTag = compound.get("SelectedWeapon")
         val selected = if (selectedWeaponTag is IntArrayTag) {
@@ -1438,7 +1367,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     public override fun addAdditionalSaveData(compound: CompoundTag) {
         checkSeatsSize()
 
-        compound.putFloat("Health", this.entityData.get(HEALTH))
+        compound.putFloat("Health", health)
 
         val overrideString = this.entityData.get(OVERRIDE)
         if (!overrideString.isBlank()) {
@@ -1589,7 +1518,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     val lastDriver: Entity?
         get() = EntityFindUtil.findEntity(
             level(),
-            entityData.get<String?>(LAST_DRIVER_UUID)
+            entityData.get(LAST_DRIVER_UUID)
         )
 
     @Deprecated("")
@@ -1738,10 +1667,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     var health: Float
         get() = this.entityData.get(HEALTH)
-        set(pHealth) {
+        set(value) {
             this.entityData.set(
                 HEALTH,
-                Mth.clamp(pHealth, 0f, this.getMaxHealth())
+                value.coerceIn(0f, this.getMaxHealth())
             )
         }
 
@@ -1966,8 +1895,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         this.clearArrow()
 
-        entityData.set(MOUSE_SPEED_X, this.mouseMoveSpeedX * 0.95f)
-        entityData.set(MOUSE_SPEED_Y, this.mouseMoveSpeedY * 0.95f)
+        mouseMoveSpeedX *= 0.95f
+        mouseMoveSpeedY *= 0.95f
 
         if (hasTurret()) {
             val turretController = getNthEntity(this.turretControllerIndex)
@@ -4175,6 +4104,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val MOUSE_SPEED_Y: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
+        // TODO 修改为不可变List
         @JvmField
         val SELECTED_WEAPON: EntityDataAccessor<MutableList<Int>> = SynchedEntityData.defineId(
             VehicleEntity::class.java, ModSerializers.INT_LIST_SERIALIZER.get()
