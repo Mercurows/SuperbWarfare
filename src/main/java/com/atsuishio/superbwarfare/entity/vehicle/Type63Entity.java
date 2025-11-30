@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.tools.OBB;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,9 +29,10 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Type63Entity extends GeoVehicleEntity {
@@ -42,7 +42,7 @@ public class Type63Entity extends GeoVehicleEntity {
     public static final EntityDataAccessor<Float> BODY_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> SHOOT_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<IntList> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
+    public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(Type63Entity.class, ModSerializers.INT_LIST_SERIALIZER.get());
 
     public OBB[] barrel = new OBB[12];
     public OBB pitchController;
@@ -135,7 +135,7 @@ public class Type63Entity extends GeoVehicleEntity {
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         var result = super.interact(player, hand);
         if (result != InteractionResult.PASS) return result;
 
@@ -175,12 +175,12 @@ public class Type63Entity extends GeoVehicleEntity {
 
                 if (level() instanceof ServerLevel serverLevel && cooldown == 0) {
                     for (int i = 0; i < this.barrel.length; i++) {
-                        if (lookingObb == this.barrel[i] && !items.get(i).isEmpty()) {
-                            player.addItem(items.get(i).copyWithCount(1));
+                        if (lookingObb == this.barrel[i] && !getItems().get(i).isEmpty()) {
+                            player.addItem(getItems().get(i).copyWithCount(1));
                             Vec3 vec3 = OBB.vector3dToVec3(this.barrel[i].center());
                             serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
                             cooldown = 5;
-                            items.set(i, ItemStack.EMPTY);
+                            getItems().set(i, ItemStack.EMPTY);
                             setChanged();
                         }
                     }
@@ -203,7 +203,7 @@ public class Type63Entity extends GeoVehicleEntity {
 
         if (stack.getItem() instanceof MediumRocketItem) {
             for (int i = 0; i < this.barrel.length; i++) {
-                if (lookingObb == this.barrel[i] && items.get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
+                if (lookingObb == this.barrel[i] && getItems().get(i).isEmpty() && level() instanceof ServerLevel serverLevel && cooldown == 0) {
                     this.setItem(i, stack.copyWithCount(1));
                     if (!player.isCreative()) {
                         stack.shrink(1);
@@ -222,9 +222,9 @@ public class Type63Entity extends GeoVehicleEntity {
             if (lookingAtBarrel(player)) {
                 // 精准发射
                 for (int i = 0; i < this.barrel.length; i++) {
-                    if (lookingObb == this.barrel[i] && items.get(i).getItem() instanceof MediumRocketItem) {
+                    if (lookingObb == this.barrel[i] && getItems().get(i).getItem() instanceof MediumRocketItem) {
                         shoot(player, i);
-                        items.set(i, ItemStack.EMPTY);
+                        getItems().set(i, ItemStack.EMPTY);
                         setChanged();
                     }
                 }
@@ -233,9 +233,9 @@ public class Type63Entity extends GeoVehicleEntity {
             } else {
                 // 顺序发射
                 for (int i = 0; i < 12; i++) {
-                    if (items.get(i).getItem() instanceof MediumRocketItem) {
+                    if (getItems().get(i).getItem() instanceof MediumRocketItem) {
                         shoot(player, i);
-                        items.set(i, ItemStack.EMPTY);
+                        getItems().set(i, ItemStack.EMPTY);
                         setChanged();
 
                         player.swing(InteractionHand.MAIN_HAND);
@@ -271,7 +271,7 @@ public class Type63Entity extends GeoVehicleEntity {
     }
 
     public void shoot(Player player, int i) {
-        ItemStack stack = items.get(i);
+        ItemStack stack = getItems().get(i);
 
         if (!(stack.getItem() instanceof MediumRocketItem rocketItem)) {
             return;
@@ -324,10 +324,10 @@ public class Type63Entity extends GeoVehicleEntity {
 
     @Override
     public void baseTick() {
-        turretYRotO = this.getTurretYRot();
-        turretXRotO = this.getTurretXRot();
-        leftWheelRotO = this.getLeftWheelRot();
-        rightWheelRotO = this.getRightWheelRot();
+        setTurretYRotO(this.getTurretYRot());
+        setTurretXRotO(this.getTurretXRot());
+        setLeftWheelRotO(this.getLeftWheelRot());
+        setRightWheelRotO(this.getRightWheelRot());
 
         super.baseTick();
 
@@ -401,7 +401,7 @@ public class Type63Entity extends GeoVehicleEntity {
     }
 
     @Override
-    public List<OBB> getOBBs() {
+    public @NotNull List<OBB> getOBBs() {
         return List.of(this.barrel[0], this.barrel[1], this.barrel[2], this.barrel[3], this.barrel[4], this.barrel[5], this.barrel[6], this.barrel[7], this.barrel[8], this.barrel[9], this.barrel[10], this.barrel[11],
                 this.hoe1, this.hoe2, this.yawController, this.pitchController, this.wheel1, this.wheel2, this.body1, this.body2);
     }
@@ -412,34 +412,34 @@ public class Type63Entity extends GeoVehicleEntity {
 
         // 驻锄位置
         Vector4d worldPosition = transformPosition(transform, 0.875, 0.1875, -1.625);
-        this.hoe1.center().set(new Vector3f((float) worldPosition.x,(float) worldPosition.y,(float) worldPosition.z));
-        this.hoe1.setRotation(VectorTool.combineRotations(1, this));
+        this.hoe1.center().set(new Vector3f((float) worldPosition.x, (float) worldPosition.y, (float) worldPosition.z));
+        this.hoe1.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPosition2 = transformPosition(transform, -0.875, 0.1875, -1.625);
-        this.hoe2.center().set(new Vector3f((float) worldPosition2.x,(float) worldPosition2.y,(float) worldPosition2.z));
-        this.hoe2.setRotation(VectorTool.combineRotations(1, this));
+        this.hoe2.center().set(new Vector3f((float) worldPosition2.x, (float) worldPosition2.y, (float) worldPosition2.z));
+        this.hoe2.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionW = transformPosition(transform, 0.90625, 0.390625, 0.1071875);
-        this.wheel1.center().set(new Vector3f((float) worldPositionW.x,(float) worldPositionW.y,(float) worldPositionW.z));
-        this.wheel1.setRotation(VectorTool.combineRotations(1, this));
+        this.wheel1.center().set(new Vector3f((float) worldPositionW.x, (float) worldPositionW.y, (float) worldPositionW.z));
+        this.wheel1.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionW2 = transformPosition(transform, -0.90625, 0.390625, 0.1071875);
-        this.wheel2.center().set(new Vector3f((float) worldPositionW2.x,(float) worldPositionW2.y,(float) worldPositionW2.z));
-        this.wheel2.setRotation(VectorTool.combineRotations(1, this));
+        this.wheel2.center().set(new Vector3f((float) worldPositionW2.x, (float) worldPositionW2.y, (float) worldPositionW2.z));
+        this.wheel2.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionBody2 = transformPosition(transform, 0, 0.42546875, -0.090625);
-        this.body2.center().set(new Vector3f((float) worldPositionBody2.x,(float) worldPositionBody2.y,(float) worldPositionBody2.z));
-        this.body2.setRotation(VectorTool.combineRotationsBarrel(1, this));
+        this.body2.center().set(new Vector3f((float) worldPositionBody2.x, (float) worldPositionBody2.y, (float) worldPositionBody2.z));
+        this.body2.updateRotation(VectorTool.combineRotationsBarrel(1, this));
 
         Matrix4d transformT = getTurretTransform(1);
 
         Vector4d worldPositionYaw = transformPosition(transformT, 0.62625, 0.0396875, -0.5);
-        this.yawController.center().set(new Vector3f((float) worldPositionYaw.x,(float) worldPositionYaw.y,(float) worldPositionYaw.z));
-        this.yawController.setRotation(VectorTool.combineRotationsTurret(1, this));
+        this.yawController.center().set(new Vector3f((float) worldPositionYaw.x, (float) worldPositionYaw.y, (float) worldPositionYaw.z));
+        this.yawController.updateRotation(VectorTool.combineRotationsTurret(1, this));
 
         Vector4d worldPositionPitch = transformPosition(transformT, 0.7825, 0.5771875, -0.024375);
-        this.pitchController.center().set(new Vector3f((float) worldPositionPitch.x,(float) worldPositionPitch.y,(float) worldPositionPitch.z));
-        this.pitchController.setRotation(VectorTool.combineRotationsTurret(1, this));
+        this.pitchController.center().set(new Vector3f((float) worldPositionPitch.x, (float) worldPositionPitch.y, (float) worldPositionPitch.z));
+        this.pitchController.updateRotation(VectorTool.combineRotationsTurret(1, this));
 
         Matrix4d transformB = getBarrelTransform(1);
 
@@ -459,20 +459,20 @@ public class Type63Entity extends GeoVehicleEntity {
         setBarrelOBB(11, -0.3659375 + 3 * i, 0.244375 - 2 * i);
 
         Vector4d worldPositionBody1 = transformPosition(transformB, 0, 0, 0.3740625);
-        this.body1.center().set(new Vector3f((float) worldPositionBody1.x,(float) worldPositionBody1.y,(float) worldPositionBody1.z));
-        this.body1.setRotation(VectorTool.combineRotationsBarrel(1, this));
+        this.body1.center().set(new Vector3f((float) worldPositionBody1.x, (float) worldPositionBody1.y, (float) worldPositionBody1.z));
+        this.body1.updateRotation(VectorTool.combineRotationsBarrel(1, this));
     }
 
     private void setBarrelOBB(int index, double x, double y) {
         Vector4d vec = transformPosition(getBarrelTransform(1), x, y, -0.44625);
-        this.barrel[index].center().set(new Vector3f((float) vec.x,(float) vec.y,(float) vec.z));
-        this.barrel[index].setRotation(VectorTool.combineRotationsBarrel(1, this));
+        this.barrel[index].center().set(new Vector3f((float) vec.x, (float) vec.y, (float) vec.z));
+        this.barrel[index].updateRotation(VectorTool.combineRotationsBarrel(1, this));
     }
 
     @Override
     public void setChanged() {
-        var list = new IntArrayList();
-        for (var item : this.items) {
+        var list = new ArrayList<Integer>();
+        for (var item : this.getItems()) {
             if (item.getItem() instanceof MediumRocketItem mediumRocketItem) {
                 list.add(mediumRocketItem.type.ordinal());
             } else {

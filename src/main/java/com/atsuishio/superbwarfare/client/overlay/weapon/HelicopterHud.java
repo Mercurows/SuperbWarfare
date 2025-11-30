@@ -178,7 +178,7 @@ public class HelicopterHud {
             if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 RenderHelper.blit(poseStack, HELI_BASE, k, l, 0, 0, i, j, i, j, color);
 
-                float diffY = -Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot()) * 0.3f;
+                float diffY = -Mth.lerp(partialTick, vehicle.getTurretYRotO(), vehicle.getTurretYRot()) * 0.3f;
                 float diffX = (float) (Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(vehicle.getBarrelVector(partialTick)) - Mth.lerp(partialTick, vehicle.xRotO, vehicle.getXRot())) * 0.072f);
                 RenderHelper.blit(poseStack, HELI_DRIVER_ANGLE, k + diffY, l + diffX, 0, 0, i, j, i, j, color);
 

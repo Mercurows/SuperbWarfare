@@ -56,12 +56,6 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    public DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 3) * damage);
-    }
-
-    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(LASER_LEFT_LENGTH, 0f);
@@ -70,7 +64,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 
         if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isCrouching()) {
@@ -96,6 +90,12 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         int targetY = stack.getOrCreateTag().getInt("TargetY");
         int targetZ = stack.getOrCreateTag().getInt("TargetZ");
         entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+    }
+
+    @Override
+    public @NotNull DamageModifier getDamageModifier() {
+        return super.getDamageModifier()
+                .custom((source, damage) -> getSourceAngle(source, 3) * damage);
     }
 
     @Override
@@ -199,7 +199,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, String weaponName) {
+    public void vehicleShoot(@NotNull LivingEntity living, @NotNull String weaponName) {
         var data = getGunData(weaponName);
         shoot(living, data);
     }

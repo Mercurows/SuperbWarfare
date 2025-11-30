@@ -458,7 +458,7 @@ public class DroneEntity extends GeoVehicleEntity {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.965, 0.7, 0.965));
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
-            this.setZRot(this.roll * 0.7f);
+            this.setZRot(this.getRoll() * 0.7f);
             this.setXRot(this.getXRot() * 0.7f);
             this.setBodyXRot(this.getBodyPitch() * 0.7f);
         }

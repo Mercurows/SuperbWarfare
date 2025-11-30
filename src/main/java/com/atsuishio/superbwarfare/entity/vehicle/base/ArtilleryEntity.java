@@ -26,14 +26,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Math;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
 
 public class ArtilleryEntity extends GeoVehicleEntity {
-    public static final EntityDataAccessor<IntList> BARREL_ANIM = SynchedEntityData.defineId(ArtilleryEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
+    public static final EntityDataAccessor<List<Integer>> BARREL_ANIM = SynchedEntityData.defineId(ArtilleryEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     public static final EntityDataAccessor<Vector3f> SHOOT_VEC = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Boolean> DEPRESSED = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(ArtilleryEntity.class, EntityDataSerializers.VECTOR3);
@@ -41,11 +44,11 @@ public class ArtilleryEntity extends GeoVehicleEntity {
 
     public ArtilleryEntity(EntityType<?> type, Level world) {
         super(type, world);
-        this.entityData.set(BARREL_ANIM, IntList.of(new int[this.getMaxBarrel()]));
+        this.entityData.set(BARREL_ANIM, newIntList(Math.max(4, this.getMaxBarrel())));
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         var gunData = getGunData("Main");
         if (gunData == null) return InteractionResult.SUCCESS;
 
@@ -91,8 +94,16 @@ public class ArtilleryEntity extends GeoVehicleEntity {
         this.entityData.define(BARREL_ANIM, IntList.of(new int[4]));
     }
 
+    protected static List<Integer> newIntList(int size) {
+        var list = new ArrayList<Integer>();
+        for (int i = 0; i < size; i++) {
+            list.add(0);
+        }
+        return list;
+    }
+
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("ShootVecX", this.entityData.get(SHOOT_VEC).x);
         compound.putFloat("ShootVecY", this.entityData.get(SHOOT_VEC).y);
@@ -106,7 +117,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("ShootVecX") && compound.contains("ShootVecY") && compound.contains("ShootVecZ")) {
             this.entityData.set(SHOOT_VEC, new Vector3f(compound.getFloat("ShootVecX"), compound.getFloat("ShootVecY"), compound.getFloat("ShootVecZ")));
@@ -191,11 +202,10 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     public void baseTick() {
         super.baseTick();
         for (int i = 0; i < getMaxBarrel(); i++) {
-            var animCounters = entityData.get(BARREL_ANIM);
-            if (i < animCounters.size() && animCounters.getInt(i) > 0) {
-                var barrelAnim = animCounters.toIntArray();
-                barrelAnim[i] = animCounters.getInt(i) - 1;
-                entityData.set(BARREL_ANIM, IntList.of(barrelAnim));
+            var animCounters = this.entityData.get(BARREL_ANIM);
+            if (i < animCounters.size() && animCounters.get(i) > 0) {
+                animCounters.set(i, animCounters.get(i) - 1);
+                entityData.set(BARREL_ANIM, animCounters, true);
             }
         }
 
@@ -210,7 +220,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, String weaponName) {
+    public void vehicleShoot(LivingEntity living, @NotNull String weaponName) {
         beforeShoot(living);
         super.vehicleShoot(living, weaponName);
     }
@@ -224,9 +234,9 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     public void beforeShoot(LivingEntity living) {
         var data = getGunData("Main");
         if (data != null && data.ammo.get() > 0) {
-            var barrelAnim = entityData.get(BARREL_ANIM).toIntArray();
-            barrelAnim[data.ammo.get() - 1] = data.compute().shootAnimationTime;
-            entityData.set(BARREL_ANIM, IntList.of(barrelAnim));
+            var barrelAnim = entityData.get(BARREL_ANIM);
+            barrelAnim.set(data.ammo.get() - 1, data.compute().shootAnimationTime);
+            entityData.set(BARREL_ANIM, barrelAnim, true);
         }
         if (living.level() instanceof ServerLevel level) {
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec("Main", 1), getShootPos("Main", 1), level, this);

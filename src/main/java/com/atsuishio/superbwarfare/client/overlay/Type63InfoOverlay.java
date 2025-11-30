@@ -59,7 +59,7 @@ public class Type63InfoOverlay implements IGuiOverlay {
         var items = type63Entity.getEntityData().get(Type63Entity.LOADED_AMMO);
         for (int i = 0; i < type63Entity.barrel.length; i++) {
             if (OBB.getLookingObb(player, player.getEntityReach()) == type63Entity.barrel[i]) {
-                int type = items.getInt(i);
+                int type = items.get(i);
 
                 ItemStack stack = switch (type) {
                     case 0 -> AP;

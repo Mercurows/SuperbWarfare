@@ -75,7 +75,7 @@ public class MortarEntity extends ArtilleryEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("TargetPitch", this.entityData.get(TARGET_PITCH));
         compound.putFloat("TargetYaw", this.entityData.get(TARGET_YAW));
@@ -83,7 +83,7 @@ public class MortarEntity extends ArtilleryEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("TargetPitch")) {
             this.entityData.set(TARGET_PITCH, compound.getFloat("TargetPitch"));
@@ -97,8 +97,8 @@ public class MortarEntity extends ArtilleryEntity {
     }
 
     @Override
-    public void vehicleShoot(@Nullable LivingEntity living, String weaponName) {
-        if (!(this.items.get(0).getItem() instanceof MortarShell)) return;
+    public void vehicleShoot(LivingEntity living, @NotNull String weaponName) {
+        if (!(this.getItems().get(0).getItem() instanceof MortarShell)) return;
         var gunData = getGunData(weaponName);
         if (gunData == null) return;
         if (entityData.get(FIRE_TIME) != 0) return;
@@ -118,7 +118,7 @@ public class MortarEntity extends ArtilleryEntity {
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         var result = super.interact(player, hand);
         if (result != InteractionResult.PASS) return result;
 
@@ -140,14 +140,14 @@ public class MortarEntity extends ArtilleryEntity {
         }
 
         if (mainHandItem.is(ModTags.Items.TOOLS_CROWBAR)) {
-            if (this.items.get(0).getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0 && level() instanceof ServerLevel) {
+            if (this.getItems().get(0).getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0 && level() instanceof ServerLevel) {
                 vehicleShoot(player, "Main");
             }
             return InteractionResult.SUCCESS;
         }
 
-        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0 && this.items.get(0).isEmpty()) {
-            this.items.set(0, mainHandItem.copyWithCount(1));
+        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0 && this.getItems().get(0).isEmpty()) {
+            this.getItems().set(0, mainHandItem.copyWithCount(1));
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
@@ -178,8 +178,8 @@ public class MortarEntity extends ArtilleryEntity {
             list.add(new ItemStack(ModItems.MONITOR.get()));
         }
 
-        if (items.get(0) != ItemStack.EMPTY) {
-            list.add(items.get(0));
+        if (getItems().get(0) != ItemStack.EMPTY) {
+            list.add(getItems().get(0));
         }
 
         return list;
@@ -197,11 +197,11 @@ public class MortarEntity extends ArtilleryEntity {
             entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
         }
 
-        if (entityData.get(FIRE_TIME) == 5 && this.items.get(0).getItem() instanceof MortarShell) {
+        if (entityData.get(FIRE_TIME) == 5 && this.getItems().get(0).getItem() instanceof MortarShell) {
             Level level = this.level();
             var gunData = getGunData("Main");
             if (level instanceof ServerLevel server && gunData != null) {
-                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.items.get(0), getProjectileGravity("Main"), (float) gunData.compute().damage, (float) gunData.compute().explosionDamage, (float) gunData.compute().explosionRadius);
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.getItems().get(0), getProjectileGravity("Main"), (float) gunData.compute().damage, (float) gunData.compute().explosionDamage, (float) gunData.compute().explosionRadius);
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
                 entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, getProjectileVelocity("Main"), getProjectileSpread("Main"));
                 level.addFreshEntity(entityToSpawn);

@@ -2,8 +2,6 @@ package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
@@ -19,8 +17,20 @@ public class ModSerializers {
 
     public static final DeferredRegister<EntityDataSerializer<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, Mod.MODID);
 
-    public static final RegistryObject<EntityDataSerializer<IntList>> INT_LIST_SERIALIZER = REGISTRY.register("int_list_serializer",
-            () -> EntityDataSerializer.simple(FriendlyByteBuf::writeIntIdList, FriendlyByteBuf::readIntIdList));
+    public static final RegistryObject<EntityDataSerializer<List<Integer>>> INT_LIST_SERIALIZER = REGISTRY.register("int_list_serializer",
+            () -> EntityDataSerializer.simple((buf, list) -> {
+                buf.writeVarInt(list.size());
+                for (var v : list) {
+                    buf.writeVarInt(v);
+                }
+            }, buf -> {
+                var length = buf.readVarInt();
+                var list = new ArrayList<Integer>();
+                for (int i = 0; i < length; i++) {
+                    list.add(buf.readVarInt());
+                }
+                return list;
+            }));
     public static final RegistryObject<EntityDataSerializer<List<Float>>> FLOAT_LIST_SERIALIZER = REGISTRY.register("float_list_serializer",
             () -> EntityDataSerializer.simple((buf, list) -> {
                 buf.writeVarInt(list.size());

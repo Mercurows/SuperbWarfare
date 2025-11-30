@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.NetworkRegistry
@@ -32,10 +31,8 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
         this.noCulling = true
     }
 
-    override fun getDamageModifier(): DamageModifier {
-        return super.getDamageModifier()
-            .custom { source, damage -> getSourceAngle(source, 0.4f) * damage }
-    }
+    override fun getDamageModifier() = super.getDamageModifier()
+        .custom { source, damage -> getSourceAngle(source, 0.4f) * damage }
 
     fun hitBlock(pos: Vec3, gunData: GunData, shooter: Entity?) {
         val serverLevel = level() as? ServerLevel ?: return

@@ -7,8 +7,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ public record OBB(Vector3d center, Vector3d extents, Quaterniond rotation, Part 
         this.extents.set(extents);
     }
 
-    public void setRotation(Quaterniond rotation) {
+    public void updateRotation(Quaterniond rotation) {
         this.rotation.set(rotation);
     }
 

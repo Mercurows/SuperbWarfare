@@ -37,7 +37,7 @@ public final class VehicleWeaponUtils {
 
         Entity driver = vehicle.getNthEntity(vehicle.getTurretControllerIndex());
         if (driver == null) {
-            vehicle.turretYRotLock = 0;
+            vehicle.setTurretYRotLock(0);
         } else {
             float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - vehicle.getYRot());
 
@@ -56,7 +56,7 @@ public final class VehicleWeaponUtils {
 
             vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed), -89.5f, 89.5f));
             vehicle.setTurretYRot(vehicle.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
-            vehicle.turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
+            vehicle.setTurretYRotLock(Mth.clamp(0.9f * diffY, min, max));
         }
     }
 
@@ -85,7 +85,7 @@ public final class VehicleWeaponUtils {
 
         vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.99f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
         vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.99f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
-        vehicle.turretYRotLock = Mth.clamp(0.9f * diffY, min, max);
+        vehicle.setTurretYRotLock(Mth.clamp(0.9f * diffY, min, max));
     }
 
     /**
@@ -135,16 +135,16 @@ public final class VehicleWeaponUtils {
                 }
 
                 vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELEASE.get(), vehicle.getSoundSource(), 1, 1);
-                vehicle.decoyReloadCoolDown = 500;
+                vehicle.setDecoyReloadCoolDown(500);
                 vehicle.getEntityData().set(DECOY_READY, false);
             }
             vehicle.setDecoyInputDown(false);
         }
 
-        if (!vehicle.getEntityData().get(DECOY_READY) && vehicle.decoyReloadCoolDown == 0 && vehicle.level() instanceof ServerLevel) {
+        if (!vehicle.getEntityData().get(DECOY_READY) && vehicle.getDecoyReloadCoolDown() == 0 && vehicle.level() instanceof ServerLevel) {
             vehicle.getEntityData().set(DECOY_READY, true);
             vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELOAD.get(), vehicle.getSoundSource(), 1, 1);
-            vehicle.decoyReloadCoolDown = 500;
+            vehicle.setDecoyReloadCoolDown(500);
         }
     }
 
@@ -174,15 +174,15 @@ public final class VehicleWeaponUtils {
                     });
                 }
 
-                vehicle.decoyReloadCoolDown = 400;
+                vehicle.setDecoyReloadCoolDown(400);
                 vehicle.getEntityData().set(DECOY_READY, false);
             }
             vehicle.setDecoyInputDown(false);
         }
-        if (!vehicle.getEntityData().get(DECOY_READY) && vehicle.decoyReloadCoolDown == 0 && vehicle.level() instanceof ServerLevel) {
+        if (!vehicle.getEntityData().get(DECOY_READY) && vehicle.getDecoyReloadCoolDown() == 0 && vehicle.level() instanceof ServerLevel) {
             vehicle.getEntityData().set(DECOY_READY, true);
             vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELOAD.get(), vehicle.getSoundSource(), 1, 1);
-            vehicle.decoyReloadCoolDown = 400;
+            vehicle.setDecoyReloadCoolDown(400);
         }
     }
 

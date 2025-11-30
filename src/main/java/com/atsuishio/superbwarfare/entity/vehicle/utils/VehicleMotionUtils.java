@@ -423,7 +423,7 @@ public final class VehicleMotionUtils {
         if (!vehicle.level().isClientSide) {
             vehicle.level().playSound(null, vehicle, ModSounds.VEHICLE_STRIKE.get(), vehicle.getSoundSource(), 1, 1);
         }
-        vehicle.collisionCoolDown = 4;
+        vehicle.setCollisionCoolDown(4);
         vehicle.setCrash(true);
         if (direction.getAxis() == Direction.Axis.Y) {
             vehicle.setDeltaMovement(vehicle.getDeltaMovement().multiply(0.9, -0.8, 0.9));

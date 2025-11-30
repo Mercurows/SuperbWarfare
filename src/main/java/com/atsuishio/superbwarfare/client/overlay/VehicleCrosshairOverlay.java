@@ -102,7 +102,7 @@ public class VehicleCrosshairOverlay implements IGuiOverlay {
 
         poseStack.pushPose();
 
-        float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
+        float recoil = Mth.lerp(partialTick, (float) vehicle.getRecoilShakeO(), (float) vehicle.getRecoilShake());
         poseStack.translate(lerpRecoil * 6 + screenWidth * 0.025f * recoil, recoil * 3 + screenHeight * 0.025f * recoil, 0);
         poseStack.scale(1 - recoil * 0.05f, 1 - recoil * 0.05f, 1);
         poseStack.rotateAround(Axis.ZP.rotationDegrees(-0.3f * ClientEventHandler.cameraRoll + 4 * lerpRecoil), screenWidth / 2f, screenHeight / 2f, 0);
