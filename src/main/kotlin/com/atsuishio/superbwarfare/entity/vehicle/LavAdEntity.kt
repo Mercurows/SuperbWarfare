@@ -1,14 +1,11 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class LavAdEntity(type: EntityType<LavAdEntity>, world: Level) : GeoVehicleEntity(type, world) {
 
-    override fun getDamageModifier(): DamageModifier {
-        return super.getDamageModifier()
-            .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
-    }
+    override fun getDamageModifier() = super.getDamageModifier()
+        .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
 }
