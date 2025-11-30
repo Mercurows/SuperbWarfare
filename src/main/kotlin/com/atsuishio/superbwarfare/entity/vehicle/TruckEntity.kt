@@ -61,7 +61,7 @@ class TruckEntity(type: EntityType<TruckEntity>, world: Level) : GeoVehicleEntit
 
     override fun baseTick() {
         super.baseTick()
-        if (decoyInputDown()) {
+        if (decoyInputDown) {
             horn()
         }
     }
