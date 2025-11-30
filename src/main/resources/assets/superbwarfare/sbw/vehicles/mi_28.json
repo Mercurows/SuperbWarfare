@@ -4,6 +4,5 @@
     "Model": "superbwarfare:geo/mi_28.geo.json",
     "Texture": "superbwarfare:textures/entity/mi_28.png",
     "LODModel": "superbwarfare:geo/vehicle_lod/mi_28_lod1.geo.json"
-  },
-  "MouseSpeed": [0.28, 0.19]
+  }
 }

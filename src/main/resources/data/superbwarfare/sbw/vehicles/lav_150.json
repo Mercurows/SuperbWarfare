@@ -220,7 +220,7 @@
     "@superbwarfare:mortar_shell * 1.25",
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
-    "@superbwarfare:igla_9k38_missile * 0.75",
+    "@#superbwarfare:aa_missile * 0.75",
     "All - 11"
   ],
   "VehicleContainerType": "Medium",

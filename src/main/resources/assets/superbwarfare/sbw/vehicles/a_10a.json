@@ -3,6 +3,5 @@
   "Model": {
     "Model": "superbwarfare:geo/a_10a.geo.json",
     "Texture": "superbwarfare:textures/entity/a_10a.png"
-  },
-  "MouseSpeed": [0.3, 0.3]
+  }
 }

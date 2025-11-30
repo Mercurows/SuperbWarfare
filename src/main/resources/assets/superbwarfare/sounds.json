@@ -3992,5 +3992,38 @@
         "name": "superbwarfare:vehicle/common/pull_up"
       }
     ]
+  },
+  "lav_ad_fire": {
+    "sounds": [
+      {
+        "attenuation_distance": 192,
+        "stream": true,
+        "name": "superbwarfare:vehicle/lav_ad/lav_ad_fire"
+      }
+    ]
+  },
+  "mini_explosion": {
+    "sounds": [
+      {
+        "name": "superbwarfare:explosion/mini_explosion_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_03",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_04",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_05",
+        "stream": false
+      }
+    ]
   }
 }

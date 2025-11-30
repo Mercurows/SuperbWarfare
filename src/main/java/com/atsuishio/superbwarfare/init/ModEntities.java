@@ -138,6 +138,8 @@ public class ModEntities {
             EntityType.Builder.of(WheelChairEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(1.0f, 1.0f));
     public static final RegistryObject<EntityType<Lav150Entity>> LAV_150 = register("lav_150",
             EntityType.Builder.of(Lav150Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.8f, 3.1f));
+    public static final RegistryObject<EntityType<LavAdEntity>> LAV_AD = register("lav_ad",
+            EntityType.Builder.of(LavAdEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.8f, 3.1f));
     public static final RegistryObject<EntityType<Bmp2Entity>> BMP_2 = register("bmp_2",
             EntityType.Builder.of(Bmp2Entity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(4f, 3f));
     public static final RegistryObject<EntityType<Yx100Entity>> YX_100 = register("yx_100",

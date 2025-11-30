@@ -22,7 +22,7 @@ public class Hpj11Model extends VehicleModel<Hpj11Entity> {
                     (bone, vehicle, state) -> bone.setRotX(getAnimationProcessor().getBone("barrel").getRotX());
 
             case "paoguanroll" -> (bone, vehicle, state) -> {
-                var gunData = vehicle.getGunData(0);
+                var gunData = vehicle.getGunData(0, 0);
 
                 if (gunData != null) {
                     bone.setRotZ(bone.getRotZ() + gunData.shootTimer.get());

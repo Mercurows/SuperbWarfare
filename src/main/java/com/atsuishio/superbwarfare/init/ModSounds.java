@@ -23,6 +23,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> JUMP = REGISTRY.register("jump", () -> SoundEvent.createVariableRangeEvent(Mod.loc("jump")));
     public static final RegistryObject<SoundEvent> DOUBLE_JUMP = REGISTRY.register("doublejump", () -> SoundEvent.createVariableRangeEvent(Mod.loc("doublejump")));
 
+    public static final RegistryObject<SoundEvent> MINI_EXPLOSION = REGISTRY.register("mini_explosion", () -> SoundEvent.createVariableRangeEvent(Mod.loc("mini_explosion")));
     public static final RegistryObject<SoundEvent> EXPLOSION_CLOSE = REGISTRY.register("explosion_close", () -> SoundEvent.createVariableRangeEvent(Mod.loc("explosion_close")));
     public static final RegistryObject<SoundEvent> EXPLOSION_FAR = REGISTRY.register("explosion_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("explosion_far")));
     public static final RegistryObject<SoundEvent> EXPLOSION_VERY_FAR = REGISTRY.register("explosion_very_far", () -> SoundEvent.createVariableRangeEvent(Mod.loc("explosion_very_far")));
