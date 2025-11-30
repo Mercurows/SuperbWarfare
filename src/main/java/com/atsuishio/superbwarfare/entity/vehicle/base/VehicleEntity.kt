@@ -36,7 +36,6 @@ import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import com.google.common.collect.ImmutableList
-import it.unimi.dsi.fastutil.ints.IntList
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
@@ -926,61 +925,63 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         protected set
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
-        builder.define(OVERRIDE, "")
-            .define(HEALTH, this.getMaxHealth())
-            .define(LAST_ATTACKER_UUID, "undefined")
-            .define(LAST_DRIVER_UUID, "undefined")
-            .define(GUN_DATA_MAP, HashMap<String, GunData>())
+        with(builder) {
+            define(OVERRIDE, "")
+            define(HEALTH, getMaxHealth())
+            define(LAST_ATTACKER_UUID, "undefined")
+            define(LAST_DRIVER_UUID, "undefined")
+            define(GUN_DATA_MAP, mutableMapOf())
 
-            .define(AI_TURRET_TARGET_UUID, "undefined")
-            .define(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined")
+            define(AI_TURRET_TARGET_UUID, "undefined")
+            define(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined")
 
-            .define(DELTA_ROT, 0f)
-            .define(MOUSE_SPEED_X, 0f)
-            .define(MOUSE_SPEED_Y, 0f)
+            define(DELTA_ROT, 0f)
+            define(MOUSE_SPEED_X, 0f)
+            define(MOUSE_SPEED_Y, 0f)
 
-            .define(TURRET_HEALTH, this.getTurretMaxHealth())
-            .define(L_WHEEL_HEALTH, this.getWheelMaxHealth())
-            .define(R_WHEEL_HEALTH, this.getWheelMaxHealth())
-            .define(MAIN_ENGINE_HEALTH, this.getEngineMaxHealth())
-            .define(SUB_ENGINE_HEALTH, this.getEngineMaxHealth())
+            define(TURRET_HEALTH, getTurretMaxHealth())
+            define(L_WHEEL_HEALTH, getWheelMaxHealth())
+            define(R_WHEEL_HEALTH, getWheelMaxHealth())
+            define(MAIN_ENGINE_HEALTH, getEngineMaxHealth())
+            define(SUB_ENGINE_HEALTH, getEngineMaxHealth())
 
-            .define(TURRET_DAMAGED, false)
-            .define(L_WHEEL_DAMAGED, false)
-            .define(R_WHEEL_DAMAGED, false)
-            .define(MAIN_ENGINE_DAMAGED, false)
-            .define(SUB_ENGINE_DAMAGED, false)
+            define(TURRET_DAMAGED, false)
+            define(L_WHEEL_DAMAGED, false)
+            define(R_WHEEL_DAMAGED, false)
+            define(MAIN_ENGINE_DAMAGED, false)
+            define(SUB_ENGINE_DAMAGED, false)
 
-            .define(CANNON_RECOIL_TIME, 0)
-            .define(CANNON_RECOIL_FORCE, 0f)
-            .define(POWER, 0f)
-            .define(YAW_WHILE_SHOOT, 0f)
-            .define(SERVER_YAW, yRot)
-            .define(SERVER_PITCH, xRot)
-            .define(AMMO, 0)
-            .define(DECOY_READY, false)
-            .define(GEAR_ROT, 0f)
-            .define(GEAR_UP, false)
-            .define(FORWARD_INPUT_DOWN, false)
-            .define(BACK_INPUT_DOWN, false)
-            .define(LEFT_INPUT_DOWN, false)
-            .define(RIGHT_INPUT_DOWN, false)
-            .define(UP_INPUT_DOWN, false)
-            .define(DOWN_INPUT_DOWN, false)
-            .define(FIRE_INPUT_DOWN, false)
-            .define(DECOY_INPUT_DOWN, false)
-            .define(SPRINT_INPUT_DOWN, false)
+            define(CANNON_RECOIL_TIME, 0)
+            define(CANNON_RECOIL_FORCE, 0f)
+            define(POWER, 0f)
+            define(YAW_WHILE_SHOOT, 0f)
+            define(SERVER_YAW, yRot)
+            define(SERVER_PITCH, xRot)
+            define(AMMO, 0)
+            define(DECOY_READY, false)
+            define(GEAR_ROT, 0f)
+            define(GEAR_UP, false)
+            define(FORWARD_INPUT_DOWN, false)
+            define(BACK_INPUT_DOWN, false)
+            define(LEFT_INPUT_DOWN, false)
+            define(RIGHT_INPUT_DOWN, false)
+            define(UP_INPUT_DOWN, false)
+            define(DOWN_INPUT_DOWN, false)
+            define(FIRE_INPUT_DOWN, false)
+            define(DECOY_INPUT_DOWN, false)
+            define(SPRINT_INPUT_DOWN, false)
 
-            .define(PLANE_BREAK, 0f)
-            .define(SELECTED_WEAPON, IntList.of(*IntArray(this.maxPassengers)))
-            .define(ENERGY, 0)
-            .define(PROPELLER_ROT, 0f)
+            define(PLANE_BREAK, 0f)
+            define(SELECTED_WEAPON, MutableList(maxPassengers) { 0 })
+            define(ENERGY, 0)
+            define(PROPELLER_ROT, 0f)
 
-            .define(HORN_VOLUME, 0f)
-            .define(LASER_LENGTH, 0f)
-            .define(LASER_SCALE, 0f)
-            .define(LASER_SCALE_O, 0f)
-            .define(CHARGE_PROGRESS, 0f)
+            define(HORN_VOLUME, 0f)
+            define(LASER_LENGTH, 0f)
+            define(LASER_SCALE, 0f)
+            define(LASER_SCALE_O, 0f)
+            define(CHARGE_PROGRESS, 0f)
+        }
     }
 
     // energy start
@@ -1415,20 +1416,19 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
 
         val selectedWeaponTag = compound.get("SelectedWeapon")
-        val selected: IntArray?
-        if (selectedWeaponTag is IntArrayTag) {
-            selected = selectedWeaponTag.asIntArray
+        val selected = if (selectedWeaponTag is IntArrayTag) {
+            selectedWeaponTag.asIntArray
         } else {
-            selected = IntArray(this.maxPassengers)
+            IntArray(this.maxPassengers)
         }
 
         if (selected.size != this.maxPassengers) {
             // 数量不符时（可能是更新或遇到损坏数据），重新初始化已选择武器
             this.entityData.set(
-                SELECTED_WEAPON, IntList.of(*IntArray(this.maxPassengers))
+                SELECTED_WEAPON, MutableList(maxPassengers) { 0 }
             )
         } else {
-            this.entityData.set(SELECTED_WEAPON, IntList.of(*selected))
+            this.entityData.set(SELECTED_WEAPON, selected.toMutableList())
         }
 
         val energyNBT = compound.get("Energy")
