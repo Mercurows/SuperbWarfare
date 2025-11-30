@@ -119,8 +119,8 @@ public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implem
 
         if (this.isInWater() && this.tickCount % 4 == 0) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6, 0.6, 0.6));
-            if (lastTickSpeed > 0.4) {
-                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
+            if (getLastTickSpeed() > 0.4) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (20 * ((getLastTickSpeed() - 0.4) * (getLastTickSpeed() - 0.4))));
             }
         }
     }

@@ -21,7 +21,7 @@ public class TruckModel extends VehicleModel<TruckEntity> {
     @Override
     public @Nullable TransformContext<TruckEntity> collectTransform(String boneName) {
         if (boneName.equals("control")) {
-            return (control, vehicle, state) -> control.setRotY(12 * Mth.lerp(state.getPartialTick(), vehicle.rudderRotO, vehicle.getRudderRot()));
+            return (control, vehicle, state) -> control.setRotY(12 * Mth.lerp(state.getPartialTick(), vehicle.getRudderRotO(), vehicle.getRudderRot()));
         }
 
         return super.collectTransform(boneName);

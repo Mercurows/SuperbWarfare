@@ -13,23 +13,16 @@ public class Mi28Model extends VehicleModel<Mi28Entity> {
 
     @Override
     public @Nullable TransformContext<Mi28Entity> collectTransform(String boneName) {
-        if (boneName.equals("propeller")) {
-            return (bone, vehicle, state) -> bone.setRotY(Mth.lerp(state.getPartialTick(), vehicle.propellerRotO, vehicle.getPropellerRot()));
-        }
+        return switch (boneName) {
+            case "propeller" ->
+                    (bone, vehicle, state) -> bone.setRotY(Mth.lerp(state.getPartialTick(), vehicle.getPropellerRotO(), vehicle.getPropellerRot()));
+            case "tailPropeller" ->
+                    (bone, vehicle, state) -> bone.setRotX(-6 * Mth.lerp(state.getPartialTick(), vehicle.getPropellerRotO(), vehicle.getPropellerRot()));
+            case "missile1" -> (bone, vehicle, state) -> bone.setHidden(shouldHideMissile(vehicle, 2));
+            case "missile2" -> (bone, vehicle, state) -> bone.setHidden(shouldHideMissile(vehicle, 1));
+            default -> super.collectTransform(boneName);
+        };
 
-        if (boneName.equals("tailPropeller")) {
-            return (bone, vehicle, state) -> bone.setRotX(-6 * Mth.lerp(state.getPartialTick(), vehicle.propellerRotO, vehicle.getPropellerRot()));
-        }
-
-        if (boneName.equals("missile1")) {
-            return (bone, vehicle, state) -> bone.setHidden(shouldHideMissile(vehicle, 2));
-        }
-
-        if (boneName.equals("missile2")) {
-            return (bone, vehicle, state) -> bone.setHidden(shouldHideMissile(vehicle, 1));
-        }
-
-        return super.collectTransform(boneName);
     }
 
     public boolean shouldHideMissile(VehicleEntity vehicle, int ammo) {

@@ -34,7 +34,7 @@ public class VehicleAssemblingTableVehicleRenderer extends GeoEntityRenderer<Veh
         Vec3 root = new Vec3(0.5, 0.5, -0.5);
         poseStack.rotateAround(Axis.YP.rotationDegrees(-yaw), (float) root.x, (float) root.y, (float) root.z);
         poseStack.rotateAround(Axis.XP.rotationDegrees(Mth.lerp(partialTick, animatable.xRotO, animatable.getXRot())), (float) root.x, (float) root.y, (float) root.z);
-        poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, animatable.prevRoll, animatable.getRoll())), (float) root.x, (float) root.y, (float) root.z);
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, animatable.getPrevRoll(), animatable.getRoll())), (float) root.x, (float) root.y, (float) root.z);
         super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
         poseStack.popPose();
     }

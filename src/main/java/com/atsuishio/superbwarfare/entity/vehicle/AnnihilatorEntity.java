@@ -53,7 +53,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(LASER_LEFT_LENGTH, 0f)
                 .define(LASER_MIDDLE_LENGTH, 0f)
@@ -94,7 +94,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    public DamageModifier getDamageModifier() {
+    public @NotNull DamageModifier getDamageModifier() {
         return super.getDamageModifier()
                 .custom((source, damage) -> getSourceAngle(source, 3) * damage);
     }
@@ -200,7 +200,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, String weaponName) {
+    public void vehicleShoot(@NotNull LivingEntity living, @NotNull String weaponName) {
         var data = getGunData(weaponName);
         shoot(living, data);
     }

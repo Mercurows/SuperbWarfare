@@ -42,14 +42,14 @@ public abstract class ClientPacketListenerMixin {
 
         // 获取排序后的Passengers
         var passengers = pPacket.getPassengers();
-        vehicle.entityIndexOverride = (e) -> {
+        vehicle.setEntityIndexOverride((e) -> {
             for (int i = 0; i < passengers.length; i++) {
-                if (passengers[i] == e.getId()) {
+                if (e != null && passengers[i] == e.getId()) {
                     return i;
                 }
             }
             return -1;
-        };
+        });
 
         for (int i : passengers) {
             if (i == -1) continue;
@@ -70,6 +70,6 @@ public abstract class ClientPacketListenerMixin {
             }
         }
 
-        vehicle.entityIndexOverride = null;
+        vehicle.setEntityIndexOverride(null);
     }
 }

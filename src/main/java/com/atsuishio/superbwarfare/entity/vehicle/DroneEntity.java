@@ -101,7 +101,7 @@ public class DroneEntity extends GeoVehicleEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         var data = new DroneAttachmentData();
 
@@ -132,7 +132,7 @@ public class DroneEntity extends GeoVehicleEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Linked", this.entityData.get(LINKED));
         compound.putString("Controller", this.entityData.get(CONTROLLER));
@@ -151,7 +151,7 @@ public class DroneEntity extends GeoVehicleEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Linked"))
             this.entityData.set(LINKED, compound.getBoolean("Linked"));
@@ -464,7 +464,7 @@ public class DroneEntity extends GeoVehicleEntity {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.965, 0.7, 0.965));
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
-            this.setZRot(this.roll * 0.7f);
+            this.setZRot(this.getRoll() * 0.7f);
             this.setXRot(this.getXRot() * 0.7f);
             this.setBodyXRot(this.getBodyPitch() * 0.7f);
         }

@@ -51,7 +51,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         var gunData = getGunData("Main");
         if (gunData == null) return InteractionResult.SUCCESS;
 
@@ -88,7 +88,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
 
         builder.define(SHOOT_VEC, getForward().toVector3f())
@@ -107,7 +107,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("ShootVecX", this.entityData.get(SHOOT_VEC).x);
         compound.putFloat("ShootVecY", this.entityData.get(SHOOT_VEC).y);
@@ -121,7 +121,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("ShootVecX") && compound.contains("ShootVecY") && compound.contains("ShootVecZ")) {
             this.entityData.set(SHOOT_VEC, new Vector3f(compound.getFloat("ShootVecX"), compound.getFloat("ShootVecY"), compound.getFloat("ShootVecZ")));
@@ -220,7 +220,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
         if (gunData != null && level() instanceof ServerLevel && getNthEntity(getTurretControllerIndex()) instanceof Player player) {
             var ammoCount = InventoryTool.countItem(player, gunData.selectedAmmoConsumer().stack().getItem());
             if (ammoCount > 0) {
-                var inStack = this.items.getFirst();
+                var inStack = this.getItems().getFirst();
                 int count = inStack.getCount();
 
                 if (count < Math.min(this.getMaxStackSize(), inStack.getMaxStackSize())) {
@@ -240,7 +240,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
     }
 
     @Override
-    public void vehicleShoot(LivingEntity living, String weaponName) {
+    public void vehicleShoot(LivingEntity living, @NotNull String weaponName) {
         beforeShoot(living);
         super.vehicleShoot(living, weaponName);
     }

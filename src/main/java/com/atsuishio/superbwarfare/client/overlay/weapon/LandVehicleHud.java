@@ -67,7 +67,7 @@ public class LandVehicleHud {
 
         poseStack.pushPose();
 
-        float recoil = Mth.lerp(partialTick, (float) vehicle.recoilShakeO, (float) vehicle.getRecoilShake());
+        float recoil = Mth.lerp(partialTick, (float) vehicle.getRecoilShakeO(), (float) vehicle.getRecoilShake());
         lerpRecoil = Mth.lerp(0.1f * partialTick, lerpRecoil, recoil * (float) (2 * (Math.random() - 0.5f)));
         poseStack.translate(lerpRecoil * 6 + screenWidth * 0.025f * recoil, recoil * 3 + screenHeight * 0.025f * recoil, 0);
         poseStack.scale(1 - recoil * 0.05f, 1 - recoil * 0.05f, 1);
@@ -95,7 +95,7 @@ public class LandVehicleHud {
 
             // 车身方向
             poseStack.pushPose();
-            poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.getTurretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
+            poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.getTurretYRotO(), vehicle.getTurretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
             int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
             RenderHelper.preciseBlitWithColor(gui, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
             int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));

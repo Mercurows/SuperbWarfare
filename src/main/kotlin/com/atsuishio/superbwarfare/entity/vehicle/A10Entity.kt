@@ -16,7 +16,7 @@ class A10Entity(type: EntityType<A10Entity>, world: Level) : GeoVehicleEntity(ty
             getSourceAngle(source, 0.25f) * damage * (if (health > 0.1f) 0.4f else 0.05f)
         }
 
-    override fun onEngine1Damaged(pos: Vec3?) {
+    override fun onEngine1Damaged(pos: Vec3) {
         if (level().isClientSide) {
             val random = 2 * (this.random.nextFloat() - 0.5f)
             addRandomParticle(ModParticleTypes.FIRE_STAR.get(), pos, 0f, level(), 0.25f, 5)
@@ -36,7 +36,7 @@ class A10Entity(type: EntityType<A10Entity>, world: Level) : GeoVehicleEntity(ty
         }
     }
 
-    override fun onEngine2Damaged(pos: Vec3?) {
+    override fun onEngine2Damaged(pos: Vec3) {
         if (level().isClientSide) {
             val random = 2 * (this.random.nextFloat() - 0.5f)
             addRandomParticle(ModParticleTypes.FIRE_STAR.get(), pos, 0f, level(), 0.25f, 5)
