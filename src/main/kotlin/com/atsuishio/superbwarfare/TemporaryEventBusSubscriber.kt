@@ -38,7 +38,7 @@ import com.atsuishio.superbwarfare.world.TDMSavedData
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 
-private val classes = setOf(
+private val classes = arrayOf(
     CriteriaRegister::class.java,
     CapabilityHandler::class.java,
     ClickHandler::class.java,
@@ -93,6 +93,7 @@ private val classes = setOf(
     ResourceOnceLogger::class.java,
     VectorUtil::class.java,
     TDMSavedData::class.java,
+    ClientMouseHandler::class.java,
 )
 
 // TODO 转为kt后移除该方法和文件
