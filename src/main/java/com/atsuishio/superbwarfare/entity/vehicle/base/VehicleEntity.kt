@@ -648,7 +648,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         padList(orderedPassengers, targetSize, null, null)
     }
 
-    protected fun <T> padList(list: MutableList<T?>, targetSize: Int, defaultValue: T?, onRemove: Consumer<T?>?) {
+    protected fun <T> padList(list: MutableList<T?>, targetSize: Int, defaultValue: T?, onRemove: Consumer<T>?) {
         while (targetSize != list.size) {
             if (targetSize > list.size) {
                 list.add(defaultValue)
@@ -719,7 +719,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         orderedPassengers[index] = null
         this.passengers =
-            ImmutableList.copyOf<Entity?>(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }
+            ImmutableList.copyOf(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }
                 .toList())
 
         pPassenger.boardingCooldown = 60
@@ -1900,7 +1900,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (turretController is Player) {
                 this.adjustTurretAngle()
             } else if (turretController is Mob) {
-                this.turretAutoAimFromUuid(entityData.get<String?>(AI_TURRET_TARGET_UUID), turretController)
+                this.turretAutoAimFromUuid(entityData.get(AI_TURRET_TARGET_UUID), turretController)
             }
         }
 
@@ -1910,7 +1910,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 this.adjustWeaponControllerAngle()
             } else if (passengerWeaponStationController is Mob) {
                 this.passengerWeaponAutoAimFormUuid(
-                    entityData.get<String?>(AI_PASSENGER_WEAPON_TARGET_UUID),
+                    entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID),
                     passengerWeaponStationController
                 )
             }
