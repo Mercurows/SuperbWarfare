@@ -219,7 +219,9 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     public ParticleTool.ParticleType explosionParticleType(float radius) {
         ParticleTool.ParticleType particleType;
 
-        if (radius <= 4) {
+        if (radius <= 2) {
+            particleType = ParticleTool.ParticleType.MINI;
+        } else if (radius > 2 && radius <= 4) {
             particleType = ParticleTool.ParticleType.SMALL;
         } else if (radius > 4 && radius < 10) {
             particleType = ParticleTool.ParticleType.MEDIUM;

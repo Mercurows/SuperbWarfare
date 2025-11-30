@@ -7,9 +7,7 @@ import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -117,7 +115,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
                 .damage(explosionDamage)
                 .radius(explosionRadius)
                 .position(vec3)
-                .withParticleType(ParticleTool.ParticleType.SMALL)
+                .withParticleType(explosionParticleType(explosionRadius))
                 .destroyBlock(() -> hitEntity ? Explosion.BlockInteraction.KEEP : (ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP))
                 .damageMultiplier(1.25F)
                 .explode();
@@ -126,15 +124,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     @Override
     public void tick() {
         super.tick();
-
-        if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,
-                    1, 0, 0, 0, 0.02, true);
-        }
-
-        if (onGround()) {
-            this.setDeltaMovement(0, 0, 0);
-        }
 
         if (this.tickCount > 200 || this.isInWater()) {
             if (this.level() instanceof ServerLevel && !onGround()) {

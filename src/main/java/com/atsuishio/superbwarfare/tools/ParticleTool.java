@@ -12,7 +12,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -60,16 +59,15 @@ public class ParticleTool {
         double z = pos.z;
 
         if (!level.isClientSide()) {
-            if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
-                level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.EXPLOSION_WATER.get(), SoundSource.BLOCKS, 2, 1);
-            }
-            level.playSound(null, BlockPos.containing(x, y + 1, z), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.BLOCKS, 4, 1);
+            level.playSound(null, BlockPos.containing(x, y + 1, z), ModSounds.MINI_EXPLOSION.get(), SoundSource.BLOCKS, 4, 1);
         }
 
         if (level instanceof ServerLevel serverLevel) {
-            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 3, 0.1, 0.1, 0.1, 0.02, true);
-            sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y, z, 4, 0.2, 0.2, 0.2, 0.02, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 4, 0, 0, 0, 0.2, true);
+            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 2, 0.1, 0.1, 0.1, 0.02, true);
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y, z, 2, 0.05, 0.05, 0.05, 1, true);
+            sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y, z, 1, 0.2, 0.2, 0.2, 0.02, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 7, 0, 0, 0, 0.4, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y, z, 1, 0, 0, 0, 20, true);
         }
     }
 
@@ -87,7 +85,7 @@ public class ParticleTool {
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 3, 0.1, 0.1, 0.1, 0.02, true);
             sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y, z, 4, 0.2, 0.2, 0.2, 0.02, true);
             sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 12, 0, 0, 0, 0.6, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y, z, 5, 0.1, 0.1, 0.1, 20, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y, z, 3, 0.1, 0.1, 0.1, 20, true);
         }
     }
 
@@ -112,7 +110,7 @@ public class ParticleTool {
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 20, 0.2, 1, 0.2, 0.02, true);
             sendParticle(serverLevel, ParticleTypes.LARGE_SMOKE, x, y + 1, z, 10, 0.4, 1, 0.4, 0.02, true);
             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 40, 2, 0.001, 2, 0.01, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 50, 0, 0, 0, 0.9, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 50, 0, 0, 0, 0.8, true);
             sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 0.5, z, 50, 0.2, 0.2, 0.2, 20, true);
         }
     }

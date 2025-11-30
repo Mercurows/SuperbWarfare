@@ -56,6 +56,7 @@
       "Part": "MainEngine"
     }
   ],
+  "MouseSpeed": [0.28, 0.19],
   "Seats": [
     {
       "Transform": "Vehicle",
@@ -299,6 +300,7 @@
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Magazine": 4,
+      "RPM": 60,
       "EmptyReloadTime": 260,
       "Projectile": "superbwarfare:ru_9m336_missile",
       "Name": "weapon.superbwarfare.9m_336_missile",
@@ -328,7 +330,7 @@
         "VehicleReloadSoundTime": 11,
         "Change": "superbwarfare:into_missile",
         "Locking": "superbwarfare:javelin_locking",
-        "Locked": "superbwarfare:javelin_locking"
+        "Locked": "superbwarfare:javelin_locked"
       },
       "CrosshairColor": "0xFFC700",
       "Crosshair": "@VehicleCommonSeekMissile",

@@ -34,6 +34,7 @@
       "Part": "SubEngine"
     }
   ],
+  "MouseSpeed": [0.4, 0.25],
   "Seats": [
     {
       "Transform": "Vehicle",

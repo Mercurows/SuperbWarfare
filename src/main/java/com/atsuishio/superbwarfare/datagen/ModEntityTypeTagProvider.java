@@ -64,6 +64,11 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.RPG_ROCKET_TBG.get()
         );
 
+        this.tag(ModTags.EntityTypes.AA_MISSILE).add(
+                ModEntities.IGLA_MISSILE.get(),
+                ModEntities.RU_9K33_MISSILE.get()
+        );
+
         this.tag(ModTags.EntityTypes.SEEK_BLACKLIST).add(
                         EntityType.ITEM,
                         EntityType.ARMOR_STAND,

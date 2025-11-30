@@ -109,6 +109,7 @@
     "superbwarfare:vehicle_strike * 0.7",
     "@superbwarfare:cannon_shell * 0.6",
     "@superbwarfare:small_cannon_shell * 0.8",
+    "@#superbwarfare:aa_missile * 0.5",
     "@superbwarfare:gun_grenade * 1.4",
     "@superbwarfare:rgo_grenade * 3",
     "@superbwarfare:hand_grenade * 2.5",
