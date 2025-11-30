@@ -28,7 +28,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
     private final JsonPropertyModifier<VehicleData, DefaultVehicleData> jsonPropModifier = new JsonPropertyModifier<>();
 
-    public static DefaultVehicleData compute(VehicleEntity vehicle) {
+    public static @NotNull DefaultVehicleData compute(VehicleEntity vehicle) {
         return from(vehicle).compute();
     }
 
@@ -86,7 +86,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
                 }
             });
 
-    public static VehicleData from(VehicleEntity entity) {
+    public static @NotNull VehicleData from(VehicleEntity entity) {
         return dataCache.getUnchecked(entity);
     }
 
