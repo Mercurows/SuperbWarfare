@@ -1,12 +1,16 @@
 package com.atsuishio.superbwarfare.entity
 
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.world.entity.Entity
 import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 import software.bernie.geckolib.animation.AnimationController
 import software.bernie.geckolib.animation.AnimationState
 import software.bernie.geckolib.animation.PlayState
 import software.bernie.geckolib.animation.RawAnimation
+import kotlin.reflect.KProperty
 
+// Geo动画播放Builder
 class ControllerBuilder<T : GeoAnimatable>(val animatable: T, val data: ControllerRegistrar) {
     fun add(
         name: String,
@@ -36,3 +40,10 @@ fun <T : GeoAnimatable> T.buildControllers(
     ControllerBuilder(this, data).apply(builder)
 }
 
+// EntityDataAccessor代理
+operator fun <T : Any> EntityDataAccessor<T>.getValue(entity: Any?, prop: KProperty<*>) =
+    (entity as Entity).entityData.get(this) as T
+
+operator fun <T : Any> EntityDataAccessor<T>.setValue(entity: Any?, prop: KProperty<*>, value: T) {
+    (entity as Entity).entityData.set(this, value)
+}
