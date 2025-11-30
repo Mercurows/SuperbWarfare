@@ -71,7 +71,7 @@ class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : GeoVehicleEntity(
         super.baseTick()
         val passenger = getFirstPassenger()
         // 空格投掷西瓜炸弹
-        if (upInputDown() && !onGround() && melon && passenger is Player) {
+        if (upInputDown && !onGround() && melon && passenger is Player) {
             melon = false
 
             val transform = getVehicleTransform(1f)
@@ -91,7 +91,7 @@ class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : GeoVehicleEntity(
             passenger.level().addFreshEntity(melonBomb)
 
             this.level().playSound(null, onPos, SoundEvents.IRON_DOOR_OPEN, SoundSource.PLAYERS, 1f, 1f)
-            setUpInputDown(false)
+            upInputDown = false
         }
     }
 
