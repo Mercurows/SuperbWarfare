@@ -53,7 +53,7 @@ private fun SingleCommand.buildDestroyTypesCommand() {
 
                     saveCollisionConfigs()
 
-                    source.success { Component.translatable("commands.config.collision_destroy.$type") }
+                    source.success { Component.translatable("commands.config.collision_destroy.${type.commandName}") }
 
                     return@execute 0
                 }
