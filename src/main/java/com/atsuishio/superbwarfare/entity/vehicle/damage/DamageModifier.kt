@@ -12,14 +12,13 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.damagesource.DamageType
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.EntityType
-import java.util.function.BiFunction
 import java.util.function.Function
 
 class DamageModifier {
     private val immuneList = mutableListOf<DamageModify>()
     private val reduceList = mutableListOf<DamageModify>()
     private val multiplyList = mutableListOf<DamageModify>()
-    private val customList = mutableListOf<BiFunction<DamageSource, Float, Float>>()
+    private val customList = mutableListOf<(DamageSource, Float) -> Float>()
 
     /**
      * 免疫所有伤害
@@ -209,7 +208,7 @@ class DamageModifier {
      *
      * @param damageModifyFunction 自定义伤害值计算函数
      */
-    fun custom(damageModifyFunction: BiFunction<DamageSource, Float, Float>): DamageModifier {
+    fun custom(damageModifyFunction: (DamageSource, Float) -> Float): DamageModifier {
         customList.add(damageModifyFunction)
         return this
     }
@@ -337,7 +336,7 @@ class DamageModifier {
         }
 
         for (func in customList) {
-            damage = func.apply(source, damage)
+            damage = func(source, damage)
             list.add(ModifyResult(null, damage))
 
             if (damage <= 0) break
@@ -364,7 +363,7 @@ class DamageModifier {
 
         // 最后计算自定义伤害
         for (func in customList) {
-            damage = func.apply(source, damage)
+            damage = func(source, damage)
             if (damage <= 0) return 0f
         }
 
