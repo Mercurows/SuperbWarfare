@@ -5,8 +5,6 @@ import kotlin.math.*
 
 fun ClosedRange<Int>.lerp(delta: Double) = Mth.clamp(delta, start.toDouble(), endInclusive.toDouble())
 fun ClosedRange<Int>.lerp(delta: Float) = lerp(delta.toDouble())
-fun ClosedFloatingPointRange<Float>.lerp(delta: Double) = Mth.lerp(delta, start.toDouble(), endInclusive.toDouble())
-fun ClosedFloatingPointRange<Float>.lerp(delta: Float) = lerp(delta.toDouble())
 fun ClosedFloatingPointRange<Double>.lerp(delta: Double) = Mth.lerp(delta, start, endInclusive)
 fun ClosedFloatingPointRange<Double>.lerp(delta: Float) = lerp(delta.toDouble())
 
