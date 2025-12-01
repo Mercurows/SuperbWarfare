@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.perk.Perk
-import com.atsuishio.superbwarfare.perk.PerkInstance
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.invoke
 import com.google.common.cache.CacheBuilder
@@ -129,7 +128,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         // perk
         if (perk != null) {
             for (type in Perk.Type.entries.toTypedArray()) {
-                val instance: Perk = perk.get(type) ?: continue
+                val instance = perk.get(type) ?: continue
 
                 rawData = instance.computeProperties(this, rawData)
             }
@@ -259,7 +258,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         if (fireModes.isNullOrEmpty()) {
             return FireModeInfo()
         }
-        return fireModes[Mth.clamp(this.selectedFireMode.get(), 0, fireModes.size - 1)]
+        return fireModes[this.selectedFireMode.get().coerceIn(fireModes.indices)]
     }
 
     // 开火相关流程开始
@@ -317,9 +316,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         if (entity is Player && entity.isCreative || InventoryTool.hasCreativeAmmoBox(entity)) return Int.MAX_VALUE
 
         return Math.toIntExact(
-            Mth.clamp(
+            min(
                 countBackupAmmoItem(entity).toLong() * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get(),
-                0,
                 Int.MAX_VALUE.toLong()
             )
         )
@@ -333,9 +331,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         if (InventoryTool.hasCreativeAmmoBox(handler)) return Int.MAX_VALUE
 
         return Math.toIntExact(
-            Mth.clamp(
+            min(
                 countBackupAmmoItem(handler).toLong() * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get(),
-                0,
                 Int.MAX_VALUE.toLong()
             )
         )
@@ -540,17 +537,17 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     fun availablePerks(): MutableList<Perk> {
         val availablePerks = mutableListOf<Perk>()
         val perkNames = compute().availablePerks()
-        if (perkNames == null || perkNames.isEmpty()) return availablePerks
+        if (perkNames.isNullOrEmpty()) return availablePerks
 
-        val sortedNames: MutableList<String> = ArrayList<String>(perkNames)
+        val sortedNames = ArrayList(perkNames)
 
         sortedNames.sortWith { s1, s2 ->
-            val p1: Int = getPerkPriority(s1)
-            val p2: Int = getPerkPriority(s2)
+            val p1 = getPerkPriority(s1)
+            val p2 = getPerkPriority(s2)
             if (p1 != p2) {
                 return@sortWith p1.compareTo(p2)
             } else {
-                return@sortWith s1!!.compareTo(s2!!)
+                return@sortWith s1.compareTo(s2)
             }
         }
 
@@ -621,7 +618,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val damageReduceMinDistance: Double
         get() {
             for (type in Perk.Type.entries.toTypedArray()) {
-                val instance: PerkInstance? = this.perk?.getInstance(type)
+                val instance = this.perk?.getInstance(type)
                 if (instance != null) {
                     return instance.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce)
                 }
@@ -695,8 +692,10 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val virtualAmmo: IntValue
 
     // backup ammo count override
+    @JvmField
     val backupAmmoCount: IntValue
 
+    @JvmField
     val ammoSlot: AmmoSlot
 
     @JvmField
@@ -727,13 +726,9 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @JvmField
     val overHeat: BooleanValue
 
-    fun canAdjustZoom(): Boolean {
-        return item.canAdjustZoom(this)
-    }
+    fun canAdjustZoom() = item.canAdjustZoom(this)
 
-    fun canSwitchScope(): Boolean {
-        return item.canSwitchScope(this)
-    }
+    fun canSwitchScope() = item.canSwitchScope(this)
 
     @JvmField
     val reload: Reload
@@ -741,16 +736,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     /**
      * 是否正在换弹
      */
-    fun reloading(): Boolean {
-        return reload.state() != ReloadState.NOT_RELOADING
-    }
+    fun reloading() = reload.state() != ReloadState.NOT_RELOADING
 
     @JvmField
     val charge: Charge
 
-    fun charging(): Boolean {
-        return charge.time() > 0
-    }
+    fun charging() = charge.time() > 0
 
     @JvmField
     val isEmpty: BooleanValue
@@ -840,6 +831,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     // TODO 删了这个，这个是为了临时适配女仆mod用的
     @Deprecated("use selectedFireModeInfo() instead", ReplaceWith("selectedFireModeInfo()"))
     @Suppress("unused")
+    @JvmField
     val fireMode: StringEnumValue<FireMode> = FireModeGetter()
 
     init {
@@ -948,9 +940,13 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
             return data
         }
 
-        fun getDefault(stack: ItemStack) = getDefault(stack.item)
+        fun getDefault(stack: ItemStack): DefaultGunData {
+            return getDefault(stack.item)
+        }
 
-        fun getDefault(item: Item) = getDefault(getRegistryId(item))
+        fun getDefault(item: Item): DefaultGunData {
+            return getDefault(getRegistryId(item))
+        }
 
         fun getRegistryId(item: Item): String {
             var id = item.descriptionId

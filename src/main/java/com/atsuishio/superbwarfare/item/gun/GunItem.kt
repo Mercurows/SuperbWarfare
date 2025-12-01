@@ -26,7 +26,6 @@ import com.atsuishio.superbwarfare.item.EnergyStorageItem
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.Perk
-import com.atsuishio.superbwarfare.perk.PerkInstance
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
@@ -92,6 +91,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     @JvmField
     val boltTimeBehaviors = mutableMapOf<Int, Consumer<GunData>?>()
+
+    init {
+        addReloadTimeBehavior(this.reloadTimeBehaviors)
+        addBoltTimeBehavior(this.boltTimeBehaviors)
+    }
 
     override fun computeProperties(gunData: GunData, rawData: DefaultGunData): DefaultGunData {
         rawData.damage += getCustomDamage(gunData)
@@ -174,11 +178,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     @ParametersAreNonnullByDefault
     override fun shouldCauseReequipAnimation(oldStack: ItemStack, newStack: ItemStack, slotChanged: Boolean) = false
-
-    init {
-        addReloadTimeBehavior(this.reloadTimeBehaviors)
-        addBoltTimeBehavior(this.boltTimeBehaviors)
-    }
 
     override fun getDefaultAttributeModifiers(stack: ItemStack): ItemAttributeModifiers {
         val list = ArrayList<ItemAttributeModifiers.Entry?>(super.getDefaultAttributeModifiers(stack).modifiers())
@@ -858,7 +857,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         for (type in Perk.Type.entries.toTypedArray()) {
-            val instance: PerkInstance? = data.perk?.getInstance(type)
+            val instance = data.perk?.getInstance(type)
             instance?.perk?.modifyProjectile(data, instance, entity)
         }
 
@@ -902,12 +901,13 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         if (entity is Projectile) {
             entity.shoot(x, y, z, velocity, spread.toFloat())
         } else {
+            val random = RandomSource.create()
             val vec3 = Vec3(x, y, z)
                 .normalize()
                 .add(
-                    entity.getRandom().triangle(0.0, 0.0172275 * spread),
-                    entity.getRandom().triangle(0.0, 0.0172275 * spread),
-                    entity.getRandom().triangle(0.0, 0.0172275 * spread)
+                    random.triangle(0.0, 0.0172275 * spread),
+                    random.triangle(0.0, 0.0172275 * spread),
+                    random.triangle(0.0, 0.0172275 * spread)
                 )
                 .scale(velocity.toDouble())
 
@@ -1073,7 +1073,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     open fun getRayHitBlockSound(data: GunData): SoundEvent = SoundEvents.EMPTY
-
     open fun getRayHitEntitySound(data: GunData): SoundEvent = SoundEvents.EMPTY
 
     open fun onRayHitEntity(
