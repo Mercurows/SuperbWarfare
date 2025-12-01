@@ -41,22 +41,22 @@
       "Part": "WheelLeft"
     },{
       "Size": [0.273, 0.625, 0.625],
-      "Position": [1.367, 0.625, 2.21],
+      "Position": [-1.367, 0.625, 2.21],
       "Part": "WheelRight"
     },
     {
       "Size": [0.273, 0.625, 0.625],
-      "Position": [1.367, 0.625, 0.843],
+      "Position": [-1.367, 0.625, 0.843],
       "Part": "WheelRight"
     },
     {
       "Size": [0.273, 0.625, 0.625],
-      "Position": [1.367, 0.625, -0.85],
+      "Position": [-1.367, 0.625, -0.85],
       "Part": "WheelRight"
     },
     {
       "Size": [0.273, 0.625, 0.625],
-      "Position": [1.367, 0.625, -2.27],
+      "Position": [-1.367, 0.625, -2.27],
       "Part": "WheelRight"
     },
     {

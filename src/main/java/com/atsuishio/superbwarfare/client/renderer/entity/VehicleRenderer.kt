@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
@@ -26,22 +25,11 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         partialTick: Float
     ): RenderType? = RenderType.entityTranslucent(getTextureLocation(vehicle))
 
-    override fun defaultRender(
-        poseStack: PoseStack,
-        animatable: T,
-        bufferSource: MultiBufferSource,
-        renderType: RenderType?,
-        buffer: VertexConsumer?,
-        yaw: Float,
-        partialTick: Float,
-        packedLight: Int
-    ) {
+    override fun render(entityIn: T, entityYaw: Float, partialTicks: Float, poseStack: PoseStack, bufferIn: MultiBufferSource, packedLightIn: Int) {
         poseStack.pushPose()
-
-        vehicleAxis(animatable, poseStack, yaw, partialTick)
-        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight)
-        renderCustomPart(animatable, yaw, partialTick, poseStack, bufferSource, packedLight)
-
+        vehicleAxis(entityIn, poseStack, entityYaw, partialTicks)
+        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn)
+        renderCustomPart(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn)
         poseStack.popPose()
     }
 
