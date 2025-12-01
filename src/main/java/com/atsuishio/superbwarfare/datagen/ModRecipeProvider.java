@@ -630,7 +630,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SNIPER_AMMO.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_SHELL.get(), 4)
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_SHELL.get(), 8)
                 .pattern("ea ")
                 .pattern("bcb")
                 .pattern(" d ")
