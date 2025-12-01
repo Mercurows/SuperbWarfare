@@ -121,7 +121,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     protected var init = false
 
     // TODO 在重载资源包时清空缓存
-    protected val TRANSFORMS = mutableListOf<Pair<String, TransformContext<T>>?>()
+    protected val TRANSFORMS = mutableListOf<Pair<String, TransformContext<T>>>()
 
     open fun collectTransform(boneName: String): TransformContext<T>? {
         // 瞄准时隐藏车体
@@ -342,12 +342,12 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
             ClientEventHandler.zoomVehicle && vehicle.getNthEntity(vehicle.passengerWeaponStationControllerIndex) === Minecraft.getInstance().player
 
         TRANSFORMS.forEach { pair ->
-            val name = pair!!.getA()
+            val name = pair.getA()
             val bone = animationProcessor.getBone(name)
 
             // TODO 这里怎么可能为空？
             if (bone != null) {
-                pair.getB()!!.transform(bone, vehicle, animationState)
+                pair.getB().transform(bone, vehicle, animationState)
             }
         }
     }
