@@ -7,13 +7,13 @@ class Ah6Model : VehicleModel<Ah6Entity>() {
     override fun collectTransform(boneName: String): TransformContext<Ah6Entity>? {
         if (boneName == "propeller") {
             return TransformContext { bone, vehicle, state ->
-                bone.setRotY(Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot))
+                bone.rotY = Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot)
             }
         }
 
         if (boneName == "tailPropeller") {
             return TransformContext { bone, vehicle, state ->
-                bone.setRotX(-6 * Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot))
+                bone.rotX = -6 * Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot)
             }
         }
 

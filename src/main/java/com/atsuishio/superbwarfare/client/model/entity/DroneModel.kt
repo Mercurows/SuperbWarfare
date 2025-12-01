@@ -6,7 +6,7 @@ class DroneModel : VehicleModel<DroneEntity>() {
     override fun collectTransform(boneName: String): TransformContext<DroneEntity>? {
         return when (boneName) {
             "wingFL", "wingFR", "wingBL", "wingBR" -> TransformContext { bone, _, _ ->
-                bone.setRotY((System.currentTimeMillis() % 36000000) / 12f)
+                bone.rotY = (System.currentTimeMillis() % 36000000) / 12f
             }
 
             else -> super.collectTransform(boneName)

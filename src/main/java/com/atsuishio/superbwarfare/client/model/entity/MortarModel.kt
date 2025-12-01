@@ -11,15 +11,16 @@ class MortarModel : VehicleModel<MortarEntity>() {
                 val jiaojia = animationProcessor.getBone("jiaojia")
                 val entityData = state.getData(DataTickets.ENTITY_MODEL_DATA)
                 if (entityData != null) {
-                    bone.setRotX((entityData.headPitch()) * Mth.DEG_TO_RAD)
-                    jiaojia.setRotX(-2 * ((entityData.headPitch() - (10 - entityData.headPitch() * 0.1f)) * Mth.DEG_TO_RAD))
+                    bone.rotX = (entityData.headPitch()) * Mth.DEG_TO_RAD
+                    jiaojia.rotX =
+                        -2 * ((entityData.headPitch() - (10 - entityData.headPitch() * 0.1f)) * Mth.DEG_TO_RAD)
                 }
             }
         }
 
         if (boneName == "monitor") {
             return TransformContext { bone, vehicle, _ ->
-                bone.setHidden(!vehicle.getEntityData().get(MortarEntity.INTELLIGENT))
+                bone.isHidden = !vehicle.getEntityData().get(MortarEntity.INTELLIGENT)
             }
         }
 

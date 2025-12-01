@@ -6,19 +6,19 @@ class WheelChairModel : VehicleModel<WheelChairEntity>() {
     override fun collectTransform(boneName: String): TransformContext<WheelChairEntity>? {
         return when (boneName) {
             "w_rb" -> TransformContext { bone, vehicle, _ ->
-                bone.setRotX(vehicle.rightWheelRot)
+                bone.rotX = vehicle.rightWheelRot
             }
 
             "w_lb" -> TransformContext { bone, vehicle, _ ->
-                bone.setRotX(vehicle.leftWheelRot)
+                bone.rotX = vehicle.leftWheelRot
             }
 
             "w_rr" -> TransformContext { bone, vehicle, _ ->
-                bone.setRotX(4 * vehicle.rightWheelRot)
+                bone.rotX = 4 * vehicle.rightWheelRot
             }
 
             "w_lr" -> TransformContext { bone, vehicle, _ ->
-                bone.setRotX(4 * vehicle.leftWheelRot)
+                bone.rotX = 4 * vehicle.leftWheelRot
             }
 
             else -> super.collectTransform(boneName)

@@ -10,11 +10,12 @@ class TowModel : VehicleModel<TowEntity>() {
         return when (boneName) {
             "guanmiao" -> TransformContext { bone, vehicle, _ ->
                 val player = MC.player
-                bone.setHidden(vehicle.getFirstPassenger() === player && (MC.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle))
+                bone.isHidden =
+                    vehicle.getFirstPassenger() === player && (MC.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
             }
 
             "missile" -> TransformContext { bone, vehicle, _ ->
-                bone.setHidden(!vehicle.getEntityData().get(TowEntity.LOADED))
+                bone.isHidden = !vehicle.getEntityData().get(TowEntity.LOADED)
             }
 
             else -> super.collectTransform(boneName)

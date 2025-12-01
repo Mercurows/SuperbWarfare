@@ -9,13 +9,13 @@ class Type63Model : VehicleModel<Type63Entity>() {
     override fun collectTransform(boneName: String): TransformContext<Type63Entity>? {
         if (boneName == "shoulunx") {
             return TransformContext { bone, _, _ ->
-                bone.setRotX(-turretXRot * 3)
+                bone.rotX = -turretXRot * 3
             }
         }
 
         if (boneName == "shouluny") {
             return TransformContext { bone, _, _ ->
-                bone.setRotZ(-turretYRot * 6)
+                bone.rotZ = -turretYRot * 6
             }
         }
 
@@ -24,7 +24,7 @@ class Type63Model : VehicleModel<Type63Entity>() {
             return TransformContext { bone, vehicle, _ ->
                 val items = vehicle.getEntityData().get(Type63Entity.LOADED_AMMO)
                 val i = matcher.group("id").toInt()
-                bone.setHidden(items[i] == -1)
+                bone.isHidden = items[i] == -1
             }
         }
 

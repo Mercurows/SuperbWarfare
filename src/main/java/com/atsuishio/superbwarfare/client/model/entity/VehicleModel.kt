@@ -20,7 +20,6 @@ import software.bernie.geckolib.cache.`object`.GeoBone
 import software.bernie.geckolib.model.GeoModel
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.math.min
 
 open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnimatable {
     protected var pitch = 0f
@@ -123,40 +122,34 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     protected var init = false
 
     // TODO 在重载资源包时清空缓存
-    protected val TRANSFORMS = mutableListOf<Pair<String, TransformContext<T>>?>()
+    protected val TRANSFORMS = mutableListOf<Pair<String, TransformContext<T>>>()
 
     open fun collectTransform(boneName: String): TransformContext<T>? {
         // 瞄准时隐藏车体
         if (boneName == "root" && hideForTurretControllerWhileZooming()) {
             return TransformContext { bone, _, _ ->
-                bone.setHidden(
-                    hideForTurretControllerWhileZooming
-                )
+                bone.isHidden = hideForTurretControllerWhileZooming
             }
         }
 
         // 瞄准时隐藏乘客武器站
         if (boneName == "passengerWeaponStation" && hideForTurretControllerWhileZooming()) {
             return TransformContext { bone, _, _ ->
-                bone.setHidden(hideForPassengerWeaponStationControllerWhileZooming)
+                bone.isHidden = hideForPassengerWeaponStationControllerWhileZooming
             }
         }
 
         if (boneName == "laser") {
             return TransformContext { bone, vehicle, state ->
-                bone.setScaleZ(
-                    10 * vehicle.getEntityData().get(VehicleEntity.LASER_LENGTH)
-                )
-                val scale = min(
-                    Mth.lerp(
-                        state.partialTick,
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE_O),
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE)
-                    ), 1.2f
-                )
+                bone.scaleZ = 10 * vehicle.getEntityData().get(VehicleEntity.LASER_LENGTH)
+                val scale = Mth.lerp(
+                    state.partialTick,
+                    vehicle.getEntityData().get(VehicleEntity.LASER_SCALE_O),
+                    vehicle.getEntityData().get(VehicleEntity.LASER_SCALE)
+                ).coerceAtMost(1.2f)
 
-                bone.setScaleX(scale)
-                bone.setScaleY(scale)
+                bone.scaleX = scale
+                bone.scaleY = scale
             }
         }
 
@@ -177,18 +170,18 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
                         }
                     }
 
-                    bone.setPosX(r2 * recoilShake * 0.5f)
-                    bone.setPosZ(r * recoilShake * 1f)
-                    bone.setRotX(r * recoilShake * Mth.DEG_TO_RAD)
-                    bone.setRotZ(r2 * recoilShake * Mth.DEG_TO_RAD)
+                    bone.posX = r2 * recoilShake * 0.5f
+                    bone.posZ = r * recoilShake * 1f
+                    bone.rotX = r * recoilShake * Mth.DEG_TO_RAD
+                    bone.rotZ = r2 * recoilShake * Mth.DEG_TO_RAD
                 }
             }
 
             "turret" -> {
                 return TransformContext { bone, _, _ ->
-                    bone.setRotY(turretYRot * Mth.DEG_TO_RAD)
-                    val turretLaser: GeoBone? = animationProcessor.getBone("turretLaser")
-                    turretLaser?.setRotY(bone.rotY)
+                    bone.rotY = turretYRot * Mth.DEG_TO_RAD
+                    val turretLaser = animationProcessor.getBone("turretLaser")
+                    turretLaser?.rotY = bone.rotY
                 }
             }
 
@@ -207,28 +200,24 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
                         }
                     }
 
-                    bone.setRotX(
-                        Mth.clamp(
-                            -turretXRot - r * pitch - r2 * roll,
-                            vehicle.turretMinPitch,
-                            vehicle.turretMaxPitch
-                        ) * Mth.DEG_TO_RAD
-                    )
+                    bone.rotX = Mth.clamp(
+                        -turretXRot - r * pitch - r2 * roll,
+                        vehicle.turretMinPitch,
+                        vehicle.turretMaxPitch
+                    ) * Mth.DEG_TO_RAD
 
-                    val barrelLaser: GeoBone? = animationProcessor.getBone("barrelLaser")
-                    barrelLaser?.setRotX(bone.rotX)
+                    val barrelLaser = animationProcessor.getBone("barrelLaser")
+                    barrelLaser?.rotX = bone.rotX
                 }
             }
 
             "passengerWeaponStationYaw" -> {
                 return TransformContext { bone, vehicle, state ->
-                    bone.setRotY(
-                        Mth.lerp(
-                            state.partialTick,
-                            vehicle.gunYRotO,
-                            vehicle.gunYRot
-                        ) * Mth.DEG_TO_RAD - turretYRot * Mth.DEG_TO_RAD
-                    )
+                    bone.rotY = Mth.lerp(
+                        state.partialTick,
+                        vehicle.gunYRotO,
+                        vehicle.gunYRot
+                    ) * Mth.DEG_TO_RAD - turretYRot * Mth.DEG_TO_RAD
                 }
             }
 
@@ -246,15 +235,13 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
                             (180f - a) / 90f
                         }
                     }
-                    bone.setRotX(
-                        Mth.clamp(
-                            -Mth.lerp(
-                                state.partialTick,
-                                vehicle.gunXRotO,
-                                vehicle.gunXRot
-                            ) * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD,
-                            -10 * Mth.DEG_TO_RAD, 60 * Mth.DEG_TO_RAD
-                        )
+                    bone.rotX = Mth.clamp(
+                        -Mth.lerp(
+                            state.partialTick,
+                            vehicle.gunXRotO,
+                            vehicle.gunXRot
+                        ) * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD,
+                        -10 * Mth.DEG_TO_RAD, 60 * Mth.DEG_TO_RAD
                     )
                 }
             }
@@ -271,26 +258,26 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
                 return if (isL) {
                     TransformContext { bone, vehicle, _ ->
                         val t = wrap(leftTrack + 2 * index, vehicle)
-                        bone.setRotX(-getBoneRotX(t) * Mth.DEG_TO_RAD)
+                        bone.rotX = -getBoneRotX(t) * Mth.DEG_TO_RAD
                     }
                 } else {
                     TransformContext { bone, vehicle, _ ->
                         val t2 = wrap(rightTrack + 2 * index, vehicle)
-                        bone.setRotX(-getBoneRotX(t2) * Mth.DEG_TO_RAD)
+                        bone.rotX = -getBoneRotX(t2) * Mth.DEG_TO_RAD
                     }
                 }
             } else {
                 return if (isL) {
                     TransformContext { bone, vehicle, _ ->
                         val t = wrap(leftTrack + 2 * index, vehicle)
-                        bone.setPosY(getBoneMoveY(t))
-                        bone.setPosZ(getBoneMoveZ(t))
+                        bone.posY = getBoneMoveY(t)
+                        bone.posZ = getBoneMoveZ(t)
                     }
                 } else {
                     TransformContext { bone, vehicle, _ ->
                         val t2 = wrap(rightTrack + 2 * index, vehicle)
-                        bone.setPosY(getBoneMoveY(t2))
-                        bone.setPosZ(getBoneMoveZ(t2))
+                        bone.posY = getBoneMoveY(t2)
+                        bone.posZ = getBoneMoveZ(t2)
                     }
                 }
             }
@@ -302,11 +289,11 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
             return if (boneName.endsWith("Turn")) {
                 TransformContext { bone, vehicle, state ->
-                    bone.setRotX(1.5f * (if (isL) leftWheelRot else rightWheelRot))
-                    bone.setRotY(Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot))
+                    bone.rotX = 1.5f * (if (isL) leftWheelRot else rightWheelRot)
+                    bone.rotY = Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot)
                 }
             } else {
-                TransformContext { bone, _, _ -> bone.setRotX(1.5f * (if (isL) leftWheelRot else rightWheelRot)) }
+                TransformContext { bone, _, _ -> bone.rotX = 1.5f * (if (isL) leftWheelRot else rightWheelRot) }
             }
         }
 
@@ -354,12 +341,12 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
             ClientEventHandler.zoomVehicle && vehicle.getNthEntity(vehicle.passengerWeaponStationControllerIndex) === Minecraft.getInstance().player
 
         TRANSFORMS.forEach { pair ->
-            val name = pair!!.getA()
-            val bone: GeoBone? = animationProcessor.getBone(name)
+            val name = pair.getA()
+            val bone = animationProcessor.getBone(name)
 
             // TODO 这里怎么可能为空？
             if (bone != null) {
-                pair.getB()!!.transform(bone, vehicle, animationState)
+                pair.getB().transform(bone, vehicle, animationState)
             }
         }
     }

@@ -6,7 +6,7 @@ class Tom6Model : VehicleModel<Tom6Entity>() {
     override fun collectTransform(boneName: String): TransformContext<Tom6Entity>? {
         if (boneName == "melon") {
             return TransformContext { bone, vehicle, _ ->
-                bone.setHidden(!vehicle.getEntityData().get(Tom6Entity.MELON))
+                bone.isHidden = !vehicle.getEntityData().get(Tom6Entity.MELON)
             }
         }
 

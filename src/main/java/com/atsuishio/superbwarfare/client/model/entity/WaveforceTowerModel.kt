@@ -19,24 +19,24 @@ class WaveforceTowerModel : VehicleModel<WaveforceTowerEntity>() {
                         vehicle.getEntityData().get(VehicleEntity.LASER_SCALE)
                     ).coerceAtMost(1.2f)
 
-                    bone.setScaleX(scale)
-                    bone.setScaleY(scale)
-                    bone.setScaleZ(scale)
+                    bone.scaleX = scale
+                    bone.scaleY = scale
+                    bone.scaleZ = scale
                 }
             }
 
             "glow2" -> {
                 return TransformContext { bone, vehicle, state ->
-                    bone.setPosZ(-16f * vehicle.getEntityData().get(VehicleEntity.LASER_LENGTH))
+                    bone.posZ = -16f * vehicle.getEntityData().get(VehicleEntity.LASER_LENGTH)
                     val scale = Mth.lerp(
                         state.partialTick,
                         vehicle.getEntityData().get(VehicleEntity.LASER_SCALE_O),
                         vehicle.getEntityData().get(VehicleEntity.LASER_SCALE)
                     ).coerceAtMost(1.2f)
 
-                    bone.setScaleX(scale)
-                    bone.setScaleY(scale)
-                    bone.setScaleZ(scale)
+                    bone.scaleX = scale
+                    bone.scaleY = scale
+                    bone.scaleZ = scale
                 }
             }
 
@@ -44,7 +44,7 @@ class WaveforceTowerModel : VehicleModel<WaveforceTowerEntity>() {
                 return TransformContext { bone, vehicle, state ->
                     val energy = vehicle.getEntityData().get(VehicleEntity.CHARGE_PROGRESS)
                     val energyRate0 = energy0
-                    bone.setScaleZ(Mth.lerp(state.partialTick, energyRate0, energy))
+                    bone.scaleZ = Mth.lerp(state.partialTick, energyRate0, energy)
                     energy0 = energy
                 }
             }
@@ -58,7 +58,7 @@ class WaveforceTowerModel : VehicleModel<WaveforceTowerEntity>() {
             return TransformContext { bone, vehicle, _ ->
                 val energy = vehicle.getEntityData().get(VehicleEntity.CHARGE_PROGRESS)
                 val shouldTurnOn = energy >= index / 7f
-                bone.setHidden(shouldTurnOn != isOn)
+                bone.isHidden = shouldTurnOn != isOn
             }
         }
 

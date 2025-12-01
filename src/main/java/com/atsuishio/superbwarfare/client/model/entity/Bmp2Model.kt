@@ -13,7 +13,8 @@ class Bmp2Model : VehicleModel<Bmp2Entity>() {
 
             return TransformContext { bone, vehicle, state ->
                 val player = MC.player
-                bone.setHidden(player != null && vehicle === player.vehicle && vehicle.getFirstPassenger() !== player && (MC.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle))
+                bone.isHidden =
+                    player != null && vehicle === player.vehicle && vehicle.getFirstPassenger() !== player && (MC.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
                 baseTransform?.transform(bone, vehicle, state)
             }
         }

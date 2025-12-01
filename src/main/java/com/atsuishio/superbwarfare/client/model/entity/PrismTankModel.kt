@@ -8,7 +8,7 @@ class PrismTankModel : VehicleModel<PrismTankEntity>() {
         return when (boneName) {
             "fanL", "fanR" -> TransformContext { fanL, vehicle, _ ->
                 if (vehicle.energy > 0) {
-                    fanL.setRotY((System.currentTimeMillis() % 36000000) / 75f)
+                    fanL.rotY = (System.currentTimeMillis() % 36000000) / 75f
                 }
             }
 

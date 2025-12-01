@@ -18,7 +18,7 @@ class TruckModel : VehicleModel<TruckEntity>() {
     override fun collectTransform(boneName: String): TransformContext<TruckEntity>? {
         if (boneName == "control") {
             return TransformContext { bone, vehicle, state ->
-                bone.setRotY(12 * Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot))
+                bone.rotY = 12 * Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot)
             }
         }
 

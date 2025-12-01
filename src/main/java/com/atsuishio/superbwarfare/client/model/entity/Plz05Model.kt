@@ -10,7 +10,8 @@ class Plz05Model : VehicleModel<Plz05Entity>() {
         return when (boneName) {
             "titop1" -> TransformContext { bone, vehicle, _ ->
                 val player = MC.player
-                bone.setHidden(vehicle.getNthEntity(vehicle.turretControllerIndex) === player && MC.options.cameraType == CameraType.FIRST_PERSON)
+                bone.isHidden =
+                    vehicle.getNthEntity(vehicle.turretControllerIndex) === player && MC.options.cameraType == CameraType.FIRST_PERSON
             }
 
             else -> super.collectTransform(boneName)

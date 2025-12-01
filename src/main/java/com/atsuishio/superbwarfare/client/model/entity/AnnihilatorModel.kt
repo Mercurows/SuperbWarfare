@@ -10,15 +10,15 @@ class AnnihilatorModel : VehicleModel<AnnihilatorEntity>() {
     override fun collectTransform(boneName: String): TransformContext<AnnihilatorEntity>? {
         return when (boneName) {
             "laser1" -> TransformContext { bone, vehicle, _ ->
-                bone.setScaleZ(vehicle.getEntityData().get(AnnihilatorEntity.LASER_LEFT_LENGTH))
+                bone.scaleZ = vehicle.getEntityData().get(AnnihilatorEntity.LASER_LEFT_LENGTH)
             }
 
             "laser2" -> TransformContext { bone, vehicle, _ ->
-                bone.setScaleZ(vehicle.getEntityData().get(AnnihilatorEntity.LASER_MIDDLE_LENGTH))
+                bone.scaleZ = vehicle.getEntityData().get(AnnihilatorEntity.LASER_MIDDLE_LENGTH)
             }
 
             "laser3" -> TransformContext { bone, vehicle, _ ->
-                bone.setScaleZ(vehicle.getEntityData().get(AnnihilatorEntity.LASER_RIGHT_LENGTH))
+                bone.scaleZ = vehicle.getEntityData().get(AnnihilatorEntity.LASER_RIGHT_LENGTH)
             }
 
             else -> {
@@ -32,7 +32,7 @@ class AnnihilatorModel : VehicleModel<AnnihilatorEntity>() {
                         val cantShoot = charge > 1
 
                         val hideGreen = 5 * charge < id || cantShoot
-                        bone.setHidden(isGreen == hideGreen)
+                        bone.isHidden = isGreen == hideGreen
                     }
                 }
 
