@@ -1,18 +1,17 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
-import com.atsuishio.superbwarfare.MC
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.options
 import net.minecraft.client.CameraType
-import net.minecraft.world.entity.player.Player
 
 class Hpj11Model : VehicleModel<Hpj11Entity>() {
     override fun collectTransform(boneName: String): TransformContext<Hpj11Entity>? {
         return when (boneName) {
             "radar2" -> TransformContext { bone, vehicle, _ ->
-                val player: Player? = MC.player
                 bone.isHidden =
-                    vehicle.getNthEntity(vehicle.turretControllerIndex) === player && (MC.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+                    vehicle.getNthEntity(vehicle.turretControllerIndex) === localPlayer && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
             }
 
             "rdr", "rdr2" -> TransformContext { bone, _, _ ->
