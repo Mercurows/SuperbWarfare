@@ -80,7 +80,7 @@ private fun SingleCommand.booleanConfig(
 
         boolArg("value") {
             execute {
-                val value = getBool("value")
+                val value = boolArg
                 config.set(value)
                 config.save()
 

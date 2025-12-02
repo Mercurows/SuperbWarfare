@@ -11,9 +11,6 @@ val AMMO_COMMAND = buildCommand("ammo") {
         playerArg("player") {
             enumArg<Ammo>("type") {
                 execute {
-                    val player = getPlayer("player")
-                    val source = getSource()
-
                     // 权限不足时，只允许玩家查询自己的弹药数量
                     if (source.isPlayer && !source.hasPermission(2)) {
                         if (source.player != null && source.player?.getUUID() != player.getUUID()) {
@@ -22,7 +19,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
                         }
                     }
 
-                    val type = getArgument<Ammo>("type")
+                    val type = enumArg
                     val value = type.get(player)
                     source.success {
                         Component.translatable(
@@ -44,19 +41,17 @@ val AMMO_COMMAND = buildCommand("ammo") {
             enumArg<Ammo>("type") {
                 intArg("value") {
                     execute {
-                        val players = getPlayers("players")
-                        val type = getArgument<Ammo>("type")
-                        val value = getInt("value")
+                        val type = enumArg
 
                         for (player in players) {
-                            type.set(player, value)
+                            type.set(player, intArg)
                         }
 
                         getSource().success {
                             Component.translatable(
                                 "commands.ammo.set",
                                 Component.translatable(type.translationKey),
-                                value,
+                                intArg,
                                 players.size
                             )
                         }
@@ -74,19 +69,17 @@ val AMMO_COMMAND = buildCommand("ammo") {
             enumArg<Ammo>("type") {
                 intArg("value") {
                     execute {
-                        val players = getPlayers("players")
-                        val type = getArgument<Ammo>("type")
-                        val value = getInt("value")
+                        val type = enumArg
 
                         for (player in players) {
-                            type.add(player, value)
+                            type.add(player, intArg)
                         }
 
                         getSource().success {
                             Component.translatable(
                                 "commands.ammo.add",
                                 Component.translatable(type.translationKey),
-                                value,
+                                intArg,
                                 players.size
                             )
                         }

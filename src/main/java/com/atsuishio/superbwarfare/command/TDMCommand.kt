@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.command
 
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import net.minecraft.network.chat.Component
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.saveddata.SavedData
 
 val TDM_COMMAND = buildCommand("tdm") {
@@ -11,10 +10,7 @@ val TDM_COMMAND = buildCommand("tdm") {
     "add" {
         entitiesArg("entities") {
             execute {
-                val level: ServerLevel = getSource().level
-                val entities = getEntities("entities")
-
-                val tdm = level.dataStorage.computeIfAbsent(
+                val tdm = source.level.dataStorage.computeIfAbsent(
                     SavedData.Factory(
                         { TDMSavedData() },
                         { tag, registries -> TDMSavedData.load(tag, registries) },
@@ -26,7 +22,7 @@ val TDM_COMMAND = buildCommand("tdm") {
                 tdm.sync()
 
                 // TODO 解决显示问题
-                getSource().success {
+                source.success {
                     if (entities.size == 1) {
                         Component.translatable(
                             "commands.tdm.add.single",
@@ -45,10 +41,7 @@ val TDM_COMMAND = buildCommand("tdm") {
     "remove" {
         entitiesArg("entities") {
             execute {
-                val level = getSource().level
-                val entities = getEntities("entities")
-
-                val tdm = level.dataStorage.computeIfAbsent(
+                val tdm = source.level.dataStorage.computeIfAbsent(
                     SavedData.Factory(
                         { TDMSavedData() },
                         { tag, registries -> TDMSavedData.load(tag, registries) },
@@ -60,7 +53,7 @@ val TDM_COMMAND = buildCommand("tdm") {
                 tdm.sync()
 
                 if (entities.size == 1) {
-                    getSource().success {
+                    source.success {
                         Component.translatable("commands.tdm.remove.single", entities.iterator().next())
                     }
                 } else {
