@@ -1057,7 +1057,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     living,
                     this.level() as ServerLevel,
                     getShootPos(weaponName, 1f),
-                    getShootVec(weaponName, 1f)!!,
+                    getShootVec(weaponName, 1f),
                     data,
                     data.compute().spread,
                     true,
@@ -1082,7 +1082,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     living,
                     this.level() as ServerLevel,
                     getShootPos(living, 1f),
-                    getShootVec(living, 1f)!!,
+                    getShootVec(living, 1f),
                     data,
                     data.compute().spread,
                     true,
@@ -1093,7 +1093,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         val gunData = getGunData(seatIndex)
-        afterShoot(gunData, getShootVec(living, 1f)!!)
+        afterShoot(gunData, getShootVec(living, 1f))
         living?.let { playShootSound3p(it, seatIndex) }
     }
 
@@ -1924,7 +1924,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 val rpm = Math.ceil(20f / (vehicleWeaponRpm(mob).toFloat() / 60)).toInt()
                 if (tickCount % rpm == 0 && canShoot(mob) &&
                     VectorTool.calculateAngle(
-                        getShootDirectionForHud(mob, 1f)!!, getShootPos(mob, 1f).vectorTo(
+                        getShootDirectionForHud(mob, 1f), getShootPos(mob, 1f).vectorTo(
                             lerpGetEntityBoundingBoxCenter(target, 1f)
                         )
                     ) < 4
@@ -2613,7 +2613,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun getVectorFromString(string: String, ticks: Float, seatIndex: Int): Vec3 {
         val entity = getNthEntity(seatIndex)
         return when (string) {
-            "Bomb" -> bombHitPos(getNthEntity(seatIndex))!!.subtract(getShootPosForHud(getNthEntity(seatIndex), 1f))
+            "Bomb" -> bombHitPos(getNthEntity(seatIndex)).subtract(getShootPosForHud(getNthEntity(seatIndex), 1f))
             "Passenger" -> if (entity != null) entity.getViewVector(ticks) else getViewVector(ticks)
             else -> getVectorFromString(string, ticks)
         }
@@ -2636,7 +2636,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return getShootPos(getNthEntity(seatIndex), ticks)
     }
 
-    open fun bombHitPos(entity: Entity?): Vec3? {
+    open fun bombHitPos(entity: Entity?): Vec3 {
         val gunData = getGunData(entity)
         return if (gunData != null) {
             ProjectileCalculator.calculatePreciseImpactPoint(
@@ -2708,7 +2708,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * @param entity 操控载具的实体
      * @return 所有炮弹发射位置的方向，用于HUD瞄准
      */
-    open fun getShootDirectionForHud(entity: Entity, partialTicks: Float): Vec3? {
+    open fun getShootDirectionForHud(entity: Entity, partialTicks: Float): Vec3 {
         val data = getGunData(getSeatIndex(entity)) ?: return getViewVector(partialTicks)
 
         val stringOrVec3 = data.fireDirectionForHud()
@@ -3939,8 +3939,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     val power: Float
         get() = entityData.get(POWER)
 
-    val decoyState: String
-        get() = if (entityData.get(DECOY_READY)) "READY" else "RELOADING"
+    var decoyReady by DECOY_READY
 
     val hornSound: SoundEvent
         get() = this.computed().hornSound

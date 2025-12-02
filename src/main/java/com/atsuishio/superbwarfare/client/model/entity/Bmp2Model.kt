@@ -1,8 +1,9 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
-import com.atsuishio.superbwarfare.MC
 import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.options
 import net.minecraft.client.CameraType
 import net.minecraft.util.Mth
 
@@ -12,9 +13,8 @@ class Bmp2Model : VehicleModel<Bmp2Entity>() {
             val baseTransform = super.collectTransform(boneName)
 
             return TransformContext { bone, vehicle, state ->
-                val player = MC.player
                 bone.isHidden =
-                    player != null && vehicle === player.vehicle && vehicle.getFirstPassenger() !== player && (MC.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+                    localPlayer != null && vehicle === localPlayer.vehicle && vehicle.getFirstPassenger() !== localPlayer && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
                 baseTransform?.transform(bone, vehicle, state)
             }
         }

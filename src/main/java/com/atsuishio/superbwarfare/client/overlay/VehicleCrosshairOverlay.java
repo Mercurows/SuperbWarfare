@@ -221,7 +221,7 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
 
                 if (player == vehicle.getFirstPassenger()) {
                     if (vehicle.hasDecoy()) {
-                        if (vehicle.getDecoyState().equals("READY")) {
+                        if (vehicle.getDecoyReady()) {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.smoke.ready").append(Component.literal(" [" + ModKeyMappings.RELEASE_DECOY.getKey().getDisplayName().getString() + "]")), 30, 1, -1, false);
                         } else {
                             guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.smoke.reloading"), 30, 1, 0xFF0000, false);

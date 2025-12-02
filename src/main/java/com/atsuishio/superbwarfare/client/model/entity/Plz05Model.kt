@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
-import com.atsuishio.superbwarfare.MC
 import com.atsuishio.superbwarfare.entity.vehicle.Plz05Entity
+import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.options
 import net.minecraft.client.CameraType
 import net.minecraft.util.Mth
 
@@ -9,9 +10,8 @@ class Plz05Model : VehicleModel<Plz05Entity>() {
     override fun collectTransform(boneName: String): TransformContext<Plz05Entity>? {
         return when (boneName) {
             "titop1" -> TransformContext { bone, vehicle, _ ->
-                val player = MC.player
                 bone.isHidden =
-                    vehicle.getNthEntity(vehicle.turretControllerIndex) === player && MC.options.cameraType == CameraType.FIRST_PERSON
+                    vehicle.getNthEntity(vehicle.turretControllerIndex) === localPlayer && options.cameraType == CameraType.FIRST_PERSON
             }
 
             else -> super.collectTransform(boneName)
