@@ -12,7 +12,8 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:ancient_cpu"
+          "name": "superbwarfare:ancient_cpu",
+          "quality": 1
         }
       ],
       "rolls": 1.0
