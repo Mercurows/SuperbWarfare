@@ -148,20 +148,20 @@ private class LootTableBuilder(val key: ResourceKey<LootTable>, val builder: Loo
 
 }
 
-private fun buildTable(key: ResourceKey<LootTable>, block: LootTableBuilder.() -> Unit): LootTableBuilder {
+private fun buildLootTable(key: ResourceKey<LootTable>, block: LootTableBuilder.() -> Unit): LootTableBuilder {
     return LootTableBuilder(key, LootTable.lootTable()).apply(block)
 }
 
 class ModCustomLootProvider() : LootTableSubProvider {
     override fun generate(output: BiConsumer<ResourceKey<LootTable>, LootTable.Builder>) {
 
-        output += buildTable(chests("ancient_cpu")) {
+        output += buildLootTable(chests("ancient_cpu")) {
             addSingleItem(ANCIENT_CPU, 1f, 1f, 1, 1) {
                 `when` { LootItemRandomChanceCondition.randomChance(0.4f).build() }
             }
         }
 
-        output += buildTable(chests("blue_print_common")) {
+        output += buildLootTable(chests("blue_print_common")) {
             addMultiItems(1f, 0f) {
                 withWeight(
                     50,
@@ -224,7 +224,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
             }
         }
 
-        output += buildTable(chests("blue_print_rare")) {
+        output += buildLootTable(chests("blue_print_rare")) {
             addMultiItems(1f, 0f) {
                 TASER_BLUEPRINT weighted 10
                 GLOCK_17_BLUEPRINT weighted 10
@@ -290,7 +290,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
             }
         }
 
-        output += buildTable(chests("blue_print_epic")) {
+        output += buildLootTable(chests("blue_print_epic")) {
             addMultiItems(1f, 0f) {
                 TRACHELIUM_BLUEPRINT weighted 10
                 SENTINEL_BLUEPRINT weighted 10
@@ -337,7 +337,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
             }
         }
 
-        output += buildTable(containers("blueprints")) {
+        output += buildLootTable(containers("blueprints")) {
             addMultiItems(1f, 0f) {
                 GLOCK_17_BLUEPRINT weighted 60
                 MP_443_BLUEPRINT weighted 60
@@ -385,7 +385,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
             }
         }
 
-        output += buildTable(containers("common")) {
+        output += buildLootTable(containers("common")) {
             addMultiItems(1f, 0f, {
                 EPIC_MATERIAL_PACK weighted 2
                 CEMENTED_CARBIDE_BLOCK weighted 2
@@ -405,58 +405,58 @@ class ModCustomLootProvider() : LootTableSubProvider {
                 add(NestedLootTable.lootTableReference(special("common/flags")).setWeight(40))
                 add(NestedLootTable.lootTableReference(special("common/blueprints")).setWeight(50))
             })
+        }
 
-            output += buildTable(special("common/flags")) {
-                addSingleItem(Items.RED_BANNER, 1)
-                addSingleItem(Items.ORANGE_BANNER, 1)
-                addSingleItem(Items.YELLOW_BANNER, 1)
-                addSingleItem(Items.GREEN_BANNER, 1)
-                addSingleItem(Items.CYAN_BANNER, 1)
-                addSingleItem(Items.BLUE_BANNER, 1)
-                addSingleItem(Items.PURPLE_BANNER, 1)
-                addSingleItem(Items.PINK_BANNER, 1)
+        output += buildLootTable(special("common/flags")) {
+            addSingleItem(Items.RED_BANNER, 1)
+            addSingleItem(Items.ORANGE_BANNER, 1)
+            addSingleItem(Items.YELLOW_BANNER, 1)
+            addSingleItem(Items.GREEN_BANNER, 1)
+            addSingleItem(Items.CYAN_BANNER, 1)
+            addSingleItem(Items.BLUE_BANNER, 1)
+            addSingleItem(Items.PURPLE_BANNER, 1)
+            addSingleItem(Items.PINK_BANNER, 1)
+        }
 
-                output += buildTable(special("common/blueprints")) {
-                    addMultiItems(1f, 0f) {
-                        withWeight(
-                            4,
-                            GLOCK_17_BLUEPRINT,
-                            MP_443_BLUEPRINT,
-                            M_1911_BLUEPRINT,
-                            MARLIN_BLUEPRINT,
-                            TASER_BLUEPRINT,
-                        )
+        output += buildLootTable(special("common/blueprints")) {
+            addMultiItems(1f, 0f) {
+                withWeight(
+                    4,
+                    GLOCK_17_BLUEPRINT,
+                    MP_443_BLUEPRINT,
+                    M_1911_BLUEPRINT,
+                    MARLIN_BLUEPRINT,
+                    TASER_BLUEPRINT,
+                )
 
-                        withWeight(
-                            2,
-                            GLOCK_18_BLUEPRINT,
-                            AK_47_BLUEPRINT,
-                            QBZ_95_BLUEPRINT,
-                            SKS_BLUEPRINT,
-                            MOSIN_NAGANT_BLUEPRINT,
-                            M_870_BLUEPRINT,
-                            M_79_BLUEPRINT,
+                withWeight(
+                    2,
+                    GLOCK_18_BLUEPRINT,
+                    AK_47_BLUEPRINT,
+                    QBZ_95_BLUEPRINT,
+                    SKS_BLUEPRINT,
+                    MOSIN_NAGANT_BLUEPRINT,
+                    M_870_BLUEPRINT,
+                    M_79_BLUEPRINT,
 
-                            BOCEK_BLUEPRINT,
-                            TRACHELIUM_BLUEPRINT,
-                            VECTOR_BLUEPRINT,
-                            DEVOTION_BLUEPRINT,
-                            M_98B_BLUEPRINT,
-                            AWM_BLUEPRINT,
-                        )
+                    BOCEK_BLUEPRINT,
+                    TRACHELIUM_BLUEPRINT,
+                    VECTOR_BLUEPRINT,
+                    DEVOTION_BLUEPRINT,
+                    M_98B_BLUEPRINT,
+                    AWM_BLUEPRINT,
+                )
 
-                        withWeight(
-                            1,
-                            AA_12_BLUEPRINT,
-                            NTW_20_BLUEPRINT,
-                            MINIGUN_BLUEPRINT,
-                            JAVELIN_BLUEPRINT,
+                withWeight(
+                    1,
+                    AA_12_BLUEPRINT,
+                    NTW_20_BLUEPRINT,
+                    MINIGUN_BLUEPRINT,
+                    JAVELIN_BLUEPRINT,
 
-                            MK_42_BLUEPRINT,
-                            MLE_1934_BLUEPRINT,
-                        )
-                    }
-                }
+                    MK_42_BLUEPRINT,
+                    MLE_1934_BLUEPRINT,
+                )
             }
         }
     }
