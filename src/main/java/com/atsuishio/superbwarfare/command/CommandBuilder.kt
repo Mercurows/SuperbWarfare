@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
 
 
 // 这才是真正的Builder！
-open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack, *>) {
+open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack, *>, val name: String = "default") {
     val cmd: MutableList<SingleCommand> = mutableListOf()
 
     fun execute(executor: CommandContext<CommandSourceStack>.() -> Int) {
@@ -30,49 +30,52 @@ open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack
 
     // literal命令
     operator fun String.invoke(builder: SingleCommand.() -> Unit) {
-        cmd += SingleCommand(Commands.literal(this)).apply(builder)
+        cmd += SingleCommand(Commands.literal(this), "$name.$this").apply(builder)
     }
 
     // 直接添加已有的ArgumentBuilder
     fun add(argument: ArgumentBuilder<CommandSourceStack, *>) {
-        cmd += SingleCommand(argument)
+        cmd += SingleCommand(argument, "$name.${cmd.size}")
     }
 
     // args
-    fun <A> arg(name: String, type: ArgumentType<A>, builder: SingleCommand.() -> Unit) {
-        cmd += SingleCommand(Commands.argument(name, type)).apply(builder)
+    fun <A> arg(argName: String = "$name.arg", type: ArgumentType<A>, builder: SingleCommand.() -> Unit) {
+        cmd += SingleCommand(Commands.argument(argName, type), argName).apply(builder)
     }
 
-    fun playerArg(name: String, builder: CommandWithPlayerArg.() -> Unit) {
-        cmd += CommandWithPlayerArg(Commands.argument(name, EntityArgument.player()), name).apply(builder)
+    fun playerArg(argName: String = "$name.player", builder: CommandWithPlayerArg.() -> Unit) {
+        cmd += CommandWithPlayerArg(Commands.argument(argName, EntityArgument.player()), argName).apply(builder)
     }
 
-    fun playersArg(name: String, builder: CommandWithPlayersArg.() -> Unit) {
-        cmd += CommandWithPlayersArg(Commands.argument(name, EntityArgument.players()), name).apply(builder)
+    fun playersArg(argName: String = "$name.players", builder: CommandWithPlayersArg.() -> Unit) {
+        cmd += CommandWithPlayersArg(Commands.argument(argName, EntityArgument.players()), argName).apply(builder)
     }
 
-    fun entityArg(name: String, builder: CommandWithEntityArg.() -> Unit) {
-        cmd += CommandWithEntityArg(Commands.argument(name, EntityArgument.entity()), name).apply(builder)
+    fun entityArg(argName: String = "$name.entity", builder: CommandWithEntityArg.() -> Unit) {
+        cmd += CommandWithEntityArg(Commands.argument(argName, EntityArgument.entity()), argName).apply(builder)
     }
 
-    fun entitiesArg(name: String, builder: CommandWithEntitiesArg.() -> Unit) {
-        cmd += CommandWithEntitiesArg(Commands.argument(name, EntityArgument.entities()), name).apply(builder)
+    fun entitiesArg(argName: String = "$name.entities", builder: CommandWithEntitiesArg.() -> Unit) {
+        cmd += CommandWithEntitiesArg(Commands.argument(argName, EntityArgument.entities()), argName).apply(builder)
     }
 
-    inline fun <reified T : Enum<T>> enumArg(name: String, noinline builder: CommandWithEnumArg<T>.() -> Unit) {
+    inline fun <reified T : Enum<T>> enumArg(
+        argName: String = "$name.${T::class.simpleName}",
+        noinline builder: CommandWithEnumArg<T>.() -> Unit
+    ) {
         cmd += CommandWithEnumArg(
-            Commands.argument(name, LowerCamelCaseEnumArgument.enumArgument(T::class.java)),
-            name,
+            Commands.argument(argName, LowerCamelCaseEnumArgument.enumArgument(T::class.java)),
+            argName,
             T::class
         ).apply(builder)
     }
 
-    fun intArg(name: String, builder: CommandWithIntArg.() -> Unit) {
-        cmd += CommandWithIntArg(Commands.argument(name, IntegerArgumentType.integer()), name).apply(builder)
+    fun intArg(argName: String = "$name.int", builder: CommandWithIntArg.() -> Unit) {
+        cmd += CommandWithIntArg(Commands.argument(argName, IntegerArgumentType.integer()), argName).apply(builder)
     }
 
-    fun boolArg(name: String, builder: CommandWithBoolArg.() -> Unit) {
-        cmd += CommandWithBoolArg(Commands.argument(name, BoolArgumentType.bool()), name).apply(builder)
+    fun boolArg(argName: String = "$name.bool", builder: CommandWithBoolArg.() -> Unit) {
+        cmd += CommandWithBoolArg(Commands.argument(argName, BoolArgumentType.bool()), argName).apply(builder)
     }
 
     fun build(): ArgumentBuilder<CommandSourceStack, *> = run {
@@ -109,7 +112,7 @@ open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack
 }
 
 class CommandWithPlayerArg(val builder: ArgumentBuilder<CommandSourceStack, *>, val argName: String) :
-    SingleCommand(builder) {
+    SingleCommand(builder, argName) {
 
     val CommandContext<CommandSourceStack>.player get() = getArg(this@CommandWithPlayerArg)
     fun CommandContext<CommandSourceStack>.getArg(ctx: CommandWithPlayerArg): ServerPlayer =
@@ -117,7 +120,7 @@ class CommandWithPlayerArg(val builder: ArgumentBuilder<CommandSourceStack, *>, 
 }
 
 class CommandWithPlayersArg(val builder: ArgumentBuilder<CommandSourceStack, *>, val argName: String) :
-    SingleCommand(builder) {
+    SingleCommand(builder, argName) {
 
     val CommandContext<CommandSourceStack>.players get() = getArg(this@CommandWithPlayersArg)
     fun CommandContext<CommandSourceStack>.getArg(ctx: CommandWithPlayersArg): Collection<ServerPlayer> =
@@ -125,7 +128,7 @@ class CommandWithPlayersArg(val builder: ArgumentBuilder<CommandSourceStack, *>,
 }
 
 class CommandWithEntityArg(val builder: ArgumentBuilder<CommandSourceStack, *>, val argName: String) :
-    SingleCommand(builder) {
+    SingleCommand(builder, argName) {
 
     val CommandContext<CommandSourceStack>.entity get() = getArg(this@CommandWithEntityArg)
     fun CommandContext<CommandSourceStack>.getArg(ctx: CommandWithEntityArg): Entity =
@@ -133,7 +136,7 @@ class CommandWithEntityArg(val builder: ArgumentBuilder<CommandSourceStack, *>, 
 }
 
 class CommandWithEntitiesArg(val builder: ArgumentBuilder<CommandSourceStack, *>, val argName: String) :
-    SingleCommand(builder) {
+    SingleCommand(builder, argName) {
 
     val CommandContext<CommandSourceStack>.entities get() = getArg(this@CommandWithEntitiesArg)
     fun CommandContext<CommandSourceStack>.getArg(ctx: CommandWithEntitiesArg): Collection<Entity> =
@@ -144,7 +147,7 @@ class CommandWithEnumArg<T : Enum<T>>(
     val builder: ArgumentBuilder<CommandSourceStack, *>,
     val argName: String,
     val type: KClass<T>
-) : SingleCommand(builder) {
+) : SingleCommand(builder, argName) {
 
     val CommandContext<CommandSourceStack>.enumArg: T get() = getArgument(argName, type.java)
     inline fun <reified E : Enum<E>> CommandContext<CommandSourceStack>.getArg(ctx: CommandWithEnumArg<E>): E =
@@ -152,7 +155,7 @@ class CommandWithEnumArg<T : Enum<T>>(
 }
 
 class CommandWithIntArg(val builder: ArgumentBuilder<CommandSourceStack, *>, val argName: String) :
-    SingleCommand(builder) {
+    SingleCommand(builder, argName) {
 
     val CommandContext<CommandSourceStack>.intArg get() = getArg(this@CommandWithIntArg)
     fun CommandContext<CommandSourceStack>.getArg(ctx: CommandWithIntArg) =
@@ -160,7 +163,7 @@ class CommandWithIntArg(val builder: ArgumentBuilder<CommandSourceStack, *>, val
 }
 
 class CommandWithBoolArg(val builder: ArgumentBuilder<CommandSourceStack, *>, val argName: String) :
-    SingleCommand(builder) {
+    SingleCommand(builder, argName) {
 
     val CommandContext<CommandSourceStack>.boolArg get() = getArg(this@CommandWithBoolArg)
     fun CommandContext<CommandSourceStack>.getArg(ctx: CommandWithBoolArg) =
@@ -168,5 +171,5 @@ class CommandWithBoolArg(val builder: ArgumentBuilder<CommandSourceStack, *>, va
 }
 
 fun buildCommand(name: String, builder: SingleCommand.() -> Unit) = run {
-    SingleCommand(Commands.literal(name)).apply(builder).build()
+    SingleCommand(Commands.literal(name), name).apply(builder).build()
 }

@@ -8,8 +8,8 @@ val AMMO_COMMAND = buildCommand("ammo") {
     requirePermission(0)
 
     "get" {
-        playerArg("player") {
-            enumArg<Ammo>("type") {
+        playerArg {
+            enumArg<Ammo> {
                 execute {
                     // 权限不足时，只允许玩家查询自己的弹药数量
                     if (source.isPlayer && !source.hasPermission(2)) {
@@ -37,9 +37,9 @@ val AMMO_COMMAND = buildCommand("ammo") {
     "set" {
         requirePermission(2)
 
-        playersArg("players") {
-            enumArg<Ammo>("type") {
-                intArg("value") {
+        playersArg {
+            enumArg<Ammo> {
+                intArg {
                     execute {
                         val type = enumArg
 
@@ -65,9 +65,9 @@ val AMMO_COMMAND = buildCommand("ammo") {
     "add" {
         requirePermission(2)
 
-        playersArg("players") {
-            enumArg<Ammo>("type") {
-                intArg("value") {
+        playersArg {
+            enumArg<Ammo> {
+                intArg {
                     execute {
                         val type = enumArg
 
