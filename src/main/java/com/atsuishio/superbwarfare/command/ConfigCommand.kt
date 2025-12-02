@@ -78,7 +78,7 @@ private fun SingleCommand.booleanConfig(
     name {
         requirePermission(2)
 
-        boolArg("value") {
+        boolArg {
             execute {
                 val value = boolArg
                 config.set(value)

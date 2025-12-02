@@ -8,7 +8,7 @@ val TDM_COMMAND = buildCommand("tdm") {
     requirePermission(2)
 
     "add" {
-        entitiesArg("entities") {
+        entitiesArg {
             execute {
                 val tdm = source.level.dataStorage.computeIfAbsent(
                     SavedData.Factory(
@@ -39,7 +39,7 @@ val TDM_COMMAND = buildCommand("tdm") {
     }
 
     "remove" {
-        entitiesArg("entities") {
+        entitiesArg {
             execute {
                 val tdm = source.level.dataStorage.computeIfAbsent(
                     SavedData.Factory(
