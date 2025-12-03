@@ -90,8 +90,8 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.*;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -1531,7 +1531,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));
         compound.putString("LastDriver", this.entityData.get(LAST_DRIVER_UUID));
 
-        var gunDataMap = entityData.get(GUN_DATA_MAP);
+        var gunDataMap = this.getGunDataMap();
         var tag = new CompoundTag();
         for (var kv : gunDataMap.entrySet()) {
             var data = GunData.from(kv.getValue().stack.copy());
@@ -1872,7 +1872,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (!this.level().isClientSide) {
             var newMap = new HashMap<String, GunData>();
 
-            for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
+            for (var kv : this.getGunDataMap().entrySet()) {
                 var newData = kv.getValue().copy();
                 newData.tick(this, true);
                 newMap.put(kv.getKey(), newData);
