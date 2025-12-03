@@ -129,7 +129,7 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public GunType gunType = GunType.SPECIAL;
 
     @SerializedName("AutoReload")
-    public boolean autoReload = false;
+    public Boolean autoReload = null;
 
     @SerializedName("WithdrawAmmoWhenChangeSlot")
     public boolean withdrawAmmoWhenChangeSlot = false;

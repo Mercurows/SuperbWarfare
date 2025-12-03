@@ -749,7 +749,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         val entityHolder = AtomicReference<Entity?>()
 
         EntityType.byString(projectileType).ifPresent { entityType ->
-            val entity: Entity? = entityType.create(level)
+            val entity = entityType.create(level)
             if (entity == null) {
                 Mod.LOGGER.warn("Failed to create projectile entity {}", projectileType)
                 return@ifPresent
@@ -873,7 +873,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             instance?.perk?.modifyProjectile(data, instance, entity)
         }
 
-        val vehicle = shooter?.vehicle as? VehicleEntity
+        val vehicle = shooter?.rootVehicle
         if (vehicle != null && computed.addShooterDeltaMovement) {
             velocity = (vehicle.deltaMovement.length() * computed.velocity).toFloat()
         }
