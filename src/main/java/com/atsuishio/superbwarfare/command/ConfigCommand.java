@@ -106,6 +106,14 @@ public class ConfigCommand {
 
                     context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.force_damage.enabled" : "commands.config.force_damage.disabled"), true);
                     return 0;
+                })))
+                .then(Commands.literal("dropAmmoBox").requires(s -> s.hasPermission(2)).then(Commands.argument("value", BoolArgumentType.bool()).executes(context -> {
+                    var value = BoolArgumentType.getBool(context, "value");
+                    MiscConfig.DROP_AMMO_BOX.set(value);
+                    MiscConfig.DROP_AMMO_BOX.save();
+
+                    context.getSource().sendSuccess(() -> Component.translatable(value ? "commands.config.drop_ammo_box.enabled" : "commands.config.drop_ammo_box.disabled"), true);
+                    return 0;
                 })));
     }
 

@@ -33,8 +33,8 @@ public class MiscConfig {
         builder.comment("Set true to enable force damage");
         ALLOW_FORCE_DAMAGE = builder.define("allow_force_damage", false);
 
-        builder.comment("Whether to drop an ammo box after the player dies when GameRule KeepInventory is False");
-        DROP_AMMO_BOX = builder.define("drop_ammo_box", true);
+        builder.comment("Whether to drop an ammo box after the player dies");
+        DROP_AMMO_BOX = builder.define("drop_ammo_box", false);
 
         builder.comment("The default maximum armor level for normal armors");
         DEFAULT_ARMOR_LEVEL = builder.defineInRange("default_armor_level", 1, 0, 10000000);
