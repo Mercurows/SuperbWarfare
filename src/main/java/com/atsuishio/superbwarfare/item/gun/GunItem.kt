@@ -498,6 +498,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             }
         }
 
+        data.closeStrike.set(true);
+
         // 真实后坐（
         if (shooter != null && computed.recoil != 0.0) {
             shooter.deltaMovement = shooter.deltaMovement.add(shooter.getViewVector(1f).scale(-computed.recoil))

@@ -451,6 +451,7 @@ public class GunEventHandler {
 
         if (stack.getItem() == ModItems.MARLIN.get() && reload.finishTimer.get() == 10) {
             data.isEmpty.set(false);
+            data.closeStrike.set(false);
         }
 
         // 三阶段结束
