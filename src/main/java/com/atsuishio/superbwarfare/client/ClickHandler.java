@@ -180,10 +180,10 @@ public class ClickHandler {
             if (player.getVehicle() instanceof VehicleEntity vehicle) {
                 var data = vehicle.getGunData(player);
                 if (data != null && data.getDefault().getAmmoConsumers().size() > 1) {
-                    NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true, true));
+                    PacketDistributor.sendToServer(new EditMessage(5, true, true));
                 }
             } else {
-                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireModeMessage(false));
+                PacketDistributor.sendToServer(new FireModeMessage(false));
             }
             burstFireAmount = 0;
         }
