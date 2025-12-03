@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -23,9 +24,9 @@ public class DogTagFinishEditMessage {
     }
 
     public static void encode(DogTagFinishEditMessage message, FriendlyByteBuf buffer) {
-        buffer.writeVarInt(message.colors.length);
+        buffer.writeVarInt(Mth.clamp(message.colors.length, 0, 16));
         for (short[] color : message.colors) {
-            buffer.writeVarInt(color.length);
+            buffer.writeVarInt(Mth.clamp(color.length, 0, 16));
             for (short c : color) {
                 buffer.writeShort(c);
             }
@@ -35,9 +36,19 @@ public class DogTagFinishEditMessage {
     }
 
     public static DogTagFinishEditMessage decode(FriendlyByteBuf buffer) {
-        short[][] colors = new short[buffer.readVarInt()][];
+        int rows = buffer.readVarInt();
+        if (rows < 0 || rows > 16) {
+            throw new IllegalArgumentException("Invalid row count: " + rows);
+        }
+
+        short[][] colors = new short[rows][];
         for (int i = 0; i < colors.length; i++) {
-            colors[i] = new short[buffer.readVarInt()];
+            int columns = buffer.readVarInt();
+            if (columns < 0 || columns > 16) {
+                throw new IllegalArgumentException("Invalid column count: " + columns);
+            }
+
+            colors[i] = new short[columns];
             for (int j = 0; j < colors[i].length; j++) {
                 colors[i][j] = buffer.readShort();
             }
