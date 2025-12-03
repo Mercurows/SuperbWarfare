@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.TargetEntity
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.lerpAngle
@@ -110,6 +111,8 @@ object VehicleMotionUtils {
      * @author YWZJ Ranpoes
      */
     fun support(vehicle: VehicleEntity, entity: Entity) {
+        if (entity is DroneEntity) return;
+
         if (vehicle.enableAABB()) return
         if (entity.noPhysics || vehicle.noPhysics) {
             return
