@@ -61,7 +61,11 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() <= energyCost) return;
+        if (vehicle.getEnergy() <= energyCost) {
+            vehicle.setForwardInputDown(false);
+            vehicle.setBackInputDown(false);
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
+        }
 
         if (passenger0 == null) {
             vehicle.setLeftInputDown(false);
@@ -182,7 +186,11 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() <= energyCost) return;
+        if (vehicle.getEnergy() <= energyCost) {
+            vehicle.setForwardInputDown(false);
+            vehicle.setBackInputDown(false);
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
+        }
 
         if (passenger0 == null) {
             vehicle.setLeftInputDown(false);
@@ -298,65 +306,69 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() > energyCost) {
-            if (passenger0 == null) {
-                vehicle.setLeftInputDown(false);
-                vehicle.setRightInputDown(false);
-                vehicle.setForwardInputDown(false);
-                vehicle.setBackInputDown(false);
-            }
+        if (vehicle.getEnergy() <= energyCost) {
+            vehicle.setForwardInputDown(false);
+            vehicle.setBackInputDown(false);
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
+        }
 
-            if (vehicle.forwardInputDown()) {
-                vehicle.getEntityData().set(POWER, Math.min(vehicle.getEntityData().get(POWER) + (vehicle.getEntityData().get(POWER) < 0 ? powerAdd * 2f : powerAdd), 1));
-            }
+        if (passenger0 == null) {
+            vehicle.setLeftInputDown(false);
+            vehicle.setRightInputDown(false);
+            vehicle.setForwardInputDown(false);
+            vehicle.setBackInputDown(false);
+        }
 
-            if (vehicle.backInputDown()) {
-                vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - (vehicle.getEntityData().get(POWER) > 0 ? powerReduce * 2f : powerReduce), -1));
-            }
+        if (vehicle.forwardInputDown()) {
+            vehicle.getEntityData().set(POWER, Math.min(vehicle.getEntityData().get(POWER) + (vehicle.getEntityData().get(POWER) < 0 ? powerAdd * 2f : powerAdd), 1));
+        }
 
-            if (vehicle.getEntityData().get(POWER) > 0) {
-                vehicle.targetSpeed = maxForwardSpeedRate;
-            } else {
-                vehicle.targetSpeed = maxBackwardSpeedRate;
-            }
+        if (vehicle.backInputDown()) {
+            vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - (vehicle.getEntityData().get(POWER) > 0 ? powerReduce * 2f : powerReduce), -1));
+        }
 
-            if (!vehicle.forwardInputDown() && !vehicle.backInputDown()) {
-                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.97f);
-            }
+        if (vehicle.getEntityData().get(POWER) > 0) {
+            vehicle.targetSpeed = maxForwardSpeedRate;
+        } else {
+            vehicle.targetSpeed = maxBackwardSpeedRate;
+        }
 
-            if (vehicle.rightInputDown() || vehicle.leftInputDown()) {
-                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.98f);
-            }
+        if (!vehicle.forwardInputDown() && !vehicle.backInputDown()) {
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.97f);
+        }
 
-            if (vehicle.getEntityData().get(MAIN_ENGINE_DAMAGED)) {
-                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.875f);
-            }
+        if (vehicle.rightInputDown() || vehicle.leftInputDown()) {
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.98f);
+        }
 
-            if (vehicle.level() instanceof ServerLevel) {
-                vehicle.consumeEnergy(energyCost);
-            }
+        if (vehicle.getEntityData().get(MAIN_ENGINE_DAMAGED)) {
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.875f);
+        }
 
-            if (vehicle.rightInputDown()) {
-                vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) - steeringSpeed);
-            } else if (vehicle.leftInputDown()) {
-                vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) + steeringSpeed);
-            }
+        if (vehicle.level() instanceof ServerLevel) {
+            vehicle.consumeEnergy(energyCost);
+        }
 
-            vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) * (float) Math.max(0.78f - 0.25f * vehicle.getDeltaMovement().horizontalDistance(), 0.1));
+        if (vehicle.rightInputDown()) {
+            vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) - steeringSpeed);
+        } else if (vehicle.leftInputDown()) {
+            vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) + steeringSpeed);
+        }
 
-            vehicle.setPropellerRot(vehicle.getPropellerRot() + 2 * vehicle.getEntityData().get(POWER));
-            vehicle.setRudderRot(Mth.clamp(vehicle.getRudderRot() - vehicle.getEntityData().get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
+        vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) * (float) Math.max(0.78f - 0.25f * vehicle.getDeltaMovement().horizontalDistance(), 0.1));
 
-            if (vehicle.isInFluidType() || vehicle.isUnderWater()) {
-                vehicle.setXRot(vehicle.getXRot() * 0.85f);
-                float direct = (90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
-                vehicle.setXRot((float) (vehicle.getXRot() - direct * (vehicle.onGround() ? 0 : 1) * bodyPitchRate * vehicle.getDeltaMovement().horizontalDistance()));
-                vehicle.setYRot((float) (vehicle.getYRot() - 20 * vehicle.getDeltaMovement().horizontalDistance() * vehicle.getEntityData().get(DELTA_ROT) * (vehicle.getEntityData().get(POWER) > 0 ? 1 : -1)));
-                vehicle.setZRot((float) (vehicle.getRoll() - direct * vehicle.getEntityData().get(DELTA_ROT) * (vehicle.onGround() ? 0 : 1) * bodyRollRate * 10 * vehicle.getDeltaMovement().horizontalDistance()));
-                vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.15 * vehicle.targetSpeed * vehicle.getEntityData().get(POWER))));
-            } else {
-                vehicle.setXRot(vehicle.getXRot() * 0.99f);
-            }
+        vehicle.setPropellerRot(vehicle.getPropellerRot() + 2 * vehicle.getEntityData().get(POWER));
+        vehicle.setRudderRot(Mth.clamp(vehicle.getRudderRot() - vehicle.getEntityData().get(DELTA_ROT), -0.8f, 0.8f) * 0.75f);
+
+        if (vehicle.isInFluidType() || vehicle.isUnderWater()) {
+            vehicle.setXRot(vehicle.getXRot() * 0.85f);
+            float direct = (90 - (float) VehicleVecUtils.calculateAngle(vehicle.getDeltaMovement(), vehicle.getViewVector(1))) / 90;
+            vehicle.setXRot((float) (vehicle.getXRot() - direct * (vehicle.onGround() ? 0 : 1) * bodyPitchRate * vehicle.getDeltaMovement().horizontalDistance()));
+            vehicle.setYRot((float) (vehicle.getYRot() - 20 * vehicle.getDeltaMovement().horizontalDistance() * vehicle.getEntityData().get(DELTA_ROT) * (vehicle.getEntityData().get(POWER) > 0 ? 1 : -1)));
+            vehicle.setZRot((float) (vehicle.getRoll() - direct * vehicle.getEntityData().get(DELTA_ROT) * (vehicle.onGround() ? 0 : 1) * bodyRollRate * 10 * vehicle.getDeltaMovement().horizontalDistance()));
+            vehicle.setDeltaMovement(vehicle.getDeltaMovement().add(vehicle.getViewVector(1).scale(0.15 * vehicle.targetSpeed * vehicle.getEntityData().get(POWER))));
+        } else {
+            vehicle.setXRot(vehicle.getXRot() * 0.99f);
         }
 
         vehicle.setZRot(vehicle.getRoll() * 0.85f);
@@ -480,7 +492,7 @@ public final class VehicleEngineUtils {
                     vehicle.holdPowerTick = 0;
                 }
             } else {
-                vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.0001f, 0));
+                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.995f);
                 vehicle.setForwardInputDown(false);
                 vehicle.setBackInputDown(false);
                 vehicle.engineStart = false;
@@ -552,6 +564,16 @@ public final class VehicleEngineUtils {
 
         Entity passenger = vehicle.getFirstPassenger();
 
+        if (vehicle.getEnergy() <= energyCost) {
+            vehicle.setForwardInputDown(false);
+            vehicle.setBackInputDown(false);
+            vehicle.engineStart = false;
+            vehicle.engineStartOver = false;
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
+        } else {
+            vehicle.consumeEnergy(energyCost);
+        }
+
         if (vehicle.getHealth() > 0.1f * vehicle.getMaxHealth()) {
             if (passenger == null || vehicle.isInFluidType()) {
                 vehicle.setLeftInputDown(false);
@@ -565,14 +587,12 @@ public final class VehicleEngineUtils {
                     vehicle.setXRot(Mth.clamp(vehicle.getXRot() + 0.1f, -89, 89));
                 }
             } else if (passenger instanceof Player) {
-                if (vehicle.getEnergy() > energyCost) {
-                    if (!vehicle.engineStart && vehicle.forwardInputDown()) {
-                        vehicle.engineStart = true;
-                        if (vehicle.getEntityData().get(POWER) > 0) {
-                            vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
-                        }
-                    }
+                if (!vehicle.engineStart && vehicle.forwardInputDown() && vehicle.getEntityData().get(POWER) > 0.01) {
+                    vehicle.engineStart = true;
+                    vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
+                }
 
+                if (vehicle.getEnergy() > energyCost) {
                     if (vehicle.forwardInputDown()) {
                         vehicle.getEntityData().set(POWER, (float) Mth.clamp(vehicle.getEntityData().get(POWER) + 0.0045f * powerAdd, -0.1, 1));
                     }
@@ -605,10 +625,6 @@ public final class VehicleEngineUtils {
                     }
                     vehicle.getEntityData().set(PLANE_BREAK, Math.min(vehicle.getEntityData().get(PLANE_BREAK) + 10, 60f));
                 }
-            }
-
-            if (vehicle.engineStart) {
-                vehicle.consumeEnergy(energyCost);
             }
 
             float rotSpeed = 1.5f + 1.2f * Mth.abs(VectorTool.calculateY(vehicle.getRoll()));
@@ -738,6 +754,16 @@ public final class VehicleEngineUtils {
 
         Entity passenger = vehicle.getFirstPassenger();
 
+        if (vehicle.getEnergy() <= energyCost) {
+            vehicle.setForwardInputDown(false);
+            vehicle.setBackInputDown(false);
+            vehicle.engineStart = false;
+            vehicle.engineStartOver = false;
+            vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.98f);
+        } else {
+            vehicle.consumeEnergy(energyCost);
+        }
+
         if (passenger == null || vehicle.isInFluidType()) {
             vehicle.setLeftInputDown(false);
             vehicle.setRightInputDown(false);
@@ -750,24 +776,15 @@ public final class VehicleEngineUtils {
                 vehicle.setXRot(Mth.clamp(vehicle.getXRot() + 0.1f, -89, 89));
             }
         } else if (passenger instanceof Player) {
-            if (vehicle.getEnergy() > energyCost) {
-                if (!vehicle.engineStart && vehicle.forwardInputDown()) {
-                    vehicle.engineStart = true;
-                    if (vehicle.getEntityData().get(POWER) > 0) {
-                        vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.getSoundSource(), 3, 1);
-                    }
-                }
+            if (vehicle.forwardInputDown()) {
+                vehicle.getEntityData().set(POWER, (float) Mth.clamp(vehicle.getEntityData().get(POWER) + 0.045f * powerAdd, -0.1, 1));
+            }
 
-                if (vehicle.forwardInputDown()) {
-                    vehicle.getEntityData().set(POWER, (float) Mth.clamp(vehicle.getEntityData().get(POWER) + 0.045f * powerAdd, -0.1, 1));
+            if (vehicle.backInputDown()) {
+                if (vehicle.onGround()) {
+                    vehicle.setDeltaMovement(vehicle.getDeltaMovement().scale(0.97));
                 }
-
-                if (vehicle.backInputDown()) {
-                    if (vehicle.onGround()) {
-                        vehicle.setDeltaMovement(vehicle.getDeltaMovement().scale(0.97));
-                    }
-                    vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.06f * powerReduce, vehicle.onGround() ? -0.6f : 0.2f));
-                }
+                vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.06f * powerReduce, vehicle.onGround() ? -0.6f : 0.2f));
             }
 
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - vehicle.getYRot()));
@@ -872,7 +889,7 @@ public final class VehicleEngineUtils {
         }
 
         if (vehicle.forwardInputDown()) {
-            if (vehicle.getEnergy() <= 0 && passenger0 instanceof Player player) {
+            if (vehicle.getEnergy() <= energyCost && passenger0 instanceof Player player) {
                 moveWithOutPower(vehicle, player, true);
             } else {
                 vehicle.getEntityData().set(POWER, Math.min(vehicle.getEntityData().get(POWER) + (vehicle.getEntityData().get(POWER) < 0 ? powerAdd * 2f : powerAdd), (vehicle.sprintInputDown() ? 2f : 1f)));
