@@ -1536,7 +1536,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));
         compound.putString("LastDriver", this.entityData.get(LAST_DRIVER_UUID));
 
-        var gunDataMap = entityData.get(GUN_DATA_MAP);
+        var gunDataMap = this.getGunDataMap();
 
         var tag = new CompoundTag();
         for (var kv : gunDataMap.entrySet()) {
@@ -1876,7 +1876,7 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         if (!this.level().isClientSide) {
             var newMap = new HashMap<String, GunData>();
 
-            for (var kv : entityData.get(GUN_DATA_MAP).entrySet()) {
+            for (var kv : this.getGunDataMap().entrySet()) {
                 var newData = kv.getValue().copy();
                 newData.tick(this, true);
                 newMap.put(kv.getKey(), newData);
