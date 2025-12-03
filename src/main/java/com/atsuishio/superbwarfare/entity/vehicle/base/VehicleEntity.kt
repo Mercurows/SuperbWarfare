@@ -3938,8 +3938,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     val hudColor: Int
         get() = computed().hudColor.get()
 
-    val power: Float
-        get() = entityData.get(POWER)
+    var power by POWER
 
     var decoyReady by DECOY_READY
 
