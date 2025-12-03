@@ -22,4 +22,6 @@ class Bl132Entity(type: EntityType<Bl132Entity>, world: Level) : ArtilleryEntity
             }
         }
     }
+
+    override fun canBind() = true
 }

@@ -54,7 +54,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
 
         ItemStack stack = player.getMainHandItem();
 
-        if (stack.getItem() instanceof ArtilleryIndicator indicator) {
+        if (this.canBind() && stack.getItem() instanceof ArtilleryIndicator indicator) {
             if (player.getRootVehicle() == this) return InteractionResult.FAIL;
 
             return indicator.bind(stack, player, this);
@@ -243,5 +243,9 @@ public class ArtilleryEntity extends GeoVehicleEntity {
         if (living.level() instanceof ServerLevel level) {
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec("Main", 1), getShootPos("Main", 1), level, this);
         }
+    }
+
+    public boolean canBind() {
+        return false;
     }
 }

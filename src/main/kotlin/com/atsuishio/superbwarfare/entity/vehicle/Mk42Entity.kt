@@ -20,4 +20,6 @@ class Mk42Entity(type: EntityType<Mk42Entity>, world: Level) : ArtilleryEntity(t
             }
         }
     }
+
+    override fun canBind() = true
 }

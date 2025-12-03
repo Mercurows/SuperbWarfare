@@ -27,4 +27,6 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity
             }
         }
     }
+
+    override fun canBind() = true
 }
