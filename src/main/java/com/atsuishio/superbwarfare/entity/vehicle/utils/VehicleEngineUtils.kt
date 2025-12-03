@@ -75,7 +75,11 @@ object VehicleEngineUtils {
 
         val passenger0 = vehicle.getFirstPassenger()
 
-        if (vehicle.energy <= energyCost) return
+        if (vehicle.energy <= energyCost) {
+            vehicle.forwardInputDown = false
+            vehicle.backInputDown = false
+            vehicle.power *= 0.95f
+        }
 
         if (passenger0 == null) {
             vehicle.leftInputDown = false
@@ -334,7 +338,11 @@ object VehicleEngineUtils {
 
         val passenger0 = vehicle.getFirstPassenger()
 
-        if (vehicle.energy <= energyCost) return
+        if (vehicle.energy < energyCost) {
+            vehicle.forwardInputDown = false
+            vehicle.backInputDown = false
+            vehicle.power *= 0.95f
+        }
 
         if (passenger0 == null) {
             vehicle.leftInputDown = false
@@ -592,127 +600,131 @@ object VehicleEngineUtils {
 
         val passenger0 = vehicle.getFirstPassenger()
 
-        if (vehicle.energy > energyCost) {
-            if (passenger0 == null) {
-                vehicle.leftInputDown = false
-                vehicle.rightInputDown = false
-                vehicle.forwardInputDown = false
-                vehicle.backInputDown = false
-            }
+        if (vehicle.energy < energyCost) {
+            vehicle.forwardInputDown = false
+            vehicle.backInputDown = false
+            vehicle.power *= 0.95f
+        }
 
-            if (vehicle.forwardInputDown) {
-                vehicle.getEntityData().set(
-                    VehicleEntity.POWER, Math.min(
-                        vehicle.getEntityData().get(VehicleEntity.POWER) + (if (vehicle.getEntityData()
-                                .get(VehicleEntity.POWER) < 0
-                        ) powerAdd * 2f else powerAdd), 1f
-                    )
+        if (passenger0 == null) {
+            vehicle.leftInputDown = false
+            vehicle.rightInputDown = false
+            vehicle.forwardInputDown = false
+            vehicle.backInputDown = false
+        }
+
+        if (vehicle.forwardInputDown) {
+            vehicle.getEntityData().set(
+                VehicleEntity.POWER, Math.min(
+                    vehicle.getEntityData().get(VehicleEntity.POWER) + (if (vehicle.getEntityData()
+                            .get(VehicleEntity.POWER) < 0
+                    ) powerAdd * 2f else powerAdd), 1f
                 )
-            }
+            )
+        }
 
-            if (vehicle.backInputDown) {
-                vehicle.getEntityData().set(
-                    VehicleEntity.POWER, Math.max(
-                        vehicle.getEntityData().get(
-                            VehicleEntity.POWER
-                        ) - (if (vehicle.getEntityData()
-                                .get(VehicleEntity.POWER) > 0
-                        ) powerReduce * 2f else powerReduce), -1f
-                    )
-                )
-            }
-
-            if (vehicle.getEntityData().get(VehicleEntity.POWER) > 0) {
-                vehicle.targetSpeed = maxForwardSpeedRate.toDouble()
-            } else {
-                vehicle.targetSpeed = maxBackwardSpeedRate.toDouble()
-            }
-
-            if (!vehicle.forwardInputDown && !vehicle.backInputDown) {
-                vehicle.getEntityData().set(
-                    VehicleEntity.POWER, vehicle.getEntityData().get(
+        if (vehicle.backInputDown) {
+            vehicle.getEntityData().set(
+                VehicleEntity.POWER, Math.max(
+                    vehicle.getEntityData().get(
                         VehicleEntity.POWER
-                    ) * 0.97f
+                    ) - (if (vehicle.getEntityData()
+                            .get(VehicleEntity.POWER) > 0
+                    ) powerReduce * 2f else powerReduce), -1f
                 )
-            }
+            )
+        }
 
-            if (vehicle.rightInputDown || vehicle.leftInputDown) {
-                vehicle.getEntityData().set(
-                    VehicleEntity.POWER, vehicle.getEntityData().get(
-                        VehicleEntity.POWER
-                    ) * 0.98f
-                )
-            }
+        if (vehicle.getEntityData().get(VehicleEntity.POWER) > 0) {
+            vehicle.targetSpeed = maxForwardSpeedRate.toDouble()
+        } else {
+            vehicle.targetSpeed = maxBackwardSpeedRate.toDouble()
+        }
 
-            if (vehicle.getEntityData().get(VehicleEntity.MAIN_ENGINE_DAMAGED)) {
-                vehicle.getEntityData().set(
-                    VehicleEntity.POWER, vehicle.getEntityData().get(
-                        VehicleEntity.POWER
-                    ) * 0.875f
-                )
-            }
+        if (!vehicle.forwardInputDown && !vehicle.backInputDown) {
+            vehicle.getEntityData().set(
+                VehicleEntity.POWER, vehicle.getEntityData().get(
+                    VehicleEntity.POWER
+                ) * 0.97f
+            )
+        }
 
-            if (level is ServerLevel) {
-                vehicle.consumeEnergy(energyCost)
-            }
+        if (vehicle.rightInputDown || vehicle.leftInputDown) {
+            vehicle.getEntityData().set(
+                VehicleEntity.POWER, vehicle.getEntityData().get(
+                    VehicleEntity.POWER
+                ) * 0.98f
+            )
+        }
 
-            if (vehicle.rightInputDown) {
-                vehicle.getEntityData().set(
-                    VehicleEntity.DELTA_ROT, vehicle.getEntityData().get(
-                        VehicleEntity.DELTA_ROT
-                    ) - steeringSpeed
-                )
-            } else if (vehicle.leftInputDown) {
-                vehicle.getEntityData().set(
-                    VehicleEntity.DELTA_ROT, vehicle.getEntityData().get(
-                        VehicleEntity.DELTA_ROT
-                    ) + steeringSpeed
-                )
-            }
+        if (vehicle.getEntityData().get(VehicleEntity.MAIN_ENGINE_DAMAGED)) {
+            vehicle.getEntityData().set(
+                VehicleEntity.POWER, vehicle.getEntityData().get(
+                    VehicleEntity.POWER
+                ) * 0.875f
+            )
+        }
 
+        if (level is ServerLevel) {
+            vehicle.consumeEnergy(energyCost)
+        }
+
+        if (vehicle.rightInputDown) {
             vehicle.getEntityData().set(
                 VehicleEntity.DELTA_ROT, vehicle.getEntityData().get(
                     VehicleEntity.DELTA_ROT
-                ) * Math.max(0.78f - 0.25f * vehicle.deltaMovement.horizontalDistance(), 0.1).toFloat()
+                ) - steeringSpeed
             )
+        } else if (vehicle.leftInputDown) {
+            vehicle.getEntityData().set(
+                VehicleEntity.DELTA_ROT, vehicle.getEntityData().get(
+                    VehicleEntity.DELTA_ROT
+                ) + steeringSpeed
+            )
+        }
 
-            vehicle.propellerRot += 2 * vehicle.getEntityData().get(VehicleEntity.POWER)
-            vehicle.rudderRot = Mth.clamp(
-                vehicle.rudderRot - vehicle.getEntityData().get(VehicleEntity.DELTA_ROT),
-                -0.8f,
-                0.8f
-            ) * 0.75f
+        vehicle.getEntityData().set(
+            VehicleEntity.DELTA_ROT, vehicle.getEntityData().get(
+                VehicleEntity.DELTA_ROT
+            ) * Math.max(0.78f - 0.25f * vehicle.deltaMovement.horizontalDistance(), 0.1).toFloat()
+        )
 
-            if (vehicle.isInFluidType || vehicle.isUnderWater) {
-                vehicle.xRot *= 0.85f
-                val direct = (90 - VehicleVecUtils.calculateAngle(vehicle.deltaMovement, vehicle.getViewVector(1f))
-                    .toFloat()) / 90
-                vehicle.xRot =
-                    (vehicle.xRot - direct * (if (vehicle.onGround()) 0 else 1) * bodyPitchRate * vehicle.deltaMovement
-                        .horizontalDistance()).toFloat()
-                vehicle.yRot = (vehicle.yRot - 20 * vehicle.deltaMovement.horizontalDistance() * vehicle.getEntityData()
-                    .get(
-                        VehicleEntity.DELTA_ROT
-                    ) * (if (vehicle.getEntityData()
-                        .get(VehicleEntity.POWER) > 0
-                ) 1 else -1)).toFloat()
-                vehicle.setZRot(
-                    (vehicle.roll - direct * vehicle.getEntityData()
-                        .get(VehicleEntity.DELTA_ROT) * (if (vehicle.onGround()) 0 else 1) * bodyRollRate * 10 * vehicle.deltaMovement
-                        .horizontalDistance()).toFloat()
-                )
-                vehicle.setDeltaMovement(
-                    vehicle.deltaMovement.add(
-                        vehicle.getViewVector(1f).scale(
-                            0.15 * vehicle.targetSpeed * vehicle.getEntityData().get(
-                                VehicleEntity.POWER
-                            )
+        vehicle.propellerRot += 2 * vehicle.getEntityData().get(VehicleEntity.POWER)
+        vehicle.rudderRot = Mth.clamp(
+            vehicle.rudderRot - vehicle.getEntityData().get(VehicleEntity.DELTA_ROT),
+            -0.8f,
+            0.8f
+        ) * 0.75f
+
+        if (vehicle.isInFluidType || vehicle.isUnderWater) {
+            vehicle.xRot *= 0.85f
+            val direct = (90 - VehicleVecUtils.calculateAngle(vehicle.deltaMovement, vehicle.getViewVector(1f))
+                .toFloat()) / 90
+            vehicle.xRot =
+                (vehicle.xRot - direct * (if (vehicle.onGround()) 0 else 1) * bodyPitchRate * vehicle.deltaMovement
+                    .horizontalDistance()).toFloat()
+            vehicle.yRot = (vehicle.yRot - 20 * vehicle.deltaMovement.horizontalDistance() * vehicle.getEntityData()
+                .get(
+                    VehicleEntity.DELTA_ROT
+                ) * (if (vehicle.getEntityData()
+                    .get(VehicleEntity.POWER) > 0
+            ) 1 else -1)).toFloat()
+            vehicle.setZRot(
+                (vehicle.roll - direct * vehicle.getEntityData()
+                    .get(VehicleEntity.DELTA_ROT) * (if (vehicle.onGround()) 0 else 1) * bodyRollRate * 10 * vehicle.deltaMovement
+                    .horizontalDistance()).toFloat()
+            )
+            vehicle.setDeltaMovement(
+                vehicle.deltaMovement.add(
+                    vehicle.getViewVector(1f).scale(
+                        0.15 * vehicle.targetSpeed * vehicle.getEntityData().get(
+                            VehicleEntity.POWER
                         )
                     )
                 )
-            } else {
-                vehicle.xRot *= 0.99f
-            }
+            )
+        } else {
+            vehicle.xRot *= 0.99f
         }
 
         vehicle.setZRot(vehicle.roll * 0.85f)
@@ -841,7 +853,7 @@ object VehicleEngineUtils {
                 }
             }
 
-            if (vehicle.energy > energyCost) {
+            if (vehicle.energy >= energyCost) {
                 val up = vehicle.upInputDown || vehicle.forwardInputDown
                 val down = vehicle.downInputDown
 
@@ -917,13 +929,7 @@ object VehicleEngineUtils {
                     vehicle.holdPowerTick = 0
                 }
             } else {
-                data.set(
-                    VehicleEntity.POWER, Math.max(
-                        data.get(
-                            VehicleEntity.POWER
-                        ) - 0.0001f, 0f
-                    )
-                )
+                vehicle.power *= 0.995f
                 vehicle.forwardInputDown = false
                 vehicle.backInputDown = false
                 vehicle.engineStart = false
@@ -985,11 +991,11 @@ object VehicleEngineUtils {
             )
         )
 
-        if (data.get(VehicleEntity.POWER) > 0.04f) {
+        if (vehicle.power > 0.04f) {
             vehicle.engineStartOver = true
         }
 
-        if (data.get(VehicleEntity.POWER) < 0.0004f) {
+        if (vehicle.power < 0.0004f) {
             vehicle.engineStart = false
             vehicle.engineStartOver = false
         }
@@ -1043,6 +1049,16 @@ object VehicleEngineUtils {
 
         val passenger = vehicle.getFirstPassenger()
 
+        if (vehicle.energy < energyCost) {
+            vehicle.forwardInputDown = false
+            vehicle.backInputDown = false
+            vehicle.engineStart = false
+            vehicle.engineStartOver = false
+            vehicle.power *= 0.95f
+        } else {
+            vehicle.consumeEnergy(energyCost)
+        }
+
         if (vehicle.health > 0.1f * vehicle.getMaxHealth()) {
             if (passenger == null || vehicle.isInFluidType) {
                 vehicle.leftInputDown = false
@@ -1058,15 +1074,12 @@ object VehicleEngineUtils {
                     vehicle.xRot = Mth.clamp(vehicle.xRot + 0.1f, -89f, 89f)
                 }
             } else if (passenger is Player) {
-                if (vehicle.energy > energyCost) {
-                    if (!vehicle.engineStart && vehicle.forwardInputDown) {
-                        vehicle.engineStart = true
-                        if (data.get(VehicleEntity.POWER) > 0) {
-                            vehicle.level()
-                                .playSound(null, vehicle, engineInfo.engineStartSound, vehicle.soundSource, 3f, 1f)
-                        }
-                    }
+                if (!vehicle.engineStart && vehicle.forwardInputDown && vehicle.power > 0.01f) {
+                    vehicle.engineStart = true
+                    vehicle.level().playSound(null, vehicle, engineInfo.engineStartSound, vehicle.soundSource, 3f, 1f)
+                }
 
+                if (vehicle.energy >= energyCost) {
                     if (vehicle.forwardInputDown) {
                         data.set(
                             VehicleEntity.POWER, Mth.clamp(
@@ -1137,10 +1150,6 @@ object VehicleEngineUtils {
                         )
                     )
                 }
-            }
-
-            if (vehicle.engineStart) {
-                vehicle.consumeEnergy(energyCost)
             }
 
             val rotSpeed = 1.5f + 1.2f * Mth.abs(calculateY(vehicle.roll))
@@ -1359,6 +1368,16 @@ object VehicleEngineUtils {
 
         val passenger = vehicle.getFirstPassenger()
 
+        if (vehicle.energy < energyCost) {
+            vehicle.forwardInputDown = false
+            vehicle.backInputDown = false
+            vehicle.engineStart = false
+            vehicle.engineStartOver = false
+            vehicle.power *= 0.95f
+        } else {
+            vehicle.consumeEnergy(energyCost)
+        }
+
         if (passenger == null || vehicle.isInFluidType) {
             vehicle.leftInputDown = false
             vehicle.rightInputDown = false
@@ -1373,37 +1392,15 @@ object VehicleEngineUtils {
                 vehicle.xRot = Mth.clamp(vehicle.xRot + 0.1f, -89f, 89f)
             }
         } else if (passenger is Player) {
-            if (vehicle.energy > energyCost) {
-                if (!vehicle.engineStart && vehicle.forwardInputDown) {
-                    vehicle.engineStart = true
-                    if (data.get(VehicleEntity.POWER) > 0) {
-                        vehicle.level()
-                            .playSound(null, vehicle, engineInfo.engineStartSound, vehicle.soundSource, 3f, 1f)
-                    }
-                }
+            if (vehicle.forwardInputDown) {
+                vehicle.power = Mth.clamp(vehicle.power + 0.045f * powerAdd, -0.1f, 1f)
+            }
 
-                if (vehicle.forwardInputDown) {
-                    data.set(
-                        VehicleEntity.POWER, Mth.clamp(
-                            (data.get(
-                                VehicleEntity.POWER
-                            ) + 0.045f * powerAdd).toDouble(), -0.1, 1.0
-                        ).toFloat()
-                    )
+            if (vehicle.backInputDown) {
+                if (vehicle.onGround()) {
+                    vehicle.setDeltaMovement(vehicle.deltaMovement.scale(0.97))
                 }
-
-                if (vehicle.backInputDown) {
-                    if (vehicle.onGround()) {
-                        vehicle.setDeltaMovement(vehicle.deltaMovement.scale(0.97))
-                    }
-                    data.set(
-                        VehicleEntity.POWER, Math.max(
-                            data.get(
-                                VehicleEntity.POWER
-                            ) - 0.06f * powerReduce, if (vehicle.onGround()) -0.6f else 0.2f
-                        )
-                    )
-                }
+                vehicle.power = Math.max(vehicle.power - 0.06f * powerReduce, if (vehicle.onGround()) -0.6f else 0.2f)
             }
 
             val diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - vehicle.yRot))
@@ -1583,7 +1580,7 @@ object VehicleEngineUtils {
         }
 
         if (vehicle.forwardInputDown) {
-            if (vehicle.energy <= 0 && passenger0 is Player) {
+            if (vehicle.energy < energyCost && passenger0 is Player) {
                 moveWithOutPower(vehicle, passenger0, true)
             } else {
                 data.set(
