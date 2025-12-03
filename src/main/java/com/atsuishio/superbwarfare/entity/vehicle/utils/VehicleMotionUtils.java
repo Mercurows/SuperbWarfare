@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils;
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
@@ -108,6 +109,8 @@ public final class VehicleMotionUtils {
      * @author YWZJ Ranpoes
      */
     public static void support(VehicleEntity vehicle, Entity entity) {
+        if (entity instanceof DroneEntity) return;
+
         if (vehicle.enableAABB()) return;
         if (entity.noPhysics || vehicle.noPhysics) {
             return;
