@@ -889,7 +889,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(SERVER_PITCH, xRot)
             define(AMMO, 0)
             define(DECOY_READY, false)
-            define(GEAR_ROT, 0f)
+            define(SYNCHED_GEAR_ROT, 0f)
             define(GEAR_UP, false)
             define(FORWARD_INPUT_DOWN, false)
             define(BACK_INPUT_DOWN, false)
@@ -904,7 +904,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(PLANE_BREAK, 0f)
             define(SELECTED_WEAPON, MutableList(maxPassengers) { 0 })
             define(ENERGY, 0)
-            define(PROPELLER_ROT, 0f)
+            define(SYNCHED_PROPELLER_ROT, 0f)
 
             define(HORN_VOLUME, 0f)
             define(LASER_LENGTH, 0f)
@@ -1330,9 +1330,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             set(POWER, compound.getFloat("Power"))
             set(DECOY_READY, compound.getBoolean("DecoyReady"))
-            set(GEAR_ROT, compound.getFloat("GearRot"))
+            set(SYNCHED_GEAR_ROT, compound.getFloat("GearRot"))
             set(GEAR_UP, compound.getBoolean("GearUp"))
-            set(PROPELLER_ROT, compound.getFloat("PropellerRot"))
+            set(SYNCHED_PROPELLER_ROT, compound.getFloat("PropellerRot"))
             set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"))
             set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"))
             set(LAST_DRIVER_UUID, compound.getString("LastDriver"))
@@ -1412,9 +1412,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         compound.putFloat("Power", this.entityData.get(POWER))
         compound.putBoolean("DecoyReady", this.entityData.get(DECOY_READY))
-        compound.putFloat("GearRot", this.entityData.get(GEAR_ROT))
+        compound.putFloat("GearRot", this.entityData.get(SYNCHED_GEAR_ROT))
         compound.putBoolean("GearUp", this.entityData.get(GEAR_UP))
-        compound.putFloat("PropellerRot", this.entityData.get(PROPELLER_ROT))
+        compound.putFloat("PropellerRot", this.entityData.get(SYNCHED_PROPELLER_ROT))
         compound.putFloat("ChargeProgress", this.entityData.get(CHARGE_PROGRESS))
 
         compound.putFloat("ServerYaw", this.entityData.get(SERVER_YAW))
@@ -3106,7 +3106,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 Mth.abs(1.4f * this.entityData.get(DELTA_ROT))
             ) * engineInfo.engineSoundVolume
 
-            EngineType.HELICOPTER -> entityData.get(PROPELLER_ROT) * engineInfo.engineSoundVolume
+            EngineType.HELICOPTER -> entityData.get(SYNCHED_PROPELLER_ROT) * engineInfo.engineSoundVolume
             else -> Mth.abs(entityData.get(POWER)) * engineInfo.engineSoundVolume
         }
     }
@@ -3847,7 +3847,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val driver = this.lastDriver
 
         if (verticalCollision) {
-            if (this.vehicleType == VehicleType.AIRPLANE && ((entityData.get(GEAR_ROT) > 0.15 && this !is Tom6Entity) || Mth.abs(
+            if (this.vehicleType == VehicleType.AIRPLANE && ((entityData.get(SYNCHED_GEAR_ROT) > 0.15 && this !is Tom6Entity) || Mth.abs(
                     this.roll
                 ) > 20 || Mth.abs(xRot) > 30)
             ) {
@@ -3988,6 +3988,20 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     var power by POWER
     var deltaRot by DELTA_ROT
     var decoyReady by DECOY_READY
+    var synchedPropellerRot by SYNCHED_PROPELLER_ROT
+    var planeBreak by PLANE_BREAK
+    var synchedGearRot by SYNCHED_GEAR_ROT
+    var gearUp by GEAR_UP
+
+    var subEngineDamaged by SUB_ENGINE_DAMAGED
+    var subEngineHealth by SUB_ENGINE_HEALTH
+    var mainEngineDamaged by MAIN_ENGINE_DAMAGED
+    var mainEngineHealth by MAIN_ENGINE_HEALTH
+
+    var leftWheelDamaged by L_WHEEL_DAMAGED
+    var leftWheelHealth by L_WHEEL_HEALTH
+    var rightWheelDamaged by R_WHEEL_DAMAGED
+    var rightWheelHealth by R_WHEEL_HEALTH
 
     val hornSound: SoundEvent
         get() = this.computed().hornSound
@@ -4196,11 +4210,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         @JvmField
-        val PROPELLER_ROT: EntityDataAccessor<Float> =
+        val SYNCHED_PROPELLER_ROT: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
         @JvmField
-        val GEAR_ROT: EntityDataAccessor<Float> =
+        val SYNCHED_GEAR_ROT: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
         @JvmField
