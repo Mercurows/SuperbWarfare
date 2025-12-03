@@ -658,6 +658,8 @@
   "commands.config.block_destroy.disabled": "已关闭子弹破坏方块",
   "commands.config.force_damage.enabled": "已开启强制伤害",
   "commands.config.force_damage.disabled": "已关闭强制伤害",
+  "commands.config.drop_ammo_box.enabled": "已开启死亡掉落弹药盒",
+  "commands.config.drop_ammo_box.disabled": "已关闭死亡掉落弹药盒",
   "commands.tdm.add.single": "已为%s启用死亡竞赛模式",
   "commands.tdm.add.multiple": "已为%s个实体启用死亡竞赛模式",
   "commands.tdm.remove.single": "已为%s禁用死亡竞赛模式",
