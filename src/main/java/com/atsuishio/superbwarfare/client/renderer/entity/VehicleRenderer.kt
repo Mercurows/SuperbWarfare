@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
@@ -26,24 +25,43 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         partialTick: Float
     ): RenderType? = RenderType.entityTranslucent(getTextureLocation(vehicle))
 
-    override fun defaultRender(
-        poseStack: PoseStack,
-        animatable: T,
-        bufferSource: MultiBufferSource,
-        renderType: RenderType?,
-        buffer: VertexConsumer?,
-        yaw: Float,
+    override fun render(
+        entity: T,
+        entityYaw: Float,
         partialTick: Float,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
         packedLight: Int
     ) {
         poseStack.pushPose()
 
-        vehicleAxis(animatable, poseStack, yaw, partialTick)
-        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight)
-        renderCustomPart(animatable, yaw, partialTick, poseStack, bufferSource, packedLight)
+        vehicleAxis(entity, poseStack, entityYaw, partialTick)
+        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight)
+        renderCustomPart(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight)
 
         poseStack.popPose()
     }
+
+    // TODO 为什么无法重写这个
+    // 见鬼了 为什么会把super.defaultRender的animatable解析成Entity？
+    //    override fun defaultRender(
+//        poseStack: PoseStack,
+//        animatable: T,
+//        bufferSource: MultiBufferSource,
+//        renderType: RenderType?,
+//        buffer: VertexConsumer?,
+//        yaw: Float,
+//        partialTick: Float,
+//        packedLight: Int
+//    ) {
+//        poseStack.pushPose()
+//
+//        vehicleAxis(animatable, poseStack, yaw, partialTick)
+//        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight)
+//        renderCustomPart(animatable, yaw, partialTick, poseStack, bufferSource, packedLight)
+//
+//        poseStack.popPose()
+//    }
 
     open fun vehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
         val root = Vec3(0.0, entityIn.rotateOffsetHeight, 0.0)
