@@ -30,4 +30,6 @@ class Mle1934Entity(type: EntityType<Mle1934Entity>, world: Level) : ArtilleryEn
             }
         }
     }
+
+    override fun canBind() = true
 }
