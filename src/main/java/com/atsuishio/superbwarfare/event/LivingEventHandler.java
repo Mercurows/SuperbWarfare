@@ -36,7 +36,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -586,7 +585,6 @@ public class LivingEventHandler {
      */
     private static void playerDropAmmoBox(LivingDropsEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
-        if (!player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) return;
         if (!MiscConfig.DROP_AMMO_BOX.get()) return;
 
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();

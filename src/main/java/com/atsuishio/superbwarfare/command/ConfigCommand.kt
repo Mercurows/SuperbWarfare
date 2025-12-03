@@ -23,6 +23,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig("explosionDestroy", ExplosionConfig.EXPLOSION_DESTROY, "commands.config.explosion_destroy")
     booleanConfig("blockDestroy", ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS, "commands.config.block_destroy")
     booleanConfig("forceDamage", MiscConfig.ALLOW_FORCE_DAMAGE, "commands.config.force_damage")
+    booleanConfig("dropAmmoBox", MiscConfig.DROP_AMMO_BOX, "commands.config.drop_ammo_box")
 }
 
 private enum class DestroyType(
