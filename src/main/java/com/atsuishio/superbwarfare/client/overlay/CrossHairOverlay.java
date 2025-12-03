@@ -124,7 +124,7 @@ public class CrossHairOverlay implements IGuiOverlay {
                 case CROSSHAIR_GUN_BOCEK ->
                         renderBocekCrosshair(guiGraphics, data, player, screenWidth, screenHeight, moveX, moveY, finPosX, finPosY, finLength, spread);
                 case CROSSHAIR_GUN_GRENADE ->
-                        renderGrenadeCrosshair(guiGraphics, screenWidth, screenHeight);
+                        renderGrenadeCrosshair(guiGraphics, stack, screenWidth, screenHeight);
             }
         }
 
@@ -229,7 +229,9 @@ public class CrossHairOverlay implements IGuiOverlay {
         }
     }
 
-    public static void renderGrenadeCrosshair(GuiGraphics guiGraphics, int screenWidth, int screenHeight) {
+    public static void renderGrenadeCrosshair(GuiGraphics guiGraphics, ItemStack stack, int screenWidth, int screenHeight) {
+        if (ClientEventHandler.zoomTime > 0.8 && GunResource.compute(stack).hideCrosshairWhenZoom) return;
+
         guiGraphics.blit(REX, screenWidth / 2 - 16, screenHeight / 2 - 16, 0, 0, 32, 32, 32, 32);
     }
 
