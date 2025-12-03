@@ -657,6 +657,8 @@
   "commands.config.block_destroy.disabled": "Disabled bullet breaking blocks",
   "commands.config.force_damage.enabled": "Enabled force damage",
   "commands.config.force_damage.disabled": "Disabled force damage",
+  "commands.config.drop_ammo_box.enabled": "Enabled dropping ammo box after death",
+  "commands.config.drop_ammo_box.disabled": "Disabled dropping ammo box after death",
   "commands.tdm.add.single": "Enabled Death Match Mode for %s",
   "commands.tdm.add.multiple": "Enabled Death Match Mode for %s entities",
   "commands.tdm.remove.single": "Disabled Death Match Mode for %s",

@@ -40,7 +40,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
@@ -605,10 +604,8 @@ public class LivingEventHandler {
      * 开启死亡掉落 & 保留武器弹药时，玩家死亡会掉落一个弹药盒
      */
     private static void playerDropAmmoBox(LivingDropsEvent event) {
-        if (!MiscConfig.DROP_AMMO_BOX.get()) return;
-
         if (!(event.getEntity() instanceof Player player)) return;
-        if (!player.level().getLevelData().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) return;
+        if (!MiscConfig.DROP_AMMO_BOX.get()) return;
 
         var cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE).orElse(new PlayerVariable());
         cap.watch();
