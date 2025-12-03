@@ -57,4 +57,9 @@ public class Bl132Entity extends ArtilleryEntity {
         data.add(new AnimationController<>(this, "fire3", 0, this::fire3Predicate));
         data.add(new AnimationController<>(this, "fire4", 0, this::fire4Predicate));
     }
+
+    @Override
+    public boolean canBind() {
+        return true;
+    }
 }

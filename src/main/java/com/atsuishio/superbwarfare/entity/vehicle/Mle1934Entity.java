@@ -41,4 +41,9 @@ public class Mle1934Entity extends ArtilleryEntity {
         data.add(new AnimationController<>(this, "fireLeft", 0, this::fireLeftPredicate));
         data.add(new AnimationController<>(this, "fireRight", 0, this::fireRightPredicate));
     }
+
+    @Override
+    public boolean canBind() {
+        return true;
+    }
 }

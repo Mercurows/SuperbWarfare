@@ -41,4 +41,9 @@ public class Plz05Entity extends ArtilleryEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         data.add(new AnimationController<>(this, "shoot", 0, this::shootPredicate));
     }
+
+    @Override
+    public boolean canBind() {
+        return true;
+    }
 }

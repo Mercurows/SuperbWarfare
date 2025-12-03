@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -53,6 +52,7 @@ public class MortarEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
 
+    @Nullable
     private LivingEntity shooter = null;
 
     public MortarEntity(EntityType<MortarEntity> type, Level level) {
@@ -123,10 +123,6 @@ public class MortarEntity extends ArtilleryEntity {
         if (result != InteractionResult.PASS) return result;
 
         ItemStack mainHandItem = player.getMainHandItem();
-
-        if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && this.entityData.get(INTELLIGENT)) {
-            return indicator.bind(mainHandItem, player, this);
-        }
 
         if (mainHandItem.getItem() instanceof Monitor && !this.entityData.get(INTELLIGENT)) {
             entityData.set(INTELLIGENT, true);
@@ -354,5 +350,10 @@ public class MortarEntity extends ArtilleryEntity {
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
         return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
+    }
+
+    @Override
+    public boolean canBind() {
+        return this.entityData.get(INTELLIGENT);
     }
 }
