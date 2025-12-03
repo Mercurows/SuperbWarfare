@@ -58,6 +58,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -208,20 +209,30 @@ public class ClientEventHandler {
     public static boolean isEditing = false;
 
     // 锁定类武器用
+    @Nullable
     public static Entity nearestEntity;
+    @Nullable
     public static Entity seekingEntity;
+    @Nullable
     public static Entity lockingEntity;
+    @Nullable
     public static Vec3 seekingPos;
+    @Nullable
     public static Vec3 lockingPos;
     public static int seekingTime;
     public static int guideType;
     public static boolean lockOn;
 
     // 锁定类载具用
+    @Nullable
     public static Entity nearestEntityVehicle;
+    @Nullable
     public static Entity seekingEntityVehicle;
+    @Nullable
     public static Entity lockingEntityVehicle;
+    @Nullable
     public static Vec3 seekingPosVehicle;
+    @Nullable
     public static Vec3 lockingPosVehicle;
     public static int seekingTimeVehicle;
     public static boolean lockOnVehicle;
@@ -457,7 +468,7 @@ public class ClientEventHandler {
                         }
 
                         if (holdingFireKey) {
-                            if (seekingPos.distanceToSqr(player.getEyePosition()) < range * range) {
+                            if (seekingPos != null && seekingPos.distanceToSqr(player.getEyePosition()) < range * range) {
                                 seekingTime++;
                                 if (seekingTime == 1) {
                                     lockingPos = seekingPos;
@@ -630,7 +641,7 @@ public class ClientEventHandler {
             }
 
             if (ModKeyMappings.VEHICLE_SEEK.isDown()) {
-                if (seekingPosVehicle.distanceToSqr(cameraPos) < seekRange * seekRange) {
+                if (seekingPosVehicle != null && seekingPosVehicle.distanceToSqr(cameraPos) < seekRange * seekRange) {
                     seekingTimeVehicle++;
                     if (seekingTimeVehicle == 1) {
                         lockingPosVehicle = seekingPosVehicle;

@@ -192,10 +192,12 @@ public class VehicleCrosshairOverlay implements LayeredDraw.Layer {
                     if (ClientEventHandler.seekingTimeVehicle > 0) {
                         vec3 = ClientEventHandler.lockingPosVehicle;
                     }
-                    String string = "[ " + FormatTool.format0D(vec3.x) + ", " + FormatTool.format0D(vec3.y) + ", " + FormatTool.format0D(vec3.z) + " ]";
-                    int width = Minecraft.getInstance().font.width(string);
-                    RenderHelper.preciseBlitWithColor(guiGraphics, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-                    guiGraphics.drawString(Minecraft.getInstance().font, string, (float) screenWidth / 2 - (float) width / 2, (float) screenHeight - 73, color, false);
+                    if (vec3 != null) {
+                        String string = "[ " + FormatTool.format0D(vec3.x) + ", " + FormatTool.format0D(vec3.y) + ", " + FormatTool.format0D(vec3.z) + " ]";
+                        int width = Minecraft.getInstance().font.width(string);
+                        RenderHelper.preciseBlitWithColor(guiGraphics, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+                        guiGraphics.drawString(Minecraft.getInstance().font, string, (float) screenWidth / 2 - (float) width / 2, (float) screenHeight - 73, color, false);
+                    }
                 } else {
                     RenderHelper.preciseBlitWithColor(guiGraphics, texture, centerW, centerH, 0, 0, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
                     VehicleHudOverlay.renderKillIndicator(guiGraphics, screenWidth, screenHeight);
