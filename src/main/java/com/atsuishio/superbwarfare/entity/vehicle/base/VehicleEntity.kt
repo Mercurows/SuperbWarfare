@@ -3928,7 +3928,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun hasDecoy() = computed().hasDecoy
 
-    open fun engineRunning() = Math.abs(this.entityData.get(POWER)) > 0
+    open fun engineRunning() = Math.abs(power) > 0
 
     /**
      * 撬棍shift+右键收回载具时返还的物品
@@ -3939,7 +3939,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         get() = computed().hudColor.get()
 
     var power by POWER
-
+    var deltaRot by DELTA_ROT
     var decoyReady by DECOY_READY
 
     val hornSound: SoundEvent

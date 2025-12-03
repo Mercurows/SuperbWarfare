@@ -341,7 +341,10 @@ object VehicleEngineUtils {
         if (vehicle.energy < energyCost) {
             vehicle.forwardInputDown = false
             vehicle.backInputDown = false
+            vehicle.leftInputDown = false
+            vehicle.rightInputDown = false
             vehicle.power *= 0.95f
+            vehicle.deltaRot *= 0.5f
         }
 
         if (passenger0 == null) {
