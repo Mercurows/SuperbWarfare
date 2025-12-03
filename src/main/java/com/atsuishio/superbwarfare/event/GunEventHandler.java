@@ -123,7 +123,8 @@ public class GunEventHandler {
     }
 
     public static void autoReload(@Nullable Entity shooter, GunData data, boolean inMainHand) {
-        if (inMainHand && data.compute().autoReload && !data.hasEnoughAmmoToShoot(shooter)) {
+        var autoReload = data.compute().autoReload;
+        if (inMainHand && autoReload != null && autoReload && !data.hasEnoughAmmoToShoot(shooter)) {
             tryStartReload(shooter, data);
         }
     }
@@ -242,7 +243,7 @@ public class GunEventHandler {
             if (data.reload.time() == (soundInfo.vehicleReloadSoundTime != 0 ? Mth.clamp(soundInfo.vehicleReloadSoundTime, 1, data.compute().emptyReloadTime - 1) : data.compute().emptyReloadTime - 1)) {
                 if (shooter instanceof VehicleEntity vehicle) {
                     if (sound1p != null) {
-                        for (Entity passenger: vehicle.getPassengers()) {
+                        for (Entity passenger : vehicle.getPassengers()) {
                             if (passenger instanceof ServerPlayer serverPlayer) {
                                 SoundTool.playLocalSound(serverPlayer, sound1p, 3, 1);
                             }

@@ -105,10 +105,10 @@ import kotlin.math.*
 abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
     VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity, OBBEntity {
 
-    val gunDataMap: MutableMap<String, GunData>
+    var gunDataMap: MutableMap<String, GunData>
         get() {
             val rawMap = entityData.get(GUN_DATA_MAP)
-            val newMap = HashMap<String, GunData>()
+            val newMap = mutableMapOf<String, GunData>()
             val weapons = computed().weapons()
 
             for (kv in weapons.entries) {
@@ -124,6 +124,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             return newMap
         }
+        set(value) = this.entityData.set(GUN_DATA_MAP, value, true)
 
     open fun getSeat(seatIndex: Int): SeatInfo? {
         if (seatIndex < 0) return null
@@ -238,7 +239,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         data.save()
         map[name] = data
 
-        entityData.set(GUN_DATA_MAP, map, true)
+        gunDataMap = map
     }
 
     private var obbCache: MutableList<OBB>? = null
@@ -1288,11 +1289,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
+        VehicleData.from(this).update()
         this.entityData.set(OVERRIDE, compound.getString("Override"))
 
         // GunData
         val state = compound.getCompound("WeaponState")
-        val gunDataMap = HashMap<String, GunData>()
+        val newMap = HashMap<String, GunData>()
         for (key in state.allKeys) {
             var tag = state.getCompound(key)
 
@@ -1301,9 +1303,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             tag.putInt("count", 1)
 
             ItemStack.parse(this.level().registryAccess(), tag)
-                .ifPresent { stack -> gunDataMap[key] = GunData.from(stack) }
+                .ifPresent { stack -> newMap[key] = GunData.from(stack) }
         }
-        entityData.set(GUN_DATA_MAP, gunDataMap, true)
+        gunDataMap = newMap
 
         health = if (compound.contains("Health")) {
             compound.getFloat("Health")
@@ -1375,7 +1377,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID))
         compound.putString("LastDriver", this.entityData.get(LAST_DRIVER_UUID))
 
-        val gunDataMap = entityData.get(GUN_DATA_MAP)
+        val gunDataMap = gunDataMap
         val tag = CompoundTag()
         for (kv in gunDataMap.entries) {
             val data = GunData.from(kv.value.stack.copy())
@@ -1754,12 +1756,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (!this.level().isClientSide) {
             val newMap = HashMap<String, GunData>()
 
-            for (kv in entityData.get(GUN_DATA_MAP).entries) {
+            for (kv in gunDataMap.entries) {
                 val newData = kv.value.copy()
                 newData.tick(this, true)
                 newMap[kv.key] = newData
             }
-            entityData.set(GUN_DATA_MAP, newMap, true)
+            gunDataMap = newMap
         }
 
         this.wasEngineRunning = this.engineRunning()
