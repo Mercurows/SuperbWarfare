@@ -64,7 +64,10 @@ public final class VehicleEngineUtils {
         if (vehicle.getEnergy() <= energyCost) {
             vehicle.setForwardInputDown(false);
             vehicle.setBackInputDown(false);
+            vehicle.setLeftInputDown(false);
+            vehicle.setRightInputDown(false);
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
+            vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) * 0.5f);
         }
 
         if (passenger0 == null) {
