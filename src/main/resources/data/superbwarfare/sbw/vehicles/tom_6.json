@@ -15,6 +15,12 @@
   },
   "Weapons": {
     "MelonBomb": {
+      "Projectile": "superbwarfare:melon_bomb",
+      "AmmoType": "minecraft:melon",
+      "Magazine": 1,
+      "Velocity": 1,
+      "addShooterDeltaMovement": true,
+      "AutoReload": false,
       "ExplosionDamage": 500,
       "ExplosionRadius": 11
     }

@@ -22,7 +22,9 @@ import javax.annotation.ParametersAreNonnullByDefault
 class VehicleGun : GunItem(Properties()) {
 
     override fun computeProperties(gunData: GunData, rawData: DefaultGunData): DefaultGunData {
-        rawData.autoReload = true
+        if (rawData.autoReload == null) {
+            rawData.autoReload = true
+        }
         // TODO 如何处理真的想设置null的情况
         if (rawData.shootShake == null) {
             rawData.shootShake = Vec3(5.0, 6.0, 9.0)
