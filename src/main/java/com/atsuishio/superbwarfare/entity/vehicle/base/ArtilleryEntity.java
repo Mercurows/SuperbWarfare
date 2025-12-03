@@ -52,6 +52,8 @@ public class ArtilleryEntity extends GeoVehicleEntity {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.getItem() instanceof ArtilleryIndicator indicator) {
+            if (player.getRootVehicle() == this) return InteractionResult.FAIL;
+
             return indicator.bind(stack, player, this);
         }
 
