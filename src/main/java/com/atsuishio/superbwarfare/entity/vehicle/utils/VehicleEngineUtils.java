@@ -70,6 +70,11 @@ public final class VehicleEngineUtils {
             vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) * 0.5f);
         }
 
+        if (vehicle.getEnergy() <= 0) {
+            vehicle.setLeftInputDown(false);
+            vehicle.setRightInputDown(false);
+        }
+
         if (passenger0 == null) {
             vehicle.setLeftInputDown(false);
             vehicle.setRightInputDown(false);
