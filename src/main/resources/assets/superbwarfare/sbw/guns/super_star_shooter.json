@@ -1,0 +1,10 @@
+{
+  "ID": "superbwarfare:super_star_shooter",
+  "Model": {
+    "Model": "superbwarfare:geo/super_star_shooter.geo.json",
+    "Texture": "superbwarfare:textures/item/super_star_shooter.png"
+  },
+  "FlarePosition": [0, 0, 0.59375],
+  "FlareSize": 1,
+  "UseOldHandRenderer": true
+}

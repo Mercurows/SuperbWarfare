@@ -1218,6 +1218,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         return null
     }
 
+    open fun tick(shooter: Entity?, data: GunData, inMainHand: Boolean) {}
+
     open fun getDefaultData(data: GunData) = getDefault(data.id)
 
     open fun getEnergyProvider(data: GunData, ammoSupplier: Entity?): LazyOptional<IEnergyStorage?>? {

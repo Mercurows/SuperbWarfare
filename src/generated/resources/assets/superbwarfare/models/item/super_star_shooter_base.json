@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/super_star_shooter.item",
+  "textures": {
+    "layer0": "superbwarfare:item/super_star_shooter"
+  }
+}

@@ -151,7 +151,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
         this.tag(ModTags.Items.SHOTGUN).add(ModItems.HOMEMADE_SHOTGUN.get(), ModItems.M_870.get(), ModItems.AA_12.get());
         this.tag(ModTags.Items.MACHINE_GUN).add(ModItems.MINIGUN.get(), ModItems.M_2_HB.get());
         this.tag(ModTags.Items.LAUNCHER).add(ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.IGLA_9K38.get(),
-                ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get());
+                ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get(), ModItems.SUPER_STAR_SHOOTER.get());
 
         this.tag(ModTags.Items.MILITARY_ARMOR).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
 

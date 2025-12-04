@@ -97,6 +97,7 @@ public class ModItems {
     public static final RegistryObject<Item> IGLA_9K38 = GUNS.register("igla_9k38", IglaItem::new);
     public static final RegistryObject<Item> AURELIA_SCEPTRE = GUNS.register("aurelia_sceptre", AureliaSceptreItem::new);
     public static final RegistryObject<Item> BOCEK = GUNS.register("bocek", BocekItem::new);
+    public static final RegistryObject<Item> SUPER_STAR_SHOOTER = GUNS.register("super_star_shooter", SuperStarShooterItem::new);
 
     public static final RegistryObject<Item> VEHICLE_GUN = GUNS.register("vehicle_gun", VehicleGun::new);
 

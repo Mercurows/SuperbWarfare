@@ -289,9 +289,9 @@ object VehicleVecUtils {
             return vehicle.getShootVec(entity, partialTicks)
         } else if (stringOrVec3.isString) {
             if (stringOrVec3.string == "Bomb") {
-                bombHitPosX = Mth.lerp(0.1 * partialTicks, bombHitPosX, vehicle.bombHitPos(entity)!!.x)
-                bombHitPosY = Mth.lerp(0.1 * partialTicks, bombHitPosY, vehicle.bombHitPos(entity)!!.y)
-                bombHitPosZ = Mth.lerp(0.1 * partialTicks, bombHitPosZ, vehicle.bombHitPos(entity)!!.z)
+                bombHitPosX = Mth.lerp(0.1 * partialTicks, bombHitPosX, vehicle.bombHitPos(entity).x)
+                bombHitPosY = Mth.lerp(0.1 * partialTicks, bombHitPosY, vehicle.bombHitPos(entity).y)
+                bombHitPosZ = Mth.lerp(0.1 * partialTicks, bombHitPosZ, vehicle.bombHitPos(entity).z)
                 return getViewPos(vehicle, entity, partialTicks).vectorTo(Vec3(bombHitPosX, bombHitPosY, bombHitPosZ))
             }
             return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
@@ -412,7 +412,7 @@ object VehicleVecUtils {
         }
     }
 
-    fun getShootVec(vehicle: VehicleEntity, weaponName: String?, partialTicks: Float): Vec3 {
+    fun getShootVec(vehicle: VehicleEntity, weaponName: String, partialTicks: Float): Vec3 {
         val data = vehicle.getGunData(weaponName) ?: return vehicle.getViewVector(partialTicks)
 
         val stringOrVec3 = data.fireDirection()
