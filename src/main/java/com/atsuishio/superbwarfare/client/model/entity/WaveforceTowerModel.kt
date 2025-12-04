@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
 import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.util.Mth
 import java.util.regex.Pattern
 
@@ -15,8 +14,8 @@ class WaveforceTowerModel : VehicleModel<WaveforceTowerEntity>() {
                 return TransformContext { bone, vehicle, state ->
                     val scale = Mth.lerp(
                         state.partialTick,
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE_O),
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE)
+                        vehicle.laserScaleO,
+                        vehicle.laserScale,
                     ).coerceAtMost(1.2f)
 
                     bone.scaleX = scale
@@ -27,11 +26,11 @@ class WaveforceTowerModel : VehicleModel<WaveforceTowerEntity>() {
 
             "glow2" -> {
                 return TransformContext { bone, vehicle, state ->
-                    bone.posZ = -16f * vehicle.getEntityData().get(VehicleEntity.LASER_LENGTH)
+                    bone.posZ = -16f * vehicle.laserLength
                     val scale = Mth.lerp(
                         state.partialTick,
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE_O),
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE)
+                        vehicle.laserScaleO,
+                        vehicle.laserScale,
                     ).coerceAtMost(1.2f)
 
                     bone.scaleX = scale
@@ -42,7 +41,7 @@ class WaveforceTowerModel : VehicleModel<WaveforceTowerEntity>() {
 
             "charge" -> {
                 return TransformContext { bone, vehicle, state ->
-                    val energy = vehicle.getEntityData().get(VehicleEntity.CHARGE_PROGRESS)
+                    val energy = vehicle.chargeProgress
                     val energyRate0 = energy0
                     bone.scaleZ = Mth.lerp(state.partialTick, energyRate0, energy)
                     energy0 = energy
@@ -56,7 +55,7 @@ class WaveforceTowerModel : VehicleModel<WaveforceTowerEntity>() {
             val index = matcher.group("id").toInt()
 
             return TransformContext { bone, vehicle, _ ->
-                val energy = vehicle.getEntityData().get(VehicleEntity.CHARGE_PROGRESS)
+                val energy = vehicle.chargeProgress
                 val shouldTurnOn = energy >= index / 7f
                 bone.isHidden = shouldTurnOn != isOn
             }

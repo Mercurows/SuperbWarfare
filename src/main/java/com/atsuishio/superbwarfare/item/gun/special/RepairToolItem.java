@@ -49,7 +49,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 public class RepairToolItem extends GunGeoItem {
@@ -93,7 +92,7 @@ public class RepairToolItem extends GunGeoItem {
     }
 
     @Override
-    public void onRayHitBlock(Entity shooter, ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, BlockHitResult result, @NotNull Vec3 pos) {
+    public void onRayHitBlock(Entity shooter, @NotNull ServerLevel level, @Nullable Entity target, @NotNull GunData data, Vec3 shootDirection, @NotNull BlockHitResult result, @NotNull Vec3 pos) {
         super.onRayHitBlock(shooter, level, target, data, shootDirection, result, pos);
         BlockPos blockPos = result.getBlockPos();
         BlockState state = level.getBlockState(blockPos);
@@ -133,12 +132,12 @@ public class RepairToolItem extends GunGeoItem {
     }
 
     @Override
-    public SoundEvent getRayHitBlockSound(GunData data) {
+    public @NotNull SoundEvent getRayHitBlockSound(@NotNull GunData data) {
         return ModSounds.REPAIRING.get();
     }
 
     @Override
-    public SoundEvent getRayHitEntitySound(GunData data) {
+    public @NotNull SoundEvent getRayHitEntitySound(@NotNull GunData data) {
         return ModSounds.REPAIRING.get();
     }
 
@@ -150,7 +149,7 @@ public class RepairToolItem extends GunGeoItem {
 
         // 修理实体（多重含义）
         if (target instanceof VehicleEntity vehicle) {
-            Entity lastDriver = EntityFindUtil.findEntity(level, vehicle.getEntityData().get(LAST_DRIVER_UUID));
+            Entity lastDriver = EntityFindUtil.findEntity(level, vehicle.getLastDriverUUID());
             if ((lastDriver != null && !SeekTool.IN_SAME_TEAM.test(shooter, lastDriver) && lastDriver.getTeam() != null) || shooter.isShiftKeyDown()) {
                 vehicle.hurt(ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), 0.5f);
                 if (shooter instanceof ServerPlayer player) {

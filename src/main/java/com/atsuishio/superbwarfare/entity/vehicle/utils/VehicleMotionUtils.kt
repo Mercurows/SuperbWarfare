@@ -111,7 +111,7 @@ object VehicleMotionUtils {
      * @author YWZJ Ranpoes
      */
     fun support(vehicle: VehicleEntity, entity: Entity) {
-        if (entity is DroneEntity) return;
+        if (entity is DroneEntity) return
 
         if (vehicle.enableAABB()) return
         if (entity.noPhysics || vehicle.noPhysics) {
@@ -379,7 +379,7 @@ object VehicleMotionUtils {
         val collisionLevel = vehicle.computed().collisionLevel
         val limits = collisionLevel.powerLimits
 
-        val power = vehicle.getEntityData().get(VehicleEntity.POWER)
+        val power = vehicle.power
         val motion = vehicle.deltaMovement.horizontalDistance()
 
         val flags = booleanArrayOf(
@@ -440,8 +440,7 @@ object VehicleMotionUtils {
 
         val state = vehicle.level().getBlockState(pos)
         if (state.`is`(ModBlocks.DRAGON_TEETH.get())) {
-            vehicle.getEntityData()
-                .set(VehicleEntity.POWER, vehicle.getEntityData().get(VehicleEntity.POWER) * 0.8f)
+            vehicle.power *= 0.8f
             vehicle.setDeltaMovement(vehicle.deltaMovement.multiply(-0.1, 0.0, -0.1))
         }
     }

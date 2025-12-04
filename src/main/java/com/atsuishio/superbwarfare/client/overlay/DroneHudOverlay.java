@@ -35,7 +35,8 @@ import java.util.List;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_ARTILLERY;
 import static com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_INDICATOR;
-import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
+import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.IS_KAMIKAZE;
+import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.MAX_AMMO;
 import static com.atsuishio.superbwarfare.item.ArtilleryIndicator.TAG_CANNON;
 
 @OnlyIn(Dist.CLIENT)
@@ -133,7 +134,7 @@ public class DroneHudOverlay implements IGuiOverlay {
                     if (!entity.getEntityData().get(IS_KAMIKAZE)) {
                         // 弹药
                         guiGraphics.drawString(mc.font, Component.translatable("tips.superbwarfare.drone.ammo")
-                                        .append(Component.literal(entity.getEntityData().get(AMMO) + " / " + entity.getEntityData().get(MAX_AMMO))),
+                                        .append(Component.literal(entity.getAmmo() + " / " + entity.getEntityData().get(MAX_AMMO))),
                                 screenWidth / 2 + 12, screenHeight / 2 - 37, -1, false);
                     } else {
                         // 神风

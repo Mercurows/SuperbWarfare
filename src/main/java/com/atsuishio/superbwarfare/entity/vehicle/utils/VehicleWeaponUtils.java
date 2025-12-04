@@ -17,7 +17,6 @@ import net.minecraftforge.common.ForgeMod;
 import org.joml.Matrix4d;
 import org.joml.Vector4d;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.DECOY_READY;
 import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.TURRET_DAMAGED;
 import static com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition;
 
@@ -126,7 +125,7 @@ public final class VehicleWeaponUtils {
      */
     public static void releaseSmokeDecoy(VehicleEntity vehicle, Vec3 vec3) {
         if (vehicle.decoyInputDown()) {
-            if (vehicle.getEntityData().get(DECOY_READY) && vehicle.level() instanceof ServerLevel) {
+            if (vehicle.getDecoyReady() && vehicle.level() instanceof ServerLevel) {
                 for (int i = 0; i < 8; i++) {
                     SmokeDecoyEntity smokeDecoyEntity = new SmokeDecoyEntity(vehicle.level());
                     smokeDecoyEntity.setPos(vehicle.getX(), vehicle.getY() + vehicle.getBbHeight(), vehicle.getZ());
@@ -136,13 +135,13 @@ public final class VehicleWeaponUtils {
 
                 vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELEASE.get(), vehicle.getSoundSource(), 1, 1);
                 vehicle.setDecoyReloadCoolDown(500);
-                vehicle.getEntityData().set(DECOY_READY, false);
+                vehicle.setDecoyReady(false);
             }
             vehicle.setDecoyInputDown(false);
         }
 
-        if (!vehicle.getEntityData().get(DECOY_READY) && vehicle.getDecoyReloadCoolDown() == 0 && vehicle.level() instanceof ServerLevel) {
-            vehicle.getEntityData().set(DECOY_READY, true);
+        if (!vehicle.getDecoyReady() && vehicle.getDecoyReloadCoolDown() == 0 && vehicle.level() instanceof ServerLevel) {
+            vehicle.setDecoyReady(true);
             vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELOAD.get(), vehicle.getSoundSource(), 1, 1);
             vehicle.setDecoyReloadCoolDown(500);
         }
@@ -155,7 +154,7 @@ public final class VehicleWeaponUtils {
      */
     public static void releaseDecoy(VehicleEntity vehicle) {
         if (vehicle.decoyInputDown()) {
-            if (vehicle.getEntityData().get(DECOY_READY) && vehicle.level() instanceof ServerLevel) {
+            if (vehicle.getDecoyReady() && vehicle.level() instanceof ServerLevel) {
                 for (int i = 0; i < 54; i += 6) {
                     int finalI = i;
                     Mod.queueServerWork(i, () -> {
@@ -175,12 +174,12 @@ public final class VehicleWeaponUtils {
                 }
 
                 vehicle.setDecoyReloadCoolDown(400);
-                vehicle.getEntityData().set(DECOY_READY, false);
+                vehicle.setDecoyReady(false);
             }
             vehicle.setDecoyInputDown(false);
         }
-        if (!vehicle.getEntityData().get(DECOY_READY) && vehicle.getDecoyReloadCoolDown() == 0 && vehicle.level() instanceof ServerLevel) {
-            vehicle.getEntityData().set(DECOY_READY, true);
+        if (!vehicle.getDecoyReady() && vehicle.getDecoyReloadCoolDown() == 0 && vehicle.level() instanceof ServerLevel) {
+            vehicle.setDecoyReady(true);
             vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELOAD.get(), vehicle.getSoundSource(), 1, 1);
             vehicle.setDecoyReloadCoolDown(400);
         }

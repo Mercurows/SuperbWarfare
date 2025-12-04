@@ -32,7 +32,6 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.joml.Math;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.*;
 
 @OnlyIn(Dist.CLIENT)
 public class LandVehicleHud {
@@ -91,7 +90,7 @@ public class LandVehicleHud {
             RenderHelper.blit(poseStack, COMPASS, (float) screenWidth / 2 - 128, 10F, 128 + (64F / 45 * player.getYRot()), 0, 256, 16, 512, 16, color);
             RenderHelper.blit(poseStack, ROLL_IND, screenWidth / 2f - 8, 30, 0, 0F, 16, 16, 16, 16, color);
 
-            int turretHeal = (int) (100 - (100 * vehicle.getEntityData().get(TURRET_HEALTH) / vehicle.getTurretMaxHealth()));
+            int turretHeal = (int) (100 - (100 * vehicle.getTurretHealth() / vehicle.getTurretMaxHealth()));
             RenderHelper.blit(poseStack, BARREL, screenWidth / 2f + 112, screenHeight - 71, 0, 0F, 1, 16, 1, 16, MathTool.getGradientColor(color, 0xFF0000, turretHeal, 2));
 
             // 车身方向
@@ -99,11 +98,11 @@ public class LandVehicleHud {
             poseStack.rotateAround(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, vehicle.getTurretYRotO(), vehicle.getTurretYRot())), screenWidth / 2f + 112, screenHeight - 56, 0);
             int bodyHeal = (int) (100 - (100 * vehicle.getHealth() / vehicle.getMaxHealth()));
             RenderHelper.blit(poseStack, BODY, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, bodyHeal, 2));
-            int leftWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(L_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
+            int leftWheelHeal = (int) (100 - (100 * vehicle.getLeftWheelHealth() / vehicle.getWheelMaxHealth()));
             RenderHelper.blit(poseStack, LEFT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, leftWheelHeal, 2));
-            int rightWheelHeal = (int) (100 - (100 * vehicle.getEntityData().get(R_WHEEL_HEALTH) / vehicle.getWheelMaxHealth()));
+            int rightWheelHeal = (int) (100 - (100 * vehicle.getRightWheelHealth() / vehicle.getWheelMaxHealth()));
             RenderHelper.blit(poseStack, RIGHT_WHEEL, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, rightWheelHeal, 2));
-            int engineHeal = (int) (100 - (100 * vehicle.getEntityData().get(MAIN_ENGINE_HEALTH) / vehicle.getEngineMaxHealth()));
+            int engineHeal = (int) (100 - (100 * vehicle.getMainEngineHealth() / vehicle.getEngineMaxHealth()));
             RenderHelper.blit(poseStack, ENGINE, screenWidth / 2f + 96, screenHeight - 72, 0, 0F, 32, 32, 32, 32, MathTool.getGradientColor(color, 0xFF0000, engineHeal, 2));
             poseStack.popPose();
 

@@ -56,9 +56,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AI_PASSENGER_WEAPON_TARGET_UUID;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AI_TURRET_TARGET_UUID;
-
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber
 public class LivingEventHandler {
 
@@ -67,17 +64,17 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof Mob mob && mob.getVehicle() instanceof VehicleEntity vehicle) {
             if (mob == vehicle.getNthEntity(vehicle.getTurretControllerIndex())) {
                 if (event.getNewTarget() != null) {
-                    vehicle.getEntityData().set(AI_TURRET_TARGET_UUID, event.getNewTarget().getStringUUID());
+                    vehicle.setAiTurretTargetUUID(event.getNewTarget().getStringUUID());
                 } else {
-                    vehicle.getEntityData().set(AI_TURRET_TARGET_UUID, "undefined");
+                    vehicle.setAiTurretTargetUUID("undefined");
                 }
             }
 
             if (mob == vehicle.getNthEntity(vehicle.getPassengerWeaponStationControllerIndex())) {
                 if (event.getNewTarget() != null) {
-                    vehicle.getEntityData().set(AI_PASSENGER_WEAPON_TARGET_UUID, event.getNewTarget().getStringUUID());
+                    vehicle.setAiPassengerWeaponTargetUUID(event.getNewTarget().getStringUUID());
                 } else {
-                    vehicle.getEntityData().set(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined");
+                    vehicle.setAiPassengerWeaponTargetUUID("undefined");
                 }
             }
         }

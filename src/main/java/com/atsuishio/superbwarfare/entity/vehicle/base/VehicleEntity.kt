@@ -96,7 +96,6 @@ import net.minecraftforge.items.wrapper.InvWrapper
 import net.minecraftforge.network.PacketDistributor
 import org.joml.*
 import java.util.*
-import java.util.List
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
@@ -107,7 +106,7 @@ import kotlin.math.*
 abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
     VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity, OBBEntity {
 
-    var gunDataMap: MutableMap<String, GunData>
+    var gunDataMap: Map<String, GunData>
         get() {
             val rawMap = entityData.get(GUN_DATA_MAP)
             val newMap = mutableMapOf<String, GunData>()
@@ -124,17 +123,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 newMap[kv.key] = data
             }
 
-            return newMap
+            return newMap.toMap()
         }
-        set(value) = this.entityData.set(GUN_DATA_MAP, value, true)
+        set(value) = this.entityData.set(GUN_DATA_MAP, value.toMap(), true)
 
-    open fun getSeat(seatIndex: Int): SeatInfo? {
-        if (seatIndex < 0) return null
-
-        val seats = computed().seats()
-        if (seatIndex >= seats.size) return null
-        return seats[seatIndex]
-    }
+    open fun getSeat(seatIndex: Int) =
+        computed().seats().getOrNull(seatIndex)
 
     open fun getSeat(passenger: Entity?): SeatInfo? {
         return getSeat(getSeatIndex(passenger))
@@ -147,10 +141,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * @return 武器数据
      */
     open fun getGunData(seatIndex: Int): GunData? {
-        if (seatIndex < 0) return null
-        val selectedWeapon = this.entityData.get(SELECTED_WEAPON)
-        if (seatIndex >= selectedWeapon.size) return null
-        return getGunData(seatIndex, selectedWeapon[seatIndex])
+        return getGunData(seatIndex, selectedWeapon.getOrNull(seatIndex) ?: return null)
     }
 
     /**
@@ -164,9 +155,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val seat = getSeat(seatIndex) ?: return null
 
         val weapons = seat.weapons()
-        if (weaponIndex < 0 || weaponIndex >= weapons.size) return null
+        val name = weapons.getOrNull(weaponIndex) ?: return null
 
-        return getGunData(weapons[weaponIndex])
+        return getGunData(name)
     }
 
     /**
@@ -193,13 +184,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * @param name 武器名称
      * @return 武器数据
      */
-    open fun getGunData(name: String?) = this.gunDataMap[name]
+    open fun getGunData(name: String) = this.gunDataMap[name]
 
     open fun getGunName(seatIndex: Int): String? {
         if (seatIndex < 0) return null
         val seat = getSeat(seatIndex) ?: return null
 
-        val selectedWeapon = this.entityData.get(SELECTED_WEAPON)
         val weaponIndex = selectedWeapon.getOrNull(seatIndex) ?: return null
         if (weaponIndex < 0) return null
 
@@ -210,16 +200,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun getGunName(seatIndex: Int, weaponIndex: Int): String? {
-        if (seatIndex < 0) return null
-        val seat = getSeat(seatIndex) ?: return null
-
-        val selectedWeapon = this.entityData.get(SELECTED_WEAPON)
-        if (seatIndex >= selectedWeapon.size) return null
-
-        val weapons = seat.weapons()
-        if (weaponIndex >= weapons.size) return null
-
-        return weapons[weaponIndex]
+        return getSeat(seatIndex)?.weapons()?.getOrNull(weaponIndex)
     }
 
     open fun modifyGunData(seatIndex: Int, weaponIndex: Int, consumer: Consumer<GunData>) {
@@ -233,7 +214,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun modifyGunData(name: String?, consumer: Consumer<GunData>) {
         if (name == null) return
 
-        val map = this.gunDataMap
+        val map = this.gunDataMap.toMutableMap()
         var data = getGunData(name) ?: return
 
         data = data.copy()
@@ -860,7 +841,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(HEALTH, getMaxHealth())
             define(LAST_ATTACKER_UUID, "undefined")
             define(LAST_DRIVER_UUID, "undefined")
-            define(GUN_DATA_MAP, mutableMapOf())
+            define(GUN_DATA_MAP, mapOf())
 
             define(AI_TURRET_TARGET_UUID, "undefined")
             define(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined")
@@ -887,7 +868,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(YAW_WHILE_SHOOT, 0f)
             define(SERVER_YAW, yRot)
             define(SERVER_PITCH, xRot)
-            define(AMMO, 0)
             define(DECOY_READY, false)
             define(SYNCHED_GEAR_ROT, 0f)
             define(GEAR_UP, false)
@@ -902,7 +882,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(SPRINT_INPUT_DOWN, false)
 
             define(PLANE_BREAK, 0f)
-            define(SELECTED_WEAPON, MutableList(maxPassengers) { 0 })
+            define(SELECTED_WEAPON, List(maxPassengers) { 0 })
             define(ENERGY, 0)
             define(SYNCHED_PROPELLER_ROT, 0f)
 
@@ -1017,10 +997,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return data.compute().rpm
     }
 
-    open fun vehicleWeaponRpm(weaponName: String?): Int {
-        val data = getGunData(weaponName)
-        if (data == null || data.compute().rpm <= 0) return 1
-        return data.compute().rpm
+    open fun vehicleWeaponRpm(weaponName: String): Int {
+        val data = getGunData(weaponName) ?: return 1
+        return data.compute().rpm.coerceAtLeast(1)
     }
 
     open fun getWeaponHeat(living: LivingEntity?): Int {
@@ -1106,8 +1085,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (gunData != null) {
             val computedGunData = gunData.compute()
             if (computedGunData.recoilTime > 0) {
-                if (computedGunData.recoilTime > entityData.get(CANNON_RECOIL_TIME)) {
-                    entityData.set(CANNON_RECOIL_TIME, computedGunData.recoilTime)
+                if (computedGunData.recoilTime > cannonRecoilTime) {
+                    cannonRecoilTime = computedGunData.recoilTime
                 }
 
                 val angle = Mth.wrapDegrees(
@@ -1116,24 +1095,22 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
                 val vo = Vec3(0.0, 0.0, 1.0)
                 val f =
-                    0.3 * entityData.get(CANNON_RECOIL_FORCE) * (entityData.get(CANNON_RECOIL_TIME) / computedGunData.recoilTime).toDouble()
-                val v1 = vo.yRot(entityData.get(YAW_WHILE_SHOOT) * Mth.DEG_TO_RAD).scale(f)
+                    0.3 * cannonRecoilForce * (cannonRecoilTime / computedGunData.recoilTime).toDouble()
+                val v1 = vo.yRot(yawWhileShoot * Mth.DEG_TO_RAD).scale(f)
                 val v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(computedGunData.recoilForce.toDouble())
                 val v3 = v1.add(v2)
 
-                entityData.set(
-                    YAW_WHILE_SHOOT,
+                yawWhileShoot =
                     Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(vo) + VehicleVecUtils.getYRotFromVector(v3))
                         .toFloat()
-                )
-                entityData.set(CANNON_RECOIL_FORCE, v3.length().toFloat())
+                cannonRecoilForce = v3.length().toFloat()
 
                 gunData.shakePlayers(this)
             }
         }
     }
 
-    open fun playShootSound3p(living: LivingEntity, weaponName: String?) {
+    open fun playShootSound3p(living: LivingEntity, weaponName: String) {
         val gunData = this.getGunData(weaponName) ?: return
         val pos = getShootPos(weaponName, 1f)
 
@@ -1209,11 +1186,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * @param seatIndex 槽位
      * @return 武器类型
      */
-    open fun getWeaponIndex(seatIndex: Int): Int {
-        val selectedWeapons = this.getEntityData().get(SELECTED_WEAPON)
-        if (selectedWeapons.size <= seatIndex) return -1
-        return selectedWeapons[seatIndex]
-    }
+    open fun getWeaponIndex(seatIndex: Int) =
+        selectedWeapon.getOrElse(seatIndex) { -1 }
 
     /**
      * 检测载具是否有武器
@@ -1225,7 +1199,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             .filter { seat: SeatInfo? -> !seat!!.weapons().isEmpty() }
             .flatMap { seat: SeatInfo? -> seat!!.weapons().stream() }
             .filter { name: String? -> name != null && !name.isEmpty() }
-            .anyMatch { name: String? -> this.getGunData(name) != null }
+            .anyMatch { name -> this.getGunData(name) != null }
     }
 
     /**
@@ -1243,23 +1217,21 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * 设置该槽位当前的武器编号
      *
      * @param seatIndex      武器槽位
-     * @param selectedWeapon 武器类型
+     * @param selectedWeaponIndex 武器类型
      */
-    open fun setWeaponIndex(seatIndex: Int, selectedWeapon: Int) {
-        val selectedWeapons = this.getEntityData().get<MutableList<Int>>(SELECTED_WEAPON)
+    open fun setWeaponIndex(seatIndex: Int, selectedWeaponIndex: Int) {
+        val oldIndex = selectedWeapon.getOrNull(seatIndex) ?: return
+        if (oldIndex == selectedWeaponIndex) return
 
-        val oldIndex = selectedWeapons[seatIndex]
-        if (oldIndex == selectedWeapon) return
-
-        this.modifyGunData(seatIndex, oldIndex) { gunData: GunData? ->
-            if (gunData!!.compute().withdrawAmmoWhenChangeSlot) {
+        this.modifyGunData(seatIndex, oldIndex) { gunData ->
+            if (gunData.compute().withdrawAmmoWhenChangeSlot) {
                 gunData.withdrawAmmo(this.ammoSupplier)
             }
         }
 
-        val newList = ArrayList<Int>(List.copyOf<Int>(selectedWeapons))
-        newList[seatIndex] = selectedWeapon
-        this.getEntityData().set(SELECTED_WEAPON, newList, true)
+        val newList = selectedWeapon.toMutableList()
+        newList[seatIndex] = selectedWeaponIndex
+        selectedWeapon = newList
     }
 
     /**
@@ -1294,11 +1266,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
         VehicleData.from(this).update()
-        this.entityData.set(OVERRIDE, compound.getString("Override"))
+        override = compound.getString("Override")
 
         // GunData
         val state = compound.getCompound("WeaponState")
-        val newMap = HashMap<String, GunData>()
+        val newMap = mutableMapOf<String, GunData>()
         for (key in state.allKeys) {
             val tag = state.getCompound(key).copy()
 
@@ -1316,29 +1288,29 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         with(entityData) {
-            set(TURRET_HEALTH, compound.getFloat("TurretHealth"))
-            set(L_WHEEL_HEALTH, compound.getFloat("LeftWheelHealth"))
-            set(R_WHEEL_HEALTH, compound.getFloat("RightWheelHealth"))
-            set(MAIN_ENGINE_HEALTH, compound.getFloat("MainEngineHealth"))
-            set(SUB_ENGINE_HEALTH, compound.getFloat("SubEngineHealth"))
+            turretHealth = compound.getFloat("TurretHealth")
+            leftWheelHealth = compound.getFloat("LeftWheelHealth")
+            rightWheelHealth = compound.getFloat("RightWheelHealth")
+            mainEngineHealth = compound.getFloat("MainEngineHealth")
+            subEngineHealth = compound.getFloat("SubEngineHealth")
 
-            set(TURRET_DAMAGED, compound.getBoolean("TurretDamaged"))
-            set(L_WHEEL_DAMAGED, compound.getBoolean("LeftWheelDamaged"))
-            set(R_WHEEL_DAMAGED, compound.getBoolean("RightWheelDamaged"))
-            set(MAIN_ENGINE_DAMAGED, compound.getBoolean("MainEngineDamaged"))
-            set(SUB_ENGINE_DAMAGED, compound.getBoolean("SubEngineDamaged"))
+            turretDamaged = compound.getBoolean("TurretDamaged")
+            leftWheelDamaged = compound.getBoolean("LeftWheelDamaged")
+            rightWheelDamaged = compound.getBoolean("RightWheelDamaged")
+            mainEngineDamaged = compound.getBoolean("MainEngineDamaged")
+            subEngineDamaged = compound.getBoolean("SubEngineDamaged")
 
-            set(POWER, compound.getFloat("Power"))
-            set(DECOY_READY, compound.getBoolean("DecoyReady"))
-            set(SYNCHED_GEAR_ROT, compound.getFloat("GearRot"))
-            set(GEAR_UP, compound.getBoolean("GearUp"))
-            set(SYNCHED_PROPELLER_ROT, compound.getFloat("PropellerRot"))
-            set(CHARGE_PROGRESS, compound.getFloat("ChargeProgress"))
-            set(LAST_ATTACKER_UUID, compound.getString("LastAttacker"))
-            set(LAST_DRIVER_UUID, compound.getString("LastDriver"))
+            power = compound.getFloat("Power")
+            decoyReady = compound.getBoolean("DecoyReady")
+            synchedGearRot = compound.getFloat("GearRot")
+            gearUp = compound.getBoolean("GearUp")
+            synchedPropellerRot = compound.getFloat("PropellerRot")
+            chargeProgress = compound.getFloat("ChargeProgress")
+            lastAttackerUUID = compound.getString("LastAttacker")
+            lastDriverUUID = compound.getString("LastDriver")
 
-            set(SERVER_YAW, compound.getFloat("ServerYaw"))
-            set(SERVER_PITCH, compound.getFloat("ServerPitch"))
+            serverYaw = compound.getFloat("ServerYaw")
+            serverPitch = compound.getFloat("ServerPitch")
         }
 
         val selectedWeaponTag = compound.get("SelectedWeapon")
@@ -1348,13 +1320,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             IntArray(this.maxPassengers)
         }
 
-        if (selected.size != this.maxPassengers) {
+        selectedWeapon = if (selected.size != this.maxPassengers) {
             // 数量不符时（可能是更新或遇到损坏数据），重新初始化已选择武器
-            this.entityData.set(
-                SELECTED_WEAPON, MutableList(maxPassengers) { 0 }
-            )
+            MutableList(maxPassengers) { 0 }
         } else {
-            this.entityData.set(SELECTED_WEAPON, selected.toMutableList())
+            selected.toMutableList()
         }
 
         val energyNBT = compound.get("Energy")
@@ -1371,15 +1341,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         compound.putFloat("Health", health)
 
-        val overrideString = this.entityData.get(OVERRIDE)
+        val overrideString = override
         if (!overrideString.isBlank()) {
             compound.putString("Override", overrideString)
         }
 
-        compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID))
-        compound.putString("LastDriver", this.entityData.get(LAST_DRIVER_UUID))
+        compound.putString("LastAttacker", lastAttackerUUID)
+        compound.putString("LastDriver", lastDriverUUID)
 
-        val gunDataMap = gunDataMap
         val tag = CompoundTag()
         for (kv in gunDataMap.entries) {
             val data = GunData.from(kv.value.stack.copy())
@@ -1398,30 +1367,30 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             compound.put("WeaponState", tag)
         }
 
-        compound.putFloat("TurretHealth", this.entityData.get(TURRET_HEALTH))
-        compound.putFloat("LeftWheelHealth", this.entityData.get(L_WHEEL_HEALTH))
-        compound.putFloat("RightWheelHealth", this.entityData.get(R_WHEEL_HEALTH))
-        compound.putFloat("MainEngineHealth", this.entityData.get(MAIN_ENGINE_HEALTH))
-        compound.putFloat("SubEngineHealth", this.entityData.get(SUB_ENGINE_HEALTH))
+        compound.putFloat("TurretHealth", turretHealth)
+        compound.putFloat("LeftWheelHealth", leftWheelHealth)
+        compound.putFloat("RightWheelHealth", rightWheelHealth)
+        compound.putFloat("MainEngineHealth", mainEngineHealth)
+        compound.putFloat("SubEngineHealth", subEngineHealth)
 
-        compound.putBoolean("TurretDamaged", this.entityData.get(TURRET_DAMAGED))
-        compound.putBoolean("LeftWheelDamaged", this.entityData.get(L_WHEEL_DAMAGED))
-        compound.putBoolean("RightWheelDamaged", this.entityData.get(R_WHEEL_DAMAGED))
-        compound.putBoolean("MainEngineDamaged", this.entityData.get(MAIN_ENGINE_DAMAGED))
-        compound.putBoolean("SubEngineDamaged", this.entityData.get(SUB_ENGINE_DAMAGED))
+        compound.putBoolean("TurretDamaged", turretDamaged)
+        compound.putBoolean("LeftWheelDamaged", leftWheelDamaged)
+        compound.putBoolean("RightWheelDamaged", rightWheelDamaged)
+        compound.putBoolean("MainEngineDamaged", mainEngineDamaged)
+        compound.putBoolean("SubEngineDamaged", subEngineDamaged)
 
-        compound.putFloat("Power", this.entityData.get(POWER))
-        compound.putBoolean("DecoyReady", this.entityData.get(DECOY_READY))
-        compound.putFloat("GearRot", this.entityData.get(SYNCHED_GEAR_ROT))
-        compound.putBoolean("GearUp", this.entityData.get(GEAR_UP))
-        compound.putFloat("PropellerRot", this.entityData.get(SYNCHED_PROPELLER_ROT))
-        compound.putFloat("ChargeProgress", this.entityData.get(CHARGE_PROGRESS))
+        compound.putFloat("Power", power)
+        compound.putBoolean("DecoyReady", decoyReady)
+        compound.putFloat("GearRot", synchedGearRot)
+        compound.putBoolean("GearUp", gearUp)
+        compound.putFloat("PropellerRot", synchedPropellerRot)
+        compound.putFloat("ChargeProgress", chargeProgress)
 
-        compound.putFloat("ServerYaw", this.entityData.get(SERVER_YAW))
-        compound.putFloat("ServerPitch", this.entityData.get(SERVER_PITCH))
+        compound.putFloat("ServerYaw", serverYaw)
+        compound.putFloat("ServerPitch", serverPitch)
 
         if (this.maxPassengers > 0) {
-            compound.putIntArray("SelectedWeapon", this.entityData.get(SELECTED_WEAPON))
+            compound.putIntArray("SelectedWeapon", selectedWeapon)
         }
 
         if (this.hasEnergyStorage()) {
@@ -1518,10 +1487,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     val lastDriver: Entity?
-        get() = EntityFindUtil.findEntity(
-            level(),
-            entityData.get(LAST_DRIVER_UUID)
-        )
+        get() = EntityFindUtil.findEntity(level(), lastDriverUUID)
 
     @Deprecated("")
     open fun setDriverAngle(player: Player) {
@@ -1562,7 +1528,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.crash = source.`is`(ModDamageTypes.VEHICLE_STRIKE)
 
         if (source.entity != null) {
-            this.entityData.set(LAST_ATTACKER_UUID, source.entity!!.getStringUUID())
+            lastAttackerUUID = source.entity!!.getStringUUID()
         }
 
         val projectile = source.directEntity
@@ -1572,27 +1538,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             if (part != null) {
                 when (part) {
-                    TURRET -> entityData.set(
-                        TURRET_HEALTH, entityData.get(TURRET_HEALTH) - computedAmount
-                    )
-
-                    WHEEL_LEFT -> entityData.set(
-                        L_WHEEL_HEALTH,
-                        entityData.get(L_WHEEL_HEALTH) - computedAmount
-                    )
-
-                    WHEEL_RIGHT -> entityData.set(
-                        R_WHEEL_HEALTH,
-                        entityData.get(R_WHEEL_HEALTH) - computedAmount
-                    )
-
-                    MAIN_ENGINE -> entityData.set(
-                        MAIN_ENGINE_HEALTH, entityData.get(MAIN_ENGINE_HEALTH) - computedAmount
-                    )
-
-                    SUB_ENGINE -> entityData.set(
-                        SUB_ENGINE_HEALTH, entityData.get(SUB_ENGINE_HEALTH) - computedAmount
-                    )
+                    TURRET -> turretHealth -= computedAmount
+                    WHEEL_LEFT -> leftWheelHealth -= computedAmount
+                    WHEEL_RIGHT -> rightWheelHealth = -computedAmount
+                    MAIN_ENGINE -> mainEngineHealth -= computedAmount
+                    SUB_ENGINE -> subEngineHealth -= computedAmount
 
                     else -> {}
                 }
@@ -1670,10 +1620,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     var health: Float
         get() = this.entityData.get(HEALTH)
         set(value) {
-            this.entityData.set(
-                HEALTH,
-                value.coerceIn(0f, this.getMaxHealth())
-            )
+            this.entityData.set(HEALTH, value.coerceIn(0f, this.getMaxHealth()))
         }
 
     open fun getMaxHealth() = computed().maxHealth
@@ -1757,7 +1704,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         // 枪数据处理
         if (!this.level().isClientSide) {
-            val newMap = HashMap<String, GunData>()
+            val newMap = mutableMapOf<String, GunData>()
 
             for (kv in gunDataMap.entries) {
                 val newData = kv.value.copy()
@@ -1801,7 +1748,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             collisionCoolDown--
         }
 
-        this.entityData.set(LASER_SCALE_O, this.entityData.get(LASER_SCALE))
+        laserScaleO = laserScale
 
         flap1LRotO = this.flap1LRot
         flap1RRotO = this.flap1RRot
@@ -1814,13 +1761,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         super.baseTick()
 
-        if (this.entityData.get(LASER_SCALE) > 0) {
-            this.entityData.set(LASER_SCALE, Math.max(this.entityData.get(LASER_SCALE) - 0.1f, 0f))
-            this.entityData.set(LASER_SCALE, this.entityData.get(LASER_SCALE) * 0.9f)
+        if (laserScale > 0) {
+            laserScale = Math.max(laserScale - 0.1f, 0f)
+            laserScale *= 0.9f
         }
 
-        if (this.entityData.get(LASER_SCALE) == 0f) {
-            this.entityData.set(LASER_LENGTH, 0f)
+        if (laserScale == 0f) {
+            laserLength = 0f
         }
 
         if (repairCoolDown > 0) {
@@ -1883,13 +1830,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         if (this.maxPassengers > 0 && getFirstPassenger() != null) {
-            this.entityData.set(LAST_DRIVER_UUID, getFirstPassenger()!!.getStringUUID())
+            lastDriverUUID = getFirstPassenger()!!.getStringUUID()
         }
 
         if (getPassengers().isEmpty()) {
             noPassengerTime++
             if (noPassengerTime > 200) {
-                this.entityData.set(LAST_DRIVER_UUID, "undefined")
+                lastDriverUUID = "undefined"
             }
         } else {
             noPassengerTime = 0
@@ -1905,7 +1852,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (turretController is Player) {
                 this.adjustTurretAngle()
             } else if (turretController is Mob) {
-                this.turretAutoAimFromUuid(entityData.get(AI_TURRET_TARGET_UUID), turretController)
+                this.turretAutoAimFromUuid(aiTurretTargetUUID, turretController)
             }
         }
 
@@ -1914,10 +1861,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (passengerWeaponStationController is Player || passengerWeaponStationController == null) {
                 this.adjustWeaponControllerAngle()
             } else if (passengerWeaponStationController is Mob) {
-                this.passengerWeaponAutoAimFormUuid(
-                    entityData.get(AI_PASSENGER_WEAPON_TARGET_UUID),
-                    passengerWeaponStationController
-                )
+                this.passengerWeaponAutoAimFormUuid(aiPassengerWeaponTargetUUID, passengerWeaponStationController)
             }
         }
 
@@ -1994,14 +1938,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             decoyReloadCoolDown--
         }
 
-        if (this.entityData.get(CANNON_RECOIL_TIME) > 0) {
-            this.entityData.set(CANNON_RECOIL_TIME, this.entityData.get(CANNON_RECOIL_TIME) - 1)
+        if (this.cannonRecoilTime > 0) {
+            cannonRecoilTime -= 1
         }
 
-        this.recoilShake =
-            Mth.abs(entityData.get(CANNON_RECOIL_FORCE)) * 0.0000007 * entityData.get(CANNON_RECOIL_TIME).toDouble()
-                .pow(4.0) * sin(0.2 * Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5))
-        entityData.set(CANNON_RECOIL_FORCE, entityData.get(CANNON_RECOIL_FORCE) * 0.93f)
+        this.recoilShake = Mth.abs(cannonRecoilForce) * 0.0000007 * cannonRecoilTime.toDouble()
+            .pow(4.0) * sin(0.2 * Math.PI * (cannonRecoilTime - 2.5))
+        cannonRecoilForce *= 0.93f
 
         this.preventStacking()
         this.supportEntities()
@@ -2036,7 +1979,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             updateBackupAmmoCount()
         }
 
-        entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) * 0.5f)
+        hornVolume *= 0.5f
 
         if (hasDecoy()) {
             if (this.vehicleType == VehicleType.AIRPLANE || this.vehicleType == VehicleType.HELICOPTER) {
@@ -2105,14 +2048,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             return SoundEvents.EMPTY
         }
 
-    open fun getShootSoundInstance(weaponName: String?): SoundEvent {
-        val gunData = getGunData(weaponName)
-        if (gunData != null) {
-            val instance = gunData.compute().soundInfo.fireSoundInstances
-            if (instance != null) return instance
-        }
+    open fun getShootSoundInstance(weaponName: String): SoundEvent {
+        val gunData = getGunData(weaponName) ?: return SoundEvents.EMPTY
 
-        return SoundEvents.EMPTY
+        return gunData.compute().soundInfo.fireSoundInstances ?: SoundEvents.EMPTY
     }
 
     val isFiring: Boolean
@@ -2172,31 +2111,31 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val pos = obb.center.toVec3()
             when (obb.part) {
                 TURRET -> {
-                    if (entityData.get(TURRET_DAMAGED)) {
+                    if (turretDamaged) {
                         this.onTurretDamaged(pos)
                     }
                 }
 
                 WHEEL_LEFT -> {
-                    if (entityData.get(L_WHEEL_DAMAGED)) {
+                    if (leftWheelDamaged) {
                         this.onLeftWheelDamaged(pos)
                     }
                 }
 
                 WHEEL_RIGHT -> {
-                    if (entityData.get(R_WHEEL_DAMAGED)) {
+                    if (rightWheelDamaged) {
                         this.onRightWheelDamaged(pos)
                     }
                 }
 
                 MAIN_ENGINE -> {
-                    if (entityData.get(MAIN_ENGINE_DAMAGED)) {
+                    if (mainEngineDamaged) {
                         this.onEngine1Damaged(pos)
                     }
                 }
 
                 SUB_ENGINE -> {
-                    if (entityData.get(SUB_ENGINE_DAMAGED)) {
+                    if (subEngineDamaged) {
                         this.onEngine2Damaged(pos)
                     }
                 }
@@ -2207,65 +2146,55 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun handlePartHealth() {
-        if (entityData.get(TURRET_HEALTH) < 0) {
-            entityData.set(TURRET_DAMAGED, true)
-        } else if (entityData.get(TURRET_HEALTH) > 0.95 * this.getTurretMaxHealth()) {
-            entityData.set(TURRET_DAMAGED, false)
+        if (turretHealth < 0) {
+            turretDamaged = true
+        } else if (turretHealth > 0.95 * this.getTurretMaxHealth()) {
+            turretDamaged = false
         }
 
-        if (entityData.get(L_WHEEL_HEALTH) < 0) {
-            entityData.set(L_WHEEL_DAMAGED, true)
-        } else if (entityData.get(L_WHEEL_HEALTH) > 0.95 * this.getWheelMaxHealth()) {
-            entityData.set(L_WHEEL_DAMAGED, false)
+        if (leftWheelHealth < 0) {
+            leftWheelDamaged = true
+        } else if (leftWheelHealth > 0.95 * this.getWheelMaxHealth()) {
+            leftWheelDamaged = false
         }
 
-        if (entityData.get(R_WHEEL_HEALTH) < 0) {
-            entityData.set(R_WHEEL_DAMAGED, true)
-        } else if (entityData.get(R_WHEEL_HEALTH) > 0.95 * this.getWheelMaxHealth()) {
-            entityData.set(R_WHEEL_DAMAGED, false)
+        if (rightWheelHealth < 0) {
+            rightWheelDamaged = true
+        } else if (rightWheelHealth > 0.95 * this.getWheelMaxHealth()) {
+            rightWheelDamaged = false
         }
 
-        if (entityData.get(MAIN_ENGINE_HEALTH) < 0) {
-            entityData.set(MAIN_ENGINE_DAMAGED, true)
-        } else if (entityData.get(MAIN_ENGINE_HEALTH) > 0.95 * this.getEngineMaxHealth()) {
-            entityData.set(MAIN_ENGINE_DAMAGED, false)
+        if (mainEngineHealth < 0) {
+            mainEngineDamaged = true
+        } else if (mainEngineHealth > 0.95 * this.getEngineMaxHealth()) {
+            mainEngineDamaged = false
         }
 
-        if (entityData.get(SUB_ENGINE_HEALTH) < 0) {
-            entityData.set(SUB_ENGINE_DAMAGED, true)
-        } else if (entityData.get(SUB_ENGINE_HEALTH) > 0.95 * this.getEngineMaxHealth()) {
-            entityData.set(SUB_ENGINE_DAMAGED, false)
+        if (subEngineHealth < 0) {
+            subEngineDamaged = true
+        } else if (subEngineHealth > 0.95 * this.getEngineMaxHealth()) {
+            subEngineDamaged = false
         }
 
-        entityData.set(
-            TURRET_HEALTH, Math.min(
-                entityData.get(TURRET_HEALTH) + 0.0025f * this.getTurretMaxHealth(),
-                this.getTurretMaxHealth()
-            )
+        turretHealth = Math.min(
+            turretHealth + 0.0025f * this.getTurretMaxHealth(),
+            this.getTurretMaxHealth()
         )
-        entityData.set(
-            L_WHEEL_HEALTH, Math.min(
-                entityData.get(L_WHEEL_HEALTH) + 0.0025f * this.getWheelMaxHealth(),
-                this.getWheelMaxHealth()
-            )
+        leftWheelHealth = Math.min(
+            leftWheelHealth + 0.0025f * this.getWheelMaxHealth(),
+            this.getWheelMaxHealth()
         )
-        entityData.set(
-            R_WHEEL_HEALTH, Math.min(
-                entityData.get(R_WHEEL_HEALTH) + 0.0025f * this.getWheelMaxHealth(),
-                this.getWheelMaxHealth()
-            )
+        rightWheelHealth = Math.min(
+            rightWheelHealth + 0.0025f * this.getWheelMaxHealth(),
+            this.getWheelMaxHealth()
         )
-        entityData.set(
-            MAIN_ENGINE_HEALTH, Math.min(
-                entityData.get(MAIN_ENGINE_HEALTH) + 0.0025f * this.getEngineMaxHealth(),
-                this.getEngineMaxHealth()
-            )
+        mainEngineHealth = Math.min(
+            mainEngineHealth + 0.0025f * this.getEngineMaxHealth(),
+            this.getEngineMaxHealth()
         )
-        entityData.set(
-            SUB_ENGINE_HEALTH, Math.min(
-                entityData.get(SUB_ENGINE_HEALTH) + 0.0025f * this.getEngineMaxHealth(),
-                this.getEngineMaxHealth()
-            )
+        subEngineHealth = Math.min(
+            subEngineHealth + 0.0025f * this.getEngineMaxHealth(),
+            this.getEngineMaxHealth()
         )
     }
 
@@ -2440,10 +2369,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         VehicleWeaponUtils.adjustTurretAngle(this)
     }
 
-    open fun getSelectedWeapon(seatIndex: Int): Int {
-        val selectedWeapon = this.entityData.get(SELECTED_WEAPON)
-        return selectedWeapon.getOrElse(seatIndex) { -1 }
-    }
+    open fun getSelectedWeapon(seatIndex: Int) =
+        selectedWeapon.getOrElse(seatIndex) { -1 }
 
     open fun turretAutoAimFromVector(shootVec: Vec3?) {
         VehicleWeaponUtils.turretAutoAimFromVector(this, shootVec)
@@ -2560,7 +2487,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     //    @Override
     //    public void onAddedToWorld() {
     //        super.onAddedToWorld();
-    //        this.setYRot(this.entityData.get(SERVER_YAW));
+    //        this.setYRot(serverYaw);
     //    }
     init {
         registerTransforms()
@@ -2677,7 +2604,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return getEyePosition(ticks)
     }
 
-    open fun getShootPos(weaponName: String?, ticks: Float): Vec3 {
+    open fun getShootPos(weaponName: String, ticks: Float): Vec3 {
         val data = getGunData(weaponName)
         if (data != null) {
             val vec3 = data.firePosition()
@@ -2825,7 +2752,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return gunData.compute().velocity.toFloat()
     }
 
-    open fun getProjectileVelocity(weaponName: String?): Float {
+    open fun getProjectileVelocity(weaponName: String): Float {
         val gunData = getGunData(weaponName) ?: return 25f
         if (gunData.compute().addShooterDeltaMovement) {
             return (deltaMovement.length() * gunData.compute().velocity).toFloat()
@@ -2858,7 +2785,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return gunData.compute().gravity.toFloat()
     }
 
-    open fun getProjectileGravity(weaponName: String?): Float {
+    open fun getProjectileGravity(weaponName: String): Float {
         val gunData = getGunData(weaponName) ?: return 0f
 
         return gunData.compute().gravity.toFloat()
@@ -2885,7 +2812,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return gunData.compute().spread.toFloat()
     }
 
-    open fun getProjectileSpread(weaponName: String?): Float {
+    open fun getProjectileSpread(weaponName: String): Float {
         val gunData = getGunData(weaponName) ?: return 0.5f
 
         return gunData.compute().spread.toFloat()
@@ -3102,12 +3029,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         return when (engineType) {
             EngineType.TRACK -> Math.max(
-                Mth.abs(entityData.get(POWER)),
-                Mth.abs(1.4f * this.entityData.get(DELTA_ROT))
+                Mth.abs(power),
+                Mth.abs(1.4f * deltaRot)
             ) * engineInfo.engineSoundVolume
 
-            EngineType.HELICOPTER -> entityData.get(SYNCHED_PROPELLER_ROT) * engineInfo.engineSoundVolume
-            else -> Mth.abs(entityData.get(POWER)) * engineInfo.engineSoundVolume
+            EngineType.HELICOPTER -> synchedPropellerRot * engineInfo.engineSoundVolume
+            else -> Mth.abs(power) * engineInfo.engineSoundVolume
         }
     }
 
@@ -3261,8 +3188,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun handleClientSync() {
         if (level() is ServerLevel && tickCount % 2 == 0) {
-            entityData.set(SERVER_YAW, yRot)
-            entityData.set(SERVER_PITCH, xRot)
+            serverYaw = yRot
+            serverPitch = xRot
         }
         if (isControlledByLocalInstance) {
             interpolationSteps = 0
@@ -3276,8 +3203,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val interpolatedY = y + (yO - y) / interpolationSteps.toDouble()
         val interpolatedZ = z + (zO - z) / interpolationSteps.toDouble()
 
-        val diffY = Mth.wrapDegrees(entityData.get(SERVER_YAW) - this.yRot)
-        val diffX = Mth.wrapDegrees(entityData.get(SERVER_PITCH) - this.xRot)
+        val diffY = Mth.wrapDegrees(serverYaw - this.yRot)
+        val diffX = Mth.wrapDegrees(serverPitch - this.xRot)
 
         this.yRot += 0.1f * diffY
         this.xRot += 0.1f * diffX
@@ -3627,7 +3554,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return getAmmo(data)
     }
 
-    open fun getAmmoCount(weaponName: String?): Int {
+    open fun getAmmoCount(weaponName: String): Int {
         val data = getGunData(weaponName) ?: return 0
         return getAmmo(data)
     }
@@ -3831,10 +3758,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     val lastAttacker: Entity?
-        get() = EntityFindUtil.findEntity(
-            level(),
-            entityData.get(LAST_ATTACKER_UUID)
-        )
+        get() = EntityFindUtil.findEntity(level(), lastAttackerUUID)
 
     override fun move(movementType: MoverType, movement: Vec3) {
         if (!this.level().isClientSide()) {
@@ -3847,7 +3771,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val driver = this.lastDriver
 
         if (verticalCollision) {
-            if (this.vehicleType == VehicleType.AIRPLANE && ((entityData.get(SYNCHED_GEAR_ROT) > 0.15 && this !is Tom6Entity) || Mth.abs(
+            if (this.vehicleType == VehicleType.AIRPLANE && ((synchedGearRot > 0.15 && this !is Tom6Entity) || Mth.abs(
                     this.roll
                 ) > 20 || Mth.abs(xRot) > 30)
             ) {
@@ -3927,7 +3851,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
             collisionCoolDown = 4
             crash = true
-            this.entityData.set(POWER, 0.8f * entityData.get(POWER))
+            power *= 0.8f
         }
     }
 
@@ -4003,6 +3927,30 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     var rightWheelDamaged by R_WHEEL_DAMAGED
     var rightWheelHealth by R_WHEEL_HEALTH
 
+    var turretDamaged by TURRET_DAMAGED
+    var turretHealth by TURRET_HEALTH
+
+    var selectedWeapon by SELECTED_WEAPON
+    var chargeProgress by CHARGE_PROGRESS
+
+    var laserScale by LASER_SCALE
+    var laserScaleO by LASER_SCALE_O
+    var laserLength by LASER_LENGTH
+
+    var serverYaw by SERVER_YAW
+    var serverPitch by SERVER_PITCH
+    var cannonRecoilTime by CANNON_RECOIL_TIME
+    var cannonRecoilForce by CANNON_RECOIL_FORCE
+
+    var override by OVERRIDE
+    var lastAttackerUUID by LAST_ATTACKER_UUID
+    var lastDriverUUID by LAST_DRIVER_UUID
+    var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
+    var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
+
+    var yawWhileShoot by YAW_WHILE_SHOOT
+    var hornVolume by HORN_VOLUME
+
     val hornSound: SoundEvent
         get() = this.computed().hornSound
 
@@ -4022,12 +3970,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     //        return SoundEvents.EMPTY;
     //    }
     open fun horn() {
-        entityData.set(HORN_VOLUME, entityData.get(HORN_VOLUME) + 0.7f)
+        hornVolume += 0.7f
     }
 
-    open fun hornWorking(): Boolean {
-        return Math.abs(this.entityData.get(HORN_VOLUME)) > 0.05
-    }
+    open fun hornWorking() = Math.abs(this.hornVolume) > 0.05
 
     val vehicleType: VehicleType?
         // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
@@ -4107,9 +4053,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val MOUSE_SPEED_Y: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
-        // TODO 修改为不可变List
         @JvmField
-        val SELECTED_WEAPON: EntityDataAccessor<MutableList<Int>> = SynchedEntityData.defineId(
+        val SELECTED_WEAPON: EntityDataAccessor<List<Int>> = SynchedEntityData.defineId(
             VehicleEntity::class.java, ModSerializers.INT_LIST_SERIALIZER.get()
         )
 
@@ -4202,10 +4147,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
         @JvmField
-        val AMMO: EntityDataAccessor<Int> =
-            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.INT)
-
-        @JvmField
         val DECOY_READY: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
@@ -4282,7 +4223,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
         // Map SeatIndex -> GunData
-        protected val GUN_DATA_MAP: EntityDataAccessor<MutableMap<String, GunData>> =
+        protected val GUN_DATA_MAP: EntityDataAccessor<Map<String, GunData>> =
             SynchedEntityData.defineId(VehicleEntity::class.java, ModSerializers.VEHICLE_GUN_DATA_MAP_SERIALIZER.get())
     }
 }

@@ -129,7 +129,7 @@ public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implem
     public void travel() {
         Entity passenger = this.getFirstPassenger();
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
+        setPower(getPower() * 0.95f);
         if (passenger == null || isInWater()) {
             setLeftInputDown(false);
             setRightInputDown(false);
@@ -139,29 +139,29 @@ public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implem
         } else if (passenger instanceof Player) {
 
             if (forwardInputDown()) {
-                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
+                setPower(Math.min(getPower() + 0.1f, 1f));
             }
 
-            this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
+            setDeltaRot(getDeltaRot() * 0.8f);
 
             if (backInputDown()) {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
+                setPower(Math.max(getPower() - (getPower() > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
                 if (rightInputDown()) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
+                    setDeltaRot(getDeltaRot() + 0.4f);
                 } else if (leftInputDown()) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
+                    setDeltaRot(getDeltaRot() - 0.4f);
                 }
             } else {
                 if (rightInputDown()) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
+                    setDeltaRot(getDeltaRot() - 0.4f);
                 } else if (this.leftInputDown()) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
+                    setDeltaRot(getDeltaRot() + 0.4f);
                 }
             }
 
             // Shift刹车
             if (downInputDown()) {
-                this.entityData.set(POWER, 0f);
+                setPower(0f);
             }
 
             // 跳
@@ -181,16 +181,16 @@ public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implem
             float diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
 
             float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().length() - 0.1, 0.01), 0.9f) * diffX, -4, 4);
-            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
+            float addZ = getDeltaRot() - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
 
-            float yRotSync = (float) (-Mth.clamp(50 * this.getDeltaMovement().length(), 2, 4) * this.entityData.get(DELTA_ROT));
+            float yRotSync = (float) (-Mth.clamp(50 * this.getDeltaMovement().length(), 2, 4) * getDeltaRot());
 
             this.setYRot(this.getYRot() + yRotSync);
             this.setXRot(Mth.clamp(this.getXRot() + addX, onGround() ? -12 : -120, onGround() ? 3 : 120));
             this.setZRot(this.getRoll() - 0.2f * addZ);
         }
 
-        double powerValue = 0.05 * this.entityData.get(POWER);
+        double powerValue = 0.05 * getPower();
         this.setDeltaMovement(this.getDeltaMovement().add(getForward()
                 .multiply(1, 0, 1)
                 .normalize()

@@ -20,7 +20,6 @@ import software.bernie.geckolib.core.animation.AnimationState
 import software.bernie.geckolib.model.GeoModel
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.math.min
 
 open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnimatable {
     protected var pitch = 0f
@@ -140,14 +139,12 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
         if (boneName == "laser") {
             return TransformContext { bone, vehicle, state ->
-                bone.scaleZ = 10 * vehicle.getEntityData().get(VehicleEntity.LASER_LENGTH)
-                val scale = min(
-                    Mth.lerp(
-                        state.partialTick,
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE_O),
-                        vehicle.getEntityData().get(VehicleEntity.LASER_SCALE)
-                    ), 1.2f
-                )
+                bone.scaleZ = 10 * vehicle.laserLength
+                val scale = Mth.lerp(
+                    state.partialTick,
+                    vehicle.laserScaleO,
+                    vehicle.laserScale
+                ).coerceAtMost(1.2f)
 
                 bone.scaleX = scale
                 bone.scaleY = scale
@@ -158,7 +155,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         when (boneName) {
             "base" -> {
                 return TransformContext { bone, vehicle, _ ->
-                    val a = vehicle.getEntityData().get(VehicleEntity.YAW_WHILE_SHOOT)
+                    val a = vehicle.yawWhileShoot
                     val r = (Mth.abs(a) - 90f) / 90f
 
                     val r2 = if (Mth.abs(a) <= 90f) {

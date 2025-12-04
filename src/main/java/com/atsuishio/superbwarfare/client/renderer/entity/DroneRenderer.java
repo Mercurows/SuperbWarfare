@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AMMO;
 
 public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 	public DroneRenderer(EntityRendererProvider.Context renderManager) {
@@ -99,15 +98,15 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 		var xLength = displayData.get(9);
 		var yLength = displayData.get(10);
 
-		for (int i = 0; i < data.get(AMMO); i++) {
-			float x, z;
-			if (data.get(MAX_AMMO) == 1) {
-				// 神风或单个挂载
-				x = 0;
-				z = 0;
-			} else {
-				// 投弹
-				x = xLength / 2 * (i % 2 == 0 ? 1 : -1);
+        for (int i = 0; i < animatable.getAmmo(); i++) {
+            float x, z;
+            if (data.get(MAX_AMMO) == 1) {
+                // 神风或单个挂载
+                x = 0;
+                z = 0;
+            } else {
+                // 投弹
+                x = xLength / 2 * (i % 2 == 0 ? 1 : -1);
 
 				var rows = data.get(MAX_AMMO) / 2;
 				var row = i / 2;
