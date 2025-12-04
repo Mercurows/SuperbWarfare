@@ -71,6 +71,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         gunItem(ModItems.IGLA_9K38);
         gunItem(ModItems.REPAIR_TOOL);
         gunItem(ModItems.QL_1031);
+        gunItem(ModItems.SUPER_STAR_SHOOTER);
 
         simpleItem(ModItems.VEHICLE_GUN);
         simpleItem(ModItems.EMPTY_PERK, "perk/");

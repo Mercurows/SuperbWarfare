@@ -135,6 +135,22 @@
       }
     ]
   },
+  "star_shoot": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/star_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "star_recover": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/star_recover",
+        "stream": false
+      }
+    ]
+  },
   "m_79_fire_1p": {
     "sounds": [
       {

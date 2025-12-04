@@ -130,6 +130,8 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SENTINEL_CHARGE_VERYFAR = REGISTRY.register("sentinel_charge_veryfar", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge_veryfar")));
     public static final DeferredHolder<SoundEvent, SoundEvent> SENTINEL_CHARGE = REGISTRY.register("sentinel_charge", () -> SoundEvent.createVariableRangeEvent(Mod.loc("sentinel_charge")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> STAR_RECOVER = REGISTRY.register("star_recover", () -> SoundEvent.createVariableRangeEvent(Mod.loc("star_recover")));
+
     // Vehicles
     // Common Vehicle Sounds
     public static final DeferredHolder<SoundEvent, SoundEvent> MISSILE_LOCKING = REGISTRY.register("missile_locking", () -> SoundEvent.createVariableRangeEvent(Mod.loc("missile_locking")));

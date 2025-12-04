@@ -284,6 +284,8 @@ public class GunEventHandler {
             }
         }
 
+        data.item.tick(shooter, data, inMainHand);
+
         data.save();
     }
 
