@@ -486,7 +486,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             }
         }
 
-        data.closeStrike.set(true);
+        data.closeStrike.set(true)
 
         // 真实后坐（
         if (shooter != null && computed.recoil != 0.0) {
@@ -1002,8 +1002,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         } else {
             val vehicle = shooter.vehicle as? VehicleEntity
             if (vehicle != null) {
-                vehicle.getEntityData().set(VehicleEntity.LASER_LENGTH, range.toFloat())
-                vehicle.getEntityData().set(VehicleEntity.LASER_SCALE, data.compute().shootAnimationTime.toFloat())
+                vehicle.laserLength = range.toFloat()
+                vehicle.laserScale = data.compute().shootAnimationTime.toFloat()
             }
         }
 

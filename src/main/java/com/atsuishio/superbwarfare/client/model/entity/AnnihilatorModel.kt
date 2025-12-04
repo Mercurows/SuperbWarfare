@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import java.util.regex.Pattern
 
 class AnnihilatorModel : VehicleModel<AnnihilatorEntity>() {
@@ -28,7 +27,7 @@ class AnnihilatorModel : VehicleModel<AnnihilatorEntity>() {
                     val id = matcher.group("id").toInt()
 
                     return TransformContext { bone, vehicle, _ ->
-                        val charge = vehicle.getEntityData().get(VehicleEntity.CHARGE_PROGRESS)
+                        val charge = vehicle.chargeProgress
                         val cantShoot = charge > 1
 
                         val hideGreen = 5 * charge < id || cantShoot

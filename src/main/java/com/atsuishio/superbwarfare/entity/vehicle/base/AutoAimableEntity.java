@@ -92,7 +92,7 @@ public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(TARGET_UUID, "none")
                 .define(OWNER_UUID, Optional.empty())
@@ -179,9 +179,9 @@ public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity
         var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
         int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(weaponName) / 60));
 
-        if (projectileTypeStr.equals("ray") && this.entityData.get(CHARGE_PROGRESS) < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
+        if (projectileTypeStr.equals("ray") && getChargeProgress() < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
             float chargeSpeed = 1f / rpm;
-            this.entityData.set(CHARGE_PROGRESS, Mth.clamp(this.entityData.get(CHARGE_PROGRESS) + chargeSpeed, 0, 1));
+            setChargeProgress(Mth.clamp(getChargeProgress() + chargeSpeed, 0, 1));
         }
 
         Vec3 barrelRootPos = getShootPos(weaponName, 1);
@@ -230,11 +230,11 @@ public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity
                 targetVec = RangeTool.calculateFiringSolution(barrelRootPos, targetPos, targetVel.scale(1.1 + random.nextFloat() * 0.2f), getProjectileVelocity(weaponName), getProjectileGravity(weaponName));
             }
 
-            if (entityData.get(LASER_SCALE) == 0) {
+            if (getLaserScale() == 0) {
                 turretAutoAimFromVector(targetVec);
                 if (VectorTool.calculateAngle(getShootVec(weaponName, 1), targetVec) < 1) {
                     if (checkNoClip(target, barrelRootPos) && !data.overHeat.get()) {
-                        if (projectileTypeStr.equals("ray") && getEntityData().get(CHARGE_PROGRESS) == 1) {
+                        if (projectileTypeStr.equals("ray") && getChargeProgress() == 1) {
                             if (player.level() instanceof ServerLevel) {
                                 rayShoot(player, target, data);
                             }
@@ -326,7 +326,7 @@ public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity
 
         Vec3 pos = target.getBoundingBox().getCenter();
 
-        entityData.set(LASER_LENGTH, (float) getShootPos("Main", 1).distanceTo(pos));
+        setLaserLength((float) getShootPos("Main", 1).distanceTo(pos));
 
         DamageHandler.doDamage(target, ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, living), (float) gunData.compute().damage);
         target.invulnerableTime = 0;
@@ -348,8 +348,8 @@ public class AutoAimableEntity extends GeoVehicleEntity implements OwnableEntity
             entityData.set(TARGET_UUID, "none");
         }
 
-        entityData.set(LASER_SCALE, (float) gunData.compute().shootAnimationTime);
-        this.entityData.set(CHARGE_PROGRESS, 0f);
+        setLaserScale((float) gunData.compute().shootAnimationTime);
+        setChargeProgress(0f);
         playShootSound3p(living, "Main");
 
         this.consumeEnergy(gunData.compute().ammoCostPerShoot);

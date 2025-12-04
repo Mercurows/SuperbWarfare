@@ -40,7 +40,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         var raw = getDefault().copy();
 
         if (vehicle.isInitialized()) {
-            jsonPropModifier.update(this.vehicle.getEntityData().get(VehicleEntity.OVERRIDE));
+            jsonPropModifier.update(this.vehicle.getOverride());
             raw = jsonPropModifier.computeProperties(this, raw);
         }
 

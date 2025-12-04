@@ -50,9 +50,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AI_PASSENGER_WEAPON_TARGET_UUID;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AI_TURRET_TARGET_UUID;
-
 @EventBusSubscriber
 public class LivingEventHandler {
 
@@ -61,17 +58,17 @@ public class LivingEventHandler {
         if (event.getEntity() instanceof Mob mob && mob.getVehicle() instanceof VehicleEntity vehicle) {
             if (mob == vehicle.getNthEntity(vehicle.getTurretControllerIndex())) {
                 if (event.getNewAboutToBeSetTarget() != null) {
-                    vehicle.getEntityData().set(AI_TURRET_TARGET_UUID, event.getNewAboutToBeSetTarget().getStringUUID());
+                    vehicle.setAiTurretTargetUUID(event.getNewAboutToBeSetTarget().getStringUUID());
                 } else {
-                    vehicle.getEntityData().set(AI_TURRET_TARGET_UUID, "undefined");
+                    vehicle.setAiTurretTargetUUID("undefined");
                 }
             }
 
             if (mob == vehicle.getNthEntity(vehicle.getPassengerWeaponStationControllerIndex())) {
                 if (event.getNewAboutToBeSetTarget() != null) {
-                    vehicle.getEntityData().set(AI_PASSENGER_WEAPON_TARGET_UUID, event.getNewAboutToBeSetTarget().getStringUUID());
+                    vehicle.setAiPassengerWeaponTargetUUID(event.getNewAboutToBeSetTarget().getStringUUID());
                 } else {
-                    vehicle.getEntityData().set(AI_PASSENGER_WEAPON_TARGET_UUID, "undefined");
+                    vehicle.setAiPassengerWeaponTargetUUID("undefined");
                 }
             }
         }

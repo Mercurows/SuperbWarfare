@@ -34,8 +34,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.LAST_DRIVER_UUID;
-
 // TODO 0.8.9把下面的废弃方法都删了
 public class SeekTool {
 
@@ -336,7 +334,7 @@ public class SeekTool {
         }
 
         if (target instanceof VehicleEntity vehicle) {
-            Entity lastDriver = EntityFindUtil.findEntity(vehicle.level(), vehicle.getEntityData().get(LAST_DRIVER_UUID));
+            Entity lastDriver = EntityFindUtil.findEntity(vehicle.level(), vehicle.getLastDriverUUID());
             return lastDriver != null && IN_SAME_TEAM.test(self, lastDriver);
         }
         return false;

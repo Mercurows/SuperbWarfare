@@ -8,8 +8,6 @@ import net.minecraft.sounds.SoundSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.HORN_VOLUME;
-
 @OnlyIn(Dist.CLIENT)
 public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
 
@@ -90,7 +88,7 @@ public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
 
         @Override
         protected float getVolume(VehicleEntity entity) {
-            return entity.getEntityData().get(HORN_VOLUME);
+            return entity.getHornVolume();
         }
     }
 }

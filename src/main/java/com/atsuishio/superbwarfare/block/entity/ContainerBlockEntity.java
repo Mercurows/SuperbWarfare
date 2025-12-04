@@ -29,8 +29,6 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.SERVER_YAW;
-
 public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity {
 
     public EntityType<?> entityType;
@@ -69,7 +67,7 @@ public class ContainerBlockEntity extends BlockEntity implements GeoBlockEntity 
             entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
             entity.setYRot(direction.toYRot());
             if (entity instanceof VehicleEntity vehicle) {
-                vehicle.getEntityData().set(SERVER_YAW, direction.toYRot());
+                vehicle.setServerYaw(direction.toYRot());
             }
             pLevel.addFreshEntity(entity);
 

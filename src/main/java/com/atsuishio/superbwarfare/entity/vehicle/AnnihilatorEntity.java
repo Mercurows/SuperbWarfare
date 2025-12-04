@@ -74,7 +74,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         }
 
         if (stack.is(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching()) {
-            if (this.entityData.get(CHARGE_PROGRESS) >= 1) {
+            if (getChargeProgress() >= 1) {
                 vehicleShoot(player, "Main");
             }
             return InteractionResult.SUCCESS;
@@ -111,9 +111,9 @@ public class AnnihilatorEntity extends ArtilleryEntity {
             var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
             int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(weaponName) / 60));
 
-            if (projectileTypeStr.equals("ray") && this.entityData.get(CHARGE_PROGRESS) < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
+            if (projectileTypeStr.equals("ray") && getChargeProgress() < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
                 float chargeSpeed = 1f / rpm;
-                this.entityData.set(CHARGE_PROGRESS, Mth.clamp(this.entityData.get(CHARGE_PROGRESS) + chargeSpeed, 0, 1));
+                setChargeProgress(Mth.clamp(getChargeProgress() + chargeSpeed, 0, 1));
             }
         }
     }
@@ -214,7 +214,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     public void shoot(LivingEntity living, GunData gunData) {
         if (gunData == null) return;
         if (level() instanceof ServerLevel) {
-            this.entityData.set(CHARGE_PROGRESS, 0f);
+            setChargeProgress(0f);
             this.consumeEnergy(gunData.compute().ammoCostPerShoot);
 
             Matrix4d transform = getBarrelTransform(1);
@@ -253,7 +253,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     private PlayState movementPredicate(AnimationState<AnnihilatorEntity> event) {
-        if (this.entityData.get(CHARGE_PROGRESS) < 1) {
+        if (getChargeProgress() < 1) {
             return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.annihilator.fire"));
         }
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.annihilator.idle"));
