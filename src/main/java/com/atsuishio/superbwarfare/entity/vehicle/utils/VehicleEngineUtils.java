@@ -61,18 +61,13 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() < energyCost) {
+        if (vehicle.getEnergy() < energyCost || (vehicle.getMaxEnergy() > 0 && vehicle.getEnergy() <= 0)) {
             vehicle.setForwardInputDown(false);
             vehicle.setBackInputDown(false);
             vehicle.setLeftInputDown(false);
             vehicle.setRightInputDown(false);
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
             vehicle.getEntityData().set(DELTA_ROT, vehicle.getEntityData().get(DELTA_ROT) * 0.5f);
-        }
-
-        if (vehicle.getEnergy() <= 0) {
-            vehicle.setLeftInputDown(false);
-            vehicle.setRightInputDown(false);
         }
 
         if (passenger0 == null) {
@@ -194,7 +189,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() < energyCost) {
+        if (vehicle.getEnergy() < energyCost || (vehicle.getMaxEnergy() > 0 && vehicle.getEnergy() <= 0)) {
             vehicle.setForwardInputDown(false);
             vehicle.setBackInputDown(false);
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
@@ -314,7 +309,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger0 = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() < energyCost) {
+        if (vehicle.getEnergy() < energyCost || (vehicle.getMaxEnergy() > 0 && vehicle.getEnergy() <= 0)) {
             vehicle.setForwardInputDown(false);
             vehicle.setBackInputDown(false);
             vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.95f);
@@ -429,7 +424,7 @@ public final class VehicleEngineUtils {
                 vehicle.setDownInputDown(false);
                 vehicle.setZRot(vehicle.getRoll() * 0.98f);
                 vehicle.setXRot(vehicle.getXRot() * 0.98f);
-                vehicle.getDeltaMovement().multiply(0.96, 0.98,0.96);
+                vehicle.getDeltaMovement().multiply(0.96, 0.98, 0.96);
                 if (hasPassenger) {
                     vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.99f);
                 }
@@ -463,7 +458,13 @@ public final class VehicleEngineUtils {
                 }
             }
 
-            if (vehicle.getEnergy() >= energyCost) {
+            if (vehicle.getEnergy() < energyCost || (vehicle.getMaxEnergy() > 0 && vehicle.getEnergy() <= 0)) {
+                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.995f);
+                vehicle.setForwardInputDown(false);
+                vehicle.setBackInputDown(false);
+                vehicle.engineStart = false;
+                vehicle.engineStartOver = false;
+            } else {
                 boolean up = vehicle.upInputDown() || vehicle.forwardInputDown();
                 boolean down = vehicle.downInputDown();
 
@@ -499,12 +500,6 @@ public final class VehicleEngineUtils {
                     }
                     vehicle.holdPowerTick = 0;
                 }
-            } else {
-                vehicle.getEntityData().set(POWER, vehicle.getEntityData().get(POWER) * 0.995f);
-                vehicle.setForwardInputDown(false);
-                vehicle.setBackInputDown(false);
-                vehicle.engineStart = false;
-                vehicle.engineStartOver = false;
             }
         } else if (!vehicle.onGround() && vehicle.engineStartOver) {
             vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.0003f, 0.01f));
@@ -572,7 +567,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() < energyCost) {
+        if (vehicle.getEnergy() < energyCost || (vehicle.getMaxEnergy() > 0 && vehicle.getEnergy() <= 0)) {
             vehicle.setForwardInputDown(false);
             vehicle.setBackInputDown(false);
             vehicle.engineStart = false;
@@ -697,7 +692,6 @@ public final class VehicleEngineUtils {
 
             float flapY = (1 - (Mth.abs(vehicle.getRoll())) / 90) * Mth.clamp(vehicle.getMouseMoveSpeedX(), -22.5f, 22.5f) + VectorTool.calculateY(vehicle.getRoll()) * Mth.clamp(vehicle.getMouseMoveSpeedY(), -22.5f, 22.5f);
             vehicle.setFlap3Rot(flapY * 5);
-
         } else if (!vehicle.onGround()) {
             float diffX;
             vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - 0.0003f, 0.02f));
@@ -762,7 +756,7 @@ public final class VehicleEngineUtils {
 
         Entity passenger = vehicle.getFirstPassenger();
 
-        if (vehicle.getEnergy() < energyCost) {
+        if (vehicle.getEnergy() < energyCost || (vehicle.getMaxEnergy() > 0 && vehicle.getEnergy() <= 0)) {
             vehicle.setForwardInputDown(false);
             vehicle.setBackInputDown(false);
             vehicle.engineStart = false;
@@ -905,7 +899,7 @@ public final class VehicleEngineUtils {
         }
 
         if (vehicle.backInputDown()) {
-            if (vehicle.getEnergy() <= 0 && passenger0 instanceof Player player) {
+            if ((vehicle.getEnergy() < energyCost || (vehicle.getMaxEnergy() > 0 && vehicle.getEnergy() <= 0)) && passenger0 instanceof Player player) {
                 moveWithOutPower(vehicle, player, false);
             } else {
                 vehicle.getEntityData().set(POWER, Math.max(vehicle.getEntityData().get(POWER) - (vehicle.getEntityData().get(POWER) > 0 ? powerReduce * 2f : powerReduce), -1));
