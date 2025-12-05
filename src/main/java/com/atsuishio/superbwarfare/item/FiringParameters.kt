@@ -37,14 +37,15 @@ class FiringParameters : Item(Properties().stacksTo(1)), ItemScreenProvider {
     }
 
     override fun useOn(context: UseOnContext): InteractionResult {
-        context.player ?: return InteractionResult.PASS
+        val player = context.player ?: return InteractionResult.PASS
 
         val stack = context.itemInHand
         val pos = context.clickedPos.relative(context.clickedFace)
 
-        val isDepressed = stack.firingParameters.isDepressed
+        if (player.isShiftKeyDown) {
+            stack.firingParameters = stack.firingParameters.copy(pos = pos)
+        }
 
-        stack.firingParameters = Parameters(pos, isDepressed)
         return InteractionResult.SUCCESS
     }
 
