@@ -7,9 +7,13 @@ import com.atsuishio.superbwarfare.init.ModEnumExtensions
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem
 import com.atsuishio.superbwarfare.tools.SoundTool
+import net.minecraft.client.model.HumanoidModel.ArmPose
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.ItemStack
 import software.bernie.geckolib.renderer.GeoItemRenderer
 import java.util.function.Supplier
 
@@ -30,4 +34,10 @@ class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModEnumExtensions.ge
         }
     }
 
+    override fun getArmPose(entityLiving: LivingEntity, hand: InteractionHand, stack: ItemStack): ArmPose? {
+        if (!stack.isEmpty && entityLiving.usedItemHand == hand) {
+            return ModEnumExtensions.Client.getSuperStarShooterPose()
+        }
+        return ArmPose.EMPTY
+    }
 }

@@ -44,6 +44,15 @@
         "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions$Client",
         "field": "SUPERBWARFARE_M2_POSE"
       }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "SUPERBWARFARE_SUPER_STAR_SHOOTER_POSE",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions$Client",
+        "field": "SUPERBWARFARE_SUPER_STAR_SHOOTER_POSE"
+      }
     }
   ]
 }

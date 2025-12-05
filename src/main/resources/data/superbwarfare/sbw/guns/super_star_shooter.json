@@ -16,7 +16,7 @@
   "AvailableFireModes": "Auto",
   "GunType": "DirectLauncher",
   "AmmoType": "100 minecraft:nether_star",
-  "Icon": "superbwarfare:textures/gun_icon/m_79_icon.png",
+  "Icon": "superbwarfare:textures/gun_icon/super_star_shooter_icon.png",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
@@ -24,8 +24,8 @@
     "superbwarfare:vorpal_weapon"
   ],
   "SoundInfo": {
-    "Fire1P": "superbwarfare:star_shoot",
-    "Fire3P": "superbwarfare:star_shoot",
+    "Fire1P": "superbwarfare:star_shoot_1p",
+    "Fire3P": "superbwarfare:star_shoot_3p",
     "ReloadEmpty": "superbwarfare:m_79_reload_empty",
     "CancellableSounds": [
       "superbwarfare:m_79_reload_empty"

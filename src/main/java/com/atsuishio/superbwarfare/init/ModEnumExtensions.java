@@ -91,5 +91,24 @@ public class ModEnumExtensions {
         public static HumanoidModel.ArmPose getM2Pose() {
             return SUPERBWARFARE_M2_POSE.getValue();
         }
+
+        public static final EnumProxy<HumanoidModel.ArmPose> SUPERBWARFARE_SUPER_STAR_SHOOTER_POSE = new EnumProxy<>(
+                HumanoidModel.ArmPose.class,
+                false,
+                (IArmPoseTransformer) (model, entity, arm) -> {
+                    if (arm != HumanoidArm.LEFT) {
+                        model.rightArm.xRot = -70f * Mth.DEG_TO_RAD + model.head.xRot;
+                        model.rightArm.yRot = 0f;
+                        model.rightArm.zRot = 0f;
+                        model.leftArm.xRot = -70f * Mth.DEG_TO_RAD + model.head.xRot;
+                        model.leftArm.yRot = 0f;
+                        model.leftArm.zRot = 0f;
+                    }
+                }
+        );
+
+        public static HumanoidModel.ArmPose getSuperStarShooterPose() {
+            return SUPERBWARFARE_SUPER_STAR_SHOOTER_POSE.getValue();
+        }
     }
 }
