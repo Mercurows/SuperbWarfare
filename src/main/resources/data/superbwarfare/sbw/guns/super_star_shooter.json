@@ -1,11 +1,12 @@
 {
   "ID": "superbwarfare:super_star_shooter",
-  "Spread": 3.5,
+  "Spread": 0,
   "RecoilX": 0,
   "RecoilY": 0,
-  "Damage": 40,
+  "Damage": 60,
+  "ExplosionDamage": 45,
   "Projectile": "superbwarfare:gun_grenade",
-  "Velocity": 6,
+  "Velocity": 1.25,
   "Magazine": 300,
   "Weight": 4,
   "EmptyReloadTime": 64,
@@ -30,6 +31,5 @@
     "CancellableSounds": [
       "superbwarfare:m_79_reload_empty"
     ]
-  },
-  "Crosshair": "@GunGrenade"
+  }
 }
