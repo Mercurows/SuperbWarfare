@@ -12,8 +12,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity.TARGET_UUID;
-
 public class RadarSetTargetMessage {
 
     private final UUID targetUUID;
@@ -44,7 +42,7 @@ public class RadarSetTargetMessage {
                     var entities = StreamSupport.stream(EntityFindUtil.getEntities(player.level()).getAll().spliterator(), false)
                             .filter(e -> (e instanceof AutoAimableEntity autoAimableEntity && autoAimableEntity.getOwner() == player && autoAimableEntity.distanceTo(player) <= 24))
                             .toList();
-                    entities.forEach(e -> e.getEntityData().set(TARGET_UUID, message.targetUUID.toString()));
+                    entities.forEach(e -> ((AutoAimableEntity) e).setTargetUUID(message.targetUUID.toString()));
                 });
             }
         });

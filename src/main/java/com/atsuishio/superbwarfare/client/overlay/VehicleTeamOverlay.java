@@ -31,7 +31,6 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.CONTROLLER;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity.ACTIVE;
 
 @OnlyIn(Dist.CLIENT)
 public class VehicleTeamOverlay implements IGuiOverlay {
@@ -171,7 +170,7 @@ public class VehicleTeamOverlay implements IGuiOverlay {
 
                 if (entity != null) {
                     int color = autoAimableEntity.getOwner().getTeamColor();
-                    boolean active = autoAimableEntity.getEntityData().get(ACTIVE);
+                    boolean active = autoAimableEntity.getActive();
 
                     String info = active ? "tips.superbwarfare.auto_aimable_entity.active" : "tips.superbwarfare.auto_aimable_entity.inactive";
                     Component component = Component.translatable(info);
