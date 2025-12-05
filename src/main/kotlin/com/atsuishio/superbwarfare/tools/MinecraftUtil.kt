@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import net.minecraft.client.Minecraft
 import net.minecraft.client.Options
 import net.minecraft.client.gui.Font
+import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
@@ -21,6 +22,9 @@ val font: Font = mc.font
 @OnlyIn(Dist.CLIENT)
 val options: Options = mc.options
 
+operator fun BlockPos.component1() = this.x
+operator fun BlockPos.component2() = this.y
+operator fun BlockPos.component3() = this.z
 
 fun Player?.isNullOrSpector() = this == null || this.isSpectator
 
