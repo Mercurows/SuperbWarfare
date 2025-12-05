@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -175,9 +176,12 @@ public class DroneHudOverlay implements IGuiOverlay {
                 // 射击诸元标记
                 ItemStack offStack = player.getOffhandItem();
                 if (offStack.is(ModItems.FIRING_PARAMETERS.get()) || offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                    double targetX = offStack.getOrCreateTag().getDouble("TargetX");
-                    double targetY = offStack.getOrCreateTag().getDouble("TargetY");
-                    double targetZ = offStack.getOrCreateTag().getDouble("TargetZ");
+                    var parameters = FiringParametersKt.getFiringParameters(offStack);
+                    var blockPos = parameters.pos();
+
+                    double targetX = blockPos.getX();
+                    double targetY = blockPos.getY();
+                    double targetZ = blockPos.getZ();
 
                     RenderSystem.disableDepthTest();
                     RenderSystem.depthMask(false);

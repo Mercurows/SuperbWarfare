@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
@@ -139,9 +140,11 @@ public class ArtilleryEntity extends GeoVehicleEntity {
         var data = getGunData(weaponName);
         if (data == null) return;
 
-        double targetX = stack.getOrCreateTag().getDouble("TargetX");
-        double targetY = stack.getOrCreateTag().getDouble("TargetY");
-        double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
+        var parameters = FiringParametersKt.getFiringParameters(stack);
+
+        double targetX = parameters.pos().getX();
+        double targetY = parameters.pos().getY();
+        double targetZ = parameters.pos().getZ();
         boolean canAim = true;
 
         entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));

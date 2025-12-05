@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.FiringParametersEditMessage;
 import com.mojang.math.Axis;
@@ -44,7 +45,7 @@ public class FiringParametersScreen extends Screen {
         this.stack = stack;
         this.hand = hand;
         if (!stack.isEmpty()) {
-            this.isDepressed = stack.getOrCreateTag().getBoolean("IsDepressed");
+            this.isDepressed = FiringParametersKt.getFiringParameters(stack).isDepressed();
         }
     }
 
@@ -58,10 +59,13 @@ public class FiringParametersScreen extends Screen {
         super.tick();
         if (!this.init) {
             if (!this.stack.isEmpty()) {
-                this.posX.setValue("" + stack.getOrCreateTag().getInt("TargetX"));
-                this.posY.setValue("" + stack.getOrCreateTag().getInt("TargetY"));
-                this.posZ.setValue("" + stack.getOrCreateTag().getInt("TargetZ"));
-                this.radius.setValue("" + Math.max(0, stack.getOrCreateTag().getInt("Radius")));
+                var parameters = FiringParametersKt.getFiringParameters(stack);
+                var pos = parameters.pos();
+
+                this.posX.setValue("" + pos.getX());
+                this.posY.setValue("" + pos.getY());
+                this.posZ.setValue("" + pos.getZ());
+                this.radius.setValue("" + Math.max(0, parameters.radius()));
             }
             this.init = true;
         }

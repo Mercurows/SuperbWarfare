@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
@@ -105,10 +106,11 @@ public class Type63InfoOverlay implements IGuiOverlay {
         }
 
         if (stack.getItem() instanceof FiringParameters) {
-            double targetX = stack.getOrCreateTag().getDouble("TargetX");
-            double targetY = stack.getOrCreateTag().getDouble("TargetY") - 1;
-            double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
-            boolean isDepressed = stack.getOrCreateTag().getBoolean("IsDepressed");
+            var parameters = FiringParametersKt.getFiringParameters(stack);
+            double targetX = parameters.pos().getX();
+            double targetY = parameters.pos().getY() - 1;
+            double targetZ = parameters.pos().getZ();
+            boolean isDepressed = parameters.isDepressed();
 
             Vec3 targetPos = new Vec3(targetX, targetY, targetZ);
             Vec3 launchVector = calculateLaunchVector(type63Entity.getShootPos(partialTick), targetPos, 10, 0.05, isDepressed);

@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -20,7 +21,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -52,9 +52,9 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
 
         if (player == null) return;
 
+        var stack = player.getUseItem();
         if (((player.isUsingItem() && player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) || player.isScoping()) && mc.options.getCameraType() == CameraType.FIRST_PERSON) {
             if (player.getUseItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                ItemStack stack = player.getUseItem();
                 poseStack.pushPose();
                 RenderSystem.disableDepthTest();
                 RenderSystem.depthMask(false);
@@ -74,13 +74,11 @@ public class SpyglassRangeOverlay implements IGuiOverlay {
                 float w = i * 21 / 9;
                 preciseBlit(guiGraphics, SPYGLASS, k - (2 * w / 7), l, 0, 0, w, j, w, j);
 
-                double targetX = stack.getOrCreateTag().getDouble("TargetX");
-                double targetY = stack.getOrCreateTag().getDouble("TargetY");
-                double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
-
                 // 标记位置
-                Vec3 pos = new Vec3(targetX, targetY, targetZ);
-                Vec3 point = VectorUtil.worldToScreen(pos);
+                var parameters = FiringParametersKt.getFiringParameters(stack);
+                var blockPos = parameters.pos();
+                var pos = new Vec3(blockPos.getX() - 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+                var point = VectorUtil.worldToScreen(pos);
                 if (VectorUtil.canSee(pos)) {
                     float x = (float) point.x;
                     float y = (float) point.y;

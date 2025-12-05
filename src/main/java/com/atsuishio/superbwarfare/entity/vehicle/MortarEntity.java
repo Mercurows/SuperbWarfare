@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -221,9 +222,10 @@ public class MortarEntity extends ArtilleryEntity {
 
     @Override
     public void setTarget(ItemStack stack, Entity entity, String weaponName) {
-        double targetX = stack.getOrCreateTag().getDouble("TargetX");
-        double targetY = stack.getOrCreateTag().getDouble("TargetY") - 1;
-        double targetZ = stack.getOrCreateTag().getDouble("TargetZ");
+        var parameters = FiringParametersKt.getFiringParameters(stack);
+        double targetX = parameters.pos().getX();
+        double targetY = parameters.pos().getY() - 1;
+        double targetZ = parameters.pos().getZ();
         boolean canAim = true;
 
         entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));

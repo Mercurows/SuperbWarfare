@@ -4,9 +4,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
+import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -45,14 +48,18 @@ public class DroneFireMessage {
                     if (player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()) || player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                         ItemStack offStack = player.getOffhandItem();
 
-                        offStack.getOrCreateTag().putDouble("TargetX", message.pos.x());
-                        offStack.getOrCreateTag().putDouble("TargetY", message.pos.y());
-                        offStack.getOrCreateTag().putDouble("TargetZ", message.pos.z());
+                        var parameters = FiringParametersKt.getFiringParameters(offStack);
+                        var isDepressed = false;
+                        var radius = 0;
+                        isDepressed = parameters.isDepressed();
+                        radius = parameters.radius();
+
+                        FiringParametersKt.setFiringParameters(offStack, new FiringParameters.Parameters(new BlockPos((int) message.pos.x, (int) message.pos.y, (int) message.pos.z), radius, isDepressed));
 
                         player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
-                                .append(Component.literal("[" + offStack.getOrCreateTag().getInt("TargetX")
-                                        + "," + offStack.getOrCreateTag().getInt("TargetY")
-                                        + "," + offStack.getOrCreateTag().getInt("TargetZ") + "]")), true);
+                                .append(Component.literal("[" + message.pos.x()
+                                        + "," + message.pos.y()
+                                        + "," + message.pos.z() + "]")), true);
 
                         SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
 

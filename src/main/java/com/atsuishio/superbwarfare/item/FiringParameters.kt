@@ -22,7 +22,7 @@ import net.minecraftforge.api.distmarker.OnlyIn
 
 var ItemStack.firingParameters: FiringParameters.Parameters
     get() {
-        val tag = orCreateTag
+        val tag = tag ?: return FiringParameters.Parameters()
         val x = tag.getInt("TargetX")
         val y = tag.getInt("TargetY")
         val z = tag.getInt("TargetZ")
