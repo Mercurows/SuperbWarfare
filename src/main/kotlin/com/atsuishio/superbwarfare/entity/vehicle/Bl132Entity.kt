@@ -14,7 +14,7 @@ class Bl132Entity(type: EntityType<Bl132Entity>, world: Level) : ArtilleryEntity
     override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
         for (i in 1..4) {
             add("fire$i") {
-                if (entityData.get(BARREL_ANIM).getOrElse(i) { 0 } > 0) {
+                if (barrelAnim.getOrElse(i) { 0 } > 0) {
                     thenPlay("animation.bl_132.fire_${5 - i}")
                 } else {
                     thenLoop("animation.bl_132.idle")
