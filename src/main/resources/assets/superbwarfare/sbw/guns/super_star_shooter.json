@@ -1,6 +1,7 @@
 {
   "ID": "superbwarfare:super_star_shooter",
   "Model": {
+    "Animation": "superbwarfare:animations/super_star_shooter.animation.json",
     "Model": "superbwarfare:geo/super_star_shooter.geo.json",
     "Texture": "superbwarfare:textures/item/super_star_shooter.png"
   },

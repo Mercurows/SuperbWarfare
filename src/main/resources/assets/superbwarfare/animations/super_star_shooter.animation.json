@@ -1,0 +1,10 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.super_star_shooter.idle": {
+			"loop": true,
+			"animation_length": 1
+		}
+	},
+	"geckolib_format_version": 2
+}

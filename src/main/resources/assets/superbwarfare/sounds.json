@@ -135,10 +135,18 @@
       }
     ]
   },
-  "star_shoot": {
+  "star_shoot_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/super_star_shooter/star_shoot",
+        "name": "superbwarfare:gun/super_star_shooter/star_shoot_1p",
+        "stream": false
+      }
+    ]
+  },
+  "star_shoot_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/star_shoot_3p",
         "stream": false
       }
     ]

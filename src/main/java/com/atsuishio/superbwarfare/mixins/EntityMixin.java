@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem;
 import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -103,6 +104,22 @@ public abstract class EntityMixin implements OBBHitter {
             if (player.getVehicle() != null) {
                 player.getVehicle().onPassengerTurned(player);
             }
+        }
+        if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof SuperStarShooterItem) {
+            ci.cancel();
+            float f = (float)pXRot * 0.15F;
+            float f1 = (float)pYRot * 0.15F;
+            player.setXRot(player.getXRot() + f);
+            player.setYRot(player.getYRot() + f1);
+            player.setXRot(Mth.clamp(player.getXRot(), -90.0F, 90.0F));
+            player.xRotO += f;
+            player.yRotO += f1;
+            player.xRotO = Mth.clamp(player.xRotO, -90.0F, 90.0F);
+            if (player.getVehicle() != null) {
+                player.getVehicle().onPassengerTurned(player);
+            }
+            float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(player.getYHeadRot() - player.yBodyRot));
+            player.setYBodyRot(player.yBodyRot + 0.5f * diffY);
         }
     }
 }
