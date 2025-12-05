@@ -1,11 +1,11 @@
 package com.atsuishio.superbwarfare.menu;
 
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
 import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.SimpleEnergyData;
 import net.minecraft.core.BlockPos;
@@ -81,11 +81,11 @@ public class FuMO25Menu extends EnergyMenu {
             ItemStack stack = this.container.getItem(0);
             if (stack.isEmpty()) return;
 
-            var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-            var isDepressed = parameters != null && parameters.isDepressed();
-            var radius = parameters != null ? parameters.radius() : 0;
+            var parameters = FiringParametersKt.getFiringParameters(stack);
+            var isDepressed = parameters.isDepressed();
+            var radius = parameters.radius();
 
-            stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos(this.posX, this.posY, this.posZ), radius, isDepressed));
+            FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(new BlockPos(this.posX, this.posY, this.posZ), radius, isDepressed));
 
             this.resetPos();
             this.container.setChanged();

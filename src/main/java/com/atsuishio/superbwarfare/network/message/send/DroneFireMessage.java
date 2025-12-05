@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -44,15 +44,13 @@ public record DroneFireMessage(Vector3f pos) implements CustomPacketPayload {
                 if (player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()) || player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                     ItemStack offStack = player.getOffhandItem();
 
-                    var parameters = offStack.get(ModDataComponents.FIRING_PARAMETERS);
+                    var parameters = FiringParametersKt.getFiringParameters(offStack);
                     var isDepressed = false;
                     var radius = 0;
-                    if (parameters != null) {
-                        isDepressed = parameters.isDepressed();
-                        radius = parameters.radius();
-                    }
+                    isDepressed = parameters.isDepressed();
+                    radius = parameters.radius();
 
-                    offStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) message.pos.x, (int) message.pos.y, (int) message.pos.z), radius, isDepressed));
+                    FiringParametersKt.setFiringParameters(offStack, new FiringParameters.Parameters(new BlockPos((int) message.pos.x, (int) message.pos.y, (int) message.pos.z), radius, isDepressed));
 
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
                             .append(Component.literal("[" + message.pos.x()

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
@@ -9,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -61,7 +61,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    public @NotNull InteractionResult interact(Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 
         if (player.getMainHandItem().getItem() == ModItems.FIRING_PARAMETERS.get() && player.isCrouching()) {
@@ -83,8 +83,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     public void setTarget(ItemStack stack) {
-        var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-        if (parameters == null) return;
+        var parameters = FiringParametersKt.getFiringParameters(stack);
 
         var pos = parameters.pos();
         int targetX = pos.getX();

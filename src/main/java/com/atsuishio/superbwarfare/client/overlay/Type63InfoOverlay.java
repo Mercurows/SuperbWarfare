@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
@@ -39,7 +39,7 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
     private static final ItemStack CM = new ItemStack(ModItems.MEDIUM_ROCKET_CM.get());
 
     @Override
-    public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
+    public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui) return;
         Player player = mc.player;
@@ -113,10 +113,7 @@ public class Type63InfoOverlay implements LayeredDraw.Layer {
         }
 
         if (stack.getItem() instanceof FiringParameters) {
-            var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-            if (parameters == null) {
-                parameters = new FiringParameters.Parameters();
-            }
+            var parameters = FiringParametersKt.getFiringParameters(stack);
             double targetX = parameters.pos().getX();
             double targetY = parameters.pos().getY() - 1;
             double targetZ = parameters.pos().getZ();

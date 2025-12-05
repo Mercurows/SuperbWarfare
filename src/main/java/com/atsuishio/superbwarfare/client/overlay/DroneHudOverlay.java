@@ -2,10 +2,10 @@ package com.atsuishio.superbwarfare.client.overlay;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.RenderHelper;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -186,13 +185,8 @@ public class DroneHudOverlay implements LayeredDraw.Layer {
                 // 射击诸元标记
                 ItemStack offStack = player.getOffhandItem();
                 if (offStack.is(ModItems.FIRING_PARAMETERS.get()) || offStack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                    var parameters = offStack.get(ModDataComponents.FIRING_PARAMETERS);
-                    BlockPos blockPos;
-                    if (parameters != null) {
-                        blockPos = parameters.pos();
-                    } else {
-                        blockPos = new BlockPos(0, 0, 0);
-                    }
+                    var parameters = FiringParametersKt.getFiringParameters(offStack);
+                    var blockPos = parameters.pos();
 
                     double targetX = blockPos.getX();
                     double targetY = blockPos.getY();

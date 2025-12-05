@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -36,8 +36,7 @@ public record FiringParametersEditMessage(
         ItemStack stack = message.mainHand ? player.getMainHandItem() : player.getOffhandItem();
         if (!stack.is(ModItems.FIRING_PARAMETERS.get()) && !stack.is(ModItems.ARTILLERY_INDICATOR.get())) return;
 
-        var parameters = new FiringParameters.Parameters(new BlockPos(message.x, message.y, message.z), message.radius, message.isDepressed);
-        stack.set(ModDataComponents.FIRING_PARAMETERS, parameters);
+        FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(new BlockPos(message.x, message.y, message.z), message.radius, message.isDepressed));
 
         if (stack.getItem() instanceof ArtilleryIndicator indicator) {
             indicator.setTarget(stack, player);

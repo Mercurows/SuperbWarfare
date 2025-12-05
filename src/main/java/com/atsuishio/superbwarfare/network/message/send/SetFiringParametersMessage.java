@@ -1,11 +1,11 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import io.netty.buffer.ByteBuf;
@@ -22,8 +22,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public enum SetFiringParametersMessage implements CustomPacketPayload {
     INSTANCE;
@@ -46,18 +44,17 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
             lookAtEntity = true;
         }
         if (stack.is(ModItems.FIRING_PARAMETERS.get())) {
-
-            var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-            var isDepressed = parameters != null && parameters.isDepressed();
-            var radius = parameters != null ? parameters.radius() : 0;
+            var parameters = FiringParametersKt.getFiringParameters(stack);
+            var isDepressed = parameters.isDepressed();
+            var radius = parameters.radius();
 
             if (lookAtEntity) {
-                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed));
+                FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed));
             } else {
-                stack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), radius, isDepressed));
+                FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), radius, isDepressed));
             }
 
-            var pos = Objects.requireNonNull(stack.get(ModDataComponents.FIRING_PARAMETERS)).pos();
+            var pos = FiringParametersKt.getFiringParameters(stack).pos();
 
             player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
                     .withStyle(ChatFormatting.GRAY)
@@ -74,10 +71,11 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
             } else {
                 pos = new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z);
             }
-            var parameters = mainStack.get(ModDataComponents.FIRING_PARAMETERS);
-            var isDepressed = parameters != null && parameters.isDepressed();
-            var radius = parameters != null ? parameters.radius() : 0;
-            mainStack.set(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters(pos, radius, isDepressed));
+            var parameters = FiringParametersKt.getFiringParameters(mainStack);
+            var isDepressed = parameters.isDepressed();
+            var radius = parameters.radius();
+
+            FiringParametersKt.setFiringParameters(mainStack, new FiringParameters.Parameters(pos, radius, isDepressed));
 
             player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
                     .withStyle(ChatFormatting.GRAY)

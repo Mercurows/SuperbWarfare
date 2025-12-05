@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.network.message.send.FiringParametersEditMessage;
 import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
@@ -46,8 +46,7 @@ public class FiringParametersScreen extends Screen {
         this.stack = stack;
         this.hand = hand;
         if (!stack.isEmpty()) {
-            var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-            this.isDepressed = parameters != null && parameters.isDepressed();
+            this.isDepressed = FiringParametersKt.getFiringParameters(stack).isDepressed();
         }
     }
 
@@ -61,20 +60,13 @@ public class FiringParametersScreen extends Screen {
         super.tick();
         if (!this.init) {
             if (!this.stack.isEmpty()) {
-                var parameters = stack.get(ModDataComponents.FIRING_PARAMETERS);
-                if (parameters != null) {
-                    var pos = parameters.pos();
+                var parameters = FiringParametersKt.getFiringParameters(stack);
+                var pos = parameters.pos();
 
-                    this.posX.setValue("" + pos.getX());
-                    this.posY.setValue("" + pos.getY());
-                    this.posZ.setValue("" + pos.getZ());
-                    this.radius.setValue("" + Math.max(0, parameters.radius()));
-                } else {
-                    this.posX.setValue("0");
-                    this.posY.setValue("0");
-                    this.posZ.setValue("0");
-                    this.radius.setValue("0");
-                }
+                this.posX.setValue("" + pos.getX());
+                this.posY.setValue("" + pos.getY());
+                this.posZ.setValue("" + pos.getZ());
+                this.radius.setValue("" + Math.max(0, parameters.radius()));
             }
             this.init = true;
         }

@@ -1,12 +1,11 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base;
 
-import com.atsuishio.superbwarfare.component.ModDataComponents;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSerializers;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
-import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -143,7 +142,7 @@ public class ArtilleryEntity extends GeoVehicleEntity {
         var data = getGunData(weaponName);
         if (data == null) return;
 
-        var parameters = stack.getOrDefault(ModDataComponents.FIRING_PARAMETERS, new FiringParameters.Parameters());
+        var parameters = FiringParametersKt.getFiringParameters(stack);
 
         double targetX = parameters.pos().getX();
         double targetY = parameters.pos().getY();
