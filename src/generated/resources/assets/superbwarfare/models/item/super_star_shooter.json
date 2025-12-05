@@ -3,7 +3,7 @@
     "parent": "superbwarfare:item/super_star_shooter_base"
   },
   "gui_light": "front",
-  "loader": "neoforge:separate_transforms",
+  "loader": "forge:separate_transforms",
   "perspectives": {
     "gui": {
       "parent": "superbwarfare:item/super_star_shooter_icon"
