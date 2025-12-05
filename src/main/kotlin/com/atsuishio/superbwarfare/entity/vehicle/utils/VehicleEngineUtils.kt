@@ -70,7 +70,7 @@ object VehicleEngineUtils {
 
         val passenger0 = getFirstPassenger()
 
-        if (energy <= energyCost) {
+        if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
             backInputDown = false
             power *= 0.95f
@@ -249,7 +249,7 @@ object VehicleEngineUtils {
 
         val passenger0 = getFirstPassenger()
 
-        if (energy < energyCost) {
+        if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
             backInputDown = false
             leftInputDown = false
@@ -439,7 +439,7 @@ object VehicleEngineUtils {
 
         val passenger0 = getFirstPassenger()
 
-        if (energy < energyCost) {
+        if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
             backInputDown = false
             power *= 0.95f
@@ -619,7 +619,13 @@ object VehicleEngineUtils {
                 }
             }
 
-            if (energy >= energyCost) {
+            if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
+                power *= 0.995f
+                forwardInputDown = false
+                backInputDown = false
+                engineStart = false
+                engineStartOver = false
+            } else {
                 val up = upInputDown || forwardInputDown
                 val down = downInputDown
 
@@ -661,12 +667,6 @@ object VehicleEngineUtils {
                     }
                     holdPowerTick = 0
                 }
-            } else {
-                power *= 0.995f
-                forwardInputDown = false
-                backInputDown = false
-                engineStart = false
-                engineStartOver = false
             }
         } else if (!onGround() && engineStartOver) {
             power = Math.max(power - 0.0003f, 0.01f)
@@ -757,7 +757,7 @@ object VehicleEngineUtils {
 
         val passenger = getFirstPassenger()
 
-        if (energy < energyCost) {
+        if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
             backInputDown = false
             engineStart = false
@@ -1010,7 +1010,7 @@ object VehicleEngineUtils {
 
         val passenger = getFirstPassenger()
 
-        if (energy < energyCost) {
+        if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
             backInputDown = false
             engineStart = false
@@ -1190,7 +1190,7 @@ object VehicleEngineUtils {
         }
 
         if (forwardInputDown) {
-            if (energy < energyCost && passenger0 is Player) {
+            if ((energy <= energyCost || (maxEnergy > 0 && energy <= 0)) && passenger0 is Player) {
                 moveWithOutPower(passenger0, true)
             } else {
                 power = Math.min(
@@ -1209,10 +1209,10 @@ object VehicleEngineUtils {
             }
         }
 
-        if (power > 0) {
-            targetSpeed = (maxForwardSpeedRate * (1 + xRot / 55)).toDouble()
+        targetSpeed = if (power > 0) {
+            (maxForwardSpeedRate * (1 + xRot / 55)).toDouble()
         } else {
-            targetSpeed = (maxBackwardSpeedRate * (1 - xRot / 55)).toDouble()
+            (maxBackwardSpeedRate * (1 - xRot / 55)).toDouble()
         }
 
         if (!forwardInputDown && !backInputDown) {
@@ -1282,7 +1282,7 @@ object VehicleEngineUtils {
     fun VehicleEntity.findNearestLandingPos(radius: Int): Vec3? {
         val world = level()
         val entityPos = blockPosition()
-        val landingBlocks: MutableList<BlockPos?> = ArrayList<BlockPos?>()
+        val landingBlocks = ArrayList<BlockPos?>()
 
         // 遍历半球区域内的所有方块
         for (x in -radius..radius) {
