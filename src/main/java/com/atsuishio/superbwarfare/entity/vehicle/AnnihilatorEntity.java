@@ -93,7 +93,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         int targetX = pos.getX();
         int targetY = pos.getY();
         int targetZ = pos.getZ();
-        entityData.set(TARGET_POS, new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+        setTargetPos(new Vector3f((float) targetX, (float) targetY, (float) targetZ));
     }
 
     @Override
@@ -203,7 +203,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     @Override
-    public void vehicleShoot(@NotNull LivingEntity living, @NotNull String weaponName) {
+    public void vehicleShoot(LivingEntity living, @NotNull String weaponName) {
         var data = getGunData(weaponName);
         shoot(living, data);
     }

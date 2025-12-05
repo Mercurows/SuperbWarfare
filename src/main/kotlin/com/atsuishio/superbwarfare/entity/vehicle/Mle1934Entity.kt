@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.buildControllers
-import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
@@ -11,8 +10,6 @@ class Mle1934Entity(type: EntityType<Mle1934Entity>, world: Level) : ArtilleryEn
 
     override fun getDamageModifier() = super.getDamageModifier()
         .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
-
-    val barrelAnim: List<Int> by BARREL_ANIM
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         add("fireLeft") {
