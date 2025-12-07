@@ -17,8 +17,6 @@ abstract class CommonOverlay(id: String) : LayeredDraw.Layer {
     val overlayID = loc(id)
 
     class RenderContext(val guiGraphics: GuiGraphics, val deltaTracker: DeltaTracker) {
-        val gui by ::guiGraphics
-
         val screenWidth get() = guiGraphics.guiWidth()
         val screenHeight get() = guiGraphics.guiHeight()
 
