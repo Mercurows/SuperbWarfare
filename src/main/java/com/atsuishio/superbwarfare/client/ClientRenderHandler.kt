@@ -90,7 +90,7 @@ object ClientRenderHandler {
         event.registerBelowAll(HandsomeFrameOverlay.ID, HandsomeFrameOverlay)
         event.registerBelowAll(SpyglassRangeOverlay.ID, SpyglassRangeOverlay)
         event.registerBelowAll(TowOverlay.ID, TowOverlay)
-        event.registerBelowAll(MortarInfoOverlay.ID, MortarInfoOverlay)
+        event.registerBelowAll(MortarInfoOverlay.overlayID, MortarInfoOverlay)
         event.registerBelowAll(Type63InfoOverlay.ID, Type63InfoOverlay)
     }
 
