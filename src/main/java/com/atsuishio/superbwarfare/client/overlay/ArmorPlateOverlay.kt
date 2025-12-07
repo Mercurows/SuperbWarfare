@@ -1,0 +1,80 @@
+package com.atsuishio.superbwarfare.client.overlay
+
+import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.tools.NBTTool
+import net.minecraft.client.DeltaTracker
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.LayeredDraw
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.item.ItemStack
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
+import javax.annotation.ParametersAreNonnullByDefault
+
+@OnlyIn(Dist.CLIENT)
+object ArmorPlateOverlay : LayeredDraw.Layer {
+    @JvmField
+    val ID: ResourceLocation = loc("armor_plate")
+
+    private val ICON = loc("textures/overlay/armor_plate/icon.png")
+    private val BAR_1 = loc("textures/overlay/armor_plate/bar_1.png")
+    private val BAR_2 = loc("textures/overlay/armor_plate/bar_2.png")
+    private val BAR_3 = loc("textures/overlay/armor_plate/bar_3.png")
+    private val BAR_FRAME_1 = loc("textures/overlay/armor_plate/bar_frame_1.png")
+    private val BAR_FRAME_2 = loc("textures/overlay/armor_plate/bar_frame_2.png")
+    private val BAR_FRAME_3 = loc("textures/overlay/armor_plate/bar_frame_3.png")
+
+    @ParametersAreNonnullByDefault
+    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
+        if (Minecraft.getInstance().options.hideGui) return
+        if (!DisplayConfig.ARMOR_PLATE_HUD.get()) return
+
+        val h = guiGraphics.guiHeight()
+
+        val player = Minecraft.getInstance().player ?: return
+        if (player.isSpectator()) return
+
+        val stack = player.getItemBySlot(EquipmentSlot.CHEST)
+        if (stack == ItemStack.EMPTY) return
+        val tag = NBTTool.getTag(stack)
+        if (!tag.contains("ArmorPlate")) return
+
+        var armorLevel = MiscConfig.DEFAULT_ARMOR_LEVEL.get()
+        if (stack.`is`(ModTags.Items.MILITARY_ARMOR)) {
+            armorLevel = MiscConfig.MILITARY_ARMOR_LEVEL.get()
+        } else if (stack.`is`(ModTags.Items.MILITARY_ARMOR_HEAVY)) {
+            armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get()
+        }
+
+        val max = armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()
+        val amount = 60 * (NBTTool.getTag(stack).getDouble("ArmorPlate") / max)
+
+        val texture: ResourceLocation = when (armorLevel) {
+            2 -> BAR_2
+            3 -> BAR_3
+            else -> BAR_1
+        }
+        val frame: ResourceLocation = when (armorLevel) {
+            2 -> BAR_FRAME_2
+            3 -> BAR_FRAME_3
+            else -> BAR_FRAME_1
+        }
+
+        guiGraphics.pose().pushPose()
+        // 渲染图标
+        guiGraphics.blit(ICON, 10, h - 13, 0f, 0f, 8, 8, 8, 8)
+
+        // 渲染框架
+        guiGraphics.blit(frame, 20, h - 12, 0f, 0f, 60, 6, 60, 6)
+
+        // 渲染盔甲值
+        guiGraphics.blit(texture, 20, h - 12, 0f, 0f, amount.toInt(), 6, 60, 6)
+
+        guiGraphics.pose().popPose()
+    }
+}
