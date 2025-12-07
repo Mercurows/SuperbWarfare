@@ -29,6 +29,7 @@ operator fun BlockPos.component2() = this.y
 operator fun BlockPos.component3() = this.z
 
 operator fun MutableComponent.plus(other: Component): MutableComponent = this.append(other)
+operator fun MutableComponent.plus(other: String): MutableComponent = this.append(Component.literal(other))
 
 fun Player?.isNullOrSpector() = this == null || this.isSpectator
 
