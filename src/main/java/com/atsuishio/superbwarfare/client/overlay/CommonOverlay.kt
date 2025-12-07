@@ -13,29 +13,30 @@ import net.minecraftforge.client.gui.overlay.ForgeGui
 import net.minecraftforge.client.gui.overlay.IGuiOverlay
 
 @OnlyIn(Dist.CLIENT)
+class RenderContext(
+    val gui: ForgeGui,
+    val guiGraphics: GuiGraphics,
+    val partialTick: Float,
+    val screenWidth: Int,
+    val screenHeight: Int
+) {
+    val w by ::screenWidth
+    val h by ::screenHeight
+
+    val player by lazy { localPlayer }
+    val camera: Camera get() = mc.gameRenderer.mainCamera
+    val cameraPos: Vec3 get() = camera.position
+
+    val isFirstPerson get() = options.cameraType.isFirstPerson
+}
+
+@OnlyIn(Dist.CLIENT)
 abstract class CommonOverlay(id: String) : IGuiOverlay {
     val overlayID = Mod.MODID + "_" + id
 
-    class RenderContext(
-        val gui: ForgeGui,
-        val guiGraphics: GuiGraphics,
-        val partialTick: Float,
-        val screenWidth: Int,
-        val screenHeight: Int
-    ) {
-        val w by ::screenWidth
-        val h by ::screenHeight
-
-        val player by ::localPlayer
-        val camera: Camera get() = mc.gameRenderer.mainCamera
-        val cameraPos: Vec3 get() = camera.position
-
-        val isFirstPerson get() = options.cameraType.isFirstPerson
-    }
-
     abstract fun RenderContext.renderOverlay()
 
-    open fun shouldRender() = !options.hideGui && localPlayer != null && !localPlayer.isSpectator
+    open fun shouldRender() = !options.hideGui && localPlayer != null && !(localPlayer?.isSpectator ?: true)
 
     override fun render(
         gui: ForgeGui,

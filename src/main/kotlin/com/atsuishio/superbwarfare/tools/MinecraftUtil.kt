@@ -12,17 +12,17 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 
-@OnlyIn(Dist.CLIENT)
-val mc: Minecraft = Minecraft.getInstance()
+@get:OnlyIn(Dist.CLIENT)
+val mc: Minecraft get() = Minecraft.getInstance()
 
-@OnlyIn(Dist.CLIENT)
-val localPlayer = mc.player
+@get:OnlyIn(Dist.CLIENT)
+val localPlayer get() = mc.player
 
-@OnlyIn(Dist.CLIENT)
-val font: Font = mc.font
+@get:OnlyIn(Dist.CLIENT)
+val font: Font get() = mc.font
 
-@OnlyIn(Dist.CLIENT)
-val options: Options = mc.options
+@get:OnlyIn(Dist.CLIENT)
+val options: Options get() = mc.options
 
 operator fun BlockPos.component1() = this.x
 operator fun BlockPos.component2() = this.y
