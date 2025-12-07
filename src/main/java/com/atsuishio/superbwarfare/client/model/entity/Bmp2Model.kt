@@ -13,8 +13,9 @@ class Bmp2Model : VehicleModel<Bmp2Entity>() {
             val baseTransform = super.collectTransform(boneName)
 
             return TransformContext { bone, vehicle, state ->
+                val player = localPlayer
                 bone.isHidden =
-                    localPlayer != null && vehicle === localPlayer.vehicle && vehicle.getFirstPassenger() !== localPlayer && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+                    player != null && vehicle === player.vehicle && vehicle.getFirstPassenger() !== player && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
                 baseTransform?.transform(bone, vehicle, state)
             }
         }
