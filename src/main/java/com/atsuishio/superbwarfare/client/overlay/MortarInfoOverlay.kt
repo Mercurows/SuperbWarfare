@@ -20,8 +20,8 @@ object MortarInfoOverlay : CommonOverlay("mortar_info") {
     val BASE_POINT = CENTER.offset(-90F, -26F)
 
     val PITCH = StringComponent(BASE_POINT)
-    val YAW = StringComponent(BASE_POINT.addOffsetY(10F))
-    val RANGE = StringComponent(BASE_POINT.addOffsetY(20F))
+    val YAW = StringComponent(BASE_POINT.offsetY(10F))
+    val RANGE = StringComponent(BASE_POINT.offsetY(20F))
 
     // TODO 移除测试组件
     val AAA = StringComponent(CENTER.offset(10F, -10F), LEFT_BOTTOM).apply {
