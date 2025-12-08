@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.overlay.components.BaseComponent
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.options
@@ -33,9 +34,23 @@ class RenderContext(val guiGraphics: GuiGraphics, val deltaTracker: DeltaTracker
 abstract class CommonOverlay(id: String) : LayeredDraw.Layer {
     val overlayID = loc(id)
 
-    abstract fun RenderContext.renderOverlay()
+    val components = mutableListOf<BaseComponent>()
 
-    open fun shouldRender() = !options.hideGui && localPlayer != null && !(localPlayer?.isSpectator ?: true)
+    fun registerComponents(vararg components: BaseComponent) {
+        this.components.addAll(components)
+    }
+
+    open fun RenderContext.preRender() {}
+
+    open fun RenderContext.render() {
+        components.forEach {
+            if (it.shouldRender()) {
+                it.apply { renderComponent() }
+            }
+        }
+    }
+
+    open fun shouldRender() = !options.hideGui && !(localPlayer?.isSpectator ?: true)
 
     override fun render(
         guiGraphics: GuiGraphics,
@@ -43,6 +58,9 @@ abstract class CommonOverlay(id: String) : LayeredDraw.Layer {
     ) {
         if (!shouldRender()) return
 
-        RenderContext(guiGraphics, deltaTracker).renderOverlay()
+        with(RenderContext(guiGraphics, deltaTracker)) {
+            preRender()
+            render()
+        }
     }
 }
