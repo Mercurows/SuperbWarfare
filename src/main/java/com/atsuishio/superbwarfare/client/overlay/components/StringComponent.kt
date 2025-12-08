@@ -1,26 +1,26 @@
 package com.atsuishio.superbwarfare.client.overlay.components
 
 import com.atsuishio.superbwarfare.client.overlay.RenderContext
-import net.minecraft.client.gui.Font
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
 
 class StringComponent(
-    anchorPoint: AnchorPoint,
-    val font: Font = com.atsuishio.superbwarfare.tools.font,
-    val color: Int = -1,
-    val dropShadow: Boolean = false
-) : BaseComponent(anchorPoint) {
+    baseAnchorPoint: AnchorPoint = CENTER,
+    componentAnchorPoint: AnchorPoint = LEFT_TOP,
+) : BaseComponent(baseAnchorPoint, componentAnchorPoint) {
 
-    // TODO 能否隐式传递RenderContext进去？
-    fun render(
-        context: RenderContext,
-        component: Component,
-        font: Font = this@StringComponent.font,
-        color: Int = this@StringComponent.color,
-        dropShadow: Boolean = this@StringComponent.dropShadow
-    ) {
-        context.run {
-            guiGraphics.drawString(font, component.visualOrderText, x, y, color, dropShadow)
-        }
+    override val width
+        get() = font.splitter.stringWidth(component.visualOrderText)
+
+    override val height
+        get() = font.lineHeight.toFloat()
+
+    var color = -1
+    var dropShadow = false
+    var font = com.atsuishio.superbwarfare.tools.font
+    var component: MutableComponent = Component.empty()
+
+    override fun RenderContext.renderComponent() {
+        guiGraphics.drawString(font, component.visualOrderText, x, y, color, dropShadow)
     }
 }

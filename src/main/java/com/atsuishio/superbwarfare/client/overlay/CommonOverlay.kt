@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.overlay.components.BaseComponent
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.options
@@ -34,9 +35,23 @@ class RenderContext(
 abstract class CommonOverlay(id: String) : IGuiOverlay {
     val overlayID = Mod.MODID + "_" + id
 
-    abstract fun RenderContext.renderOverlay()
+    val components = mutableListOf<BaseComponent>()
 
-    open fun shouldRender() = !options.hideGui && localPlayer != null && !(localPlayer?.isSpectator ?: true)
+    fun registerComponents(vararg components: BaseComponent) {
+        this.components.addAll(components)
+    }
+
+    open fun RenderContext.preRender() {}
+
+    open fun RenderContext.render() {
+        components.forEach {
+            if (it.shouldRender()) {
+                it.apply { renderComponent() }
+            }
+        }
+    }
+
+    open fun shouldRender() = !options.hideGui && !(localPlayer?.isSpectator ?: true)
 
     override fun render(
         gui: ForgeGui,
@@ -47,6 +62,9 @@ abstract class CommonOverlay(id: String) : IGuiOverlay {
     ) {
         if (!shouldRender()) return
 
-        RenderContext(gui, guiGraphics, partialTick, screenWidth, screenHeight).renderOverlay()
+        with(RenderContext(gui, guiGraphics, partialTick, screenWidth, screenHeight)) {
+            preRender()
+            render()
+        }
     }
 }
