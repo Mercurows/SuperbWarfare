@@ -20,19 +20,15 @@ data class AnchorPoint(
     // 当组件指定挂载点时，计算组件本身的位置偏移
     val componentX: (Float) -> Float,
     val componentY: (Float) -> Float,
-    // 其余自定义偏移
-    val xOffset: Float = 0F,
-    val yOffset: Float = 0f
 ) {
-    // TODO 修改为包装成新函数
-    fun offset(x: Float, y: Float) = this.copy(xOffset = x, yOffset = y)
-    fun offsetX(x: Float) = this.copy(xOffset = x)
-    fun offsetY(y: Float) = this.copy(yOffset = y)
+    // TODO 如何处理组件挂载位置？
 
-    fun addOffset(x: Float, y: Float) = this.copy(xOffset = xOffset + x, yOffset = yOffset + y)
-    fun addOffsetX(x: Float) = this.copy(xOffset = xOffset + x)
-    fun addOffsetY(y: Float) = this.copy(yOffset = yOffset + y)
+    fun offset(x: Float, y: Float) =
+        this.copy(baseX = { width -> baseX(width) + x }, baseY = { height -> baseY(height) + y })
 
-    fun getX(width: Float) = baseX(width) + xOffset
-    fun getY(height: Float) = baseY(height) + yOffset
+    fun offsetX(x: Float) = this.copy(baseX = { width -> baseX(width) + x })
+    fun offsetY(y: Float) = this.copy(baseY = { height -> baseY(height) + y })
+
+    fun getX(width: Float) = baseX(width)
+    fun getY(height: Float) = baseY(height)
 }
