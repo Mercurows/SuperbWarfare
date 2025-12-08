@@ -979,7 +979,7 @@ object VehicleEngineUtils {
 
         val f = Mth.clamp(
             Math.max(
-                (if (onGround()) 0.819f else 0.82f) - 0.005 * deltaMovement.length(), 0.5
+                (if (onGround()) 0.715f else 0.77f) - 0.005 * deltaMovement.length(), 0.5
             ) + 0.001f * Mth.abs(
                 90 - VehicleVecUtils.calculateAngle(
                     deltaMovement,
@@ -1040,13 +1040,13 @@ object VehicleEngineUtils {
                 if (onGround()) {
                     deltaMovement = deltaMovement.scale(0.97)
                 }
-                power = Math.max(power - 0.06f * powerReduce, if (onGround()) -0.6f else 0.2f)
+                power = Math.max(power - 0.01f * powerReduce, if (onGround()) -0.1f else 0.2f)
             }
 
             val diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - yRot))
             val diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.xRot - xRot))
 
-            val roll = Mth.abs(Mth.clamp(roll / 60, -1.5f, 1.5f))
+            val deltaRoll = Mth.abs(Mth.clamp(roll / 60, -1.5f, 1.5f))
 
             val addY = Mth.clamp(
                 Math.min(
@@ -1054,7 +1054,7 @@ object VehicleEngineUtils {
                         deltaMovement.length() - 0.06,
                         0.1
                     ).toFloat(), 0.9f
-                ) * diffY - 0.5f * deltaRot, -3 * (roll + 1), 3 * (roll + 1)
+                ) * diffY - 0.5f * deltaRot, -3 * (deltaRoll + 1), 3 * (deltaRoll + 1)
             )
             val addX = Mth.clamp(
                 Math.min(Math.max(deltaMovement.length() - 0.1, 0.01).toFloat(), 0.9f) * diffX,
@@ -1116,7 +1116,7 @@ object VehicleEngineUtils {
         )
         deltaMovement = deltaMovement.add(
             getViewVector(1f).scale(
-                0.02 * speedRate * power * (if (sprintInputDown) 2.2 else 1.0)
+                0.1 * speedRate * power * (if (sprintInputDown) 2.2 else 1.0)
             )
         )
     }
