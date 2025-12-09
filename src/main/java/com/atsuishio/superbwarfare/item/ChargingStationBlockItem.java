@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item;
 
 import com.atsuishio.superbwarfare.client.tooltip.component.ChargingStationImageComponent;
 import com.atsuishio.superbwarfare.component.ModDataComponents;
+import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -17,8 +18,6 @@ import java.util.Optional;
 
 public class ChargingStationBlockItem extends BlockItem {
 
-    public static final int MAX_ENERGY = 4000000;
-
     public ChargingStationBlockItem() {
         super(ModBlocks.CHARGING_STATION.get(), new Properties().stacksTo(1));
     }
@@ -26,13 +25,13 @@ public class ChargingStationBlockItem extends BlockItem {
     @Override
     public boolean isBarVisible(ItemStack stack) {
         int energy = stack.getOrDefault(ModDataComponents.ENERGY.get(), 0);
-        return energy != MAX_ENERGY && energy != 0;
+        return energy != MiscConfig.CHARGING_STATION_MAX_ENERGY.get() && energy != 0;
     }
 
     @Override
     public int getBarWidth(ItemStack stack) {
         int energy = stack.getOrDefault(ModDataComponents.ENERGY.get(), 0);
-        return Math.round(energy * 13F / MAX_ENERGY);
+        return Math.round(energy * 13F / Math.max(1, MiscConfig.CHARGING_STATION_MAX_ENERGY.get()));
     }
 
     @Override
