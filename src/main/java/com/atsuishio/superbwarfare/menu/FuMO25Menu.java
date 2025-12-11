@@ -161,6 +161,7 @@ public class FuMO25Menu extends EnergyMenu {
 
     @Override
     public void removed(@NotNull Player pPlayer) {
+        super.removed(pPlayer);
         this.access.execute((level, pos) -> {
             ItemStack para = this.container.getItem(0);
             if (!para.isEmpty()) {

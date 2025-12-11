@@ -167,6 +167,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
 
     @Override
     public void removed(@NotNull Player pPlayer) {
+        super.removed(pPlayer);
         this.access.execute((level, pos) -> {
             var gun = this.container.getItem(INPUT_SLOT);
             var copy = gun.copy();
