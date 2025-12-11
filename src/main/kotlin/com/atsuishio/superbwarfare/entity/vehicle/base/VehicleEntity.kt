@@ -2549,8 +2549,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return when (string) {
             "Bomb" -> bombHitPos(getNthEntity(seatIndex)).subtract(getShootPosForHud(getNthEntity(seatIndex), 1f))
             "Passenger" -> if (entity != null) entity.getViewVector(ticks) else getViewVector(ticks)
+            "ClientCamera" -> if (entity != null && entity.level().isClientSide) cameraDirection() else getViewVector(ticks)
             else -> getVectorFromString(string, ticks)
         }
+    }
+
+    open fun cameraDirection(): Vec3 {
+        return Vec3(Minecraft.getInstance().gameRenderer.mainCamera.lookVector)
     }
 
     open fun getRotationFromString(string: String?): Quaterniond {
@@ -3771,22 +3776,16 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val driver = this.lastDriver
 
         if (verticalCollision) {
-            if (this.vehicleType == VehicleType.AIRPLANE && ((synchedGearRot > 0.15 && this !is Tom6Entity) || Mth.abs(
-                    this.roll
-                ) > 20 || Mth.abs(xRot) > 30)
+            if (this.vehicleType == VehicleType.AIRPLANE
+                    && ((synchedGearRot > 0.15 && this !is Tom6Entity) || Mth.abs(this.roll) > 20 || Mth.abs(xRot) > 30)
             ) {
                 this.hurt(
                     ModDamageTypes.causeVehicleStrikeDamage(
                         this.level().registryAccess(),
                         this,
                         driver ?: this
-                    ), ((8 + Mth.abs(
-                        this.roll * 0.2f
-                    )) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)).toFloat()
+                    ), ((40 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)).toFloat()
                 )
-                if (!this.level().isClientSide) {
-                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
-                }
                 this.bounceVertical(
                     Direction.getNearest(
                         this.deltaMovement.x(),
