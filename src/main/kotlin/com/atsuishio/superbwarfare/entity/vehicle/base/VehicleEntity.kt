@@ -96,7 +96,6 @@ import org.joml.*
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
-import java.util.function.Predicate
 import java.util.function.Supplier
 import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.*
@@ -1862,7 +1861,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
-        for (i in data().default.seats().indices) {
+        for (i in data().getDefault().seats().indices) {
             val mob = getNthEntity(i)
             if (mob is Mob && canShoot(mob) && mob.target != null && getGunData(mob) != null && mob.level() is ServerLevel) {
                 val target = mob.target!!
@@ -2252,11 +2251,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun clearArrow() {
-        val list = this.level().getEntities(
+        if (tickCount % 5 != 0) return
+        this.level().getEntities(
             this,
-            this.boundingBox.inflate(0.0, 0.5, 0.0),
-            Predicate { e: Entity? -> e is AbstractArrow })
-        list.forEach(Consumer { obj: Entity? -> obj!!.discard() })
+            this.boundingBox.inflate(0.0, 0.5, 0.0)
+        ) { e -> e is AbstractArrow }
+            .forEach { obj -> obj.discard() }
     }
 
     open fun lowHealthWarning() {
@@ -3721,6 +3721,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun collideBlocks() {
+        if (tickCount % 3 != 0) return
         VehicleMotionUtils.collideBlocks(this)
     }
 
