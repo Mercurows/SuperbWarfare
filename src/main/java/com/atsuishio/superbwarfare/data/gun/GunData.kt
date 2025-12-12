@@ -780,6 +780,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val perk: Perks?
 
     fun save() {
+        if (ItemStack.isSameItemSameComponents(stack, originalItemStack)) return
+
         val keysToRemove = mutableListOf<String>()
         for (key in perkTag.allKeys) {
             val compoundTag = perkTag.get(key) as? CompoundTag
@@ -830,9 +832,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @JvmField
     val fireMode: StringEnumValue<FireMode> = FireModeGetter()
 
+    private val originalItemStack: ItemStack
+
     init {
         require(stack.item is GunItem) { "stack is not GunItem!" }
 
+        originalItemStack = stack.copy()
         val gunItem = stack.item as GunItem
         this.item = gunItem
         this.stack = stack

@@ -719,10 +719,10 @@ object VehicleVecUtils {
         val transformT = getTurretTransform(vehicle, partialTicks)
 
         val transform = Matrix4d()
-        val pos = vehicle.passengerWeaponStationPosition
+        val pos = vehicle.passengerWeaponStationPosition ?: return transformT
         val worldPosition = transformPosition(
             transform,
-            pos!!.x,
+            pos.x,
             pos.y,
             pos.z
         )
