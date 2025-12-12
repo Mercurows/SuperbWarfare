@@ -63,13 +63,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
         if (this.level() instanceof ServerLevel) {
-            if (this.getOwner() instanceof LivingEntity living) {
-                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-                    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-                }
-            }
-
             DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
 
             if (entity instanceof LivingEntity) {

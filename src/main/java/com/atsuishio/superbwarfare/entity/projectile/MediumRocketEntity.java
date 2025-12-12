@@ -7,16 +7,13 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -155,20 +152,11 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
                 entity.invulnerableTime = 0;
             }
 
-            if (this.getOwner() instanceof LivingEntity living) {
-                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-
-                    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-                }
-            }
-
             ParticleTool.cannonHitParticles(this.level(), this.position(), this);
             causeExplode(entityHitResult.getLocation());
             if (entity instanceof VehicleEntity) {
                 this.discard();
             }
-
         }
     }
 

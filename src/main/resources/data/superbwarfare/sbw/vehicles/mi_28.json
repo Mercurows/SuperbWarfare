@@ -183,7 +183,7 @@
       "Name": "weapon.superbwarfare.9m_120_missile",
       "Damage": 650,
       "ExplosionDamage": 80,
-      "ExplosionRadius": 7,
+      "ExplosionRadius": 8,
       "Velocity": 3,
       "CrosshairColor": "0xFFC700",
       "SoundInfo": {

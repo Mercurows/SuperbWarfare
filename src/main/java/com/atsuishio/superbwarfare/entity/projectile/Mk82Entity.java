@@ -1,15 +1,21 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -47,12 +53,44 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
     }
 
     @Override
+    protected void onHitEntity(@NotNull EntityHitResult result) {
+        super.onHitEntity(result);
+        Entity entity = result.getEntity();
+        if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()) || entity instanceof Mk82Entity)
+            return;
+        if (this.level() instanceof ServerLevel) {
+            if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
+                AABB aabb = new AABB(result.getLocation(), result.getLocation()).inflate(5);
+                BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                    float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+                    if (hard != -1 && new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(result.getLocation()) < 3) {
+                        this.level().destroyBlock(pos, true);
+                    }
+                });
+            }
+
+            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
+            this.discard();
+        }
+    }
+
+    @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
+            if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
+                AABB aabb = new AABB(blockHitResult.getLocation(), blockHitResult.getLocation()).inflate(5);
+                BlockPos.betweenClosedStream(aabb).forEach((pos) -> {
+                    float hard = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+                    if (hard != -1 && new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(blockHitResult.getLocation()) < 3) {
+                        this.level().destroyBlock(pos, true);
+                    }
+                });
+            }
+
             ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
+            this.discard();
         }
-        this.discard();
     }
 
     @Override

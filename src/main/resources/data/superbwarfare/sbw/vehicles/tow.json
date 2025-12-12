@@ -38,7 +38,7 @@
       "Magazine": 1,
       "Damage": 600,
       "ExplosionDamage": 60,
-      "ExplosionRadius": 6,
+      "ExplosionRadius": 8,
       "RPM": 8,
       "Velocity": 3,
       "ShootShake": [6, 6, 14],

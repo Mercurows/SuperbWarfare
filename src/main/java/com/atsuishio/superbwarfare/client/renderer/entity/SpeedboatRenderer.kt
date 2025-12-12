@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.SpeedBoatHeatLayer
 import com.atsuishio.superbwarfare.client.layer.vehicle.SpeedBoatLayer
 import com.atsuishio.superbwarfare.client.layer.vehicle.SpeedBoatPowerLayer
 import com.atsuishio.superbwarfare.client.layer.vehicle.SpeedBoatWaterMaskLayer
@@ -15,6 +14,5 @@ class SpeedboatRenderer(renderManager: EntityRendererProvider.Context) :
         this.addRenderLayer(SpeedBoatLayer(this))
         this.addRenderLayer(SpeedBoatWaterMaskLayer(this))
         this.addRenderLayer(SpeedBoatPowerLayer(this))
-        this.addRenderLayer(SpeedBoatHeatLayer(this))
     }
 }

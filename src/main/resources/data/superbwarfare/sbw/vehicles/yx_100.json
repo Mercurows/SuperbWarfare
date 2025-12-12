@@ -117,7 +117,7 @@
       "Magazine": 1,
       "EmptyReloadTime": 70,
       "Velocity": 40,
-      "Damage": 500,
+      "Damage": 700,
       "ExplosionDamage": 80,
       "ExplosionRadius": 4,
       "RecoilTime": 42,
