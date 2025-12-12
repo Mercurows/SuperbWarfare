@@ -110,6 +110,8 @@ public class PlayerModelMixin<T extends LivingEntity> {
 
                 model.body.xRot = 20 * Mth.DEG_TO_RAD;
                 model.body.z = -5;
+                model.jacket.xRot = 20 * Mth.DEG_TO_RAD;
+                model.jacket.z = -5;
 
                 model.leftArm.z = -5;
                 model.leftSleeve.z = -5;
