@@ -59,6 +59,7 @@
   "MouseSpeed": [0.28, 0.19],
   "Seats": [
     {
+      "IsEnclosed": true,
       "Transform": "Vehicle",
       "Position": [0, 1.9625, 2.25],
       "Sensitivity": [0, 0, 0],
