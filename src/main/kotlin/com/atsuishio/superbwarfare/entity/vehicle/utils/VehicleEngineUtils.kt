@@ -558,14 +558,7 @@ object VehicleEngineUtils {
         }
 
         val pilot = getFirstPassenger()
-
-        var hasPassenger = false
-
-        for (i in 0..<maxPassengers - 1) {
-            if (getNthEntity(i) != null) {
-                hasPassenger = true
-            }
-        }
+        val hasPassenger = getPassengers().isNotEmpty()
 
         val diffX: Float
         val diffZ: Float
@@ -580,10 +573,10 @@ object VehicleEngineUtils {
                 upInputDown = false
                 downInputDown = false
                 setZRot(roll * 0.98f)
-                xRot *= 0.98f
+                xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
                 deltaMovement.multiply(0.96, 0.98, 0.96)
-                if (hasPassenger) {
-                    power *= 0.99f
+                if (!hasPassenger) {
+                    power *= 0.995f
                 }
             } else {
                 if (!backInputDown || landingPos == null) {
@@ -644,7 +637,7 @@ object VehicleEngineUtils {
                         holdPowerTick++
                         power = Math.max(
                             power - 0.001f * powerReduce * Math.min(holdPowerTick, 5),
-                            if (onGround()) 0f else 0.025f / lift
+                            if (onGround()) 0f else 0.035f / lift
                         )
                     } else if (backInputDown) {
                         holdPowerTick++
@@ -660,10 +653,11 @@ object VehicleEngineUtils {
                 }
 
                 if (!(up || down || backInputDown) && engineStartOver) {
+                    val force = 0.002f * deltaMovement.y().toFloat()
                     power = if (deltaMovement.y() < 0) {
-                        Math.min(power + 0.0002f, 0.12f)
+                        Math.min(power - force, 0.12f)
                     } else {
-                        Math.max(power - (if (onGround()) 0.00005f else 0.0002f), 0f)
+                        Math.max(power - (if (onGround()) 0.25f * force else force), 0f)
                     }
                     holdPowerTick = 0
                 }
