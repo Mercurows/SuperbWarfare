@@ -82,7 +82,7 @@ public class LivingEventHandler {
 
     @SubscribeEvent
     public static void onEntityAttacked(LivingAttackEvent event) {
-        if (!event.getSource().is(ModDamageTypes.VEHICLE_EXPLOSION)
+        if (!event.getSource().is(ModDamageTypes.VEHICLE_EXPLOSION) && !event.getSource().is(ModDamageTypes.AIR_CRASH)
                 && event.getEntity().getVehicle() instanceof VehicleEntity vehicle
                 && vehicle.isEnclosed(event.getEntity())
         ) {
@@ -130,7 +130,7 @@ public class LivingEventHandler {
             if (source.is(ModTags.DamageTypes.VEHICLE_IGNORE)) return;
 
             if (vehicle.isEnclosed(event.getEntity())) {
-                if (!source.is(ModDamageTypes.VEHICLE_EXPLOSION)) {
+                if (!source.is(ModDamageTypes.VEHICLE_EXPLOSION) && !source.is(ModDamageTypes.AIR_CRASH)) {
                     event.setCanceled(true);
                 }
             } else {
