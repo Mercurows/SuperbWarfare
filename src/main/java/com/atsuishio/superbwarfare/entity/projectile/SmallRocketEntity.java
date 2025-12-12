@@ -46,15 +46,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
         this.durability = 20;
     }
 
-    public SmallRocketEntity(EntityType<? extends ThrowableItemProjectile> pEntityType, double pX, double pY, double pZ, Level pLevel) {
-        super(pEntityType, pX, pY, pZ, pLevel);
-        this.noCulling = true;
-        this.damage = 140f;
-        this.explosionDamage = 60f;
-        this.explosionRadius = 5f;
-        this.durability = 20;
-    }
-
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.SMALL_ROCKET.get();
@@ -67,8 +58,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
         if (this.level() instanceof ServerLevel) {
-            if (entity == this.getOwner() || (this.getOwner() != null && entity == this.getOwner().getVehicle()))
-                return;
             if (this.getOwner() instanceof LivingEntity living) {
                 if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                     living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);

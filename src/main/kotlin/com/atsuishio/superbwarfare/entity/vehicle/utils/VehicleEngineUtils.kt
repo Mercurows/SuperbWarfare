@@ -73,6 +73,8 @@ object VehicleEngineUtils {
         if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
             backInputDown = false
+            leftInputDown = false
+            rightInputDown = false
             power *= 0.95f
         }
 

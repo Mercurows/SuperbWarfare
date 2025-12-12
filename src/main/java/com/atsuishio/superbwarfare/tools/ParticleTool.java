@@ -35,6 +35,7 @@ public class ParticleTool {
         @SerializedName("Mini") MINI,
         @SerializedName("Small") SMALL,
         @SerializedName("Medium") MEDIUM,
+        @SerializedName("Large") LARGE,
         @SerializedName("Huge") HUGE,
         @SerializedName("Giant") GIANT,
     }
@@ -48,6 +49,7 @@ public class ParticleTool {
             case MINI -> ParticleTool.spawnMiniExplosionParticles(level, pos);
             case SMALL -> ParticleTool.spawnSmallExplosionParticles(level, pos);
             case MEDIUM -> ParticleTool.spawnMediumExplosionParticles(level, pos);
+            case LARGE -> ParticleTool.spawnLargeExplosionParticles(level, pos);
             case HUGE -> ParticleTool.spawnHugeExplosionParticles(level, pos);
             case GIANT -> ParticleTool.spawnGiantExplosionParticles(level, pos);
         }
@@ -115,6 +117,39 @@ public class ParticleTool {
         }
     }
 
+    public static void spawnLargeExplosionParticles(Level level, Vec3 pos) {
+        double x = pos.x;
+        double y = pos.y;
+        double z = pos.z;
+
+        if (level instanceof ServerLevel serverLevel) {
+            if ((level.getBlockState(BlockPos.containing(x, y, z))).getBlock() == Blocks.WATER) {
+                sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 3, z, 100, 2, 6, 2, 0.01, true);
+                sendParticle(serverLevel, ParticleTypes.CLOUD, x, y + 3, z, 200, 4, 2, 4, 0.01, true);
+                sendParticle(serverLevel, ParticleTypes.FALLING_WATER, x, y + 3, z, 500, 3, 8, 3, 1, true);
+                sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6, 1, 6, 0.1, true);
+            }
+
+            SoundTool.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_CLOSE.get(), pos, 6, 1, null);
+            SoundTool.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_FAR.get(), pos, 20, 1, null);
+            SoundTool.playDistantSound(serverLevel, ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), pos, 64, 1, null);
+
+            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 60, 0.5, 2, 0.5, 0.02, true);
+            sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 120, 5, 0.001, 5, 0.01, true);
+            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 100, 0, 0, 0, 1.2, true);
+            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 1, z, 35, 1.5, 1.5, 1.5, 1, true);
+            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 1, z, 120, 3, 3, 3, 20, true);
+
+            for (int h = 0; h < 2; h++) {
+                for (int i = 0; i < 150; i++) {
+                    Vec3 v = new Vec3(1, 0, 0).yRot((float) (i * Math.random()));
+                    sendParticle(serverLevel, new CustomCloudOption(0xFFFFFF, 25, 2, 0, false, false), x, y + 0.2, z,
+                            0, v.x, v.y, v.z, 140 - 2 * h, true);
+                }
+            }
+        }
+    }
+
     public static void spawnHugeExplosionParticles(Level level, Vec3 pos) {
         double x = pos.x;
         double y = pos.y;
@@ -131,10 +166,6 @@ public class ParticleTool {
                 sendParticle(serverLevel, ParticleTypes.FALLING_WATER, x, y + 3, z, 500, 3, 8, 3, 1, true);
                 sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6, 1, 6, 0.1, true);
             }
-
-            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y + 3, z, 60, 3, 3, 3, 1, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y + 4, z, 70, 4, 4, 4, 1, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 130, 0, 0, 0, 2, true);
 
             for (int h = 0; h < 4; h++) {
                 for (int i = 0; i < 200; i++) {
