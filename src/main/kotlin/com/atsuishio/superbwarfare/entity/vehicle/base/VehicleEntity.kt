@@ -324,7 +324,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     var jumpCoolDown = 0
 
     private fun initOBB() {
-        this.obb = data().default.copy().obb.filterNotNull().toList()
+        this.obb = data().getDefault().copy().obb.filterNotNull().toList()
     }
 
     override fun onSyncedDataUpdated(dataValues: MutableList<DataValue<*>>) {

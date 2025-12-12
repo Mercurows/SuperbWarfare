@@ -105,7 +105,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     fun compute(useCache: Boolean = true): DefaultGunData {
         if (cache != null && useCache) return cache!!
 
-        var rawData = default.copy()
+        var rawData = getDefault().copy()
 
         // property override tag
         jsonPropModifier.update(propertyOverrideString.get())
@@ -146,11 +146,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         this.cache = null
     }
 
-    /**
-     * use compute() instead
-     */
-    @Deprecated("use compute() to get properties", ReplaceWith("compute()"))
-    fun <T> get(prop: GunProp<T>): T {
+    fun <T> get(prop: GunProp<*, T>): T {
         return prop.asModifier(this).compute(compute())
     }
 
@@ -171,13 +167,13 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     // TODO 这什么b scope判断
     fun minZoom(): Double {
         val scopeType = this.attachment.get(AttachmentType.SCOPE)
-        return if (scopeType == 3) max(default.minZoom, 1.25) else 1.25
+        return if (scopeType == 3) max(getDefault().minZoom, 1.25) else 1.25
     }
 
     // TODO 这什么b scope判断
     fun maxZoom(): Double {
         val scopeType = this.attachment.get(AttachmentType.SCOPE)
-        return if (scopeType == 3) default.maxZoom else 114514.0
+        return if (scopeType == 3) getDefault().maxZoom else 114514.0
     }
 
     fun zoom(): Double {
@@ -592,7 +588,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     val rawDamageReduce: DamageReduce?
-        get() = default.damageReduce
+        get() = getDefault().damageReduce
 
     val damageReduceRate: Double
         get() {
