@@ -33,7 +33,6 @@ object VehicleVecUtils {
     fun getYRotFromVector(vec3: Vec3) =
         Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI)
 
-
     @JvmStatic
     fun getXRotFromVector(vec3: Vec3) =
         Mth.atan2(vec3.y, vec3.horizontalDistance()) * (180f / Math.PI)
@@ -41,7 +40,6 @@ object VehicleVecUtils {
     @JvmStatic
     fun getSubmergedHeight(entity: Entity) =
         entity.getFluidTypeHeight(entity.level().getFluidState(entity.blockPosition()).fluidType)
-
 
     fun eulerToQuaternion(yaw: Float, pitch: Float, roll: Float): Quaternionf {
         val cy = Math.cos(yaw * 0.5 * Mth.DEG_TO_RAD)
@@ -62,12 +60,9 @@ object VehicleVecUtils {
 
     @JvmStatic
     fun calculateAngle(move: Vec3, view: Vec3): Double {
-        var move = move
-        var view = view
-        move = move.multiply(1.0, 0.0, 1.0).normalize()
-        view = view.multiply(1.0, 0.0, 1.0).normalize()
-
-        return VectorTool.calculateAngle(move, view)
+        val nMove = move.multiply(1.0, 0.0, 1.0).normalize()
+        val nView = view.multiply(1.0, 0.0, 1.0).normalize()
+        return VectorTool.calculateAngle(nMove, nView)
     }
 
     fun entityEyePos(entity: Entity, partialTicks: Float): Vec3 {
@@ -167,15 +162,13 @@ object VehicleVecUtils {
             val a = -passengerRot
             val r = (Mth.abs(a) - 90f) / 90f
 
-            val r2: Float
-
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f
+            val r2: Float = if (Mth.abs(a) <= 90f) {
+                a / 90f
             } else {
                 if (a < 0) {
-                    r2 = -(180f + a) / 90f
+                    -(180f + a) / 90f
                 } else {
-                    r2 = (180f - a) / 90f
+                    (180f - a) / 90f
                 }
             }
 
@@ -322,8 +315,8 @@ object VehicleVecUtils {
 
         val vec3 = data.compute().shootPos.viewPosition
 
-        if (vec3 == null) {
-            return vehicle.getCameraPos(entity, partialTicks)
+        return if (vec3 == null) {
+            vehicle.getCameraPos(entity, partialTicks)
         } else {
             val worldPosition = transformPosition(
                 vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
@@ -331,7 +324,7 @@ object VehicleVecUtils {
                 vec3.y,
                 vec3.z
             )
-            return Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
+            Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
         }
     }
 
@@ -530,13 +523,13 @@ object VehicleVecUtils {
         val data = seat.cameraPos ?: return entityEyePos(entity, partialTicks)
 
         val vec3 = data.zoomPosition
-        if (vec3 != null) {
+        return if (vec3 != null) {
             val worldPosition = transformPosition(
                 vehicle.getTransformFromString(data.transform, partialTicks), vec3.x, vec3.y, vec3.z
             )
-            return Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
+            Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
         } else {
-            return getCameraPos(vehicle, entity, partialTicks)
+            getCameraPos(vehicle, entity, partialTicks)
         }
     }
 
@@ -556,8 +549,8 @@ object VehicleVecUtils {
 
         val stringOrVec3 = data.zoomDirection
         if (stringOrVec3 != null) {
-            if (stringOrVec3.isString) {
-                return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
+            return if (stringOrVec3.isString) {
+                vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
             } else {
                 val vec3 = data.zoomPosition
                 val worldPosition = transformPosition(
@@ -569,7 +562,7 @@ object VehicleVecUtils {
 
                 val startPos = vehicle.getShootPos(entity, partialTicks)
                 val endPos = Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
-                return startPos.vectorTo(endPos).normalize()
+                startPos.vectorTo(endPos).normalize()
             }
         }
         return entity.getViewVector(partialTicks)

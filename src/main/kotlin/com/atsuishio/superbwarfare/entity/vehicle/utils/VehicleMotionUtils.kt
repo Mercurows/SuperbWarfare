@@ -30,7 +30,6 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import org.joml.Matrix4d
 import org.joml.Vector3d
-import java.util.function.Predicate
 
 /**
  * 处理载具运动相关方法的工具类
@@ -44,9 +43,8 @@ object VehicleMotionUtils {
     fun preventStacking(vehicle: VehicleEntity) {
         val entities = vehicle.level().getEntities(
             EntityTypeTest.forClass(VehicleEntity::class.java),
-            vehicle.boundingBox.inflate(6.0),
-            Predicate { entity: VehicleEntity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity.vehicle == null }
-        )
+            vehicle.boundingBox.inflate(6.0)
+        ) { entity: VehicleEntity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity.vehicle == null }
 
         for (entity in entities) {
             if (entity.boundingBox.intersects(vehicle.boundingBox)) {
@@ -83,8 +81,8 @@ object VehicleMotionUtils {
 
         val frontBox = calculateCombinedAABBOptimized(vehicle).inflate(1.0)
         val entities = vehicle.level().getEntities(
-            EntityTypeTest.forClass(Entity::class.java), frontBox,
-            Predicate { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null })
+            EntityTypeTest.forClass(Entity::class.java), frontBox
+        ) { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null }
             .stream().filter { entity ->
                 if (entity!!.isAlive && vehicle.isInObb(entity, vehicle.deltaMovement)) {
                     val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
@@ -221,8 +219,8 @@ object VehicleMotionUtils {
         } else {
             val frontBox = vehicle.boundingBox.move(vec3)
             entities = vehicle.level().getEntities(
-                EntityTypeTest.forClass(Entity::class.java), frontBox,
-                Predicate { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null })
+                EntityTypeTest.forClass(Entity::class.java), frontBox
+            ) { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null }
                 .stream().filter { entity ->
                     if (entity.isAlive) {
                         val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
@@ -491,7 +489,7 @@ object VehicleMotionUtils {
                 heightY = if (!shape.isEmpty) {
                     p.y - (shape.max(Direction.Axis.Y) + blockPos.y)
                 } else if (res.type == HitResult.Type.BLOCK && level.noCollision(AABB(p, p))) {
-                    Mth.clamp(p.y - res.getLocation().y, 0.0, 20.0)
+                    Mth.clamp(p.y - res.location.y, 0.0, 20.0)
                 } else {
                     0.0
                 }
