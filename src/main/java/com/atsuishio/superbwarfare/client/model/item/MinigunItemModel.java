@@ -30,7 +30,7 @@ public class MinigunItemModel extends CustomGunModel<MinigunItem> {
         var data = GunData.from(stack);
         int rpm = data.compute().rpm;
 
-        float heat = (float) data.heat.get();
+        float heat = data.heat.get().floatValue();
 
         for (int i = 1; i <= 6; i++) {
             CoreGeoBone bone = getAnimationProcessor().getBone("barrel" + i + "_illuminated");
