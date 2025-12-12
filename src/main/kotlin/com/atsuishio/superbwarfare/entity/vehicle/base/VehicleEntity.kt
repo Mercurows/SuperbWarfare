@@ -2089,12 +2089,18 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     protected fun updateBackupAmmoCount() {
         for (i in 0..<this.maxPassengers) {
-            modifyGunData(i) { data ->
-                if (data.useBackpackAmmo()) {
-                    data.backupAmmoCount.set(data.countBackupAmmo(this.ammoSupplier))
-                } else {
-                    data.backupAmmoCount.reset()
+            val currentData = getGunData(i) ?: continue
+
+            if (currentData.useBackpackAmmo()) {
+                if (currentData.backupAmmoCount.get() != 0) {
+                    modifyGunData(i) { it.backupAmmoCount.reset() }
                 }
+                continue
+            }
+
+            val count = currentData.countBackupAmmo(this.ammoSupplier)
+            if (currentData.backupAmmoCount.get() != count) {
+                modifyGunData(i) { it.backupAmmoCount.set(count) }
             }
         }
     }
@@ -2549,7 +2555,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return when (string) {
             "Bomb" -> bombHitPos(getNthEntity(seatIndex)).subtract(getShootPosForHud(getNthEntity(seatIndex), 1f))
             "Passenger" -> if (entity != null) entity.getViewVector(ticks) else getViewVector(ticks)
-            "ClientCamera" -> if (entity != null && entity.level().isClientSide) cameraDirection() else getViewVector(ticks)
+            "ClientCamera" -> if (entity != null && entity.level().isClientSide) cameraDirection() else getViewVector(
+                ticks
+            )
+
             else -> getVectorFromString(string, ticks)
         }
     }
@@ -3777,7 +3786,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         if (verticalCollision) {
             if (this.vehicleType == VehicleType.AIRPLANE
-                    && ((synchedGearRot > 0.15 && this !is Tom6Entity) || Mth.abs(this.roll) > 20 || Mth.abs(xRot) > 30)
+                && ((synchedGearRot > 0.15 && this !is Tom6Entity) || Mth.abs(this.roll) > 20 || Mth.abs(xRot) > 30)
             ) {
                 this.hurt(
                     ModDamageTypes.causeVehicleStrikeDamage(

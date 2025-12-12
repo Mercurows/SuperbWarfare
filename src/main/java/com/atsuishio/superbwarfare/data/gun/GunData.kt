@@ -771,6 +771,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
 
     fun save() {
+        if (ItemStack.isSameItemSameTags(stack, originalItemStack)) return
+
         // TODO 实现正确的清理空tag的方式
 //        var keysToRemove = new ArrayList<String>();
 //        for (var key : perkTag.getAllKeys()) {
@@ -813,9 +815,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @JvmField
     val fireMode: StringEnumValue<FireMode> = FireModeGetter()
 
+    private val originalItemStack: ItemStack
+
     init {
         require(stack.item is GunItem) { "stack is not GunItem!" }
 
+        originalItemStack = stack.copy()
         val gunItem = stack.item as GunItem
         this.item = gunItem
         this.stack = stack
