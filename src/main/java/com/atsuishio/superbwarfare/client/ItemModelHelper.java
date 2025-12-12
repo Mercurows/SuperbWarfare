@@ -21,7 +21,7 @@ public class ItemModelHelper {
 
     private static void splitBoneName(GeoBone bone, String boneName, Attachment attachment, AttachmentType type) {
         try {
-            if (boneName.startsWith(type.getName())) {
+            if (boneName.startsWith(type.getAttachmentName())) {
                 String[] parts = boneName.split("(?<=\\D)(?=\\d)");
                 if (parts.length == 2) {
                     int index = Integer.parseInt(parts[1]);
