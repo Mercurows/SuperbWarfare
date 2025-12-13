@@ -570,7 +570,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
         }
         var blockPos = BlockPos.containing(pos);
-        if (state.getSoundType(serverLevel, blockPos, null) == SoundType.METAL || state.getSoundType(serverLevel, blockPos, null) == SoundType.ANVIL || state.getSoundType(serverLevel, blockPos, null) == SoundType.CHAIN || state.getSoundType(serverLevel, blockPos, null) == SoundType.COPPER || state.getSoundType(serverLevel, blockPos, null) == SoundType.NETHERITE_BLOCK) {
+        var soundType = state.getSoundType(serverLevel, blockPos, null);
+        if (soundType == SoundType.METAL || soundType == SoundType.ANVIL || soundType == SoundType.CHAIN || soundType == SoundType.COPPER || soundType == SoundType.NETHERITE_BLOCK) {
             serverLevel.playSound(null, pos.x, pos.y, pos.z, ModSounds.HIT.get(), SoundSource.BLOCKS, 2, 1);
             for (int i = 0; i < 3; i++) {
                 Vec3 vec3 = randomVec(dir, 80);
