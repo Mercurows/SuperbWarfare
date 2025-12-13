@@ -204,7 +204,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
             level().playSound(null, BlockPos.containing(position()), ModSounds.PTKM_1R_DEPLOY.get(), SoundSource.PLAYERS, 1, 1);
         }
 
-        if (tickCount > 20 && onGround()) {
+        if (tickCount > 20 && onGround() && tickCount % 10 == 0) {
             findTarget();
         }
 
@@ -222,11 +222,11 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
         for (var entity : list) {
             var condition =
                     entity.onGround()
-                    && this.getOwner() != entity
-                    && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
+                            && this.getOwner() != entity
+                            && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
                             && (this.getOwner() != null && !SeekTool.IS_FRIENDLY.test(this.getOwner(), entity) && entity != this.getOwner().getVehicle())
-                    && !entity.isShiftKeyDown()
-                    && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity || entity instanceof SenpaiEntity) && entity.getDeltaMovement().lengthSqr() > 0.009);
+                            && !entity.isShiftKeyDown()
+                            && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity || entity instanceof SenpaiEntity) && entity.getDeltaMovement().lengthSqr() > 0.009);
             if (!condition) continue;
 
             target = entity;
