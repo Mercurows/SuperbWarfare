@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.projectile.GrapeshotEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -84,7 +85,7 @@ public class CustomEventHandler {
         var face = event.getFace();
 
         if (state.getBlock() instanceof BellBlock bell) {
-            if (projectile instanceof ProjectileEntity || projectile instanceof GrapeshotEntity) {
+            if (projectile instanceof ProjectileEntity || projectile instanceof GrapeshotEntity || projectile instanceof SuperStarProjectileEntity) {
                 bell.attemptToRing(projectile.level(), pos, face);
             }
         }

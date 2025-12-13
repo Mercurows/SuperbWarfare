@@ -187,7 +187,7 @@ dependencies {
     implementation(fg.deobf("curse.maven:better-combat-by-daedelus-639842:5625757"))
     implementation(fg.deobf("curse.maven:playeranimator-658587:4587214"))
 
-    implementation("curse.maven:spark-361579:4738952")
+//    implementation("curse.maven:spark-361579:4587309")
 }
 
 mixin {

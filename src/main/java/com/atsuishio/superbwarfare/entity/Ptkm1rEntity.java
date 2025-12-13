@@ -212,7 +212,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
             level().playSound(null, BlockPos.containing(position()), ModSounds.PTKM_1R_DEPLOY.get(), SoundSource.PLAYERS, 1, 1);
         }
 
-        if (tickCount > 20 && onGround()) {
+        if (tickCount > 20 && onGround() && tickCount %10 == 0) {
             findTarget();
         }
 
