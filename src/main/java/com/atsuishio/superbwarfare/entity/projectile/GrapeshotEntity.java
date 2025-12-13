@@ -118,7 +118,8 @@ public class GrapeshotEntity extends FastThrowableProjectile {
             Vec3 vec3 = randomVec(dir, 20);
             ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
         }
-        if (state.getSoundType() == SoundType.METAL || state.getSoundType() == SoundType.ANVIL || state.getSoundType() == SoundType.CHAIN || state.getSoundType() == SoundType.COPPER || state.getSoundType() == SoundType.NETHERITE_BLOCK) {
+        var soundType = state.getSoundType();
+        if (soundType == SoundType.METAL || soundType == SoundType.ANVIL || soundType == SoundType.CHAIN || soundType == SoundType.COPPER || soundType == SoundType.NETHERITE_BLOCK) {
             serverLevel.playSound(null, pos.x, pos.y, pos.z, ModSounds.HIT.get(), SoundSource.BLOCKS, 2, 1);
             for (int i = 0; i < 3; i++) {
                 Vec3 vec3 = randomVec(dir, 80);

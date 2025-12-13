@@ -1,10 +1,11 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -20,7 +21,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,11 +28,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import static com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity.rayTraceBlocks;
 
@@ -113,7 +108,8 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
             Vec3 vec3 = randomVec(dir, 80);
             ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.2 + 0.1 * Math.random(), true);
         }
-        if (state.getSoundType() == SoundType.METAL || state.getSoundType() == SoundType.ANVIL || state.getSoundType() == SoundType.CHAIN || state.getSoundType() == SoundType.COPPER || state.getSoundType() == SoundType.NETHERITE_BLOCK) {
+        var soundType = state.getSoundType();
+        if (soundType == SoundType.METAL || soundType == SoundType.ANVIL || soundType == SoundType.CHAIN || soundType == SoundType.COPPER || soundType == SoundType.NETHERITE_BLOCK) {
             serverLevel.playSound(null, pos.x, pos.y, pos.z, ModSounds.HIT.get(), SoundSource.BLOCKS, 2, 1);
         }
     }

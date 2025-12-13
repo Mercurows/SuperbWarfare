@@ -19,8 +19,8 @@ import org.joml.Matrix4f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class SuperStarProjectiletRenderer extends EntityRenderer<SuperStarProjectileEntity> {
-    public SuperStarProjectiletRenderer(EntityRendererProvider.Context pContext) {
+public class SuperStarProjectileRenderer extends EntityRenderer<SuperStarProjectileEntity> {
+    public SuperStarProjectileRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
     }
 
