@@ -65,6 +65,7 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
         }
 
         if (level() instanceof ServerLevel serverLevel) {
+            // TODO 添加星星炮伤害类型
             DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
             entity.invulnerableTime = 0;
 
@@ -138,9 +139,9 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
 
     protected void onHitWater(Vec3 location, BlockHitResult result) {
         if (this.level() instanceof ServerLevel serverLevel) {
-            BlockPos pos = result.getBlockPos();
-            Direction face = result.getDirection();
-            BlockState state = level().getBlockState(pos);
+            var pos = result.getBlockPos();
+            var face = result.getDirection();
+            var state = level().getBlockState(pos);
 
             double vx = face.getStepX();
             double vy = face.getStepY();
@@ -149,27 +150,25 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
 
             if (state.getBlock() == Blocks.WATER) {
                 if (!isInWater()) {
-                    CustomCloudOption particleData = new CustomCloudOption(1, 1, 1, 80, 0.5f, 1, false, false);
+                    var particleData = new CustomCloudOption(1, 1, 1, 80, 0.5f, 1, false, false);
                     for (int i = 0; i < 10; i++) {
-                        Vec3 vec3 = randomVec(dir, 40);
+                        var vec3 = randomVec(dir, 40);
                         ParticleTool.sendParticle(serverLevel, particleData, location.x + 0.12 * i * dir.x, location.y + 0.12 * i * dir.y, location.z + 0.12 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 15, true);
                     }
 
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
                     serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1, 1);
-                    this.discard();
                 }
             } else if (state.getBlock() == Blocks.LAVA) {
                 if (!isInLava()) {
-                    BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
+                    var particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
                     for (int i = 0; i < 7; i++) {
-                        Vec3 vec3 = randomVec(dir, 20);
+                        var vec3 = randomVec(dir, 20);
                         ParticleTool.sendParticle(serverLevel, particleData, location.x + 0.1 * i * dir.x, location.y + 0.1 * i * dir.y, location.z + 0.1 * i * dir.z, 0, vec3.x, vec3.y, vec3.z, 10, true);
                     }
                     ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, location.x, location.y, location.z,
                             4, 0, 0, 0, 0.6, true);
                     serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1, 1);
-                    this.discard();
                 }
             }
         }
@@ -182,20 +181,21 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
     @Override
     public void tick() {
         super.tick();
+
         if (!this.level().isClientSide()) {
-            Vec3 startVec = this.position();
-            Vec3 endVec = startVec.add(this.getDeltaMovement());
-            BlockHitResult fluidResult = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this), state -> false);
+            var startVec = this.position();
+            var endVec = startVec.add(this.getDeltaMovement());
+            var fluidResult = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this), state -> false);
             this.onHitWater(fluidResult.getLocation(), fluidResult);
         }
 
         if (tickCount > 1 && tickCount % 3 == 0 && level().isClientSide) {
-            Vec3 vec3 = randomVec(getDeltaMovement(), 30).normalize().scale(0.4 + 0.05 * Math.random());
+            var vec3 = randomVec(getDeltaMovement(), 30).normalize().scale(0.4 + 0.05 * Math.random());
             level().addAlwaysVisibleParticle(ModParticleTypes.WHITE_STAR.get(), true, xo, yo, zo, vec3.x, vec3.y, vec3.z);
         }
 
 
-        if (this.tickCount > 200 || this.isInWater()) {
+        if (this.tickCount > 200) {
             this.discard();
         }
     }
