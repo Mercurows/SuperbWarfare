@@ -239,7 +239,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
                             vehicle.gunXRotO,
                             vehicle.gunXRot
                         ) * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD,
-                        -10 * Mth.DEG_TO_RAD, 60 * Mth.DEG_TO_RAD
+                            vehicle.passengerWeaponMinPitch * Mth.DEG_TO_RAD, vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
                     )
                 }
             }
