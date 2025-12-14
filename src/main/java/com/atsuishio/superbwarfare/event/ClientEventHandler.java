@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
@@ -1559,12 +1560,12 @@ public class ClientEventHandler {
             float customWeight = (float) Mth.clamp(data.compute().weight, 1, 50);
 
             if (!isEditing) {
-                if (!entity.isSprinting() && Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0) {
+                if (!entity.isSprinting() && Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0 && !(stack.getItem() instanceof SuperStarShooterItem)) {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0.14) * (1 - zoomTime);
                 } else {
                     moveRotZ = Mth.lerp(0.2f * times, moveRotZ, 0) * (1 - zoomTime);
                 }
-                if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && noSprintTicks == 0 && zoomTime < 0.1) {
+                if (entity.isSprinting() && !data.reloading() && firePosTimer == 0 && !ModKeyMappings.FIRE.isDown() && noSprintTicks == 0 && zoomTime < 0.5) {
                     sprintBasicRotX = Mth.clamp(Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1), 0, 1);
                     sprintBasicRotY = Mth.clamp(Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1), 0, 1);
                     sprintBasicRotZ = Mth.clamp(Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1), 0, 1);
@@ -1598,8 +1599,8 @@ public class ClientEventHandler {
                     sprintFadeTime = Mth.lerp(0.15 * times, sprintFadeTime, 0);
                 }
 
-                sprintPosX = 2 * Math.sin(1 * Math.PI * sprintTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
-                sprintPosY = 1 * Math.sin(2 * Math.PI * sprintTime) * (1 - 0.95 * zoomTime) * sprintFadeTime;
+                sprintPosX = 2 * Math.sin(1 * Math.PI * sprintTime) * sprintFadeTime;
+                sprintPosY = 1 * Math.sin(2 * Math.PI * sprintTime) * sprintFadeTime;
             } else {
 
                 sprintPosX = Mth.lerp(0.1 * times, sprintPosX, 0);
@@ -1608,8 +1609,8 @@ public class ClientEventHandler {
                 sprintFadeTime = Mth.lerp(0.1 * times, sprintFadeTime, 0);
             }
 
-            movePosX = 0.2 * Math.sin(1 * Math.PI * moveTime) * (1 - 0.95 * zoomTime) * moveFadeTime;
-            movePosY = -0.135 * Math.sin(2 * Math.PI * (moveTime - 0.25)) * (1 - 0.95 * zoomTime) * moveFadeTime;
+            movePosX = 0.2 * Math.sin(1 * Math.PI * moveTime) * (1 - 0.4 * zoomTime) * moveFadeTime;
+            movePosY = -0.135 * Math.sin(2 * Math.PI * (moveTime - 0.25)) * (1 - 0.4 * zoomTime) * moveFadeTime;
 
             boolean left = Minecraft.getInstance().options.keyLeft.isDown();
             boolean right = Minecraft.getInstance().options.keyRight.isDown();
@@ -1631,7 +1632,7 @@ public class ClientEventHandler {
 
             double velocity = entity.getDeltaMovement().y() + 0.078;
 
-            velocityY = Mth.clamp(Mth.lerp(0.23f * times, velocityY, velocity) * (1 - 0.8 * zoomTime), -0.8, 0.8);
+            velocityY = Mth.clamp(Mth.lerp(0.23f * times, velocityY, velocity) * (1 - 0.5 * zoomTime), -0.8, 0.8);
         }
     }
 
@@ -1654,12 +1655,12 @@ public class ClientEventHandler {
         float basicSprintRotY = (float) (sprintBasicRotY * 35.6 * Mth.DEG_TO_RAD) * i;
         float basicSprintRotZ = (float) (sprintBasicRotZ * 34.7 * Mth.DEG_TO_RAD) * i;
 
-        float gunPosX = (float) (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon) * (float) (1 - 1 * zoomTime);
-        float gunPosY = (float) (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY) * (float) (1 - 1 * zoomTime);
+        float gunPosX = (float) (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon) * (float) (1 - 0.5 * zoomTime);
+        float gunPosY = (float) (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY) * (float) (1 - 0.5 * zoomTime);
         float gunPosZ = (walkPosZ + basicSprintPosZ) * (float) (1 - 1 * zoomTime);
-        float gunRotX = (float) ((walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime - 0.15f * velocityY) * (1 - 1 * zoomTime) + Mth.DEG_TO_RAD * turnRot[0]);
-        float gunRotY = (float) ((walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime) * (1 - 1 * zoomTime) + Mth.DEG_TO_RAD * turnRot[1]);
-        float gunRotZ = (float) ((walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon) * (1 - 1 * zoomTime) + Mth.DEG_TO_RAD * turnRot[2]);
+        float gunRotX = (float) ((walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime - 0.15f * velocityY) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[0]);
+        float gunRotY = (float) ((walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime) * (1 - 0.75 * zoomTime) + Mth.DEG_TO_RAD * turnRot[1]);
+        float gunRotZ = (float) ((walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[2]);
 
         root.setPosX(gunPosX);
         root.setPosY(gunPosY);
@@ -1685,15 +1686,17 @@ public class ClientEventHandler {
                 && drawTime < 0.01
                 && !isEditing
                 && !(data.reloading() && !computed.zoomReload)) {
-            if (Minecraft.getInstance().player != null) {
-                noSprintTicks = 5;
-            }
             if (fireCooldown <= 10) {
                 zoomTime = Mth.clamp(zoomTime + 0.03 * speed * times, 0, 1);
             }
         } else {
             zoomTime = Mth.clamp(zoomTime - 0.04 * speed * times, 0, 1);
         }
+
+        if (zoomPos > 0.8) {
+            noSprintTicks = 5;
+        }
+
         zoomPos = AnimationCurves.EASE_IN_OUT_QUINT.apply(zoomTime);
         zoomPosZ = AnimationCurves.PARABOLA.apply(zoomTime);
     }

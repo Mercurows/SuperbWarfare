@@ -27,7 +27,7 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
     @Override
     protected void addTags(HolderLookup.@NotNull Provider pProvider) {
         this.tag(ModTags.DamageTypes.PROJECTILE).add(ModDamageTypes.GUN_FIRE, ModDamageTypes.GUN_FIRE_HEADSHOT,
-                        DamageTypes.ARROW, DamageTypes.TRIDENT, DamageTypes.THROWN)
+                        DamageTypes.ARROW, DamageTypes.TRIDENT, DamageTypes.THROWN, ModDamageTypes.SUPER_STAR_HIT, ModDamageTypes.SUPER_STAR_SLASH)
                 .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet"))
                 .addOptional(ResourceLocation.fromNamespaceAndPath("tacz", "bullet_void"))
                 .addOptional(ResourceLocation.fromNamespaceAndPath("virtuarealcraft", "rain_crystal"))
