@@ -5,6 +5,8 @@
     "minecraft:arrow",
     "minecraft:trident",
     "minecraft:thrown",
+    "superbwarfare:super_star_hit",
+    "superbwarfare:super_star_slash",
     {
       "id": "tacz:bullet",
       "required": false

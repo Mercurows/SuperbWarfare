@@ -35,7 +35,7 @@ class SuperStarShooterItemModel : CustomGunModel<SuperStarShooterItem>() {
 
         CrossHairOverlay.gunRot = fireRoot.rotZ
 
-        ClientEventHandler.gunRootMove(animationProcessor, 0f, 0f, 0f, true)
+        ClientEventHandler.gunRootMove(animationProcessor, 0f, 0f, 0f, false)
 
         val camera = animationProcessor.getBone("camera")
         val main = animationProcessor.getBone("0")
