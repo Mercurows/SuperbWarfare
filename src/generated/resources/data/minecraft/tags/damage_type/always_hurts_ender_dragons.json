@@ -7,6 +7,8 @@
     "superbwarfare:laser",
     "superbwarfare:laser_headshot",
     "superbwarfare:laser_static",
-    "superbwarfare:repair_tool"
+    "superbwarfare:repair_tool",
+    "superbwarfare:super_star_hit",
+    "superbwarfare:super_star_slash"
   ]
 }

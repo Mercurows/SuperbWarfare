@@ -10,6 +10,8 @@
     "superbwarfare:burn",
     "superbwarfare:repair_tool",
     "superbwarfare:projectile_hit",
-    "superbwarfare:projectile_explosion"
+    "superbwarfare:projectile_explosion",
+    "superbwarfare:super_star_hit",
+    "superbwarfare:super_star_slash"
   ]
 }
