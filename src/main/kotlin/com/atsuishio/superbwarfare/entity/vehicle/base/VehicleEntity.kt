@@ -24,6 +24,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
@@ -36,7 +38,9 @@ import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import com.google.common.collect.ImmutableList
+import com.mojang.math.Axis
 import net.minecraft.ChatFormatting
+import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -2381,84 +2385,85 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         VehicleWeaponUtils.turretAutoAimFromUuid(this, uuid, pLiving)
     }
 
-    open fun passengerPitch(entity: Entity, minPitch: Float, maxPitch: Float, passengerRot: Float) {
-        VehicleVecUtils.setPassengerPitch(this, entity, minPitch, maxPitch, passengerRot)
-    }
-
-    open fun passengerYaw(entity: Entity, minYaw: Float, maxYaw: Float, passengerRot: Float) {
-        VehicleVecUtils.setPassengerYaw(this, entity, minYaw, maxYaw, passengerRot)
-    }
-
-    open fun passengerPitchOnTurret(entity: Entity, turretMinPitch: Float, turretMaxPitch: Float) {
-        VehicleVecUtils.setPassengerPitchOnTurret(this, entity, turretMinPitch, turretMaxPitch)
-    }
-
-    open fun passengerYawOnTurret(
-        entity: Entity,
-        minYaw: Float,
-        maxYaw: Float,
-        passengerRot: Float,
-        rotateWithTurret: Boolean
-    ) {
-        VehicleVecUtils.setPassengerYawOnTurret(this, entity, minYaw, maxYaw, passengerRot, rotateWithTurret)
-    }
-
     override fun onPassengerTurned(entity: Entity) {
         this.clampRotation(entity)
     }
 
-    protected fun clampRotation(entity: Entity) {
+    private fun clampRotation(entity: Entity) {
         val index = getSeatIndex(entity)
         val seats = computed().seats()
         if (index < 0 || index >= seats.size) return
         val seat = seats.get(index)
 
-        if (seat.transform == "Vehicle"
-            || seat.transform == "VehicleFlat"
-            || (seat.transform == "Turret" && seat.canRotateBody)
-        ) {
-            if (!seat.canRotateBody) {
-                passengerYaw(entity, seat.minYaw, seat.maxYaw, seat.orientation)
-            }
+        var vec3 = getTransformDirection(1f, entity)
 
-            if (hasTurret() && index == this.turretControllerIndex) {
-                if (seat.transform == "Vehicle" || seat.transform == "VehicleFlat") {
-                    val diffY = Mth.wrapDegrees(entity.yRot - this.yRot)
-                    passengerPitch(entity, seat.minPitch, seat.maxPitch, diffY)
-                } else {
-                    passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch)
-                    passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, true)
-                }
-            } else {
-                val diffY = Mth.wrapDegrees(entity.yRot - this.yRot)
-                passengerPitch(entity, seat.minPitch, seat.maxPitch, diffY)
-            }
+        if ((seat.transform == "Barrel" && turretControllerIndex == getSeatIndex(entity)) ||
+            (seat.transform == "WeaponStationBarrel" && passengerWeaponStationControllerIndex == getSeatIndex(entity))
+        ) {
+            vec3 = getTransformDirectionFromString(1f, entity, "Turret")
         }
 
-        if (seat.transform == "Turret" && !seat.canRotateBody) {
-            passengerPitchOnTurret(entity, seat.minPitch, seat.maxPitch)
-            passengerYawOnTurret(entity, seat.minYaw, seat.maxYaw, seat.orientation, false)
+        val minPitch = -seat.maxPitch
+        val maxPitch = -seat.minPitch
+        val f = Mth.wrapDegrees(entity.xRot - -getXRotFromVector(vec3)).toFloat()
+        val f1 = Mth.clamp(f, minPitch, maxPitch)
+        entity.xRotO += f1 - f
+        entity.xRot = entity.xRot + f1 - f
+
+        val minYaw = seat.minYaw
+        val maxYaw = seat.maxYaw
+        val f2 = Mth.wrapDegrees(entity.yRot - -getYRotFromVector(vec3)).toFloat()
+        val f3 = Mth.clamp(f2, minYaw, maxYaw)
+        entity.yRotO += f3 - f2
+        entity.yRot = entity.yRot + f3 - f2
+
+        if (seat.transform == "Turret" && turretControllerIndex == getSeatIndex(entity)) {
+            if (!entity.level().isClientSide) return
+            if (Minecraft.getInstance().options.cameraType != CameraType.FIRST_PERSON) return
+
+            val f4 = Mth.wrapDegrees(entity.yRot - -getYRotFromVector(vec3)).toFloat()
+            val f5 = Mth.clamp(f2, -20f, 20f)
+            entity.yRotO += f5 - f4
+            entity.yRot = entity.yRot + f5 - f4
         }
     }
 
     open fun copyEntityData(entity: Entity) {
         entity.yRot += destroyRot
-
         val index = getSeatIndex(entity)
         val seat = computed().seats()[index]
+        val vec3 = getTransformDirection(1f, entity)
+        val yaw = -getYRotFromVector(vec3).toFloat()
 
         if (seat.transform == "Vehicle" || seat.transform == "VehicleFlat") {
-            if (!seat.canRotateBody) {
-                entity.setYBodyRot(yRot + seat.orientation)
-            }
             if (!seat.canRotateHead) {
-                entity.yRot = yRot + seat.orientation
+                entity.yRot = yaw + seat.orientation
             }
         }
 
-        if (seat.transform == "Turret" && !seat.canRotateBody) {
-            entity.setYBodyRot(getBarrelYRot(1f) + seat.orientation)
+        if (!seat.canRotateBody) {
+            entity.setYBodyRot(yaw + seat.orientation)
         }
+    }
+
+    open fun getTransformDirection(ticks: Float, entity: Entity): Vec3 {
+        val index = getSeatIndex(entity)
+        val seat = computed().seats()[index]
+        val passengerRot = seat.orientation
+        val transform = getTransformFromString(seat.transform, ticks).rotate(Axis.YP.rotationDegrees(-passengerRot))
+        val posO = transformPosition(transform, 0.0, 0.0, 0.0)
+        val pos = transformPosition(transform, 0.0, 0.0, 1.0)
+        return Vec3(posO.x, posO.y, posO.z).vectorTo(Vec3(pos.x, pos.y, pos.z))
+    }
+
+    open fun getTransformDirectionFromString(ticks: Float, entity: Entity, string: String): Vec3 {
+        val index = getSeatIndex(entity)
+        val seat = computed().seats()[index]
+        val passengerRot = seat.orientation
+        val transform = getTransformFromString(string, ticks).rotate(Axis.YP.rotationDegrees(-passengerRot))
+        val posO = transformPosition(transform, 0.0, 0.0, 0.0)
+        val pos = transformPosition(transform, 0.0, 0.0, 1.0)
+        return Vec3(posO.x, posO.y, posO.z).vectorTo(Vec3(pos.x, pos.y, pos.z))
     }
 
     public override fun positionRider(passenger: Entity, callback: MoveFunction) {
@@ -2519,6 +2524,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         vectorTransform["Up"] = Function { ticks -> this.getUpVec(ticks) }
         vectorTransform["Default"] = Function { partialTicks -> this.getViewVector(partialTicks) }
 
+        rotationTransform["WeaponStation"] =
+            Function { tick -> VectorTool.combineRotationsPassengerWeaponStation(tick, this) }
+        rotationTransform["WeaponStationBarrel"] =
+            Function { tick -> VectorTool.combineRotationsPassengerWeaponStationBarrel(tick, this) }
         rotationTransform["Turret"] = Function { tick -> VectorTool.combineRotationsTurret(tick, this) }
         rotationTransform["Barrel"] = Function { tick -> VectorTool.combineRotationsBarrel(tick, this) }
         rotationTransform["RotationsYaw"] = Function { tick -> VectorTool.combineRotationsYaw(tick, this) }

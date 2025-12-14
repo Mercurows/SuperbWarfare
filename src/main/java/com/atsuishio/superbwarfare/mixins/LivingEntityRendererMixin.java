@@ -2,50 +2,45 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// From Immersive_Aircraft
 @Mixin(LivingEntityRenderer.class)
 public class LivingEntityRendererMixin<T extends LivingEntity> {
 
     @Inject(method = "setupRotations", at = @At("TAIL"))
     public void render(T entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale, CallbackInfo ci) {
         if (entity.getRootVehicle() != entity && entity.getRootVehicle() instanceof VehicleEntity vehicle) {
-            float a = Mth.wrapDegrees(Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot) - Mth.lerp(partialTick, vehicle.yRotO, vehicle.getYRot()));
-
             var seats = VehicleData.compute(vehicle).seats();
             int index = vehicle.getSeatIndex(entity);
             if (index < 0 || index >= seats.size()) return;
 
             var seat = seats.get(index);
-            if (seat.transform.equals("VehicleFlat")) return;
+            float lerpRot = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
 
-            if (entity.yBodyRot == vehicle.getYRot()) {
-                a = 0;
+            if (!seat.canRotateBody && Mth.abs(entity.yBodyRot) > 150) {
+                lerpRot = entity.yBodyRot;
             }
 
-            float r = (Mth.abs(a) - 90f) / 90f;
-            float r2;
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
+            float transformYaw = (float) VehicleVecUtils.getYRotFromVector(vehicle.getTransformDirection(partialTick, entity));
+            var bodyDiffY = lerpRot + transformYaw;
+            var passengerWeaponStationYawRot = Axis.YP.rotationDegrees(-bodyDiffY);
 
-            poseStack.mulPose(Axis.XP.rotationDegrees(r * vehicle.getViewXRot(partialTick) - r2 * vehicle.getRoll(partialTick)));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(r * vehicle.getRoll(partialTick) + r2 * vehicle.getViewXRot(partialTick)));
+            Quaterniond quaterniond = vehicle.getRotationFromString(seat.transform, partialTick).mul(new Quaterniond(passengerWeaponStationYawRot));
+            Quaternionf quaternionf = new Quaternionf(-quaterniond.x, quaterniond.y, -quaterniond.z, quaterniond.w);
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(lerpRot));
+            poseStack.mulPose(quaternionf);
         }
     }
 }
