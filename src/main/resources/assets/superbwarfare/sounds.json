@@ -4049,5 +4049,29 @@
         "stream": false
       }
     ]
+  },
+  "knife_flesh": {
+    "sounds": [
+      {
+        "name": "superbwarfare:super_star/knife_flesh_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_03",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_04",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_05",
+        "stream": false
+      }
+    ]
   }
 }

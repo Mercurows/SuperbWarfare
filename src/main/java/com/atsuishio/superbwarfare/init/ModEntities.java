@@ -60,7 +60,7 @@ public class ModEntities {
 
     // Fast Projectiles
     public static final RegistryObject<EntityType<SuperStarProjectileEntity>> SUPER_STAR_PROJECTILE = register("super_star_projectile",
-            EntityType.Builder.<SuperStarProjectileEntity>of(SuperStarProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.25f, 0.25f));
+            EntityType.Builder.<SuperStarProjectileEntity>of(SuperStarProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.75f, 0.75f));
     public static final RegistryObject<EntityType<SmallCannonShellEntity>> SMALL_CANNON_SHELL = register("small_cannon_shell",
             EntityType.Builder.<SmallCannonShellEntity>of(SmallCannonShellEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.25f, 0.25f));
     public static final RegistryObject<EntityType<RpgRocketTBGEntity>> RPG_ROCKET_TBG = register("rpg_rocket_tbg",
