@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -54,33 +53,35 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
-        Entity entity = result.getEntity();
+
+        var entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
 
-        Vec3 hitVec = result.getLocation();
+        var hitVec = result.getLocation();
 
         if (entity instanceof LivingEntity living) {
             hitVec = living.getEyePosition();
         }
 
         if (level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ModParticleTypes.PRISMATIC_BOLT.get(), hitVec.x, hitVec.y, hitVec.z, 1, 0, 0.2, 0, 0, true);
-        }
-
-        Mod.queueServerWork(2, () -> {
-            // TODO 添加星星炮伤害类型
             DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
-            entity.level().playSound(null, entity.getOnPos(), ModSounds.KNIFE_FLESH.get(), SoundSource.PLAYERS, 2, 1);
+            entity.invulnerableTime = 0;
 
-            if (entity instanceof LivingEntity) {
-                entity.invulnerableTime = 0;
-            }
+            ParticleTool.sendParticle(serverLevel, ModParticleTypes.PRISMATIC_BOLT.get(), hitVec.x, hitVec.y, hitVec.z, 1, 0, 0.2, 0, 0, true);
 
             if (this.getOwner() instanceof ServerPlayer player) {
                 player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
                 PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
             }
+        }
+
+        Mod.queueServerWork(2, () -> {
+            // TODO 添加星星炮伤害类型
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage * 0.75F);
+            entity.invulnerableTime = 0;
+
+            entity.level().playSound(null, entity.getOnPos(), ModSounds.KNIFE_FLESH.get(), SoundSource.PLAYERS, 2, 1);
         });
     }
 
