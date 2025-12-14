@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
-import com.atsuishio.superbwarfare.data.gun.AmmoConsumer;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -10,7 +9,6 @@ import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -80,11 +78,9 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
                 entity.invulnerableTime = 0;
             }
 
-            if (this.getOwner() instanceof LivingEntity living && level() instanceof ServerLevel serverLevel) {
-                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-                    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-                }
+            if (this.getOwner() instanceof ServerPlayer player) {
+                player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
             }
         });
     }
@@ -193,7 +189,7 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
             this.onHitWater(fluidResult.getLocation(), fluidResult);
         }
 
-        if (tickCount > 1 && tickCount %3 == 0 && level().isClientSide) {
+        if (tickCount > 1 && tickCount % 3 == 0 && level().isClientSide) {
             Vec3 vec3 = randomVec(getDeltaMovement(), 30).normalize().scale(0.4 + 0.05 * Math.random());
             level().addAlwaysVisibleParticle(ModParticleTypes.WHITE_STAR.get(), true, xo, yo, zo, vec3.x, vec3.y, vec3.z);
         }
