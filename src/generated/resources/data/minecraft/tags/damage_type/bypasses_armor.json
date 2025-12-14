@@ -11,6 +11,8 @@
     "superbwarfare:vehicle_strike",
     "superbwarfare:vehicle_explosion",
     "superbwarfare:air_crash",
-    "superbwarfare:repair_tool"
+    "superbwarfare:repair_tool",
+    "superbwarfare:super_star_hit",
+    "superbwarfare:super_star_slash"
   ]
 }

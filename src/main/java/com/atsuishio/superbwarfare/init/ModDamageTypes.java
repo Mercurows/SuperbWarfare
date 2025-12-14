@@ -29,6 +29,8 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> PROJECTILE_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("projectile_hit"));
     public static final ResourceKey<DamageType> PROJECTILE_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("projectile_explosion"));
     public static final ResourceKey<DamageType> REPAIR_TOOL = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("repair_tool"));
+    public static final ResourceKey<DamageType> SUPER_STAR_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("super_star_hit"));
+    public static final ResourceKey<DamageType> SUPER_STAR_SLASH = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("super_star_slash"));
 
     // Other Damage Types
     public static final ResourceKey<DamageType> MINE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("mine"));
@@ -90,6 +92,14 @@ public class ModDamageTypes {
 
     public static DamageSource causeGrapeShotHitDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GRAPESHOT_HIT), directEntity, attacker);
+    }
+
+    public static DamageSource causeSuperStarHitDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
+        return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(SUPER_STAR_HIT), directEntity, attacker);
+    }
+
+    public static DamageSource causeSuperStarSlashDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
+        return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(SUPER_STAR_SLASH), directEntity, attacker);
     }
 
     /**

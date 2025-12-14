@@ -10,6 +10,8 @@
     "superbwarfare:laser_static",
     "superbwarfare:vehicle_strike",
     "superbwarfare:vehicle_explosion",
-    "superbwarfare:air_crash"
+    "superbwarfare:air_crash",
+    "superbwarfare:super_star_hit",
+    "superbwarfare:super_star_slash"
   ]
 }
