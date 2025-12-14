@@ -1,9 +1,11 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
@@ -11,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import static com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity.rayTraceBlocks;
@@ -54,13 +58,30 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
 
-        // TODO 添加星星炮伤害类型
+        Vec3 hitVec = result.getLocation();
 
-        DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
-
-        if (entity instanceof LivingEntity) {
-            entity.invulnerableTime = 0;
+        if (entity instanceof LivingEntity living) {
+            hitVec = living.getEyePosition();
         }
+
+        if (level() instanceof ServerLevel serverLevel) {
+            ParticleTool.sendParticle(serverLevel, ModParticleTypes.PRISMATIC_BOLT.get(), hitVec.x, hitVec.y, hitVec.z, 1, 0, 0.2, 0, 0, true);
+        }
+
+        Mod.queueServerWork(2, () -> {
+            // TODO 添加星星炮伤害类型
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
+            entity.level().playSound(null, entity.getOnPos(), ModSounds.KNIFE_FLESH.get(), SoundSource.PLAYERS, 2, 1);
+
+            if (entity instanceof LivingEntity) {
+                entity.invulnerableTime = 0;
+            }
+
+            if (this.getOwner() instanceof ServerPlayer player) {
+                player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+            }
+        });
     }
 
     @Override
@@ -167,7 +188,7 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
             this.onHitWater(fluidResult.getLocation(), fluidResult);
         }
 
-        if (tickCount > 1 && tickCount % 3 == 0) {
+        if (tickCount > 1 && tickCount % 3 == 0 && level().isClientSide) {
             Vec3 vec3 = randomVec(getDeltaMovement(), 30).normalize().scale(0.4 + 0.05 * Math.random());
             level().addAlwaysVisibleParticle(ModParticleTypes.WHITE_STAR.get(), true, xo, yo, zo, vec3.x, vec3.y, vec3.z);
         }
