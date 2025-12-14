@@ -33,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
 import static com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity.rayTraceBlocks;
 
 public class SuperStarProjectileEntity extends FastThrowableProjectile {
+    private Entity currentTarget = null;
+
     public SuperStarProjectileEntity(EntityType<? extends SuperStarProjectileEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
@@ -55,6 +57,8 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
 
+        this.currentTarget = entity;
+
         Vec3 hitVec = result.getLocation();
 
         if (entity instanceof LivingEntity living) {
@@ -65,6 +69,10 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
             ParticleTool.sendParticle(serverLevel, ModParticleTypes.PRISMATIC_BOLT.get(), hitVec.x, hitVec.y, hitVec.z, 1, 0, 0.2, 0, 0, true);
         }
 
+        this.hitAndSlash(entity);
+    }
+
+    private void hitAndSlash(Entity entity) {
         DamageHandler.doDamage(entity, ModDamageTypes.causeSuperStarHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
         if (entity instanceof LivingEntity) {
             entity.invulnerableTime = 0;
@@ -148,7 +156,6 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
 
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
                     serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1, 1);
-                    this.discard();
                 }
             }
         }
@@ -166,6 +173,14 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
             Vec3 endVec = startVec.add(this.getDeltaMovement());
             BlockHitResult fluidResult = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this), state -> false);
             this.onHitWater(fluidResult.getLocation(), fluidResult);
+
+            if (this.currentTarget != null) {
+                if (this.currentTarget.getBoundingBox().contains(this.position())) {
+                    this.hitAndSlash(this.currentTarget);
+                } else {
+                    this.currentTarget = null;
+                }
+            }
         }
 
         if (tickCount > 1 && tickCount % 3 == 0 && level().isClientSide) {
