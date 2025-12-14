@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,7 +60,12 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
 
-        this.currentTarget = entity;
+        if (entity instanceof PartEntity<?> partEntity) {
+            this.currentTarget = partEntity.getParent();
+        } else {
+            this.currentTarget = entity;
+        }
+
         this.hitAndSlash(entity);
     }
 
