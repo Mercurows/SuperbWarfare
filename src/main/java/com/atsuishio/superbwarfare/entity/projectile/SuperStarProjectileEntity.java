@@ -53,13 +53,17 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
-        Entity entity = result.getEntity();
+
+        var entity = result.getEntity();
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
 
         this.currentTarget = entity;
+        this.hitAndSlash(entity);
+    }
 
-        Vec3 hitVec = result.getLocation();
+    private void hitAndSlash(Entity entity) {
+        Vec3 hitVec = entity.position();
 
         if (entity instanceof LivingEntity living) {
             hitVec = living.getEyePosition();
@@ -69,22 +73,16 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
             ParticleTool.sendParticle(serverLevel, ModParticleTypes.PRISMATIC_BOLT.get(), hitVec.x, hitVec.y, hitVec.z, 1, 0, 0.2, 0, 0, true);
         }
 
-        this.hitAndSlash(entity);
-    }
-
-    private void hitAndSlash(Entity entity) {
+        // 命中伤害
         DamageHandler.doDamage(entity, ModDamageTypes.causeSuperStarHitDamage(this.level().registryAccess(), this, this.getOwner()), damage);
-        if (entity instanceof LivingEntity) {
-            entity.invulnerableTime = 0;
-        }
+        entity.invulnerableTime = 0;
 
+        // 斩切伤害
         Mod.queueServerWork(2, () -> {
             DamageHandler.doDamage(entity, ModDamageTypes.causeSuperStarSlashDamage(this.level().registryAccess(), this, this.getOwner()), explosionDamage);
             entity.level().playSound(null, entity.getOnPos(), ModSounds.KNIFE_FLESH.get(), SoundSource.PLAYERS, 2, 1);
 
-            if (entity instanceof LivingEntity) {
-                entity.invulnerableTime = 0;
-            }
+            entity.invulnerableTime = 0;
 
             if (this.getOwner() instanceof ServerPlayer player) {
                 player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
@@ -168,18 +166,15 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
     @Override
     public void tick() {
         super.tick();
+
         if (!this.level().isClientSide()) {
             Vec3 startVec = this.position();
             Vec3 endVec = startVec.add(this.getDeltaMovement());
             BlockHitResult fluidResult = rayTraceBlocks(this.level(), new ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this), state -> false);
             this.onHitWater(fluidResult.getLocation(), fluidResult);
 
-            if (this.currentTarget != null) {
-                if (this.currentTarget.getBoundingBox().contains(this.position())) {
-                    this.hitAndSlash(this.currentTarget);
-                } else {
-                    this.currentTarget = null;
-                }
+            if (this.currentTarget != null && this.getBoundingBox().intersects(this.currentTarget.getBoundingBox())) {
+                this.hitAndSlash(this.currentTarget);
             }
         }
 
