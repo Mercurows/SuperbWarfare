@@ -68,7 +68,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.util.LazyOptional
@@ -432,7 +431,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun beforeShoot(parameters: ShootParameters) {
         val data = parameters.data
         val ammoSupplier = parameters.ammoSupplier
-        MinecraftForge.EVENT_BUS.post(ShootEvent.Pre(parameters))
+
+        postEvent(ShootEvent.Pre(parameters))
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         if (data.compute().boltActionTime > 0 && data.hasEnoughAmmoToShoot(ammoSupplier)) {
@@ -465,7 +465,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         val shooter = parameters.shooter
         val ammoSupplier = parameters.ammoSupplier
 
-        MinecraftForge.EVENT_BUS.post(ShootEvent.Post(parameters))
+        postEvent(ShootEvent.Post(parameters))
 
         val computed = data.compute()
         if (!data.useBackpackAmmo()) {

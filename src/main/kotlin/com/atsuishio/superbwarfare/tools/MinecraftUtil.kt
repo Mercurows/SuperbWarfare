@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.network.PacketDistributor
 
 @get:OnlyIn(Dist.CLIENT)
@@ -54,4 +56,8 @@ fun sendPacketToAllPlayers(packet: Any) {
 
 fun sendPacketToServer(packet: Any) {
     NetworkRegistry.PACKET_HANDLER.sendToServer(packet)
+}
+
+fun postEvent(event: Event) {
+    MinecraftForge.EVENT_BUS.post(event)
 }
