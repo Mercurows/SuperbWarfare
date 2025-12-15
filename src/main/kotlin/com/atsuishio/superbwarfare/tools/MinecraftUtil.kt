@@ -58,6 +58,4 @@ fun sendPacketToServer(packet: Any) {
     NetworkRegistry.PACKET_HANDLER.sendToServer(packet)
 }
 
-fun postEvent(event: Event) {
-    MinecraftForge.EVENT_BUS.post(event)
-}
+fun <T : Event> postEvent(event: T) = MinecraftForge.EVENT_BUS.post(event)
