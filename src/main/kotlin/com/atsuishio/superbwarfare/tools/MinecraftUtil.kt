@@ -58,6 +58,4 @@ fun sendPacketToServer(packet: CustomPacketPayload) {
     PacketDistributor.sendToServer(packet)
 }
 
-fun postEvent(event: Event) {
-    NeoForge.EVENT_BUS.post(event)
-}
+fun <T : Event> postEvent(event: T): T = NeoForge.EVENT_BUS.post(event)

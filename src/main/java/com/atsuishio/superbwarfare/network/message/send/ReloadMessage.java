@@ -25,13 +25,13 @@ public enum ReloadMessage implements CustomPacketPayload {
 
     public static void pressAction(Player player) {
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
-            vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> GunEventHandler.tryStartReload(vehicle.getAmmoSupplier(), data));
+            vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> GunEventHandler.INSTANCE.tryStartReload(vehicle.getAmmoSupplier(), data));
             return;
         }
 
         var stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
-        GunEventHandler.tryStartReload(player, GunData.from(stack));
+        GunEventHandler.INSTANCE.tryStartReload(player, GunData.from(stack));
     }
 
     @Override
