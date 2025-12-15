@@ -59,12 +59,12 @@ fun sendPacketToServer(packet: CustomPacketPayload) {
     PacketDistributor.sendToServer(packet)
 }
 
-fun sendPacketToTracking(entity: Entity, packet: CustomPacketPayload) {
+fun sendPacketToTrackingEntity(entity: Entity, packet: CustomPacketPayload) {
     PacketDistributor.sendToPlayersTrackingEntity(entity, packet)
 }
 
-fun Entity.sendPacketToTracking(packet: CustomPacketPayload) {
-    sendPacketToTracking(this, packet)
+fun Entity.sendPacketToTrackingThis(packet: CustomPacketPayload) {
+    sendPacketToTrackingEntity(this, packet)
 }
 
 fun <T : Event> postEvent(event: T): T = NeoForge.EVENT_BUS.post(event)

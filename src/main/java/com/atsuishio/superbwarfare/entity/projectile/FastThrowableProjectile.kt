@@ -276,7 +276,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         if (!shouldSyncMotion()) return
 
         if (this.tickCount % this.type.updateInterval() == 0) {
-            sendPacketToTracking(ClientMotionSyncMessage(this))
+            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
         }
     }
 
