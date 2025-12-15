@@ -4,11 +4,11 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.Component
@@ -24,7 +24,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.network.PacketDistributor
 
 class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehicleEntity(type, world) {
     init {
@@ -226,10 +225,7 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
                         shooter.level().random.nextLong()
                     )
                 )
-                NetworkRegistry.PACKET_HANDLER.send(
-                    PacketDistributor.PLAYER.with { shooter },
-                    ClientIndicatorMessage(0, 5)
-                )
+                shooter.sendPacket(ClientIndicatorMessage(0, 5))
             }
         }
     }

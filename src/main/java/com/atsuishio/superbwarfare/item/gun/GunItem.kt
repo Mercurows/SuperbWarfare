@@ -25,15 +25,11 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
-import com.atsuishio.superbwarfare.tools.DamageHandler
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import com.google.common.collect.HashMultimap
@@ -79,7 +75,6 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.common.util.NonNullFunction
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import net.minecraftforge.network.PacketDistributor
 import org.joml.Math
 import software.bernie.geckolib.animatable.GeoItem
 import java.util.*
@@ -1168,10 +1163,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 0.1f,
                 1f
             )
-            NetworkRegistry.PACKET_HANDLER.send(
-                PacketDistributor.PLAYER.with { shooter },
-                ClientIndicatorMessage(type, 5)
-            )
+            shooter.sendPacket(ClientIndicatorMessage(type, 5))
         }
 
         level.playSound(

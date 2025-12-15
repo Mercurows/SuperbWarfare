@@ -4,11 +4,10 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.ClientTacticalSprintSyncMessage
+import com.atsuishio.superbwarfare.tools.sendPacketToAllPlayers
 import net.minecraft.network.chat.Component
 import net.minecraftforge.common.ForgeConfigSpec
-import net.minecraftforge.network.PacketDistributor
 
 val CONFIG_COMMAND = buildCommand("config") {
     requirePermission(0)
@@ -19,7 +18,7 @@ val CONFIG_COMMAND = buildCommand("config") {
         "tacticalSprint",
         MiscConfig.ALLOW_TACTICAL_SPRINT,
         "commands.config.tactical_sprint"
-    ) { NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), ClientTacticalSprintSyncMessage(it)) }
+    ) { sendPacketToAllPlayers(ClientTacticalSprintSyncMessage(it)) }
 
     booleanConfig("explosionDestroy", ExplosionConfig.EXPLOSION_DESTROY, "commands.config.explosion_destroy")
     booleanConfig("blockDestroy", ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS, "commands.config.block_destroy")

@@ -31,12 +31,10 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.menu.VehicleMenu
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.VectorTool.combineRotations
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import com.google.common.collect.ImmutableList
@@ -98,7 +96,6 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.wrapper.InvWrapper
-import net.minecraftforge.network.PacketDistributor
 import org.joml.*
 import java.util.*
 import java.util.function.Consumer
@@ -1590,10 +1587,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         attacker.level().random.nextLong()
                     )
                 )
-                NetworkRegistry.PACKET_HANDLER.send(
-                    PacketDistributor.PLAYER.with { attacker },
-                    ClientIndicatorMessage(3, 5)
-                )
+                attacker.sendPacket(ClientIndicatorMessage(3, 5))
             }
 
             if (pHealAmount > 0 && this.health > 0 && send) {

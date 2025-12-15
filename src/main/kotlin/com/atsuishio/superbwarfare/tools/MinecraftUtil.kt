@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools
 
+import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import net.minecraft.client.Minecraft
 import net.minecraft.client.Options
@@ -7,10 +8,12 @@ import net.minecraft.client.gui.Font
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.network.PacketDistributor
 
 @get:OnlyIn(Dist.CLIENT)
 val mc: Minecraft get() = Minecraft.getInstance()
@@ -36,4 +39,19 @@ fun Player?.isNullOrSpector() = this == null || this.isSpectator
 fun Vec3?.toFormattedString(): String {
     if (this == null) return "[ ---, ---, --- ]"
     return "[ " + format0D(x) + ", " + format0D(y) + ", " + format0D(z) + " ]"
+}
+
+fun Player.sendPacket(packet: Any) = sendPacketToPlayer(this, packet)
+
+fun sendPacketToPlayer(player: Player, packet: Any) {
+    if (player !is ServerPlayer) return
+    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with { player }, packet)
+}
+
+fun sendPacketToAllPlayers(packet: Any) {
+    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), packet)
+}
+
+fun sendPacketToServer(packet: Any) {
+    NetworkRegistry.PACKET_HANDLER.sendToServer(packet)
 }
