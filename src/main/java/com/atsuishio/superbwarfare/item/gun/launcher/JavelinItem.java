@@ -39,7 +39,7 @@ public class JavelinItem extends GunGeoItem {
     }
 
     @Override
-    public boolean useSpecialFireProcedure(GunData data) {
+    public boolean useSpecialFireProcedure(@NotNull GunData data) {
         return true;
     }
 
@@ -84,7 +84,7 @@ public class JavelinItem extends GunGeoItem {
             missileEntity.setPos(shooter.getX() + firePos.x, shooter.getEyeY() + firePos.y, shooter.getZ() + firePos.z);
             missileEntity.shoot(shooter.getLookAngle().x, shooter.getLookAngle().y + 0.3, shooter.getLookAngle().z, 3f, 1);
             if (targetEntity != null) {
-                missileEntity.setTargetUuid(targetEntity.getStringUUID());
+                missileEntity.setTargetUUID(targetEntity.getStringUUID());
             }
             missileEntity.setAttackMode(data.selectedFireModeInfo().name.equals("Top"));
 

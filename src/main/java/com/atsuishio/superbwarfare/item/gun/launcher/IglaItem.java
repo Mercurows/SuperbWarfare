@@ -39,7 +39,7 @@ public class IglaItem extends GunGeoItem {
     }
 
     @Override
-    public boolean useSpecialFireProcedure(GunData data) {
+    public boolean useSpecialFireProcedure(@NotNull GunData data) {
         return true;
     }
 
@@ -80,7 +80,7 @@ public class IglaItem extends GunGeoItem {
             iglaMissileEntity.setPos(shooter.getX() + firePos.x, shooter.getEyeY() + firePos.y, shooter.getZ() + firePos.z);
             iglaMissileEntity.shoot(shooter.getLookAngle().x, shooter.getLookAngle().y + 0.3, shooter.getLookAngle().z, 3f, 1);
             if (targetEntity != null) {
-                iglaMissileEntity.setTargetUuid(targetEntity.getStringUUID());
+                iglaMissileEntity.setTargetUUID(targetEntity.getStringUUID());
             }
 
             level.addFreshEntity(iglaMissileEntity);
