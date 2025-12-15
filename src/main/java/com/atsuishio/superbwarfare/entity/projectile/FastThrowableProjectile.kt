@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitBlock
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.particles.ParticleTypes
@@ -24,7 +23,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.entity.IEntityAdditionalSpawnData
-import net.minecraftforge.network.PacketDistributor
 import java.util.function.Consumer
 
 abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMotionEntity, IEntityAdditionalSpawnData,
@@ -279,10 +277,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         if (!shouldSyncMotion()) return
 
         if (this.tickCount % this.type.updateInterval() == 0) {
-            NetworkRegistry.PACKET_HANDLER.send(
-                PacketDistributor.TRACKING_ENTITY.with { this },
-                ClientMotionSyncMessage(this)
-            )
+            sendPacketToTracking(ClientMotionSyncMessage(this))
         }
     }
 

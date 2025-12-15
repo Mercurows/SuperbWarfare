@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
@@ -50,12 +51,23 @@ fun sendPacketTo(player: Player, packet: Any) {
     NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with { player }, packet)
 }
 
-fun sendPacketToAllPlayers(packet: Any) {
+fun sendPacketToAll(packet: Any) {
     NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), packet)
 }
 
 fun sendPacketToServer(packet: Any) {
     NetworkRegistry.PACKET_HANDLER.sendToServer(packet)
+}
+
+fun sendPacketToTracking(entity: Entity, packet: Any) {
+    NetworkRegistry.PACKET_HANDLER.send(
+        PacketDistributor.TRACKING_ENTITY.with { entity },
+        packet
+    )
+}
+
+fun Entity.sendPacketToTracking(packet: Any) {
+    sendPacketToTracking(this, packet)
 }
 
 fun <T : Event> postEvent(event: T) = MinecraftForge.EVENT_BUS.post(event)
