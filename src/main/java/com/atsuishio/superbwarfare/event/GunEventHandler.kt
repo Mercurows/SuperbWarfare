@@ -1,5 +1,3 @@
-@file:EventBusSubscriber
-
 package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.Mod
@@ -35,6 +33,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 
+@EventBusSubscriber
 object GunEventHandler {
     /**
      * 拉大栓
@@ -718,20 +717,19 @@ object GunEventHandler {
         }
     }
 
-}
-
-@SubscribeEvent
-private fun onMissingMappings(event: MissingMappingsEvent) {
-    for (mapping in event.getAllMappings<Item?>(Registries.ITEM)) {
-        if (Mod.MODID == mapping.getKey().namespace) {
-            val item = mapping.getKey().path
-            when (item) {
-                "abekiri" -> mapping.remap(ModItems.HOMEMADE_SHOTGUN.get())
-                "m2hb_blueprint" -> mapping.remap(ModItems.M_2_HB_BLUEPRINT.get())
-                "rocket_70" -> mapping.remap(ModItems.SMALL_ROCKET.get())
-                "us_helmet_pastg" -> mapping.remap(ModItems.US_HELMET_PASGT.get())
-                "agm" -> mapping.remap(ModItems.LARGE_ANTI_GROUND_MISSILE.get())
-                "wire_guide_missile" -> mapping.remap(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
+    @SubscribeEvent
+    fun onMissingMappings(event: MissingMappingsEvent) {
+        for (mapping in event.getAllMappings<Item?>(Registries.ITEM)) {
+            if (Mod.MODID == mapping.getKey().namespace) {
+                val item = mapping.getKey().path
+                when (item) {
+                    "abekiri" -> mapping.remap(ModItems.HOMEMADE_SHOTGUN.get())
+                    "m2hb_blueprint" -> mapping.remap(ModItems.M_2_HB_BLUEPRINT.get())
+                    "rocket_70" -> mapping.remap(ModItems.SMALL_ROCKET.get())
+                    "us_helmet_pastg" -> mapping.remap(ModItems.US_HELMET_PASGT.get())
+                    "agm" -> mapping.remap(ModItems.LARGE_ANTI_GROUND_MISSILE.get())
+                    "wire_guide_missile" -> mapping.remap(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
+                }
             }
         }
     }
