@@ -799,7 +799,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 val target = EntityFindUtil.findEntity(shooter.level(), uuid.toString())
                 if (target != null) {
                     entity.setGuideType(0)
-                    entity.setTargetUuid(uuid.toString())
+                    entity.targetUUID = uuid.toString()
                 } else if (targetPos != null) {
                     entity.setGuideType(1)
                     entity.setTargetVec(targetPos)
