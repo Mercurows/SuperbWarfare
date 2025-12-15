@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.Component
@@ -23,7 +24,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import net.neoforged.neoforge.network.PacketDistributor
 
 class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehicleEntity(type, world) {
     init {
@@ -225,7 +225,7 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
                         shooter.level().random.nextLong()
                     )
                 )
-                PacketDistributor.sendToPlayer(shooter, ClientIndicatorMessage(0, 5))
+                shooter.sendPacket(ClientIndicatorMessage(0, 5))
             }
         }
     }

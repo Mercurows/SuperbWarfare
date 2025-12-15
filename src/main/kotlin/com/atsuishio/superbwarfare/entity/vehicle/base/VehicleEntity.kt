@@ -95,7 +95,6 @@ import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.common.util.FakePlayer
 import net.neoforged.neoforge.energy.IEnergyStorage
 import net.neoforged.neoforge.items.ItemHandlerHelper
-import net.neoforged.neoforge.network.PacketDistributor
 import org.joml.*
 import java.util.*
 import java.util.function.Consumer
@@ -1589,7 +1588,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         attacker.level().random.nextLong()
                     )
                 )
-                PacketDistributor.sendToPlayer(attacker, ClientIndicatorMessage(3, 5))
+                attacker.sendPacket(ClientIndicatorMessage(3, 5))
             }
 
             if (pHealAmount > 0 && this.health > 0 && send) {

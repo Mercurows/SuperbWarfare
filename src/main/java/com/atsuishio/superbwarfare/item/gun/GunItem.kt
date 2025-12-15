@@ -27,11 +27,8 @@ import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
-import com.atsuishio.superbwarfare.tools.DamageHandler
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import net.minecraft.client.gui.screens.Screen
@@ -69,7 +66,6 @@ import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.energy.IEnergyStorage
-import net.neoforged.neoforge.network.PacketDistributor
 import org.joml.Math
 import software.bernie.geckolib.animatable.GeoItem
 import java.util.*
@@ -1156,7 +1152,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 0.1f,
                 1f
             )
-            PacketDistributor.sendToPlayer(shooter, ClientIndicatorMessage(type, 5))
+            shooter.sendPacket(ClientIndicatorMessage(type, 5))
         }
 
         level.playSound(

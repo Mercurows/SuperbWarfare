@@ -7,10 +7,13 @@ import net.minecraft.client.gui.Font
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.neoforge.network.PacketDistributor
 
 @get:OnlyIn(Dist.CLIENT)
 val mc: Minecraft get() = Minecraft.getInstance()
@@ -36,4 +39,19 @@ fun Player?.isNullOrSpector() = this == null || this.isSpectator
 fun Vec3?.toFormattedString(): String {
     if (this == null) return "[ ---, ---, --- ]"
     return "[ " + format0D(x) + ", " + format0D(y) + ", " + format0D(z) + " ]"
+}
+
+fun Player.sendPacket(packet: CustomPacketPayload) = sendPacketToPlayer(this, packet)
+
+fun sendPacketToPlayer(player: Player, packet: CustomPacketPayload) {
+    if (player !is ServerPlayer) return
+    PacketDistributor.sendToPlayer(player, packet)
+}
+
+fun sendPacketToAllPlayers(packet: CustomPacketPayload) {
+    PacketDistributor.sendToAllPlayers(packet)
+}
+
+fun sendPacketToServer(packet: CustomPacketPayload) {
+    PacketDistributor.sendToServer(packet)
 }
