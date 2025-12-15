@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.Event
+import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.network.PacketDistributor
 
 @get:OnlyIn(Dist.CLIENT)
@@ -54,4 +56,8 @@ fun sendPacketToAllPlayers(packet: CustomPacketPayload) {
 
 fun sendPacketToServer(packet: CustomPacketPayload) {
     PacketDistributor.sendToServer(packet)
+}
+
+fun postEvent(event: Event) {
+    NeoForge.EVENT_BUS.post(event)
 }

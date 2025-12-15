@@ -64,7 +64,6 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.neoforge.capabilities.Capabilities
-import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.energy.IEnergyStorage
 import org.joml.Math
 import software.bernie.geckolib.animatable.GeoItem
@@ -421,7 +420,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun beforeShoot(parameters: ShootParameters) {
         val data = parameters.data
         val ammoSupplier = parameters.ammoSupplier
-        NeoForge.EVENT_BUS.post(ShootEvent.Pre(parameters))
+
+        postEvent(ShootEvent.Pre(parameters))
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         if (data.compute().boltActionTime > 0 && data.hasEnoughAmmoToShoot(ammoSupplier)) {
@@ -455,7 +455,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         val ammoSupplier = parameters.ammoSupplier
         val level = parameters.level
 
-        NeoForge.EVENT_BUS.post(ShootEvent.Post(parameters))
+        postEvent(ShootEvent.Post(parameters))
 
         val computed = data.compute()
         if (!data.useBackpackAmmo()) {
