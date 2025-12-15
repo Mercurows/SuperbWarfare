@@ -59,15 +59,15 @@ fun sendPacketToServer(packet: Any) {
     NetworkRegistry.PACKET_HANDLER.sendToServer(packet)
 }
 
-fun sendPacketToTracking(entity: Entity, packet: Any) {
+fun sendPacketToTrackingEntity(entity: Entity, packet: Any) {
     NetworkRegistry.PACKET_HANDLER.send(
         PacketDistributor.TRACKING_ENTITY.with { entity },
         packet
     )
 }
 
-fun Entity.sendPacketToTracking(packet: Any) {
-    sendPacketToTracking(this, packet)
+fun Entity.sendPacketToTrackingThis(packet: Any) {
+    sendPacketToTrackingEntity(this, packet)
 }
 
 fun <T : Event> postEvent(event: T) = MinecraftForge.EVENT_BUS.post(event)
