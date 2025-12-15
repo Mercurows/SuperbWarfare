@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
@@ -50,12 +51,20 @@ fun sendPacketTo(player: Player, packet: CustomPacketPayload) {
     PacketDistributor.sendToPlayer(player, packet)
 }
 
-fun sendPacketToAllPlayers(packet: CustomPacketPayload) {
+fun sendPacketToAll(packet: CustomPacketPayload) {
     PacketDistributor.sendToAllPlayers(packet)
 }
 
 fun sendPacketToServer(packet: CustomPacketPayload) {
     PacketDistributor.sendToServer(packet)
+}
+
+fun sendPacketToTracking(entity: Entity, packet: CustomPacketPayload) {
+    PacketDistributor.sendToPlayersTrackingEntity(entity, packet)
+}
+
+fun Entity.sendPacketToTracking(packet: CustomPacketPayload) {
+    sendPacketToTracking(this, packet)
 }
 
 fun <T : Event> postEvent(event: T): T = NeoForge.EVENT_BUS.post(event)

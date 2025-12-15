@@ -23,7 +23,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn
-import net.neoforged.neoforge.network.PacketDistributor
 import java.util.function.Consumer
 
 abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMotionEntity, IEntityWithComplexSpawn,
@@ -277,7 +276,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         if (!shouldSyncMotion()) return
 
         if (this.tickCount % this.type.updateInterval() == 0) {
-            PacketDistributor.sendToPlayersTrackingEntity(this, ClientMotionSyncMessage(this))
+            sendPacketToTracking(ClientMotionSyncMessage(this))
         }
     }
 
