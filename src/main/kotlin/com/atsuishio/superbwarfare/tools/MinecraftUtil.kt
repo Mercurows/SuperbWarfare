@@ -41,9 +41,9 @@ fun Vec3?.toFormattedString(): String {
     return "[ " + format0D(x) + ", " + format0D(y) + ", " + format0D(z) + " ]"
 }
 
-fun Player.sendPacket(packet: Any) = sendPacketToPlayer(this, packet)
+fun Player.sendPacket(packet: Any) = sendPacketTo(this, packet)
 
-fun sendPacketToPlayer(player: Player, packet: Any) {
+fun sendPacketTo(player: Player, packet: Any) {
     if (player !is ServerPlayer) return
     NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with { player }, packet)
 }
