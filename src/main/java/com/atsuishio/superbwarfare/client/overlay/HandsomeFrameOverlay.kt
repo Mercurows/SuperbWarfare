@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
@@ -13,38 +12,21 @@ import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 
 @OnlyIn(Dist.CLIENT)
-object HandsomeFrameOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_handsome_frame"
-
+object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
     private val FRAME = loc("textures/overlay/frame/frame.png")
     private val FRAME_WEAK = loc("textures/overlay/frame/frame_weak.png")
     private val FRAME_TARGET = loc("textures/overlay/frame/frame_target_triangle.png")
     private val FRAME_LOCK = loc("textures/overlay/frame/frame_lock.png")
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val player: Player? = gui.getMinecraft().player
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-
-        if (player == null) return
-        if (player.isSpectator) return
-
         val stack = player.mainHandItem
 
         if (ClientEventHandler.isEditing) return

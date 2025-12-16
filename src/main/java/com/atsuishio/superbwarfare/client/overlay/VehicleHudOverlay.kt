@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
@@ -27,20 +26,13 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
-import net.minecraftforge.common.util.NonNullConsumer
 import org.joml.Math
 import top.theillusivec4.curios.api.CuriosApi
-import top.theillusivec4.curios.api.SlotResult
-import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler
 import java.util.concurrent.atomic.AtomicReference
-import java.util.function.Consumer
 
 @OnlyIn(Dist.CLIENT)
-object VehicleHudOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_vehicle_hud"
-    const val ANIMATION_TIME: Int = 300
+object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
+    const val ANIMATION_TIME = 300
 
     private val ARMOR = loc("textures/overlay/vehicle/base/armor.png")
     private val ENERGY = loc("textures/overlay/vehicle/base/energy.png")
@@ -85,21 +77,13 @@ object VehicleHudOverlay : IGuiOverlay {
     private var oldWeaponIndex = 0
     private var oldRenderWeaponIndex = 0
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val player: Player? = gui.getMinecraft().player
-
+    override fun RenderContext.render() {
         if (!shouldRenderHud(player)) {
             wasRenderingWeapons = false
             return
         }
 
-        val entity = player!!.vehicle
+        val entity = player.vehicle
         if (entity !is VehicleEntity) return
 
         val poseStack = guiGraphics.pose()
@@ -293,27 +277,23 @@ object VehicleHudOverlay : IGuiOverlay {
 
         var index = 0
         for (i in passengers.indices.reversed()) {
-            val passenger = passengers.get(i)
+            val passenger = passengers[i]
 
             val y = h - 35 - index * 12
-            val name = AtomicReference<String?>("---")
+            val name = AtomicReference("---")
 
             if (passenger != null) {
                 name.set(passenger.getName().string)
             }
 
             if (passenger is Player) {
-                CuriosApi.getCuriosInventory(passenger).ifPresent(
-                    NonNullConsumer { c: ICuriosItemHandler? ->
-                        c!!.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent(
-                            Consumer { s: SlotResult? ->
-                                if (s!!.stack().hasCustomHoverName()) {
-                                    name.set(s.stack().getHoverName().string)
-                                }
-                            }
-                        )
+                CuriosApi.getCuriosInventory(passenger).ifPresent { c ->
+                    c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent { s ->
+                        if (s.stack().hasCustomHoverName()) {
+                            name.set(s.stack().getHoverName().string)
+                        }
                     }
-                )
+                }
             }
 
             guiGraphics.drawString(Minecraft.getInstance().font, name.get(), 42, y, 0x66ff00, true)

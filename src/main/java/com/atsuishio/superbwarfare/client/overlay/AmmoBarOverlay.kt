@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter
@@ -16,8 +15,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZZ
 import net.minecraft.Util
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
@@ -25,16 +22,13 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.NonNullFunction
 import java.util.regex.Pattern
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
-object AmmoBarOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_ammo_bar"
+object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
     private val LINE = loc("textures/overlay/ammo_bar/fire_mode/line.png")
     private val MOUSE = loc("textures/overlay/ammo_bar/fire_mode/mouse.png")
@@ -45,20 +39,9 @@ object AmmoBarOverlay : IGuiOverlay {
     private val TO_RESOURCE_LOCATION =
         Util.memoize<String, ResourceLocation> { str -> loc("textures/overlay/ammo_bar/fire_mode/$str.png") }
 
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.AMMO_HUD.get()
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        if (!DisplayConfig.AMMO_HUD.get()) return
-
-        val player: LocalPlayer = gui.getMinecraft().player ?: return
-
-        if (player.isSpectator) return
-
+    override fun RenderContext.render() {
         val stack = player.mainHandItem
         val vehicle = player.vehicle
         val item = stack.item

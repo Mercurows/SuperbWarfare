@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
@@ -10,40 +9,29 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.util.Mth
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 
 @OnlyIn(Dist.CLIENT)
-object HeatBarOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_heat_bar"
-
+object HeatBarOverlay : CommonOverlay("heat_bar") {
     private val TEXTURE = loc("textures/overlay/heat_bar/heat_bar.png")
 
     private val ANIMATION_TIMER: AnimationTimer = AnimationTimer(200)
         .animation(AnimationCurves.EASE_IN_QUART)
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        if (!DisplayConfig.ENABLE_HEAT_BAR_HUD.get()) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.ENABLE_HEAT_BAR_HUD.get()
 
-        val player = localPlayer ?: return
+    override fun RenderContext.render() {
+        val heat: Double
         val vehicle = player.vehicle
-        val heat = if (ClientEventHandler.isEditing
-            || (player.mainHandItem
-                .item !is GunItem) || (vehicle is VehicleEntity && vehicle.banHand(player))
+
+        heat = if (ClientEventHandler.isEditing
+            || (player.mainHandItem.item !is GunItem)
+            || (vehicle is VehicleEntity && vehicle.banHand(player))
         ) {
             0.0
         } else {

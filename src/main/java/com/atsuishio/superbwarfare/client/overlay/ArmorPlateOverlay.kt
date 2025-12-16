@@ -1,23 +1,17 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModTags
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 
 @OnlyIn(Dist.CLIENT)
-object ArmorPlateOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_armor_plate"
-
+object ArmorPlateOverlay : CommonOverlay("armor_plate") {
     private val ICON = loc("textures/overlay/armor_plate/icon.png")
     private val BAR_1 = loc("textures/overlay/armor_plate/bar_1.png")
     private val BAR_2 = loc("textures/overlay/armor_plate/bar_2.png")
@@ -26,20 +20,9 @@ object ArmorPlateOverlay : IGuiOverlay {
     private val BAR_FRAME_2 = loc("textures/overlay/armor_plate/bar_frame_2.png")
     private val BAR_FRAME_3 = loc("textures/overlay/armor_plate/bar_frame_3.png")
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        if (!DisplayConfig.ARMOR_PLATE_HUD.get()) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.ARMOR_PLATE_HUD.get()
 
-        val mc = gui.getMinecraft()
-
-        val player = mc.player ?: return
-        if (player.isSpectator()) return
-
+    override fun RenderContext.render() {
         val stack = player.getItemBySlot(EquipmentSlot.CHEST)
         if (stack == ItemStack.EMPTY) return
         if (stack.tag == null || !stack.tag!!.contains("ArmorPlate")) return

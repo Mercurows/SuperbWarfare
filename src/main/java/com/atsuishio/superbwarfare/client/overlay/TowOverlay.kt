@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity
@@ -9,33 +8,20 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.util.Mth
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
-object TowOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_tow"
-
+object TowOverlay : CommonOverlay("tow") {
     private val SPYGLASS = loc("textures/overlay/spyglass/spyglass.png")
 
     private var scopeScale = 1f
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val mc = gui.getMinecraft()
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-        val player = gui.getMinecraft().player ?: return
 
         if (player.vehicle is TowEntity && (ClientEventHandler.zoomVehicle || mc.options.cameraType == CameraType.FIRST_PERSON)) {
             poseStack.pushPose()

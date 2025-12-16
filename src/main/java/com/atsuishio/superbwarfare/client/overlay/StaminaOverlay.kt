@@ -1,37 +1,24 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.util.Mth
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 
 @OnlyIn(Dist.CLIENT)
-object StaminaOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_stamina"
+object StaminaOverlay : CommonOverlay("stamina") {
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        if (!DisplayConfig.STAMINA_HUD.get()) return
+    override fun shouldRender() =
+        super.shouldRender() && DisplayConfig.STAMINA_HUD.get() && !ClientEventHandler.isEditing
 
-        val player: LocalPlayer = gui.getMinecraft().player ?: return
-        if (ClientEventHandler.isEditing) return
+    override fun RenderContext.render() {
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
         if (ClientEventHandler.switchTime <= 0) return

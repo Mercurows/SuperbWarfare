@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -17,7 +16,6 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
@@ -26,30 +24,18 @@ import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
-object SpyglassRangeOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_spyglass_range"
-
+object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
     private val INDICATOR = loc("textures/overlay/spyglass/indicator.png")
     private val SPYGLASS = loc("textures/overlay/spyglass/spyglass.png")
 
     private var scopeScale = 1f
     private var lerpHoldArtilleryIndicator = 0f
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val mc = gui.getMinecraft()
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-        val player = gui.getMinecraft().player ?: return
 
         val stack = player.getUseItem()
         if (((player.isUsingItem && player.getUseItem()

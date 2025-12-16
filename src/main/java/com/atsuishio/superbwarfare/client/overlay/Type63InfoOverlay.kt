@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModItems
@@ -16,39 +15,23 @@ import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
-object Type63InfoOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_type_63_info"
-
+object Type63InfoOverlay : CommonOverlay("type_63_info") {
     private val AP = ItemStack(ModItems.MEDIUM_ROCKET_AP.get())
     private val HE = ItemStack(ModItems.MEDIUM_ROCKET_HE.get())
     private val CM = ItemStack(ModItems.MEDIUM_ROCKET_CM.get())
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val mc = gui.getMinecraft()
-        val player: Player? = mc.player
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-
-        if (player == null) return
 
         val lookingEntity = TraceTool.findLookingEntity(player, player.getEntityReach())
 

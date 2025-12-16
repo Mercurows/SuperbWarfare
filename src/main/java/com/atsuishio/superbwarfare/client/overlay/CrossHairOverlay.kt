@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
@@ -28,15 +27,11 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.max
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
-object CrossHairOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_cross_hair"
-
+object CrossHairOverlay : CommonOverlay("cross_hair") {
     const val CROSSHAIR_EMPTY: String = "@Empty"
     const val CROSSHAIR_CUSTOM: String = "@Custom"
     const val CROSSHAIR_GUN_DEFAULT: String = "@GunDefault"
@@ -68,23 +63,15 @@ object CrossHairOverlay : IGuiOverlay {
 
     @JvmField
     var vehicleIndicator: Int = 0
-    private var scopeScale = 1f
 
     @JvmField
     var gunRot: Float = 0f
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val player = gui.getMinecraft().player ?: return
-        if (player.isSpectator()) return
+    private var scopeScale = 1f
 
-        if (ClientEventHandler.isEditing) return
+    override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
 
+    override fun RenderContext.render() {
         val stack = player.mainHandItem
         val vehicle = player.vehicle
         if (stack.item !is GunItem || (vehicle is VehicleEntity && vehicle.banHand(player))) return

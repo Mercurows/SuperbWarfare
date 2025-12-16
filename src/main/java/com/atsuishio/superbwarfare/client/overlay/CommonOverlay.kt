@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.overlay.components.BaseComponent
+import com.atsuishio.superbwarfare.tools.isNullOrSpector
 import com.atsuishio.superbwarfare.tools.localPlayer
-import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.options
 import net.minecraft.client.Camera
 import net.minecraft.client.gui.GuiGraphics
@@ -24,7 +24,11 @@ class RenderContext(
     val w by ::screenWidth
     val h by ::screenHeight
 
-    val player by lazy { localPlayer }
+    // Non-null local player, MUST BE USED AFTER NULL CHECK!
+    val player get() = localPlayer!!
+
+    val mc get() = com.atsuishio.superbwarfare.tools.mc
+
     val camera: Camera get() = mc.gameRenderer.mainCamera
     val cameraPos: Vec3 get() = camera.position
 
@@ -33,7 +37,7 @@ class RenderContext(
 
 @OnlyIn(Dist.CLIENT)
 abstract class CommonOverlay(id: String) : IGuiOverlay {
-    val overlayID = Mod.MODID + "_" + id
+    val ID = Mod.MODID + "_" + id
 
     val components = mutableListOf<BaseComponent>()
 
@@ -51,7 +55,7 @@ abstract class CommonOverlay(id: String) : IGuiOverlay {
         }
     }
 
-    open fun shouldRender() = !options.hideGui && !(localPlayer?.isSpectator ?: true)
+    open fun shouldRender() = !options.hideGui && !localPlayer.isNullOrSpector()
 
     override fun render(
         gui: ForgeGui,

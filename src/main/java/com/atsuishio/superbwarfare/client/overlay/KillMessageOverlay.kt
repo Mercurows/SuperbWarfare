@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen
@@ -30,15 +29,11 @@ import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import top.theillusivec4.curios.api.CuriosApi
 import kotlin.math.pow
 
 @OnlyIn(Dist.CLIENT)
-object KillMessageOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_kill_message"
-
+object KillMessageOverlay : CommonOverlay("kill_message") {
     private val HEADSHOT = loc("textures/overlay/damage_types/headshot.png")
 
     private val KNIFE = loc("textures/overlay/damage_types/knife.png")
@@ -52,23 +47,12 @@ object KillMessageOverlay : IGuiOverlay {
     private val LASER = loc("textures/overlay/damage_types/laser.png")
     private val VEHICLE = loc("textures/overlay/damage_types/vehicle_strike.png")
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        if (!KillMessageConfig.SHOW_KILL_MESSAGE.get()) {
-            return
-        }
 
-        gui.getMinecraft().player ?: return
+    override fun shouldRender() = super.shouldRender()
+            && KillMessageConfig.SHOW_KILL_MESSAGE.get()
+            && !KillMessageHandler.QUEUE.isEmpty()
 
-        if (KillMessageHandler.QUEUE.isEmpty()) {
-            return
-        }
-
+    override fun RenderContext.render() {
         val pos = KillMessageConfig.KILL_MESSAGE_POSITION.get()
         var posX: Int
         var posY: Float

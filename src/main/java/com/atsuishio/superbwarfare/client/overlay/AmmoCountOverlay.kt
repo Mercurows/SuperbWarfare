@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer
 import com.atsuishio.superbwarfare.client.animation.ValueAnimator
@@ -10,19 +9,14 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 import net.minecraft.util.FastColor
-import net.minecraft.world.entity.player.Player
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.roundToInt
 
 @OnlyIn(Dist.CLIENT)
-object AmmoCountOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_ammo_count"
+object AmmoCountOverlay : CommonOverlay("ammo_count") {
 
     private val ammoInfoTimer: AnimationTimer = AnimationTimer(500, 2000)
         .forwardAnimation(AnimationCurves.EASE_OUT_EXPO)
@@ -41,17 +35,8 @@ object AmmoCountOverlay : IGuiOverlay {
     /**
      * 在手持弹药或弹药盒时，渲染玩家弹药总量信息
      */
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
+    override fun RenderContext.render() {
         var startRenderingAmmoInfo = false
-        val player: Player? = gui.getMinecraft().player
-        if (player == null || player.isSpectator) return
-
         var isAmmoBox = false
 
         // 动画计算

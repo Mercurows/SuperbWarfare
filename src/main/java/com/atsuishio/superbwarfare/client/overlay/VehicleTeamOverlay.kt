@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
@@ -16,8 +15,6 @@ import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.atsuishio.superbwarfare.tools.font
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
@@ -27,28 +24,15 @@ import net.minecraft.world.phys.Vec3
 import net.minecraft.world.scores.PlayerTeam
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
-object VehicleTeamOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_vehicle_team"
+object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        if (!DisplayConfig.VEHICLE_INFO.get()) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
-        val mc = gui.getMinecraft()
-        val player: LocalPlayer = mc.player ?: return
 
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
+    override fun RenderContext.render() {
         var viewVec = Vec3(camera.lookVector)
         val poseStack = guiGraphics.pose()
 

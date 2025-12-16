@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
@@ -14,22 +13,16 @@ import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
-object IglaHudOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_igla_9k38_hud"
-
+object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
     private val FRAME = loc("textures/overlay/frame/frame_diamond.png")
     private val PART_1 = loc("textures/overlay/igla_9k38/part_1.png")
     private val PART_2 = loc("textures/overlay/igla_9k38/part_2.png")
@@ -42,21 +35,12 @@ object IglaHudOverlay : IGuiOverlay {
     private var scopeScale = 1f
     private var lerpSeeking = 1f
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val player: Player? = gui.getMinecraft().player
-        val poseStack = guiGraphics.pose()
-        val camera = gui.getMinecraft().gameRenderer.mainCamera
+    override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
 
-        if (player == null) return
+    override fun RenderContext.render() {
+        val poseStack = guiGraphics.pose()
         val stack = player.mainHandItem
 
-        if (ClientEventHandler.isEditing) return
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
 

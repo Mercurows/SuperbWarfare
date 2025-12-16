@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
@@ -15,7 +14,6 @@ import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
@@ -27,15 +25,10 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import top.theillusivec4.curios.api.CuriosApi
 
 @OnlyIn(Dist.CLIENT)
-object IFFOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_iff"
-
-    @JvmField
+object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_INDICATOR: ResourceLocation = loc("textures/overlay/teammate/friendly_indicator.png")
     val FRIENDLY_AIRCRAFT: ResourceLocation = loc("textures/overlay/teammate/friendly_aircraft.png")
     val FRIENDLY_TANK: ResourceLocation = loc("textures/overlay/teammate/friendly_tank.png")
@@ -51,22 +44,9 @@ object IFFOverlay : IGuiOverlay {
     val FRIENDLY_HELICOPTER: ResourceLocation = loc("textures/overlay/teammate/friendly_helicopter.png")
     val FRIENDLY_MINE: ResourceLocation = loc("textures/overlay/teammate/friendly_mine.png")
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics?,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        if (!DisplayConfig.VEHICLE_INFO.get()) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
-        val mc = gui.getMinecraft()
-        val player: Player? = mc.player
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
-
-        if (player == null) return
-
+    override fun RenderContext.render() {
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
                 val entities = SeekTool.Builder(player)

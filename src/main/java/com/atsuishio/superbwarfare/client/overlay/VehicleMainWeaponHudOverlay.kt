@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.weapon.AircraftHud
@@ -30,8 +29,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -39,9 +36,8 @@ import kotlin.math.sin
  * 控制载具主武器的玩家显示的HUD
  */
 @OnlyIn(Dist.CLIENT)
-object VehicleMainWeaponHudOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_vehicle_main_weapon_hud"
-    const val EMPTY: String = "@Empty"
+object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
+    const val EMPTY = "@Empty"
 
     private var lerpLock = 1f
 
@@ -61,17 +57,11 @@ object VehicleMainWeaponHudOverlay : IGuiOverlay {
     private val SHOOT_INDICATOR = loc("textures/overlay/frame/frame_diamond.png")
     private val BLOCK = loc("textures/overlay/misc/block.png")
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val player = gui.getMinecraft().player ?: return
+    override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
+
+    override fun RenderContext.render() {
         val vehicle = player.vehicle
         if (vehicle !is VehicleEntity) return
-        if (ClientEventHandler.isEditing) return
 
         val type: String = vehicle.computed().hudType
         if (type == EMPTY) return

@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicator
@@ -19,7 +18,6 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -27,13 +25,10 @@ import net.minecraft.util.Mth
 import net.minecraft.world.level.ClipContext
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.gui.overlay.ForgeGui
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
 import org.joml.Math
 
 @OnlyIn(Dist.CLIENT)
-object VehicleCrosshairOverlay : IGuiOverlay {
-    const val ID: String = Mod.MODID + "_vehicle_crosshair"
+object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
 
     private val LOGGER = ResourceOnceLogger()
 
@@ -58,20 +53,15 @@ object VehicleCrosshairOverlay : IGuiOverlay {
     private val CROSSHAIR_THIRD_CAMERA = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private var scopeScale = 1f
 
-    override fun render(
-        gui: ForgeGui,
-        guiGraphics: GuiGraphics,
-        partialTick: Float,
-        screenWidth: Int,
-        screenHeight: Int
-    ) {
-        val mc = gui.getMinecraft()
-        val player = mc.player
-        if (player == null || player.isSpectator()) {
+    override fun shouldRender(): Boolean {
+        val shouldRender = super.shouldRender()
+        if (!shouldRender) {
             resetScale()
-            return
         }
+        return shouldRender
+    }
 
+    override fun RenderContext.render() {
         val entity = player.vehicle
         if (entity !is VehicleEntity) {
             resetScale()
