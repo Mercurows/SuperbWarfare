@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
@@ -33,7 +32,7 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
 
-        if (stack.item is GunItem && Minecraft.getInstance().options.cameraType.isFirstPerson) {
+        if (stack.item is GunItem && isFirstPerson) {
             val data = from(stack)
             val level = data.perk!!.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
             if (level == 0) return
