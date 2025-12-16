@@ -43,9 +43,7 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
 
-        if ((stack.item === ModItems.JAVELIN.get() && ClientEventHandler.zoomPos > 0.8) && Minecraft.getInstance().options.cameraType
-                .isFirstPerson && ClientEventHandler.zoom
-        ) {
+        if (stack.item === ModItems.JAVELIN.get() && ClientEventHandler.zoomPos > 0.8 && isFirstPerson && ClientEventHandler.zoom) {
             val data = from(stack)
 
             poseStack.pushPose()
