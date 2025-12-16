@@ -14,9 +14,9 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.level.Level
 
 abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotionEntity {
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level?) : super(pEntityType, pLevel)
+    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
 
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pShooter: Entity?, pLevel: Level?) : super(
+    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pShooter: Entity?, pLevel: Level) : super(
         pEntityType,
         pLevel
     ) {

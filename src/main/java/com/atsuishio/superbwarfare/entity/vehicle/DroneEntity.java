@@ -119,6 +119,7 @@ public class DroneEntity extends GeoVehicleEntity {
                         (float) data.tickCount
                 ))
                 .define(DISPLAY_ENTITY_TAG, new CompoundTag())
+                .define(AMMO, 0)
                 .define(MAX_AMMO, 1);
     }
 

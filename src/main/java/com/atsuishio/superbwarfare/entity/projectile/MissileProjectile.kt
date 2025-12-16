@@ -31,9 +31,9 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
 
     var targetUUID by TARGET_UUID
 
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile?>, pLevel: Level?) : super(pEntityType, pLevel)
+    constructor(pEntityType: EntityType<out ThrowableItemProjectile?>, pLevel: Level) : super(pEntityType, pLevel)
 
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile?>, pShooter: Entity?, pLevel: Level?) : super(
+    constructor(pEntityType: EntityType<out ThrowableItemProjectile?>, pShooter: Entity?, pLevel: Level) : super(
         pEntityType,
         pLevel
     ) {
