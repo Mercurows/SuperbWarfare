@@ -125,7 +125,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             return newMap.toMap()
         }
-        set(value) = this.entityData.set(GUN_DATA_MAP, value.toMap(), true)
+        set(value) = this.entityData.set(GUN_DATA_MAP, value.toMap())
 
     open fun getSeat(seatIndex: Int) =
         computed().seats().getOrNull(seatIndex)
@@ -1088,7 +1088,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 }
 
                 val angle = Mth.wrapDegrees(
-                    -VehicleVecUtils.getYRotFromVector(getViewVector(1f)) + VehicleVecUtils.getYRotFromVector(shootVec)
+                    -getYRotFromVector(getViewVector(1f)) + getYRotFromVector(shootVec)
                 ).toFloat()
 
                 val vo = Vec3(0.0, 0.0, 1.0)
@@ -1099,7 +1099,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 val v3 = v1.add(v2)
 
                 yawWhileShoot =
-                    Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(vo) + VehicleVecUtils.getYRotFromVector(v3))
+                    Mth.wrapDegrees(-getYRotFromVector(vo) + getYRotFromVector(v3))
                         .toFloat()
                 cannonRecoilForce = v3.length().toFloat()
 
@@ -2892,12 +2892,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val ySpeed = this.passengerWeaponYSpeed
         val xSpeed = this.passengerWeaponXSpeed
         val diffY = Mth.wrapDegrees(
-            -VehicleVecUtils.getYRotFromVector(shootVec) + VehicleVecUtils.getYRotFromVector(
+            -getYRotFromVector(shootVec) + getYRotFromVector(
                 getPassengerWeaponStationVector(1f)
             )
         ).toFloat()
         val diffX = Mth.wrapDegrees(
-            -VehicleVecUtils.getXRotFromVector(shootVec) + VehicleVecUtils.getXRotFromVector(
+            -getXRotFromVector(shootVec) + getXRotFromVector(
                 getPassengerWeaponStationVector(1f)
             )
         ).toFloat()
@@ -3603,8 +3603,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (data != null) {
                 if (zoom && gunData != null && gunData.compute().shootPos.viewDirection != null) {
                     return Vec2(
-                        -VehicleVecUtils.getYRotFromVector(getViewVec(player, partialTicks)).toFloat(),
-                        -VehicleVecUtils.getXRotFromVector(getViewVec(player, partialTicks)).toFloat()
+                        -getYRotFromVector(getViewVec(player, partialTicks)).toFloat(),
+                        -getXRotFromVector(getViewVec(player, partialTicks)).toFloat()
                     )
                 }
                 if (useAircraftCamera(index)) {
@@ -3615,8 +3615,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 }
                 if (zoom || isFirstPerson) {
                     return Vec2(
-                        -VehicleVecUtils.getYRotFromVector(cameraDirection(player, partialTicks)).toFloat(),
-                        -VehicleVecUtils.getXRotFromVector(cameraDirection(player, partialTicks)).toFloat()
+                        -getYRotFromVector(cameraDirection(player, partialTicks)).toFloat(),
+                        -getXRotFromVector(cameraDirection(player, partialTicks)).toFloat()
                     )
                 }
             } else {
