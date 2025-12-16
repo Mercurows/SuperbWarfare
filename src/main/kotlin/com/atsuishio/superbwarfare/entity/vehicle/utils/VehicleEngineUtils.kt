@@ -557,6 +557,7 @@ object VehicleEngineUtils {
                     if (getFirstPassenger() == null) vehicle else getFirstPassenger()
                 ), 6 + (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
             )
+            crash = true
         }
 
         val pilot = getFirstPassenger()
@@ -566,7 +567,6 @@ object VehicleEngineUtils {
         val diffZ: Float
 
         if (health > 0.1f * getMaxHealth()) {
-            val landingPos = findNearestLandingPos(30)
             if (pilot == null) {
                 leftInputDown = false
                 rightInputDown = false
@@ -581,32 +581,23 @@ object VehicleEngineUtils {
                     power *= 0.995f
                 }
             } else {
-                if (!backInputDown || landingPos == null) {
-                    if (rightInputDown) {
-                        holdTick++
-                        deltaRot -= 2f * Math.min(holdTick, 7) * power
-                    } else if (leftInputDown) {
-                        holdTick++
-                        deltaRot += 2f * Math.min(holdTick, 7) * power
-                    } else {
-                        holdTick = 0
-                    }
-                    xRot += (if (onGround()) 0f else 1.5f) * pitchSpeed * mouseMoveSpeedY * synchedPropellerRot
-                    setZRot(roll - rollSpeed * (deltaRot + (if (onGround()) 0f else 0.25f) * mouseMoveSpeedX * synchedPropellerRot))
+                if (rightInputDown) {
+                    holdTick++
+                    deltaRot -= 2f * Math.min(holdTick, 7) * power
+                } else if (leftInputDown) {
+                    holdTick++
+                    deltaRot += 2f * Math.min(holdTick, 7) * power
+                } else {
+                    holdTick = 0
                 }
+                xRot += (if (onGround()) 0f else 1.5f) * pitchSpeed * mouseMoveSpeedY * synchedPropellerRot
+                setZRot(roll - rollSpeed * (deltaRot + (if (onGround()) 0f else 0.25f) * mouseMoveSpeedX * synchedPropellerRot))
 
                 yRot += yawSpeed * Mth.clamp(
                     (if (onGround()) 0.1f else 2f) * mouseMoveSpeedX * synchedPropellerRot + (if (subEngineDamaged) 25 else 0) * synchedPropellerRot,
                     -10f,
                     10f
                 )
-                if (landingPos != null && !onGround() && backInputDown) {
-                    updateAutoLanding(landingPos)
-                }
-
-                if (pilot is Player && level().isClientSide && landingPos != null && !onGround()) {
-                    pilot.displayClientMessage(Component.translatable("tips.superbwarfare.press_s_to_landing"), true)
-                }
 
                 if (onGround()) {
                     setZRot(roll * 0.98f)
@@ -749,6 +740,7 @@ object VehicleEngineUtils {
                     ), (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
                 )
             }
+            crash = true
         }
 
         val passenger = getFirstPassenger()
