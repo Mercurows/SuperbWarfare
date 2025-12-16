@@ -20,7 +20,6 @@ public class ModParticleTypes {
 
     public static final RegistryObject<SimpleParticleType> FIRE_STAR = REGISTRY.register("fire_star", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> WHITE_STAR = REGISTRY.register("white_star", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> PRISMATIC_BOLT = REGISTRY.register("prismatic_bolt", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> RISING_SMOKE = REGISTRY.register("rising_smoke", () -> new SimpleParticleType(true));
     public static final RegistryObject<ParticleType<BulletDecalOption>> BULLET_DECAL = REGISTRY.register("bullet_decal",
             () -> createOptions(BulletDecalOption.CODEC, true, BulletDecalOption.DESERIALIZER));

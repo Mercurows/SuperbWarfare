@@ -38,17 +38,17 @@ public class SuperStarProjectileRenderer extends EntityRenderer<SuperStarProject
         Matrix4f $$7 = $$6.pose();
         Matrix3f $$8 = $$6.normal();
         VertexConsumer $$9 = pBuffer.getBuffer(RenderType.entityCutoutNoCull(texture(pEntity)));
-        pMatrixStack.rotateAround(Axis.ZP.rotationDegrees((System.currentTimeMillis() % 36000000) / 2f), 0, 0.125f, 0);
-        vertex($$9, $$7, $$8, pPackedLight, 0, 0, 0, 1);
-        vertex($$9, $$7, $$8, pPackedLight, 1, 0, 1, 1);
-        vertex($$9, $$7, $$8, pPackedLight, 1, 1, 1, 0);
-        vertex($$9, $$7, $$8, pPackedLight, 0, 1, 0, 0);
+        pMatrixStack.rotateAround(Axis.ZP.rotationDegrees((System.currentTimeMillis() % 36000000) / 2f), 0, 0, 0);
+        vertex($$9, $$7, $$8, pPackedLight, -0.5f, -0.5f, 0, 1);
+        vertex($$9, $$7, $$8, pPackedLight, 0.5f, -0.5f, 1, 1);
+        vertex($$9, $$7, $$8, pPackedLight, 0.5f, 0.5f, 1, 0);
+        vertex($$9, $$7, $$8, pPackedLight, -0.5f, 0.5f, 0, 0);
         pMatrixStack.popPose();
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
     private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
-        pConsumer.vertex(pPose, pX - 0.5F, pY - 0.25F, 0).color(255, 255, 0, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
+        pConsumer.vertex(pPose, pX, pY, 0).color(255, 255, 0, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
     }
 
     private static ResourceLocation texture(Entity entity) {
