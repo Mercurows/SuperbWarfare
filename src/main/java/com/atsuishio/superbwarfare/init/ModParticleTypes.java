@@ -22,7 +22,6 @@ public class ModParticleTypes {
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FIRE_STAR = REGISTRY.register("fire_star", () -> new SimpleParticleType(true));
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> WHITE_STAR = REGISTRY.register("white_star", () -> new SimpleParticleType(true));
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> PRISMATIC_BOLT = REGISTRY.register("prismatic_bolt", () -> new SimpleParticleType(true));
     public static final DeferredHolder<ParticleType<?>,SimpleParticleType> RISING_SMOKE = REGISTRY.register("rising_smoke", () -> new SimpleParticleType(true));
     public static final DeferredHolder<ParticleType<?>, ParticleType<BulletDecalOption>> BULLET_DECAL = REGISTRY.register("bullet_decal",
             () -> createOptions(BulletDecalOption.CODEC, true, BulletDecalOption.STREAM_CODEC));

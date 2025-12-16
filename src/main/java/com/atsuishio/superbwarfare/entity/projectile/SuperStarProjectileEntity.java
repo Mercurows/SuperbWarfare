@@ -75,8 +75,10 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
             hitVec = living.getEyePosition();
         }
 
-        if (level() instanceof ServerLevel serverLevel) {
-            ParticleTool.sendParticle(serverLevel, ModParticleTypes.PRISMATIC_BOLT.get(), hitVec.x, hitVec.y, hitVec.z, 1, 0, 0.2, 0, 0, true);
+        if (level() instanceof ServerLevel) {
+            PrismaticBoltEntity PrismaticBoltEntity = new PrismaticBoltEntity(level());
+            PrismaticBoltEntity.setPos(hitVec.x, hitVec.y, hitVec.z);
+            level().addFreshEntity(PrismaticBoltEntity);
         }
 
         // 命中伤害
