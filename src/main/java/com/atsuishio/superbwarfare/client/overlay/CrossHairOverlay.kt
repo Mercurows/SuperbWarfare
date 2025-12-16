@@ -19,12 +19,9 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
 import net.minecraft.client.CameraType
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -34,16 +31,12 @@ import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.ClientTickEvent
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.max
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = Mod.MODID, value = [Dist.CLIENT])
-object CrossHairOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("cross_hair")
-
+object CrossHairOverlay : CommonOverlay("cross_hair") {
     const val CROSSHAIR_EMPTY: String = "@Empty"
     const val CROSSHAIR_CUSTOM: String = "@Custom"
     const val CROSSHAIR_GUN_DEFAULT: String = "@GunDefault"
@@ -81,18 +74,9 @@ object CrossHairOverlay : LayeredDraw.Layer {
 
     private var scopeScale = 1f
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
+    override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
 
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-
-        val player: Player? = Minecraft.getInstance().player
-        if (player == null || player.isSpectator) return
-
-        if (ClientEventHandler.isEditing) return
-
+    override fun RenderContext.render() {
         val stack = player.mainHandItem
         val vehicle = player.vehicle
         if (stack.item !is GunItem || (vehicle is VehicleEntity && vehicle.banHand(player))) return

@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.overlay.components.BaseComponent
+import com.atsuishio.superbwarfare.tools.isNullOrSpector
 import com.atsuishio.superbwarfare.tools.localPlayer
-import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.options
 import net.minecraft.client.Camera
 import net.minecraft.client.DeltaTracker
@@ -21,7 +21,11 @@ class RenderContext(val guiGraphics: GuiGraphics, val deltaTracker: DeltaTracker
     val w by ::screenWidth
     val h by ::screenHeight
 
-    val player by ::localPlayer
+    // Non-null local player, MUST BE USED AFTER NULL CHECK!
+    val player get() = localPlayer!!
+
+    val mc get() = com.atsuishio.superbwarfare.tools.mc
+
     val camera: Camera get() = mc.gameRenderer.mainCamera
     val cameraPos: Vec3 get() = camera.position
 
@@ -32,7 +36,7 @@ class RenderContext(val guiGraphics: GuiGraphics, val deltaTracker: DeltaTracker
 
 @OnlyIn(Dist.CLIENT)
 abstract class CommonOverlay(id: String) : LayeredDraw.Layer {
-    val overlayID = loc(id)
+    val ID = loc(id)
 
     val components = mutableListOf<BaseComponent>()
 
@@ -50,7 +54,7 @@ abstract class CommonOverlay(id: String) : LayeredDraw.Layer {
         }
     }
 
-    open fun shouldRender() = !options.hideGui && !(localPlayer?.isSpectator ?: true)
+    open fun shouldRender() = !options.hideGui && !localPlayer.isNullOrSpector()
 
     override fun render(
         guiGraphics: GuiGraphics,

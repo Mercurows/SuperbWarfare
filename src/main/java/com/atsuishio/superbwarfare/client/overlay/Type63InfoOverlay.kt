@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModItems
@@ -15,13 +14,9 @@ import com.atsuishio.superbwarfare.tools.RangeTool.getRange
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import net.minecraft.ChatFormatting
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
@@ -30,23 +25,13 @@ import net.neoforged.api.distmarker.OnlyIn
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
-object Type63InfoOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("type_63_info")
-
+object Type63InfoOverlay : CommonOverlay("type_63_info") {
     private val AP = ItemStack(ModItems.MEDIUM_ROCKET_AP.get())
     private val HE = ItemStack(ModItems.MEDIUM_ROCKET_HE.get())
     private val CM = ItemStack(ModItems.MEDIUM_ROCKET_CM.get())
 
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        val mc = Minecraft.getInstance()
-        if (mc.options.hideGui) return
-        val player = mc.player ?: return
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-        val partialTick = deltaTracker.getGameTimeDeltaPartialTick(true)
 
         val lookingEntity = TraceTool.findLookingEntity(player, player.entityInteractionRange())
 

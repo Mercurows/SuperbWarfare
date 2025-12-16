@@ -19,11 +19,9 @@ import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCent
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
@@ -38,10 +36,7 @@ import kotlin.math.sin
  * 控制载具主武器的玩家显示的HUD
  */
 @OnlyIn(Dist.CLIENT)
-object VehicleMainWeaponHudOverlay : LayeredDraw.Layer {
-
-    @JvmField
-    val ID = loc("vehicle_main_weapon_hud")
+object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
     const val EMPTY = "@Empty"
 
     private var lerpLock = 1f
@@ -62,14 +57,11 @@ object VehicleMainWeaponHudOverlay : LayeredDraw.Layer {
     private val SHOOT_INDICATOR = loc("textures/overlay/frame/frame_diamond.png")
     private val BLOCK = loc("textures/overlay/misc/block.png")
 
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        val mc = Minecraft.getInstance()
-        if (mc.options.hideGui) return
+    override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
 
-        val player = mc.player ?: return
+    override fun RenderContext.render() {
         val vehicle = player.vehicle
         if (vehicle !is VehicleEntity) return
-        if (ClientEventHandler.isEditing) return
 
         val type: String = vehicle.computed().hudType
         if (type == EMPTY) return

@@ -7,36 +7,20 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.CameraType
-import net.minecraft.client.DeltaTracker
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.player.Player
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
-object TowOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("tow")
-
+object TowOverlay : CommonOverlay("tow") {
     private val SPYGLASS = loc("textures/overlay/spyglass/spyglass.png")
 
     private var scopeScale = 1f
 
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-        val mc = Minecraft.getInstance()
-        val player: Player? = mc.player
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-
-        if (player == null) return
 
         if (player.vehicle is TowEntity && (ClientEventHandler.zoomVehicle || mc.options.cameraType == CameraType.FIRST_PERSON)) {
             poseStack.pushPose()

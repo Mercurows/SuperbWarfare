@@ -8,34 +8,18 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.DeltaTracker
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
-import net.minecraft.client.player.LocalPlayer
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object RedTriangleOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("red_triangle")
-
+object RedTriangleOverlay : CommonOverlay("red_triangle") {
     private val TRIANGLE = loc("textures/overlay/rpg/red_triangle.png")
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-        val mc = Minecraft.getInstance()
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
 
-        val player: LocalPlayer = mc.player ?: return
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
 

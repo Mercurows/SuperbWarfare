@@ -11,39 +11,22 @@ import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object HandsomeFrameOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("handsome_frame")
-
+object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
     private val FRAME = loc("textures/overlay/frame/frame.png")
     private val FRAME_WEAK = loc("textures/overlay/frame/frame_weak.png")
     private val FRAME_TARGET = loc("textures/overlay/frame/frame_target_triangle.png")
     private val FRAME_LOCK = loc("textures/overlay/frame/frame_lock.png")
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-
-        val player: Player? = Minecraft.getInstance().player
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-
-        if (player == null) return
-        if (player.isSpectator) return
-
         val stack = player.mainHandItem
 
         if (ClientEventHandler.isEditing) return

@@ -14,11 +14,7 @@ import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZZ
 import net.minecraft.Util
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
@@ -28,13 +24,10 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.neoforge.capabilities.Capabilities
 import java.util.regex.Pattern
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
-object AmmoBarOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("ammo_bar")
+object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
     private val LINE = loc("textures/overlay/ammo_bar/fire_mode/line.png")
     private val MOUSE = loc("textures/overlay/ammo_bar/fire_mode/mouse.png")
@@ -45,17 +38,9 @@ object AmmoBarOverlay : LayeredDraw.Layer {
     private val TO_RESOURCE_LOCATION =
         Util.memoize<String, ResourceLocation> { str -> loc("textures/overlay/ammo_bar/fire_mode/$str.png") }
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (!DisplayConfig.AMMO_HUD.get()) return
-        if (Minecraft.getInstance().options.hideGui) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.AMMO_HUD.get()
 
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-        val player: LocalPlayer = Minecraft.getInstance().player ?: return
-
-        if (player.isSpectator()) return
-
+    override fun RenderContext.render() {
         val stack = player.mainHandItem
         val vehicle = player.vehicle
         val item = stack.item

@@ -17,6 +17,8 @@ import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.Event
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.network.PacketDistributor
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 @get:OnlyIn(Dist.CLIENT)
 val mc: Minecraft get() = Minecraft.getInstance()
@@ -37,7 +39,14 @@ operator fun BlockPos.component3() = this.z
 operator fun MutableComponent.plus(other: Component): MutableComponent = this.append(other)
 operator fun MutableComponent.plus(other: String): MutableComponent = this.append(Component.literal(other))
 
-fun Player?.isNullOrSpector() = this == null || this.isSpectator
+@OptIn(ExperimentalContracts::class)
+fun Player?.isNullOrSpector(): Boolean {
+    contract {
+        returns(false) implies (this@isNullOrSpector != null)
+    }
+
+    return this == null || this.isSpectator
+}
 
 fun Vec3?.toFormattedString(): String {
     if (this == null) return "[ ---, ---, --- ]"

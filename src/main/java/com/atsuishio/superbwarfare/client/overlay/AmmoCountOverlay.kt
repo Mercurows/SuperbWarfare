@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer
 import com.atsuishio.superbwarfare.client.animation.ValueAnimator
@@ -11,23 +10,15 @@ import com.atsuishio.superbwarfare.init.ModAttachments
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FastColor
-import net.minecraft.world.entity.player.Player
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.roundToInt
 
 @OnlyIn(Dist.CLIENT)
-object AmmoCountOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("ammo_count")
+object AmmoCountOverlay : CommonOverlay("ammo_count") {
 
     private val ammoInfoTimer: AnimationTimer = AnimationTimer(500, 2000)
         .forwardAnimation(AnimationCurves.EASE_OUT_EXPO)
@@ -42,14 +33,8 @@ object AmmoCountOverlay : LayeredDraw.Layer {
     /**
      * 在手持弹药或弹药盒时，渲染玩家弹药总量信息
      */
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-
+    override fun RenderContext.render() {
         var startRenderingAmmoInfo = false
-        val player: Player? = Minecraft.getInstance().player
-        if (player == null || player.isSpectator) return
-
         var isAmmoBox = false
 
         // 动画计算

@@ -18,10 +18,8 @@ import com.atsuishio.superbwarfare.tools.LivingKillRecord
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.ChatFormatting
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.damagesource.DamageTypes
@@ -32,14 +30,10 @@ import net.minecraft.world.entity.player.Player
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import top.theillusivec4.curios.api.CuriosApi
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.pow
 
 @OnlyIn(Dist.CLIENT)
-object KillMessageOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("kill_message")
-
+object KillMessageOverlay : CommonOverlay("kill_message") {
     private val HEADSHOT = loc("textures/overlay/damage_types/headshot.png")
 
     private val KNIFE = loc("textures/overlay/damage_types/knife.png")
@@ -53,22 +47,12 @@ object KillMessageOverlay : LayeredDraw.Layer {
     private val LASER = loc("textures/overlay/damage_types/laser.png")
     private val VEHICLE = loc("textures/overlay/damage_types/vehicle_strike.png")
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-        if (!KillMessageConfig.SHOW_KILL_MESSAGE.get()) {
-            return
-        }
 
-        Minecraft.getInstance().player ?: return
+    override fun shouldRender() = super.shouldRender()
+            && KillMessageConfig.SHOW_KILL_MESSAGE.get()
+            && !KillMessageHandler.QUEUE.isEmpty()
 
-        if (KillMessageHandler.QUEUE.isEmpty()) {
-            return
-        }
-
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-
+    override fun RenderContext.render() {
         val pos = KillMessageConfig.KILL_MESSAGE_POSITION.get()
         var posX: Int
         var posY: Float

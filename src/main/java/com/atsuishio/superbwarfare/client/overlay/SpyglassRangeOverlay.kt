@@ -16,45 +16,27 @@ import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.CameraType
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
-object SpyglassRangeOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("spyglass_range")
-
+object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
     private val INDICATOR = loc("textures/overlay/spyglass/indicator.png")
     private val SPYGLASS = loc("textures/overlay/spyglass/spyglass.png")
 
     private var scopeScale = 1f
     private var lerpHoldArtilleryIndicator = 0f
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        val mc = Minecraft.getInstance()
-        if (mc.options.hideGui) return
-
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-        val player: Player? = mc.player
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-
-        if (player == null) return
 
         val stack = player.getUseItem()
         if (((player.isUsingItem && player.getUseItem()

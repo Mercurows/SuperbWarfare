@@ -5,22 +5,14 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.NBTTool
-import net.minecraft.client.DeltaTracker
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object ArmorPlateOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("armor_plate")
-
+object ArmorPlateOverlay : CommonOverlay("armor_plate") {
     private val ICON = loc("textures/overlay/armor_plate/icon.png")
     private val BAR_1 = loc("textures/overlay/armor_plate/bar_1.png")
     private val BAR_2 = loc("textures/overlay/armor_plate/bar_2.png")
@@ -29,16 +21,9 @@ object ArmorPlateOverlay : LayeredDraw.Layer {
     private val BAR_FRAME_2 = loc("textures/overlay/armor_plate/bar_frame_2.png")
     private val BAR_FRAME_3 = loc("textures/overlay/armor_plate/bar_frame_3.png")
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-        if (!DisplayConfig.ARMOR_PLATE_HUD.get()) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.ARMOR_PLATE_HUD.get()
 
-        val h = guiGraphics.guiHeight()
-
-        val player = Minecraft.getInstance().player ?: return
-        if (player.isSpectator()) return
-
+    override fun RenderContext.render() {
         val stack = player.getItemBySlot(EquipmentSlot.CHEST)
         if (stack == ItemStack.EMPTY) return
         val tag = NBTTool.getTag(stack)

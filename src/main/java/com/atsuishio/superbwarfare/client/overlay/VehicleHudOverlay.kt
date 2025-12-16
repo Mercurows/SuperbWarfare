@@ -16,10 +16,8 @@ import com.atsuishio.superbwarfare.tools.NBTTool
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -32,12 +30,9 @@ import net.neoforged.api.distmarker.OnlyIn
 import org.joml.Math
 import top.theillusivec4.curios.api.CuriosApi
 import java.util.concurrent.atomic.AtomicReference
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object VehicleHudOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID = loc("vehicle_hud")
+object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
     const val ANIMATION_TIME = 300
 
     private val ARMOR = loc("textures/overlay/vehicle/base/armor.png")
@@ -83,21 +78,13 @@ object VehicleHudOverlay : LayeredDraw.Layer {
     private var oldWeaponIndex = 0
     private var oldRenderWeaponIndex = 0
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-        val player: Player? = Minecraft.getInstance().player
-        val partialTick = deltaTracker.getGameTimeDeltaPartialTick(true)
-
+    override fun RenderContext.render() {
         if (!shouldRenderHud(player)) {
             wasRenderingWeapons = false
             return
         }
 
-        val entity = player!!.vehicle
+        val entity = player.vehicle
         if (entity !is VehicleEntity) return
 
         val poseStack = guiGraphics.pose()

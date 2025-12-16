@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
@@ -10,13 +9,13 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
+import com.atsuishio.superbwarfare.tools.NBTTool
+import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import net.minecraft.client.DeltaTracker
+import com.atsuishio.superbwarfare.tools.VectorUtil
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
@@ -28,26 +27,15 @@ import net.minecraft.world.scores.PlayerTeam
 import net.minecraft.world.scores.Team
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
-object VehicleTeamOverlay : LayeredDraw.Layer {
+object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
 
-    @JvmField
-    val ID = loc("vehicle_team")
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (!DisplayConfig.VEHICLE_INFO.get()) return
 
-        val mc = Minecraft.getInstance()
-        if (options.hideGui) return
-
-        val player = localPlayer ?: return
-
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
+    override fun RenderContext.render() {
         var viewVec = Vec3(camera.lookVector)
         val poseStack = guiGraphics.pose()
 

@@ -17,10 +17,7 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
 import net.minecraft.client.CameraType
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -29,13 +26,9 @@ import net.minecraft.world.level.ClipContext
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import org.joml.Math
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object VehicleCrosshairOverlay : LayeredDraw.Layer {
-
-    @JvmField
-    val ID: ResourceLocation = loc("vehicle_crosshair")
+object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
 
     private val LOGGER = ResourceOnceLogger()
 
@@ -60,20 +53,15 @@ object VehicleCrosshairOverlay : LayeredDraw.Layer {
     private val CROSSHAIR_THIRD_CAMERA = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private var scopeScale = 1f
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-        val partialTick = deltaTracker.getGameTimeDeltaPartialTick(true)
-        val mc = Minecraft.getInstance()
-        if (mc.options.hideGui) return
-
-        val player = mc.player
-        if (player == null || player.isSpectator()) {
+    override fun shouldRender(): Boolean {
+        val shouldRender = super.shouldRender()
+        if (!shouldRender) {
             resetScale()
-            return
         }
+        return shouldRender
+    }
 
+    override fun RenderContext.render() {
         val entity = player.vehicle
         if (entity !is VehicleEntity) {
             resetScale()

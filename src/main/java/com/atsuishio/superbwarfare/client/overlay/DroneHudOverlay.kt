@@ -15,28 +15,19 @@ import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCent
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.CameraType
-import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object DroneHudOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("drone_hud")
-
+object DroneHudOverlay : CommonOverlay("drone_hud") {
     private val FRAME = loc("textures/overlay/frame/frame.png")
     private val TV_FRAME = loc("textures/overlay/vehicle/land/tv_frame.png")
     private val CROSSHAIR = loc("textures/overlay/vehicle/crosshair/third_camera.png")
@@ -50,22 +41,8 @@ object DroneHudOverlay : LayeredDraw.Layer {
             return (mc.connection?.serverSimulationDistance ?: 16) * 16
         }
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-
-        if (mc.options.hideGui) return
-
-        val player: Player? = mc.player
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
-        val partialTick = deltaTracker.getGameTimeDeltaPartialTick(true)
-
-        if (player == null) return
-
+    override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-
         val stack = player.mainHandItem
 
         poseStack.pushPose()

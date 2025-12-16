@@ -1,37 +1,24 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.DeltaTracker
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object StaminaOverlay : LayeredDraw.Layer {
+object StaminaOverlay : CommonOverlay("stamina") {
 
-    @JvmField
-    val ID: ResourceLocation = loc("stamina")
+    override fun shouldRender() =
+        super.shouldRender() && DisplayConfig.STAMINA_HUD.get() && !ClientEventHandler.isEditing
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-        if (!DisplayConfig.STAMINA_HUD.get()) return
-
-        val player = Minecraft.getInstance().player ?: return
-        if (ClientEventHandler.isEditing) return
+    override fun RenderContext.render() {
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
         if (ClientEventHandler.switchTime <= 0) return

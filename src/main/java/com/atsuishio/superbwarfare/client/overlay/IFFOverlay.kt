@@ -11,14 +11,9 @@ import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
 import com.atsuishio.superbwarfare.tools.VectorUtil
-import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
-import net.minecraft.client.DeltaTracker
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
@@ -31,15 +26,9 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import top.theillusivec4.curios.api.CuriosApi
-import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler
-import java.util.function.Function
-import javax.annotation.ParametersAreNonnullByDefault
 
 @OnlyIn(Dist.CLIENT)
-object IFFOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("iff")
-
+object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_INDICATOR: ResourceLocation = loc("textures/overlay/teammate/friendly_indicator.png")
     val FRIENDLY_AIRCRAFT: ResourceLocation = loc("textures/overlay/teammate/friendly_aircraft.png")
     val FRIENDLY_TANK: ResourceLocation = loc("textures/overlay/teammate/friendly_tank.png")
@@ -55,74 +44,60 @@ object IFFOverlay : LayeredDraw.Layer {
     val FRIENDLY_HELICOPTER: ResourceLocation = loc("textures/overlay/teammate/friendly_helicopter.png")
     val FRIENDLY_MINE: ResourceLocation = loc("textures/overlay/teammate/friendly_mine.png")
 
-    @ParametersAreNonnullByDefault
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-        if (!DisplayConfig.VEHICLE_INFO.get()) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
-        val player = mc.player
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-        val partialTick = deltaTracker.getGameTimeDeltaPartialTick(true)
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
+    override fun RenderContext.render() {
+        CuriosApi.getCuriosInventory(player)
+            .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
+            .ifPresent { _ ->
+                val entities = SeekTool.Builder(player)
+                    .friendly()
+                    .build()
+                for (e in entities) {
+                    if (e != null && e !== player && VectorUtil.canSee(e.position()) && e !== player.vehicle) {
+                        var team: Entity? = e
+                        if (e.vehicle != null) {
+                            team = e.vehicle
+                        }
 
+                        RenderSystem.disableDepthTest()
+                        RenderSystem.depthMask(false)
+                        RenderSystem.enableBlend()
+                        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+                        RenderSystem.blendFuncSeparate(
+                            GlStateManager.SourceFactor.SRC_ALPHA,
+                            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                            GlStateManager.SourceFactor.ONE,
+                            GlStateManager.DestFactor.ZERO
+                        )
 
-        if (player == null) return
+                        if (checkNoClip(player, team!!, cameraPos)) {
+                            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                        } else {
+                            RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
+                        }
 
-        CuriosApi.getCuriosInventory(player).flatMap(Function { c: ICuriosItemHandler? ->
-            c!!.findFirstCurio(
-                ModItems.IFF.get()
-            )
-        }).ifPresent { _ ->
-            val entities = SeekTool.Builder(player)
-                .friendly()
-                .build()
-            for (e in entities) {
-                if (e != null && e !== player && VectorUtil.canSee(e.position()) && e !== player.vehicle) {
-                    var team: Entity? = e
-                    if (e.vehicle != null) {
-                        team = e.vehicle
+                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
+                        val point = VectorUtil.worldToScreen(pos)
+                        val xf = point.x.toFloat()
+                        val yf = point.y.toFloat()
+                        val icon: ResourceLocation = getResourceLocation(team)
+
+                        RenderHelper.preciseBlit(
+                            guiGraphics,
+                            icon,
+                            Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
+                            Mth.clamp(yf - 6, 0f, (screenHeight - 12).toFloat()),
+                            0f,
+                            0f,
+                            12f,
+                            12f,
+                            12f,
+                            12f
+                        )
                     }
-
-                    RenderSystem.disableDepthTest()
-                    RenderSystem.depthMask(false)
-                    RenderSystem.enableBlend()
-                    RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-                    RenderSystem.blendFuncSeparate(
-                        GlStateManager.SourceFactor.SRC_ALPHA,
-                        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                        GlStateManager.SourceFactor.ONE,
-                        GlStateManager.DestFactor.ZERO
-                    )
-
-                    if (checkNoClip(player, team!!, cameraPos)) {
-                        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-                    } else {
-                        RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
-                    }
-
-                    val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
-                    val point = VectorUtil.worldToScreen(pos)
-                    val xf = point.x.toFloat()
-                    val yf = point.y.toFloat()
-                    val icon: ResourceLocation = getResourceLocation(team)
-
-                    RenderHelper.preciseBlit(
-                        guiGraphics,
-                        icon,
-                        Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
-                        Mth.clamp(yf - 6, 0f, (screenHeight - 12).toFloat()),
-                        0f,
-                        0f,
-                        12f,
-                        12f,
-                        12f,
-                        12f
-                    )
                 }
             }
-        }
     }
 
 

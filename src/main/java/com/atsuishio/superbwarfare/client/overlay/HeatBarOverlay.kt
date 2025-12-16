@@ -11,48 +11,33 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.DeltaTracker
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.LayeredDraw
 import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 
 @OnlyIn(Dist.CLIENT)
-object HeatBarOverlay : LayeredDraw.Layer {
-    @JvmField
-    val ID: ResourceLocation = loc("heat_bar")
-
+object HeatBarOverlay : CommonOverlay("heat_bar") {
     private val TEXTURE = loc("textures/overlay/heat_bar/heat_bar.png")
 
     private val ANIMATION_TIMER: AnimationTimer = AnimationTimer(200)
         .animation(AnimationCurves.EASE_IN_QUART)
 
-    override fun render(guiGraphics: GuiGraphics, deltaTracker: DeltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) return
-        if (!DisplayConfig.ENABLE_HEAT_BAR_HUD.get()) return
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.ENABLE_HEAT_BAR_HUD.get()
 
-        val mc = Minecraft.getInstance()
-        val player = mc.player ?: return
-
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-
+    override fun RenderContext.render() {
         val heat: Double
         val vehicle = player.vehicle
-        heat =
-            if (ClientEventHandler.isEditing
-                || (player.mainHandItem.item !is GunItem)
-                || (vehicle is VehicleEntity && vehicle.banHand(player))
-            ) {
-                0.0
-            } else {
-                from(player.mainHandItem).heat.get()
-            }
+
+        heat = if (ClientEventHandler.isEditing
+            || (player.mainHandItem.item !is GunItem)
+            || (vehicle is VehicleEntity && vehicle.banHand(player))
+        ) {
+            0.0
+        } else {
+            from(player.mainHandItem).heat.get()
+        }
 
         val currentTime = System.currentTimeMillis()
         if (heat <= 0) {
