@@ -885,6 +885,7 @@
   "des.jade_plugin_superbwarfare.dps_generator.level": "Generator Level: %1$s",
   "des.jade_plugin_superbwarfare.dps_generator.health": "Maximum Health: %1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "Vehicle Deployer",
+  "gamerule.sbwDoGenerateLoots": "Generate Superb Warfare Chest Loots",
 
   "superbwarfare.advancement.main.root": "Superb Warfare",
   "superbwarfare.advancement.main.root.des": "Welcome to the Superb Warfare!",

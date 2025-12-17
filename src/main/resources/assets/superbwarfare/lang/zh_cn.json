@@ -885,6 +885,7 @@
   "des.jade_plugin_superbwarfare.dps_generator.level": "发电机等级：%1$s",
   "des.jade_plugin_superbwarfare.dps_generator.health": "当前最大血量：%1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "载具部署器",
+  "gamerule.sbwDoGenerateLoots": "生成卓越前线的箱子战利品",
 
   "superbwarfare.advancement.main.root": "卓越前线",
   "superbwarfare.advancement.main.root.des": "欢迎来到卓越前线！",

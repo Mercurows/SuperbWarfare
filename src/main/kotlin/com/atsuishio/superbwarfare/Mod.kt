@@ -15,7 +15,6 @@ import com.atsuishio.superbwarfare.config.ServerConfig
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
-import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.IEventBus
@@ -37,8 +36,6 @@ import software.bernie.geckolib.constant.dataticket.SerializableDataTicket
 import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
-
-val MC: Minecraft by lazy { Minecraft.getInstance() }
 
 private typealias Task = AbstractMap.SimpleEntry<Runnable, Int>
 
@@ -71,7 +68,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         ModCommandArguments.COMMAND_ARGUMENT_TYPES.register(bus)
 
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
-        bus.addListener<FMLCommonSetupEvent> { onCommonSetup(bus) }
+        bus.addListener<FMLCommonSetupEvent> { onCommonSetup(bus, it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior(it) }
 
         bus.addListener<RegisterPayloadHandlersEvent> { NetworkRegistry.register(it) }
@@ -110,8 +107,9 @@ class Mod(bus: IEventBus, container: ModContainer) {
         )
     }
 
-    private fun onCommonSetup(bus: IEventBus) {
+    private fun onCommonSetup(bus: IEventBus, event: FMLCommonSetupEvent) {
         bus.post(RegisterContainersEvent())
+        event.enqueueWork { ModGameRules.bootstrap() }
     }
 
     private fun onClientSetup(event: FMLClientSetupEvent) {
