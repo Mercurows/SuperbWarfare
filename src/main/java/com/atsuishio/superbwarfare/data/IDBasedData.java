@@ -7,6 +7,8 @@ import java.io.Serializable;
 public interface IDBasedData<T extends IDBasedData<T>> extends Serializable {
     String getId();
 
+    void setId(String id);
+
     default JsonObject toJson() {
         return DataLoader.JSON_OBJECT_CACHE.getUnchecked(this);
     }

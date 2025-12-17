@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:hunting_rifle",
   "Model": {
     "Animation": "superbwarfare:animations/hunting_rifle.animation.json",
     "Model": "superbwarfare:geo/hunting_rifle.geo.json",

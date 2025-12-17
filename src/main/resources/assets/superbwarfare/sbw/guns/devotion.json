@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:devotion",
   "Model": {
     "Animation": "superbwarfare:animations/devotion.animation.json",
     "Model": "superbwarfare:geo/devotion.geo.json",

@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:taser",
   "Animation": {
     "Idle": "animation.taser.idle",
     "Reload": "animation.taser.reload"

@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:repair_tool",
   "Model": {
     "Animation": "superbwarfare:animations/repair_tool.animation.json",
     "Model": "superbwarfare:geo/repair_tool.geo.json",

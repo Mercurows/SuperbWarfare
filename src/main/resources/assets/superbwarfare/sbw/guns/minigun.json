@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:minigun",
   "Model": {
     "Animation": "superbwarfare:animations/minigun.animation.json",
     "Model": "superbwarfare:geo/minigun.geo.json",

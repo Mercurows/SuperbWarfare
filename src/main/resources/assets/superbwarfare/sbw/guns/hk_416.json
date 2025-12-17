@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:hk_416",
   "Model": {
     "Animation": "superbwarfare:animations/m_4.animation.json",
     "Model": "superbwarfare:geo/hk_416.geo.json",

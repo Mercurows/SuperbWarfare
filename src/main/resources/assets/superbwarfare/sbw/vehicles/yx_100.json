@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:yx_100",
   "Model": {
     "Animation": "superbwarfare:animations/yx_100.animation.json",
     "Model": "superbwarfare:geo/yx_100.geo.json",

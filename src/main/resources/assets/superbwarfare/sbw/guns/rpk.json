@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:rpk",
   "Model": {
     "Animation": "superbwarfare:animations/ak_47.animation.json",
     "Model": "superbwarfare:geo/rpk.geo.json",

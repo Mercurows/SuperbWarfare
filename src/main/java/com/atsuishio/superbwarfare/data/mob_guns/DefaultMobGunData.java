@@ -6,12 +6,17 @@ import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
 
 public class DefaultMobGunData implements IDBasedData<DefaultMobGunData> {
-    @SerializedName("ID")
-    String id = "";
+
+    private transient String id = "";
 
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
     }
 
     @SerializedName("Probability")

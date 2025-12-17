@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:trachelium",
   "Model": {
     "Animation": "superbwarfare:animations/trachelium.animation.json",
     "Model": "superbwarfare:geo/trachelium.geo.json",

@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:secondary_cataclysm",
   "Model": {
     "Animation": "superbwarfare:animations/secondary_cataclysm.animation.json",
     "Model": "superbwarfare:geo/secondary_cataclysm.geo.json",

@@ -72,6 +72,11 @@ public class DroneAttachmentData implements IDBasedData<DroneAttachmentData> {
         return this.itemID;
     }
 
+    @Override
+    public void setId(String id) {
+        this.itemID = id;
+    }
+
     @SerializedName("Count")
     private int count = 1;
 

@@ -22,14 +22,19 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
-    @SerializedName("ID")
-    public String id = "";
+
+    private transient String id = "";
 
     public transient boolean isDefaultData = true;
 
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
     }
 
     @SerializedName("MaxHealth")

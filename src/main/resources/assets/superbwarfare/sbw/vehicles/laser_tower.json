@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:laser_tower",
   "Model": {
     "Animation": "superbwarfare:animations/laser_tower.animation.json",
     "Model": "superbwarfare:geo/laser_tower.geo.json",

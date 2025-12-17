@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:bmp_2",
   "Model": {
     "Animation": "superbwarfare:animations/lav_150.animation.json",
     "Model": "superbwarfare:geo/bmp_2.geo.json",

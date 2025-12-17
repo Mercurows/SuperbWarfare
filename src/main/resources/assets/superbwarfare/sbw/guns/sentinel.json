@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:sentinel",
   "Model": {
     "Animation": "superbwarfare:animations/sentinel.animation.json",
     "Model": "superbwarfare:geo/sentinel.geo.json",

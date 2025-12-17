@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:glock_18",
   "Animation": {
     "Idle": "animation.glock_17.idle",
     "ReloadNormal": "animation.glock_17.reload_normal",

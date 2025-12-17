@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:mosin_nagant",
   "Model": {
     "Animation": "superbwarfare:animations/mosin_nagant.animation.json",
     "Model": "superbwarfare:geo/mosin_nagant.geo.json",
