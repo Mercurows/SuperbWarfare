@@ -14,7 +14,7 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity
     override fun baseTick() {
         super.baseTick()
         if (getNthEntity(turretControllerIndex) == null && deltaMovement.horizontalDistanceSqr() > 0.007) {
-            shootVec = getForwardDirection()
+            shootVec = getViewVec(this, 1f).toVector3f()
         }
     }
 

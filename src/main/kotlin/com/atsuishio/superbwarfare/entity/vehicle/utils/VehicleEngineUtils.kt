@@ -87,11 +87,11 @@ object VehicleEngineUtils {
         }
 
         if (forwardInputDown) {
-            power = Math.min(power + (if (power < 0) powerAdd * 2f else powerAdd), 1f)
+            power = Math.min(power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (power / 1.02f)), 1f)
         }
 
         if (backInputDown) {
-            power = Math.max(power - (if (power > 0) powerReduce * 2f else powerReduce), -1f)
+            power = Math.max(power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (power / 1.02f)), -1f)
             if (rightInputDown) {
                 deltaRot += steeringSpeed
 
@@ -107,9 +107,15 @@ object VehicleEngineUtils {
         }
 
         targetSpeed = if (power > 0) {
-            (maxForwardSpeedRate * (1 + xRot / 55)).toDouble()
+            (maxForwardSpeedRate * (1 + xRot / 60)).toDouble()
         } else {
-            (maxBackwardSpeedRate * (1 - xRot / 55)).toDouble()
+            (maxBackwardSpeedRate * (1 - xRot / 60)).toDouble()
+        }
+
+        power *= if (power > 0) {
+            1 + xRot / 514
+        } else {
+            1 - xRot / 514
         }
 
         if (!forwardInputDown && !backInputDown) {
@@ -270,20 +276,26 @@ object VehicleEngineUtils {
 
         if (forwardInputDown) {
             power = Math.min(
-                power + (if (power < 0) powerAdd * 2f else powerAdd), 1f
+                power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (power / 1.02f)), 1f
             )
         }
 
         if (backInputDown) {
             power = Math.max(
-                power - (if (power > 0) powerReduce * 2f else powerReduce), -1f
+                power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (power / 1.02f)), -1f
             )
         }
 
         targetSpeed = if (power > 0) {
-            maxForwardSpeedRate.toDouble() * (1 + xRot / 55)
+            (maxForwardSpeedRate * (1 + xRot / 60)).toDouble()
         } else {
-            maxBackwardSpeedRate.toDouble() * (1 - xRot / 55)
+            (maxBackwardSpeedRate * (1 - xRot / 60)).toDouble()
+        }
+
+        power *= if (power > 0) {
+            1 + xRot / 514
+        } else {
+            1 - xRot / 514
         }
 
         if (!forwardInputDown && !backInputDown) {
@@ -1182,7 +1194,7 @@ object VehicleEngineUtils {
                 moveWithOutPower(passenger0, true)
             } else {
                 power = Math.min(
-                    power + (if (power < 0) powerAdd * 2f else powerAdd), (if (sprintInputDown) 2f else 1f)
+                    power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (power / 1.02f)), (if (sprintInputDown) 2f else 1f)
                 )
             }
         }
@@ -1192,15 +1204,21 @@ object VehicleEngineUtils {
                 moveWithOutPower(passenger0, false)
             } else {
                 power = Math.max(
-                    power - (if (power > 0) powerReduce * 2f else powerReduce), -1f
+                    power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (power / 1.02f)), -1f
                 )
             }
         }
 
         targetSpeed = if (power > 0) {
-            (maxForwardSpeedRate * (1 + xRot / 55)).toDouble()
+            (maxForwardSpeedRate * (1 + xRot / 60)).toDouble()
         } else {
-            (maxBackwardSpeedRate * (1 - xRot / 55)).toDouble()
+            (maxBackwardSpeedRate * (1 - xRot / 60)).toDouble()
+        }
+
+        power *= if (power > 0) {
+            1 + xRot / 514
+        } else {
+            1 - xRot / 514
         }
 
         if (!forwardInputDown && !backInputDown) {
