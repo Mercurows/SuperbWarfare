@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.tools.FormatTool
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
 import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.plus
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
@@ -69,6 +70,8 @@ object AircraftHud {
         screenHeight: Int
     ) {
         if (player !== vehicle.getFirstPassenger()) return
+        val camera = mc.gameRenderer.mainCamera
+        val cameraPos = camera.position
         val poseStack = guiGraphics.pose()
         val gunData = vehicle.getGunData(player) ?: return
 
