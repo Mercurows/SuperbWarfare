@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.NBTTool
+import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -362,7 +363,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
     }
 
     private fun renderWeaponInfo(guiGraphics: GuiGraphics, vehicle: VehicleEntity, w: Int, h: Int) {
-        val player: Player? = Minecraft.getInstance().player
+        val player = localPlayer
 
         if (!vehicle.banHand(player)) return
         if (!vehicle.hasWeapon()) return

@@ -32,6 +32,7 @@ class RenderContext(val guiGraphics: GuiGraphics, val deltaTracker: DeltaTracker
     val isFirstPerson get() = options.cameraType.isFirstPerson
 
     val partialTick get() = deltaTracker.getGameTimeDeltaPartialTick(true)
+    val deltaFrame by ::partialTick
 }
 
 @OnlyIn(Dist.CLIENT)

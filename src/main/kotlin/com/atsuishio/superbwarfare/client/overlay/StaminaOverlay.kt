@@ -23,9 +23,6 @@ object StaminaOverlay : CommonOverlay("stamina") {
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
         if (ClientEventHandler.switchTime <= 0) return
 
-        val w = guiGraphics.guiWidth()
-        val h = guiGraphics.guiHeight()
-
         guiGraphics.pose().pushPose()
 
         RenderSystem.disableDepthTest()

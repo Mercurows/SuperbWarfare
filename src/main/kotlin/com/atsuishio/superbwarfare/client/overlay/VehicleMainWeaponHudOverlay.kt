@@ -83,10 +83,6 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
         )
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-        val partialTick = deltaTracker.getGameTimeDeltaPartialTick(true)
-        val screenWidth = guiGraphics.guiWidth()
-        val screenHeight = guiGraphics.guiHeight()
-
         when (type) {
             LandVehicleHud.ID -> LandVehicleHud.render(
                 vehicle,
@@ -116,14 +112,12 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             return
         }
 
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
         val seekTime = seekInfo.seekTime
 
         if (seekInfo.onlyLockEntity) {
             val targetEntity = ClientEventHandler.lockingEntityVehicle
             var nearestEntity = ClientEventHandler.nearestEntityVehicle
-            val seekVec: Vec3? = vehicle.getSeekVec(player, partialTick)
+            val seekVec = vehicle.getSeekVec(player, partialTick)
 
             val entities = SeekTool.Builder(vehicle)
                 .withinRange(seekInfo.seekRange)

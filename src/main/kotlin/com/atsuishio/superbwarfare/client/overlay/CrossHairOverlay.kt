@@ -87,7 +87,6 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         if (crosshair == CROSSHAIR_EMPTY || crosshair == CROSSHAIR_CUSTOM) return
 
         val spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos
-        val deltaFrame = deltaTracker.getGameTimeDeltaPartialTick(true)
         var moveX = 0f
         var moveY = 0f
 

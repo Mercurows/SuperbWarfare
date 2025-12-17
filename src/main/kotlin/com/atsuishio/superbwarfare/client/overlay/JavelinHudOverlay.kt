@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCent
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.util.Mth
@@ -61,7 +60,6 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            val deltaFrame = deltaTracker.getGameTimeDeltaPartialTick(true)
             val moveX =
                 (-32 * ClientEventHandler.turnRot[1] - (if (player.isSprinting) 100 else 67) * ClientEventHandler.movePosX + 3 * ClientEventHandler.cameraRot[2]).toFloat()
             val moveY =
@@ -115,10 +113,6 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
             RenderSystem.enableDepthTest()
             RenderSystem.disableBlend()
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-
-            val mc = Minecraft.getInstance()
-            val camera = mc.gameRenderer.mainCamera
-            val cameraPos = camera.position
 
             val decoy = TraceTool.findLookDecoy(
                 player,

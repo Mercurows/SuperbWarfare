@@ -69,9 +69,6 @@ object AircraftHud {
         screenHeight: Int
     ) {
         if (player !== vehicle.getFirstPassenger()) return
-        val mc = Minecraft.getInstance()
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
         val poseStack = guiGraphics.pose()
         val gunData = vehicle.getGunData(player) ?: return
 

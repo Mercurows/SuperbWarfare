@@ -39,8 +39,6 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
         var viewVec = Vec3(camera.lookVector)
         val poseStack = guiGraphics.pose()
 
-        val partialTick = deltaTracker.getGameTimeDeltaPartialTick(true)
-
         val stack = player.mainHandItem
 
         var lookAtEntity = false
