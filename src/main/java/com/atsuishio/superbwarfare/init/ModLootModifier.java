@@ -36,7 +36,9 @@ public class ModLootModifier {
 
         @Override
         protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-            context.getResolver().getLootTable(lootTable).getRandomItemsRaw(context, generatedLoot::add);
+            if (context.getLevel().getGameRules().getBoolean(ModGameRules.MOD_RULE_DO_GENERATE_LOOTS)) {
+                context.getResolver().getLootTable(lootTable).getRandomItemsRaw(context, generatedLoot::add);
+            }
             return generatedLoot;
         }
 

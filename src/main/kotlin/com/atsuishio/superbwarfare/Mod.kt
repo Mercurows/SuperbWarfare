@@ -66,7 +66,7 @@ class Mod {
         ModRecipes.register(bus)
         ModCommandArguments.COMMAND_ARGUMENT_TYPES.register(bus)
 
-        bus.addListener<FMLCommonSetupEvent> { onCommonSetup() }
+        bus.addListener<FMLCommonSetupEvent> { onCommonSetup(it) }
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior(it) }
 
@@ -108,7 +108,10 @@ class Mod {
         )
     }
 
-    private fun onCommonSetup() = NetworkRegistry.register()
+    private fun onCommonSetup(event: FMLCommonSetupEvent) {
+        NetworkRegistry.register()
+        event.enqueueWork { ModGameRules.bootstrap() }
+    }
 
     private fun onClientSetup(event: FMLClientSetupEvent) {
         MouseMovementHandler.init()
