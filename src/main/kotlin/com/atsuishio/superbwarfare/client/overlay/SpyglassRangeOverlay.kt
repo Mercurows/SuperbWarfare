@@ -55,7 +55,6 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
                 )
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-                val deltaFrame = Minecraft.getInstance().deltaFrameTime
                 scopeScale = Mth.lerp(
                     (0.5f * deltaFrame).toDouble(),
                     scopeScale.toDouble(),

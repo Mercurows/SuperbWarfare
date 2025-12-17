@@ -65,8 +65,7 @@ object AmmoCountOverlay : CommonOverlay("ammo_count") {
         val poseStack = guiGraphics.pose()
         poseStack.pushPose()
 
-        val ammoX: Float =
-            ammoInfoTimer.lerp((screenWidth + 120).toFloat(), screenWidth.toFloat() / 2 + 40, currentTime)
+        val ammoX: Float = ammoInfoTimer.lerp((w + 120).toFloat(), w.toFloat() / 2 + 40, currentTime)
         val fontHeight = 15
         var yOffset = (-screenHeight - Ammo.entries.size * fontHeight) / 2f
 

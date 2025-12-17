@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.CameraType
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.util.Mth
 import net.minecraftforge.api.distmarker.Dist
@@ -37,7 +36,6 @@ object TowOverlay : CommonOverlay("tow") {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            val deltaFrame = Minecraft.getInstance().deltaFrameTime
             scopeScale = Mth.lerp(
                 (0.5f * deltaFrame).toDouble(),
                 scopeScale.toDouble(),

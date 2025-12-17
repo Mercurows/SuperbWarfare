@@ -49,7 +49,6 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
 
             poseStack.pushPose()
 
-            val deltaFrame = Minecraft.getInstance().deltaFrameTime
             val moveX =
                 (-32 * ClientEventHandler.turnRot[1] - (if (player.isSprinting) 100 else 67) * ClientEventHandler.movePosX + 3 * ClientEventHandler.cameraRot[2]).toFloat()
             val moveY =
@@ -112,10 +111,7 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            Minecraft.getInstance()
-            val cameraPos = camera.position
-
-            val decoy = TraceTool.findLookDecoy(player, cameraPos, player.getViewVector(partialTick), 512.0)
+            val decoy = TraceTool.findLookDecoy(player, cameraPos, player.getViewVector(deltaFrame), 512.0)
 
             if (decoy == null) {
                 val targetEntity =

@@ -33,6 +33,8 @@ class RenderContext(
     val cameraPos: Vec3 get() = camera.position
 
     val isFirstPerson get() = options.cameraType.isFirstPerson
+
+    val deltaFrame by ::partialTick
 }
 
 @OnlyIn(Dist.CLIENT)
