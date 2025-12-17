@@ -42,8 +42,8 @@ public class GunsDataMessage {
         CustomData.GUN_DATA.clear();
 
         for (var entry : message.data) {
-            if (CustomData.GUN_DATA.containsKey(entry.id)) continue;
-            CustomData.GUN_DATA.put(entry.id, entry);
+            if (CustomData.GUN_DATA.containsKey(entry.getId())) continue;
+            CustomData.GUN_DATA.put(entry.getId(), entry);
         }
     }
 }

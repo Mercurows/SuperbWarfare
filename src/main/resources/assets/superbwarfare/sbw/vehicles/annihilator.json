@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:annihilator",
   "Model": {
     "Animation": "superbwarfare:animations/annihilator.animation.json",
     "Model": "superbwarfare:geo/annihilator.geo.json",

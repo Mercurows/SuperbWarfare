@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:homemade_shotgun",
   "Animation": {
     "Idle": "animation.homemade_shotgun.idle",
     "ReloadNormal": "animation.homemade_shotgun.reload_normal",

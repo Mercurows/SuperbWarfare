@@ -36,8 +36,8 @@ public record VehiclesDataMessage(List<DefaultVehicleData> data) {
         CustomData.VEHICLE_DATA.clear();
 
         for (var entry : message.data) {
-            if (CustomData.VEHICLE_DATA.containsKey(entry.id)) continue;
-            CustomData.VEHICLE_DATA.put(entry.id, entry);
+            if (CustomData.VEHICLE_DATA.containsKey(entry.getId())) continue;
+            CustomData.VEHICLE_DATA.put(entry.getId(), entry);
         }
     }
 }

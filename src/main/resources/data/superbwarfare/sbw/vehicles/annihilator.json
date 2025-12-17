@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:annihilator",
   "MaxHealth": 1200,
   "TurretPos": [0, 0.453, 0],
   "TurretTurnSpeed": [0.9, 0.9],

@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:m_1911",
   "Model": {
     "Animation": "superbwarfare:animations/glock_17.animation.json",
     "Model": "superbwarfare:geo/m_1911.geo.json",

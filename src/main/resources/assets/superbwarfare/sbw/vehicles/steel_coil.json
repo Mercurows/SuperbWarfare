@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:steel_coil",
   "Model": {
     "Model": "superbwarfare:geo/steel_coil.geo.json",
     "Texture": "superbwarfare:textures/entity/steel_coil.png"

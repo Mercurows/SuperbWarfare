@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:plz_05",
   "Model": {
     "Animation": "superbwarfare:animations/plz_05.animation.json",
     "Model": "superbwarfare:geo/plz_05.geo.json",

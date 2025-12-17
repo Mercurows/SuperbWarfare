@@ -11,14 +11,16 @@ import net.minecraft.world.phys.Vec3;
 
 public class DefaultGunResource implements IDBasedData<DefaultGunResource> {
 
-    @SerializedName("ID")
-    public String id = "";
-
-    public transient boolean isDefaultResource = true;
+    private transient String id = "";
 
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
     }
 
     @SerializedName("Icon")

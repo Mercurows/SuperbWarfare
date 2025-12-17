@@ -7,12 +7,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class DefaultVehicleResource implements IDBasedData<DefaultVehicleResource> {
 
-    @SerializedName("ID")
-    public String id = "";
+    private transient String id = "";
 
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
     }
 
     @SerializedName("Model")

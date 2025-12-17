@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:speedboat",
   "Model": {
     "Animation": "superbwarfare:animations/speedboat.animation.json",
     "Model": "superbwarfare:geo/speedboat.geo.json",

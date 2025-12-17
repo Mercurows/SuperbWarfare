@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:bocek",
   "Model": {
     "Animation": "superbwarfare:animations/bocek.animation.json",
     "Model": "superbwarfare:geo/bocek.geo.json",

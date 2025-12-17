@@ -16,14 +16,18 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 public class DefaultGunData implements IDBasedData<DefaultGunData> {
-    @SerializedName("ID")
-    public String id = "";
 
+    private transient String id = "";
     public transient boolean isDefaultData = true;
 
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
     }
 
     // 不要动态修改这玩意，很容易出问题

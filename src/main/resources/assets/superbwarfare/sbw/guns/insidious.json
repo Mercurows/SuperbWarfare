@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:insidious",
   "Model": {
     "Animation": "superbwarfare:animations/insidious.animation.json",
     "Model": "superbwarfare:geo/insidious.geo.json",

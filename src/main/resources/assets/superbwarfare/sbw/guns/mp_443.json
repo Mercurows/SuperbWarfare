@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:mp_443",
   "Model": {
     "Animation": "superbwarfare:animations/mp_443.animation.json",
     "Model": "superbwarfare:geo/mp_443.geo.json",

@@ -1,5 +1,4 @@
 {
-  "ID": "superbwarfare:rpg",
   "Animation": {
     "Idle": "animation.rpg.idle",
     "Edit": "animation.rpg.edit",

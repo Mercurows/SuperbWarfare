@@ -19,6 +19,11 @@ public class ProjectileInfo implements IDBasedData<ProjectileInfo>, DeserializeF
     }
 
     @Override
+    public void setId(String id) {
+        this.type = id;
+    }
+
+    @Override
     public void deserializeFromString(String str) {
         this.type = str;
     }
