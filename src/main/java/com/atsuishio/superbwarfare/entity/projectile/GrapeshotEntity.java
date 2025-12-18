@@ -83,7 +83,8 @@ public class GrapeshotEntity extends FastThrowableProjectile {
         BlockState state = this.level().getBlockState(resultPos);
 
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
-        this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, speed/4 + 0.5, 1);
+        var volume = (float) getDeltaMovement().length() / 4F + 0.5F;
+        this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, volume, 1);
         Vec3 hitVec = result.getLocation();
 
         this.hitBlock(hitVec, result);
