@@ -400,7 +400,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
         double speed = this.getDeltaMovement().length();
         if (speed > 0.1) {
-            var volume = (float) speed / 4F + 0.5F;
+            var volume = Math.min(4, (float) speed / 4F + 0.5F);
             this.level().playSound(null, pResult.getLocation().x, pResult.getLocation().y, pResult.getLocation().z, event, SoundSource.AMBIENT, volume, 1);
         }
         this.inGround = true;
