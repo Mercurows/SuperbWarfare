@@ -9,9 +9,9 @@ import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
 import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
 import com.atsuishio.superbwarfare.component.ModDataComponents
-import com.atsuishio.superbwarfare.config.ClientConfig
-import com.atsuishio.superbwarfare.config.CommonConfig
-import com.atsuishio.superbwarfare.config.ServerConfig
+import com.atsuishio.superbwarfare.config.CLIENT_CONFIG
+import com.atsuishio.superbwarfare.config.COMMON_CONFIG
+import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
@@ -42,9 +42,9 @@ private typealias Task = AbstractMap.SimpleEntry<Runnable, Int>
 @Mod(com.atsuishio.superbwarfare.Mod.MODID)
 class Mod(bus: IEventBus, container: ModContainer) {
     init {
-        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.init())
-        container.registerConfig(ModConfig.Type.COMMON, CommonConfig.init())
-        container.registerConfig(ModConfig.Type.SERVER, ServerConfig.init())
+        container.registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG)
+        container.registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG)
+        container.registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG)
 
         ModPerks.register(bus)
         ModSerializers.REGISTRY.register(bus)
