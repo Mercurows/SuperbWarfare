@@ -6,14 +6,13 @@ import com.atsuishio.superbwarfare.client.molang.MolangVariable
 import com.atsuishio.superbwarfare.client.sound.ModSoundInstances
 import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
 import com.atsuishio.superbwarfare.compat.tacz.TACZGunEventHandler
-import com.atsuishio.superbwarfare.config.ClientConfig
-import com.atsuishio.superbwarfare.config.CommonConfig
-import com.atsuishio.superbwarfare.config.ServerConfig
+import com.atsuishio.superbwarfare.config.CLIENT_CONFIG
+import com.atsuishio.superbwarfare.config.COMMON_CONFIG
+import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent
-import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
@@ -33,18 +32,15 @@ import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-val MC: Minecraft by lazy { Minecraft.getInstance() }
-val BUS get() = MOD_BUS
-
 private typealias Task = AbstractMap.SimpleEntry<Runnable, Int>
 
 @Mod(com.atsuishio.superbwarfare.Mod.MODID)
 class Mod {
     init {
         with(ModLoadingContext.get()) {
-            registerConfig(ModConfig.Type.CLIENT, ClientConfig.init())
-            registerConfig(ModConfig.Type.COMMON, CommonConfig.init())
-            registerConfig(ModConfig.Type.SERVER, ServerConfig.init())
+            registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG)
+            registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG)
+            registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG)
         }
 
         val bus = MOD_BUS
