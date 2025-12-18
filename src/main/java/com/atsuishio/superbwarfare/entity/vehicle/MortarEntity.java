@@ -152,7 +152,9 @@ public class MortarEntity extends ArtilleryEntity {
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
-            vehicleShoot(player, "Main");
+            if (!this.entityData.get(INTELLIGENT)) {
+                vehicleShoot(player, "Main");
+            }
             return InteractionResult.SUCCESS;
         }
 
