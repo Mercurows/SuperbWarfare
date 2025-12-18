@@ -70,6 +70,7 @@ public class AdjustZoomFovMessage {
                     SoundTool.playLocalSound(player, ModSounds.ADJUST_FOV.get(), 1f, 0.7f);
                 }
             }
+            gun.save();
         });
         context.get().setPacketHandled(true);
     }

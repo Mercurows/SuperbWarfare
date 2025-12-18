@@ -2,7 +2,9 @@ package com.atsuishio.superbwarfare.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -60,7 +62,7 @@ public class RenderHelper {
     }
 
     public static void blit(PoseStack pose, ResourceLocation pAtlasLocation, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pUWidth, float pVHeight, float pUOffset, float pVOffset, float pTextureWidth, float pTextureHeight, int color) {
-        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0.0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0.0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, color);
+        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, color);
     }
 
     public static void blit(PoseStack pose, ResourceLocation pAtlasLocation, float pX, float pY, float pUOffset, float pVOffset, float pWidth, float pHeight, float pTextureWidth, float pTextureHeight, float alpha, boolean opposite) {
@@ -76,7 +78,7 @@ public class RenderHelper {
     }
 
     public static void blit(PoseStack pose, ResourceLocation pAtlasLocation, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pUWidth, float pVHeight, float pUOffset, float pVOffset, float pTextureWidth, float pTextureHeight, float alpha, boolean opposite) {
-        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0.0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0.0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, alpha, opposite);
+        innerBlit(pose, pAtlasLocation, pX1, pX2, pY1, pY2, pBlitOffset, (pUOffset + 0F) / pTextureWidth, (pUOffset + pUWidth) / pTextureWidth, (pVOffset + 0F) / pTextureHeight, (pVOffset + pVHeight) / pTextureHeight, alpha, opposite);
     }
 
     private static void innerBlit(PoseStack pose, ResourceLocation pAtlasLocation, float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pMinU, float pMaxU, float pMinV, float pMaxV, int color) {
@@ -118,9 +120,9 @@ public class RenderHelper {
     }
 
     private static void vertexC(float pX1, float pX2, float pY1, float pY2, float pBlitOffset, float pMinU, float pMaxU, float pMinV, float pMaxV, int color, Matrix4f matrix4f, BufferBuilder bufferBuilder) {
-        float r = (color >> 16 & 255) / 255.0F;
-        float g = (color >> 8 & 255) / 255.0F;
-        float b = (color & 255) / 255.0F;
+        float r = (color >> 16 & 255) / 255F;
+        float g = (color >> 8 & 255) / 255F;
+        float b = (color & 255) / 255F;
 
         bufferBuilder.vertex(matrix4f, pX1, pY1, pBlitOffset).color(r, g, b, 1f).uv(pMinU, pMinV).endVertex();
         bufferBuilder.vertex(matrix4f, pX1, pY2, pBlitOffset).color(r, g, b, 1f).uv(pMinU, pMaxV).endVertex();
@@ -154,10 +156,10 @@ public class RenderHelper {
             pMaxY = j;
         }
 
-        float f3 = (float) FastColor.ARGB32.alpha(pColor) / 255.0F;
-        float f = (float) FastColor.ARGB32.red(pColor) / 255.0F;
-        float f1 = (float) FastColor.ARGB32.green(pColor) / 255.0F;
-        float f2 = (float) FastColor.ARGB32.blue(pColor) / 255.0F;
+        float f3 = (float) FastColor.ARGB32.alpha(pColor) / 255F;
+        float f = (float) FastColor.ARGB32.red(pColor) / 255F;
+        float f1 = (float) FastColor.ARGB32.green(pColor) / 255F;
+        float f2 = (float) FastColor.ARGB32.blue(pColor) / 255F;
         VertexConsumer vertexconsumer = guiGraphics.bufferSource().getBuffer(pRenderType);
         vertexconsumer.vertex(matrix4f, pMinX, pMinY, pZ).color(f, f1, f2, f3).endVertex();
         vertexconsumer.vertex(matrix4f, pMinX, pMaxY, pZ).color(f, f1, f2, f3).endVertex();
@@ -171,15 +173,97 @@ public class RenderHelper {
         int borderWidth = pMaxX - pMinX;
         if (width > borderWidth) {
             int l = width - borderWidth;
-            double rate = (double) Util.getMillis() / 1000.0D;
-            double d1 = Math.max((double) l * 0.5D, 3.0D);
-            double d2 = Math.sin((Math.PI / 2D) * Math.cos((Math.PI * 2D) * rate / d1)) / 2.0D + 0.5D;
-            double d3 = Mth.lerp(d2, 0.0D, l);
+            double rate = (double) Util.getMillis() / 1000;
+            double d1 = Math.max((double) l * 0.5, 3);
+            double d2 = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * rate / d1)) / 2 + 0.5;
+            double d3 = Mth.lerp(d2, 0, l);
             pGuiGraphics.enableScissor((int) (pMinX * scale), (int) (pMinY * scale), (int) (pMaxX * scale), (int) (pMaxY * scale));
             pGuiGraphics.drawString(pFont, pText, pMinX - (int) d3, pMinY, pColor);
             pGuiGraphics.disableScissor();
         } else {
             pGuiGraphics.drawString(pFont, pText, pMinX, pMinY, pColor);
         }
+    }
+
+    /**
+     * 渲染一个圆环
+     *
+     * @param guiGraphics     gui
+     * @param centerX         渲染中心X坐标
+     * @param centerY         渲染中心Y坐标
+     * @param outerRadius     外环半径
+     * @param innerRadius     内环半径
+     * @param backgroundColor 背景颜色
+     * @param progressColor   进度颜色
+     * @param progress        进度
+     * @param useRate         是否使用占据屏幕百分比形式的半径
+     */
+    public static void renderCircularRing(GuiGraphics guiGraphics, float centerX, float centerY, float outerRadius, float innerRadius, float[] backgroundColor, float[] progressColor, float progress, boolean useRate) {
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+
+        poseStack.rotateAround(Axis.ZP.rotationDegrees(-90), centerX, centerY, 0);
+
+        var window = Minecraft.getInstance().getWindow();
+        float scale = useRate ? Math.min(window.getGuiScaledWidth(), window.getGuiScaledHeight()) : 1;
+
+        // 绘制背景圆环
+        drawCircularRing(poseStack, centerX, centerY, outerRadius * scale, innerRadius * scale, backgroundColor, 1.0f);
+
+        // 绘制进度圆环
+        drawCircularRing(poseStack, centerX, centerY, outerRadius * scale, innerRadius * scale, progressColor, progress);
+
+        poseStack.popPose();
+
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawCircularRing(PoseStack poseStack, float centerX, float centerY, float outerRadius, float innerRadius,
+                                        float[] color, float progressAngle) {
+        poseStack.pushPose();
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
+
+        Matrix4f matrix = poseStack.last().pose();
+        float angleStep = (float) (2 * Math.PI / 180);
+        float maxAngle = (float) (2 * Math.PI * progressAngle);
+
+        RenderSystem.setShaderColor(color[0], color[1], color[2], color[3]);
+
+        buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION);
+
+        for (int i = 0; i <= 180 * progressAngle; i++) {
+            float angle = i * angleStep;
+            if (angle > maxAngle) {
+                angle = maxAngle;
+            }
+
+            float cos = (float) Math.cos(angle);
+            float sin = (float) Math.sin(angle);
+
+            // 外圆点
+            float outerX = centerX + outerRadius * cos;
+            float outerY = centerY + outerRadius * sin;
+            buffer.vertex(matrix, outerX, outerY, 0).endVertex();
+
+            // 内圆点
+            float innerX = centerX + innerRadius * cos;
+            float innerY = centerY + innerRadius * sin;
+            buffer.vertex(matrix, innerX, innerY, 0).endVertex();
+
+            if (angle >= maxAngle) break;
+        }
+
+        tesselator.end();
+
+        // 重置颜色
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        poseStack.popPose();
     }
 }

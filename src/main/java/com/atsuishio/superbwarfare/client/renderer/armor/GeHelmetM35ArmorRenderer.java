@@ -12,7 +12,7 @@ public class GeHelmetM35ArmorRenderer extends GeoArmorRenderer<GeHelmetM35> {
 
     public GeHelmetM35ArmorRenderer() {
         super(new GeHelmetM35Model());
-        this.head = new GeoBone(null, "", false, (double) 0, false, false);
+        this.head = new GeoBone(null, "", false, 0.0, false, false);
     }
 
     @Override

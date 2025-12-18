@@ -1,0 +1,22 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/aa_12.animation.json",
+    "Model": "superbwarfare:geo/aa_12.geo.json",
+    "Texture": "superbwarfare:textures/item/aa_12.png",
+    "LODModel": "superbwarfare:geo/lod/aa_12.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/aa_12.png"
+  },
+  "Animation": {
+    "Idle": "animation.aa_12.idle",
+    "ReloadNormal": "animation.aa_12.reload_normal",
+    "ReloadEmpty": "animation.aa_12.reload_empty"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.31465
+  ],
+  "FlareSize": 0.5,
+  "UseOldHandRenderer": true,
+  "EjectShell": true
+}

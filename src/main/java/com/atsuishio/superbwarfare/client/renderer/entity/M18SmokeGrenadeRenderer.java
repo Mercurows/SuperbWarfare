@@ -33,6 +33,6 @@ public class M18SmokeGrenadeRenderer extends GeoEntityRenderer<M18SmokeGrenadeEn
 
     @Override
     protected float getDeathMaxRotation(M18SmokeGrenadeEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

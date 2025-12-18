@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.menu.ReforgingTableMenu;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.GunReforgeMessage;
 import com.atsuishio.superbwarfare.network.message.send.SetPerkLevelMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -62,7 +63,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
             renderNumber(pGuiGraphics, this.leftPos + 156, this.topPos + 31, 1, 190, damagePerkLevel);
         }
 
-        var upgradePoint = ReforgingTableScreen.this.menu.upgradePoint.get();
+        var upgradePoint = ReforgingTableScreen.this.menu.availableLevel();
         renderNumber(pGuiGraphics, this.leftPos + 43, this.topPos + 20, 51, 178, upgradePoint);
 
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
@@ -117,7 +118,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
 
         @Override
         public void onPress() {
-            Mod.PACKET_HANDLER.sendToServer(GunReforgeMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.sendToServer(GunReforgeMessage.INSTANCE);
         }
 
         @Override
@@ -163,7 +164,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
                 }
             }
 
-            Mod.PACKET_HANDLER.sendToServer(new SetPerkLevelMessage(type.ordinal(), true));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new SetPerkLevelMessage(type.ordinal(), true));
         }
 
         @Override
@@ -209,7 +210,7 @@ public class ReforgingTableScreen extends AbstractContainerScreen<ReforgingTable
                 }
             }
 
-            Mod.PACKET_HANDLER.sendToServer(new SetPerkLevelMessage(type.ordinal(), false));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new SetPerkLevelMessage(type.ordinal(), false));
         }
 
         @Override

@@ -1,0 +1,19 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/lav_150.animation.json",
+    "Model": "superbwarfare:geo/lav_150.geo.json",
+    "LODModel": [
+      "superbwarfare:geo/vehicle_lod/lav_150_lod1.geo.json",
+      "superbwarfare:geo/vehicle_lod/lav_150_lod2.geo.json"
+    ],
+    "Texture": "superbwarfare:textures/entity/lav_150.png",
+    "LODTexture": [
+      "superbwarfare:textures/entity/lav_150_lod1.png",
+      "superbwarfare:textures/entity/lav_150_lod2.png"
+    ]
+  },
+  "LODDistance": [
+    32,
+    96
+  ]
+}

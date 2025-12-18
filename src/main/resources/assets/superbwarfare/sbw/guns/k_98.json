@@ -1,0 +1,16 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/k_98.animation.json",
+    "Model": "superbwarfare:geo/k_98.geo.json",
+    "Texture": "superbwarfare:textures/item/k_98.png",
+    "LODModel": "superbwarfare:geo/lod/k_98.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/k_98.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.9772
+  ],
+  "FlareSize": 0.4,
+  "UseOldHandRenderer": true
+}

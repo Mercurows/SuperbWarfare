@@ -23,12 +23,9 @@ public class ModTags {
         public static final TagKey<Item> RIFLE = modItemTag("rifle");
         public static final TagKey<Item> SNIPER_RIFLE = modItemTag("sniper_rifle");
         public static final TagKey<Item> SHOTGUN = modItemTag("shotgun");
-        public static final TagKey<Item> HEAVY_WEAPON = modItemTag("heavy_weapon");
+        public static final TagKey<Item> MACHINE_GUN = modItemTag("machine_gun");
 
         public static final TagKey<Item> LAUNCHER = modItemTag("launcher");
-        public static final TagKey<Item> LAUNCHER_GRENADE = modItemTag("launcher/grenade");
-
-        public static final TagKey<Item> NORMAL_GUN = modItemTag("normal_gun");
 
         public static final TagKey<Item> MILITARY_ARMOR = modItemTag("military_armor");
         public static final TagKey<Item> MILITARY_ARMOR_HEAVY = modItemTag("military_armor_heavy");
@@ -96,6 +93,8 @@ public class ModTags {
         public static final TagKey<DamageType> VEHICLE_IGNORE = modDamageTag("vehicle_ignore");
         // 在载具上的实体受到带有此标签的伤害类型的伤害时，只会受到伤害减免，而不会转移到载具上
         public static final TagKey<DamageType> VEHICLE_NOT_ABSORB = modDamageTag("vehicle_not_absorb");
+        // 载具直接免疫的伤害类型
+        public static final TagKey<DamageType> VEHICLE_IMMUNE = modDamageTag("vehicle_immune");
 
         // 能够由枪械造成的伤害，可用于perk效果判定
         public static final TagKey<DamageType> GUN_DAMAGE = modDamageTag("gun_damage");
@@ -115,8 +114,9 @@ public class ModTags {
         public static final TagKey<EntityType<?>> NO_EXPERIENCE = modEntityTag("no_experience");
         public static final TagKey<EntityType<?>> CAN_REPAIR = modEntityTag("can_repair");
         public static final TagKey<EntityType<?>> MINE = modEntityTag("mine");
-
         public static final TagKey<EntityType<?>> AT_ROCKET = modEntityTag("at_rocket");
+        public static final TagKey<EntityType<?>> AA_MISSILE = modEntityTag("aa_missile");
+        public static final TagKey<EntityType<?>> SEEK_BLACKLIST = modEntityTag("seek_blacklist");
     }
 
     private static TagKey<EntityType<?>> modEntityTag(String name) {

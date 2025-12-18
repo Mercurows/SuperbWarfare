@@ -3,7 +3,7 @@
   "category": "equipment",
   "ingredients": [
     {
-      "item": "superbwarfare:wire_guide_missile"
+      "item": "superbwarfare:medium_anti_ground_missile"
     }
   ],
   "result": {

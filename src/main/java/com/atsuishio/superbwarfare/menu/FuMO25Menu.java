@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.menu;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
+import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.network.dataslot.SimpleEnergyData;
 import com.atsuishio.superbwarfare.network.message.receive.RadarMenuCloseMessage;
@@ -21,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -86,9 +89,11 @@ public class FuMO25Menu extends EnergyMenu {
             ItemStack stack = this.container.getItem(0);
             if (stack.isEmpty()) return;
 
-            stack.getOrCreateTag().putInt("TargetX", this.posX);
-            stack.getOrCreateTag().putInt("TargetY", this.posY);
-            stack.getOrCreateTag().putInt("TargetZ", this.posZ);
+            var parameters = FiringParametersKt.getFiringParameters(stack);
+            var isDepressed = parameters.isDepressed();
+            var radius = parameters.radius();
+
+            FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(new BlockPos(this.posX, this.posY, this.posZ), radius, isDepressed));
 
             this.resetPos();
             this.container.setChanged();
@@ -112,7 +117,7 @@ public class FuMO25Menu extends EnergyMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player pPlayer, int pIndex) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(pIndex);
         if (slot.hasItem()) {
@@ -149,13 +154,14 @@ public class FuMO25Menu extends EnergyMenu {
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
+    public boolean stillValid(@NotNull Player pPlayer) {
         return this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.FUMO_25.get())
-                && pPlayer.distanceToSqr((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D) <= 64.0D, true);
+                && pPlayer.distanceToSqr((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64, true);
     }
 
     @Override
-    public void removed(Player pPlayer) {
+    public void removed(@NotNull Player pPlayer) {
+        super.removed(pPlayer);
         this.access.execute((level, pos) -> {
             ItemStack para = this.container.getItem(0);
             if (!para.isEmpty()) {
@@ -208,14 +214,14 @@ public class FuMO25Menu extends EnergyMenu {
     public static void onContainerOpened(PlayerContainerEvent.Open event) {
         if (event.getContainer() instanceof FuMO25Menu fuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
             fuMO25Menu.getSelfPos().ifPresent(pos ->
-                    Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new RadarMenuOpenMessage(pos)));
+                    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new RadarMenuOpenMessage(pos)));
         }
     }
 
     @SubscribeEvent
     public static void onContainerClosed(PlayerContainerEvent.Close event) {
         if (event.getContainer() instanceof FuMO25Menu && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), RadarMenuCloseMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), RadarMenuCloseMessage.INSTANCE);
         }
     }
 }

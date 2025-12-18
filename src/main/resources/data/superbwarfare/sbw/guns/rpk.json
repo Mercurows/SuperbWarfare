@@ -1,0 +1,59 @@
+{
+  "MinZoom": 1.25,
+  "MaxZoom": 6,
+  "Spread": 5.5,
+  "RecoilX": 0.0018,
+  "RecoilY": 0.012,
+  "Damage": 9.5,
+  "Headshot": 2,
+  "Velocity": 38,
+  "Magazine": 40,
+  "Weight": 7,
+  "DefaultFireMode": "Auto",
+  "NormalReloadTime": 52,
+  "EmptyReloadTime": 65,
+  "BypassesArmor": 0.23,
+  "SoundRadius": 14,
+  "RPM": 600,
+  "GunType": "MachineGun",
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
+  "AmmoType": "@RifleAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/rpk_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:killing_tally",
+    "superbwarfare:desperado",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:rpk_fire_1p",
+    "Fire3P": "superbwarfare:rpk_fire_3p",
+    "Fire3PFar": "superbwarfare:rpk_far",
+    "Fire3PVeryFar": "superbwarfare:rpk_veryfar",
+    "Fire1PSilent": "superbwarfare:rpk_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:rpk_fire_3p_s",
+    "ReloadNormal": "superbwarfare:ak_47_reload_normal",
+    "ReloadEmpty": "superbwarfare:ak_47_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:ak_47_reload_normal",
+      "superbwarfare:ak_47_reload_empty"
+    ]
+  }
+}

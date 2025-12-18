@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -29,14 +27,13 @@ public record FireModeMessage(boolean forward) {
             var player = context.getSender();
             if (player == null) return;
 
-            ItemStack stack = player.getMainHandItem();
-            if (!(stack.getItem() instanceof GunItem)) {
-                return;
-            }
+            var stack = player.getMainHandItem();
+
+            if (!(stack.getItem() instanceof GunItem)) return;
             var data = GunData.from(stack);
 
             var selectedFireMode = data.selectedFireMode.get();
-            var fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES);
+            var fireModes = data.compute().availableFireModes();
 
             if (fireModes.size() > 1) {
                 int mode = (selectedFireMode + (message.forward() ? -1 : 1) + fireModes.size()) % fireModes.size();
@@ -68,6 +65,7 @@ public record FireModeMessage(boolean forward) {
             if (stack.getItem() == ModItems.JAVELIN.get()) {
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_OUT.get());
             }
+            data.save();
         });
         context.setPacketHandled(true);
     }

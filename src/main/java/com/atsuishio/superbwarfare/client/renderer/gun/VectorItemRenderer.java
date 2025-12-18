@@ -53,7 +53,7 @@ public class VectorItemRenderer extends CustomGunRenderer<VectorItem> {
                             AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.3, 16, 1, 255, 0, 0, 255, "apex_2x", true);
                 }
 
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0, 1.453125, 0.35);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
             } else {
                 ItemModelHelper.hideAllAttachments(bone, name);

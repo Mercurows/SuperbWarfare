@@ -1,0 +1,21 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/sks.animation.json",
+    "Model": "superbwarfare:geo/sks.geo.json",
+    "Texture": "superbwarfare:textures/item/sks.png",
+    "LODModel": "superbwarfare:geo/lod/sks.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/sks.png"
+  },
+  "Animation": {
+    "Idle": "animation.sks.idle",
+    "ReloadNormal": "animation.sks.reload_normal",
+    "ReloadEmpty": "animation.sks.reload_empty"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.4375
+  ],
+  "FlareSize": 0.35,
+  "EjectShell": true
+}

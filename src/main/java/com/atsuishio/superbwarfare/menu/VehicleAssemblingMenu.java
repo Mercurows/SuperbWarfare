@@ -1,8 +1,9 @@
 package com.atsuishio.superbwarfare.menu;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity;
+import com.atsuishio.superbwarfare.init.ModBlocks;
 import com.atsuishio.superbwarfare.init.ModMenuTypes;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.FinishAssemblingVehicleMessage;
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -24,15 +26,20 @@ import org.jetbrains.annotations.Nullable;
 public class VehicleAssemblingMenu extends AbstractContainerMenu {
 
     private final boolean isVehicleMenu;
+    protected final ContainerLevelAccess access;
 
     public VehicleAssemblingMenu(int pContainerId, Inventory inventory) {
-        super(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), pContainerId);
-        this.isVehicleMenu = false;
+        this(pContainerId, inventory, ContainerLevelAccess.NULL);
     }
 
-    public VehicleAssemblingMenu(int pContainerId, Inventory inventory, boolean isVehicleMenu) {
+    public VehicleAssemblingMenu(int pContainerId, Inventory inventory, ContainerLevelAccess access) {
+        this(pContainerId, inventory, access, false);
+    }
+
+    public VehicleAssemblingMenu(int pContainerId, Inventory inventory, ContainerLevelAccess access, boolean isVehicleMenu) {
         super(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), pContainerId);
         this.isVehicleMenu = isVehicleMenu;
+        this.access = access;
     }
 
     @Override
@@ -42,7 +49,10 @@ public class VehicleAssemblingMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player pPlayer) {
-        return (pPlayer.isAlive() && !this.isVehicleMenu) || (this.isVehicleMenu && pPlayer.getVehicle() instanceof VehicleAssemblingTableVehicleEntity);
+        return (pPlayer.isAlive() && !this.isVehicleMenu &&
+                this.access.evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get())
+                        && pPlayer.distanceToSqr((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64, true))
+                || (this.isVehicleMenu && pPlayer.getVehicle() instanceof VehicleAssemblingTableVehicleEntity);
     }
 
     /**
@@ -91,7 +101,7 @@ public class VehicleAssemblingMenu extends AbstractContainerMenu {
             }
 
             player.inventoryMenu.broadcastFullState();
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new FinishAssemblingVehicleMessage(this.containerId));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new FinishAssemblingVehicleMessage(this.containerId));
         });
     }
 

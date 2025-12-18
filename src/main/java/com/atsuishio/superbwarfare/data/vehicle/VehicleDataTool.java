@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.data.CustomData;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.VehiclesDataMessage;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.OnDatapackSyncEvent;
@@ -9,12 +9,8 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.PacketDistributor;
 
-import java.util.HashMap;
-
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 public class VehicleDataTool {
-
-    public static HashMap<String, DefaultVehicleData> vehicleData = CustomData.VEHICLE;
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
@@ -24,7 +20,7 @@ public class VehicleDataTool {
                 return;
             }
 
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), VehiclesDataMessage.create());
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), VehiclesDataMessage.create());
         }
     }
 
@@ -39,7 +35,7 @@ public class VehicleDataTool {
                 continue;
             }
 
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), message);
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), message);
         }
     }
 }

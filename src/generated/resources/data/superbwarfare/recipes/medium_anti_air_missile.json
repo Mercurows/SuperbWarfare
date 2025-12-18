@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "superbwarfare:seeker"
+    },
+    "b": {
+      "tag": "forge:ingots/iron"
+    },
+    "c": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "d": {
+      "item": "superbwarfare:missile_engine"
+    },
+    "e": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "pattern": [
+    "eae",
+    "bcb",
+    " d "
+  ],
+  "result": {
+    "item": "superbwarfare:medium_anti_air_missile"
+  },
+  "show_notification": true
+}

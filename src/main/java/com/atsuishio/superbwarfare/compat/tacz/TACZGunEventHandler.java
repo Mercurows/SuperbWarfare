@@ -10,12 +10,10 @@ import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
-
-import java.util.List;
+import net.minecraftforge.fml.loading.LoadingModList;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 public class TACZGunEventHandler {
-
-    private static final List<String> VERSIONS = List.of("1.1.4", "1.1.5", "1.1.6");
 
     public static void entityHurtByTACZGun(EntityHurtByGunEvent.Pre event) {
         if (event.getHurtEntity() instanceof VehicleEntity) {
@@ -28,16 +26,10 @@ public class TACZGunEventHandler {
     }
 
     public static boolean compatCondition() {
-        if (hasMod() && ModList.get().getModFileById("tacz") != null) {
-            boolean[] flag = {false};
-            VERSIONS.forEach(version -> {
-                if (ModList.get().getModFileById("tacz").versionString().startsWith(version)) {
-                    flag[0] = true;
-                }
-            });
-            return flag[0];
-        }
-        return false;
+        var modFile = LoadingModList.get().getModFileById("tacz");
+        if (modFile == null) return false;
+        DefaultArtifactVersion modVersion = new DefaultArtifactVersion(modFile.versionString());
+        return modVersion.compareTo(new DefaultArtifactVersion("1.1.4")) >= 0;
     }
 
     public static ResourceLocation getTaczCompatIcon(ItemStack stack) {

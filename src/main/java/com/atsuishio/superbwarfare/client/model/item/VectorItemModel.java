@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,31 +15,6 @@ import software.bernie.geckolib.core.animation.AnimationState;
 
 public class VectorItemModel extends CustomGunModel<VectorItem> {
     public static float rotXSight = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(VectorItem animatable) {
-        return Mod.loc("animations/vector.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(VectorItem animatable) {
-        return Mod.loc("geo/vector.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(VectorItem animatable) {
-        return Mod.loc("textures/item/vector.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(VectorItem animatable) {
-        return Mod.loc("geo/lod/vector.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(VectorItem animatable) {
-        return Mod.loc("textures/item/lod/vector.png");
-    }
 
     @Override
     public void setCustomAnimations(VectorItem animatable, long instanceId, AnimationState<VectorItem> animationState) {

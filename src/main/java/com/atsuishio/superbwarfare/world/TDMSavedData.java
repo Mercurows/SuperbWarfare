@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.world;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.TDMSyncMessage;
 import com.google.common.collect.Sets;
 import net.minecraft.nbt.CompoundTag;
@@ -81,7 +81,7 @@ public class TDMSavedData extends SavedData {
 
     public void sync() {
         this.setDirty();
-        Mod.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new TDMSyncMessage(this));
+        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new TDMSyncMessage(this));
     }
 
     public static boolean enabledTDM(Entity entity) {
@@ -99,6 +99,6 @@ public class TDMSavedData extends SavedData {
 
         var data = level.getDataStorage().get(TDMSavedData::load, FILE_ID);
         if (data == null) return;
-        Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new TDMSyncMessage(data));
+        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new TDMSyncMessage(data));
     }
 }

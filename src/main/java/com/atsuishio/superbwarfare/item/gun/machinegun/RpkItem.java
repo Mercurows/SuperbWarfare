@@ -1,19 +1,14 @@
 package com.atsuishio.superbwarfare.item.gun.machinegun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.RpkItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -29,7 +24,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class RpkItem extends GunGeoItem {
@@ -143,25 +137,16 @@ public class RpkItem extends GunGeoItem {
     }
 
     @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.RPK_RELOAD_EMPTY.get(), ModSounds.RPK_RELOAD_NORMAL.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/rpk_icon.png");
-    }
-
-    @Override
     @ParametersAreNonnullByDefault
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);
 
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+        var data = GunData.from(stack);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
 
         if (gripType == 3) {
-            CompoundTag tag = GunData.from(stack).attachment();
-            tag.putInt("Grip", 0);
+            data.attachment.set(AttachmentType.GRIP, 0);
+            data.save();
         }
     }
 
@@ -202,11 +187,6 @@ public class RpkItem extends GunGeoItem {
 
     @Override
     public boolean hasCustomStock(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean canEjectShell(GunData data) {
         return true;
     }
 

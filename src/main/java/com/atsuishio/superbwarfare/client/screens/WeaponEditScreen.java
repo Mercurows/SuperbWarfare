@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.EditMessage;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -122,10 +123,10 @@ public class WeaponEditScreen extends Screen {
 
         var currentData = GunData.from(itemStack);
         RenderHelper.preciseBlit(pGuiGraphics, AMMO_TYPE, posX2, posY3, 0, 0, 24, 24, 24, 24);
-        if (currentData.ammoConsumers.size() <= 1) {
+        if (currentData.compute().getAmmoConsumers().size() <= 1) {
             RenderHelper.preciseBlit(pGuiGraphics, INVALID, posX2, posY3, 0, 0, 24, 24, 24, 24);
         } else {
-            int size = currentData.ammoConsumers.size();
+            int size = currentData.compute().getAmmoConsumers().size();
             float offset = 35f;
             int count = size / 2;
 
@@ -243,7 +244,7 @@ public class WeaponEditScreen extends Screen {
         @Override
         public void onPress() {
             if (!this.isActive()) return;
-            Mod.PACKET_HANDLER.sendToServer(new EditMessage(this.type, !this.left));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(this.type, !this.left));
             ClientEventHandler.editModelShake();
         }
 
@@ -259,7 +260,7 @@ public class WeaponEditScreen extends Screen {
                 case 2 -> gunItem.hasCustomGrip(data);
                 case 3 -> gunItem.hasCustomStock(data);
                 case 4 -> gunItem.hasCustomMagazine(data);
-                case 5 -> data.ammoConsumers.size() > 1;
+                case 5 -> data.compute().getAmmoConsumers().size() > 1;
                 default -> false;
             };
         }

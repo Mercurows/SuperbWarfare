@@ -1,0 +1,15 @@
+{
+  "base": {
+    "parent": "superbwarfare:item/super_star_shooter_base"
+  },
+  "gui_light": "front",
+  "loader": "forge:separate_transforms",
+  "perspectives": {
+    "gui": {
+      "parent": "superbwarfare:item/super_star_shooter_icon"
+    }
+  },
+  "textures": {
+    "particle": "superbwarfare:item/super_star_shooter_icon"
+  }
+}

@@ -25,8 +25,9 @@ public class MortarShell extends Item implements DispenserLaunchable {
         super(new Properties());
     }
 
-    public static MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack) {
-        MortarShellEntity shellEntity = new MortarShellEntity(entity, level);
+    public static MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack, float gravity, float damage, float explosionDamage, float explosionRadius) {
+        MortarShellEntity shellEntity = new MortarShellEntity(entity, level, damage, explosionDamage, explosionRadius);
+        shellEntity.setGravity(gravity);
         shellEntity.setEffectsFromItem(stack);
         return shellEntity;
     }
@@ -42,12 +43,12 @@ public class MortarShell extends Item implements DispenserLaunchable {
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel);
+                return new MortarShellEntity(ModEntities.MORTAR_SHELL.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 0.13f);
             }
 
             @Override
             protected void playSound(@NotNull BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MORTAR_FIRE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.MORTAR_FIRE.get(), SoundSource.BLOCKS, 1F, 1F);
             }
         };
     }

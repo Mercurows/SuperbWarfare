@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:javelin_missile"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:medium_anti_ground_missile"
+  }
+}

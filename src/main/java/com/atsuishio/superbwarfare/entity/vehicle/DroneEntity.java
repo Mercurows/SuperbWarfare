@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData;
 import com.atsuishio.superbwarfare.entity.C4Entity;
 import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Monitor;
@@ -21,7 +21,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -46,18 +45,13 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
+import org.joml.Matrix4d;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import org.joml.Vector4d;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,12 +59,8 @@ import java.util.stream.Collectors;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
 import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
 
-public class DroneEntity extends VehicleEntity implements GeoEntity {
+public class DroneEntity extends GeoVehicleEntity {
 
-    @Override
-    public boolean hasMenu() {
-        return false;
-    }
     public static final EntityDataAccessor<Boolean> LINKED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> CONTROLLER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Boolean> IS_KAMIKAZE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
@@ -80,9 +70,8 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
 
     // scale[3], offset[3], rotation[3], xLength, zLength, tickCount
     public static final EntityDataAccessor<List<Float>> DISPLAY_DATA = SynchedEntityData.defineId(DroneEntity.class, ModSerializers.FLOAT_LIST_SERIALIZER.get());
+    public static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> MAX_AMMO = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public boolean fire;
     public int collisionCoolDown;
@@ -96,10 +85,6 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     public int holdTickX;
     public int holdTickY;
     public int holdTickZ;
-
-    public DroneEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.DRONE.get(), world);
-    }
 
     public DroneEntity(EntityType<DroneEntity> type, Level world) {
         super(type, world);
@@ -139,6 +124,7 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
                 (float) data.tickCount
         ));
         this.entityData.define(DISPLAY_ENTITY_TAG, new CompoundTag());
+        this.entityData.define(AMMO, 0);
         this.entityData.define(MAX_AMMO, 1);
     }
 
@@ -148,13 +134,16 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean shouldSendHitParticles() {
+    public boolean shouldSendHitSounds() {
         return false;
     }
 
-    @Override
-    public boolean shouldSendHitSounds() {
-        return false;
+    public void setAmmo(int count) {
+        this.entityData.set(AMMO, count);
+    }
+
+    public int getAmmo() {
+        return this.entityData.get(AMMO);
     }
 
     @Override
@@ -162,7 +151,7 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Linked", this.entityData.get(LINKED));
         compound.putString("Controller", this.entityData.get(CONTROLLER));
-        compound.putInt("Ammo", this.entityData.get(AMMO));
+        compound.putInt("Ammo", getAmmo());
         compound.putBoolean("KamikazeMode", this.entityData.get(IS_KAMIKAZE));
         compound.putInt("MaxAmmo", this.entityData.get(MAX_AMMO));
         compound.putString("DisplayEntity", this.entityData.get(DISPLAY_ENTITY));
@@ -175,11 +164,6 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public boolean hasEnergyStorage() {
-        return false;
-    }
-
-    @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Linked"))
@@ -187,7 +171,7 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
         if (compound.contains("Controller"))
             this.entityData.set(CONTROLLER, compound.getString("Controller"));
         if (compound.contains("Ammo"))
-            this.entityData.set(AMMO, compound.getInt("Ammo"));
+            setAmmo(compound.getInt("Ammo"));
         if (compound.contains("KamikazeMode"))
             this.entityData.set(IS_KAMIKAZE, compound.getBoolean("KamikazeMode"));
         if (compound.contains("Item"))
@@ -229,12 +213,12 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
             if (controller != null) {
                 ItemStack stack = controller.getMainHandItem();
                 if (!stack.is(ModItems.MONITOR.get()) || !stack.getOrCreateTag().getBoolean("Using")) {
-                    upInputDown = false;
-                    downInputDown = false;
-                    forwardInputDown = false;
-                    backInputDown = false;
-                    leftInputDown = false;
-                    rightInputDown = false;
+                    setLeftInputDown(false);
+                    setRightInputDown(false);
+                    setForwardInputDown(false);
+                    setBackInputDown(false);
+                    setUpInputDown(false);
+                    setDownInputDown(false);
                 }
 
                 if (tickCount % 5 == 0) {
@@ -252,9 +236,9 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
             this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), controller), 0.25f + (float) (2 * lastTickSpeed));
         }
 
-        if (this.fire && this.entityData.get(AMMO) > 0) {
+        if (this.fire && getAmmo() > 0) {
             if (!this.entityData.get(IS_KAMIKAZE)) {
-                this.entityData.set(AMMO, this.entityData.get(AMMO) - 1);
+                setAmmo(getAmmo() - 1);
                 if (controller != null && this.level() instanceof ServerLevel) {
                     droneDrop(controller);
                 }
@@ -360,7 +344,7 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
                 ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ModItems.DRONE.get()));
 
                 // 返还弹药
-                for (int index0 = 0; index0 < this.entityData.get(AMMO); index0++) {
+                for (int index0 = 0; index0 < getAmmo(); index0++) {
                     ItemHandlerHelper.giveItemToPlayer(player, this.currentItem.copy());
                 }
 
@@ -378,10 +362,10 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
         } else {
             if (stack.isEmpty()) {
                 // 返还单个弹药
-                int ammo = this.entityData.get(AMMO);
+                int ammo = getAmmo();
                 if (ammo > 0) {
                     ItemHandlerHelper.giveItemToPlayer(player, this.currentItem.copy());
-                    this.entityData.set(AMMO, ammo - 1);
+                    setAmmo(ammo - 1);
                     if (ammo == 1) {
                         this.entityData.set(DISPLAY_ENTITY, "");
                         this.entityData.set(MAX_AMMO, 1);
@@ -395,12 +379,12 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
                 var attachmentData = CustomData.DRONE_ATTACHMENT.get(itemID);
 
                 // 是否能挂载该物品
-                if (attachmentData != null && this.entityData.get(AMMO) < attachmentData.count()) {
+                if (attachmentData != null && getAmmo() < attachmentData.count()) {
                     if (this.entityData.get(DISPLAY_ENTITY).equals(attachmentData.displayEntity())
                             && ItemStack.matches(this.currentItem, stack.copyWithCount(1))
                     ) {
                         // 同种物品挂载
-                        this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
+                        setAmmo(getAmmo() + 1);
 
                         if (!player.isCreative()) {
                             stack.shrink(1);
@@ -408,11 +392,11 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
                         if (player instanceof ServerPlayer serverPlayer) {
                             serverPlayer.level().playSound(null, serverPlayer.getOnPos(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 0.5F, 1);
                         }
-                    } else if (this.entityData.get(AMMO) == 0) {
+                    } else if (getAmmo() == 0) {
                         // 不同种物品挂载
                         this.currentItem = stack.copyWithCount(1);
                         this.entityData.set(DISPLAY_ENTITY, attachmentData.displayEntity());
-                        this.entityData.set(AMMO, this.entityData.get(AMMO) + 1);
+                        setAmmo(getAmmo() + 1);
                         this.entityData.set(IS_KAMIKAZE, attachmentData.isKamikaze);
                         this.entityData.set(MAX_AMMO, attachmentData.count());
 
@@ -460,21 +444,21 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     public void travel() {
         if (!this.onGround()) {
             // left and right
-            if (rightInputDown) {
+            if (rightInputDown()) {
                 holdTickX++;
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.3f * Math.min(holdTickX, 5));
-            } else if (this.leftInputDown) {
+                setDeltaRot(getDeltaRot() - 0.3f * Math.min(holdTickX, 5));
+            } else if (this.leftInputDown()) {
                 holdTickX++;
-                this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.3f * Math.min(holdTickX, 5));
+                setDeltaRot(getDeltaRot() + 0.3f * Math.min(holdTickX, 5));
             } else {
                 holdTickX = 0;
             }
 
             // forward and backward
-            if (forwardInputDown) {
+            if (forwardInputDown()) {
                 holdTickZ++;
                 this.entityData.set(DELTA_X_ROT, this.entityData.get(DELTA_X_ROT) - 0.3f * Math.min(holdTickZ, 5));
-            } else if (backInputDown) {
+            } else if (backInputDown()) {
                 holdTickZ++;
                 this.entityData.set(DELTA_X_ROT, this.entityData.get(DELTA_X_ROT) + 0.3f * Math.min(holdTickZ, 5));
             } else {
@@ -484,7 +468,7 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.965, 0.7, 0.965));
         } else {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 1, 0.8));
-            this.setZRot(this.roll * 0.7f);
+            this.setZRot(this.getRoll() * 0.7f);
             this.setXRot(this.getXRot() * 0.7f);
             this.setBodyXRot(this.getBodyPitch() * 0.7f);
         }
@@ -494,16 +478,16 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
             this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), 26 + (float) (60 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
         }
 
-        boolean up = this.upInputDown;
-        boolean down = this.downInputDown;
+        boolean up = this.upInputDown();
+        boolean down = this.downInputDown();
 
         if (up) {
             holdTickY++;
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.01f * Math.min(holdTickY, 5), 0.2f));
+            setPower(Math.min(getPower() + 0.01f * Math.min(holdTickY, 5), 0.2f));
             setDeltaMovement(new Vec3(getDeltaMovement().x, 0.05 * holdTickY, getDeltaMovement().z));
         } else if (down) {
             holdTickY++;
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - 0.02f * Math.min(holdTickY, 5), this.onGround() ? 0 : 0.06f));
+            setPower(Math.max(getPower() - 0.02f * Math.min(holdTickY, 5), this.onGround() ? 0 : 0.06f));
             setDeltaMovement(new Vec3(getDeltaMovement().x, -0.05 * holdTickY, getDeltaMovement().z));
         } else {
             holdTickY = 0;
@@ -511,21 +495,21 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
 
         if (!(up || down)) {
             if (this.getDeltaMovement().y() < 0) {
-                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.005f, 0.2f));
+                setPower(Math.min(getPower() + 0.005f, 0.2f));
             } else {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.onGround() ? 0.0005f : 0.005f), 0.02f));
+                setPower(Math.max(getPower() - (this.onGround() ? 0.0005f : 0.005f), 0.02f));
             }
         }
 
-        this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.7f);
+        setDeltaRot(getDeltaRot() * 0.7f);
         this.entityData.set(DELTA_X_ROT, this.entityData.get(DELTA_X_ROT) * 0.7f);
 
-        this.setZRot(Mth.clamp(this.getRoll() - this.entityData.get(DELTA_ROT), -30, 30));
+        this.setZRot(Mth.clamp(this.getRoll() - getDeltaRot(), -30, 30));
         this.setBodyXRot(Mth.clamp(this.getBodyPitch() - this.entityData.get(DELTA_X_ROT), -30, 30));
 
-        setDeltaMovement(getDeltaMovement().add(0.0f, this.entityData.get(POWER) * 0.6, 0.0f));
+        setDeltaMovement(getDeltaMovement().add(0.0f, getPower() * 0.6, 0.0f));
 
-        Vector3f direction = getRightDirection().mul(this.entityData.get(DELTA_ROT));
+        Vector3f direction = getRightDirection().mul(getDeltaRot());
         setDeltaMovement(getDeltaMovement().add(new Vec3(direction.x, direction.y, direction.z).scale(0.017)));
 
         Vector3f directionZ = getForwardDirection().mul(-this.entityData.get(DELTA_X_ROT));
@@ -535,8 +519,8 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
         if (controller != null) {
             ItemStack stack = controller.getMainHandItem();
             if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")) {
-                this.setYRot(this.getYRot() + 0.5f * entityData.get(MOUSE_SPEED_X));
-                this.setXRot(Mth.clamp(this.getXRot() + 0.5f * entityData.get(MOUSE_SPEED_Y), -10, 90));
+                this.setYRot(this.getYRot() + 0.5f * getMouseMoveSpeedX());
+                this.setXRot(Mth.clamp(this.getXRot() + 0.5f * getMouseMoveSpeedY(), -10, 90));
             }
         }
 
@@ -553,9 +537,9 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     }
 
     public void hitEntityCrash(Player player, Entity target) {
-        if (lastTickSpeed > 0.12) {
+        if (lastTickSpeed > 0.05) {
             var attachedEntity = this.entityData.get(DISPLAY_ENTITY);
-            if (!attachedEntity.isEmpty() && 20 * lastTickSpeed > this.getHealth()) {
+            if (!attachedEntity.isEmpty() && 50 * lastTickSpeed > this.getHealth()) {
                 var data = CustomData.DRONE_ATTACHMENT.get(getItemId(this.currentItem));
                 if (data != null) {
                     if (data.isKamikaze) {
@@ -573,36 +557,30 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
                     Monitor.disLink(player.getMainHandItem(), player);
                 }
             }
-            this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), Objects.requireNonNullElse(player, this)), (float) ((!this.entityData.get(DISPLAY_ENTITY).isEmpty() ? 20 : 4) * lastTickSpeed));
+            this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), Objects.requireNonNullElse(player, this)), (float) ((!this.entityData.get(DISPLAY_ENTITY).isEmpty() ? 50 : 4) * lastTickSpeed));
         }
     }
 
     @Override
     public boolean engineRunning() {
-        return Math.abs(this.entityData.get(POWER)) > 0.05;
-    }
-
-    @Override
-    public SoundEvent getEngineSound() {
-        return ModSounds.DRONE_SOUND.get();
+        return Math.abs(getPower()) > 0.05;
     }
 
     @Override
     public float getEngineSoundVolume() {
-
-        if (Math.abs(this.entityData.get(POWER)) <= 0.05) {
+        if (Math.abs(getPower()) <= 0.05) {
             return 0;
         }
 
         Player player = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
-        if (player == null) return entityData.get(POWER);
+        if (player == null) return getPower();
         ItemStack stack = player.getMainHandItem();
 
         if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
-            return entityData.get(POWER) * 0.25f;
+            return getPower() * 0.25f;
         }
-        return entityData.get(POWER) * 2f;
+        return getPower() * 2f;
     }
 
     @Override
@@ -655,7 +633,7 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
                 kamikazeExplosion();
             } else {
                 if (this.level() instanceof ServerLevel) {
-                    int count = this.entityData.get(AMMO);
+                    int count = getAmmo();
                     for (int i = 0; i < count; i++) {
                         droneDrop(controller);
                     }
@@ -686,7 +664,7 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     }
 
     private void kamikazeExplosion() {
-        Entity attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID));
+        Entity attacker = EntityFindUtil.findEntity(this.level(), getLastAttackerUUID());
         Player controller = EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
 
         assert controller != null;
@@ -750,40 +728,26 @@ public class DroneEntity extends VehicleEntity implements GeoEntity {
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    @Override
     public boolean canCrushEntities() {
         return false;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
+    public @Nullable Vec2 getCameraRotation(float partialTicks, @NotNull Player player, boolean zoom, boolean isFirstPerson) {
         return new Vec2((float) (getYaw(partialTicks) - freeCameraYaw), (float) (getPitch(partialTicks) + freeCameraPitch));
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public Vec3 getCameraPosition(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        Matrix4f transform = getClientVehicleTransform(partialTicks);
-        Vector4f maxCameraPosition = transformPosition(transform, 0, 0.75f, -2 - 0.2f * (float) ClientMouseHandler.custom3pDistanceLerp);
+    public Vec3 getCameraPosition(float partialTicks, @NotNull Player player, boolean zoom, boolean isFirstPerson) {
+        Matrix4d transform = getClientVehicleTransform(partialTicks);
+        Vector4d maxCameraPosition = transformPosition(transform, 0, 0.75, -2 - 0.2 * ClientMouseHandler.custom3pDistanceLerp);
         return CameraTool.getMaxZoom(transform, maxCameraPosition);
     }
 
     public Entity getController() {
         return EntityFindUtil.findPlayer(this.level(), this.entityData.get(CONTROLLER));
-    }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.DRONE;
     }
 }
 

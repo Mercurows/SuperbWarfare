@@ -1,0 +1,45 @@
+{
+  "Spread": 1.5,
+  "RecoilX": 0.003,
+  "RecoilY": 0.02,
+  "Damage": 8,
+  "Headshot": 2,
+  "Velocity": 46,
+  "Weight": 10,
+  "BypassesArmor": 0.3,
+  "ZoomSpreadRate": 0.75,
+  "SoundRadius": 14,
+  "RPM": 1200,
+  "DefaultFireMode": "Auto",
+  "GunType": "MachineGun",
+  "AvailableFireModes": [
+    "Auto"
+  ],
+  "AmmoType": "@RifleAmmo",
+  "ShootDelay": 10,
+  "HeatPerShoot": 0.5,
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
+  "Icon": "superbwarfare:textures/gun_icon/minigun_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:field_doctor",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:powerful_cooler",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:fair_means",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:minigun_fire_1p",
+    "Fire3P": "superbwarfare:minigun_fire_3p",
+    "Fire3PFar": "superbwarfare:minigun_far",
+    "Fire3PVeryFar": "superbwarfare:minigun_veryfar"
+  }
+}

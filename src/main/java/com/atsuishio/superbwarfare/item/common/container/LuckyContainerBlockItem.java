@@ -7,9 +7,12 @@ import com.atsuishio.superbwarfare.init.ModBlocks;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +48,12 @@ public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public LuckyContainerBlockItem() {
-        super(ModBlocks.LUCKY_CONTAINER.get(), new Properties().stacksTo(1).rarity(Rarity.EPIC));
+        super(ModBlocks.LUCKY_CONTAINER.get(), new Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant());
+    }
+
+    @Override
+    public boolean canBeHurtBy(DamageSource pDamageSource) {
+        return super.canBeHurtBy(pDamageSource) && !pDamageSource.is(DamageTypeTags.IS_EXPLOSION) && !pDamageSource.is(DamageTypes.CACTUS);
     }
 
     @Override
@@ -55,7 +63,7 @@ public class LuckyContainerBlockItem extends BlockItem implements GeoItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        BlockHitResult playerPOVHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.WATER);
+        BlockHitResult playerPOVHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
         if (playerPOVHitResult.getType() == HitResult.Type.MISS) {
             return super.use(level, player, hand);
         }

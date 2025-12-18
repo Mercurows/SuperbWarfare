@@ -1,0 +1,11 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/igla_9k38.animation.json",
+    "Model": "superbwarfare:geo/igla_9k38.geo.json",
+    "Texture": "superbwarfare:textures/item/igla_9k38.png"
+  },
+  "Animation": {
+    "Idle": "animation.igla_9k38.idle",
+    "Reload": "animation.igla_9k38.reload"
+  }
+}

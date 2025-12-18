@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.item;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
-import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -41,6 +41,7 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         TooltipTool.addScreenProviderText(pTooltipComponents);
         if (pStack.getTag() != null && pStack.getTag().contains(TAG_TYPE)) {
@@ -71,20 +72,22 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
         if (pHand == InteractionHand.OFF_HAND) {
             return InteractionResultHolder.fail(pPlayer.getItemInHand(pHand));
         }
-        pPlayer.playSound(SoundEvents.SPYGLASS_USE, 1.0F, 1.0F);
+        pPlayer.playSound(SoundEvents.SPYGLASS_USE, 1, 1);
         pPlayer.startUsingItem(pHand);
         return InteractionResultHolder.consume(pPlayer.getItemInHand(pHand));
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
-        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+    @ParametersAreNonnullByDefault
+    public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
+        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1, 1);
         return pStack;
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
-        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0F, 1.0F);
+        pLivingEntity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1, 1);
     }
 
     public boolean checkFull(ItemStack stack) {
@@ -161,9 +164,9 @@ public class ArtilleryIndicator extends Item implements ItemScreenProvider {
             var tag = tags.getCompound(i);
             Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
 
-            if (entity instanceof RemoteControllableTurret lockTargetEntity) {
+            if (entity instanceof ArtilleryEntity artilleryEntity) {
                 list.add(tag);
-                lockTargetEntity.setTarget(stack, player);
+                artilleryEntity.setTarget(stack, player, "Main");
             }
         }
 

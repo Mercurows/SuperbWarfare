@@ -1,0 +1,16 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/ak_12.animation.json",
+    "Model": "superbwarfare:geo/ak_12.geo.json",
+    "Texture": "superbwarfare:textures/item/ak_12.png",
+    "LODModel": "superbwarfare:geo/lod/ak_12.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/ak_12.png"
+  },
+  "FlarePosition": [
+    0,
+    0.02,
+    1.12375
+  ],
+  "FlareSize": 0.3,
+  "EjectShell": true
+}

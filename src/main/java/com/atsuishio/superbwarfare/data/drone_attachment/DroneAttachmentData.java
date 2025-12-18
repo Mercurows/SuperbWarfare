@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
-public class DroneAttachmentData implements IDBasedData {
+public class DroneAttachmentData implements IDBasedData<DroneAttachmentData> {
     @SerializedName("Item")
     public String itemID = "";
 
@@ -70,6 +70,11 @@ public class DroneAttachmentData implements IDBasedData {
     @Override
     public String getId() {
         return this.itemID;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.itemID = id;
     }
 
     @SerializedName("Count")

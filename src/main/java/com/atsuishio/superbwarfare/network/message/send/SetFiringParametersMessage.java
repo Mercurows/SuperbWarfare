@@ -3,9 +3,12 @@ package com.atsuishio.superbwarfare.network.message.send;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
+import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.tools.SoundTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +28,7 @@ public enum SetFiringParametersMessage {
             var player = context.getSender();
             if (player == null) return;
 
-            ItemStack offStack = player.getOffhandItem();
+            ItemStack stack = player.getOffhandItem();
             ItemStack mainStack = player.getMainHandItem();
             boolean lookAtEntity = false;
             Entity lookingEntity = TraceTool.findLookingEntity(player, 520);
@@ -38,36 +41,46 @@ public enum SetFiringParametersMessage {
                 lookAtEntity = true;
             }
 
-            if (offStack.is(ModItems.FIRING_PARAMETERS.get())) {
+            if (stack.is(ModItems.FIRING_PARAMETERS.get())) {
+                var parameters = FiringParametersKt.getFiringParameters(stack);
+                var isDepressed = parameters.isDepressed();
+                var radius = parameters.radius();
+
                 if (lookAtEntity) {
-                    offStack.getOrCreateTag().putDouble("TargetX", lookingEntity.getX());
-                    offStack.getOrCreateTag().putDouble("TargetY", lookingEntity.getY());
-                    offStack.getOrCreateTag().putDouble("TargetZ", lookingEntity.getZ());
+                    FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed));
                 } else {
-                    offStack.getOrCreateTag().putDouble("TargetX", hitPos.x());
-                    offStack.getOrCreateTag().putDouble("TargetY", hitPos.y());
-                    offStack.getOrCreateTag().putDouble("TargetZ", hitPos.z());
+                    FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), radius, isDepressed));
                 }
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
-                        .append(Component.literal("[" + offStack.getOrCreateTag().getInt("TargetX")
-                                + "," + offStack.getOrCreateTag().getInt("TargetY")
-                                + "," + offStack.getOrCreateTag().getInt("TargetZ") + "]")), true);
+
+                var pos = FiringParametersKt.getFiringParameters(stack).pos();
+
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.literal("[" + pos.getX()
+                                + "," + pos.getY()
+                                + "," + pos.getZ()
+                                + "]")), true);
             }
 
             if (mainStack.getItem() instanceof ArtilleryIndicator indicator) {
+                BlockPos pos;
                 if (lookAtEntity) {
-                    mainStack.getOrCreateTag().putDouble("TargetX", lookingEntity.getX());
-                    mainStack.getOrCreateTag().putDouble("TargetY", lookingEntity.getY());
-                    mainStack.getOrCreateTag().putDouble("TargetZ", lookingEntity.getZ());
+                    pos = lookingEntity.blockPosition();
                 } else {
-                    mainStack.getOrCreateTag().putDouble("TargetX", hitPos.x());
-                    mainStack.getOrCreateTag().putDouble("TargetY", hitPos.y());
-                    mainStack.getOrCreateTag().putDouble("TargetZ", hitPos.z());
+                    pos = new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z);
                 }
-                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos").withStyle(ChatFormatting.GRAY)
-                        .append(Component.literal("[" + mainStack.getOrCreateTag().getInt("TargetX")
-                                + "," + mainStack.getOrCreateTag().getInt("TargetY")
-                                + "," + mainStack.getOrCreateTag().getInt("TargetZ") + "]")), true);
+                var parameters = FiringParametersKt.getFiringParameters(mainStack);
+                var isDepressed = parameters.isDepressed();
+                var radius = parameters.radius();
+
+                FiringParametersKt.setFiringParameters(mainStack, new FiringParameters.Parameters(pos, radius, isDepressed));
+
+                player.displayClientMessage(Component.translatable("tips.superbwarfare.mortar.target_pos")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.literal("[" + pos.getX()
+                                + "," + pos.getY()
+                                + "," + pos.getZ()
+                                + "]")), true);
 
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2, 1);
 

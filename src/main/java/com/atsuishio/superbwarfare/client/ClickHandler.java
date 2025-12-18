@@ -1,25 +1,23 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
 import com.atsuishio.superbwarfare.config.client.ReloadConfig;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.SeekType;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArmedVehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.CannonEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.WeaponVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.*;
+import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -90,12 +88,12 @@ public class ClickHandler {
 
     private static boolean cancelFireKey(Player player, ItemStack stack) {
         return stack.getItem() instanceof GunItem || stack.is(ModItems.MONITOR.get()) || stack.is(ModItems.LUNGE_MINE.get()) || stack.is(ModItems.ARTILLERY_INDICATOR.get()) || player.hasEffect(ModMobEffects.SHOCK.get())
-                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.banHand(player));
+                || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player));
     }
 
     private static boolean cancelZoomKey(Player player, ItemStack stack) {
         return stack.getItem() instanceof GunItem
-                || (player.getVehicle() instanceof ArmedVehicleEntity iArmedVehicle && iArmedVehicle.isDriver(player) && !stack.getItem().isEdible());
+                || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && !stack.getItem().isEdible());
     }
 
     @SubscribeEvent
@@ -107,8 +105,6 @@ public class ClickHandler {
         Player player = mc.player;
         if (player == null) return;
         if (player.isSpectator()) return;
-
-//        player.displayClientMessage(Component.literal("Mouse " + event.getButton() + " Pressed"), false);
 
         ItemStack stack = player.getMainHandItem();
 
@@ -149,7 +145,7 @@ public class ClickHandler {
 
         if (button == ModKeyMappings.MARK.getKey().getValue()) {
             if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+                NetworkRegistry.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
             }
             if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                 droneLeftClick(stack, player);
@@ -159,7 +155,7 @@ public class ClickHandler {
         if (stack.getItem() instanceof GunItem
                 || stack.is(ModItems.MONITOR.get())
                 || stack.is(ModItems.LUNGE_MINE.get())
-                || (player.getVehicle() instanceof ArmedVehicleEntity)
+                || player.getVehicle() instanceof VehicleEntity
                 || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))
                 || (stack.is(ModItems.ARTILLERY_INDICATOR.get()))
         ) {
@@ -177,6 +173,19 @@ public class ClickHandler {
                 handleWeaponZoomPress(player, stack);
                 switchZoom = !switchZoom;
             }
+        }
+
+        var fireModeKey = ModKeyMappings.FIRE_MODE.getKey();
+        if (fireModeKey.getType() == InputConstants.Type.MOUSE && button == fireModeKey.getValue()) {
+            if (player.getVehicle() instanceof VehicleEntity vehicle) {
+                var data = vehicle.getGunData(player);
+                if (data != null && data.getDefault().getAmmoConsumers().size() > 1) {
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true, true));
+                }
+            } else {
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireModeMessage(false));
+            }
+            burstFireAmount = 0;
         }
     }
 
@@ -214,21 +223,23 @@ public class ClickHandler {
         // 未按下shift时，为有武器的载具切换武器
         if (!Screen.hasShiftDown()
                 && player.getVehicle() instanceof VehicleEntity vehicle
-                && vehicle instanceof WeaponVehicleEntity weaponVehicle
-                && weaponVehicle.hasWeapon(vehicle.getSeatIndex(player))
-                && weaponVehicle.banHand(player)
+                && vehicle.hasWeapon(vehicle.getSeatIndex(player))
+                && vehicle.banHand(player)
         ) {
-            int index = vehicle.getSeatIndex(player);
-            Mod.PACKET_HANDLER.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
+            if (switchVehicleWeaponCooldown <= 0) {
+                int index = vehicle.getSeatIndex(player);
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SwitchVehicleWeaponMessage(index, -scroll, true));
+                switchVehicleWeaponCooldown = 3;
+            }
             event.setCanceled(true);
         }
 
         if (stack.getItem() instanceof GunItem && ClientEventHandler.zoom) {
             var data = GunData.from(stack);
             if (data.canSwitchScope()) {
-                Mod.PACKET_HANDLER.sendToServer(new SwitchScopeMessage(scroll));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SwitchScopeMessage(scroll));
             } else if (data.canAdjustZoom() || stack.is(ModItems.MINIGUN.get())) {
-                Mod.PACKET_HANDLER.sendToServer(new AdjustZoomFovMessage(scroll));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new AdjustZoomFovMessage(scroll));
             }
             event.setCanceled(true);
         }
@@ -245,7 +256,7 @@ public class ClickHandler {
 
         Entity looking = TraceTool.findLookingEntity(player, 6);
         if (looking instanceof MortarEntity && player.isShiftKeyDown()) {
-            Mod.PACKET_HANDLER.sendToServer(new AdjustMortarAngleMessage(scroll));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new AdjustMortarAngleMessage(scroll));
             event.setCanceled(true);
         }
     }
@@ -257,12 +268,16 @@ public class ClickHandler {
         var mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null) return;
-        if (player.isSpectator()) return;
-
-        ItemStack stack = player.getMainHandItem();
-
         int key = event.getKey();
         if (key < 0) return;
+
+        if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
+            handleDismountPress(player);
+        }
+
+        if (player.isSpectator()) return;
+
+        var stack = player.getMainHandItem();
 
         if (event.getAction() == GLFW.GLFW_PRESS) {
             if (player.hasEffect(ModMobEffects.SHOCK.get())) {
@@ -278,43 +293,67 @@ public class ClickHandler {
                 handleConfigScreen(player);
             }
             if (key == ModKeyMappings.RELOAD.getKey().getValue()) {
-                ClientEventHandler.burstFireAmount = 0;
+                burstFireAmount = 0;
                 isEditing = false;
-                Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
+                seekingTime = 0;
+                lockOn = false;
+                lockingEntity = null;
+                seekingEntity = null;
+                lockingPos = null;
+                NetworkRegistry.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
             }
             if (key == ModKeyMappings.FIRE_MODE.getKey().getValue() || key == ModKeyMappings.CHANGE_FIRE_MODE_BACKWARD.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(false));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireModeMessage(false));
+                burstFireAmount = 0;
             }
             if (key == ModKeyMappings.CHANGE_FIRE_MODE_FORWARD.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new FireModeMessage(true));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireModeMessage(true));
+                burstFireAmount = 0;
             }
             if (key == ModKeyMappings.INTERACT.getKey().getValue()) {
                 if (stack.getItem() instanceof GunItem) {
                     KeyMapping.click(mc.options.keyUse.getKey());
                 } else if (stack.is(ModItems.MONITOR.get())) {
-                    Mod.PACKET_HANDLER.sendToServer(InteractMessage.INSTANCE);
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(InteractMessage.INSTANCE);
                 }
             }
 
+            // 玩家手持枪械时，处理卸弹/切换弹种
             if (stack.getItem() instanceof GunItem) {
                 var data = GunData.from(stack);
                 if (key == ModKeyMappings.UNLOAD.getKey().getValue()) {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return;
-                    Mod.PACKET_HANDLER.sendToServer(UnloadMessage.INSTANCE);
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(UnloadMessage.INSTANCE);
+                    burstFireAmount = 0;
                 }
-                if (data.ammoConsumers.size() > 1) {
+                if (data.compute().getAmmoConsumers().size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
-                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
+                        burstFireAmount = 0;
                     }
                     if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
-                        Mod.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
+                        burstFireAmount = 0;
                     }
                 }
             }
 
-            if (key == ModKeyMappings.DISMOUNT.getKey().getValue()) {
-                handleDismountPress(player);
+            // 玩家位于载具上时，处理切换弹种
+            if (player.getVehicle() instanceof VehicleEntity vehicle) {
+                var data = vehicle.getGunData(player);
+                if (data != null && data.getDefault().getAmmoConsumers().size() > 1) {
+                    if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, false, true));
+                        burstFireAmount = 0;
+                    }
+                    if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue() ||
+                            key == ModKeyMappings.FIRE_MODE.getKey().getValue()) {
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true, true));
+                        burstFireAmount = 0;
+                    }
+                }
             }
+
             if (key == ModKeyMappings.EDIT_MODE.getKey().getValue()) {
                 if (stack.getItem() instanceof ItemScreenProvider provider) {
                     var screen = provider.getItemScreen(stack, player, InteractionHand.MAIN_HAND);
@@ -340,15 +379,15 @@ public class ClickHandler {
                 breath = true;
             }
             if (key == ModKeyMappings.SENSITIVITY_INCREASE.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new SensitivityMessage(true));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SensitivityMessage(true));
             }
             if (key == ModKeyMappings.SENSITIVITY_REDUCE.getKey().getValue()) {
-                Mod.PACKET_HANDLER.sendToServer(new SensitivityMessage(false));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new SensitivityMessage(false));
             }
 
             if (stack.getItem() instanceof GunItem
                     || stack.is(ModItems.MONITOR.get())
-                    || (player.getVehicle() instanceof ArmedVehicleEntity iVehicle && iVehicle.isDriver(player))
+                    || (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.getFirstPassenger() == player)
                     || (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get()))
                     || (stack.is(ModItems.ARTILLERY_INDICATOR.get()))
             ) {
@@ -370,13 +409,12 @@ public class ClickHandler {
 
             if (key == ModKeyMappings.MARK.getKey().getValue()) {
                 if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-                    Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
                 }
                 if (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
                     droneLeftClick(stack, player);
                 }
             }
-
         } else {
             if (player.hasEffect(ModMobEffects.SHOCK.get())) {
                 return;
@@ -408,47 +446,58 @@ public class ClickHandler {
 
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return;
 
-        if (player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.banHand(player)) {
-            if (player.getVehicle() instanceof VehicleEntity pVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player))) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
+            if (vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
                 ClientEventHandler.holdFireVehicle = true;
             }
             return;
         }
 
         if (stack.is(ModItems.ARTILLERY_INDICATOR.get())) {
-            ClientEventHandler.holdFire = true;
+            ClientEventHandler.holdingFireKey = true;
         }
 
         if (stack.is(Items.SPYGLASS) && player.isScoping() && player.getOffhandItem().is(ModItems.FIRING_PARAMETERS.get())) {
-            Mod.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.sendToServer(SetFiringParametersMessage.INSTANCE);
         }
 
         if (stack.is(ModItems.MONITOR.get())) {
             if (player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get())) {
-                ClientEventHandler.holdFire = true;
+                ClientEventHandler.holdingFireKey = true;
             } else {
                 droneLeftClick(stack, player);
             }
         }
 
         if (stack.is(ModItems.LUNGE_MINE.get())) {
-            ClientEventHandler.holdFire = true;
+            ClientEventHandler.usingLunge = true;
         }
 
-        if (stack.getItem() instanceof GunItem && !(player.getVehicle() != null
-                && player.getVehicle() instanceof CannonEntity)
+        if (stack.getItem() instanceof GunItem gunItem
                 && clientTimer.getProgress() == 0
                 && !notInGame()
         ) {
             var data = GunData.from(stack);
+            var resource = GunResource.compute(stack);
 
+            // TODO 整合特殊处理
             if (!(stack.is(ModItems.BOCEK.get()) || stack.is(ModItems.AURELIA_SCEPTRE.get()))) {
                 if (!data.meleeOnly()) {
-                    player.playSound(ModSounds.TRIGGER_CLICK.get(), 1, 1);
+                    // 普通枪（？）
+                    if (stack.is(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold") && gunItem.canShoot(data, player)) {
+                        player.playSound(ModSounds.QL_1031_CHARGE.get(), 1, 1);
+                        shouldPlayDischargeSound = true;
+                    }
+
+                    var triggerSound = resource.triggerSound;
+                    if (triggerSound != null && !data.meleeOnly()) {
+                        player.playSound(triggerSound, 1, 1);
+                    }
                 }
             } else {
+                // 波塞克、海月权杖特殊处理
                 bowPower = 0;
-                holdFire = true;
+                holdingFireKey = true;
                 player.setSprinting(false);
                 if (data.hasEnoughAmmoToShoot(player)) {
                     return;
@@ -457,35 +506,48 @@ public class ClickHandler {
 
             if (!data.useBackpackAmmo() && !data.meleeOnly() && !data.hasEnoughAmmoToShoot(player) && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
-                    Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
-                    ClientEventHandler.burstFireAmount = 0;
+                    NetworkRegistry.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
+                    burstFireAmount = 0;
+                    seekingTime = 0;
+                    lockOn = false;
+                    lockingEntity = null;
+                    seekingEntity = null;
+                    lockingPos = null;
                 }
             } else {
-                Mod.PACKET_HANDLER.sendToServer(new FireKeyMessage(0, bowPower, zoom));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new FireKeyMessage(0, bowPower, zoom));
                 if ((!data.reloading()
                         && !data.charging()
                         && !data.bolt.needed.get())
                         && drawTime < 0.01
                 ) {
-                    if (data.selectedFireModeInfo().mode == FireMode.BURST) {
+                    var fireMode = data.selectedFireModeInfo().mode;
+
+                    if (fireMode == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
-                            cantSprint = 8;
+                            noSprintTicks = 8;
                             player.setSprinting(false);
-                            ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT);
+                            ClientEventHandler.burstFireAmount = data.compute().burstAmount;
                         }
-                    } else {
-                        ClientEventHandler.holdFire = true;
-                        player.setSprinting(false);
+                    } else if (fireMode == FireMode.SEMI) {
+                        if (ClientEventHandler.burstFireAmount == 0) {
+                            noSprintTicks = 3;
+                            player.setSprinting(false);
+                            ClientEventHandler.burstFireAmount = 1;
+                        }
                     }
+
+                    ClientEventHandler.holdingFireKey = true;
+                    player.setSprinting(false);
                 }
             }
         }
     }
 
     public static void handleWeaponFireRelease() {
-        Mod.PACKET_HANDLER.sendToServer(new FireKeyMessage(1, bowPower, zoom));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new FireKeyMessage(1, bowPower, zoom));
         bowPull = false;
-        holdFire = false;
+        holdingFireKey = false;
         holdFireVehicle = false;
         isEditing = false;
         customRpm = 0;
@@ -497,41 +559,53 @@ public class ClickHandler {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.is(ModItems.BOCEK.get())) {
-            Mod.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.sendToServer(ReloadMessage.INSTANCE);
+        }
+
+        if (stack.getItem() instanceof GunItem) {
+            var data = GunData.from(stack);
+            var computed = data.compute();
+            if (computed.seekType == SeekType.HOLD_FIRE) {
+                ClientEventHandler.stopWeaponSeekSound(Minecraft.getInstance().player);
+            }
         }
     }
 
     public static void handleWeaponZoomPress(Player player, ItemStack stack) {
-        Mod.PACKET_HANDLER.sendToServer(new ZoomMessage(0));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new ZoomMessage(0));
 
         isEditing = false;
 
-        if (player.getVehicle() instanceof VehicleEntity pVehicle && player.getVehicle() instanceof WeaponVehicleEntity iVehicle && iVehicle.hasWeapon(pVehicle.getSeatIndex(player)) && iVehicle.banHand(player)) {
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player)) && vehicle.banHand(player)) {
             ClientEventHandler.zoomVehicle = true;
             return;
         }
 
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
-        if (!gunItem.canZoom(GunData.from(stack), player)) return;
+        if (!(stack.getItem() instanceof GunItem)) return;
 
+        if (!GunResource.compute(stack).canZoom) return;
+
+        var data = GunData.from(stack);
         ClientEventHandler.zoom = true;
-        int level = GunData.from(stack).perk.getLevel(ModPerks.INTELLIGENT_CHIP);
+
+        int level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP);
         if (level > 0) {
-            if (ClientEventHandler.entity == null) {
-                if (GunData.from(stack).perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || GunData.from(stack).perk.has(ModPerks.BEAST_BULLET.get())) {
-                    ClientEventHandler.entity = SeekTool.seekEntityThroughWall(player, player.level(), 32 + 8 * (level - 1), 20);
+            if (ClientEventHandler.lockedEntity == null) {
+                if (data.perk.has(ModPerks.PHASE_PENETRATING_BULLET.get()) || data.perk.has(ModPerks.BEAST_BULLET.get())) {
+                    ClientEventHandler.lockedEntity = SeekTool.seekEntityThroughWall(player, 32 + 8 * (level - 1), 20);
                 } else {
-                    ClientEventHandler.entity = SeekTool.seekLivingEntity(player, player.level(), 32 + 8 * (level - 1), 20);
+                    ClientEventHandler.lockedEntity = SeekTool.seekLivingEntity(player, 32 + 8 * (level - 1), 20);
                 }
             }
         }
     }
 
     public static void handleWeaponZoomRelease() {
-        Mod.PACKET_HANDLER.sendToServer(new ZoomMessage(1));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new ZoomMessage(1));
         ClientEventHandler.zoom = false;
         ClientEventHandler.zoomVehicle = false;
-        ClientEventHandler.entity = null;
+        ClientEventHandler.lockedEntity = null;
+        ClientEventHandler.stopWeaponSeekSound(Minecraft.getInstance().player);
         breath = false;
     }
 
@@ -548,13 +622,13 @@ public class ClickHandler {
         if (canDoubleJump) {
             player.setDeltaMovement(new Vec3(player.getLookAngle().x, 0.8, player.getLookAngle().z));
             level.playLocalSound(x, y, z, ModSounds.DOUBLE_JUMP.get(), SoundSource.BLOCKS, 1, 1, false);
-            Mod.PACKET_HANDLER.sendToServer(DoubleJumpMessage.INSTANCE);
+            NetworkRegistry.PACKET_HANDLER.sendToServer(DoubleJumpMessage.INSTANCE);
             canDoubleJump = false;
         }
     }
 
     private static void handleParachute() {
-        Mod.PACKET_HANDLER.sendToServer(ParachuteMessage.INSTANCE);
+        NetworkRegistry.PACKET_HANDLER.sendToServer(ParachuteMessage.INSTANCE);
     }
 
     private static void handleConfigScreen(Player player) {
@@ -568,7 +642,7 @@ public class ClickHandler {
     private static void handleDismountPress(Player player) {
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             if ((!vehicle.onGround() || vehicle.getDeltaMovement().length() >= 0.1) && ClientEventHandler.dismountCountdown <= 0) {
-                if (vehicle.allowEjection()) {
+                if (vehicle.allowEjection(vehicle.getSeatIndex(player))) {
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage()), true);
                 } else {
                     player.displayClientMessage(Component.translatable("mount.onboard", ModKeyMappings.DISMOUNT.getTranslatedKeyMessage()), true);
@@ -577,7 +651,8 @@ public class ClickHandler {
                 ClientEventHandler.dismountCountdown = 20;
                 return;
             }
-            Mod.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(false));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new PlayerStopRidingMessage(false));
+            ClientEventHandler.stopVehicleReloadSound(player);
         }
 
     }
@@ -588,7 +663,7 @@ public class ClickHandler {
             if (drone != null) {
                 boolean lookAtEntity = false;
 
-                Entity lookingEntity = SeekTool.seekLivingEntity(drone, drone.level(), 512, 2 / droneFovLerp);
+                Entity lookingEntity = SeekTool.seekLivingEntity(drone, 512, 2 / droneFovLerp);
 
                 BlockHitResult result = player.level().clip(new ClipContext(drone.getEyePosition(), drone.getEyePosition().add(drone.getLookAngle().scale(512)),
                         ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, drone));
@@ -602,7 +677,7 @@ public class ClickHandler {
                     pos = lookingEntity.position();
                 }
 
-                Mod.PACKET_HANDLER.sendToServer(new DroneFireMessage(pos.toVector3f()));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new DroneFireMessage(pos.toVector3f()));
             }
         }
     }

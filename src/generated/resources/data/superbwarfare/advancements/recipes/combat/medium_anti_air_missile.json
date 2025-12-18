@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_high_energy_explosives": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:high_energy_explosives"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_missile_engine": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:missile_engine"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:medium_anti_air_missile"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_high_energy_explosives",
+      "has_missile_engine",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:medium_anti_air_missile"
+    ]
+  },
+  "sends_telemetry_event": false
+}

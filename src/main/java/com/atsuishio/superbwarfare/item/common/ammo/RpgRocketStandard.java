@@ -111,12 +111,12 @@ public class RpgRocketStandard extends Item implements GeoItem, DispenserLauncha
             @Override
             @ParametersAreNonnullByDefault
             protected @NotNull Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {
-                return new RpgRocketStandardEntity(ModEntities.RPG_ROCKET_STANDARD.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 340, 80, 5, 0.015f);
+                return new RpgRocketStandardEntity(ModEntities.RPG_ROCKET_STANDARD.get(), pPosition.x(), pPosition.y(), pPosition.z(), pLevel, 340, 80, 5);
             }
 
             @Override
-            protected void playSound(BlockSource pSource) {
-                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            protected void playSound(@NotNull BlockSource pSource) {
+                pSource.getLevel().playSound(null, pSource.getPos(), ModSounds.RPG_FIRE_3P.get(), SoundSource.BLOCKS, 1F, 1F);
             }
         };
     }

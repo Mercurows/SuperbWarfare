@@ -1,0 +1,64 @@
+{
+  "Spread": 2,
+  "RecoilX": 0.004,
+  "RecoilY": 0.031,
+  "Damage": 16,
+  "Headshot": 2.5,
+  "Velocity": 38,
+  "Magazine": 8,
+  "Weight": 3,
+  "ReloadTypes": [
+    "Iterative"
+  ],
+  "PrepareTime": 7,
+  "IterativeTime": 16,
+  "IterativeAmmoLoadTime": 3,
+  "FinishTime": 19,
+  "BypassesArmor": 0.3,
+  "SoundRadius": 15,
+  "BoltActionTime": 12,
+  "GunType": "Rifle",
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
+  "AmmoType": "@RifleAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/marlin_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:head_seeker",
+    "superbwarfare:desperado",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:magnificent_howl",
+    "superbwarfare:firefly",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:marlin_fire_1p",
+    "Fire3P": "superbwarfare:marlin_fire_3p",
+    "Fire3PFar": "superbwarfare:marlin_far",
+    "Fire3PVeryFar": "superbwarfare:marlin_veryfar",
+    "ReloadPrepare": "superbwarfare:marlin_prepare",
+    "ReloadLoop": "superbwarfare:marlin_loop",
+    "ReloadEnd": "superbwarfare:marlin_bolt",
+    "Bolt": "superbwarfare:marlin_bolt",
+    "CancellableSounds": [
+      "superbwarfare:marlin_prepare",
+      "superbwarfare:marlin_loop",
+      "superbwarfare:marlin_bolt"
+    ]
+  }
+}

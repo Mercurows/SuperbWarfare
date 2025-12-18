@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.curio.DogTagItem;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.DogTagFinishEditMessage;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -260,7 +261,7 @@ public class DogTagEditorScreen extends Screen {
                 DogTagEditorScreen.this.minecraft.setScreen(null);
             }
             this.updateLocal(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue());
-            Mod.PACKET_HANDLER.sendToServer(new DogTagFinishEditMessage(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue(),
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new DogTagFinishEditMessage(DogTagEditorScreen.this.icon, DogTagEditorScreen.this.name.getValue(),
                     DogTagEditorScreen.this.hand == InteractionHand.MAIN_HAND));
         }
 

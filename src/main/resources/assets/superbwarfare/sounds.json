@@ -2,7 +2,7 @@
   "taser_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:taser/taser_fire_1p",
+        "name": "superbwarfare:gun/taser/taser_fire_1p",
         "stream": false
       }
     ]
@@ -10,7 +10,7 @@
   "taser_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:taser/taser_fire_3p",
+        "name": "superbwarfare:gun/taser/taser_fire_3p",
         "stream": false
       }
     ]
@@ -18,7 +18,7 @@
   "taser_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:taser/taser_reload",
+        "name": "superbwarfare:gun/taser/taser_reload_empty",
         "stream": false
       }
     ]
@@ -26,7 +26,7 @@
   "trachelium_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_fire_1p",
+        "name": "superbwarfare:gun/trachelium/trachelium_fire_1p",
         "stream": false
       }
     ]
@@ -34,7 +34,7 @@
   "trachelium_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_fire_3p",
+        "name": "superbwarfare:gun/trachelium/trachelium_fire_3p",
         "stream": false
       }
     ]
@@ -42,7 +42,7 @@
   "trachelium_far": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_far",
+        "name": "superbwarfare:gun/trachelium/trachelium_far",
         "stream": false
       }
     ]
@@ -50,7 +50,7 @@
   "trachelium_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_veryfar",
+        "name": "superbwarfare:gun/trachelium/trachelium_veryfar",
         "stream": false
       }
     ]
@@ -58,7 +58,7 @@
   "trachelium_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_fire_1p_s",
+        "name": "superbwarfare:gun/trachelium/trachelium_fire_1p_s",
         "stream": false
       }
     ]
@@ -66,7 +66,7 @@
   "trachelium_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_fire_3p_s",
+        "name": "superbwarfare:gun/trachelium/trachelium_fire_3p_s",
         "stream": false
       }
     ]
@@ -74,7 +74,7 @@
   "trachelium_far_s": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_far_s",
+        "name": "superbwarfare:gun/trachelium/trachelium_far_s",
         "stream": false
       }
     ]
@@ -82,7 +82,7 @@
   "trachelium_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_reload",
+        "name": "superbwarfare:gun/trachelium/trachelium_reload",
         "stream": false
       }
     ]
@@ -90,7 +90,7 @@
   "trachelium_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:trachelium/trachelium_shift",
+        "name": "superbwarfare:gun/trachelium/trachelium_bolt",
         "stream": false
       }
     ]
@@ -98,7 +98,7 @@
   "hunting_rifle_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:hunting_rifle/hunting_rifle_fire_1p",
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_fire_1p",
         "stream": false
       }
     ]
@@ -106,7 +106,7 @@
   "hunting_rifle_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:hunting_rifle/hunting_rifle_fire_3p",
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_fire_3p",
         "stream": false
       }
     ]
@@ -114,7 +114,7 @@
   "hunting_rifle_far": {
     "sounds": [
       {
-        "name": "superbwarfare:hunting_rifle/hunting_rifle_far",
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_far",
         "stream": false
       }
     ]
@@ -122,7 +122,7 @@
   "hunting_rifle_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:hunting_rifle/hunting_rifle_veryfar",
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_veryfar",
         "stream": false
       }
     ]
@@ -130,7 +130,31 @@
   "hunting_rifle_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:hunting_rifle/hunting_rifle_reload",
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_reload",
+        "stream": false
+      }
+    ]
+  },
+  "star_shoot_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/star_shoot_1p",
+        "stream": false
+      }
+    ]
+  },
+  "star_shoot_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/star_shoot_3p",
+        "stream": false
+      }
+    ]
+  },
+  "star_recover": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/star_recover",
         "stream": false
       }
     ]
@@ -138,7 +162,7 @@
   "m_79_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_79/m_79_fire_1p",
+        "name": "superbwarfare:gun/m_79/m_79_fire_1p",
         "stream": false
       }
     ]
@@ -146,7 +170,7 @@
   "m_79_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_79/m_79_fire_3p",
+        "name": "superbwarfare:gun/m_79/m_79_fire_3p",
         "stream": false
       }
     ]
@@ -154,7 +178,7 @@
   "m_79_far": {
     "sounds": [
       {
-        "name": "superbwarfare:m_79/m_79_far",
+        "name": "superbwarfare:gun/m_79/m_79_far",
         "stream": false
       }
     ]
@@ -162,7 +186,7 @@
   "m_79_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:m_79/m_79_veryfar",
+        "name": "superbwarfare:gun/m_79/m_79_veryfar",
         "stream": false
       }
     ]
@@ -170,7 +194,7 @@
   "m_79_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:m_79/m_79_reload",
+        "name": "superbwarfare:gun/m_79/m_79_reload",
         "stream": false
       }
     ]
@@ -178,7 +202,7 @@
   "sks_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:sks/sks_fire_1p",
+        "name": "superbwarfare:gun/sks/sks_fire_1p",
         "stream": false
       }
     ]
@@ -186,7 +210,7 @@
   "sks_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:sks/sks_fire_3p",
+        "name": "superbwarfare:gun/sks/sks_fire_3p",
         "stream": false
       }
     ]
@@ -194,7 +218,7 @@
   "sks_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:sks/sks_reload_normal",
+        "name": "superbwarfare:gun/sks/sks_reload_normal",
         "stream": false
       }
     ]
@@ -202,7 +226,7 @@
   "sks_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:sks/sks_reload_empty",
+        "name": "superbwarfare:gun/sks/sks_reload_empty",
         "stream": false
       }
     ]
@@ -210,7 +234,7 @@
   "sks_far": {
     "sounds": [
       {
-        "name": "superbwarfare:sks/sks_far",
+        "name": "superbwarfare:gun/sks/sks_far",
         "stream": false
       }
     ]
@@ -218,7 +242,7 @@
   "sks_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:sks/sks_veryfar",
+        "name": "superbwarfare:gun/sks/sks_veryfar",
         "stream": false
       }
     ]
@@ -226,7 +250,7 @@
   "homemade_shotgun_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:homemade_shotgun/homemade_shotgun_fire_1p",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_fire_1p",
         "stream": false
       }
     ]
@@ -234,7 +258,7 @@
   "homemade_shotgun_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:homemade_shotgun/homemade_shotgun_fire_3p",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_fire_3p",
         "stream": false
       }
     ]
@@ -242,7 +266,7 @@
   "homemade_shotgun_far": {
     "sounds": [
       {
-        "name": "superbwarfare:homemade_shotgun/homemade_shotgun_far",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_far",
         "stream": false
       }
     ]
@@ -250,7 +274,7 @@
   "homemade_shotgun_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:homemade_shotgun/homemade_shotgun_veryfar",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_veryfar",
         "stream": false
       }
     ]
@@ -258,7 +282,7 @@
   "homemade_shotgun_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:homemade_shotgun/homemade_shotgun_reload_normal",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_reload_normal",
         "stream": false
       }
     ]
@@ -266,7 +290,7 @@
   "homemade_shotgun_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:homemade_shotgun/homemade_shotgun_reload_empty",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_reload_empty",
         "stream": false
       }
     ]
@@ -274,7 +298,7 @@
   "ak_47_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_1p",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_1p",
         "stream": false
       }
     ]
@@ -282,7 +306,7 @@
   "ak_47_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_1p_s",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_1p_s",
         "stream": false
       }
     ]
@@ -290,7 +314,7 @@
   "ak_47_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_3p",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_3p",
         "stream": false
       }
     ]
@@ -298,7 +322,7 @@
   "ak_47_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_fire_3p_s",
+        "name": "superbwarfare:gun/ak_47/ak_47_fire_3p_s",
         "stream": false
       }
     ]
@@ -306,7 +330,7 @@
   "ak_47_far": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_far",
+        "name": "superbwarfare:gun/ak_47/ak_47_far",
         "stream": false
       }
     ]
@@ -314,7 +338,7 @@
   "ak_47_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_veryfar",
+        "name": "superbwarfare:gun/ak_47/ak_47_veryfar",
         "stream": false
       }
     ]
@@ -322,7 +346,7 @@
   "ak_47_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_reload_normal",
+        "name": "superbwarfare:gun/ak_47/ak_47_reload_normal",
         "stream": false
       }
     ]
@@ -330,7 +354,7 @@
   "ak_47_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_47/ak_47_reload_empty",
+        "name": "superbwarfare:gun/ak_47/ak_47_reload_empty",
         "stream": false
       }
     ]
@@ -338,7 +362,7 @@
   "devotion_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_fire_1p",
+        "name": "superbwarfare:gun/devotion/devotion_fire_1p",
         "stream": false
       }
     ]
@@ -346,7 +370,7 @@
   "devotion_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_fire_3p",
+        "name": "superbwarfare:gun/devotion/devotion_fire_3p",
         "stream": false
       }
     ]
@@ -354,7 +378,7 @@
   "devotion_far": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_far",
+        "name": "superbwarfare:gun/devotion/devotion_far",
         "stream": false
       }
     ]
@@ -362,7 +386,7 @@
   "devotion_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_veryfar",
+        "name": "superbwarfare:gun/devotion/devotion_veryfar",
         "stream": false
       }
     ]
@@ -370,7 +394,7 @@
   "devotion_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_reload_normal",
+        "name": "superbwarfare:gun/devotion/devotion_reload_normal",
         "stream": false
       }
     ]
@@ -378,7 +402,7 @@
   "devotion_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:devotion/devotion_reload_empty",
+        "name": "superbwarfare:gun/devotion/devotion_reload_empty",
         "stream": false
       }
     ]
@@ -386,7 +410,7 @@
   "rpg_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:rpg/rpg_fire_1p",
+        "name": "superbwarfare:gun/rpg/rpg_fire_1p",
         "stream": false
       }
     ]
@@ -394,7 +418,7 @@
   "rpg_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:rpg/rpg_fire_3p",
+        "name": "superbwarfare:gun/rpg/rpg_fire_3p",
         "stream": false
       }
     ]
@@ -402,7 +426,7 @@
   "rpg_far": {
     "sounds": [
       {
-        "name": "superbwarfare:rpg/rpg_far",
+        "name": "superbwarfare:gun/rpg/rpg_far",
         "stream": false
       }
     ]
@@ -410,7 +434,7 @@
   "rpg_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:rpg/rpg_veryfar",
+        "name": "superbwarfare:gun/rpg/rpg_veryfar",
         "stream": false
       }
     ]
@@ -418,7 +442,7 @@
   "rpg_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:rpg/rpg_reload",
+        "name": "superbwarfare:gun/rpg/rpg_reload",
         "stream": false
       }
     ]
@@ -426,7 +450,7 @@
   "m_4_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_fire_1p",
+        "name": "superbwarfare:gun/m_4/m_4_fire_1p",
         "stream": false
       }
     ]
@@ -434,7 +458,7 @@
   "m_4_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_fire_1p_s",
+        "name": "superbwarfare:gun/m_4/m_4_fire_1p_s",
         "stream": false
       }
     ]
@@ -442,7 +466,7 @@
   "m_4_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_fire_3p",
+        "name": "superbwarfare:gun/m_4/m_4_fire_3p",
         "stream": false
       }
     ]
@@ -450,7 +474,7 @@
   "m_4_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_fire_3p_s",
+        "name": "superbwarfare:gun/m_4/m_4_fire_3p_s",
         "stream": false
       }
     ]
@@ -458,7 +482,7 @@
   "m_4_far": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_far",
+        "name": "superbwarfare:gun/m_4/m_4_far",
         "stream": false
       }
     ]
@@ -466,7 +490,7 @@
   "m_4_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_veryfar",
+        "name": "superbwarfare:gun/m_4/m_4_veryfar",
         "stream": false
       }
     ]
@@ -474,7 +498,7 @@
   "m_4_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_reload_normal",
+        "name": "superbwarfare:gun/m_4/m_4_reload_normal",
         "stream": false
       }
     ]
@@ -482,7 +506,7 @@
   "m_4_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:m_4/m_4_reload_empty",
+        "name": "superbwarfare:gun/m_4/m_4_reload_empty",
         "stream": false
       }
     ]
@@ -490,7 +514,7 @@
   "aa_12_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:aa_12/aa_12_fire_1p",
+        "name": "superbwarfare:gun/aa_12/aa_12_fire_1p",
         "stream": false
       }
     ]
@@ -498,7 +522,7 @@
   "aa_12_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:aa_12/aa_12_fire_3p",
+        "name": "superbwarfare:gun/aa_12/aa_12_fire_3p",
         "stream": false
       }
     ]
@@ -506,7 +530,7 @@
   "aa_12_far": {
     "sounds": [
       {
-        "name": "superbwarfare:aa_12/aa_12_far",
+        "name": "superbwarfare:gun/aa_12/aa_12_far",
         "stream": false
       }
     ]
@@ -514,7 +538,7 @@
   "aa_12_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:aa_12/aa_12_veryfar",
+        "name": "superbwarfare:gun/aa_12/aa_12_veryfar",
         "stream": false
       }
     ]
@@ -522,7 +546,7 @@
   "aa_12_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:aa_12/aa_12_reload_normal",
+        "name": "superbwarfare:gun/aa_12/aa_12_reload_normal",
         "stream": false
       }
     ]
@@ -530,7 +554,7 @@
   "aa_12_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:aa_12/aa_12_reload_empty",
+        "name": "superbwarfare:gun/aa_12/aa_12_reload_empty",
         "stream": false
       }
     ]
@@ -538,7 +562,7 @@
   "bocek_zoom_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_zoom_fire_1p",
+        "name": "superbwarfare:gun/bocek/bocek_zoom_fire_1p",
         "stream": false
       }
     ]
@@ -546,7 +570,7 @@
   "bocek_zoom_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_zoom_fire_3p",
+        "name": "superbwarfare:gun/bocek/bocek_zoom_fire_3p",
         "stream": false
       }
     ]
@@ -554,7 +578,7 @@
   "bocek_shatter_cap_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_shatter_cap_fire_1p",
+        "name": "superbwarfare:gun/bocek/bocek_shatter_cap_fire_1p",
         "stream": false
       }
     ]
@@ -562,7 +586,7 @@
   "bocek_shatter_cap_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_shatter_cap_fire_3p",
+        "name": "superbwarfare:gun/bocek/bocek_shatter_cap_fire_3p",
         "stream": false
       }
     ]
@@ -570,7 +594,7 @@
   "bocek_pull_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_pull_1p",
+        "name": "superbwarfare:gun/bocek/bocek_pull_1p",
         "stream": false
       }
     ]
@@ -578,7 +602,7 @@
   "bocek_pull_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bocek/bocek_pull_3p",
+        "name": "superbwarfare:gun/bocek/bocek_pull_3p",
         "stream": false
       }
     ]
@@ -586,7 +610,7 @@
   "hk_416_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_fire_1p",
+        "name": "superbwarfare:gun/hk_416/hk_416_fire_1p",
         "stream": false
       }
     ]
@@ -594,7 +618,7 @@
   "hk_416_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_fire_1p_s",
+        "name": "superbwarfare:gun/hk_416/hk_416_fire_1p_s",
         "stream": false
       }
     ]
@@ -602,7 +626,7 @@
   "hk_416_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_fire_3p",
+        "name": "superbwarfare:gun/hk_416/hk_416_fire_3p",
         "stream": false
       }
     ]
@@ -610,7 +634,7 @@
   "hk_416_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_fire_3p_s",
+        "name": "superbwarfare:gun/hk_416/hk_416_fire_3p_s",
         "stream": false
       }
     ]
@@ -618,7 +642,7 @@
   "hk_416_far": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_far",
+        "name": "superbwarfare:gun/hk_416/hk_416_far",
         "stream": false
       }
     ]
@@ -626,7 +650,7 @@
   "hk_416_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_veryfar",
+        "name": "superbwarfare:gun/hk_416/hk_416_veryfar",
         "stream": false
       }
     ]
@@ -634,7 +658,7 @@
   "hk_416_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_reload_normal",
+        "name": "superbwarfare:gun/hk_416/hk_416_reload_normal",
         "stream": false
       }
     ]
@@ -642,7 +666,7 @@
   "hk_416_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:hk_416/hk_416_reload_empty",
+        "name": "superbwarfare:gun/hk_416/hk_416_reload_empty",
         "stream": false
       }
     ]
@@ -650,7 +674,7 @@
   "rpk_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_fire_1p",
+        "name": "superbwarfare:gun/rpk/rpk_fire_1p",
         "stream": false
       }
     ]
@@ -658,7 +682,7 @@
   "rpk_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_fire_3p",
+        "name": "superbwarfare:gun/rpk/rpk_fire_3p",
         "stream": false
       }
     ]
@@ -666,7 +690,7 @@
   "rpk_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_fire_1p_s",
+        "name": "superbwarfare:gun/rpk/rpk_fire_1p_s",
         "stream": false
       }
     ]
@@ -674,7 +698,7 @@
   "rpk_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_fire_3p_s",
+        "name": "superbwarfare:gun/rpk/rpk_fire_3p_s",
         "stream": false
       }
     ]
@@ -682,7 +706,7 @@
   "rpk_far": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_far",
+        "name": "superbwarfare:gun/rpk/rpk_far",
         "stream": false
       }
     ]
@@ -690,23 +714,7 @@
   "rpk_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:rpk/rpk_veryfar",
-        "stream": false
-      }
-    ]
-  },
-  "rpk_reload_normal": {
-    "sounds": [
-      {
-        "name": "superbwarfare:ak_47/ak_47_reload_normal",
-        "stream": false
-      }
-    ]
-  },
-  "rpk_reload_empty": {
-    "sounds": [
-      {
-        "name": "superbwarfare:ak_47/ak_47_reload_empty",
+        "name": "superbwarfare:gun/rpk/rpk_veryfar",
         "stream": false
       }
     ]
@@ -714,7 +722,7 @@
   "ntw_20_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:ntw_20/ntw_20_fire_1p",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_fire_1p",
         "stream": false
       }
     ]
@@ -722,7 +730,7 @@
   "ntw_20_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:ntw_20/ntw_20_fire_3p",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_fire_3p",
         "stream": false
       }
     ]
@@ -730,7 +738,7 @@
   "ntw_20_far": {
     "sounds": [
       {
-        "name": "superbwarfare:ntw_20/ntw_20_far",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_far",
         "stream": false
       }
     ]
@@ -738,7 +746,7 @@
   "ntw_20_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:ntw_20/ntw_20_veryfar",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_veryfar",
         "stream": false
       }
     ]
@@ -746,7 +754,7 @@
   "ntw_20_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:ntw_20/ntw_20_reload_normal",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_reload_normal",
         "stream": false
       }
     ]
@@ -754,7 +762,7 @@
   "ntw_20_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:ntw_20/ntw_20_reload_empty",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_reload_empty",
         "stream": false
       }
     ]
@@ -762,7 +770,7 @@
   "ntw_20_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:ntw_20/ntw_20_bolt",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_bolt",
         "stream": false
       }
     ]
@@ -770,7 +778,7 @@
   "vector_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_fire_1p",
+        "name": "superbwarfare:gun/vector/vector_fire_1p",
         "stream": false
       }
     ]
@@ -778,7 +786,7 @@
   "vector_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_fire_3p",
+        "name": "superbwarfare:gun/vector/vector_fire_3p",
         "stream": false
       }
     ]
@@ -786,7 +794,7 @@
   "vector_far": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_far",
+        "name": "superbwarfare:gun/vector/vector_far",
         "stream": false
       }
     ]
@@ -794,7 +802,7 @@
   "vector_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_veryfar",
+        "name": "superbwarfare:gun/vector/vector_veryfar",
         "stream": false
       }
     ]
@@ -802,7 +810,7 @@
   "vector_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_fire_1p_s",
+        "name": "superbwarfare:gun/vector/vector_fire_1p_s",
         "stream": false
       }
     ]
@@ -810,7 +818,7 @@
   "vector_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_fire_3p_s",
+        "name": "superbwarfare:gun/vector/vector_fire_3p_s",
         "stream": false
       }
     ]
@@ -818,7 +826,7 @@
   "vector_far_s": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_far_s",
+        "name": "superbwarfare:gun/vector/vector_far_s",
         "stream": false
       }
     ]
@@ -826,7 +834,7 @@
   "vector_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_reload_normal",
+        "name": "superbwarfare:gun/vector/vector_reload_normal",
         "stream": false
       }
     ]
@@ -834,7 +842,7 @@
   "vector_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:vector/vector_reload_empty",
+        "name": "superbwarfare:gun/vector/vector_reload_empty",
         "stream": false
       }
     ]
@@ -842,7 +850,7 @@
   "minigun_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:minigun/minigun_fire_1p",
+        "name": "superbwarfare:gun/minigun/minigun_fire_1p",
         "stream": false
       }
     ]
@@ -850,7 +858,7 @@
   "minigun_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:minigun/minigun_fire_3p",
+        "name": "superbwarfare:gun/minigun/minigun_fire_3p",
         "stream": false
       }
     ]
@@ -858,7 +866,7 @@
   "minigun_far": {
     "sounds": [
       {
-        "name": "superbwarfare:minigun/minigun_far",
+        "name": "superbwarfare:gun/minigun/minigun_far",
         "stream": false
       }
     ]
@@ -866,23 +874,23 @@
   "minigun_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:minigun/minigun_veryfar",
+        "name": "superbwarfare:gun/minigun/minigun_veryfar",
         "stream": false
       }
     ]
   },
-  "minigun_rot": {
+  "minigun_rotate": {
     "sounds": [
       {
-        "name": "superbwarfare:minigun/minigun_rot",
+        "name": "superbwarfare:gun/minigun/minigun_rotate",
         "stream": false
       }
     ]
   },
-  "minigun_overheat": {
+  "overheat": {
     "sounds": [
       {
-        "name": "superbwarfare:minigun/minigun_overheat",
+        "name": "superbwarfare:gun/common/overheat",
         "stream": false
       }
     ]
@@ -890,7 +898,7 @@
   "mk_14_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_fire_1p",
+        "name": "superbwarfare:gun/mk_14/mk_14_fire_1p",
         "stream": false
       }
     ]
@@ -898,7 +906,7 @@
   "mk_14_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_fire_3p",
+        "name": "superbwarfare:gun/mk_14/mk_14_fire_3p",
         "stream": false
       }
     ]
@@ -906,7 +914,7 @@
   "mk_14_far": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_far",
+        "name": "superbwarfare:gun/mk_14/mk_14_far",
         "stream": false
       }
     ]
@@ -914,7 +922,7 @@
   "mk_14_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_veryfar",
+        "name": "superbwarfare:gun/mk_14/mk_14_veryfar",
         "stream": false
       }
     ]
@@ -922,7 +930,7 @@
   "mk_14_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_fire_1p_s",
+        "name": "superbwarfare:gun/mk_14/mk_14_fire_1p_s",
         "stream": false
       }
     ]
@@ -930,7 +938,7 @@
   "mk_14_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_fire_3p_s",
+        "name": "superbwarfare:gun/mk_14/mk_14_fire_3p_s",
         "stream": false
       }
     ]
@@ -938,7 +946,7 @@
   "mk_14_far_s": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_far_s",
+        "name": "superbwarfare:gun/mk_14/mk_14_far_s",
         "stream": false
       }
     ]
@@ -946,7 +954,7 @@
   "mk_14_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_reload_normal",
+        "name": "superbwarfare:gun/mk_14/mk_14_reload_normal",
         "stream": false
       }
     ]
@@ -954,7 +962,7 @@
   "mk_14_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:mk_14/mk_14_reload_empty",
+        "name": "superbwarfare:gun/mk_14/mk_14_reload_empty",
         "stream": false
       }
     ]
@@ -962,7 +970,7 @@
   "sentinel_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_fire_1p",
+        "name": "superbwarfare:gun/sentinel/sentinel_fire_1p",
         "stream": false
       }
     ]
@@ -970,7 +978,7 @@
   "sentinel_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_fire_3p",
+        "name": "superbwarfare:gun/sentinel/sentinel_fire_3p",
         "stream": false
       }
     ]
@@ -978,7 +986,7 @@
   "sentinel_charge_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_charge_fire_1p",
+        "name": "superbwarfare:gun/sentinel/sentinel_charge_fire_1p",
         "stream": false
       }
     ]
@@ -986,7 +994,7 @@
   "sentinel_charge_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_charge_fire_3p",
+        "name": "superbwarfare:gun/sentinel/sentinel_charge_fire_3p",
         "stream": false
       }
     ]
@@ -994,7 +1002,7 @@
   "sentinel_far": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_far",
+        "name": "superbwarfare:gun/sentinel/sentinel_far",
         "stream": false
       }
     ]
@@ -1002,7 +1010,7 @@
   "sentinel_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_veryfar",
+        "name": "superbwarfare:gun/sentinel/sentinel_veryfar",
         "stream": false
       }
     ]
@@ -1010,7 +1018,7 @@
   "sentinel_charge_far": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_charge_far",
+        "name": "superbwarfare:gun/sentinel/sentinel_charge_far",
         "stream": false
       }
     ]
@@ -1018,7 +1026,7 @@
   "sentinel_charge_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_charge_veryfar",
+        "name": "superbwarfare:gun/sentinel/sentinel_charge_veryfar",
         "stream": false
       }
     ]
@@ -1026,7 +1034,7 @@
   "sentinel_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_reload_normal",
+        "name": "superbwarfare:gun/sentinel/sentinel_reload_normal",
         "stream": false
       }
     ]
@@ -1034,7 +1042,7 @@
   "sentinel_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_reload_empty",
+        "name": "superbwarfare:gun/sentinel/sentinel_reload_empty",
         "stream": false
       }
     ]
@@ -1042,7 +1050,7 @@
   "sentinel_charge": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_charge",
+        "name": "superbwarfare:gun/sentinel/sentinel_charge",
         "stream": false
       }
     ]
@@ -1050,7 +1058,7 @@
   "sentinel_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:sentinel/sentinel_bolt",
+        "name": "superbwarfare:gun/sentinel/sentinel_bolt",
         "stream": false
       }
     ]
@@ -1058,7 +1066,7 @@
   "m_60_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_60/m_60_fire_1p",
+        "name": "superbwarfare:gun/m_60/m_60_fire_1p",
         "stream": false
       }
     ]
@@ -1066,7 +1074,7 @@
   "m_60_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_60/m_60_fire_3p",
+        "name": "superbwarfare:gun/m_60/m_60_fire_3p",
         "stream": false
       }
     ]
@@ -1074,7 +1082,7 @@
   "m_60_far": {
     "sounds": [
       {
-        "name": "superbwarfare:m_60/m_60_far",
+        "name": "superbwarfare:gun/m_60/m_60_far",
         "stream": false
       }
     ]
@@ -1082,7 +1090,7 @@
   "m_60_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:m_60/m_60_veryfar",
+        "name": "superbwarfare:gun/m_60/m_60_veryfar",
         "stream": false
       }
     ]
@@ -1090,7 +1098,7 @@
   "m_60_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:m_60/m_60_reload_normal",
+        "name": "superbwarfare:gun/m_60/m_60_reload_normal",
         "stream": false
       }
     ]
@@ -1098,7 +1106,7 @@
   "m_60_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:m_60/m_60_reload_empty",
+        "name": "superbwarfare:gun/m_60/m_60_reload_empty",
         "stream": false
       }
     ]
@@ -1106,7 +1114,7 @@
   "svd_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_fire_1p",
+        "name": "superbwarfare:gun/svd/svd_fire_1p",
         "stream": false
       }
     ]
@@ -1114,7 +1122,7 @@
   "svd_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_fire_3p",
+        "name": "superbwarfare:gun/svd/svd_fire_3p",
         "stream": false
       }
     ]
@@ -1122,7 +1130,7 @@
   "svd_far": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_far",
+        "name": "superbwarfare:gun/svd/svd_far",
         "stream": false
       }
     ]
@@ -1130,7 +1138,7 @@
   "svd_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_veryfar",
+        "name": "superbwarfare:gun/svd/svd_veryfar",
         "stream": false
       }
     ]
@@ -1138,7 +1146,7 @@
   "svd_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_fire_1p_s",
+        "name": "superbwarfare:gun/svd/svd_fire_1p_s",
         "stream": false
       }
     ]
@@ -1146,7 +1154,7 @@
   "svd_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_fire_3p_s",
+        "name": "superbwarfare:gun/svd/svd_fire_3p_s",
         "stream": false
       }
     ]
@@ -1154,7 +1162,7 @@
   "svd_far_s": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_far_s",
+        "name": "superbwarfare:gun/svd/svd_far_s",
         "stream": false
       }
     ]
@@ -1162,7 +1170,7 @@
   "svd_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_reload_normal",
+        "name": "superbwarfare:gun/svd/svd_reload_normal",
         "stream": false
       }
     ]
@@ -1170,7 +1178,7 @@
   "svd_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:svd/svd_reload_empty",
+        "name": "superbwarfare:gun/svd/svd_reload_empty",
         "stream": false
       }
     ]
@@ -1178,7 +1186,7 @@
   "m_98b_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_fire_1p",
+        "name": "superbwarfare:gun/m_98b/m_98b_fire_1p",
         "stream": false
       }
     ]
@@ -1186,7 +1194,7 @@
   "m_98b_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_fire_3p",
+        "name": "superbwarfare:gun/m_98b/m_98b_fire_3p",
         "stream": false
       }
     ]
@@ -1194,7 +1202,7 @@
   "m_98b_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_fire_1p_s",
+        "name": "superbwarfare:gun/m_98b/m_98b_fire_1p_s",
         "stream": false
       }
     ]
@@ -1202,7 +1210,7 @@
   "m_98b_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_fire_3p_s",
+        "name": "superbwarfare:gun/m_98b/m_98b_fire_3p_s",
         "stream": false
       }
     ]
@@ -1210,7 +1218,7 @@
   "m_98b_far": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_far",
+        "name": "superbwarfare:gun/m_98b/m_98b_far",
         "stream": false
       }
     ]
@@ -1218,7 +1226,7 @@
   "m_98b_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_veryfar",
+        "name": "superbwarfare:gun/m_98b/m_98b_veryfar",
         "stream": false
       }
     ]
@@ -1226,7 +1234,7 @@
   "m_98b_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_reload_normal",
+        "name": "superbwarfare:gun/m_98b/m_98b_reload_normal",
         "stream": false
       }
     ]
@@ -1234,7 +1242,7 @@
   "m_98b_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_reload_empty",
+        "name": "superbwarfare:gun/m_98b/m_98b_reload_empty",
         "stream": false
       }
     ]
@@ -1242,7 +1250,7 @@
   "m_98b_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:m_98b/m_98b_bolt",
+        "name": "superbwarfare:gun/m_98b/m_98b_bolt",
         "stream": false
       }
     ]
@@ -1250,7 +1258,7 @@
   "marlin_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:marlin/marlin_fire_1p",
+        "name": "superbwarfare:gun/marlin/marlin_fire_1p",
         "stream": false
       }
     ]
@@ -1258,7 +1266,7 @@
   "marlin_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:marlin/marlin_fire_3p",
+        "name": "superbwarfare:gun/marlin/marlin_fire_3p",
         "stream": false
       }
     ]
@@ -1266,7 +1274,7 @@
   "marlin_far": {
     "sounds": [
       {
-        "name": "superbwarfare:marlin/marlin_far",
+        "name": "superbwarfare:gun/marlin/marlin_far",
         "stream": false
       }
     ]
@@ -1274,7 +1282,7 @@
   "marlin_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:marlin/marlin_veryfar",
+        "name": "superbwarfare:gun/marlin/marlin_veryfar",
         "stream": false
       }
     ]
@@ -1282,7 +1290,7 @@
   "marlin_loop": {
     "sounds": [
       {
-        "name": "superbwarfare:marlin/marlin_loop",
+        "name": "superbwarfare:gun/marlin/marlin_loop",
         "stream": false
       }
     ]
@@ -1290,15 +1298,7 @@
   "marlin_prepare": {
     "sounds": [
       {
-        "name": "superbwarfare:marlin/marlin_start",
-        "stream": false
-      }
-    ]
-  },
-  "marlin_end": {
-    "sounds": [
-      {
-        "name": "superbwarfare:marlin/marlin_end",
+        "name": "superbwarfare:gun/marlin/marlin_prepare",
         "stream": false
       }
     ]
@@ -1306,7 +1306,7 @@
   "marlin_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:marlin/marlin_end",
+        "name": "superbwarfare:gun/marlin/marlin_bolt",
         "stream": false
       }
     ]
@@ -1314,7 +1314,7 @@
   "m_870_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_870/m_870_fire_1p",
+        "name": "superbwarfare:gun/m_870/m_870_fire_1p",
         "stream": false
       }
     ]
@@ -1322,7 +1322,7 @@
   "m_870_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_870/m_870_fire_3p",
+        "name": "superbwarfare:gun/m_870/m_870_fire_3p",
         "stream": false
       }
     ]
@@ -1330,7 +1330,7 @@
   "m_870_far": {
     "sounds": [
       {
-        "name": "superbwarfare:m_870/m_870_far",
+        "name": "superbwarfare:gun/m_870/m_870_far",
         "stream": false
       }
     ]
@@ -1338,7 +1338,7 @@
   "m_870_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:m_870/m_870_veryfar",
+        "name": "superbwarfare:gun/m_870/m_870_veryfar",
         "stream": false
       }
     ]
@@ -1346,7 +1346,7 @@
   "m_870_prepare_load": {
     "sounds": [
       {
-        "name": "superbwarfare:m_870/m_870_preparealt",
+        "name": "superbwarfare:gun/m_870/m_870_prepare_load",
         "stream": false
       }
     ]
@@ -1354,7 +1354,7 @@
   "m_870_loop": {
     "sounds": [
       {
-        "name": "superbwarfare:m_870/m_870_reload_loop",
+        "name": "superbwarfare:gun/m_870/m_870_reload_loop",
         "stream": false
       }
     ]
@@ -1362,7 +1362,7 @@
   "m_870_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:m_870/m_870_bolt",
+        "name": "superbwarfare:gun/m_870/m_870_bolt",
         "stream": false
       }
     ]
@@ -1370,7 +1370,7 @@
   "glock_17_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_fire_1p",
+        "name": "superbwarfare:gun/glock_17/glock_17_fire_1p",
         "stream": false
       }
     ]
@@ -1378,7 +1378,7 @@
   "glock_17_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_fire_3p",
+        "name": "superbwarfare:gun/glock_17/glock_17_fire_3p",
         "stream": false
       }
     ]
@@ -1386,7 +1386,7 @@
   "glock_17_far": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_far",
+        "name": "superbwarfare:gun/glock_17/glock_17_far",
         "stream": false
       }
     ]
@@ -1394,7 +1394,7 @@
   "glock_17_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_veryfar",
+        "name": "superbwarfare:gun/glock_17/glock_17_veryfar",
         "stream": false
       }
     ]
@@ -1402,7 +1402,7 @@
   "glock_17_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_reload_normal",
+        "name": "superbwarfare:gun/glock_17/glock_17_reload_normal",
         "stream": false
       }
     ]
@@ -1410,7 +1410,7 @@
   "glock_17_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:glock_17/glock_reload_empty",
+        "name": "superbwarfare:gun/glock_17/glock_17_reload_empty",
         "stream": false
       }
     ]
@@ -1418,7 +1418,7 @@
   "mp_443_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:mp443/mp443_fire_1p",
+        "name": "superbwarfare:gun/mp_443/mp_443_fire_1p",
         "stream": false
       }
     ]
@@ -1426,7 +1426,23 @@
   "mp_443_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:mp443/mp443_fire_3p",
+        "name": "superbwarfare:gun/mp_443/mp_443_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "mp_443_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/mp_443/mp_443_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "mp_443_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/mp_443/mp_443_fire_3p_s",
         "stream": false
       }
     ]
@@ -1434,7 +1450,7 @@
   "m_1911_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:m1911/m1911_fire_1p",
+        "name": "superbwarfare:gun/m_1911/m_1911_fire_1p",
         "stream": false
       }
     ]
@@ -1442,7 +1458,7 @@
   "m_1911_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:m1911/m1911_fire_3p",
+        "name": "superbwarfare:gun/m_1911/m_1911_fire_3p",
         "stream": false
       }
     ]
@@ -1450,7 +1466,7 @@
   "m_1911_far": {
     "sounds": [
       {
-        "name": "superbwarfare:m1911/m1911_far",
+        "name": "superbwarfare:gun/m_1911/m_1911_far",
         "stream": false
       }
     ]
@@ -1458,7 +1474,7 @@
   "m_1911_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:m1911/m1911_veryfar",
+        "name": "superbwarfare:gun/m_1911/m_1911_veryfar",
         "stream": false
       }
     ]
@@ -1466,7 +1482,7 @@
   "qbz_95_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_fire1p",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_fire_1p",
         "stream": false
       }
     ]
@@ -1474,7 +1490,7 @@
   "qbz_95_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_fire1p_s",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_fire_1p_s",
         "stream": false
       }
     ]
@@ -1482,7 +1498,7 @@
   "qbz_95_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_fire3p",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_fire_3p",
         "stream": false
       }
     ]
@@ -1490,7 +1506,7 @@
   "qbz_95_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_fire3p_s",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_fire_3p_s",
         "stream": false
       }
     ]
@@ -1498,7 +1514,7 @@
   "qbz_95_far": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_far",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_far",
         "stream": false
       }
     ]
@@ -1506,7 +1522,7 @@
   "qbz_95_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_veryfar",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_veryfar",
         "stream": false
       }
     ]
@@ -1514,7 +1530,7 @@
   "qbz_95_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_reload_normal",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_reload_normal",
         "stream": false
       }
     ]
@@ -1522,7 +1538,7 @@
   "qbz_95_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz95/qbz95_reload_empty",
+        "name": "superbwarfare:gun/qbz_95/qbz_95_reload_empty",
         "stream": false
       }
     ]
@@ -1530,7 +1546,7 @@
   "k_98_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_fire_1p",
+        "name": "superbwarfare:gun/k_98/k_98_fire_1p",
         "stream": false
       }
     ]
@@ -1538,7 +1554,7 @@
   "k_98_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_fire_3p",
+        "name": "superbwarfare:gun/k_98/k_98_fire_3p",
         "stream": false
       }
     ]
@@ -1546,7 +1562,7 @@
   "k_98_far": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_far",
+        "name": "superbwarfare:gun/k_98/k_98_far",
         "stream": false
       }
     ]
@@ -1554,7 +1570,7 @@
   "k_98_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_veryfar",
+        "name": "superbwarfare:gun/k_98/k_98_veryfar",
         "stream": false
       }
     ]
@@ -1562,7 +1578,7 @@
   "k_98_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_reload_empty",
+        "name": "superbwarfare:gun/k_98/k_98_reload_empty",
         "stream": false
       }
     ]
@@ -1570,7 +1586,7 @@
   "k_98_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_bolt",
+        "name": "superbwarfare:gun/k_98/k_98_bolt",
         "stream": false
       }
     ]
@@ -1578,7 +1594,7 @@
   "k_98_loop": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_loop",
+        "name": "superbwarfare:gun/k_98/k_98_loop",
         "stream": false
       }
     ]
@@ -1586,7 +1602,7 @@
   "k_98_prepare": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_prepare",
+        "name": "superbwarfare:gun/k_98/k_98_prepare",
         "stream": false
       }
     ]
@@ -1594,7 +1610,7 @@
   "k_98_end": {
     "sounds": [
       {
-        "name": "superbwarfare:k_98/k_98_finish",
+        "name": "superbwarfare:gun/k_98/k_98_end",
         "stream": false
       }
     ]
@@ -1602,7 +1618,7 @@
   "mosin_nagant_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:mosin_nagant/mosin_nagant_fire_1p",
+        "name": "superbwarfare:gun/mosin_nagant/mosin_nagant_fire_1p",
         "stream": false
       }
     ]
@@ -1610,7 +1626,7 @@
   "mosin_nagant_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:mosin_nagant/mosin_nagant_fire_3p",
+        "name": "superbwarfare:gun/mosin_nagant/mosin_nagant_fire_3p",
         "stream": false
       }
     ]
@@ -1618,7 +1634,7 @@
   "mosin_nagant_far": {
     "sounds": [
       {
-        "name": "superbwarfare:mosin_nagant/mosin_nagant_far",
+        "name": "superbwarfare:gun/mosin_nagant/mosin_nagant_far",
         "stream": false
       }
     ]
@@ -1626,47 +1642,7 @@
   "mosin_nagant_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:mosin_nagant/mosin_nagant_veryfar",
-        "stream": false
-      }
-    ]
-  },
-  "mosin_nagant_bolt": {
-    "sounds": [
-      {
-        "name": "superbwarfare:k_98/k_98_bolt",
-        "stream": false
-      }
-    ]
-  },
-  "mosin_nagant_loop": {
-    "sounds": [
-      {
-        "name": "superbwarfare:k_98/k_98_loop",
-        "stream": false
-      }
-    ]
-  },
-  "mosin_nagant_prepare": {
-    "sounds": [
-      {
-        "name": "superbwarfare:k_98/k_98_prepare",
-        "stream": false
-      }
-    ]
-  },
-  "mosin_nagant_prepare_empty": {
-    "sounds": [
-      {
-        "name": "superbwarfare:k_98/k_98_prepare_empty",
-        "stream": false
-      }
-    ]
-  },
-  "mosin_nagant_end": {
-    "sounds": [
-      {
-        "name": "superbwarfare:k_98/k_98_finish",
+        "name": "superbwarfare:gun/mosin_nagant/mosin_nagant_veryfar",
         "stream": false
       }
     ]
@@ -1674,7 +1650,7 @@
   "javelin_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:javelin/javelin_fire_1p",
+        "name": "superbwarfare:gun/javelin/javelin_fire_1p",
         "stream": false
       }
     ]
@@ -1682,7 +1658,7 @@
   "javelin_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:javelin/javelin_fire_3p",
+        "name": "superbwarfare:gun/javelin/javelin_fire_3p",
         "stream": false
       }
     ]
@@ -1690,7 +1666,7 @@
   "javelin_far": {
     "sounds": [
       {
-        "name": "superbwarfare:javelin/javelin_far",
+        "name": "superbwarfare:gun/javelin/javelin_far",
         "stream": false
       }
     ]
@@ -1698,23 +1674,23 @@
   "javelin_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:javelin/javelin_reload",
+        "name": "superbwarfare:gun/javelin/javelin_reload",
         "stream": false
       }
     ]
   },
-  "javelin_lock": {
+  "javelin_locking": {
     "sounds": [
       {
-        "name": "superbwarfare:javelin/javelin_lock",
+        "name": "superbwarfare:gun/javelin/javelin_locking",
         "stream": false
       }
     ]
   },
-  "javelin_lockon": {
+  "javelin_locked": {
     "sounds": [
       {
-        "name": "superbwarfare:javelin/javelin_lockon",
+        "name": "superbwarfare:gun/javelin/javelin_locked",
         "stream": false
       }
     ]
@@ -1722,7 +1698,7 @@
   "ak_12_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_fire_1p",
+        "name": "superbwarfare:gun/ak_12/ak_12_fire_1p",
         "stream": false
       }
     ]
@@ -1730,7 +1706,7 @@
   "ak_12_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_fire_3p",
+        "name": "superbwarfare:gun/ak_12/ak_12_fire_3p",
         "stream": false
       }
     ]
@@ -1738,7 +1714,7 @@
   "ak_12_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_fire_1p_s",
+        "name": "superbwarfare:gun/ak_12/ak_12_fire_1p_s",
         "stream": false
       }
     ]
@@ -1746,7 +1722,7 @@
   "ak_12_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_fire_3p_s",
+        "name": "superbwarfare:gun/ak_12/ak_12_fire_3p_s",
         "stream": false
       }
     ]
@@ -1754,7 +1730,7 @@
   "ak_12_far": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_far",
+        "name": "superbwarfare:gun/ak_12/ak_12_far",
         "stream": false
       }
     ]
@@ -1762,7 +1738,7 @@
   "ak_12_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_veryfar",
+        "name": "superbwarfare:gun/ak_12/ak_12_veryfar",
         "stream": false
       }
     ]
@@ -1770,7 +1746,7 @@
   "ak_12_far_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_far_s",
+        "name": "superbwarfare:gun/ak_12/ak_12_far_s",
         "stream": false
       }
     ]
@@ -1778,7 +1754,7 @@
   "ak_12_veryfar_s": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_veryfar_s",
+        "name": "superbwarfare:gun/ak_12/ak_12_veryfar_s",
         "stream": false
       }
     ]
@@ -1786,7 +1762,7 @@
   "ak_12_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_reload_normal",
+        "name": "superbwarfare:gun/ak_12/ak_12_reload_normal",
         "stream": false
       }
     ]
@@ -1794,7 +1770,7 @@
   "ak_12_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:ak_12/ak_12_reload_empty",
+        "name": "superbwarfare:gun/ak_12/ak_12_reload_empty",
         "stream": false
       }
     ]
@@ -1823,7 +1799,7 @@
       }
     ]
   },
-  "triggerclick": {
+  "trigger_click": {
     "sounds": [
       {
         "name": "superbwarfare:trigger_click",
@@ -2247,12 +2223,12 @@
       }
     ]
   },
-  "drone_sound": {
+  "drone_engine": {
     "sounds": [
       {
         "attenuation_distance": 48,
         "stream": false,
-        "name": "superbwarfare:drone_sound"
+        "name": "superbwarfare:vehicle/drone/drone_engine"
       }
     ]
   },
@@ -2416,38 +2392,6 @@
       }
     ]
   },
-  "charge_rifle_fire_1p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:charge_rifle/charge_rifle_fire_1p",
-        "stream": false
-      }
-    ]
-  },
-  "charge_rifle_fire_3p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:charge_rifle/charge_rifle_fire_3p",
-        "stream": false
-      }
-    ]
-  },
-  "charge_rifle_fire_boom_1p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:charge_rifle/charge_rifle_fire_boom_1p",
-        "stream": false
-      }
-    ]
-  },
-  "charge_rifle_fire_boom_3p": {
-    "sounds": [
-      {
-        "name": "superbwarfare:charge_rifle/charge_rifle_fire_boom_3p",
-        "stream": false
-      }
-    ]
-  },
   "annihilator_fire_1p": {
     "sounds": [
       {
@@ -2488,19 +2432,19 @@
       }
     ]
   },
-  "boat_engine": {
+  "speedboat_engine": {
     "sounds": [
       {
         "attenuation_distance": 48,
         "stream": false,
-        "name": "superbwarfare:speedboat/engine"
+        "name": "superbwarfare:vehicle/speedboat/speedboat_engine"
       }
     ]
   },
   "vehicle_strike": {
     "sounds": [
       {
-        "name": "superbwarfare:vehicle_strike",
+        "name": "superbwarfare:vehicle/common/vehicle_strike",
         "stream": false
       }
     ]
@@ -2508,7 +2452,7 @@
   "m_2_hb_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_2_hb/m_2_hb_fire_1p",
+        "name": "superbwarfare:gun/m_2_hb/m_2_hb_fire_1p",
         "stream": false
       }
     ]
@@ -2516,7 +2460,7 @@
   "m_2_hb_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:m_2_hb/m_2_hb_fire_3p",
+        "name": "superbwarfare:gun/m_2_hb/m_2_hb_fire_3p",
         "stream": false
       }
     ]
@@ -2524,7 +2468,7 @@
   "m_2_hb_far": {
     "sounds": [
       {
-        "name": "superbwarfare:m_2_hb/m_2_hb_far",
+        "name": "superbwarfare:gun/m_2_hb/m_2_hb_far",
         "stream": false
       }
     ]
@@ -2532,7 +2476,7 @@
   "m_2_hb_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:m_2_hb/m_2_hb_veryfar",
+        "name": "superbwarfare:gun/m_2_hb/m_2_hb_veryfar",
         "stream": false
       }
     ]
@@ -2540,7 +2484,7 @@
   "m_2_hb_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:m_2_hb/m_2_hb_reload_normal",
+        "name": "superbwarfare:gun/m_2_hb/m_2_hb_reload_normal",
         "stream": false
       }
     ]
@@ -2548,7 +2492,7 @@
   "m_2_hb_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:m_2_hb/m_2_hb_reload_empty",
+        "name": "superbwarfare:gun/m_2_hb/m_2_hb_reload_empty",
         "stream": false
       }
     ]
@@ -2557,14 +2501,14 @@
     "sounds": [
       {
         "stream": true,
-        "name": "superbwarfare:wheel_chair/wheel_chair_engine"
+        "name": "superbwarfare:vehicle/wheel_chair/wheel_chair_engine"
       }
     ]
   },
   "wheel_chair_jump": {
     "sounds": [
       {
-        "name": "superbwarfare:wheel_chair/wheel_chair_jump",
+        "name": "superbwarfare:vehicle/wheel_chair/wheel_chair_jump",
         "stream": false
       }
     ]
@@ -2590,50 +2534,50 @@
       }
     ]
   },
-  "helicopter_engine_start": {
+  "ah_6_engine_start": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_engine_start"
+        "name": "superbwarfare:vehicle/ah_6/ah_6_engine_start"
       }
     ]
   },
-  "helicopter_engine": {
+  "ah_6_engine": {
     "sounds": [
       {
         "attenuation_distance": 160,
         "stream": true,
-        "name": "superbwarfare:helicopter/heli_engine"
+        "name": "superbwarfare:vehicle/ah_6/ah_6_engine"
       }
     ]
   },
-  "heli_cannon_fire_1p": {
+  "ah_6_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_fire_1p",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "heli_cannon_fire_3p": {
+  "ah_6_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_fire_3p",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_fire_3p",
         "stream": false
       }
     ]
   },
-  "heli_cannon_far": {
+  "ah_6_cannon_far": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_far",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_far",
         "stream": false
       }
     ]
   },
-  "heli_cannon_veryfar": {
+  "ah_6_cannon_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/heli_cannon_veryfar",
+        "name": "superbwarfare:vehicle/ah_6/ah_6_cannon_veryfar",
         "stream": false
       }
     ]
@@ -2641,7 +2585,7 @@
   "small_rocket_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/small_rocket_fire_1p",
+        "name": "superbwarfare:vehicle/common/small_rocket_fire_1p",
         "stream": false
       }
     ]
@@ -2649,7 +2593,7 @@
   "small_rocket_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/small_rocket_fire_3p",
+        "name": "superbwarfare:vehicle/common/small_rocket_fire_3p",
         "stream": false
       }
     ]
@@ -2721,15 +2665,23 @@
   "decoy_reload": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/decoy_reload",
+        "name": "superbwarfare:vehicle/common/decoy_reload",
         "stream": false
       }
     ]
   },
-  "decoy_fire": {
+  "decoy_release_first": {
     "sounds": [
       {
-        "name": "superbwarfare:helicopter/decoy_fire",
+        "name": "superbwarfare:vehicle/common/decoy_release_first",
+        "stream": false
+      }
+    ]
+  },
+  "decoy_release": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/common/decoy_release",
         "stream": false
       }
     ]
@@ -2737,7 +2689,7 @@
   "secondary_cataclysm_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_fire_1p",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_fire_1p",
         "stream": false
       }
     ]
@@ -2745,7 +2697,7 @@
   "secondary_cataclysm_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_fire_3p",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_fire_3p",
         "stream": false
       }
     ]
@@ -2753,7 +2705,7 @@
   "secondary_cataclysm_far": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_far",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_far",
         "stream": false
       }
     ]
@@ -2761,7 +2713,7 @@
   "secondary_cataclysm_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_veryfar",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_veryfar",
         "stream": false
       }
     ]
@@ -2769,7 +2721,7 @@
   "secondary_cataclysm_loop": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_loop",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_loop",
         "stream": false
       }
     ]
@@ -2777,7 +2729,7 @@
   "secondary_cataclysm_prepare_load": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_start",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_start",
         "stream": false
       }
     ]
@@ -2785,7 +2737,7 @@
   "secondary_cataclysm_end": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_end",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_end",
         "stream": false
       }
     ]
@@ -2793,7 +2745,7 @@
   "secondary_cataclysm_fire_1p_charge": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_charge_fire_1p",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_charge_fire_1p",
         "stream": false
       }
     ]
@@ -2801,7 +2753,7 @@
   "secondary_cataclysm_fire_3p_charge": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_charge_fire_3p",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_charge_fire_3p",
         "stream": false
       }
     ]
@@ -2809,7 +2761,7 @@
   "secondary_cataclysm_far_charge": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_charge_far",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_charge_far",
         "stream": false
       }
     ]
@@ -2817,7 +2769,7 @@
   "secondary_cataclysm_veryfar_charge": {
     "sounds": [
       {
-        "name": "superbwarfare:secondary_cataclysm/secondary_cataclysm_charge_veryfar",
+        "name": "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_charge_veryfar",
         "stream": false
       }
     ]
@@ -2830,107 +2782,107 @@
       }
     ]
   },
-  "lav_fire_1p": {
+  "lav_150_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_fire_1p",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "lav_fire_3p": {
+  "lav_150_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_fire_3p",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_fire_3p",
         "stream": false
       }
     ]
   },
-  "lav_far": {
+  "lav_150_cannon_far": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_far",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_far",
         "stream": false
       }
     ]
   },
-  "lav_veryfar": {
+  "lav_150_cannon_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/lav_veryfar",
+        "name": "superbwarfare:vehicle/lav_150/lav_150_cannon_veryfar",
         "stream": false
       }
     ]
   },
-  "lav_engine": {
+  "lav_150_engine": {
     "sounds": [
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:lav/lav_engine"
+        "name": "superbwarfare:vehicle/lav_150/lav_150_engine"
       }
     ]
   },
   "coax_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:lav/coax_fire_1p"
+        "name": "superbwarfare:vehicle/common/coax_fire_1p"
       }
     ]
   },
-  "bmp_fire_1p": {
+  "bmp_2_cannon_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_fire_1p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_cannon_fire_1p",
         "stream": false
       }
     ]
   },
-  "bmp_fire_3p": {
+  "bmp_2_cannon_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_fire_3p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_cannon_fire_3p",
         "stream": false
       }
     ]
   },
-  "bmp_engine": {
+  "bmp_2_engine": {
     "sounds": [
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:bmp/bmp_engine"
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_engine"
       }
     ]
   },
-  "bmp_missile_fire_1p": {
+  "bmp_2_missile_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_missile_fire_1p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_missile_fire_1p",
         "stream": false
       }
     ]
   },
-  "bmp_missile_fire_3p": {
+  "bmp_2_missile_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_missile_fire_3p",
+        "name": "superbwarfare:vehicle/bmp_2/bmp_2_missile_fire_3p",
         "stream": false
       }
     ]
   },
-  "bmp_missile_reload": {
+  "medium_missile_reload": {
     "sounds": [
       {
-        "name": "superbwarfare:bmp/bmp_missile_reload",
+        "name": "superbwarfare:vehicle/common/medium_missile_reload",
         "stream": false
       }
     ]
   },
-  "wheel_step": {
+  "wheel_vehicle_step": {
     "sounds": [
       {
-        "name": "superbwarfare:wheel_step",
+        "name": "superbwarfare:vehicle/common/wheel_vehicle_step",
         "stream": false
       }
     ]
@@ -2946,7 +2898,7 @@
   "yx_100_reload": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_reload",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_reload",
         "stream": false
       }
     ]
@@ -2954,7 +2906,7 @@
   "yx_100_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_fire_1p",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_fire_1p",
         "stream": false
       }
     ]
@@ -2962,7 +2914,7 @@
   "yx_100_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_fire_3p",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_fire_3p",
         "stream": false
       }
     ]
@@ -2970,7 +2922,7 @@
   "yx_100_far": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_far",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_far",
         "stream": false
       }
     ]
@@ -2978,7 +2930,7 @@
   "yx_100_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:yx100/yx100_veryfar",
+        "name": "superbwarfare:vehicle/yx_100/yx_100_veryfar",
         "stream": false
       }
     ]
@@ -2988,7 +2940,15 @@
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:yx100/yx100_engine"
+        "name": "superbwarfare:vehicle/yx_100/yx_100_engine"
+      }
+    ]
+  },
+  "yx_100_swarm_drone_release": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/yx_100/yx_100_swarm_drone_release",
+        "stream": false
       }
     ]
   },
@@ -3032,51 +2992,51 @@
       }
     ]
   },
-  "prism_fire_1p": {
+  "prism_tank_fire_high_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_1p",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_high_1p",
         "stream": false
       }
     ]
   },
-  "prism_fire_3p": {
+  "prism_tank_fire_high_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_3p",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_high_3p",
         "stream": false
       }
     ]
   },
-  "prism_fire_1p_2": {
+  "prism_tank_fire_low_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_1p_2",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_low_1p",
         "stream": false
       }
     ]
   },
-  "prism_fire_3p_2": {
+  "prism_tank_fire_low_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:prism/prism_fire_3p_2",
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_fire_low_3p",
         "stream": false
       }
     ]
   },
-  "prism_engine": {
+  "prism_tank_engine": {
     "sounds": [
       {
         "attenuation_distance": 64,
         "stream": true,
-        "name": "superbwarfare:prism/prism_engine"
+        "name": "superbwarfare:vehicle/prism_tank/prism_tank_engine"
       }
     ]
   },
   "insidious_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:insidious/insidious_fire_1p",
+        "name": "superbwarfare:gun/insidious/insidious_fire_1p",
         "stream": false
       }
     ]
@@ -3084,7 +3044,7 @@
   "insidious_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:insidious/insidious_fire_3p",
+        "name": "superbwarfare:gun/insidious/insidious_fire_3p",
         "stream": false
       }
     ]
@@ -3092,7 +3052,7 @@
   "insidious_far": {
     "sounds": [
       {
-        "name": "superbwarfare:insidious/insidious_far",
+        "name": "superbwarfare:gun/insidious/insidious_far",
         "stream": false
       }
     ]
@@ -3100,7 +3060,7 @@
   "insidious_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:insidious/insidious_veryfar",
+        "name": "superbwarfare:gun/insidious/insidious_veryfar",
         "stream": false
       }
     ]
@@ -3108,7 +3068,7 @@
   "insidious_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:insidious/insidious_reload",
+        "name": "superbwarfare:gun/insidious/insidious_reload",
         "stream": false
       }
     ]
@@ -3121,21 +3081,21 @@
       }
     ]
   },
-  "hpj_11_fire_3p": {
+  "hpj_11_fire": {
     "sounds": [
       {
-        "attenuation_distance": 192,
+        "attenuation_distance": 384,
         "stream": true,
-        "name": "superbwarfare:hpj11/hpj_11_fire_3p"
+        "name": "superbwarfare:hpj11/hpj_11_fire"
       }
     ]
   },
-  "track_move": {
+  "track_vehicle_step": {
     "sounds": [
       {
         "attenuation_distance": 32,
         "stream": true,
-        "name": "superbwarfare:track_move"
+        "name": "superbwarfare:vehicle/common/track_vehicle_step"
       }
     ]
   },
@@ -3171,25 +3131,34 @@
       {
         "attenuation_distance": 48,
         "stream": true,
-        "name": "superbwarfare:vehicle_swim"
+        "name": "superbwarfare:vehicle/common/vehicle_swim"
       }
     ]
   },
-  "a10_engine": {
+  "a_10a_engine": {
     "sounds": [
       {
         "attenuation_distance": 256,
         "stream": true,
-        "name": "superbwarfare:a10/a10_engine"
+        "name": "superbwarfare:vehicle/a_10a/a_10a_engine"
       }
     ]
   },
-  "a10_fire": {
+  "a_10a_engine_start": {
     "sounds": [
       {
         "attenuation_distance": 256,
         "stream": true,
-        "name": "superbwarfare:a10/a10_fire"
+        "name": "superbwarfare:vehicle/a_10a/a_10a_engine_start"
+      }
+    ]
+  },
+  "a_10a_fire": {
+    "sounds": [
+      {
+        "attenuation_distance": 512,
+        "stream": true,
+        "name": "superbwarfare:vehicle/a_10a/a_10a_fire"
       }
     ]
   },
@@ -3218,18 +3187,18 @@
       }
     ]
   },
-  "jet_lock": {
+  "missile_locking": {
     "sounds": [
       {
-        "name": "superbwarfare:a10/jet_lock",
+        "name": "superbwarfare:vehicle/common/missile_locking",
         "stream": false
       }
     ]
   },
-  "jet_lockon": {
+  "missile_locked": {
     "sounds": [
       {
-        "name": "superbwarfare:a10/jet_lockon",
+        "name": "superbwarfare:vehicle/common/missile_locked",
         "stream": false
       }
     ]
@@ -3248,16 +3217,20 @@
       {
         "name": "superbwarfare:melee_hit_01",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:melee_hit_02",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:melee_hit_03",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:melee_hit_04",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:melee_hit_05",
         "stream": false
       }
@@ -3266,7 +3239,7 @@
   "aurelia_sceptre_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:aurelia_sceptre/aurelia_sceptre_fire_1p",
+        "name": "superbwarfare:gun/aurelia_sceptre/aurelia_sceptre_fire_1p",
         "stream": false
       }
     ]
@@ -3274,15 +3247,15 @@
   "aurelia_sceptre_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:aurelia_sceptre/aurelia_sceptre_fire_3p",
+        "name": "superbwarfare:gun/aurelia_sceptre/aurelia_sceptre_fire_3p",
         "stream": false
       }
     ]
   },
-  "fly_loop": {
+  "tom_6_engine": {
     "sounds": [
       {
-        "name": "superbwarfare:fly_loop",
+        "name": "superbwarfare:vehicle/tom_6/tom_6_engine",
         "stream": false
       }
     ]
@@ -3290,7 +3263,7 @@
   "mp_5_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_fire_1p",
+        "name": "superbwarfare:gun/mp_5/mp_5_fire_1p",
         "stream": false
       }
     ]
@@ -3298,7 +3271,7 @@
   "mp_5_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_fire_3p",
+        "name": "superbwarfare:gun/mp_5/mp_5_fire_3p",
         "stream": false
       }
     ]
@@ -3306,7 +3279,7 @@
   "mp_5_far": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_far",
+        "name": "superbwarfare:gun/mp_5/mp_5_far",
         "stream": false
       }
     ]
@@ -3314,7 +3287,7 @@
   "mp_5_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_veryfar",
+        "name": "superbwarfare:gun/mp_5/mp_5_veryfar",
         "stream": false
       }
     ]
@@ -3322,7 +3295,7 @@
   "mp_5_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_fire_1p_s",
+        "name": "superbwarfare:gun/mp_5/mp_5_fire_1p_s",
         "stream": false
       }
     ]
@@ -3330,7 +3303,7 @@
   "mp_5_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_fire_3p_s",
+        "name": "superbwarfare:gun/mp_5/mp_5_fire_3p_s",
         "stream": false
       }
     ]
@@ -3338,7 +3311,7 @@
   "mp_5_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_reload_normal",
+        "name": "superbwarfare:gun/mp_5/mp_5_reload_normal",
         "stream": false
       }
     ]
@@ -3346,7 +3319,7 @@
   "mp_5_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:mp_5/mp_5_reload_empty",
+        "name": "superbwarfare:gun/mp_5/mp_5_reload_empty",
         "stream": false
       }
     ]
@@ -3370,7 +3343,7 @@
   "qbz_191_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_fire_1p",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_fire_1p",
         "stream": false
       }
     ]
@@ -3378,7 +3351,7 @@
   "qbz_191_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_fire_1p_s",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_fire_1p_s",
         "stream": false
       }
     ]
@@ -3386,7 +3359,7 @@
   "qbz_191_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_fire_3p",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_fire_3p",
         "stream": false
       }
     ]
@@ -3394,7 +3367,7 @@
   "qbz_191_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_fire_3p_s",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_fire_3p_s",
         "stream": false
       }
     ]
@@ -3402,7 +3375,7 @@
   "qbz_191_far": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_far",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_far",
         "stream": false
       }
     ]
@@ -3410,7 +3383,7 @@
   "qbz_191_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_veryfar",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_veryfar",
         "stream": false
       }
     ]
@@ -3418,7 +3391,7 @@
   "qbz_191_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_reload_normal",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_reload_normal",
         "stream": false
       }
     ]
@@ -3426,7 +3399,7 @@
   "qbz_191_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:qbz_191/qbz_191_reload_empty",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_reload_empty",
         "stream": false
       }
     ]
@@ -3542,7 +3515,7 @@
   "awm_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_1p",
+        "name": "superbwarfare:gun/awm/awm_fire_1p",
         "stream": false
       }
     ]
@@ -3550,7 +3523,7 @@
   "awm_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_3p",
+        "name": "superbwarfare:gun/awm/awm_fire_3p",
         "stream": false
       }
     ]
@@ -3558,7 +3531,7 @@
   "awm_fire_1p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_1p_s",
+        "name": "superbwarfare:gun/awm/awm_fire_1p_s",
         "stream": false
       }
     ]
@@ -3566,7 +3539,7 @@
   "awm_fire_3p_s": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_fire_3p_s",
+        "name": "superbwarfare:gun/awm/awm_fire_3p_s",
         "stream": false
       }
     ]
@@ -3574,7 +3547,7 @@
   "awm_far": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_far",
+        "name": "superbwarfare:gun/awm/awm_far",
         "stream": false
       }
     ]
@@ -3582,7 +3555,7 @@
   "awm_veryfar": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_veryfar",
+        "name": "superbwarfare:gun/awm/awm_veryfar",
         "stream": false
       }
     ]
@@ -3590,7 +3563,7 @@
   "awm_reload_normal": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_reload_normal",
+        "name": "superbwarfare:gun/awm/awm_reload_normal",
         "stream": false
       }
     ]
@@ -3598,7 +3571,7 @@
   "awm_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_reload_empty",
+        "name": "superbwarfare:gun/awm/awm_reload_empty",
         "stream": false
       }
     ]
@@ -3606,7 +3579,7 @@
   "awm_bolt": {
     "sounds": [
       {
-        "name": "superbwarfare:awm/awm_bolt",
+        "name": "superbwarfare:gun/awm/awm_bolt",
         "stream": false
       }
     ]
@@ -3624,13 +3597,16 @@
       {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_1",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_2",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_3",
         "stream": false
-      },      {
+      },
+      {
         "name": "superbwarfare:waveforce_tower/waveforce_tower_fire_4",
         "stream": false
       }
@@ -3639,7 +3615,7 @@
   "igla_9k38_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:igla_9k38/igla_9k38_fire_1p",
+        "name": "superbwarfare:gun/igla_9k38/igla_9k38_fire_1p",
         "stream": false
       }
     ]
@@ -3647,7 +3623,7 @@
   "igla_9k38_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:igla_9k38/igla_9k38_fire_3p",
+        "name": "superbwarfare:gun/igla_9k38/igla_9k38_fire_3p",
         "stream": false
       }
     ]
@@ -3655,7 +3631,7 @@
   "igla_9k38_far": {
     "sounds": [
       {
-        "name": "superbwarfare:igla_9k38/igla_9k38_far",
+        "name": "superbwarfare:gun/igla_9k38/igla_9k38_far",
         "stream": false
       }
     ]
@@ -3663,23 +3639,23 @@
   "igla_9k38_reload_empty": {
     "sounds": [
       {
-        "name": "superbwarfare:igla_9k38/igla_9k38_reload",
+        "name": "superbwarfare:gun/igla_9k38/igla_9k38_reload",
         "stream": false
       }
     ]
   },
-  "igla_9k38_lock": {
+  "igla_9k38_locking": {
     "sounds": [
       {
-        "name": "superbwarfare:igla_9k38/igla_9k38_lock",
+        "name": "superbwarfare:gun/igla_9k38/igla_9k38_locking",
         "stream": false
       }
     ]
   },
-  "igla_9k38_lockon": {
+  "igla_9k38_locked": {
     "sounds": [
       {
-        "name": "superbwarfare:igla_9k38/igla_9k38_lockon",
+        "name": "superbwarfare:gun/igla_9k38/igla_9k38_locked",
         "stream": false
       }
     ]
@@ -3687,15 +3663,15 @@
   "repair_tool_fire_1p": {
     "sounds": [
       {
-        "name": "superbwarfare:repair_tool/repair_tool_fire_1p",
+        "name": "superbwarfare:gun/repair_tool/repair_tool_fire_1p",
         "stream": false
       }
     ]
   },
-  "repair_tool_3p": {
+  "repair_tool_fire_3p": {
     "sounds": [
       {
-        "name": "superbwarfare:repair_tool/repair_tool_fire_3p",
+        "name": "superbwarfare:gun/repair_tool/repair_tool_fire_3p",
         "stream": false
       }
     ]
@@ -3703,7 +3679,397 @@
   "repairing": {
     "sounds": [
       {
-        "name": "superbwarfare:repair_tool/repairing",
+        "name": "superbwarfare:gun/repair_tool/repairing",
+        "stream": false
+      }
+    ]
+  },
+  "truck_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/truck/truck_engine"
+      }
+    ]
+  },
+  "truck_horn": {
+    "sounds": [
+      {
+        "attenuation_distance": 128,
+        "stream": true,
+        "name": "superbwarfare:vehicle/truck/truck_horn"
+      }
+    ]
+  },
+  "ql_1031_fire_1p_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_1p_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_far",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_far_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_s_hold": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_veryfar_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_charge": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_charge",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_discharge": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/hold/ql_1031_discharge",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_1p_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_1p_s_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_s_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_far",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_s_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_far_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_s_semi": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/semi/ql_1031_veryfar_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_1p_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_1p_s_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_fire_3p_s_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_far",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_far_s_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_far_s",
+        "stream": false
+      }
+    ]
+  },
+  "ql_1031_veryfar_s_auto": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ql_1031/auto/ql_1031_veryfar_s",
+        "stream": false
+      }
+    ]
+  },
+  "mi_28_engine_start": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_engine_start"
+      }
+    ]
+  },
+  "mi_28_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 160,
+        "stream": true,
+        "name": "superbwarfare:vehicle/mi_28/mi_28_engine"
+      }
+    ]
+  },
+  "mi_28_cannon_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "mi_28_cannon_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_far",
+        "stream": false
+      }
+    ]
+  },
+  "mi_28_cannon_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/mi_28/mi_28_cannon_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_reload": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_reload",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_far",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/plz_05/plz_05_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "plz_05_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/plz_05/plz_05_engine"
+      }
+    ]
+  },
+  "terrain": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/common/terrain"
+      }
+    ]
+  },
+  "pull_up": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/common/pull_up"
+      }
+    ]
+  },
+  "lav_ad_fire": {
+    "sounds": [
+      {
+        "attenuation_distance": 192,
+        "stream": true,
+        "name": "superbwarfare:vehicle/lav_ad/lav_ad_fire"
+      }
+    ]
+  },
+  "mini_explosion": {
+    "sounds": [
+      {
+        "name": "superbwarfare:explosion/mini_explosion_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_03",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_04",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/mini_explosion_05",
+        "stream": false
+      }
+    ]
+  },
+  "knife_flesh": {
+    "sounds": [
+      {
+        "name": "superbwarfare:super_star/knife_flesh_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_03",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_04",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:super_star/knife_flesh_05",
         "stream": false
       }
     ]

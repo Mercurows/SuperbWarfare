@@ -1,0 +1,16 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/marlin.animation.json",
+    "Model": "superbwarfare:geo/marlin.geo.json",
+    "Texture": "superbwarfare:textures/item/marlin.png",
+    "LODModel": "superbwarfare:geo/lod/marlin.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/marlin.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.33720625
+  ],
+  "FlareSize": 0.4,
+  "UseOldHandRenderer": true
+}

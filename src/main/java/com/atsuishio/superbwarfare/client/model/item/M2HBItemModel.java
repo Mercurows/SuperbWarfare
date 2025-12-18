@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.machinegun.M2HBItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,30 +13,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class M2HBItemModel extends CustomGunModel<M2HBItem> {
-    @Override
-    public ResourceLocation getAnimationResource(M2HBItem animatable) {
-        return Mod.loc("animations/m_2_hb.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(M2HBItem animatable) {
-        return Mod.loc("geo/m_2_hb.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(M2HBItem animatable) {
-        return Mod.loc("textures/item/m_2_hb.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(M2HBItem animatable) {
-        return Mod.loc("geo/lod/m_2_hb.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(M2HBItem animatable) {
-        return Mod.loc("textures/item/lod/m_2_hb.png");
-    }
 
     @Override
     public void setCustomAnimations(M2HBItem animatable, long instanceId, AnimationState<M2HBItem> animationState) {

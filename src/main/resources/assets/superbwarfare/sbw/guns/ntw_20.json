@@ -1,0 +1,15 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/ntw_20.animation.json",
+    "Model": "superbwarfare:geo/ntw_20.geo.json",
+    "Texture": "superbwarfare:textures/item/ntw_20.png",
+    "LODModel": "superbwarfare:geo/lod/ntw_20.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/ntw_20.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    3.70229375
+  ],
+  "FlareSize": 0.8
+}

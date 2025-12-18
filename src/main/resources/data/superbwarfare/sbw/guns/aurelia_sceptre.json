@@ -1,0 +1,59 @@
+{
+  "Spread": 2.5,
+  "RecoilX": 0.0005,
+  "RecoilY": 0.0001,
+  "Damage": 5.5,
+  "ProjectileAmount": 2,
+  "Headshot": 1.5,
+  "Velocity": 8,
+  "Weight": 1,
+  "MeleeDamage": 10,
+  "NormalReloadTime": 20,
+  "EmptyReloadTime": 20,
+  "BypassesArmor": 0.26,
+  "SoundRadius": 2,
+  "RPM": 1100,
+  "ShootDelay": 5,
+  "HeatPerShoot": 1,
+  "GunType": "Handgun",
+  "AvailableFireModes": [
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Handgun"
+  },
+  "DefaultFireMode": "Auto",
+  "AmmoType": [
+    "@HandgunAmmo",
+    {
+      "AmmoSlot": "Melee",
+      "Override": {
+        "ProjectileAmount": 0,
+        "MeleeDuration": 12
+      }
+    }
+  ],
+  "Icon": "superbwarfare:textures/gun_icon/aurelia_sceptre_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:powerful_cooler",
+    "superbwarfare:killing_tally",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:firefly",
+    "superbwarfare:one_two_punch",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:aurelia_sceptre_fire_1p",
+    "Fire3P": "superbwarfare:aurelia_sceptre_fire_3p"
+  }
+}

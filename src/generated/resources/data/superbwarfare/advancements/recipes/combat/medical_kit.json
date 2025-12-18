@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_string": {
+    "has_golden_apple": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:string"
+              "minecraft:golden_apple"
             ]
           }
         ]
@@ -22,7 +22,7 @@
   },
   "requirements": [
     [
-      "has_string",
+      "has_golden_apple",
       "has_the_recipe"
     ]
   ],

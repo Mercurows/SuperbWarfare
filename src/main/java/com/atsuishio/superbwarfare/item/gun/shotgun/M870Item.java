@@ -1,16 +1,13 @@
 package com.atsuishio.superbwarfare.item.gun.shotgun;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.M870ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +20,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class M870Item extends GunGeoItem {
@@ -34,7 +30,7 @@ public class M870Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(M870ItemModel::new, 0, 0, 1.4209, 0.8, true);
+        return GunRendererBuilder.simple(M870ItemModel::new);
     }
 
     private PlayState fireAnimPredicate(AnimationState<M870Item> event) {
@@ -74,23 +70,22 @@ public class M870Item extends GunGeoItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
     }
 
+    private PlayState meleePredicate(AnimationState<M870Item> event) {
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
+
+        if (ClientEventHandler.gunMelee > 0) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.hit"));
+        }
+
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
         var fireAnimController = new AnimationController<>(this, "fireAnimController", 1, this::fireAnimPredicate);
         data.add(fireAnimController);
+        var meleeController = new AnimationController<>(this, "meleeController", 0, this::meleePredicate);
+        data.add(meleeController);
     }
-
-    @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(ModSounds.M_870_PREPARE_LOAD.get(),
-                ModSounds.M_870_LOOP.get(),
-                ModSounds.M_870_BOLT.get());
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/m_870_icon.png");
-    }
-
 }

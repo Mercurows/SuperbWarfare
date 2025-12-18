@@ -4,6 +4,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomSmokeParticle extends TextureSheetParticle {
@@ -16,7 +17,7 @@ public class CustomSmokeParticle extends TextureSheetParticle {
             this.spriteSet = spriteSet;
         }
 
-        public Particle createParticle(CustomSmokeOption pType, ClientLevel pLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(CustomSmokeOption pType, @NotNull ClientLevel pLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             return new CustomSmokeParticle(pLevel, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet, pType.getRed(), pType.getGreen(), pType.getBlue());
         }
     }
@@ -41,7 +42,7 @@ public class CustomSmokeParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
+    public @NotNull ParticleRenderType getRenderType() {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
@@ -51,7 +52,7 @@ public class CustomSmokeParticle extends TextureSheetParticle {
         if (!this.removed) {
             this.setSprite(this.spriteSet.get(Math.min((this.age / 8) + 1, 8), 8));
         }
-        if (this.age++ < this.lifetime && !(this.alpha <= 0.0F)) {
+        if (this.age++ < this.lifetime && !(this.alpha <= 0)) {
             if (this.age >= this.lifetime - 60 && this.alpha > 0.01F) {
                 this.alpha -= 0.015F;
             }

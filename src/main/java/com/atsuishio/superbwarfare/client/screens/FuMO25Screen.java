@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.menu.FuMO25Menu;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.RadarChangeModeMessage;
 import com.atsuishio.superbwarfare.network.message.send.RadarSetParametersMessage;
 import com.atsuishio.superbwarfare.network.message.send.RadarSetPosMessage;
@@ -211,7 +212,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
             double moveZ = (entity.getZ() - pos.getZ()) / range * 74;
 
             if (pMouseX >= centerX + moveX && pMouseX <= centerX + moveX + 4 && pMouseY >= centerY + moveZ && pMouseY <= centerY + moveZ + 4) {
-                Mod.PACKET_HANDLER.sendToServer(new RadarSetPosMessage(entity.getOnPos()));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new RadarSetPosMessage(entity.getOnPos()));
                 this.currentPos = entity.getOnPos();
                 this.currentTarget = entity;
                 return true;
@@ -289,9 +290,9 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
         public void onPress() {
             if (FuMO25Screen.this.menu.getFuncType() == 3 && FuMO25Screen.this.menu.getSlot(0).getItem().isEmpty()) {
                 if (FuMO25Screen.this.currentTarget == null) return;
-                Mod.PACKET_HANDLER.sendToServer(new RadarSetTargetMessage(FuMO25Screen.this.currentTarget.getUUID()));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new RadarSetTargetMessage(FuMO25Screen.this.currentTarget.getUUID()));
             } else {
-                Mod.PACKET_HANDLER.sendToServer(new RadarSetParametersMessage((byte) 0));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(new RadarSetParametersMessage((byte) 0));
             }
         }
 
@@ -321,7 +322,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
 
         @Override
         public void onPress() {
-            Mod.PACKET_HANDLER.sendToServer(new RadarChangeModeMessage((byte) this.mode));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new RadarChangeModeMessage((byte) this.mode));
         }
 
         @Override

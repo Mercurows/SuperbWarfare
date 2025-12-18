@@ -1,0 +1,78 @@
+{
+  "MaxHealth": 100,
+  "MaxEnergy": 500000,
+  "Mass": 0.5,
+  "TurretPos": [0, 0.65625, 0],
+  "TurretTurnSpeed": [30, 30],
+  "TurretPitchRange": [-42.5, 90],
+  "BarrelPos": [0, 0.734375, 0],
+  "SeekInfo": {
+    "MinSeekRange": 1,
+    "MaxSeekRange": 72,
+    "ChangeTargetTime": 60,
+    "SeekIterative": 30,
+    "MinTargetSize": 0.1,
+    "SeekEnergyCost": 500
+  },
+  "Weapons": {
+    "Main": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "ray",
+      "RPM": 30,
+      "Velocity": 6000000000,
+      "Gravity": 0,
+      "Damage": 15,
+      "Spread": 0,
+      "ShootAnimationTime": 3,
+      "AmmoType": "FE",
+      "AmmoCostPerShoot": 4500,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0, 0]],
+        "Directions": ["Barrel"]
+      },
+      "SoundRadius": 6,
+      "SoundInfo": {
+        "Fire3P": "superbwarfare:laser_tower_shoot"
+      }
+    }
+  },
+  "DamageModifiers": [
+    "minecraft:arrow * 0.1",
+    "minecraft:trident * 0.2",
+    "minecraft:mob_attack * 0.2",
+    "minecraft:mob_attack_no_aggro * 0.2",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:explosion * 1.5",
+    "minecraft:player_explosion * 1.5",
+    "superbwarfare:custom_explosion * 0.5",
+    "superbwarfare:projectile_explosion * 0.5",
+    "superbwarfare:mine * 0.5",
+    "superbwarfare:lunge_mine * 0.5",
+    "superbwarfare:projectile_hit * 0.6",
+    "superbwarfare:grapeshot_hit * 0.4",
+    "#superbwarfare:projectile * 0.5",
+    "#superbwarfare:projectile_absolute * 0.8",
+    "superbwarfare:vehicle_strike * 5",
+    "minecraft:lava - -1",
+    "minecraft:lava * 2",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
+    "All - 1"
+  ],
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0,
+  "VehicleContainerType": "Empty",
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 10,
+    "ExplosionRadius": 3,
+    "ExplodeBlocks": false
+  },
+  "EngineType": "Fixed",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/laser_tower_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
+  "Type": "Defense"
+}

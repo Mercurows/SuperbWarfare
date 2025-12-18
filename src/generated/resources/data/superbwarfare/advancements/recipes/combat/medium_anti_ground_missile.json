@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_javelin_missile": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:javelin_missile"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:medium_anti_ground_missile"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_javelin_missile",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:medium_anti_ground_missile"
+    ]
+  },
+  "sends_telemetry_event": false
+}

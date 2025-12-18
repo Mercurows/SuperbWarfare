@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.data.gun.Ammo;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.common.ammo.AmmoBoxItem;
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.tags.TagKey;
@@ -76,8 +78,18 @@ public class InventoryTool {
         int count = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             var stack = handler.getStackInSlot(i);
+
+            // AmmoSupplier Item
             if (stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type) {
                 count += ammoSupplierItem.ammoToAdd * stack.getCount();
+            }
+
+            // AmmoBox
+            if (stack.getItem() instanceof AmmoBoxItem) {
+                var stackAmmo = type.get(stack);
+                if (stackAmmo > 0) {
+                    count += stackAmmo;
+                }
             }
         }
 
@@ -106,6 +118,19 @@ public class InventoryTool {
         int initialCount = count;
         for (int i = 0; i < handler.getSlots(); i++) {
             var stack = handler.getStackInSlot(i);
+
+            // AmmoBox
+            if (stack.getItem() instanceof AmmoBoxItem) {
+                var stackAmmo = type.get(stack);
+                if (stackAmmo > 0) {
+                    var maxConsumable = Math.min(stackAmmo, count);
+                    type.set(stack, stackAmmo - maxConsumable);
+                    count -= maxConsumable;
+                    continue;
+                }
+            }
+
+            // AmmoSupplier Item
             if (!(stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type))
                 continue;
 
@@ -193,7 +218,17 @@ public class InventoryTool {
      * @param entity 实体
      */
     public static boolean hasCreativeAmmoBox(@Nullable Entity entity) {
-        return hasItem(entity, ModItems.CREATIVE_AMMO_BOX.get());
+        if (entity instanceof VehicleEntity vehicle) {
+            return hasCreativeAmmoBoxForVehicle(vehicle);
+        } else {
+            return hasItem(entity, ModItems.CREATIVE_AMMO_BOX.get());
+        }
+    }
+
+    public static boolean hasCreativeAmmoBoxForVehicle(@NotNull VehicleEntity vehicle) {
+        var passengers = vehicle.getPassengers();
+        boolean flag = passengers.stream().anyMatch(e -> InventoryTool.hasItem(e, ModItems.CREATIVE_AMMO_BOX.get())) && vehicle.data().compute().usePassengerCreativeAmmoBox;
+        return flag || hasItem(vehicle, ModItems.CREATIVE_AMMO_BOX.get());
     }
 
     /**
@@ -209,9 +244,10 @@ public class InventoryTool {
 
     /**
      * 消耗生物物品列表内指定物品
-     * @param living  物品类型
-     * @param item  物品类型
-     * @param count 要消耗的数量
+     *
+     * @param living 物品类型
+     * @param item   物品类型
+     * @param count  要消耗的数量
      */
     public static void consumeItem(LivingEntity living, Item item, int count) {
         living.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {

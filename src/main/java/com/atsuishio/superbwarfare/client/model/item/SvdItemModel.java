@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.SvdItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,31 +17,6 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class SvdItemModel extends CustomGunModel<SvdItem> {
     public static float rotXBipod = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(SvdItem animatable) {
-        return Mod.loc("animations/svd.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(SvdItem animatable) {
-        return Mod.loc("geo/svd.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(SvdItem animatable) {
-        return Mod.loc("textures/item/svd.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(SvdItem animatable) {
-        return Mod.loc("geo/lod/svd.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(SvdItem animatable) {
-        return Mod.loc("textures/item/lod/svd.png");
-    }
 
     @Override
     public void setCustomAnimations(SvdItem animatable, long instanceId, AnimationState<SvdItem> animationState) {
@@ -62,7 +35,8 @@ public class SvdItemModel extends CustomGunModel<SvdItem> {
 
         double fp = ClientEventHandler.firePos;
 
-        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+        var data = GunData.from(stack);
+        int type = data.attachment.get(AttachmentType.SCOPE);
 
         float posX = switch (type) {
             case 0, 1 -> 1.701f;

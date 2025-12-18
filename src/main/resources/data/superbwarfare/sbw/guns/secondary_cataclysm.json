@@ -1,0 +1,79 @@
+{
+  "Spread": 5,
+  "RecoilX": 0.004,
+  "RecoilY": 0.023,
+  "MaxEnergy": 24000,
+  "Damage": 30,
+  "MeleeDamage": 19,
+  "MeleeDuration": 20,
+  "ExplosionDamage": 50,
+  "ExplosionRadius": 5,
+  "Headshot": 0,
+  "Velocity": 3.75,
+  "Magazine": 8,
+  "Weight": 9,
+  "ReloadTypes": [
+    "Iterative"
+  ],
+  "PrepareTime": 31,
+  "PrepareLoadTime": 31,
+  "PrepareAmmoLoadTime": 3,
+  "IterativeTime": 20,
+  "FinishTime": 22,
+  "SoundRadius": 8,
+  "RPM": 300,
+  "Projectile": "superbwarfare:gun_grenade",
+  "GunType": "CurvedLauncher",
+  "AmmoType": [
+    "superbwarfare:grenade_40mm",
+    {
+      "Ammo": "@ShotgunAmmo",
+      "AmmoSlot": "Default",
+      "Projectile": "superbwarfare:projectile",
+      "Override": {
+        "Damage": 10,
+        "Headshot": 1.75,
+        "BypassesArmor": 0.2,
+        "ExplosionDamage": 0,
+        "ProjectileAmount": 6,
+        "Velocity": 10,
+        "RecoilX": 0.006,
+        "RecoilY": 0.018,
+        "Crosshair": "@GunDefault"
+      }
+    },
+    {
+      "AmmoSlot": "Melee",
+      "Override": {
+        "ProjectileAmount": 0,
+        "MeleeDuration": 15,
+        "Crosshair": "@GunDefault"
+      }
+    }
+  ],
+  "Icon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
+  "AvailablePerks": [
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:micro_missile",
+    "superbwarfare:regeneration",
+    "superbwarfare:one_two_punch"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p",
+    "Fire3P": "superbwarfare:secondary_cataclysm_fire_3p",
+    "Fire3PFar": "superbwarfare:secondary_cataclysm_far",
+    "Fire3PVeryFar": "superbwarfare:secondary_cataclysm_veryfar",
+    "ReloadPrepareLoad": "superbwarfare:secondary_cataclysm_prepare_load",
+    "ReloadLoop": "superbwarfare:secondary_cataclysm_loop",
+    "ReloadEnd": "superbwarfare:secondary_cataclysm_end",
+    "CancellableSounds": [
+      "superbwarfare:secondary_cataclysm_prepare_load",
+      "superbwarfare:secondary_cataclysm_loop",
+      "superbwarfare:secondary_cataclysm_end"
+    ]
+  },
+  "Crosshair": "@GunGrenade"
+}

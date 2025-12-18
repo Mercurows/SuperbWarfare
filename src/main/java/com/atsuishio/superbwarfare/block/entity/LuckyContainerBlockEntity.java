@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.block.entity;
 
 import com.atsuishio.superbwarfare.block.LuckyContainerBlock;
 import com.atsuishio.superbwarfare.data.container.ContainerDataManager;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import it.unimi.dsi.fastutil.Pair;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -57,7 +59,7 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
 
             if (blockEntity.tick == 18) {
                 ParticleTool.sendParticle((ServerLevel) pLevel, ParticleTypes.EXPLOSION, pPos.getX(), pPos.getY() + 1, pPos.getZ(), 40, 1.5, 1.5, 1.5, 1, false);
-                pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.2F) * 0.7F);
+                pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4, (1 + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.2F) * 0.7F);
             }
         } else {
             var direction = pState.getValue(LuckyContainerBlock.FACING);
@@ -68,6 +70,9 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
                 if (entity != null) {
                     entity.setPos(pPos.getX() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getY() + 0.5 + (2 * Math.random() - 1) * 0.1f, pPos.getZ() + 0.5 + (2 * Math.random() - 1) * 0.1f);
                     entity.setYRot(direction.toYRot());
+                    if (entity instanceof VehicleEntity vehicle) {
+                        vehicle.setServerYaw(direction.toYRot());
+                    }
                     pLevel.addFreshEntity(entity);
                 }
             }
@@ -118,7 +123,7 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     @Override
-    public void load(CompoundTag compound) {
+    public void load(@NotNull CompoundTag compound) {
         super.load(compound);
         if (compound.contains("Location", 8)) {
             this.location = new ResourceLocation(compound.getString("Location"));
@@ -130,7 +135,7 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    public void saveAdditional(@NotNull CompoundTag compound) {
         super.saveAdditional(compound);
         if (this.location != null) {
             compound.putString("Location", this.location.toString());
@@ -147,12 +152,12 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         return this.saveWithFullMetadata();
     }
 
     @Override
-    public void saveToItem(ItemStack pStack) {
+    public void saveToItem(@NotNull ItemStack pStack) {
         CompoundTag tag = new CompoundTag();
         if (this.location != null) {
             tag.putString("Location", this.location.toString());

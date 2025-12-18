@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "8 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:heavy_armament_module",
+    "2 superbwarfare:medium_battery_pack",
+    "3 superbwarfare:wheel",
+    "superbwarfare:large_propeller",
+    "superbwarfare:propeller",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:mi_28"
+  }
+}

@@ -1,14 +1,12 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.item.gun.handgun.Trachelium;
+import com.atsuishio.superbwarfare.item.gun.handgun.TracheliumItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +15,7 @@ import software.bernie.geckolib.core.animation.AnimationState;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
-public class TracheliumItemModel extends CustomGunModel<Trachelium> {
+public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
 
     public static float posYAlt = -0.83f;
     public static float scaleZAlt = 0.8f;
@@ -26,32 +24,7 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
     public static float rotXBipod = 0f;
 
     @Override
-    public ResourceLocation getAnimationResource(Trachelium animatable) {
-        return Mod.loc("animations/trachelium.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Trachelium animatable) {
-        return Mod.loc("geo/trachelium.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Trachelium animatable) {
-        return Mod.loc("textures/item/trachelium.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Trachelium animatable) {
-        return Mod.loc("geo/lod/trachelium.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Trachelium animatable) {
-        return Mod.loc("textures/item/lod/trachelium.png");
-    }
-
-    @Override
-    public void setCustomAnimations(Trachelium animatable, long instanceId, AnimationState<Trachelium> animationState) {
+    public void setCustomAnimations(TracheliumItem animatable, long instanceId, AnimationState<TracheliumItem> animationState) {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
         ItemStack stack = player.getMainHandItem();
@@ -72,10 +45,11 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        int stockType = GunData.from(stack).attachment.get(AttachmentType.STOCK);
-        int barrelType = GunData.from(stack).attachment.get(AttachmentType.BARREL);
-        int scopeType = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
-        int gripType = GunData.from(stack).attachment.get(AttachmentType.GRIP);
+        var data = GunData.from(stack);
+        int stockType = data.attachment.get(AttachmentType.STOCK);
+        int barrelType = data.attachment.get(AttachmentType.BARREL);
+        int scopeType = data.attachment.get(AttachmentType.SCOPE);
+        int gripType = data.attachment.get(AttachmentType.GRIP);
 
         posYAlt = Mth.lerp(times, posYAlt, stack.getOrCreateTag().getBoolean("ScopeAlt") ? -1.98f : -0.83f);
         scaleZAlt = Mth.lerp(times, scaleZAlt, stack.getOrCreateTag().getBoolean("ScopeAlt") ? 0.4f : 0.8f);
@@ -133,7 +107,7 @@ public class TracheliumItemModel extends CustomGunModel<Trachelium> {
         ammo.setRotZ(60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
         ammohole.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
 
-        if (GunData.from(stack).reload.empty()) {
+        if (data.reload.empty()) {
             lun.setRotZ(0);
             ammo.setRotZ(0);
             ammohole.setRotZ(0);

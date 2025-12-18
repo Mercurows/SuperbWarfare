@@ -1,0 +1,16 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/minigun.animation.json",
+    "Model": "superbwarfare:geo/minigun.geo.json",
+    "Texture": "superbwarfare:textures/item/minigun.png",
+    "LODModel": "superbwarfare:geo/lod/minigun.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/minigun.png"
+  },
+  "HideCrosshairWhenZoom": false,
+  "FlarePosition": [
+    0,
+    0.1,
+    1.45
+  ],
+  "FlareSize": 0.9
+}

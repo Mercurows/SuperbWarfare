@@ -1,0 +1,67 @@
+{
+  "MaxHealth": 40,
+  "MaxEnergy": 100000,
+  "Seats": {
+    "Transform": "Vehicle",
+    "Position": [0, 0.6, -0.4],
+    "MinPitch": -60,
+    "MaxPitch": 85,
+    "MinYaw": -45,
+    "MaxYaw": 45,
+    "CameraPos": {
+      "AircraftCameraPos": [-0.5, 2.2, -5]
+    }
+  },
+  "Weapons": {
+    "MelonBomb": {
+      "Projectile": "superbwarfare:melon_bomb",
+      "AmmoType": "minecraft:melon",
+      "Magazine": 1,
+      "Velocity": 1,
+      "addShooterDeltaMovement": true,
+      "AutoReload": false,
+      "ExplosionDamage": 500,
+      "ExplosionRadius": 11
+    }
+  },
+  "HasDecoy": true,
+  "UpStep": 1.1,
+  "Mass": 0.02,
+  "RotateOffsetHeight": 0.5,
+  "AllowFreeCam": true,
+  "SendHitParticles": false,
+  "DamageModifiers": [
+    "minecraft:lava * 2",
+    "superbwarfare:vehicle_strike * 2",
+    "superbwarfare:grapeshot_hit * 0.5",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3"
+  ],
+  "VehicleContainerType": "Empty",
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 15,
+    "ExplosionRadius": 2,
+    "CrashPassengers": true
+  },
+  "ThirdPersonCameraPos": [-0.5, 0, 1],
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/tom_6_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "Type": "Airplane",
+  "EngineSound": "superbwarfare:tom_6_engine",
+  "HasLowHealthWarning": false,
+  "EngineType": "Tom6",
+  "EngineInfo": {
+    "EnergyCostRate": 8,
+    "Increment": 1,
+    "Decrement": 1,
+    "PitchSpeed": 1,
+    "YawSpeed": 1,
+    "RollSpeed": 1,
+    "LiftSpeed": 1,
+    "SpeedRate": 1
+  },
+  "TerrainCompat": [[0.562, 0, 0.6375], [-0.562, 0, 0.6375], [0.562, 0, -0.6375], [-0.562, 0, -0.6375]],
+  "TerrainCompatRotateRate" : 6,
+  "SelfHurtPercent": 0
+}

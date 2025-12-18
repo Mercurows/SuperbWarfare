@@ -14,10 +14,11 @@ import net.minecraftforge.common.loot.LootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
+import thedarkcolour.kotlinforforge.forge.ForgeKt;
 
 import java.util.function.Supplier;
 
@@ -34,8 +35,10 @@ public class ModLootModifier {
         }
 
         @Override
-        protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-            context.getResolver().getLootTable(lootTable).getRandomItemsRaw(context, generatedLoot::add);
+        protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+            if (context.getLevel().getGameRules().getBoolean(ModGameRules.MOD_RULE_DO_GENERATE_LOOTS)) {
+                context.getResolver().getLootTable(lootTable).getRandomItemsRaw(context, generatedLoot::add);
+            }
             return generatedLoot;
         }
 
@@ -50,7 +53,7 @@ public class ModLootModifier {
 
     @SubscribeEvent
     public static void register(FMLConstructModEvent event) {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus bus = ForgeKt.getMOD_BUS();
         event.enqueueWork(() -> LOOT_MODIFIERS.register(bus));
     }
 }

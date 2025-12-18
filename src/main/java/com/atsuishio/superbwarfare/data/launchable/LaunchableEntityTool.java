@@ -11,17 +11,15 @@ import net.minecraft.nbt.StringTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.Map;
 
 public class LaunchableEntityTool {
-    public static Map<String, ProjectileInfo> launchableEntitiesData = CustomData.LAUNCHABLE_ENTITY;
 
     public static @Nullable CompoundTag getModifiedTag(ProjectileInfo projectileInfo, ShootData data) {
         JsonObject launchableData;
         if (projectileInfo.data != null) {
             launchableData = projectileInfo.data;
-        } else if (launchableEntitiesData.containsKey(projectileInfo.type)) {
-            launchableData = launchableEntitiesData.get(projectileInfo.type).data;
+        } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileInfo.type)) {
+            launchableData = CustomData.LAUNCHABLE_ENTITY.get(projectileInfo.type).data;
         } else {
             return null;
         }

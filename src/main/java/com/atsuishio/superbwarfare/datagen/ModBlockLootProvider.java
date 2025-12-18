@@ -66,15 +66,15 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.add(ModBlocks.DEEPSLATE_SILVER_ORE.get(), this.createOreDrop(ModBlocks.DEEPSLATE_SILVER_ORE.get(), ModItems.RAW_SILVER.get()));
 
         this.add(ModBlocks.CONTAINER.get(), LootTable.lootTable().withPool(this.applyExplosionCondition(ModBlocks.CONTAINER.get(),
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(ModBlocks.CONTAINER.get()))
+                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(ModBlocks.CONTAINER.get()))
                         .apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy("Entity", "BlockEntityTag.Entity")
                                 .copy("EntityType", "BlockEntityTag.EntityType")))));
         this.add(ModBlocks.SMALL_CONTAINER.get(), LootTable.lootTable().withPool(this.applyExplosionCondition(ModBlocks.SMALL_CONTAINER.get(),
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(ModBlocks.SMALL_CONTAINER.get()))
+                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(ModBlocks.SMALL_CONTAINER.get()))
                         .apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy("LootTable", "BlockEntityTag.LootTable")
                                 .copy("LootTableSeed", "BlockEntityTag.LootTableSeed")))));
         this.add(ModBlocks.LUCKY_CONTAINER.get(), LootTable.lootTable().withPool(this.applyExplosionCondition(ModBlocks.LUCKY_CONTAINER.get(),
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(ModBlocks.LUCKY_CONTAINER.get()))
+                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(ModBlocks.LUCKY_CONTAINER.get()))
                         .apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy("Location", "BlockEntityTag.Location")
                                 .copy("Icon", "BlockEntityTag.Icon")))));
     }
@@ -85,7 +85,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
     }
 
     public LootTable.Builder createCopyNBTDrops(Block pBlock, List<Pair<String, String>> paths) {
-        var pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(pBlock));
+        var pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(pBlock));
         if (!paths.isEmpty()) {
             var copy = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
             for (var path : paths) {

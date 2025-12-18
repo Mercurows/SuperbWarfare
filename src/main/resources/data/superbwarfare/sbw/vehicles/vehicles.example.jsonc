@@ -1,0 +1,66 @@
+// NOTE: Not updated for 0.8.8, wait for future documentation
+
+// Vehicle data example, check out DefaultVehicleData.java for more info
+{
+  // Vehicle entity's ID, MUST not be null or empty and MUST be VehicleEntity.java
+  "ID": "superbwarfare:a_10a",
+  // I think you know what is this
+  "MaxHealth": 350,
+  // Self repair cooldown in ticks
+  "RepairCooldown": 200,
+  // Self repair amount per tick
+  "RepairAmount": 0.05,
+  // At which percent of health will the vehicle start hurting itself
+  "SelfHurtPercent": 0.1,
+  // Self hurt amount per tick
+  "SelfHurtAmount": 0.1,
+  // I think you know what is this too
+  "MaxEnergy": 10000000,
+  // Up step
+  "UpStep": 0,
+  "AllowFreeCam": false,
+  // apply default damage modifiers defined in DamageModifier.createDefaultModifier()
+  "ApplyDefaultDamageModifiers": true,
+  // Mass, used to calculate crash damage and knockback
+  "Mass": 20,
+  // Damage modifiers, check out DamageModify.java for more info
+  "DamageModifiers": [
+    /*
+     * Can also be shortened using string
+     * Format: [Source] [Type] [Value]
+     * for example:
+     * - "minecraft:arrow * 1.5" -> damage * 1.5
+     * - "minecraft:arrow 0"     -> immunity
+     * - "minecraft:arrow - 3"   -> damage - 3
+     */
+    "minecraft:arrow * 1.5",
+    {
+      // Modify type, can be "Immunity", "Reduce", and "Multiply"
+      "Type": "Immunity",
+      // Value for "Reduce" and "Multiply"
+      "Value": 0,
+      /*
+       * Damage source, can be:
+       * All            - apply to any source
+       * namespace:id   - apply to this damage
+       * #namespace:id  - apply to any damage with this damage tag
+       * @namespace:id  - apply to this entity
+       * @#namespace:id - apply to any entity with this entity tag
+       */
+      "Source": "All"
+    }
+  ],
+  // Should cause explosion damage to passengers when been destroyed
+  "ExplodePassengersOnDestroy": false,
+  // Should cause crash damage to passengers when getting crashed, useful for aircraft. You need to turn on "ExplodePassengersOnDestroy" to make this work
+  "CrashPassengersOnDestroy": false,
+  // Explosion damage when been destroyed
+  "ExplosionDamage": 0,
+  // Explosion radius when been destroyed, when this is not greater than 0, vehicles will not explode when been destroyed
+  "ExplosionRadius": 0,
+  // Should blocks be destroyed by explosion when vehicle been destroyed
+  "ExplosionDestroyBlockOnDestroy": true,
+  // Which particle type should be used when vehicle been destroyed
+  // can be "Mini", "Small", "Medium", "Huge" and "Giant"
+  "ExplosionParticleType": "Mini"
+}

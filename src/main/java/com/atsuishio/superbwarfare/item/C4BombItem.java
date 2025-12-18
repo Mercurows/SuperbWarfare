@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.Vec3;
@@ -90,7 +91,7 @@ public class C4BombItem extends Item implements DispenserLaunchable {
                 Position position = DispenserBlock.getDispensePosition(pSource);
                 Direction direction = pSource.getBlockState().getValue(DispenserBlock.FACING);
 
-                var entity = new C4Entity(ModEntities.C_4.get(), level);
+                var entity = new C4Entity(ModEntities.C4.get(), level);
                 entity.setPos(position.x(), position.y(), position.z());
 
                 var pX = direction.getStepX();
@@ -109,5 +110,10 @@ public class C4BombItem extends Item implements DispenserLaunchable {
                 return pStack;
             }
         };
+    }
+
+    @Override
+    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
+        return 20000;
     }
 }

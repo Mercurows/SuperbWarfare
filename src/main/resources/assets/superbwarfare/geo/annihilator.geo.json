@@ -12,17 +12,17 @@
 			},
 			"bones": [
 				{
-					"name": "bone",
+					"name": "root",
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "main",
-					"parent": "bone",
-					"pivot": [0, 0, 0]
+					"name": "turret",
+					"parent": "root",
+					"pivot": [0, 7.25, 0]
 				},
 				{
-					"name": "PaoGuan",
-					"parent": "main",
+					"name": "barrel",
+					"parent": "turret",
 					"pivot": [0, 36, -79.2],
 					"cubes": [
 						{
@@ -39,7 +39,7 @@
 				},
 				{
 					"name": "YouPaoGuan",
-					"parent": "PaoGuan",
+					"parent": "barrel",
 					"pivot": [36, 28.8, -219],
 					"cubes": [
 						{
@@ -327,7 +327,7 @@
 				},
 				{
 					"name": "ZuoPaoGuan",
-					"parent": "PaoGuan",
+					"parent": "barrel",
 					"pivot": [-36, 28.8, -219],
 					"cubes": [
 						{
@@ -615,7 +615,7 @@
 				},
 				{
 					"name": "ZhongPaoGuan",
-					"parent": "PaoGuan",
+					"parent": "barrel",
 					"pivot": [0, 28.8, -219],
 					"cubes": [
 						{
@@ -903,7 +903,7 @@
 				},
 				{
 					"name": "body",
-					"parent": "main",
+					"parent": "turret",
 					"pivot": [0, 0, -24]
 				},
 				{
@@ -912,7 +912,7 @@
 					"pivot": [0, 91.72092, -117.08214]
 				},
 				{
-					"name": "ledgreen",
+					"name": "ledgreen1",
 					"parent": "led",
 					"pivot": [0, 91.72092, -117.08214],
 					"cubes": [
@@ -1037,7 +1037,7 @@
 					]
 				},
 				{
-					"name": "ledred",
+					"name": "ledred1",
 					"parent": "led",
 					"pivot": [0, 91.72092, -117.08214],
 					"cubes": [
@@ -3434,8 +3434,8 @@
 					]
 				},
 				{
-					"name": "Base",
-					"parent": "bone",
+					"name": "dipan",
+					"parent": "root",
 					"pivot": [-0.36, 3, 1.584],
 					"cubes": [
 						{
@@ -3535,22 +3535,22 @@
 					]
 				},
 				{
-					"name": "main2",
+					"name": "turretLaser",
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "PaoGuan2",
-					"parent": "main2",
+					"name": "barrelLaser",
+					"parent": "turretLaser",
 					"pivot": [0, 36, -79.2]
 				},
 				{
-					"name": "laser",
-					"parent": "PaoGuan2",
+					"name": "beam",
+					"parent": "barrelLaser",
 					"pivot": [43.25, 36.0004, -275]
 				},
 				{
 					"name": "glow1",
-					"parent": "laser",
+					"parent": "beam",
 					"pivot": [43.25, 35.2538, -330.9],
 					"cubes": [
 						{
@@ -3699,7 +3699,7 @@
 				},
 				{
 					"name": "glow2",
-					"parent": "laser",
+					"parent": "beam",
 					"pivot": [-43.25, 35.2538, -330.9],
 					"cubes": [
 						{
@@ -3848,7 +3848,7 @@
 				},
 				{
 					"name": "glow3",
-					"parent": "laser",
+					"parent": "beam",
 					"pivot": [-0.035, 35.2538, -330.9],
 					"cubes": [
 						{
@@ -3997,7 +3997,7 @@
 				},
 				{
 					"name": "laser1",
-					"parent": "laser",
+					"parent": "beam",
 					"pivot": [43.25, 35.2504, -331],
 					"cubes": [
 						{
@@ -4068,7 +4068,7 @@
 				},
 				{
 					"name": "laser2",
-					"parent": "laser",
+					"parent": "beam",
 					"pivot": [0, 35.2504, -331],
 					"cubes": [
 						{
@@ -4139,7 +4139,7 @@
 				},
 				{
 					"name": "laser3",
-					"parent": "laser",
+					"parent": "beam",
 					"pivot": [-43.25, 35.2504, -331],
 					"cubes": [
 						{

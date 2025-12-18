@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "tag": "forge:plates/copper"
+    },
+    "b": {
+      "item": "superbwarfare:seeker"
+    },
+    "c": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "d": {
+      "item": "minecraft:tnt"
+    },
+    "e": {
+      "item": "superbwarfare:missile_engine"
+    }
+  },
+  "pattern": [
+    " b ",
+    "ada",
+    "cec"
+  ],
+  "result": {
+    "item": "superbwarfare:large_anti_ground_missile"
+  },
+  "show_notification": true
+}

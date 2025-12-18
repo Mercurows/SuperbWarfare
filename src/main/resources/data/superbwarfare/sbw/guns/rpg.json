@@ -1,0 +1,51 @@
+{
+  "Spread": 5,
+  "RecoilX": 0.008,
+  "RecoilY": 0.018,
+  "Damage": 250,
+  "Projectile": "superbwarfare:rpg_rocket_tbg",
+  "ExplosionDamage": 150,
+  "ExplosionRadius": 11,
+  "ZoomReload": false,
+  "Headshot": 0,
+  "Velocity": 4,
+  "Magazine": 1,
+  "Weight": 7,
+  "EmptyReloadTime": 100,
+  "RPM": 120,
+  "Gravity": 0.03,
+  "GunType": "DirectLauncher",
+  "AmmoType": [
+    "superbwarfare:rpg_rocket_tbg",
+    {
+      "Ammo": "superbwarfare:rpg_rocket_standard",
+      "Projectile": "superbwarfare:rpg_rocket_standard",
+      "Override": {
+        "Damage": 340,
+        "ExplosionDamage": 80,
+        "ExplosionRadius": 5,
+        "Velocity": 6,
+        "Gravity": 0.015,
+        "Icon": "superbwarfare:textures/gun_icon/rpg_standard_icon.png"
+      }
+    }
+  ],
+  "Icon": "superbwarfare:textures/gun_icon/rpg_tbg_icon.png",
+  "AvailablePerks": [
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:micro_missile"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:rpg_fire_1p",
+    "Fire3P": "superbwarfare:rpg_fire_3p",
+    "Fire3PFar": "superbwarfare:rpg_far",
+    "Fire3PVeryFar": "superbwarfare:rpg_veryfar",
+    "ReloadEmpty": "superbwarfare:rpg_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:rpg_reload_empty"
+    ]
+  }
+}

@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.mobeffect;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import net.minecraft.core.BlockPos;
@@ -31,7 +31,7 @@ public class ShockMobEffect extends MobEffect {
 
     public ShockMobEffect() {
         super(MobEffectCategory.HARMFUL, -256);
-        addAttributeModifier(Attributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -10.0F, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -10F, AttributeModifier.Operation.ADDITION);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ShockMobEffect extends MobEffect {
 
         if (attacker instanceof ServerPlayer player) {
             player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
         }
     }
 

@@ -1,18 +1,14 @@
 package com.atsuishio.superbwarfare.item.gun.sniper;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -20,10 +16,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -34,8 +28,6 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class SentinelItem extends GunGeoItem {
@@ -106,21 +98,6 @@ public class SentinelItem extends GunGeoItem {
     }
 
     @Override
-    public Set<SoundEvent> getReloadSound() {
-        return Set.of(
-                ModSounds.SENTINEL_RELOAD_EMPTY.get(),
-                ModSounds.SENTINEL_RELOAD_NORMAL.get(),
-                ModSounds.SENTINEL_CHARGE.get(),
-                ModSounds.SENTINEL_BOLT.get()
-        );
-    }
-
-    @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/sentinel_icon.png");
-    }
-
-    @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack pStack) {
         return Optional.of(new SentinelImageComponent(pStack));
     }
@@ -136,17 +113,10 @@ public class SentinelItem extends GunGeoItem {
     }
 
     @Override
-    public void afterShoot(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
-        super.afterShoot(shooter, level, shootPosition, shootDirection, data, spread, zoom, uuid);
+    public void afterShoot(@NotNull ShootParameters parameters) {
+        super.afterShoot(parameters);
+
+        var data = parameters.data();
 
         data.stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(cap -> cap.extractEnergy(3000, false));
     }
@@ -156,7 +126,7 @@ public class SentinelItem extends GunGeoItem {
         var cap = data.stack.getCapability(ForgeCapabilities.ENERGY);
 
         if (cap.map(c -> c.getEnergyStored() > 0).orElse(false)) {
-            float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
+            float soundRadius = (float) data.compute().soundRadius;
 
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);

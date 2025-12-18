@@ -70,7 +70,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     public C4Entity(LivingEntity owner, Level level, boolean isControllable) {
-        super(ModEntities.C_4.get(), level);
+        super(ModEntities.C4.get(), level);
         if (owner != null) {
             this.setOwnerUUID(owner.getUUID());
         }
@@ -198,7 +198,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         }
 
         Vec3 motion = this.getDeltaMovement();
-        if (this.xRotO == 0.0F && this.yRotO == 0.0F && !this.inGround) {
+        if (this.xRotO == 0 && this.yRotO == 0 && !this.inGround) {
             double d0 = motion.horizontalDistance();
             this.setYRot((float) (Mth.atan2(motion.x, motion.z) * (double) (180F / (float) Math.PI)));
             this.setXRot((float) (Mth.atan2(motion.y, d0) * (double) (180F / (float) Math.PI)));
@@ -271,7 +271,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
             float f = 0.99F;
             if (this.isInWater()) {
                 for (int j = 0; j < 4; ++j) {
-                    this.level().addParticle(ParticleTypes.BUBBLE, nX - pX * 0.25D, nY - pY * 0.25D, nZ - pZ * 0.25D, pX, pY, pZ);
+                    this.level().addParticle(ParticleTypes.BUBBLE, nX - pX * 0.25, nY - pY * 0.25, nZ - pZ * 0.25, pX, pY, pZ);
                 }
 
                 f = this.getWaterInertia();
@@ -298,7 +298,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     private boolean shouldFall() {
-        return this.inGround && this.level().noCollision((new AABB(this.position(), this.position())).inflate(0.06D));
+        return this.inGround && this.level().noCollision((new AABB(this.position(), this.position())).inflate(0.06));
     }
 
     private void startFalling() {
@@ -336,12 +336,12 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     protected static float lerpRotation(float pCurrentRotation, float pTargetRotation) {
-        while (pTargetRotation - pCurrentRotation < -180.0F) {
-            pCurrentRotation -= 360.0F;
+        while (pTargetRotation - pCurrentRotation < -180F) {
+            pCurrentRotation -= 360F;
         }
 
-        while (pTargetRotation - pCurrentRotation >= 180.0F) {
-            pCurrentRotation += 360.0F;
+        while (pTargetRotation - pCurrentRotation >= 180F) {
+            pCurrentRotation += 360F;
         }
 
         return Mth.lerp(0.2F, pCurrentRotation, pTargetRotation);
@@ -349,7 +349,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
 
     @Nullable
     protected EntityHitResult findHitEntity(Vec3 pStartVec, Vec3 pEndVec) {
-        return ProjectileUtil.getEntityHitResult(this.level(), this, pStartVec, pEndVec, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D),
+        return ProjectileUtil.getEntityHitResult(this.level(), this, pStartVec, pEndVec, this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1),
                 this::canHitEntity);
     }
 
@@ -400,7 +400,8 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
         double speed = this.getDeltaMovement().length();
         if (speed > 0.1) {
-            this.level().playSound(null, pResult.getLocation().x, pResult.getLocation().y, pResult.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
+            var volume = Math.min(4, (float) speed / 4F + 0.5F);
+            this.level().playSound(null, pResult.getLocation().x, pResult.getLocation().y, pResult.getLocation().z, event, SoundSource.AMBIENT, volume, 1);
         }
         this.inGround = true;
     }
@@ -415,11 +416,11 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
             }
         }
 
-        if (this.level() instanceof ServerLevel) {
+        if (this.level() instanceof ServerLevel && ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
             AABB aabb = new AABB(pos, pos).inflate(2);
             BlockPos.betweenClosedStream(aabb).forEach((blockPos) -> {
                 float hard = this.level().getBlockState(blockPos).getBlock().defaultDestroyTime();
-                if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1) {
+                if (hard != -1) {
                     this.level().destroyBlock(blockPos, true);
                 }
             });
@@ -438,7 +439,7 @@ public class C4Entity extends Entity implements GeoEntity, OwnableEntity {
 
     @Override
     public @NotNull EntityDimensions getDimensions(@NotNull Pose pPose) {
-        return super.getDimensions(pPose).scale((float) 0.5);
+        return super.getDimensions(pPose).scale(0.5F);
     }
 
     @Override

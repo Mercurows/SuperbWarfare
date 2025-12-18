@@ -1,0 +1,28 @@
+{
+  "Spread": 4,
+  "Headshot": 2.5,
+  "Damage": 48,
+  "Weight": 3,
+  "BypassesArmor": 0.25,
+  "Velocity": 24,
+  "Magazine": 1,
+  "EmptyReloadTime": 6,
+  "AutoReload": true,
+  "GunType": "Special",
+  "DamageReduce": {
+    "Rate": 0.007,
+    "MinDistance": 100
+  },
+  "AmmoType": "minecraft:arrow",
+  "Crosshair": "@GunBocek",
+  "Icon": "superbwarfare:textures/gun_icon/bocek_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:cupid_arrow",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:butterfly_bullet"
+  ]
+}

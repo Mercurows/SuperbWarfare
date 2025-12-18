@@ -1,0 +1,15 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/secondary_cataclysm.animation.json",
+    "Model": "superbwarfare:geo/secondary_cataclysm.geo.json",
+    "Texture": "superbwarfare:textures/item/secondary_cataclysm.png",
+    "LODModel": "superbwarfare:geo/lod/secondary_cataclysm.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/secondary_cataclysm.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.10375
+  ],
+  "FlareSize": 0.6
+}

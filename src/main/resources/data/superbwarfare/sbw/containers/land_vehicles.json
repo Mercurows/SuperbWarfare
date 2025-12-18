@@ -1,0 +1,26 @@
+{
+  "List": [
+    {
+      "Type": "superbwarfare:lav_150",
+      "Weight": 5
+    },
+    {
+      "Type": "superbwarfare:bmp_2",
+      "Weight": 4
+    },
+    {
+      "Type": "superbwarfare:wheel_chair",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:truck",
+      "Weight": 2
+    },
+    {
+      "Type": "superbwarfare:prism_tank",
+      "Weight": 2
+    },
+    "superbwarfare:plz_05",
+    "superbwarfare:yx_100"
+  ]
+}

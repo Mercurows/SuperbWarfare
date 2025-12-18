@@ -1,0 +1,176 @@
+// NOTE: Not updated for 0.8.8, wait for future documentation
+
+// Example gun data, check out DefaultGunData.java and GunProp.java for more info
+{
+  // Gun item's registry ID, MUST NOT be null and MUST be GunItem
+  "ID": "superbwarfare:gun_id",
+  // Max durability, set this to zero to disable durability
+  "MaxDurability": 0,
+  // Durability cost per shoot, only available when MaxDurability is greater than 0
+  "DurabilityPerShoot": 1,
+  // Recoil on horizontal direction
+  "RecoilX": 0,
+  // Recoil on vertical direction
+  "RecoilY": 0,
+  // REALISTIC recoil, will knockback shooters when shooting
+  "Recoil": 0,
+  // Default zoom when aiming
+  "DefaultZoom": 1.25,
+  // Minimum zoom
+  "MinZoom": 1.25,
+  // Maximum zoom
+  "MaxZoom": 1.25,
+  // Fire spread
+  "Spread": 0,
+  // Projectile damage
+  "Damage": 0,
+  // Headshot damage multiplier, only available for superbwarfare:projectile
+  "Headshot": 1.5,
+  // Projectile velocity
+  "Velocity": 0,
+  // Magazine, set this to zero to make guns use backpack ammo directly
+  "Magazine": 0,
+  // Melee damage, when this is greater than zero, you can perform melee attacks by pressing V
+  // When MeleeDamage is greater than zero and ProjectileAmount equals zero, gun will be considered melee only, and you can perform melee attack by holding fire key
+  "MeleeDamage": 0,
+  // Melee attack duration in ticks
+  "MeleeDuration": 16,
+  // In which tick will melee damage be applied
+  "MeleeDamageTime": 6,
+  /*
+   * Default projectile data
+   * Can be pure String like "Projectile": "superbwarfare:projectile"
+   * Can also be overridden by AmmoType
+   */
+  "Projectile": {
+    /*
+     * Projectile entity's registry ID, can be "empty"
+     */
+    "Type": "superbwarfare:projectile",
+    /* NBT data replacer
+     * You can write anything here, Json data will be parsed to NBT data, then been set into the projectile entity
+     * check out LaunchableEntityTool.java for more info
+     */
+    "Data": {
+      "owner": "@sbw:owner"
+    }
+  },
+  // Ammo cost per shoot
+  "AmmoCostPerShoot": 1,
+  // Projectile amount spawned per shoot, set this to zero will prevent gun from shooting
+  "ProjectileAmount": 1,
+  // Gun weight, affects movement speed, projectile velocity, tactical sprint cost, etc
+  "Weight": 7,
+  // Default fire mode
+  "DefaultFireMode": "Auto",
+  // Available fire modes, can be "Semi", "Auto", or "Burst"
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  // Available reload types, can be "Magazine", "Clip" and "Iterative"
+  "ReloadTypes": [
+    "Magazine"
+  ],
+  "SeekType": "None",
+  // Should guns start reloading automatically when needed
+  "AutoReload": false,
+  // Shoots per click when fire mode is "Burst"
+  "BurstAmount": 0,
+  // Bypasses armor rate, only available for superbwarfare:projectile
+  "BypassesArmor": 0.05,
+  /* Available ammo types
+   * can be pure string, list of string, or list of AmmoConsumer objects
+   * Example:
+   * "AmmoType": "@HandgunAmmo"
+   * "AmmoType": ["@HandgunAmmo"]
+   */
+  "AmmoType": [
+    {
+      /*
+       * Ammo type, will be parsed at runtime
+       *
+       * format: <ammo loaded from each ammo> <ammo><NBT tag for items>
+       *
+       * amount and NBT tag can be omitted
+       * ammo started with @ will be considered as player ammo defined in Ammo.java
+       *
+       * example:
+       * "Ammo": "@HandgunAmmo"
+       * "Ammo": "1 tacz:ammo{AmmoId:\"tacz:40mm\"}"
+       */
+      "Ammo": "@HandgunAmmo",
+      /*
+       * What slot will the current ammo type use
+       * Different ammo type with the same slot will conflict with each other
+       * And you have to withdraw ammo and then reload
+       */
+      "AmmoSlot": "Default",
+      // Projectile info override, same as defined above
+      "Projectile": "superbwarfare:projectile",
+      // Gun property override, check out GunProp.java for mor info
+      "Override": {
+        "Damage": 810
+      }
+    }
+  ],
+  // Normal reload time in ticks
+  "NormalReloadTime": 0,
+  // Empty reload time in ticks
+  "EmptyReloadTime": 0,
+  // Bolt action time in ticks, when this is greater than zero, guns will require bolt after shoot
+  "BoltActionTime": 0,
+  // Prepare time in ticks
+  "PrepareTime": 0,
+  // Prepare load time in ticks
+  "PrepareLoadTime": 0,
+  "PrepareAmmoLoadTime": 1,
+  "PrepareEmptyTime": 0,
+  "IterativeTime": 0,
+  "IterativeAmmoLoadTime": 1,
+  // ammo cost when performing iterative load
+  "IterativeLoadAmount": 1,
+  "FinishTime": 0,
+  // Sound radius in blocks
+  "SoundRadius": 0,
+  // Fire RPM
+  "RPM": 600,
+  // Explosion damage, only available for ExplosiveProjectile.java
+  "ExplosionDamage": 0,
+  // Explosion radius, only available for ExplosiveProjectile.java
+  "ExplosionRadius": 0,
+  // Gravity(default: NaN), only available for CustomGravityEntity.java
+  "Gravity": 0,
+  // Shoot delay before actually fire and pressing fire key
+  "ShootDelay": 0,
+  // heat added per shoot(heat is between 0 and 100)
+  "HeatPerShoot": 0,
+  // heat decreased per tick in natural situation
+  "NaturalCooldown": 0.25,
+  // rate of heat decreased per tick in water
+  "InWaterCooldownRate": 1.1,
+  // rate of heat decreased per tick in powder snow
+  "InSnowCooldownRate": 1.5,
+  // rate of heat decreased per tick in fire
+  "InFireCooldownRate": 0.6,
+  // rate of heat decreased per tick in lava
+  "InLavaCooldownRate": 0.2,
+  // Available perks for guns
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "DamageReduce": {
+    // Available values: "Shotgun", "Sniper", "Heavy", "Handgun", "Rifle", "Smg", "Empty"
+    "Type": "Shotgun",
+    "Rate": 0,
+    "MinDistance": 0
+  }
+}

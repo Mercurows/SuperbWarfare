@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.handgun.M1911Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,31 +13,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class M1911ItemModel extends CustomGunModel<M1911Item> {
-
-    @Override
-    public ResourceLocation getAnimationResource(M1911Item animatable) {
-        return Mod.loc("animations/glock_17.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(M1911Item animatable) {
-        return Mod.loc("geo/m_1911.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(M1911Item animatable) {
-        return Mod.loc("textures/item/m_1911.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(M1911Item animatable) {
-        return Mod.loc("geo/lod/m_1911.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(M1911Item animatable) {
-        return Mod.loc("textures/item/lod/m_1911.png");
-    }
 
     @Override
     public void setCustomAnimations(M1911Item animatable, long instanceId, AnimationState<M1911Item> animationState) {
@@ -74,7 +47,8 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
 
         CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
         huatao.setPosZ(2.75f * (float) ClientEventHandler.firePos);
-        if (GunData.from(stack).holdOpen.get()) {
+        var data = GunData.from(stack);
+        if (data.holdOpen.get()) {
             huatao.setPosZ(1.5f);
         }
 
@@ -86,7 +60,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         float numR = (float) (1 - 0.12 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunData.from(stack).reload.time() > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());
@@ -102,7 +76,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         AnimationHelper.handleShellsAnimation(getAnimationProcessor(), 0.7f, 1f);
         CoreGeoBone shell = getAnimationProcessor().getBone("shell");
 
-        if (GunData.from(stack).holdOpen.get()) {
+        if (data.holdOpen.get()) {
             bullet.setScaleX(0);
             bullet.setScaleY(0);
             bullet.setScaleZ(0);

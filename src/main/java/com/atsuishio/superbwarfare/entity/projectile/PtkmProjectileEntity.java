@@ -1,11 +1,9 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -13,11 +11,7 @@ import com.atsuishio.superbwarfare.tools.RangeTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -28,52 +22,39 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class PtkmProjectileEntity extends FastThrowableProjectile implements ExplosiveProjectile, GeoEntity, MineEntity {
-    private float damage = 500;
-    private float explosionDamage = 80;
-    private float explosionRadius = 7;
-    private float gravity = 0.05f;
-    private int shootTime = 3;
-    private Entity target = null;
+public class PtkmProjectileEntity extends FastThrowableProjectile implements GeoEntity {
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public PtkmProjectileEntity(EntityType<? extends PtkmProjectileEntity> type, Level world) {
-        super(type, world);
+    private int shootTime = 3;
+    @Nullable
+    private Entity target = null;
+
+    public PtkmProjectileEntity(EntityType<? extends PtkmProjectileEntity> type, Level level) {
+        super(type, level);
+        this.damage = 500;
+        this.explosionDamage = 80;
+        this.explosionRadius = 7;
     }
 
     public PtkmProjectileEntity(LivingEntity entity, Level level) {
         super(ModEntities.PTKM_PROJECTILE.get(), entity, level);
-    }
-
-    public PtkmProjectileEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.PTKM_PROJECTILE.get(), level);
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        this.damage = 500;
+        this.explosionDamage = 80;
+        this.explosionRadius = 7;
     }
 
     @Override
     protected @NotNull Item getDefaultItem() {
         return ModItems.PTKM_1R.get();
     }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double pDistance) {
-        return true;
-    }
-
-
 
     @Override
     public boolean isPickable() {
@@ -83,17 +64,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
     }
 
     @Override
@@ -112,14 +82,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
 
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
-            }
-
-            if (this.getOwner() instanceof LivingEntity living) {
-                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-
-                    Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
-                }
             }
 
             explode(entityHitResult.getLocation());
@@ -201,37 +163,12 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
                 .explode();
     }
 
-    @Override
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    @Override
-    public void setExplosionDamage(float damage) {
-        this.explosionDamage = damage;
-    }
-
-    @Override
-    public void setExplosionRadius(float radius) {
-        this.explosionRadius = radius;
-    }
-
     public void setShootTime(int time) {
         this.shootTime = time;
     }
 
     public void setTarget(Entity entity) {
         this.target = entity;
-    }
-
-    @Override
-    public float getGravity() {
-        return this.gravity;
-    }
-
-    @Override
-    public void setGravity(float gravity) {
-        this.gravity = gravity;
     }
 
     @Override
@@ -242,8 +179,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
-
-
 
     public static void spawnDirectionalParticles(Entity projectile, int count, double radius, ServerLevel level, SimpleParticleType particle) {
         Vec3 deltaMovement = projectile.getDeltaMovement();
@@ -282,7 +217,6 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
                 1, 0.02, 0.02, 0.02, 0.0001, true);
     }
 
-
     @Override
     public void largeTrail() {
         if (level().isClientSide && tickCount > 0) {
@@ -293,5 +227,10 @@ public class PtkmProjectileEntity extends FastThrowableProjectile implements Exp
                 level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0, 0, 0);
             }
         }
+    }
+
+    @Override
+    public boolean isFastMoving() {
+        return false;
     }
 }

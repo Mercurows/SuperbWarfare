@@ -1,0 +1,13 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/javelin.animation.json",
+    "Model": "superbwarfare:geo/javelin.geo.json",
+    "Texture": "superbwarfare:textures/item/javelin.png",
+    "LODModel": "superbwarfare:geo/lod/javelin.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/javelin.png"
+  },
+  "Animation": {
+    "Idle": "animation.javelin.idle",
+    "Reload": "animation.javelin.reload"
+  }
+}

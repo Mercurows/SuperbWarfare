@@ -41,6 +41,8 @@ public class EntityUseGunEventHandler {
             gunData.reloadAmmo(mob);
         }
 
+        gunData.save();
+
         mob.setItemInHand(InteractionHand.MAIN_HAND, gunData.stack);
     }
 }

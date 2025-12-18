@@ -46,16 +46,17 @@ public class RpkItemRenderer extends CustomGunRenderer<RpkItem> {
 
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                var data = GunData.from(itemStack);
                 if (name.equals("humu1")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) != 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.GRIP) != 0);
                 }
                 if (name.equals("humu2")) {
-                    bone.setHidden(GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0);
+                    bone.setHidden(data.attachment.get(AttachmentType.GRIP) == 0);
                 }
 
                 float height = 0.02f;
 
-                if ((GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 || GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
+                if ((data.attachment.get(AttachmentType.SCOPE) == 2 || data.attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
                     height = -0.1f;
                 }
 
@@ -63,16 +64,16 @@ public class RpkItemRenderer extends CustomGunRenderer<RpkItem> {
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2
+                    if (data.attachment.get(AttachmentType.SCOPE) == 2
                             && (name.equals("hide2") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 3
+                    if (data.attachment.get(AttachmentType.SCOPE) == 3
                             && (name.equals("jing") || name.equals("Barrel") || name.equals("humu") || name.equals("qiangguan") || name.equals("houzhunxing"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
 
                     switch (scopeType) {
                         case 1 ->

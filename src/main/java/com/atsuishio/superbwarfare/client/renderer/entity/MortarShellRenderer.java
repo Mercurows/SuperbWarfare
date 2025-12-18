@@ -33,6 +33,6 @@ public class MortarShellRenderer extends GeoEntityRenderer<MortarShellEntity> {
 
     @Override
     protected float getDeathMaxRotation(MortarShellEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

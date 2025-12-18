@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -52,15 +52,17 @@ public class ShakeClientMessage {
         context.get().setPacketHandled(true);
     }
 
-    public static void sendToNearbyPlayers(Level level, double x, double y, double z, double sendRadius, double time, double radius, double amplitude) {
+    public static void sendToNearbyPlayers(Level level, double x, double y, double z, double sendRadius, double time, double amplitude) {
         var center = new Vec3(x, y, z);
 
         for (var serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, new AABB(center, center).inflate(sendRadius), e -> true)) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(time, radius, amplitude, x, y, z));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShakeClientMessage(time, sendRadius, amplitude, x, y, z));
         }
     }
 
-    public static void sendToNearbyPlayers(Entity source, double sendRadius, double time, double radius, double amplitude) {
-        sendToNearbyPlayers(source.level(), source.getX(), source.getY(), source.getZ(), sendRadius, time, radius, amplitude);
+    public static void sendToNearbyPlayers(Entity source, double sendRadius, double time, double amplitude) {
+        if (sendRadius <= 0 || time <= 0 || amplitude <= 0) return;
+        
+        sendToNearbyPlayers(source.level(), source.getX(), source.getY(), source.getZ(), sendRadius, time, amplitude);
     }
 }

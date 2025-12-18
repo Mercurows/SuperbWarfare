@@ -1,0 +1,38 @@
+{
+  "MaxHealth": 100,
+  "MaxEnergy": 0,
+  "Seats": {
+    "IsEnclosed": true,
+    "Transform": "Vehicle",
+    "Position": [-0.4, -0.3, 0.2],
+    "MinPitch": -60,
+    "MaxPitch": 60,
+    "MinYaw": -60,
+    "MaxYaw": 85
+  },
+  "UpStep": 1.1,
+  "Mass": 1,
+  "DamageModifiers": [
+    "superbwarfare:vehicle_strike * 0.5",
+    "superbwarfare:grapeshot_hit * 0.5",
+    "minecraft:lava * 2",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3"
+  ],
+  "DestroyInfo": {
+    "ParticleType": "Small",
+    "ExplosionDamage": 20,
+    "ExplosionRadius": 3,
+    "ExplodePassengers": false,
+    "ExplodeBlocks": false
+  },
+  "ThirdPersonCameraPos": [0, 0, 1.5],
+  "RotateOffsetHeight": 0.5,
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0,
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/vehicle_assembling_table_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
+  "TerrainCompat": [[-1, 0, 1], [1, 0, 1], [-1, 0, -1], [1, 0, -1]],
+  "TerrainCompatRotateRate" : 6,
+  "Type": "Car"
+}

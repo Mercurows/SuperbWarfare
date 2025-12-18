@@ -37,6 +37,15 @@ public class CustomGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Geo
     }
 
     @Override
+    public void preRender(PoseStack poseStack, T animatable, BakedGeoModel model, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        if (this.model instanceof CustomGunModel<T> gunModel) {
+            gunModel.gunItemStack = this.currentItemStack;
+        }
+
+        super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    @Override
     public void actuallyRender(PoseStack matrixStackIn, T animatable, BakedGeoModel model, RenderType type, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, boolean isRenderer, float partialTicks, int packedLightIn,
                                int packedOverlayIn, float red, float green, float blue, float alpha) {
         this.currentBuffer = renderTypeBuffer;
@@ -50,6 +59,9 @@ public class CustomGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Geo
 
     @Override
     public RenderType getRenderType(T animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
+        if (texture == null) {
+            return RenderType.translucent();
+        }
         return RenderType.entityTranslucent(texture);
     }
 
@@ -140,14 +152,25 @@ public class CustomGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Geo
         } else {
             modelLocation = geoModel.getModelResource(animatable);
         }
+        // 资源包重载过程中该值可能为空（恼）
+        if (modelLocation == null) {
+            poseStack.popPose();
+            return;
+        }
 
         BakedGeoModel model = geoModel.getBakedModel(modelLocation);
 
         if (renderType == null)
             renderType = getRenderType(animatable, getTextureLocation(animatable), bufferSource, partialTick);
 
-        if (buffer == null)
+        if (renderType == null) {
+            poseStack.popPose();
+            return;
+        }
+
+        if (buffer == null) {
             buffer = bufferSource.getBuffer(renderType);
+        }
 
         preRender(poseStack, animatable, model, bufferSource, buffer, false, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
 

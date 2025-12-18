@@ -26,6 +26,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -43,7 +44,7 @@ public class ElectricBaton extends SwordItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, @NotNull TooltipFlag pIsAdvanced) {
         pTooltipComponents.add(Component.translatable("des.superbwarfare.electric_baton").withStyle(ChatFormatting.AQUA));
         if (pStack.getTag() != null && pStack.getTag().getBoolean(TAG_OPEN)) {
             pTooltipComponents.add(Component.translatable("des.superbwarfare.electric_baton.open").withStyle(ChatFormatting.GRAY));
@@ -56,7 +57,8 @@ public class ElectricBaton extends SwordItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+    @ParametersAreNonnullByDefault
+    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
         if (pPlayer.isShiftKeyDown()) {
             stack.getOrCreateTag().putBoolean(TAG_OPEN, !stack.getOrCreateTag().getBoolean(TAG_OPEN));
@@ -77,7 +79,7 @@ public class ElectricBaton extends SwordItem {
                     .map(IEnergyStorage::getEnergyStored)
                     .orElse(0);
 
-            return Math.round((float) energy * 13.0F / MAX_ENERGY);
+            return Math.round(energy * 13F / MAX_ENERGY);
         } else {
             return super.getBarWidth(pStack);
         }

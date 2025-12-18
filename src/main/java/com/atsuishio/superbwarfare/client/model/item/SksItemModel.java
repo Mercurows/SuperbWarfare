@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.rifle.SksItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,31 +13,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class SksItemModel extends CustomGunModel<SksItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(SksItem animatable) {
-        return Mod.loc("animations/sks.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(SksItem animatable) {
-        return Mod.loc("geo/sks.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(SksItem animatable) {
-        return Mod.loc("textures/item/sks.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(SksItem animatable) {
-        return Mod.loc("geo/lod/sks.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(SksItem animatable) {
-        return Mod.loc("textures/item/lod/sks.png");
-    }
 
     @Override
     public void setCustomAnimations(SksItem animatable, long instanceId, AnimationState<SksItem> animationState) {

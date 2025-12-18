@@ -1,0 +1,15 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/trachelium.animation.json",
+    "Model": "superbwarfare:geo/trachelium.geo.json",
+    "Texture": "superbwarfare:textures/item/trachelium.png",
+    "LODModel": "superbwarfare:geo/lod/trachelium.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/trachelium.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    0.734375
+  ],
+  "FlareSize": 0.5
+}

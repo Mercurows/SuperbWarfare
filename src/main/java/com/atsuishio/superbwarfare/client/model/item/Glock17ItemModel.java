@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.handgun.Glock17Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,30 +13,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
-    @Override
-    public ResourceLocation getAnimationResource(Glock17Item animatable) {
-        return Mod.loc("animations/glock_17.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Glock17Item animatable) {
-        return Mod.loc("geo/glock_17.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Glock17Item animatable) {
-        return Mod.loc("textures/item/glock_17.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Glock17Item animatable) {
-        return Mod.loc("geo/lod/glock_17.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Glock17Item animatable) {
-        return Mod.loc("textures/item/lod/glock_17.png");
-    }
 
     @Override
     public void setCustomAnimations(Glock17Item animatable, long instanceId, AnimationState<Glock17Item> animationState) {
@@ -65,7 +39,8 @@ public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
 
         CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
         huatao.setPosZ(1.5f * (float) ClientEventHandler.firePos);
-        if (GunData.from(stack).holdOpen.get()) {
+        var data = GunData.from(stack);
+        if (data.holdOpen.get()) {
             huatao.setPosZ(1.5f);
         }
 
@@ -79,7 +54,7 @@ public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
         float numR = (float) (1 - 0.12 * zt);
         float numP = (float) (1 - 0.68 * zt);
 
-        if (GunData.from(stack).reload.time() > 0) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());
@@ -97,7 +72,7 @@ public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
         CoreGeoBone shell = getAnimationProcessor().getBone("shell");
         CoreGeoBone barrel = getAnimationProcessor().getBone("guan");
 
-        if (GunData.from(stack).holdOpen.get()) {
+        if (data.holdOpen.get()) {
             barrel.setRotX(4 * Mth.DEG_TO_RAD);
             bullet.setScaleX(0);
             bullet.setScaleY(0);

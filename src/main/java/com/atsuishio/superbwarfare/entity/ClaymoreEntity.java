@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.*;
@@ -38,7 +37,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, MineEntity {
+public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity {
 
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(ClaymoreEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(ClaymoreEntity.class, EntityDataSerializers.STRING);
@@ -187,12 +186,8 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
                         && !target.isShiftKeyDown();
                 if (!condition) continue;
 
-                if (!level.isClientSide()) {
-                    if (!this.level().isClientSide()) {
-                        ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
-                    }
-                    this.discard();
-                }
+                ParticleTool.spawnMediumExplosionParticles(this.level(), this.position());
+                this.discard();
 
                 Mod.queueServerWork(1, () -> {
                     if (!level.isClientSide()) {
@@ -203,7 +198,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
             }
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.03, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.03, 0));
 
         if (!this.level().noCollision(this.getBoundingBox())) {
             this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
@@ -218,7 +213,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
         if (this.onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, -0.9, 1.0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1, -0.9, 1));
         }
 
         if (this.entityData.get(HEALTH) <= 0) {
@@ -254,7 +249,7 @@ public class ClaymoreEntity extends Entity implements GeoEntity, OwnableEntity, 
 
     @Override
     public @NotNull EntityDimensions getDimensions(@NotNull Pose p_33597_) {
-        return super.getDimensions(p_33597_).scale((float) 0.5);
+        return super.getDimensions(p_33597_).scale(0.5F);
     }
 
     @Override

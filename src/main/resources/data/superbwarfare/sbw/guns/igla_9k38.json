@@ -1,0 +1,39 @@
+{
+  "DefaultZoom": 2.5,
+  "Spread": 5,
+  "Magazine": 1,
+  "Weight": 8,
+  "EmptyReloadTime": 88,
+  "Damage": 260,
+  "ExplosionDamage": 90,
+  "ExplosionRadius": 6,
+  "Headshot": 0,
+  "ZoomReload": false,
+  "SeekTime": 30,
+  "SeekAngle": 20,
+  "SeekRange": 256,
+  "MinTargetHeight": 16,
+  "SeekType": "HoldZoom",
+  "GunType": "DirectLauncher",
+  "AmmoType": "superbwarfare:medium_anti_air_missile",
+  "Icon": "superbwarfare:textures/gun_icon/igla_9k38_icon.png",
+  "AvailablePerks": [
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:igla_9k38_fire_1p",
+    "Fire3P": "superbwarfare:igla_9k38_fire_3p",
+    "Fire3PFar": "superbwarfare:igla_9k38_far",
+    "ReloadEmpty": "superbwarfare:igla_9k38_reload_empty",
+    "Locking": "superbwarfare:igla_9k38_locking",
+    "Locked": "superbwarfare:igla_9k38_locked",
+    "CancellableSounds": [
+      "superbwarfare:igla_9k38_reload_empty",
+      "superbwarfare:igla_9k38_locking",
+      "superbwarfare:igla_9k38_locked"
+    ]
+  }
+}

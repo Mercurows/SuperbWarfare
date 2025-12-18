@@ -1,0 +1,66 @@
+{
+  "MinZoom": 4,
+  "MaxZoom": 8,
+  "Spread": 3.7,
+  "RecoilX": 0.0013,
+  "RecoilY": 0.009,
+  "Damage": 8.5,
+  "Headshot": 2,
+  "Velocity": 46,
+  "Magazine": 30,
+  "Weight": 4,
+  "DefaultFireMode": "Auto",
+  "NormalReloadTime": 60,
+  "EmptyReloadTime": 74,
+  "BypassesArmor": 0.28,
+  "SoundRadius": 13,
+  "RPM": 650,
+  "GunType": "Rifle",
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
+  "AmmoType": "@RifleAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/qbz_95_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:head_seeker",
+    "superbwarfare:desperado",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:firefly",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:qbz_95_fire_1p",
+    "Fire3P": "superbwarfare:qbz_95_fire_3p",
+    "Fire3PFar": "superbwarfare:qbz_95_far",
+    "Fire3PVeryFar": "superbwarfare:qbz_95_veryfar",
+    "Fire1PSilent": "superbwarfare:qbz_95_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:qbz_95_fire_3p_s",
+    "Fire3PFarSilent": "superbwarfare:ak_12_far_s",
+    "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s",
+    "ReloadNormal": "superbwarfare:qbz_95_reload_normal",
+    "ReloadEmpty": "superbwarfare:qbz_95_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:qbz_95_reload_normal",
+      "superbwarfare:qbz_95_reload_empty"
+    ]
+  }
+}

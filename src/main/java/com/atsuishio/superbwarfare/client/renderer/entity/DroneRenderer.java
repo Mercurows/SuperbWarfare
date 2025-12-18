@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -20,11 +19,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
-import static com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.AMMO;
 
 public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 	public DroneRenderer(EntityRendererProvider.Context renderManager) {
@@ -101,15 +98,15 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 		var xLength = displayData.get(9);
 		var yLength = displayData.get(10);
 
-		for (int i = 0; i < data.get(AMMO); i++) {
-			float x, z;
-			if (data.get(MAX_AMMO) == 1) {
-				// 神风或单个挂载
-				x = 0;
-				z = 0;
-			} else {
-				// 投弹
-				x = xLength / 2 * (i % 2 == 0 ? 1 : -1);
+        for (int i = 0; i < animatable.getAmmo(); i++) {
+            float x, z;
+            if (data.get(MAX_AMMO) == 1) {
+                // 神风或单个挂载
+                x = 0;
+                z = 0;
+            } else {
+                // 投弹
+                x = xLength / 2 * (i % 2 == 0 ? 1 : -1);
 
 				var rows = data.get(MAX_AMMO) / 2;
 				var row = i / 2;
@@ -130,28 +127,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 
 			entityRenderDispatcher.render(renderEntity, 0, 0, 0, entityYaw, partialTicks, poseStack, buffer, packedLight);
 
-			poseStack.popPose();
-		}
-	}
-
-	@Override
-	public void renderRecursively(PoseStack poseStack, DroneEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		String name = bone.getName();
-		if (!animatable.onGround()) {
-			if (name.equals("wingFL")) {
-				bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-			}
-			if (name.equals("wingFR")) {
-				bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-			}
-			if (name.equals("wingBL")) {
-				bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-			}
-			if (name.equals("wingBR")) {
-				bone.setRotY((System.currentTimeMillis() % 36000000) / 12f);
-			}
-		}
-
-		super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-	}
+            poseStack.popPose();
+        }
+    }
 }

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.goal;
 
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.MillisTimer;
@@ -69,8 +68,8 @@ public class GunShootGoal<T extends Mob> extends Goal {
             }
         }
 
-        this.mob.lookAt(target, 30.0F, 30.0F);
-//            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+        this.mob.lookAt(target, 30F, 30F);
+//            this.mob.getLookControl().setLookAt(target, 30F, 30F);
 
         if (distance > data.shootDistance()) {
             this.mob.getNavigation().moveTo(target, 1);
@@ -90,7 +89,7 @@ public class GunShootGoal<T extends Mob> extends Goal {
         }
 
         if (gunData.canShoot(this.mob) && aimTime >= this.data.aimTime()) {
-            double rps = (double) gunData.get(GunProp.RPM) / 60;
+            double rps = (double) gunData.compute().rpm / 60;
 
             // cooldown in ms
             long cooldown = Math.round(1000 / rps);

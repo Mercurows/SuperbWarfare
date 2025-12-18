@@ -1,0 +1,9 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/annihilator.animation.json",
+    "Model": "superbwarfare:geo/annihilator.geo.json",
+    "LODModel": "superbwarfare:geo/vehicle_lod/annihilator_lod1.geo.json",
+    "Texture": "superbwarfare:textures/entity/annihilator.png"
+  },
+  "LODDistance": 64
+}

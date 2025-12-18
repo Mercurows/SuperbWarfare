@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -40,7 +39,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity, MineEntity {
+public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
 
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Blu43Entity.class, EntityDataSerializers.OPTIONAL_UUID);
     protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(Blu43Entity.class, EntityDataSerializers.STRING);
@@ -167,7 +166,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity, Min
             touchEntity();
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.03, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.03, 0));
 
         if (!this.level().noCollision(this.getBoundingBox())) {
             this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
@@ -182,7 +181,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity, Min
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
         if (this.onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, -0.9, 1.0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1, -0.9, 1));
         }
 
         if (this.entityData.get(HEALTH) <= 0) {
@@ -264,7 +263,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity, Min
     }
 
     public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
         this.setDeltaMovement(vec3);
     }
 }

@@ -1,0 +1,11 @@
+{
+  "MaxHealth": 5,
+  "MaxEnergy": 0,
+  "Mass": 0.0005,
+  "VehicleContainerType": "Empty",
+  "SendHitParticles": false,
+  "EngineSound": "superbwarfare:drone_engine",
+  "Type": "Drone",
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0
+}

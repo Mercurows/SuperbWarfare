@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.sniper.AwmItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,31 +17,6 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
 
     public static float rotXBipod = 0f;
     public static float rotXSight = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(AwmItem animatable) {
-        return Mod.loc("animations/awm.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(AwmItem animatable) {
-        return Mod.loc("geo/awm.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(AwmItem animatable) {
-        return Mod.loc("textures/item/awm.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(AwmItem animatable) {
-        return Mod.loc("geo/lod/awm.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(AwmItem animatable) {
-        return Mod.loc("textures/item/lod/awm.png");
-    }
 
     @Override
     public void setCustomAnimations(AwmItem animatable, long instanceId, AnimationState<AwmItem> animationState) {
@@ -63,7 +36,8 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         CoreGeoBone button7 = getAnimationProcessor().getBone("button7");
         CoreGeoBone strike = getAnimationProcessor().getBone("jizhen");
 
-        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+        var data = GunData.from(stack);
+        int type = data.attachment.get(AttachmentType.SCOPE);
 
         float times = 0.6f * (float) Math.min(Minecraft.getInstance().getDeltaFrameTime(), 0.8);
         double zt = ClientEventHandler.zoomTime;
@@ -122,14 +96,14 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
         sight1fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
         sight2fold.setRotX(rotXSight * Mth.DEG_TO_RAD);
 
-        if (GunData.from(stack).closeStrike.get()) {
+        if (data.closeStrike.get()) {
             strike.setPosZ(-0.2f);
         }
 
         float numR = (float) (1 - 0.92 * zt);
         float numP = (float) (1 - 0.82 * zt);
 
-        if (GunData.from(stack).reload.time() > 0 || GunData.from(stack).bolt.actionTimer.get() > 0) {
+        if (data.reload.time() > 0 || data.bolt.actionTimer.get() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

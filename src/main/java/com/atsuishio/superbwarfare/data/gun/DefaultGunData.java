@@ -3,18 +3,21 @@ package com.atsuishio.superbwarfare.data.gun;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
 import com.atsuishio.superbwarfare.data.IDBasedData;
+import com.atsuishio.superbwarfare.data.ModColor;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public class DefaultGunData implements IDBasedData {
-    @SerializedName("ID")
-    public String id = "";
+public class DefaultGunData implements IDBasedData<DefaultGunData> {
 
+    private transient String id = "";
     public transient boolean isDefaultData = true;
 
     @Override
@@ -22,17 +25,26 @@ public class DefaultGunData implements IDBasedData {
         return this.id;
     }
 
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
     // 不要动态修改这玩意，很容易出问题
     @SerializedName("MaxDurability")
     public int maxDurability = 0;
 
+    @ServerOnly
     @SerializedName("DurabilityPerShoot")
     public int durabilityPerShoot = 1;
 
     @SerializedName("MaxEnergy")
     public int maxEnergy = 0;
+
+    @ServerOnly
     @SerializedName("MaxReceiveEnergy")
     public int maxReceiveEnergy = -1;
+    @ServerOnly
     @SerializedName("MaxExtractEnergy")
     public int maxExtractEnergy = -1;
 
@@ -42,6 +54,15 @@ public class DefaultGunData implements IDBasedData {
     public double recoilY;
     @SerializedName("Recoil")
     public double recoil;
+    @SerializedName("RecoilTime")
+    public int recoilTime = 0;
+    @SerializedName("RecoilForce")
+    public float recoilForce = 0f;
+
+    //x:范围，y：振动时长，z：振幅
+    @ServerOnly
+    @SerializedName("ShootShake")
+    public Vec3 shootShake = null;
 
     @SerializedName("DefaultZoom")
     public double defaultZoom = 1.25;
@@ -75,6 +96,17 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
 
+    public ProjectileInfo projectile() {
+        return projectile.value;
+    }
+
+    @ServerOnly
+    @SerializedName("ShootPos")
+    public ShootPos shootPos = new ShootPos();
+
+    @SerializedName("SeekWeaponInfo")
+    public SeekWeaponInfo seekWeaponInfo = null;
+
     @SerializedName("AmmoCostPerShoot")
     public int ammoCostPerShoot = 1;
     @SerializedName("ProjectileAmount")
@@ -87,11 +119,30 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("AvailableFireModes")
     public ObjectToList<StringToObject<FireModeInfo>> availableFireModes = new ObjectToList<>(new StringToObject<>(new FireModeInfo()));
 
+    public List<FireModeInfo> availableFireModes() {
+        return availableFireModes.list.stream().map(m -> m.value).toList();
+    }
+
     @SerializedName("ReloadTypes")
     public Set<ReloadType> reloadTypes = Set.of(ReloadType.MAGAZINE);
 
+    @SerializedName("SeekType")
+    public SeekType seekType = SeekType.NONE;
+
+    @SerializedName("GunType")
+    public GunType gunType = GunType.SPECIAL;
+
     @SerializedName("AutoReload")
-    public boolean autoReload = false;
+    public Boolean autoReload = null;
+
+    @SerializedName("WithdrawAmmoWhenChangeSlot")
+    public boolean withdrawAmmoWhenChangeSlot = false;
+
+    @SerializedName("ZoomReload")
+    public boolean zoomReload = true;
+
+    @SerializedName("ClearHoldProgressAfterShoot")
+    public boolean clearHoldProgressAfterShoot = false;
 
     @SerializedName("BurstAmount")
     public int burstAmount;
@@ -161,7 +212,7 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("IterativeTime")
     public int iterativeTime;
 
-    // 单发装填时的上弹时间
+    // 单发装填时的上弹时间，在reload.iterativeLoadTimer等于该值时上弹
     @SerializedName("IterativeAmmoLoadTime")
     public int iterativeAmmoLoadTime = 1;
 
@@ -176,6 +227,7 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("BurstCooldown")
     public int burstCooldown = 30;
 
+    @ServerOnly
     @SerializedName("SoundRadius")
     public double soundRadius;
     @SerializedName("RPM")
@@ -186,11 +238,12 @@ public class DefaultGunData implements IDBasedData {
     @SerializedName("ExplosionRadius")
     public double explosionRadius;
     @SerializedName("Gravity")
-    public double gravity = Double.NaN;
+    public double gravity = 0.05;
 
     @SerializedName("ShootDelay")
     public int shootDelay = 0;
 
+    @ServerOnly
     @SerializedName("HeatPerShoot")
     public double heatPerShoot = 0;
 
@@ -207,27 +260,147 @@ public class DefaultGunData implements IDBasedData {
             "!superbwarfare:cupid_arrow"
     );
 
+    public List<String> availablePerks() {
+        return availablePerks.list;
+    }
+
     @ServerOnly
     @SerializedName("DamageReduce")
     public DamageReduce damageReduce = new DamageReduce();
 
     // 自然情况下每tick减少的热量
+    @ServerOnly
     @SerializedName("NaturalCooldown")
     public double naturalCooldown = 0.25;
     // 在水中或雨中时的散热比例
+    @ServerOnly
     @SerializedName("InWaterCooldownRate")
     public double inWaterCooldownRate = 1.1;
     // 在细雪中时的散热比例
+    @ServerOnly
     @SerializedName("InSnowCooldownRate")
     public double inSnowCooldownRate = 1.5;
     // 在火焰中时的散热比例
+    @ServerOnly
     @SerializedName("InFireCooldownRate")
     public double inFireCooldownRate = 0.6;
     // 在岩浆中时的散热比例
+    @ServerOnly
     @SerializedName("InLavaCooldownRate")
     public double inLavaCooldownRate = 0.2;
 
     // 瞄准时的扩散比例
     @SerializedName("ZoomSpreadRate")
     public double zoomSpreadRate = 0.1;
+
+    @SerializedName("SeekTime")
+    public int seekTime = 20;
+    @SerializedName("SeekAngle")
+    public double seekAngle = 10;
+    @SerializedName("SeekRange")
+    public double seekRange = 384;
+
+    @SerializedName("MinTargetHeight")
+    public double minTargetHeight = 0;
+
+    @SerializedName("MaxTargetHeight")
+    public double maxTargetHeight = 114514;
+
+    @SerializedName("SoundInfo")
+    public SoundInfo soundInfo = new SoundInfo();
+
+    @ServerOnly
+    @SerializedName("ShootAnimationTime")
+    public int shootAnimationTime = 0;
+
+    @ServerOnly
+    @SerializedName("IsAntiAirProjectile")
+    public boolean isAntiAirProjectile = false;
+
+    @ServerOnly
+    @SerializedName("IsClusterMunitionsProjectile")
+    public boolean isClusterMunitionsProjectile = false;
+
+    @ServerOnly
+    @SerializedName("SpreadAmount")
+    public int spreadAmount = 10;
+
+    @ServerOnly
+    @SerializedName("SpreadAngle")
+    public int spreadAngle = 15;
+
+    @ServerOnly
+    @SerializedName("IsArmorPiercingProjectile")
+    public boolean isArmorPiercingProjectile = false;
+
+    @ServerOnly
+    @SerializedName("IsHighExplosiveProjectile")
+    public boolean isHighExplosiveProjectile = false;
+
+    @ServerOnly
+    @SerializedName("IsGrapeShotProjectile")
+    public boolean isGrapeShotProjectile = false;
+
+    @SerializedName("AddShooterDeltaMovement")
+    public boolean addShooterDeltaMovement = false;
+
+    @SerializedName("Icon")
+    public ResourceLocation icon = Mod.loc("textures/gun_icon/default_icon.png");
+    /*
+     * 准星类型
+     * 预制的字段有：
+     * @Empty - 空
+     * @Custom - 自定义
+     * @GunDefault - 默认枪械准星
+     * @VehicleDefault - 默认载具准星
+     */
+    @SerializedName("Crosshair")
+    public String crosshair = "@GunDefault";
+    // 瞄准时的准星，默认为空，仅用于部分载具
+    @SerializedName("CrosshairZooming")
+    public String crosshairZooming = "@Empty";
+    @SerializedName("CrosshairColor")
+    public ModColor crosshairColor = new ModColor();
+    @SerializedName("Name")
+    public String name;
+
+    @Override
+    public void limit() {
+        maxDurability = Math.max(0, maxDurability);
+        durabilityPerShoot = Math.max(0, durabilityPerShoot);
+        maxEnergy = Math.max(0, maxEnergy);
+
+        var temp = Mth.clamp(maxReceiveEnergy, -1, maxEnergy);
+        maxReceiveEnergy = temp < 0 ? maxEnergy : temp;
+
+        temp = Mth.clamp(maxExtractEnergy, -1, maxEnergy);
+        maxExtractEnergy = temp < 0 ? maxEnergy : temp;
+
+        meleeDuration = Math.max(1, meleeDuration);
+        zoomSpreadRate = Mth.clamp(zoomSpreadRate, 0, 1);
+        range = Math.max(1, range);
+
+        meleeDamageTime = Math.min(meleeDuration - 1, meleeDamageTime);
+
+        ammoCostPerShoot = Math.max(0, ammoCostPerShoot);
+        projectileAmount = Math.max(0, projectileAmount);
+        weight = Math.max(1, weight);
+
+        if (projectileAmount == 0 && meleeDamage > 0) {
+            magazine = 0;
+        } else {
+            magazine = Math.max(0, magazine);
+        }
+
+        if (reloadTypes == null) {
+            reloadTypes = Set.of();
+        }
+
+        if (seekType == null) {
+            seekType = SeekType.NONE;
+        }
+
+        burstAmount = Math.max(0, burstAmount);
+        rpm = Mth.clamp(rpm, 1, 114514);
+    }
 }

@@ -1,0 +1,56 @@
+{
+  "DefaultZoom": 2,
+  "Spread": 5,
+  "RecoilX": 0.0018,
+  "RecoilY": 0.01,
+  "Damage": 9.5,
+  "Headshot": 2,
+  "Velocity": 40,
+  "Magazine": 55,
+  "Weight": 6,
+  "DefaultFireMode": "Auto",
+  "NormalReloadTime": 73,
+  "EmptyReloadTime": 95,
+  "BypassesArmor": 0.25,
+  "SoundRadius": 13,
+  "RPM": 400,
+  "GunType": "MachineGun",
+  "AvailableFireModes": [
+    "Auto"
+  ],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
+  "AmmoType": "@RifleAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/devotion_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:killing_tally",
+    "superbwarfare:desperado",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:turbo_charger",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:devotion_fire_1p",
+    "Fire3P": "superbwarfare:devotion_fire_3p",
+    "Fire3PFar": "superbwarfare:devotion_far",
+    "Fire3PVeryFar": "superbwarfare:devotion_veryfar",
+    "ReloadNormal": "superbwarfare:devotion_reload_normal",
+    "ReloadEmpty": "superbwarfare:devotion_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:devotion_reload_normal",
+      "superbwarfare:devotion_reload_empty"
+    ]
+  }
+}

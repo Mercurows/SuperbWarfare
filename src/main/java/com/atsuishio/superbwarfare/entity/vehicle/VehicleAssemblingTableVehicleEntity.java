@@ -1,19 +1,13 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
-import com.atsuishio.superbwarfare.entity.vehicle.base.ThirdPersonCameraPosition;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientMouseHandler;
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.menu.VehicleAssemblingMenu;
-import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -27,60 +21,30 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector4f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
-import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraPitch;
-import static com.atsuishio.superbwarfare.event.ClientMouseHandler.freeCameraYaw;
-
-public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implements GeoEntity, HasCustomInventoryScreen, MenuProvider {
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private float yRotSync;
+public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implements HasCustomInventoryScreen, MenuProvider {
 
     public float deltaXo;
     public float deltaYo;
-
     public float deltaX;
     public float deltaY;
-
     public int jumpCooldown;
 
     public VehicleAssemblingTableVehicleEntity(EntityType<?> type, Level world) {
         super(type, world);
     }
 
-    public VehicleAssemblingTableVehicleEntity(PlayMessages.SpawnEntity packet, Level level) {
-        this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), level);
-    }
-
     public VehicleAssemblingTableVehicleEntity(Level world) {
         this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), world);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    protected void playStepSound(BlockPos pPos, BlockState pState) {
-        this.playSound(ModSounds.WHEEL_STEP.get(), (float) (getDeltaMovement().length() * 2), random.nextFloat() * 0.1f + 1f);
     }
 
     // 变回方块
@@ -141,12 +105,12 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
             jumpCooldown--;
         }
 
-        deltaX = entityData.get(MOUSE_SPEED_Y);
-        if (this.leftInputDown && this.rightInputDown) {
+        deltaX = getMouseMoveSpeedY();
+        if (this.leftInputDown() && this.rightInputDown()) {
             deltaX = 0;
-        } else if (this.leftInputDown) {
+        } else if (this.leftInputDown()) {
             deltaX = -1;
-        } else if (this.rightInputDown) {
+        } else if (this.rightInputDown()) {
             deltaX = 1;
         }
 
@@ -155,56 +119,53 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
 
         if (this.isInWater() && this.tickCount % 4 == 0) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6, 0.6, 0.6));
-            if (lastTickSpeed > 0.4) {
-                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (20 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))));
+            if (getLastTickSpeed() > 0.4) {
+                this.hurt(ModDamageTypes.causeVehicleStrikeDamage(this.level().registryAccess(), this, this.getFirstPassenger() == null ? this : this.getFirstPassenger()), (float) (20 * ((getLastTickSpeed() - 0.4) * (getLastTickSpeed() - 0.4))));
             }
         }
-
-        this.terrainCompact(1.95f, 1.95f);
-        this.refreshDimensions();
     }
 
     @Override
     public void travel() {
         Entity passenger = this.getFirstPassenger();
 
-        this.entityData.set(POWER, this.entityData.get(POWER) * 0.95f);
+        setPower(getPower() * 0.95f);
         if (passenger == null || isInWater()) {
-            this.leftInputDown = false;
-            this.rightInputDown = false;
-            this.forwardInputDown = false;
-            this.backInputDown = false;
+            setLeftInputDown(false);
+            setRightInputDown(false);
+            setForwardInputDown(false);
+            setBackInputDown(false);
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.96, 1, 0.96));
         } else if (passenger instanceof Player) {
 
-            if (forwardInputDown) {
-                this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + 0.1f, 1f));
+            if (forwardInputDown()) {
+                setPower(Math.min(getPower() + 0.1f, 1f));
             }
 
-            this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) * 0.8f);
+            setDeltaRot(getDeltaRot() * 0.8f);
 
-            if (backInputDown) {
-                this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
-                if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
-                } else if (leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
+            if (backInputDown()) {
+                setPower(Math.max(getPower() - (getPower() > 0 ? 0.1f : 0.01f), onGround() ? -0.2f : 0.2f));
+                if (rightInputDown()) {
+                    setDeltaRot(getDeltaRot() + 0.4f);
+                } else if (leftInputDown()) {
+                    setDeltaRot(getDeltaRot() - 0.4f);
                 }
             } else {
-                if (rightInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) - 0.4f);
-                } else if (this.leftInputDown) {
-                    this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.4f);
+                if (rightInputDown()) {
+                    setDeltaRot(getDeltaRot() - 0.4f);
+                } else if (this.leftInputDown()) {
+                    setDeltaRot(getDeltaRot() + 0.4f);
                 }
             }
 
             // Shift刹车
-            if (downInputDown) {
-                this.entityData.set(POWER, 0f);
+            if (downInputDown()) {
+                setPower(0f);
             }
 
             // 跳
-            if (upInputDown && onGround() && jumpCooldown == 0) {
+            if (upInputDown() && onGround() && jumpCooldown == 0) {
                 jumpCooldown = 40;
                 if (this.level() instanceof ServerLevel server) {
                     server.playSound(null, this.getOnPos(), ModSounds.WHEEL_CHAIR_JUMP.get(), SoundSource.PLAYERS, 2, 1);
@@ -220,16 +181,16 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
             float diffX = Math.clamp(-60f, 60f, Mth.wrapDegrees(passenger.getXRot() - this.getXRot()));
 
             float addX = Mth.clamp(Math.min((float) Math.max(getDeltaMovement().length() - 0.1, 0.01), 0.9f) * diffX, -4, 4);
-            float addZ = this.entityData.get(DELTA_ROT) - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
+            float addZ = getDeltaRot() - (this.onGround() ? 0 : 0.01f) * diffY * (float) getDeltaMovement().length();
 
-            yRotSync = (float) (-Mth.clamp(50 * this.getDeltaMovement().length(), 2, 4) * this.entityData.get(DELTA_ROT));
+            float yRotSync = (float) (-Mth.clamp(50 * this.getDeltaMovement().length(), 2, 4) * getDeltaRot());
 
             this.setYRot(this.getYRot() + yRotSync);
             this.setXRot(Mth.clamp(this.getXRot() + addX, onGround() ? -12 : -120, onGround() ? 3 : 120));
             this.setZRot(this.getRoll() - 0.2f * addZ);
         }
 
-        double powerValue = 0.05 * this.entityData.get(POWER);
+        double powerValue = 0.05 * getPower();
         this.setDeltaMovement(this.getDeltaMovement().add(getForward()
                 .multiply(1, 0, 1)
                 .normalize()
@@ -238,90 +199,8 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     }
 
     @Override
-    public boolean engineRunning() {
-        return (getFirstPassenger() != null && Math.abs(getDeltaMovement().length()) > 0);
-    }
-
-    @Override
-    public float getEngineSoundVolume() {
-        return (float) getDeltaMovement().length();
-    }
-
-    protected void clampRotation(Entity entity) {
-        float f = Mth.wrapDegrees(entity.getXRot() - this.getXRot());
-        float f1 = Mth.clamp(f, -85.0F, 60F);
-        entity.xRotO += f1 - f;
-        entity.setXRot(entity.getXRot() + f1 - f);
-
-        entity.setYBodyRot(this.getYRot());
-        float f2 = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
-        float f3 = Mth.clamp(f2, -45.0F, 45.0F);
-        entity.yRotO += f3 - f2;
-        entity.setYRot(entity.getYRot() + f3 - f2);
-        entity.setYBodyRot(this.getYRot());
-    }
-
-    @Override
-    public void onPassengerTurned(@NotNull Entity entity) {
-        this.clampRotation(entity);
-    }
-
-    @Override
-    public void positionRider(@NotNull Entity passenger, @NotNull MoveFunction callback) {
-        // From Immersive_Aircraft
-        if (!this.hasPassenger(passenger)) {
-            return;
-        }
-
-        passenger.setYRot(passenger.getYRot() + this.getYRot() - this.yRotO);
-        passenger.setYHeadRot(passenger.getYHeadRot() + this.getYRot() - this.yRotO);
-
-        Matrix4f transform = getVehicleTransform(1);
-
-        float x = -0.4f;
-        float y = -0.95f;
-        float z = 0.2f;
-
-        int i = this.getSeatIndex(passenger);
-
-        if (i == 0) {
-            Vector4f worldPosition = transformPosition(transform, x, y, z);
-            passenger.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-            callback.accept(passenger, worldPosition.x, worldPosition.y, worldPosition.z);
-        }
-
-        if (passenger != this.getFirstPassenger()) {
-            passenger.setXRot(passenger.getXRot() + (getXRot() - xRotO));
-        }
-
-        copyEntityData(passenger);
-    }
-
-    public void copyEntityData(Entity entity) {
-        float i = getXRot() / 90;
-        float f = Mth.wrapDegrees(entity.getYRot() - getYRot());
-        float g = Mth.clamp(f, -105.0f, 105.0f);
-
-        entity.yRotO += g - f;
-        entity.setYRot(entity.getYRot() + g - f + yRotSync * Mth.abs(i));
-        entity.setYHeadRot(entity.getYRot());
-        entity.setYBodyRot(getYRot());
-    }
-
-    @Override
-    public Matrix4f getVehicleTransform(float ticks) {
-        Matrix4f transform = new Matrix4f();
-        transform.translate((float) Mth.lerp(ticks, xo, getX()), (float) Mth.lerp(ticks, yo + 0.5f, getY() + 0.5f), (float) Mth.lerp(ticks, zo, getZ()));
-        transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(ticks, yRotO, getYRot())));
-        transform.rotate(Axis.XP.rotationDegrees(Mth.lerp(ticks, xRotO, getXRot())));
-        transform.rotate(Axis.ZP.rotationDegrees(Mth.lerp(ticks, prevRoll, getRoll())));
-        return transform;
-    }
-
-    @Override
     public void destroy() {
         super.destroy();
-
         if (level() instanceof ServerLevel) {
             var item = new ItemEntity(level(), this.getX(), this.getY(), this.getZ(), new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
             item.setPickUpDelay(50);
@@ -330,63 +209,8 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     }
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    @Override
-    public ResourceLocation getVehicleIcon() {
-        return Mod.loc("textures/vehicle_icon/vehicle_assembling_table_icon.png");
-    }
-
-    @Override
-    public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
-        return 0.3;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    public Pair<Quaternionf, Quaternionf> getPassengerRotation(Entity entity, float tickDelta) {
-        return Pair.of(Axis.XP.rotationDegrees(-this.getViewXRot(tickDelta)), Axis.ZP.rotationDegrees(-this.getRoll(tickDelta)));
-    }
-
-    @Override
-    public @Nullable ResourceLocation getVehicleItemIcon() {
-        return Mod.loc("textures/gui/vehicle/type/civilian.png");
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public @Nullable Vec2 getCameraRotation(float partialTicks, Player player, boolean zoom, boolean isFirstPerson) {
-        if (isFreeCam(player) && this.getSeatIndex(player) == 0 && Mth.abs((float) (freeCameraYaw * freeCameraPitch)) > 0.01) {
-            return new Vec2((float) (getYaw(partialTicks) - 0.5f * Mth.lerp(partialTicks, deltaYo, deltaY) - freeCameraYaw), (float) (getPitch(partialTicks) - 0.5f * Mth.lerp(partialTicks, deltaXo, deltaX) + freeCameraPitch));
-        }
-
-        return super.getCameraRotation(partialTicks, player, false, false);
-    }
-
-    @Override
     public @NotNull List<ItemStack> getRetrieveItems() {
         return List.of(new ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()));
-    }
-
-    @Override
-    public @Nullable ThirdPersonCameraPosition getThirdPersonCameraPosition(int seatIndex) {
-        return new ThirdPersonCameraPosition(1.5 * ClientMouseHandler.custom3pDistanceLerp, 0, 0);
-    }
-
-    @Override
-    public boolean isEnclosed(int index) {
-        return true;
-    }
-
-    @Override
-    public boolean hasEnergyStorage() {
-        return false;
     }
 
     @Override
@@ -397,11 +221,6 @@ public class VehicleAssemblingTableVehicleEntity extends VehicleEntity implement
     @Override
     @ParametersAreNonnullByDefault
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new VehicleAssemblingMenu(i, inventory, true);
-    }
-
-    @Override
-    public VehicleType getVehicleType() {
-        return VehicleType.CAR;
+        return new VehicleAssemblingMenu(i, inventory, ContainerLevelAccess.NULL, true);
     }
 }

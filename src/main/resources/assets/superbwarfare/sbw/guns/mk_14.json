@@ -1,0 +1,16 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/mk_14.animation.json",
+    "Model": "superbwarfare:geo/mk_14.geo.json",
+    "Texture": "superbwarfare:textures/item/mk_14.png",
+    "LODModel": "superbwarfare:geo/lod/mk_14.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/mk_14.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.475
+  ],
+  "FlareSize": 0.33,
+  "EjectShell": true
+}

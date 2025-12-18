@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -8,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.rifle.AK47Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,31 +17,6 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class AK47ItemModel extends CustomGunModel<AK47Item> {
     public static float rotXBipod = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(AK47Item animatable) {
-        return Mod.loc("animations/ak_47.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(AK47Item animatable) {
-        return Mod.loc("geo/ak.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(AK47Item animatable) {
-        return Mod.loc("textures/item/ak_47.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(AK47Item animatable) {
-        return Mod.loc("geo/lod/ak_47.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(AK47Item animatable) {
-        return Mod.loc("textures/item/lod/ak_47.png");
-    }
 
     @Override
     public void setCustomAnimations(AK47Item animatable, long instanceId, AnimationState<AK47Item> animationState) {

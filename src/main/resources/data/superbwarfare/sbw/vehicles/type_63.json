@@ -1,0 +1,79 @@
+{
+  "MaxHealth": 100,
+  "MaxEnergy": 0,
+  "Mass": 0.45,
+  "TurretPos": [0, 0.45703125, -0.1625],
+  "TurretYawRange": [-15, 15],
+  "TurretPitchRange": [-5, 60],
+  "BarrelPos": [0, 0.65, -0.203125],
+  "Weapons": {
+    "@Rocket": {
+      "Velocity": 10,
+      "Gravity": 0.05,
+      "Spread": 0.5,
+      "ShootShake": [8, 8, 20],
+      "SoundInfo": {
+        "Fire3P": "superbwarfare:medium_rocket_fire",
+        "VehicleReload3p": "ty63_reload"
+      },
+      "SoundRadius": 4
+    },
+    "AP": {
+      "Template": "@Rocket",
+      "Damage": 500,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 5,
+      "IsArmorPiercingProjectile": true
+    },
+    "HE": {
+      "Template": "@Rocket",
+      "Damage": 200,
+      "ExplosionDamage": 200,
+      "ExplosionRadius": 12,
+      "IsHighExplosiveProjectile": true
+    },
+    "CM": {
+      "Template": "@Rocket",
+      "Damage": 300,
+      "ExplosionDamage": 300,
+      "ExplosionRadius": 6,
+      "IsClusterMunitionsProjectile": true,
+      "SpreadAmount": 12
+    }
+  },
+  "DamageModifiers": [
+    "minecraft:lava - -1",
+    "minecraft:lava * 2",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
+    "minecraft:arrow * 0.1",
+    "minecraft:trident * 0.2",
+    "minecraft:mob_attack * 0.2",
+    "minecraft:mob_attack_no_aggro * 0.2",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:explosion * 1.5",
+    "minecraft:player_explosion * 1.5",
+    "superbwarfare:custom_explosion * 0.5",
+    "superbwarfare:projectile_explosion * 0.5",
+    "superbwarfare:mine * 0.5",
+    "superbwarfare:lunge_mine * 0.5",
+    "superbwarfare:projectile_hit * 0.6",
+    "superbwarfare:grapeshot_hit * 0.4",
+    "#superbwarfare:projectile * 0.5",
+    "#superbwarfare:projectile_absolute * 0.8",
+    "superbwarfare:vehicle_strike * 5",
+    "All - 1"
+  ],
+  "VehicleContainerType": "Special",
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 20,
+    "ExplosionRadius": 2
+  },
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0,
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/type_63_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
+  "Type": "Artillery"
+}

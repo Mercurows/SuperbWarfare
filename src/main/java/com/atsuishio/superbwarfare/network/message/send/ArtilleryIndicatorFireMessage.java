@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.vehicle.base.RemoteControllableTurret;
+import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -42,8 +43,21 @@ public enum ArtilleryIndicatorFireMessage {
                         var tag = tags.getCompound(i);
                         Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
 
-                        if (entity instanceof RemoteControllableTurret turret && turret.canRemoteFire()) {
-                            Mod.queueServerWork(i % 5 + 1, () -> turret.remoteFire(player));
+                        if (entity instanceof ArtilleryEntity artilleryEntity) {
+                            var gunData = artilleryEntity.getGunData("Main");
+                            if (gunData != null) {
+                                if (entity instanceof MortarEntity mortarEntity) {
+                                    Mod.queueServerWork(i % 5 + 1, () -> {
+                                        mortarEntity.vehicleShoot(player, "Main");
+                                        mortarEntity.resetTarget("Main");
+                                    });
+                                } else if (gunData.ammo.get() > 0) {
+                                    Mod.queueServerWork(i % 5 + 1, () -> {
+                                        artilleryEntity.vehicleShoot(player, "Main");
+                                        artilleryEntity.resetTarget("Main");
+                                    });
+                                }
+                            }
                         }
                     }
                 }

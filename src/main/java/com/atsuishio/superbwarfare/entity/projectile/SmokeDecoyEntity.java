@@ -13,42 +13,35 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class SmokeDecoyEntity extends Entity {
 
+    public int life = 400;
+    public int igniteTime = 4;
     public boolean releaseSmoke = true;
 
-    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world) {
-        super(type, world);
+    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level level) {
+        super(type, level);
     }
 
-    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level world, boolean release) {
-        super(type, world);
+    public SmokeDecoyEntity(EntityType<? extends SmokeDecoyEntity> type, Level level, boolean release) {
+        super(type, level);
         releaseSmoke = release;
     }
 
-    public SmokeDecoyEntity(LivingEntity entity, Level level) {
+    public SmokeDecoyEntity(Level level) {
         super(ModEntities.SMOKE_DECOY.get(), level);
-    }
-
-    public SmokeDecoyEntity(PlayMessages.SpawnEntity spawnEntity, Level level) {
-        this(ModEntities.SMOKE_DECOY.get(), level, true);
     }
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
-
-    public int life = 400;
-    public int igniteTime = 4;
 
     @Override
     protected void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
@@ -93,7 +86,7 @@ public class SmokeDecoyEntity extends Entity {
     }
 
     public void decoyShoot(Entity entity, Vec3 shootVec, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = shootVec.normalize().add(this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
+        Vec3 vec3 = shootVec.normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
         this.setDeltaMovement(entity.getDeltaMovement().scale(0.75).add(vec3));
         double d0 = vec3.horizontalDistance();
         this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 57.2957763671875));

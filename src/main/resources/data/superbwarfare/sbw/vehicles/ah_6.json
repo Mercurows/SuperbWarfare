@@ -1,0 +1,224 @@
+{
+  "MaxHealth": 250,
+  "MaxEnergy": 5000000,
+  "OBB": [
+    {
+      "Size": [1.0625, 1.18125, 1.625],
+      "Position": [0, 1.86875, -0.15625]
+    },
+    {
+      "Size": [0.875, 0.6875, 0.59375],
+      "Position": [0, 1.5, 1.90625]
+    },
+    {
+      "Size": [0.25, 0.3125, 2.25],
+      "Position": [0, 2.3125, -4.1875]
+    },
+    {
+      "Size": [0.0625, 1.15625, 0.40625],
+      "Position": [-0.125, 2.34375, -6.34375]
+    },
+    {
+      "Size": [1, 0.25, 0.21875],
+      "Position": [-0.125, 3.5625, -6.65625]
+    },
+    {
+      "Size": [0.3125, 0.40625, 0.84375],
+      "Position": [0, 3.28125, -0.53125],
+      "Part": "MainEngine"
+    },
+    {
+      "Size": [0.3125, 0.40625, 0.40625],
+      "Position": [0.1875, 2.09375, -6.15625],
+      "Part": "SubEngine"
+    }
+  ],
+  "MouseSpeed": [0.4, 0.25],
+  "Seats": [
+    {
+      "Transform": "Vehicle",
+      "Position": [0.45, 0.85, 1],
+      "Sensitivity": [0, 0, 0],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "Position": [0.45, 2.45, 1],
+        "UseFixedCameraPos": true,
+        "UseAircraftCamera": true,
+        "AircraftCameraPos": [-2.1, 2.45, -10]
+      },
+      "CanRotateHead": false,
+      "MinPitch": -80,
+      "MaxPitch": 80,
+      "MinYaw": -80,
+      "MaxYaw": 80,
+      "Weapons": ["Cannon", "Rocket"],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [2, 1.2, 1]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [-0.45, 0.85, 1],
+      "MinPitch": -80,
+      "MaxPitch": 80,
+      "MinYaw": -80,
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-2, 1.2, 1]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [-1.4, 0.4, 0],
+      "Orientation": 90,
+      "MinYaw": -80,
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-2, 1.2, 0]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [1.4, 0.4, 0],
+      "Orientation": -90,
+      "MinYaw": -80,
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [2, 1.2, 0]
+      }
+    }
+  ],
+  "Weapons": {
+    "Cannon": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "superbwarfare:small_cannon_shell",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm.png",
+      "DefaultZoom": 2,
+      "RPM": 500,
+      "Velocity": 30,
+      "Damage": 45,
+      "ExplosionDamage": 12,
+      "ExplosionRadius": 3.5,
+      "HeatPerShoot": 5,
+      "NaturalCooldown": 1,
+      "Spread": 0.25,
+      "Name": "weapon.superbwarfare.20mm_cannon",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:ah_6_cannon_fire_1p",
+        "Fire3P": "superbwarfare:ah_6_cannon_fire_3p",
+        "Fire3PFar": "superbwarfare:ah_6_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:ah_6_cannon_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "Crosshair": "@Empty",
+      "SoundRadius": 24,
+      "AmmoType": "superbwarfare:small_shell",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 0.62, 0.8],
+        "ShootDirectionForHud": [0, 0.018, 1],
+        "Positions": [[-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]],
+        "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
+      }
+    },
+    "Rocket": {
+      "AmmoType": "superbwarfare:small_rocket",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/small_rocket.png",
+      "DefaultZoom": 2,
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Magazine": 14,
+      "EmptyReloadTime": 100,
+      "Projectile": "superbwarfare:small_rocket",
+      "HeatPerShoot": 0.5,
+      "Spread": 0.25,
+      "Name": "weapon.superbwarfare.70mm_rocket",
+      "RPM": 450,
+      "Damage": 80,
+      "ExplosionDamage": 40,
+      "ExplosionRadius": 5,
+      "Gravity": 0.02,
+      "Velocity": 16,
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 0.62, 0.8],
+        "ShootDirectionForHud": [0, 0.018, 1],
+        "Positions": [[-1.7, 0.62, 0.8], [1.7, 0.62, 0.8]],
+        "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:small_rocket_fire_1p",
+        "Fire3P": "superbwarfare:small_rocket_fire_3p",
+        "VehicleReload3p": "superbwarfare:missile_reload",
+        "VehicleReloadSoundTime": 7,
+        "Change": "superbwarfare:into_missile"
+      },
+      "Crosshair": "@Empty",
+      "SoundRadius": 12
+    }
+  },
+  "EngineType": "Helicopter",
+  "EngineInfo": {
+    "EnergyCostRate": 256,
+    "Increment": 1,
+    "Decrement": 1,
+    "PitchSpeed": 1,
+    "YawSpeed": 1,
+    "RollSpeed": 0.75,
+    "LiftSpeed": 1,
+    "EngineStartSound": "superbwarfare:ah_6_engine_start",
+    "EngineSoundVolume" : 2
+  },
+  "EngineSound": "superbwarfare:ah_6_engine",
+  "ThirdPersonCameraPos": [0, 1, 7],
+  "UpStep": 1.1,
+  "RotateOffsetHeight": 1.45,
+  "Mass": 1.2,
+  "AllowFreeCam": true,
+  "HasDecoy": true,
+  "DamageModifiers": [
+    "minecraft:arrow * 0.2",
+    "minecraft:trident * 0.4",
+    "minecraft:mob_attack * 0.4",
+    "minecraft:mob_attack_no_aggro * 0.4",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:lava - -2",
+    "minecraft:lava * 2.5",
+    "@minecraft:tnt * 6",
+    "@minecraft:tnt_minecart * 6",
+    "minecraft:explosion * 4",
+    "minecraft:player_explosion * 4",
+    "superbwarfare:projectile_hit * 0.8",
+    "superbwarfare:grapeshot_hit * 0.75",
+    "#superbwarfare:projectile * 0.16",
+    "superbwarfare:vehicle_strike * 7",
+    "superbwarfare:laser * 0.4",
+    "@superbwarfare:cannon_shell * 2",
+    "@superbwarfare:small_cannon_shell * 1.1",
+    "@superbwarfare:gun_grenade * 2.2",
+    "@superbwarfare:rgo_grenade * 6",
+    "@superbwarfare:hand_grenade * 5",
+    "@superbwarfare:mortar_shell * 3",
+    "@#superbwarfare:at_rocket * 3",
+    "@#superbwarfare:aerial_bomb * 2",
+    "All * 0.7",
+    "All - 2"
+  ],
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 300,
+    "ExplosionRadius": 8,
+    "CrashPassengers": true
+  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/ah_6_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "Type": "Helicopter",
+  "TerrainCompat": [[1.156, 0, 1.875], [-1.156, 0, 1.875], [1.156, 0, 0.875], [-1.156, 0, 0.875], [1.156, 0, -0.875], [-1.156, 0, -0.875]],
+  "HudType": "@Helicopter"
+}

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -29,7 +28,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -47,10 +45,6 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
     public static final EntityDataAccessor<Integer> DOWN_TIME = SynchedEntityData.defineId(TargetEntity.class, EntityDataSerializers.INT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public TargetEntity(PlayMessages.SpawnEntity packet, Level world) {
-        this(ModEntities.TARGET.get(), world);
-    }
-
     public TargetEntity(EntityType<TargetEntity> type, Level world) {
         super(type, world);
         this.noCulling = true;
@@ -65,11 +59,6 @@ public class TargetEntity extends LivingEntity implements GeoEntity {
     @Override
     protected float getStandingEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
         return 1.57F;
-    }
-
-    @Override
-    public @NotNull MobType getMobType() {
-        return super.getMobType();
     }
 
     @Override

@@ -1,0 +1,13 @@
+{
+  "Animation": {
+    "Idle": "animation.taser.idle",
+    "Reload": "animation.taser.reload"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/taser.animation.json",
+    "Model": "superbwarfare:geo/taser.geo.json",
+    "Texture": "superbwarfare:textures/item/taser.png",
+    "LODModel": "superbwarfare:geo/lod/taser.geo.json"
+  },
+  "EnergyBarColor": "0xFFFF00"
+}

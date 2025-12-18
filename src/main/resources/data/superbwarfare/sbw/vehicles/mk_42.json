@@ -1,0 +1,141 @@
+{
+  "MaxHealth": 350,
+  "MaxEnergy": 0,
+  "TurretPos": [0, 0.413125, 0],
+  "TurretTurnSpeed": [1.75, 1.75],
+  "TurretPitchRange": [-15, 85],
+  "BarrelPos": [0, 1.746875, 0.5175],
+  "Seats": {
+    "HidePassenger": true,
+    "Transform": "Turret",
+    "Position": [0, 1.886875, 0],
+    "CameraPos": {
+      "Transform": "Barrel",
+      "ZoomPosition": [0, 0.15, 0],
+      "ZoomDirection": "Barrel"
+    },
+    "MinPitch": -15,
+    "MaxPitch": 85,
+    "Sensitivity": [0.42, 0.7, 0.9],
+    "Weapons": ["Main"]
+  },
+  "Weapons": {
+    "Main": {
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ap_shell.png",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Projectile": "superbwarfare:cannon_shell",
+      "Magazine": 1,
+      "EmptyReloadTime": 30,
+      "DefaultZoom": 5,
+      "Velocity": 15,
+      "Gravity": 0.06,
+      "Damage": 450,
+      "ExplosionDamage": 120,
+      "ExplosionRadius": 3,
+      "RecoilTime": 42,
+      "RecoilForce": 1.1,
+      "ShootShake": [12, 14, 80],
+      "Spread": 0.05,
+      "ShootAnimationTime": 30,
+      "Crosshair": "@VehicleDynamicCross",
+      "CrosshairZooming": "@VehicleCommonCannonZooming",
+      "Name": "weapon.superbwarfare.cannon_ap",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:mk_42_fire_1p",
+        "Fire3P": "superbwarfare:mk_42_fire_3p",
+        "Fire3PFar": "superbwarfare:mk_42_far",
+        "Fire3PVeryFar": "superbwarfare:mk_42_veryfar",
+        "VehicleReload3p": "superbwarfare:cannon_reload",
+        "VehicleReloadSoundTime": 30,
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 32,
+      "AmmoType": [
+        "superbwarfare:ap_5_inches",
+        {
+          "Ammo": "superbwarfare:he_5_inches",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
+            "IsArmorPiercingProjectile": false,
+            "IsHighExplosiveProjectile": true,
+            "Damage": 250,
+            "ExplosionDamage": 120,
+            "ExplosionRadius": 10,
+            "Name": "weapon.superbwarfare.cannon_he"
+          }
+        },
+        {
+          "Ammo": "superbwarfare:cm_5_inches",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cm_shell.png",
+            "IsArmorPiercingProjectile": false,
+            "IsClusterMunitionsProjectile": true,
+            "SpreadAmount": 18,
+            "SpreadAngle": 8,
+            "Damage": 300,
+            "ExplosionDamage": 180,
+            "ExplosionRadius": 6,
+            "Name": "weapon.superbwarfare.cannon_cm"
+          }
+        },
+        {
+          "Ammo": "superbwarfare:gs_5_inches",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
+            "IsArmorPiercingProjectile": false,
+            "IsGrapeShotProjectile": true,
+            "SpreadAmount": 36,
+            "SpreadAngle": 5,
+            "Damage": 1000,
+            "ExplosionDamage": 180,
+            "ExplosionRadius": 6,
+            "Name": "weapon.superbwarfare.cannon_gs"
+          }
+        }
+      ],
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0, 6.375]],
+        "Directions": ["Barrel"]
+      }
+    }
+  },
+  "Mass": 61.4,
+  "DamageModifiers": [
+    "minecraft:lava - -8",
+    "minecraft:lava * 10",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
+    "All * 0.2",
+    "minecraft:arrow * 1.5",
+    "minecraft:trident * 1.5",
+    "minecraft:mob_attack * 2.5",
+    "minecraft:mob_attack_no_aggro * 2",
+    "minecraft:mob_projectile * 1.5",
+    "minecraft:explosion * 6",
+    "minecraft:player_explosion * 6",
+    "superbwarfare:custom_explosion * 2.4",
+    "superbwarfare:projectile_explosion * 2",
+    "superbwarfare:mine * 0.75",
+    "superbwarfare:projectile_hit * 1.5",
+    "superbwarfare:grapeshot_hit * 0.25",
+    "#superbwarfare:projectile * 0.25",
+    "#superbwarfare:projectile_absolute * 0.85",
+    "superbwarfare:vehicle_strike * 5",
+    "@superbwarfare:gun_grenade * 1.5",
+    "All - 8"
+  ],
+  "ThirdPersonCameraPos": [0, 1, 8],
+  "EngineType": "Fixed",
+  "VehicleContainerType": "Small",
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 160,
+    "ExplosionRadius": 8
+  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/mk_42_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
+  "Type": "Artillery",
+  "HudType": "@Artillery"
+}

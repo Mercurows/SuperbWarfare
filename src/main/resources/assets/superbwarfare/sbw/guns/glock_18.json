@@ -1,0 +1,21 @@
+{
+  "Animation": {
+    "Idle": "animation.glock_17.idle",
+    "ReloadNormal": "animation.glock_17.reload_normal",
+    "ReloadEmpty": "animation.glock_17.reload_empty"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/glock_17.animation.json",
+    "Model": "superbwarfare:geo/glock_18.geo.json",
+    "Texture": "superbwarfare:textures/item/glock_17.png",
+    "LODModel": "superbwarfare:geo/lod/glock_17.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/glock_17.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    0.3022
+  ],
+  "FlareSize": 0.3,
+  "EjectShell": true
+}

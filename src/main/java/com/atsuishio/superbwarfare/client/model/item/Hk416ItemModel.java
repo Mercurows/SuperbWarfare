@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
@@ -9,7 +8,6 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.rifle.Hk416Item;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -20,31 +18,6 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.isProne;
 
 public class Hk416ItemModel extends CustomGunModel<Hk416Item> {
     public static float rotXBipod = 0f;
-
-    @Override
-    public ResourceLocation getAnimationResource(Hk416Item animatable) {
-        return Mod.loc("animations/m_4.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(Hk416Item animatable) {
-        return Mod.loc("geo/hk_416.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(Hk416Item animatable) {
-        return Mod.loc("textures/item/hk_416.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(Hk416Item animatable) {
-        return Mod.loc("geo/lod/hk_416.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(Hk416Item animatable) {
-        return Mod.loc("textures/item/lod/hk_416.png");
-    }
 
     @Override
     public void setCustomAnimations(Hk416Item animatable, long instanceId, AnimationState<Hk416Item> animationState) {

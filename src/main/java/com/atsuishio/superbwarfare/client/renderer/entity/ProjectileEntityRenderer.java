@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
+import com.atsuishio.superbwarfare.client.ClientRenderHandler;
 import com.atsuishio.superbwarfare.client.layer.projectile.ProjectileEntityInsideLayer;
 import com.atsuishio.superbwarfare.client.layer.projectile.ProjectileEntityLayer;
 import com.atsuishio.superbwarfare.client.model.entity.ProjectileEntityModel;
@@ -17,6 +18,7 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity> {
+
     public ProjectileEntityRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ProjectileEntityModel());
         this.shadowRadius = 0f;
@@ -32,17 +34,21 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
     @Override
     public void preRender(PoseStack poseStack, ProjectileEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green,
                           float blue, float alpha) {
-        if (entity.tickCount > 1 && !entity.isInWater() && entity.getDeltaMovement().lengthSqr() > 25) {
+        if (entity.tickCount > 1 && !entity.isInWater()) {
             super.preRender(poseStack, entity, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
         }
     }
 
     @Override
     public void render(ProjectileEntity entityIn, float entityYaw, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        if (entityIn.tickCount > 1 && !entityIn.isInWater() && entityIn.getDeltaMovement().lengthSqr() > 25) {
+        if (entityIn.tickCount > 1 && !entityIn.isInWater()) {
             poseStack.pushPose();
+
+            ClientRenderHandler.transformVirtualRenderPosition(poseStack, entityIn, partialTicks);
+
             poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90));
             poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
+
             super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
             poseStack.popPose();
         }
@@ -50,6 +56,6 @@ public class ProjectileEntityRenderer extends GeoEntityRenderer<ProjectileEntity
 
     @Override
     protected float getDeathMaxRotation(ProjectileEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0F;
     }
 }

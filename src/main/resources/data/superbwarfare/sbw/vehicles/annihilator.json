@@ -1,0 +1,200 @@
+{
+  "MaxHealth": 1200,
+  "TurretPos": [0, 0.453, 0],
+  "TurretTurnSpeed": [0.9, 0.9],
+  "TurretPitchRange": [-5, 45],
+  "BarrelPos": [0, 1.797, 4.95],
+  "MaxEnergy": 20000000,
+  "OBB": [
+    {
+      "Size": [6.4375, 1.875, 3.3125],
+      "Position": [0, 1.875, 0],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [6.25, 0.6875, 1.28125],
+      "Position": [0, 0.6875, 4.59375],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [4.875, 0.5, 1.09375],
+      "Position": [0, 0.5, 6.96875],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [4.875, 1.15625, 1.46875],
+      "Position": [0, 2.15625, 4.78125],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [5.1875, 1.875, 2.03125],
+      "Position": [0, 1.875, -5.34375],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [1.28125, 0.75, 1.5],
+      "Position": [-6.46875, 2, -5.3125],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [1.28125, 0.75, 1.5],
+      "Position": [6.46875, 2, -5.3125],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [3.875, 1.875, 0.65625],
+      "Position": [0, 1.875, -8.03125],
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    },
+    {
+      "Size": [0.625, 0.6875, 2.34375],
+      "Position": [0, 0.09375, 1.90625],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.4375, 0.4375, 3.71875],
+      "Position": [0, 0.03125, 7.96875],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.1875, 0.1875, 2.03125],
+      "Position": [0, -0.03125, 13.71875],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.625, 0.6875, 2.34375],
+      "Position": [-2.7, 0.09375, 1.90625],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.4375, 0.4375, 3.71875],
+      "Position": [-2.7, 0.03125, 7.96875],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.1875, 0.1875, 2.03125],
+      "Position": [-2.7, -0.03125, 13.71875],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.625, 0.6875, 2.34375],
+      "Position": [2.7, 0.09375, 1.90625],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.4375, 0.4375, 3.71875],
+      "Position": [2.7, 0.03125, 7.96875],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    },
+    {
+      "Size": [0.1875, 0.1875, 2.03125],
+      "Position": [2.7, -0.03125, 13.71875],
+      "Transform": "Barrel",
+      "Rotation": "Barrel"
+    }
+  ],
+  "Seats": {
+    "HidePassenger": true,
+    "Transform" : "Turret",
+    "Position": [0, 3.3, 1.5],
+    "MinPitch": -5,
+    "MaxPitch": 45,
+    "Sensitivity": [0.5, 0.7, 0.9],
+    "CameraPos": {
+      "Transform": "Turret",
+      "ZoomPosition": [0, 3.574, 4.6],
+      "ZoomDirection": "Barrel"
+    },
+    "Weapons": ["Main"]
+  },
+  "Weapons": {
+    "Main": {
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/laser.png",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Projectile": "ray",
+      "Range": 512,
+      "DefaultZoom": 3,
+      "RPM": 12,
+      "Velocity": 6000000000,
+      "Damage": 1000,
+      "ExplosionDamage": 72,
+      "ExplosionRadius": 16,
+      "ShootAnimationTime": 12,
+      "AmmoCostPerShoot": 2000000,
+      "AmmoType": "FE",
+      "RecoilTime": 42,
+      "RecoilForce": 1.1,
+      "ShootShake": [12, 14, 80],
+      "Crosshair": "@VehicleDynamicCross",
+      "CrosshairZooming": "@VehicleLaserCannon",
+      "Name": "weapon.superbwarfare.laser",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:annihilator_fire_1p",
+        "Fire3P": "superbwarfare:annihilator_fire_3p",
+        "Fire3PFar": "superbwarfare:annihilator_far",
+        "Fire3PVeryFar": "superbwarfare:annihilator_veryfar",
+        "VehicleReload": "superbwarfare:annihilator_reload"
+      },
+      "SoundRadius": 32,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, -0.045, 15.75]],
+        "Directions": ["Barrel"]
+      }
+    }
+  },
+  "Mass": 2774,
+  "ThirdPersonCameraPos": [0, 1.3, 16],
+  "DamageModifiers": [
+    "All * 0.1",
+    "minecraft:arrow 0",
+    "minecraft:trident 0",
+    "minecraft:mob_attack 0",
+    "minecraft:mob_attack_no_aggro 0",
+    "minecraft:mob_projectile 0",
+    "minecraft:player_attack 0",
+    "#superbwarfare:projectile 0",
+    "superbwarfare:grapeshot_hit 0",
+    "superbwarfare:vehicle_strike 0",
+    "minecraft:explosion * 0.7",
+    "superbwarfare:custom_explosion * 0.2",
+    "superbwarfare:projectile_explosion * 0.2",
+    "superbwarfare:mine * 0.2",
+    "superbwarfare:lunge_mine * 0.24",
+    "superbwarfare:projectile_hit * 0.3",
+    "@#superbwarfare:aerial_bomb * 8",
+    "#superbwarfare:projectile_absolute * 0.04",
+    "@superbwarfare:c4 * 10",
+    "@superbwarfare:gun_grenade * 3",
+    "@superbwarfare:cannon_shell * 3",
+    "All - 12"
+  ],
+  "VehicleContainerType": "Empty",
+  "EngineType": "Fixed",
+  "DestroyInfo": {
+    "ParticleType": "Giant",
+    "ExplosionDamage": 600,
+    "ExplosionRadius": 15
+  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/annihilator_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/defense.png",
+  "Type": "Artillery",
+  "HudType": "@Artillery"
+}

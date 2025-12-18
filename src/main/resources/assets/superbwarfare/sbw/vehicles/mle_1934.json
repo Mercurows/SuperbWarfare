@@ -1,0 +1,9 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/mle_1934.animation.json",
+    "Model": "superbwarfare:geo/mle_1934.geo.json",
+    "LODModel": "superbwarfare:geo/vehicle_lod/mle_1934_lod1.geo.json",
+    "Texture": "superbwarfare:textures/entity/mle_1934.png"
+  },
+  "LODDistance": 32
+}

@@ -1,0 +1,33 @@
+{
+  "Spread": 2,
+  "RecoilX": 0,
+  "RecoilY": 0,
+  "MaxEnergy": 100000,
+  "Damage": 3,
+  "Velocity": 1,
+  "Weight": 3,
+  "Headshot": 0,
+  "Range": 3,
+  "EmptyReloadTime": 1,
+  "RPM": 1200,
+  "HeatPerShoot": 1,
+  "ShootDelay": 4,
+  "Projectile": "ray",
+  "DefaultFireMode": "Auto",
+  "GunType": "Special",
+  "AvailableFireModes": [
+    "Auto"
+  ],
+  "AmmoType": "FE",
+  "AmmoCostPerShoot": 50,
+  "Icon": "superbwarfare:textures/gun_icon/repair_tool_icon.png",
+  "AvailablePerks": [
+    "superbwarfare:regeneration",
+    "superbwarfare:powerful_cooler"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:repair_tool_fire_1p",
+    "Fire3P": "superbwarfare:repair_tool_fire_3p"
+  },
+  "Crosshair": "@GunRepairTool"
+}

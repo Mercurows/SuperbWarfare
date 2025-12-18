@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -13,23 +13,22 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-public class EditMessage {
+import static com.atsuishio.superbwarfare.event.LivingEventHandler.stopGunReloadSound;
 
-    private final int type;
-    private final boolean add;
+public record EditMessage(int type, boolean add, boolean isVehicle) {
 
     public EditMessage(int type, boolean add) {
-        this.type = type;
-        this.add = add;
+        this(type, add, false);
     }
 
     public static EditMessage decode(FriendlyByteBuf buffer) {
-        return new EditMessage(buffer.readInt(), buffer.readBoolean());
+        return new EditMessage(buffer.readInt(), buffer.readBoolean(), buffer.readBoolean());
     }
 
     public static void encode(EditMessage message, FriendlyByteBuf buffer) {
         buffer.writeInt(message.type);
         buffer.writeBoolean(message.add);
+        buffer.writeBoolean(message.isVehicle);
     }
 
     public static void handler(EditMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
@@ -38,80 +37,58 @@ public class EditMessage {
             var player = context.getSender();
             if (player == null) return;
 
-            ItemStack stack = player.getMainHandItem();
-            if (!(stack.getItem() instanceof GunItem gunItem)) return;
-            var data = GunData.from(stack);
+            if (message.isVehicle && player.getVehicle() instanceof VehicleEntity vehicle) {
+                if (message.type != 5) return;
 
-            switch (message.type) {
-                case 0 -> {
-                    int att = data.attachment.get(AttachmentType.BARREL);
-                    att = setAttachment(gunItem.getValidBarrels(), att, message.add);
-                    data.attachment.set(AttachmentType.BARREL, att);
-                }
-                case 1 -> {
-                    int att = data.attachment.get(AttachmentType.SCOPE);
-                    att = setAttachment(gunItem.getValidScopes(), att, message.add);
-                    data.attachment.set(AttachmentType.SCOPE, att);
-                }
-                case 2 -> {
-                    int att = data.attachment.get(AttachmentType.GRIP);
-                    att = setAttachment(gunItem.getValidGrips(), att, message.add);
-                    data.attachment.set(AttachmentType.GRIP, att);
-                }
-                case 3 -> {
-                    int att = data.attachment.get(AttachmentType.STOCK);
-                    att = setAttachment(gunItem.getValidStocks(), att, message.add);
-                    data.attachment.set(AttachmentType.STOCK, att);
-                }
-                case 4 -> {
-                    int att = data.attachment.get(AttachmentType.MAGAZINE);
-                    att = setAttachment(gunItem.getValidMagazines(), att, message.add);
-                    data.withdrawAmmo(player);
-                    data.attachment.set(AttachmentType.MAGAZINE, att);
-                }
-                case 5 -> {
-                    var diff = message.add ? 1 : -1;
-                    var selectedAmmoType = data.selectedAmmoType.get() + diff;
+                vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
+                    int size = data.getDefault().getAmmoConsumers().size();
+                    stopGunReloadSound(player, data);
+                    data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
 
-                    if (!player.isCreative()
-                            && selectedAmmoType >= 0
-                            && selectedAmmoType <= data.ammoConsumers.size() - 1
-                    ) {
-                        var currentConsumer = data.selectedAmmoConsumer();
-                        var targetConsumer = data.ammoConsumers.get(selectedAmmoType);
-                        if (currentConsumer == targetConsumer) return;
+                    var sound = data.compute().soundInfo.change;
+                    if (sound == null) return;
+                    SoundTool.playLocalSound(player, sound, 4f, 1f);
+                });
+            } else {
+                ItemStack stack = player.getMainHandItem();
+                if (!(stack.getItem() instanceof GunItem gunItem)) return;
 
-                        var currentSlot = currentConsumer.ammoSlot;
-                        var targetSlot = targetConsumer.ammoSlot;
-
-                        if (currentSlot == null) currentSlot = "Default";
-                        if (targetSlot == null) targetSlot = "Default";
-
-                        if (currentSlot.equals(targetSlot)) {
-                            data.withdrawAmmo(player);
-                        } else {
-                            var ammo = data.ammo.get();
-                            var virtualAmmo = data.virtualAmmo.get();
-                            data.ammoSlot.set(currentSlot, ammo, virtualAmmo);
-
-                            data.ammo.set(data.ammoSlot.getAmmo(targetSlot));
-                            data.virtualAmmo.set(data.ammoSlot.getVirtualAmmo(targetSlot));
-                            data.ammoSlot.reset(targetSlot);
-                        }
+                var data = GunData.from(stack);
+                switch (message.type) {
+                    case 0 -> {
+                        int att = data.attachment.get(AttachmentType.BARREL);
+                        att = setAttachment(gunItem.getValidBarrels(), att, message.add);
+                        data.attachment.set(AttachmentType.BARREL, att);
                     }
-
-                    data.changeAmmoConsumer(selectedAmmoType);
-
-                    if (player.isCreative()) {
-                        data.ammo.set(data.get(GunProp.MAGAZINE));
+                    case 1 -> {
+                        int att = data.attachment.get(AttachmentType.SCOPE);
+                        att = setAttachment(gunItem.getValidScopes(), att, message.add);
+                        data.attachment.set(AttachmentType.SCOPE, att);
                     }
-
-                    data.isEmpty.set(true);
-                    data.holdOpen.set(true);
-                    data.closeHammer.set(false);
+                    case 2 -> {
+                        int att = data.attachment.get(AttachmentType.GRIP);
+                        att = setAttachment(gunItem.getValidGrips(), att, message.add);
+                        data.attachment.set(AttachmentType.GRIP, att);
+                    }
+                    case 3 -> {
+                        int att = data.attachment.get(AttachmentType.STOCK);
+                        att = setAttachment(gunItem.getValidStocks(), att, message.add);
+                        data.attachment.set(AttachmentType.STOCK, att);
+                    }
+                    case 4 -> {
+                        int att = data.attachment.get(AttachmentType.MAGAZINE);
+                        att = setAttachment(gunItem.getValidMagazines(), att, message.add);
+                        data.withdrawAmmo(player);
+                        data.attachment.set(AttachmentType.MAGAZINE, att);
+                    }
+                    case 5 -> {
+                        int size = data.getDefault().getAmmoConsumers().size();
+                        data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, player);
+                    }
                 }
+                data.save();
+                SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
             }
-            SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f);
         });
         context.setPacketHandled(true);
     }

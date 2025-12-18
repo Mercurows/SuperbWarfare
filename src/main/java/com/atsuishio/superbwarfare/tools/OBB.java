@@ -1,13 +1,14 @@
 package com.atsuishio.superbwarfare.tools;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
+import com.google.gson.annotations.SerializedName;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.Optional;
 
@@ -19,18 +20,88 @@ import java.util.Optional;
  * @param rotation 旋转
  * @param part     部件
  */
-public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part part) {
+public record OBB(Vector3d center, Vector3d extents, Quaterniond rotation, Part part) {
 
-    public void setCenter(Vector3f center) {
+    public void setCenter(Vector3d center) {
         this.center.set(center);
     }
 
-    public void setExtents(Vector3f extents) {
+    public void setExtents(Vector3d extents) {
         this.extents.set(extents);
     }
 
-    public void setRotation(Quaternionf rotation) {
+    public void updateRotation(Quaterniond rotation) {
         this.rotation.set(rotation);
+    }
+
+    /**
+     * 计算与向量相交的某个面
+     *
+     * @author YWZJ Ranpoes
+     */
+    public int getEmbeddingFace(Vec3 vec3) {
+        Vector3d rel = vec3ToVector3d(vec3).sub(center);
+
+        Vector3d[] axes = new Vector3d[3];
+        axes[0] = rotation.transform(new Vector3d(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3d(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3d(0, 0, 1));
+
+        double projX = Math.abs(rel.dot(axes[0]));
+        double projY = Math.abs(rel.dot(axes[1]));
+        double projZ = Math.abs(rel.dot(axes[2]));
+
+        double min = Double.MAX_VALUE;
+        int index = 0;
+
+        double dx = extents.x - projX;
+        double dy = extents.y - projY;
+        double dz = extents.z - projZ;
+
+        if (dx < min) {
+            min = dx;
+            index = 1;
+        }
+        if (dy < min) {
+            min = dy;
+            index = 2;
+        }
+        if (dz < min) {
+            index = 3;
+        }
+
+        return index * (rel.dot(axes[index - 1]) < 0 ? -1 : 1);
+    }
+
+    public double getEmbeddingDepth(Vec3 vec3) {
+        Vector3d rel = vec3ToVector3d(vec3).sub(center);
+
+        Vector3d[] axes = new Vector3d[3];
+        axes[0] = rotation.transform(new Vector3d(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3d(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3d(0, 0, 1));
+
+        double projX = Math.abs(rel.dot(axes[0]));
+        double projY = Math.abs(rel.dot(axes[1]));
+        double projZ = Math.abs(rel.dot(axes[2]));
+
+        double dx = extents.x - projX;
+        double dy = extents.y - projY;
+        double dz = extents.z - projZ;
+
+        double minDepth = Double.MAX_VALUE;
+
+        if (Math.abs(dx) < Math.abs(minDepth)) {
+            minDepth = dx;
+        }
+        if (Math.abs(dy) < Math.abs(minDepth)) {
+            minDepth = dy;
+        }
+        if (Math.abs(dz) < Math.abs(minDepth)) {
+            minDepth = dz;
+        }
+
+        return minDepth;
     }
 
     /**
@@ -38,22 +109,22 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
      *
      * @return 顶点坐标
      */
-    public Vector3f[] getVertices() {
-        Vector3f[] vertices = new Vector3f[8];
+    public Vector3d[] getVertices() {
+        Vector3d[] vertices = new Vector3d[8];
 
-        Vector3f[] localVertices = new Vector3f[]{
-                new Vector3f(-extents.x, -extents.y, -extents.z),
-                new Vector3f(extents.x, -extents.y, -extents.z),
-                new Vector3f(extents.x, extents.y, -extents.z),
-                new Vector3f(-extents.x, extents.y, -extents.z),
-                new Vector3f(-extents.x, -extents.y, extents.z),
-                new Vector3f(extents.x, -extents.y, extents.z),
-                new Vector3f(extents.x, extents.y, extents.z),
-                new Vector3f(-extents.x, extents.y, extents.z)
+        Vector3d[] localVertices = new Vector3d[]{
+                new Vector3d(-extents.x, -extents.y, -extents.z),
+                new Vector3d(extents.x, -extents.y, -extents.z),
+                new Vector3d(extents.x, extents.y, -extents.z),
+                new Vector3d(-extents.x, extents.y, -extents.z),
+                new Vector3d(-extents.x, -extents.y, extents.z),
+                new Vector3d(extents.x, -extents.y, extents.z),
+                new Vector3d(extents.x, extents.y, extents.z),
+                new Vector3d(-extents.x, extents.y, extents.z)
         };
 
         for (int i = 0; i < 8; i++) {
-            Vector3f vertex = localVertices[i];
+            Vector3d vertex = localVertices[i];
             vertex.rotate(rotation);
             vertex.add(center);
             vertices[i] = vertex;
@@ -67,11 +138,11 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
      *
      * @return 正交轴
      */
-    public Vector3f[] getAxes() {
-        Vector3f[] axes = new Vector3f[]{
-                new Vector3f(1, 0, 0),
-                new Vector3f(0, 1, 0),
-                new Vector3f(0, 0, 1)};
+    public Vector3d[] getAxes() {
+        Vector3d[] axes = new Vector3d[]{
+                new Vector3d(1, 0, 0),
+                new Vector3d(0, 1, 0),
+                new Vector3d(0, 0, 1)};
         rotation.transform(axes[0]);
         rotation.transform(axes[1]);
         rotation.transform(axes[2]);
@@ -82,9 +153,9 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
      * 判断两个OBB是否相撞
      */
     public static boolean isColliding(OBB obb, OBB other) {
-        Vector3f[] axes1 = obb.getAxes();
-        Vector3f[] axes2 = other.getAxes();
-        return Intersectionf.testObOb(obb.center(), axes1[0], axes1[1], axes1[2], obb.extents(),
+        Vector3d[] axes1 = obb.getAxes();
+        Vector3d[] axes2 = other.getAxes();
+        return Intersectiond.testObOb(obb.center(), axes1[0], axes1[1], axes1[2], obb.extents(),
                 other.center(), axes2[0], axes2[1], axes2[2], other.extents());
     }
 
@@ -92,12 +163,12 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
      * 判断OBB和AABB是否相撞
      */
     public static boolean isColliding(OBB obb, AABB aabb) {
-        Vector3f obbCenter = obb.center();
-        Vector3f[] obbAxes = obb.getAxes();
-        Vector3f obbHalfExtents = obb.extents();
-        Vector3f aabbCenter = aabb.getCenter().toVector3f();
-        Vector3f aabbHalfExtents = new Vector3f((float) (aabb.getXsize() / 2f), (float) (aabb.getYsize() / 2f), (float) (aabb.getZsize() / 2f));
-        return Intersectionf.testObOb(
+        Vector3d obbCenter = obb.center();
+        Vector3d[] obbAxes = obb.getAxes();
+        Vector3d obbHalfExtents = obb.extents();
+        Vector3d aabbCenter = vec3ToVector3d(aabb.getCenter());
+        Vector3d aabbHalfExtents = new Vector3d(aabb.getXsize() / 2, aabb.getYsize() / 2f, aabb.getZsize() / 2f);
+        return Intersectiond.testObOb(
                 obbCenter.x, obbCenter.y, obbCenter.z,
                 obbAxes[0].x, obbAxes[0].y, obbAxes[0].z,
                 obbAxes[1].x, obbAxes[1].y, obbAxes[1].z,
@@ -118,15 +189,15 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
      * @param obb   OBB盒
      * @return 在OBB上离待判定点最近的点
      */
-    public static Vector3f getClosestPointOBB(Vector3f point, OBB obb) {
-        Vector3f nearP = new Vector3f(obb.center());
-        Vector3f dist = point.sub(nearP, new Vector3f());
+    public static Vector3d getClosestPointOBB(Vector3d point, OBB obb) {
+        Vector3d nearP = new Vector3d(obb.center());
+        Vector3d dist = point.sub(nearP, new Vector3d());
 
-        float[] extents = new float[]{obb.extents().x, obb.extents().y, obb.extents().z};
-        Vector3f[] axes = obb.getAxes();
+        double[] extents = new double[]{obb.extents().x, obb.extents().y, obb.extents().z};
+        Vector3d[] axes = obb.getAxes();
 
         for (int i = 0; i < 3; i++) {
-            float distance = dist.dot(axes[i]);
+            double distance = dist.dot(axes[i]);
             distance = Math.clamp(distance, -extents[i], extents[i]);
 
             nearP.x += distance * axes[i].x;
@@ -137,23 +208,23 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         return nearP;
     }
 
-    public Optional<Vector3f> clip(Vector3f pFrom, Vector3f pTo) {
+    public Optional<Vector3d> clip(Vector3d pFrom, Vector3d pTo) {
         // 计算OBB的局部坐标系基向量（世界坐标系中的方向）
-        Vector3f[] axes = new Vector3f[3];
-        axes[0] = rotation.transform(new Vector3f(1, 0, 0));
-        axes[1] = rotation.transform(new Vector3f(0, 1, 0));
-        axes[2] = rotation.transform(new Vector3f(0, 0, 1));
+        Vector3d[] axes = new Vector3d[3];
+        axes[0] = rotation.transform(new Vector3d(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3d(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3d(0, 0, 1));
 
         // 将点转换到OBB局部坐标系
-        Vector3f localFrom = worldToLocal(pFrom, axes);
-        Vector3f localTo = worldToLocal(pTo, axes);
+        Vector3d localFrom = worldToLocal(pFrom, axes);
+        Vector3d localTo = worldToLocal(pTo, axes);
 
         // 射线方向（局部坐标系）
-        Vector3f dir = new Vector3f(localTo).sub(localFrom);
+        Vector3d dir = new Vector3d(localTo).sub(localFrom);
 
         // Slab算法参数
-        double tEnter = 0.0;      // 进入时间
-        double tExit = 1.0;       // 离开时间
+        double tEnter = 0;      // 进入时间
+        double tExit = 1;       // 离开时间
 
         // 在三个轴上执行Slab算法
         for (int i = 0; i < 3; i++) {
@@ -190,16 +261,15 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
 
         // 检查是否有有效交点
         // 计算局部坐标系中的交点
-        Vector3f localHit = new Vector3f(dir).mul((float) tEnter).add(localFrom);
+        Vector3d localHit = new Vector3d(dir).mul(tEnter).add(localFrom);
         // 转换回世界坐标系
         return Optional.of(localToWorld(localHit, axes));
-
     }
 
     // 世界坐标转局部坐标
-    private Vector3f worldToLocal(Vector3f worldPoint, Vector3f[] axes) {
-        Vector3f rel = new Vector3f(worldPoint).sub(center);
-        return new Vector3f(
+    private Vector3d worldToLocal(Vector3d worldPoint, Vector3d[] axes) {
+        Vector3d rel = new Vector3d(worldPoint).sub(center);
+        return new Vector3d(
                 rel.dot(axes[0]),
                 rel.dot(axes[1]),
                 rel.dot(axes[2])
@@ -207,26 +277,26 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     }
 
     // 局部坐标转世界坐标
-    private Vector3f localToWorld(Vector3f localPoint, Vector3f[] axes) {
-        Vector3f result = new Vector3f(center);
-        result.add(axes[0].mul(localPoint.x, new Vector3f()));
-        result.add(axes[1].mul(localPoint.y, new Vector3f()));
-        result.add(axes[2].mul(localPoint.z, new Vector3f()));
+    private Vector3d localToWorld(Vector3d localPoint, Vector3d[] axes) {
+        Vector3d result = new Vector3d(center);
+        result.add(axes[0].mul(localPoint.x, new Vector3d()));
+        result.add(axes[1].mul(localPoint.y, new Vector3d()));
+        result.add(axes[2].mul(localPoint.z, new Vector3d()));
         return result;
     }
 
-    public OBB inflate(float amount) {
-        Vector3f newExtents = new Vector3f(extents).add(amount, amount, amount);
+    public OBB inflate(double amount) {
+        Vector3d newExtents = new Vector3d(extents).add(amount, amount, amount);
         return new OBB(center, newExtents, rotation, part);
     }
 
-    public OBB inflate(float x, float y, float z) {
-        Vector3f newExtents = new Vector3f(extents).add(x, y, z);
+    public OBB inflate(double x, double y, double z) {
+        Vector3d newExtents = new Vector3d(extents).add(x, y, z);
         return new OBB(center, newExtents, rotation, part);
     }
 
     public OBB move(Vec3 vec3) {
-        Vector3f newCenter = new Vector3f((float) (center.x + vec3.x), (float) (center.y + vec3.y), (float) (center.z + vec3.z));
+        Vector3d newCenter = new Vector3d(center.x + vec3.x, center.y + vec3.y, center.z + vec3.z);
         return new OBB(newCenter, extents, rotation, part);
     }
 
@@ -237,17 +307,17 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
      */
     public boolean contains(Vec3 vec3) {
         // 计算点到OBB中心的向量
-        Vector3f rel = new Vector3f(vec3.toVector3f()).sub(center);
+        Vector3d rel = vec3ToVector3d(vec3).sub(center);
 
-        Vector3f[] axes = new Vector3f[3];
-        axes[0] = rotation.transform(new Vector3f(1, 0, 0));
-        axes[1] = rotation.transform(new Vector3f(0, 1, 0));
-        axes[2] = rotation.transform(new Vector3f(0, 0, 1));
+        Vector3d[] axes = new Vector3d[3];
+        axes[0] = rotation.transform(new Vector3d(1, 0, 0));
+        axes[1] = rotation.transform(new Vector3d(0, 1, 0));
+        axes[2] = rotation.transform(new Vector3d(0, 0, 1));
 
         // 将相对向量投影到OBB的三个轴上
-        float projX = Math.abs(rel.dot(axes[0]));
-        float projY = Math.abs(rel.dot(axes[1]));
-        float projZ = Math.abs(rel.dot(axes[2]));
+        double projX = Math.abs(rel.dot(axes[0]));
+        double projY = Math.abs(rel.dot(axes[1]));
+        double projZ = Math.abs(rel.dot(axes[2]));
 
         // 检查投影值是否小于对应轴上的半长
         return projX <= extents.x &&
@@ -261,7 +331,7 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     @Nullable
     public static OBB getLookingObb(Player player, double range) {
         Entity lookingEntity = TraceTool.findLookingEntity(player, range);
-        if (!(lookingEntity instanceof OBBEntity obbEntity)) {
+        if (!(lookingEntity instanceof OBBEntity obbEntity) || obbEntity.enableAABB()) {
             return null;
         }
 
@@ -294,24 +364,24 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     @Nullable
     public static Vec3 rayIntersect(OBB obb, Vec3 start, Vec3 end) {
         // 获取 OBB 信息
-        Vec3 center = new Vec3(obb.center());
-        Vec3 extents = new Vec3(obb.extents());
-        Quaternionf rotation = obb.rotation();
+        Vec3 center = vector3dToVec3(obb.center());
+        Vec3 extents = vector3dToVec3(obb.extents());
+        Quaterniond rotation = obb.rotation();
 
         // 计算逆旋转
-        Quaternionf inverse = new Quaternionf(rotation).conjugate();
+        Quaterniond inverse = new Quaterniond(rotation).conjugate();
 
         // 转换起点和终点到局部坐标系
-        Vector3f localStart = toLocal(obb, start);
-        Vector3f localEnd = toLocal(obb, end);
+        Vector3d localStart = toLocal(obb, start);
+        Vector3d localEnd = toLocal(obb, end);
 
         // 定义 OBB 的 AABB（在局部坐标系中）
-        float minX = (float) -extents.x, minY = (float) -extents.y, minZ = (float) -extents.z;
-        float maxX = (float) extents.x, maxY = (float) extents.y, maxZ = (float) extents.z;
+        double minX = -extents.x, minY = -extents.y, minZ = -extents.z;
+        double maxX = extents.x, maxY = extents.y, maxZ = extents.z;
 
         // 使用 JOML 的相交检测
-        Vector2f result = new Vector2f();
-        boolean intersects = Intersectionf.intersectRayAab(
+        Vector2d result = new Vector2d();
+        boolean intersects = Intersectiond.intersectRayAab(
                 localStart.x, localStart.y, localStart.z,
                 localEnd.x - localStart.x, localEnd.y - localStart.y, localEnd.z - localStart.z,
                 minX, minY, minZ,
@@ -320,8 +390,8 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
         );
 
         if (intersects) {
-            float t = result.x; // 交点参数
-            Vector3f localHit = new Vector3f(
+            double t = result.x; // 交点参数
+            Vector3d localHit = new Vector3d(
                     localStart.x + t * (localEnd.x - localStart.x),
                     localStart.y + t * (localEnd.y - localStart.y),
                     localStart.z + t * (localEnd.z - localStart.z)
@@ -335,17 +405,17 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     }
 
     // 将世界坐标点转换到 OBB 局部坐标系
-    private static Vector3f toLocal(OBB obb, Vec3 worldPoint) {
+    private static Vector3d toLocal(OBB obb, Vec3 worldPoint) {
         // 获取 OBB 信息
-        Vec3 center = new Vec3(obb.center());
-        Quaternionf rotation = obb.rotation();
-        Quaternionf inverse = new Quaternionf(rotation).conjugate();
+        Vec3 center = vector3dToVec3(obb.center());
+        Quaterniond rotation = obb.rotation();
+        Quaterniond inverse = new Quaterniond(rotation).conjugate();
 
         // 计算相对于中心的向量
-        Vector3f relative = new Vector3f(
-                (float) (worldPoint.x - center.x),
-                (float) (worldPoint.y - center.y),
-                (float) (worldPoint.z - center.z)
+        Vector3d relative = new Vector3d(
+                worldPoint.x - center.x,
+                worldPoint.y - center.y,
+                worldPoint.z - center.z
         );
 
         // 应用逆旋转（世界坐标 -> 局部坐标）
@@ -354,13 +424,29 @@ public record OBB(Vector3f center, Vector3f extents, Quaternionf rotation, Part 
     }
 
     public enum Part {
+        @SerializedName("Empty")
         EMPTY,
+        @SerializedName("WheelLeft")
         WHEEL_LEFT,
+        @SerializedName("WheelRight")
         WHEEL_RIGHT,
+        @SerializedName("Turret")
         TURRET,
-        ENGINE1,
-        ENGINE2,
+        @SerializedName("MainEngine")
+        MAIN_ENGINE,
+        @SerializedName("SubEngine")
+        SUB_ENGINE,
+        @SerializedName("Body")
         BODY,
+        @SerializedName("Interactive")
         INTERACTIVE
+    }
+
+    public static Vector3d vec3ToVector3d(Vec3 vec3) {
+        return new Vector3d(vec3.x, vec3.y, vec3.z);
+    }
+
+    public static Vec3 vector3dToVec3(Vector3d vector3d) {
+        return new Vec3(vector3d.x, vector3d.y, vector3d.z);
     }
 }

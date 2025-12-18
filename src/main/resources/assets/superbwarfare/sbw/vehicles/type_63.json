@@ -1,0 +1,11 @@
+{
+  "Model": {
+    "Model": "superbwarfare:geo/type_63.geo.json",
+    "LODModel": [
+      "superbwarfare:geo/vehicle_lod/type_63_lod1.geo.json",
+      "superbwarfare:geo/vehicle_lod/type_63_lod2.geo.json"
+    ],
+    "Texture": "superbwarfare:textures/entity/type_63.png"
+  },
+  "LODDistance": [32, 96]
+}

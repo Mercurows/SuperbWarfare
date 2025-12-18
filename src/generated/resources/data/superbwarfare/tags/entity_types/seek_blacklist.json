@@ -1,0 +1,47 @@
+{
+  "values": [
+    "minecraft:item",
+    "minecraft:armor_stand",
+    "minecraft:experience_orb",
+    "minecraft:item_display",
+    "minecraft:falling_block",
+    "minecraft:item_frame",
+    "minecraft:firework_rocket",
+    "minecraft:glow_item_frame",
+    "minecraft:area_effect_cloud",
+    "superbwarfare:claymore",
+    "superbwarfare:c4",
+    {
+      "id": "touhou_little_maid:power_point",
+      "required": false
+    },
+    {
+      "id": "evilcraft:vengeance_spirit",
+      "required": false
+    },
+    {
+      "id": "mts:builder_rendering",
+      "required": false
+    },
+    {
+      "id": "create:carriage_contraption",
+      "required": false
+    },
+    {
+      "id": "create:stationary_contraption",
+      "required": false
+    },
+    {
+      "id": "create:gantry_contraption",
+      "required": false
+    },
+    {
+      "id": "create:super_glue",
+      "required": false
+    },
+    {
+      "id": "zombiekit:flares",
+      "required": false
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
@@ -13,16 +14,21 @@ import com.atsuishio.superbwarfare.tools.LivingKillRecord;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 public class ClientPacketHandler {
 
@@ -98,6 +104,7 @@ public class ClientPacketHandler {
             Minecraft minecraft = Minecraft.getInstance();
             Player player = minecraft.player;
             if (player != null) {
+                player.setPos(message.position().x, message.position().y, message.position().z);
                 player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
             }
         }
@@ -118,6 +125,28 @@ public class ClientPacketHandler {
     public static void handleTDMSyncMessage(TDMSyncMessage message, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
             ClientEventHandler.tdmSavedData = message.data();
+        }
+    }
+
+    public static void handleSoundClient(SoundClientMessage message, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+            Player player = Minecraft.getInstance().player;
+            if (player == null) return;
+            if (player.getUUID().equals(message.sender())
+                    && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle)
+            ) return;
+
+            SoundEvent sound = SoundEvent.createVariableRangeEvent(message.location());
+
+            double distance = player.position().distanceTo(new Vec3(message.x(), message.y(), message.z()));
+            int time = (int) (distance / 17);
+
+            if (time == 0) {
+                player.level().playSound(player, message.x(), message.y(), message.z(), sound, SoundSource.BLOCKS, message.radius(), message.pitch());
+            } else {
+                Mod.queueClientWork(time,
+                        () -> player.level().playSound(player, message.x(), message.y(), message.z(), sound, SoundSource.BLOCKS, message.radius(), message.pitch()));
+            }
         }
     }
 }

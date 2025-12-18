@@ -1,0 +1,65 @@
+{
+  "Spread": 2.3,
+  "RecoilX": 0.0005,
+  "RecoilY": 0.015,
+  "Damage": 6,
+  "Headshot": 1.5,
+  "Velocity": 16,
+  "Magazine": 13,
+  "Weight": 3,
+  "DefaultFireMode": "Auto",
+  "BurstAmount": 3,
+  "NormalReloadTime": 46,
+  "EmptyReloadTime": 64,
+  "BypassesArmor": 0.15,
+  "SoundRadius": 11,
+  "RPM": 1200,
+  "AvailableFireModes": [
+    "Semi",
+    "Burst",
+    "Auto"
+  ],
+  "GunType": "Smg",
+  "DamageReduce": {
+    "Type": "Smg"
+  },
+  "AmmoType": "@HandgunAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/vector_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:head_seeker",
+    "superbwarfare:desperado",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:firefly",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:vector_fire_1p",
+    "Fire3P": "superbwarfare:vector_fire_3p",
+    "Fire3PFar": "superbwarfare:vector_far",
+    "Fire3PVeryFar": "superbwarfare:vector_veryfar",
+    "Fire1PSilent": "superbwarfare:vector_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:vector_fire_3p_s",
+    "Fire3PFarSilent": "superbwarfare:vector_far_s",
+    "ReloadNormal": "superbwarfare:vector_reload_normal",
+    "ReloadEmpty": "superbwarfare:vector_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:vector_reload_normal",
+      "superbwarfare:vector_reload_empty"
+    ]
+  }
+}

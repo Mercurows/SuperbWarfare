@@ -1,0 +1,10 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/bocek.animation.json",
+    "Model": "superbwarfare:geo/bocek.geo.json",
+    "Texture": "superbwarfare:textures/item/bocek.png",
+    "LODModel": "superbwarfare:geo/lod/bocek.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/bocek.png"
+  },
+  "TriggerSound": null
+}

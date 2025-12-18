@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
@@ -101,9 +100,10 @@ public class PlayerEventHandler {
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     data.reloadAmmo(player);
                 } else {
-                    data.ammo.set(data.get(GunProp.MAGAZINE));
+                    data.ammo.set(data.compute().magazine);
                 }
                 data.holdOpen.set(false);
+                data.save();
             }
         }
     }
@@ -123,17 +123,17 @@ public class PlayerEventHandler {
             armorLevel = MiscConfig.HEAVY_MILITARY_ARMOR_LEVEL.get();
         }
 
-        if (armorPlate < armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) {
+        if (armorPlate < armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()) {
             for (var stack : player.getInventory().items) {
                 if (stack.is(ModItems.ARMOR_PLATE.get())) {
                     if (stack.getTag() != null && stack.getTag().getBoolean("Infinite")) {
-                        armor.getOrCreateTag().putDouble("ArmorPlate", armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get());
+                        armor.getOrCreateTag().putDouble("ArmorPlate", armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get());
 
                         if (player instanceof ServerPlayer serverPlayer) {
                             serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARMOR_EQUIP_IRON, SoundSource.PLAYERS, 0.5f, 1);
                         }
                     } else {
-                        for (int index0 = 0; index0 < Math.ceil(((armorLevel * MiscConfig.ARMOR_PONT_PER_LEVEL.get()) - armorPlate) / MiscConfig.ARMOR_PONT_PER_LEVEL.get()); index0++) {
+                        for (int index0 = 0; index0 < Math.ceil(((armorLevel * MiscConfig.ARMOR_POINT_PER_LEVEL.get()) - armorPlate) / MiscConfig.ARMOR_POINT_PER_LEVEL.get()); index0++) {
                             stack.finishUsingItem(player.level(), player);
                         }
                     }
@@ -166,9 +166,10 @@ public class PlayerEventHandler {
 
         if (left.getItem() instanceof GunItem && right.getItem() == ModItems.SHORTCUT_PACK.get()) {
             ItemStack output = left.copy();
-            var data = GunData.from(output);
 
-            data.upgradePoint.set(data.upgradePoint.get() + 1);
+            var data = GunData.from(output);
+            data.level.add(1);
+            data.save();
 
             event.setOutput(output);
             event.setCost(10);

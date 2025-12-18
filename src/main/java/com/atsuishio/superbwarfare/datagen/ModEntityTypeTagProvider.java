@@ -35,7 +35,7 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 ModEntities.MELON_BOMB.get(),
                 ModEntities.MK_82.get(),
                 ModEntities.SWARM_DRONE.get(),
-                ModEntities.WG_MISSILE.get()
+                ModEntities.WIRE_GUIDE_MISSILE.get()
         );
 
         this.tag(ModTags.EntityTypes.DECOY).add(
@@ -49,19 +49,46 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
 
         this.tag(ModTags.EntityTypes.CAN_REPAIR).add(
                 EntityType.IRON_GOLEM
-        );
+        ).addOptional(new ResourceLocation("touhou_little_maid", "maid"));
 
         this.tag(ModTags.EntityTypes.MINE).add(
                 ModEntities.BLU_43.get(),
                 ModEntities.TM_62.get(),
                 ModEntities.PTKM_1R.get(),
-                ModEntities.CLAYMORE.get()
+                ModEntities.CLAYMORE.get(),
+                ModEntities.PTKM_PROJECTILE.get()
         );
 
         this.tag(ModTags.EntityTypes.AT_ROCKET).add(
                 ModEntities.RPG_ROCKET_STANDARD.get(),
                 ModEntities.RPG_ROCKET_TBG.get()
         );
+
+        this.tag(ModTags.EntityTypes.AA_MISSILE).add(
+                ModEntities.IGLA_MISSILE.get(),
+                ModEntities.RU_9K33_MISSILE.get()
+        );
+
+        this.tag(ModTags.EntityTypes.SEEK_BLACKLIST).add(
+                        EntityType.ITEM,
+                        EntityType.ARMOR_STAND,
+                        EntityType.EXPERIENCE_ORB,
+                        EntityType.ITEM_DISPLAY,
+                        EntityType.FALLING_BLOCK,
+                        EntityType.ITEM_FRAME,
+                        EntityType.FIREWORK_ROCKET,
+                        EntityType.GLOW_ITEM_FRAME,
+                        EntityType.AREA_EFFECT_CLOUD,
+                        ModEntities.CLAYMORE.get(),
+                        ModEntities.C4.get()
+                ).addOptional(new ResourceLocation("touhou_little_maid", "power_point"))
+                .addOptional(new ResourceLocation("evilcraft", "vengeance_spirit"))
+                .addOptional(new ResourceLocation("mts", "builder_rendering"))
+                .addOptional(new ResourceLocation("create", "carriage_contraption"))
+                .addOptional(new ResourceLocation("create", "stationary_contraption"))
+                .addOptional(new ResourceLocation("create", "gantry_contraption"))
+                .addOptional(new ResourceLocation("create", "super_glue"))
+                .addOptional(new ResourceLocation("zombiekit", "flares"));
     }
 
     public static TagKey<EntityType<?>> forgeTag(String name) {

@@ -1,0 +1,46 @@
+{
+  "Spread": 7,
+  "RecoilX": 0.004,
+  "RecoilY": 0.04,
+  "Damage": 65,
+  "Headshot": 3,
+  "Velocity": 38,
+  "Magazine": 1,
+  "Weight": 5,
+  "ZoomSpreadRate": 0.005,
+  "EmptyReloadTime": 64,
+  "BypassesArmor": 0.7,
+  "SoundRadius": 20,
+  "GunType": "Sniper",
+  "DamageReduce": {
+    "Type": "Sniper"
+  },
+  "AmmoType": "@SniperAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/hunting_rifle_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:kill_clip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:fair_means",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:hunting_rifle_fire_1p",
+    "Fire3P": "superbwarfare:hunting_rifle_fire_3p",
+    "Fire3PFar": "superbwarfare:hunting_rifle_far",
+    "Fire3PVeryFar": "superbwarfare:hunting_rifle_veryfar",
+    "ReloadEmpty": "superbwarfare:hunting_rifle_reload_empty",
+    "CancellableSounds": [
+      "superbwarfare:hunting_rifle_reload_empty"
+    ]
+  }
+}

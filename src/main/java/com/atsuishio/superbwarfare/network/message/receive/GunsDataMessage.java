@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.receive;
 
+import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.tools.BufferSerializer;
-import com.atsuishio.superbwarfare.tools.GunsTool;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.ArrayList;
@@ -14,10 +14,6 @@ public class GunsDataMessage {
 
     private GunsDataMessage(List<DefaultGunData> data) {
         this.data = data;
-    }
-
-    public static GunsDataMessage create() {
-        return new GunsDataMessage(GunsTool.gunsData.values().stream().toList());
     }
 
     public static void encode(GunsDataMessage message, FriendlyByteBuf buf) {
@@ -38,12 +34,16 @@ public class GunsDataMessage {
         return new GunsDataMessage(list);
     }
 
+    public static GunsDataMessage create() {
+        return new GunsDataMessage(CustomData.GUN_DATA.values().stream().toList());
+    }
+
     public static void handler(GunsDataMessage message) {
-        GunsTool.gunsData.clear();
+        CustomData.GUN_DATA.clear();
 
         for (var entry : message.data) {
-            if (GunsTool.gunsData.containsKey(entry.id)) continue;
-            GunsTool.gunsData.put(entry.id, entry);
+            if (CustomData.GUN_DATA.containsKey(entry.getId())) continue;
+            CustomData.GUN_DATA.put(entry.getId(), entry);
         }
     }
 }

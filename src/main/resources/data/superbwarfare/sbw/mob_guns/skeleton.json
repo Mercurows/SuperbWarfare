@@ -1,0 +1,13 @@
+{
+  "Probability": 1,
+  "Guns": {
+    "ID": "superbwarfare:m_79",
+    "SpawnWithLoadedAmmo": false,
+    "BackupAmmo": 20,
+    "Override": {
+      "Damage": 1,
+      "ExplosionDamage": 0,
+      "ExplosionRadius": 1
+    }
+  }
+}

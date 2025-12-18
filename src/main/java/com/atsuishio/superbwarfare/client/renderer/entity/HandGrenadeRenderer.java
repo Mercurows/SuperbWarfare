@@ -33,6 +33,6 @@ public class HandGrenadeRenderer extends GeoEntityRenderer<HandGrenadeEntity> {
 
     @Override
     protected float getDeathMaxRotation(HandGrenadeEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

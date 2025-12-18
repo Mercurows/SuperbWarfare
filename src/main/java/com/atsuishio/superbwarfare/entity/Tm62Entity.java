@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
@@ -41,7 +40,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity, MineEntity {
+public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity {
 
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Tm62Entity.class, EntityDataSerializers.OPTIONAL_UUID);
     protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(Tm62Entity.class, EntityDataSerializers.STRING);
@@ -178,7 +177,7 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity, Mine
             touchEntity();
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.03, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.03, 0));
 
         if (!this.level().noCollision(this.getBoundingBox())) {
             this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
@@ -193,7 +192,7 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity, Mine
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
         if (this.onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, -0.9, 1.0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1, -0.9, 1));
         }
 
         if (entityData.get(FUSE) && this.level() instanceof ServerLevel serverLevel) {
@@ -223,12 +222,13 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity, Mine
             }
 
             if (trigger) {
-                triggerExplode();
-                if (this.level() instanceof ServerLevel) {
+                this.triggerExplode();
+
+                if (this.level() instanceof ServerLevel && ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
                     AABB aabb = new AABB(position(), position()).inflate(2);
                     BlockPos.betweenClosedStream(aabb).forEach((blockPos) -> {
                         float hard = this.level().getBlockState(blockPos).getBlock().defaultDestroyTime();
-                        if (ExplosionConfig.EXPLOSION_DESTROY.get() && hard != -1) {
+                        if (hard != -1) {
                             this.level().destroyBlock(blockPos, true);
                         }
                     });
@@ -249,11 +249,6 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity, Mine
     }
 
     @Override
-    public boolean isPushable() {
-        return super.isPushable();
-    }
-
-    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar data) {
     }
 
@@ -263,7 +258,7 @@ public class Tm62Entity extends Entity implements GeoEntity, OwnableEntity, Mine
     }
 
     public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
-        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0.0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale(pVelocity);
         this.setDeltaMovement(vec3);
     }
 }

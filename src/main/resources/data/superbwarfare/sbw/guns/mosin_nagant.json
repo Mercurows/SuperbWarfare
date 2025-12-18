@@ -1,0 +1,63 @@
+{
+  "DefaultZoom": 3.5,
+  "Spread": 4.8,
+  "RecoilX": 0.002,
+  "RecoilY": 0.063,
+  "Damage": 33,
+  "Headshot": 3,
+  "Velocity": 42,
+  "Magazine": 5,
+  "ReloadTypes": [
+    "Iterative"
+  ],
+  "BoltActionTime": 22,
+  "Weight": 5,
+  "ZoomSpreadRate": 0.005,
+  "PrepareTime": 29,
+  "PrepareEmptyTime": 16,
+  "IterativeTime": 11,
+  "FinishTime": 18,
+  "BypassesArmor": 0.54,
+  "SoundRadius": 18,
+  "GunType": "Sniper",
+  "DamageReduce": {
+    "Type": "Sniper"
+  },
+  "AmmoType": "@SniperAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/mosin_nagant_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:kill_clip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:fair_means",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:mosin_nagant_fire_1p",
+    "Fire3P": "superbwarfare:mosin_nagant_fire_3p",
+    "Fire3PFar": "superbwarfare:mosin_nagant_far",
+    "Fire3PVeryFar": "superbwarfare:mosin_nagant_veryfar",
+    "ReloadPrepare": "superbwarfare:k_98_prepare",
+    "ReloadPrepareEmpty": "superbwarfare:k_98_prepare_empty",
+    "ReloadLoop": "superbwarfare:k_98_loop",
+    "ReloadEnd": "superbwarfare:k_98_end",
+    "Bolt": "superbwarfare:k_98_bolt",
+    "CancellableSounds": [
+      "superbwarfare:k_98_prepare",
+      "superbwarfare:k_98_prepare_empty",
+      "superbwarfare:k_98_loop",
+      "superbwarfare:k_98_end",
+      "superbwarfare:k_98_bolt"
+    ]
+  }
+}

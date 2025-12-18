@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -23,9 +23,13 @@ public enum ReloadMessage {
     }
 
     public static void pressAction(Player player) {
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof GunItem)) return;
+        if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+            vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> GunEventHandler.INSTANCE.tryStartReload(vehicle.getAmmoSupplier(), data));
+            return;
+        }
 
-        GunEventHandler.tryStartReload(player, GunData.from(stack));
+        var stack = player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem)) return;
+        GunEventHandler.INSTANCE.tryStartReload(player, GunData.from(stack));
     }
 }

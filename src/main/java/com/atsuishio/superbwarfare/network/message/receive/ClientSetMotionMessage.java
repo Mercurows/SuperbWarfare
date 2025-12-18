@@ -10,15 +10,17 @@ import org.joml.Vector3f;
 
 import java.util.function.Supplier;
 
-public record ClientSetMotionMessage(Vec3 motion) {
+public record ClientSetMotionMessage(Vec3 motion, Vec3 position) {
 
     public static void encode(ClientSetMotionMessage message, FriendlyByteBuf buffer) {
         buffer.writeVector3f(message.motion.toVector3f());
+        buffer.writeVector3f(message.position.toVector3f());
     }
 
     public static ClientSetMotionMessage decode(FriendlyByteBuf buffer) {
         Vector3f v = buffer.readVector3f();
-        return new ClientSetMotionMessage(new Vec3(v));
+        Vector3f p = buffer.readVector3f();
+        return new ClientSetMotionMessage(new Vec3(v), new Vec3(p));
     }
 
     public static void handler(ClientSetMotionMessage message, Supplier<NetworkEvent.Context> ctx) {

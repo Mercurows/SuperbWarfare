@@ -1,0 +1,15 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/sentinel.animation.json",
+    "Model": "superbwarfare:geo/sentinel.geo.json",
+    "Texture": "superbwarfare:textures/item/sentinel.png",
+    "LODModel": "superbwarfare:geo/lod/sentinel.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/sentinel.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.53125
+  ],
+  "FlareSize": 0.6
+}

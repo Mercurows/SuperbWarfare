@@ -1,11 +1,9 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,31 +11,6 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 
 public class JavelinItemModel extends CustomGunModel<JavelinItem> {
-
-    @Override
-    public ResourceLocation getAnimationResource(JavelinItem animatable) {
-        return Mod.loc("animations/javelin.animation.json");
-    }
-
-    @Override
-    public ResourceLocation getModelResource(JavelinItem animatable) {
-        return Mod.loc("geo/javelin.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getTextureResource(JavelinItem animatable) {
-        return Mod.loc("textures/item/javelin.png");
-    }
-
-    @Override
-    public ResourceLocation getLODModelResource(JavelinItem animatable) {
-        return Mod.loc("geo/lod/javelin.geo.json");
-    }
-
-    @Override
-    public ResourceLocation getLODTextureResource(JavelinItem animatable) {
-        return Mod.loc("textures/item/lod/javelin.png");
-    }
 
     @Override
     public void setCustomAnimations(JavelinItem animatable, long instanceId, AnimationState<JavelinItem> animationState) {

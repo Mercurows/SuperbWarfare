@@ -1,0 +1,19 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/hunting_rifle.animation.json",
+    "Model": "superbwarfare:geo/hunting_rifle.geo.json",
+    "Texture": "superbwarfare:textures/item/hunting_rifle.png",
+    "LODModel": "superbwarfare:geo/lod/hunting_rifle.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/hunting_rifle.png"
+  },
+  "Animation": {
+    "Idle": "animation.hunting_rifle.idle",
+    "Reload": "animation.hunting_rifle.reload"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    2.234375
+  ],
+  "FlareSize": 0.6
+}

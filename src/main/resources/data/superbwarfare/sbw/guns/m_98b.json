@@ -1,0 +1,58 @@
+{
+  "MinZoom": 4,
+  "MaxZoom": 8,
+  "Spread": 6,
+  "RecoilX": 0.007,
+  "RecoilY": 0.013,
+  "Damage": 38,
+  "Headshot": 3,
+  "Velocity": 47.2,
+  "Magazine": 5,
+  "BoltActionTime": 24,
+  "Weight": 7,
+  "ZoomSpreadRate": 0.005,
+  "NormalReloadTime": 62,
+  "EmptyReloadTime": 80,
+  "BypassesArmor": 0.6,
+  "SoundRadius": 18,
+  "GunType": "Sniper",
+  "DamageReduce": {
+    "Type": "Sniper"
+  },
+  "AmmoType": "@SniperAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/m_98b_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:kill_clip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:butterfly_bullet",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:m_98b_fire_1p",
+    "Fire3P": "superbwarfare:m_98b_fire_3p",
+    "Fire3PFar": "superbwarfare:m_98b_far",
+    "Fire3PVeryFar": "superbwarfare:m_98b_veryfar",
+    "Fire1PSilent": "superbwarfare:m_98b_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:m_98b_fire_3p_s",
+    "ReloadNormal": "superbwarfare:m_98b_reload_normal",
+    "ReloadEmpty": "superbwarfare:m_98b_reload_empty",
+    "Bolt": "superbwarfare:m_98b_bolt",
+    "CancellableSounds": [
+      "superbwarfare:m_98b_reload_normal",
+      "superbwarfare:m_98b_reload_empty",
+      "superbwarfare:m_98b_bolt"
+    ]
+  }
+}

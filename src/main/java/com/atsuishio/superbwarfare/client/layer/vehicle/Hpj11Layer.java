@@ -15,7 +15,7 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class Hpj11Layer extends GeoRenderLayer<Hpj11Entity> {
 
-    private static final ResourceLocation LAYER = Mod.loc("textures/entity/1130_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/entity/hpj_11_e.png");
 
     public Hpj11Layer(GeoRenderer<Hpj11Entity> entityRenderer) {
         super(entityRenderer);

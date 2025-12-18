@@ -26,6 +26,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -65,7 +66,7 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
 
             if (blockEntity.tick == 18) {
                 ParticleTool.sendParticle((ServerLevel) pLevel, ParticleTypes.EXPLOSION, pPos.getX(), pPos.getY() + 1, pPos.getZ(), 40, 1.5, 1.5, 1.5, 1, false);
-                pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.2F) * 0.7F);
+                pLevel.playSound(null, pPos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4F, (1F + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.2F) * 0.7F);
             }
         } else {
             var items = blockEntity.unpackLootTable(blockEntity.player);
@@ -98,7 +99,7 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     @Override
-    public void load(CompoundTag compound) {
+    public void load(@NotNull CompoundTag compound) {
         super.load(compound);
         if (compound.contains("LootTable", 8)) {
             this.lootTable = new ResourceLocation(compound.getString("LootTable"));
@@ -108,7 +109,7 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    public void saveAdditional(@NotNull CompoundTag compound) {
         super.saveAdditional(compound);
         if (this.lootTable != null) {
             compound.putString("LootTable", this.lootTable.toString());
@@ -125,12 +126,12 @@ public class SmallContainerBlockEntity extends BlockEntity implements GeoBlockEn
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         return this.saveWithFullMetadata();
     }
 
     @Override
-    public void saveToItem(ItemStack pStack) {
+    public void saveToItem(@NotNull ItemStack pStack) {
         CompoundTag tag = new CompoundTag();
         if (this.lootTable != null) {
             tag.putString("LootTable", this.lootTable.toString());

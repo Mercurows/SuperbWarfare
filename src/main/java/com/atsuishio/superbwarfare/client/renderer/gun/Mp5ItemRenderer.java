@@ -43,7 +43,8 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-                boolean flag = GunData.from(itemStack).attachment.get(AttachmentType.GRIP) == 0;
+                var data = GunData.from(itemStack);
+                boolean flag = data.attachment.get(AttachmentType.GRIP) == 0;
                 if (name.equals("yugu")) {
                     bone.setHidden(flag);
                 }
@@ -51,15 +52,15 @@ public class Mp5ItemRenderer extends CustomGunRenderer<Mp5Item> {
                     bone.setHidden(!flag);
                 }
 
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.05, 1, 0.35);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    if (GunData.from(itemStack).attachment.get(AttachmentType.SCOPE) == 2 && bone.getName().endsWith("_hide2")) {
+                    if (data.attachment.get(AttachmentType.SCOPE) == 2 && bone.getName().endsWith("_hide2")) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
 
-                    int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
+                    int scopeType = data.attachment.get(AttachmentType.SCOPE);
                     switch (scopeType) {
                         case 1 ->
                                 AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.42, 14, 1, 255, 0, 0, 255, "dot", false);

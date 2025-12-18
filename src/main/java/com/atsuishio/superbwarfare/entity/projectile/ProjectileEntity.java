@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
@@ -14,6 +13,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Beast;
 import com.atsuishio.superbwarfare.item.Transcript;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.*;
@@ -57,7 +57,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -125,6 +124,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private final ArrayList<MobEffectInstance> mobEffects = new ArrayList<>();
     // 发射子弹的武器ID
     private String gunItemId;
+    // 重力
+    private float gravity = 0.05f;
 
     public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, Level level) {
         super(entityType, level);
@@ -133,10 +134,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public ProjectileEntity(Level level) {
         this(ModEntities.PROJECTILE.get(), level);
-    }
-
-    public ProjectileEntity(PlayMessages.SpawnEntity packet, Level level) {
-        super(ModEntities.PROJECTILE.get(), level);
     }
 
     @Nullable
@@ -208,14 +205,14 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
      */
     @Nullable
     private EntityResult getHitResult(Entity entity, Vec3 startVec, Vec3 endVec) {
-        double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0.0;
+        double expandHeight = entity instanceof Player && !entity.isCrouching() ? 0.0625 : 0;
 
         Vec3 hitPos = null;
-        if (entity instanceof OBBEntity obbEntity) {
+        if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
             for (OBB obb : obbEntity.getOBBs()) {
-                var obbVec = obb.clip(startVec.toVector3f(), endVec.toVector3f()).orElse(null);
+                var obbVec = obb.clip(OBB.vec3ToVector3d(startVec), OBB.vec3ToVector3d(endVec)).orElse(null);
                 if (obbVec != null) {
-                    hitPos = new Vec3(obbVec);
+                    hitPos = OBB.vector3dToVec3(obbVec);
                     if (this.level() instanceof ServerLevel serverLevel) {
                         this.level().playSound(null, BlockPos.containing(hitPos), ModSounds.HIT.get(), SoundSource.PLAYERS, 1, 1);
                         sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);
@@ -350,7 +347,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             this.setPosRaw(this.getX() + vec.x, this.getY() + vec.y, this.getZ() + vec.z);
         }
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -this.gravity, 0));
 
         if (this.tickCount > (fireLevel > 0 ? 10 : 40)) {
             this.discard();
@@ -384,11 +381,10 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         this.syncMotion();
     }
 
-
     @Override
     public void syncMotion() {
         if (!this.level().isClientSide) {
-            Mod.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new ClientMotionSyncMessage(this));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new ClientMotionSyncMessage(this));
         }
     }
 
@@ -401,7 +397,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             BlockPos resultPos = blockHitResult.getBlockPos();
             BlockState state = this.level().getBlockState(resultPos);
             SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
-            this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1.0F, 1.0F);
+            this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1F, 1F);
             Vec3 hitVec = result.getLocation();
 
             this.onHitBlock(hitVec, blockHitResult);
@@ -445,7 +441,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             v = Math.max(y, z);
         }
 
-        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0.0, 1.0)));
+        return Math.max(1, Mth.ceil(10.0 * Mth.clamp((0.5 - v) / 0.5, 0, 1)));
     }
 
     public void recordHitScore(@NotNull Direction direction, @NotNull Vec3 hitVec) {
@@ -464,7 +460,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer serverPlayer) {
             var holder = score == 10 ? Holder.direct(ModSounds.HEADSHOT.get()) : Holder.direct(ModSounds.INDICATION.get());
             serverPlayer.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ClientIndicatorMessage(score == 10 ? 1 : 0, 5));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ClientIndicatorMessage(score == 10 ? 1 : 0, 5));
         }
 
         ItemStack stack = player.getOffhandItem();
@@ -514,7 +510,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     }
 
                     ParticleTool.spawnBulletHitWaterParticles(serverLevel, location);
-                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.HIT_WATER.get(), SoundSource.BLOCKS, 1F, 1F);
 
                     // 水下路径气泡
                     double l = getDeltaMovement().length();
@@ -535,7 +531,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     }
                     ParticleTool.sendParticle(serverLevel, ParticleTypes.LAVA, location.x, location.y, location.z,
                             4, 0, 0, 0, 0.6, true);
-                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1F, 1F);
                     this.discard();
                 }
             }
@@ -571,7 +567,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
                 this.discard();
             }
-            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            serverLevel.playSound(null, new BlockPos((int) location.x, (int) location.y, (int) location.z), ModSounds.LAND.get(), SoundSource.BLOCKS, 1F, 1F);
         }
     }
 
@@ -585,7 +581,8 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             Vec3 vec3 = randomVec(dir, 20);
             ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 0, vec3.x, vec3.y, vec3.z, 0.05, true);
         }
-        if (state.getSoundType() == SoundType.METAL || state.getSoundType() == SoundType.ANVIL || state.getSoundType() == SoundType.CHAIN || state.getSoundType() == SoundType.COPPER || state.getSoundType() == SoundType.NETHERITE_BLOCK) {
+        var soundType = state.getSoundType();
+        if (soundType == SoundType.METAL || soundType == SoundType.ANVIL || soundType == SoundType.CHAIN || soundType == SoundType.COPPER || soundType == SoundType.NETHERITE_BLOCK) {
             serverLevel.playSound(null, pos.x, pos.y, pos.z, ModSounds.HIT.get(), SoundSource.BLOCKS, 2, 1);
             for (int i = 0; i < 3; i++) {
                 Vec3 vec3 = randomVec(dir, 80);
@@ -595,7 +592,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     }
 
     public Vec3 randomVec(Vec3 vec3, double spread) {
-        return vec3.normalize().add(this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread), this.random.triangle(0.0D, 0.0172275D * spread));
+        return vec3.normalize().add(this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread), this.random.triangle(0, 0.0172275 * spread));
     }
 
     protected void onHitEntity(Entity entity, ExtendedEntityRayTraceResult result) {
@@ -625,14 +622,14 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer player) {
                 var holder = Holder.direct(ModSounds.HEADSHOT.get());
                 player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
-                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(1, 5));
+                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(1, 5));
             }
             performOnHit(entity, this.damage, true, this.knockback);
         } else {
             if (!this.level().isClientSide() && this.shooter instanceof ServerPlayer player) {
                 var holder = Holder.direct(ModSounds.INDICATION.get());
                 player.connection.send(new ClientboundSoundPacket(holder, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1f, 1f, player.level().random.nextLong()));
-                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
             }
 
             if (legShot) {
@@ -662,7 +659,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     public void performOnHit(Entity entity, float damage, boolean headshot, double knockback) {
         if (entity instanceof LivingEntity living) {
             if (this.forceKnockback) {
-                Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize();
+                Vec3 vec3 = this.getDeltaMovement().multiply(1, 0, 1).normalize();
                 living.addDeltaMovement(vec3.scale(knockback));
                 performDamage(entity, damage, headshot);
             } else {
@@ -695,7 +692,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     public void shoot(LivingEntity living, double vecX, double vecY, double vecZ, float velocity, float spread) {
         Vec3 vec3 = (new Vec3(vecX, vecY, vecZ)).normalize().
-                add(this.random.triangle(0.0D, 0.0172275D * (double) spread), this.random.triangle(0.0D, 0.0172275D * (double) spread), this.random.triangle(0.0D, 0.0172275D * (double) spread)).
+                add(this.random.triangle(0, 0.0172275 * (double) spread), this.random.triangle(0, 0.0172275 * (double) spread), this.random.triangle(0, 0.0172275 * (double) spread)).
                 scale(velocity);
         this.setDeltaMovement(vec3);
         double d0 = vec3.horizontalDistance();
@@ -754,11 +751,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             double d9 = signX == 0 ? Double.MAX_VALUE : (double) signX / deltaX;
             double d10 = signY == 0 ? Double.MAX_VALUE : (double) signY / deltaY;
             double d11 = signZ == 0 ? Double.MAX_VALUE : (double) signZ / deltaZ;
-            double d12 = d9 * (signX > 0 ? 1.0D - Mth.frac(endX) : Mth.frac(endX));
-            double d13 = d10 * (signY > 0 ? 1.0D - Mth.frac(endY) : Mth.frac(endY));
-            double d14 = d11 * (signZ > 0 ? 1.0D - Mth.frac(endZ) : Mth.frac(endZ));
+            double d12 = d9 * (signX > 0 ? 1 - Mth.frac(endX) : Mth.frac(endX));
+            double d13 = d10 * (signY > 0 ? 1 - Mth.frac(endY) : Mth.frac(endY));
+            double d14 = d11 * (signZ > 0 ? 1 - Mth.frac(endZ) : Mth.frac(endZ));
 
-            while (d12 <= 1.0D || d13 <= 1.0D || d14 <= 1.0D) {
+            while (d12 <= 1 || d13 <= 1 || d14 <= 1) {
                 if (d12 < d13) {
                     if (d12 < d14) {
                         blockX += signX;
@@ -833,6 +830,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
     @Override
     public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 
     @Override

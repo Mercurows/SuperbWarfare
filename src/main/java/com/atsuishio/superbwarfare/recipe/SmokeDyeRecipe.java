@@ -14,6 +14,7 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class SmokeDyeRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer pInv, Level pLevel) {
+    public boolean matches(CraftingContainer pInv, @NotNull Level pLevel) {
         ItemStack itemstack = ItemStack.EMPTY;
         List<ItemStack> list = Lists.newArrayList();
 
@@ -50,7 +51,7 @@ public class SmokeDyeRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer pContainer, RegistryAccess pRegistryAccess) {
+    public @NotNull ItemStack assemble(CraftingContainer pContainer, @NotNull RegistryAccess pRegistryAccess) {
         List<DyeItem> list = Lists.newArrayList();
         ItemStack itemstack = ItemStack.EMPTY;
 
@@ -81,7 +82,7 @@ public class SmokeDyeRecipe extends CustomRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipes.SMOKE_DYE_SERIALIZER.get();
     }
 
@@ -94,21 +95,21 @@ public class SmokeDyeRecipe extends CustomRecipe {
             itemstack = pStack.copyWithCount(1);
             int color = grenade.getColor(pStack);
             if (color != 0xFFFFFF) {
-                float r = (float) (color >> 16 & 255) / 255.0F;
-                float g = (float) (color >> 8 & 255) / 255.0F;
-                float b = (float) (color & 255) / 255.0F;
-                i += (int) (Math.max(r, Math.max(g, b)) * 255.0F);
-                colors[0] += (int) (r * 255.0F);
-                colors[1] += (int) (g * 255.0F);
-                colors[2] += (int) (b * 255.0F);
+                float r = (float) (color >> 16 & 255) / 255F;
+                float g = (float) (color >> 8 & 255) / 255F;
+                float b = (float) (color & 255) / 255F;
+                i += (int) (Math.max(r, Math.max(g, b)) * 255F);
+                colors[0] += (int) (r * 255F);
+                colors[1] += (int) (g * 255F);
+                colors[2] += (int) (b * 255F);
                 ++j;
             }
 
             for (DyeItem dyeitem : pDyes) {
                 float[] dyeColors = dyeitem.getDyeColor().getTextureDiffuseColors();
-                int r = (int) (dyeColors[0] * 255.0F);
-                int g = (int) (dyeColors[1] * 255.0F);
-                int b = (int) (dyeColors[2] * 255.0F);
+                int r = (int) (dyeColors[0] * 255F);
+                int g = (int) (dyeColors[1] * 255F);
+                int b = (int) (dyeColors[2] * 255F);
                 i += Math.max(r, Math.max(g, b));
                 colors[0] += r;
                 colors[1] += g;

@@ -1,0 +1,29 @@
+{
+  "MaxHealth": 40,
+  "MaxEnergy": 0,
+  "TurretPitchRange": [20, 89],
+  "Weapons": {
+    "Main": {
+      "Damage": 60,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 8,
+      "Velocity": 10,
+      "Gravity": 0.13,
+      "Spread": 0.5,
+      "ShootShake": [8, 6, 14],
+      "SoundInfo": {
+        "Fire3P": "superbwarfare:mortar_fire",
+        "Fire3PFar": "superbwarfare:mortar_distant",
+        "VehicleReload": "superbwarfare:mortar_load"
+      },
+      "SoundRadius": 32
+    }
+  },
+  "EngineType": "Fixed",
+  "Mass": 0.05,
+  "HasLowHealthWarning": false,
+  "SelfHurtPercent": 0,
+  "VehicleContainerType": "One",
+  "SendHitParticles": false,
+  "Type": "Artillery"
+}

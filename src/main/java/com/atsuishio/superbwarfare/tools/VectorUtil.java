@@ -9,7 +9,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.Vector4d;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class VectorUtil {
@@ -24,7 +24,7 @@ public class VectorUtil {
         var mc = Minecraft.getInstance();
         var window = mc.getWindow();
         var camera = mc.gameRenderer.getMainCamera();
-        var worldPosRel = new Vector4f(camera.getPosition().reverse().add(pos).toVector3f(), 1f);
+        var worldPosRel = new Vector4d(camera.getPosition().reverse().add(pos).toVector3f(), 1f);
         worldPosRel.mul(modelViewMatrix);
         worldPosRel.mul(projectionMatrix);
 
@@ -54,6 +54,6 @@ public class VectorUtil {
         Vec3 cameraPos = camera.getPosition();
         Vec3 viewVec = new Vec3(camera.getLookVector());
         Vec3 v1 = cameraPos.vectorTo(pos);
-        return VectorTool.calculateAngle(v1, viewVec) < fov - 10;
+        return VectorTool.calculateAngle(v1, viewVec) < fov + 10;
     }
 }

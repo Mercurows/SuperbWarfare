@@ -76,14 +76,14 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModItems.STEEL_MATERIALS.barrel().get())
                 .unlockedBy(getHasName(ModItems.STEEL_MATERIALS.barrel().get()), has(ModItems.STEEL_MATERIALS.barrel().get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_PIPE.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDICAL_KIT.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDICAL_KIT.get(), 4)
                 .pattern("aba")
                 .pattern("bcb")
                 .pattern("aba")
                 .define('a', Items.STRING)
                 .define('b', ItemTags.WOOL_CARPETS)
-                .define('c', getPotionIngredient(Potions.REGENERATION))
-                .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
+                .define('c', Items.GOLDEN_APPLE)
+                .unlockedBy(getHasName(Items.GOLDEN_APPLE), has(Items.GOLDEN_APPLE))
                 .save(writer, Mod.loc(getItemName(ModItems.MEDICAL_KIT.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ARMOR_PLATE.get(), 4)
                 .pattern("aba")
@@ -166,7 +166,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("b  ")
                 .define('a', ModTags.Items.INGOTS_STEEL)
                 .define('b', Tags.Items.INGOTS_IRON)
-                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModItems.STEEL_INGOT.get()))
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModTags.Items.INGOTS_STEEL))
                 .save(writer, Mod.loc(getItemName(ModItems.CROWBAR.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DEFUSER.get())
                 .pattern("  a")
@@ -175,7 +175,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('a', ModTags.Items.INGOTS_STEEL)
                 .define('b', Tags.Items.NUGGETS_IRON)
                 .define('c', Items.STICK)
-                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModItems.STEEL_INGOT.get()))
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModTags.Items.INGOTS_STEEL))
                 .save(writer, Mod.loc(getItemName(ModItems.DEFUSER.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DETONATOR.get())
                 .pattern(" a")
@@ -200,7 +200,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("b ")
                 .define('a', ModTags.Items.INGOTS_STEEL)
                 .define('b', Items.STICK)
-                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModItems.STEEL_INGOT.get()))
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModTags.Items.INGOTS_STEEL))
                 .save(writer, Mod.loc(getItemName(ModItems.KNIFE.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.MONITOR.get())
                 .pattern("a a")
@@ -253,16 +253,25 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', Items.ARMOR_STAND)
                 .unlockedBy(getHasName(Items.TARGET), has(Items.TARGET))
                 .save(writer, Mod.loc(getItemName(ModItems.TARGET_DEPLOYER.get())));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TOW_DEPLOYER.get())
+                .pattern("c ")
+                .pattern("ab")
+                .pattern("d ")
+                .define('a', Items.DISPENSER)
+                .define('b', ModItems.MORTAR_BARREL.get())
+                .define('c', ModItems.ARTILLERY_INDICATOR.get())
+                .define('d', ModTags.Items.STORAGE_BLOCK_STEEL)
+                .unlockedBy(getHasName(Items.DISPENSER), has(Items.DISPENSER))
+                .save(writer, Mod.loc(getItemName(ModItems.TOW_DEPLOYER.get())));
     }
 
     private static void buildArmorRecipes(Consumer<FinishedRecipe> writer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.GE_HELMET_M_35.get())
-                .pattern("aca")
+                .pattern("aaa")
                 .pattern("aba")
                 .define('a', ModTags.Items.INGOTS_STEEL)
                 .define('b', Tags.Items.DYES_BLACK)
-                .define('c', ModItems.STEEL_INGOT.get())
-                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModItems.STEEL_INGOT.get()))
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModTags.Items.INGOTS_STEEL))
                 .save(writer, Mod.loc(getItemName(ModItems.GE_HELMET_M_35.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RU_HELMET_6B47.get())
                 .pattern("aca")
@@ -308,7 +317,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('b', Tags.Items.DYES_GREEN)
                 .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
                 .save(writer, Mod.loc(getItemName(ModItems.AMMO_BOX.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.AGM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_GROUND_MISSILE.get())
                 .pattern(" b ")
                 .pattern("ada")
                 .pattern("cec")
@@ -318,7 +327,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('d', Items.TNT)
                 .define('e', ModItems.MISSILE_ENGINE.get())
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.AGM.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
                 .pattern(" a ")
                 .pattern("bcb")
@@ -329,7 +338,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('d', ModItems.GRAIN.get())
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SMALL_ROCKET.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_TBG_TBG.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_TBG.get(), 2)
                 .pattern(" a ")
                 .pattern("bcb")
                 .pattern(" d ")
@@ -338,7 +347,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('c', ModItems.HIGH_ENERGY_EXPLOSIVES.get())
                 .define('d', ModItems.GRAIN.get())
                 .unlockedBy(getHasName(ModItems.FUSEE.get()), has(ModItems.FUSEE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_TBG_TBG.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.RPG_ROCKET_TBG.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.RPG_ROCKET_STANDARD.get(), 2)
                 .pattern(" a ")
                 .pattern("bcb")
@@ -473,7 +482,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(ModItems.AP_HEAD.get()), has(ModItems.AP_HEAD.get()))
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.IGLA_MISSILE.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_AIR_MISSILE.get())
                 .pattern("eae")
                 .pattern("bcb")
                 .pattern(" d ")
@@ -484,15 +493,18 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('e', Items.IRON_BARS)
                 .unlockedBy(getHasName(ModItems.HIGH_ENERGY_EXPLOSIVES.get()), has(ModItems.HIGH_ENERGY_EXPLOSIVES.get()))
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.IGLA_MISSILE.get())));
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.WIRE_GUIDE_MISSILE.get())
+                .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
                 .requires(ModItems.JAVELIN_MISSILE.get())
                 .unlockedBy(getHasName(ModItems.JAVELIN_MISSILE.get()), has(ModItems.JAVELIN_MISSILE.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.WIRE_GUIDE_MISSILE.get())));
+                .save(writer, Mod.loc(getItemName(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())));
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.JAVELIN_MISSILE.get())
-                .requires(ModItems.WIRE_GUIDE_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.WIRE_GUIDE_MISSILE.get()), has(ModItems.WIRE_GUIDE_MISSILE.get()))
+                .requires(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
+                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()), has(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.JAVELIN_MISSILE.get()) + "_convert"));
+
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.LUNGE_MINE.get(), 2)
                 .pattern(" ba")
                 .pattern(" cb")
@@ -610,7 +622,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('d', ModItems.PRIMER.get())
                 .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.SNIPER_AMMO.get())));
-        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_SHELL.get(), 4)
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_SHELL.get(), 8)
                 .pattern("ea ")
                 .pattern("bcb")
                 .pattern(" d ")
@@ -655,8 +667,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     private static void buildMaterialRecipes(Consumer<FinishedRecipe> writer) {
         generateMaterialRecipes(writer, ModItems.IRON_MATERIALS, Items.IRON_INGOT);
-        generateMaterialRecipes(writer, ModItems.STEEL_MATERIALS, ModItems.STEEL_INGOT.get());
-        generateMaterialRecipes(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.CEMENTED_CARBIDE_INGOT.get());
+        generateMaterialRecipes(writer, ModItems.STEEL_MATERIALS, ModTags.Items.INGOTS_STEEL, ModItems.STEEL_INGOT.get());
+        generateMaterialRecipes(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.CEMENTED_CARBIDE_INGOT.get());
         generateSmithingMaterialRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.NETHERITE_MATERIALS, Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, Items.NETHERITE_INGOT);
 
         generateMaterialPackRecipe(writer, ModItems.IRON_MATERIALS, ModItems.COMMON_MATERIAL_PACK.get());
@@ -664,15 +676,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get());
         generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get());
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ANCIENT_CPU.get(), 2)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ANCIENT_CPU.get())
                 .pattern("bcb")
                 .pattern("cac")
                 .pattern("bcb")
-                .define('a', ModItems.ANCIENT_CPU.get())
+                .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Tags.Items.GEMS_DIAMOND)
                 .define('c', Tags.Items.ORES_NETHERITE_SCRAP)
-                .unlockedBy(getHasName(ModItems.ANCIENT_CPU.get()), has(ModItems.ANCIENT_CPU.get()))
-                .save(writer, Mod.loc(getItemName(ModItems.ANCIENT_CPU.get()) + "_copy"));
+                .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
+                .save(writer, Mod.loc(getItemName(ModItems.ANCIENT_CPU.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AP_HEAD.get(), 2)
                 .pattern(" b ")
                 .pattern("bdb")
@@ -733,7 +745,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.CEMENTED_CARBIDE_INGOT.get(),
                         8,
-                        800,
+                        200,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()), has(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.CEMENTED_CARBIDE_INGOT.get()) + "_blasting"));
@@ -1074,7 +1086,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.STEEL_INGOT.get(),
                         0.7f,
-                        400,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.COAL_IRON_POWDER.get()), has(ModItems.COAL_IRON_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_INGOT.get()) + "_blasting"));
@@ -1094,7 +1106,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        400,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.SCHEELITE.get()), has(ModItems.SCHEELITE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_blasting"));
@@ -1102,7 +1114,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        600,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.SCHEELITE_ORE.get()), has(commonItemTag("ores/tungsten")))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_blasting_from_ore"));
@@ -1110,7 +1122,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                         RecipeCategory.MISC,
                         ModItems.TUNGSTEN_INGOT.get(),
                         4,
-                        200,
+                        100,
                         RecipeSerializer.BLASTING_RECIPE)
                 .unlockedBy(getHasName(ModItems.TUNGSTEN_POWDER.get()), has(ModItems.TUNGSTEN_POWDER.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_blasting_from_powder"));
@@ -1245,11 +1257,10 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(writer, Mod.loc(getItemName(ModItems.SILVER_BLOCK.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.STEEL_BLOCK.get())
                 .pattern("aaa")
-                .pattern("aba")
+                .pattern("aaa")
                 .pattern("aaa")
                 .define('a', ModTags.Items.INGOTS_STEEL)
-                .define('b', ModItems.STEEL_INGOT.get())
-                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModItems.STEEL_INGOT.get()))
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModTags.Items.INGOTS_STEEL))
                 .save(writer, Mod.loc(getItemName(ModItems.STEEL_BLOCK.get())));
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.TUNGSTEN_BLOCK.get())
                 .pattern("aaa")
@@ -1351,6 +1362,14 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.LAV_150.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.LAV_AD.get(), VehicleAssemblingRecipe.Category.LAND)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 7)
+                .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.WHEEL.get(), 8)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.LAV_AD.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.BMP_2.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
                 .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
@@ -1376,6 +1395,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.YX_100.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.PLZ_05.get(), VehicleAssemblingRecipe.Category.LAND)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.CANNON_CORE.get(), 1)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.PLZ_05.get())));
         VehicleAssemblingRecipeBuilder.entity(ModEntities.SPEEDBOAT.get(), VehicleAssemblingRecipe.Category.WATER)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 2)
                 .require(ItemTags.BOATS)
@@ -1389,7 +1417,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 3)
                 .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
                 .require(ModItems.MEDIUM_BATTERY_PACK.get())
-                .require(ModItems.LARGE_PROPELLER.get(), 2)
+                .require(ModItems.LARGE_PROPELLER.get())
+                .require(ModItems.PROPELLER.get())
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.AH_6.get())));
@@ -1402,6 +1431,24 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(ModItems.WHEEL.get(), 3)
                 .unlockedBy(getHasName(ModItems.LARGE_PROPELLER.get()), has(ModItems.LARGE_PROPELLER.get()))
                 .save(writer, Mod.loc(getEntityTypeName(ModEntities.A_10A.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.TRUCK.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(Items.CHEST, 4)
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.WHEEL.get(), 6)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.TRUCK.get())));
+        VehicleAssemblingRecipeBuilder.entity(ModEntities.MI_28.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
+                .require(ModItems.WHEEL.get(), 3)
+                .require(ModItems.LARGE_PROPELLER.get())
+                .require(ModItems.PROPELLER.get())
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.HEAVY_ARMAMENT_MODULE.get()), has(ModItems.HEAVY_ARMAMENT_MODULE.get()))
+                .save(writer, Mod.loc(getEntityTypeName(ModEntities.MI_28.get())));
 
         VehicleAssemblingRecipeBuilder.item(ModItems.SMALL_BATTERY_PACK.get(), 1, VehicleAssemblingRecipe.Category.MISC)
                 .require(PLATES_COPPER, 4)
@@ -1424,6 +1471,11 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .require(Items.IRON_INGOT, 144)
                 .unlockedBy(getHasName(ModItems.COPPER_PLATE.get()), has(ModItems.COPPER_PLATE.get()))
                 .save(writer, Mod.loc(getItemName(ModItems.LARGE_BATTERY_PACK.get()) + "_assembling"));
+        VehicleAssemblingRecipeBuilder.item(ModItems.VEHICLE_RESET_KIT.get(), 1, VehicleAssemblingRecipe.Category.MISC)
+                .require(ModTags.Items.INGOTS_STEEL)
+                .require(Items.PAPER, 4)
+                .unlockedBy(getHasName(Items.PAPER), has(Items.PAPER))
+                .save(writer, Mod.loc(getItemName(ModItems.VEHICLE_RESET_KIT.get()) + "_assembling"));
     }
 
     private static void buildGunRecipes(Consumer<FinishedRecipe> writer) {
@@ -1467,6 +1519,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         gunSmithing(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.KNIFE.get(), ModItems.SECONDARY_CATACLYSM.get());
         gunSmithing(writer, ModItems.INSIDIOUS_BLUEPRINT.get(), GunRarity.EPIC, ModTags.Items.INGOTS_CEMENTED_CARBIDE, ModItems.INSIDIOUS.get());
         gunSmithing(writer, ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(), GunRarity.LEGENDARY, Items.END_CRYSTAL, ModItems.AURELIA_SCEPTRE.get());
+        gunSmithing(writer, ModItems.QL_1031_BLUEPRINT.get(), GunRarity.LEGENDARY, ModItems.BATTERY.get(), ModItems.QL_1031.get());
 
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.HOMEMADE_SHOTGUN.get())
                 .pattern("aab")
@@ -1526,6 +1579,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         copyBlueprint(writer, ModItems.BL_132_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.HPJ_11_BLUEPRINT.get());
         copyBlueprint(writer, ModItems.ANNIHILATOR_BLUEPRINT.get());
+        copyBlueprint(writer, ModItems.QL_1031_BLUEPRINT.get());
     }
 
     private static void buildPerkRecipes(Consumer<FinishedRecipe> writer) {
@@ -1791,6 +1845,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_ADD_AMMO_SERIALIZER.get()).save(writer, "ammo_box_add_ammo");
         SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_EXTRACT_AMMO_SERIALIZER.get()).save(writer, "ammo_box_extract_ammo");
         SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye");
+        SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get()).save(writer, "vehicle_reset");
     }
 
     public static void copyBlueprint(Consumer<FinishedRecipe> writer, ItemLike result) {
@@ -1840,7 +1895,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
     }
 
     // 生成材料包所有材料的配方
-    public static void generateMaterialRecipes(@NotNull Consumer<FinishedRecipe> writer, ModItems.Materials material, Item ingredient) {
+    public static void generateMaterialRecipes(@NotNull Consumer<FinishedRecipe> writer, ModItems.Materials material, ItemLike ingredient) {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.barrel().get())
                 .pattern("AAA")
                 .define('A', ingredient)
@@ -1868,6 +1923,37 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('A', ingredient)
                 .define('B', Items.TRIPWIRE_HOOK)
                 .unlockedBy(getHasName(ingredient), has(ingredient))
+                .save(writer, Mod.loc(getItemName(material.trigger().get())));
+    }
+
+    public static void generateMaterialRecipes(@NotNull Consumer<FinishedRecipe> writer, ModItems.Materials material, TagKey<Item> tagKey, Item name) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.barrel().get())
+                .pattern("AAA")
+                .define('A', tagKey)
+                .unlockedBy(getHasName(name), has(tagKey))
+                .save(writer, Mod.loc(getItemName(material.barrel().get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.action().get())
+                .pattern("AAA")
+                .pattern("  A")
+                .define('A', tagKey)
+                .unlockedBy(getHasName(name), has(tagKey))
+                .save(writer, Mod.loc(getItemName(material.action().get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.spring().get())
+                .pattern("A")
+                .pattern("A")
+                .pattern("A")
+                .define('A', tagKey)
+                .unlockedBy(getHasName(name), has(tagKey))
+                .save(writer, Mod.loc(getItemName(material.spring().get())));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, material.trigger().get())
+                .pattern("BA")
+                .pattern(" A")
+                .define('A', tagKey)
+                .define('B', Items.TRIPWIRE_HOOK)
+                .unlockedBy(getHasName(name), has(tagKey))
                 .save(writer, Mod.loc(getItemName(material.trigger().get())));
     }
 

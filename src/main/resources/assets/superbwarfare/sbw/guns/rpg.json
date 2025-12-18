@@ -1,0 +1,22 @@
+{
+  "Animation": {
+    "Idle": "animation.rpg.idle",
+    "Edit": "animation.rpg.edit",
+    "Reload": "animation.rpg.reload",
+    "Run": "animation.rpg.run",
+    "Sprint": "animation.rpg.run_fast"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/rpg.animation.json",
+    "Model": "superbwarfare:geo/rpg.geo.json",
+    "Texture": "superbwarfare:textures/item/rpg.png",
+    "LODModel": "superbwarfare:geo/lod/rpg.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/rpg.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    0.625
+  ],
+  "FlareSize": 0.7
+}

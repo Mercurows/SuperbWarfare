@@ -35,6 +35,6 @@ public class SmallRocketRenderer extends GeoEntityRenderer<SmallRocketEntity> {
 
     @Override
     protected float getDeathMaxRotation(SmallRocketEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

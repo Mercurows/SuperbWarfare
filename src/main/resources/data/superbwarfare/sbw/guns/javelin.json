@@ -1,0 +1,43 @@
+{
+  "DefaultZoom": 3,
+  "Spread": 5,
+  "Magazine": 1,
+  "Weight": 10,
+  "EmptyReloadTime": 78,
+  "Damage": 500,
+  "ExplosionDamage": 120,
+  "ExplosionRadius": 9,
+  "Headshot": 0,
+  "ZoomReload": false,
+  "SeekTime": 20,
+  "SeekAngle": 10,
+  "SeekRange": 256,
+  "MaxTargetHeight": 64,
+  "SeekType": "HoldFire",
+  "GunType": "DirectLauncher",
+  "AvailableFireModes": [
+    "Dir",
+    "Top"
+  ],
+  "AmmoType": "superbwarfare:javelin_missile",
+  "Icon": "superbwarfare:textures/gun_icon/javelin_icon.png",
+  "AvailablePerks": [
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:javelin_fire_1p",
+    "Fire3P": "superbwarfare:javelin_fire_3p",
+    "Fire3PFar": "superbwarfare:javelin_far",
+    "ReloadEmpty": "superbwarfare:javelin_reload_empty",
+    "Locking": "superbwarfare:javelin_locking",
+    "Locked": "superbwarfare:javelin_locked",
+    "CancellableSounds": [
+      "superbwarfare:javelin_reload_empty",
+      "superbwarfare:javelin_locking",
+      "superbwarfare:javelin_locked"
+    ]
+  }
+}

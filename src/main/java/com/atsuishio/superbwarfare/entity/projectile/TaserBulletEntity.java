@@ -1,10 +1,9 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import net.minecraft.core.BlockPos;
@@ -23,7 +22,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,7 +32,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -44,34 +41,16 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 @OnlyIn(value = Dist.CLIENT, _interface = ItemSupplier.class)
 public class TaserBulletEntity extends AbstractArrow implements GeoEntity, CustomDamageProjectile {
 
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    private Vec3 initialPos;
     private float damage = 1f;
     private int volt = 0;
     private int wireLength = 0;
     private boolean stopped = false;
-    public static final ItemStack PROJECTILE_ITEM = new ItemStack(Items.AIR);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public TaserBulletEntity(PlayMessages.SpawnEntity packet, Level world) {
-        super(ModEntities.TASER_BULLET.get(), world);
-        this.pickup = AbstractArrow.Pickup.DISALLOWED;
-    }
-
-    public TaserBulletEntity(LivingEntity entity, Level level, float damage, int volt, int wireLength) {
-        super(ModEntities.TASER_BULLET.get(), entity, level);
-        this.damage = damage;
-        this.volt = volt;
-        this.wireLength = wireLength;
-    }
-
-    public TaserBulletEntity(Level level, float damage) {
-        super(ModEntities.TASER_BULLET.get(), level);
-        this.noCulling = true;
-
-        this.damage = damage;
-    }
-
-    public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level world) {
-        super(type, world);
+    public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level level) {
+        super(type, level);
         this.noCulling = true;
     }
 
@@ -110,18 +89,19 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity, Custo
 
     @Override
     protected @NotNull ItemStack getPickupItem() {
-        return PROJECTILE_ITEM;
+        return ItemStack.EMPTY;
     }
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle()) return;
+        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
+            return;
         if (this.getOwner() instanceof LivingEntity living) {
             if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
                 living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
 
-                Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
+                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
             }
         }
         if (entity instanceof LivingEntity living) {
@@ -150,8 +130,6 @@ public class TaserBulletEntity extends AbstractArrow implements GeoEntity, Custo
             bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
         }
     }
-
-    private Vec3 initialPos;
 
     @Override
     public void tick() {

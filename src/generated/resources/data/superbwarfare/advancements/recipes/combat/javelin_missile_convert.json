@@ -1,28 +1,28 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "superbwarfare:javelin_missile_convert"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    },
-    "has_wire_guide_missile": {
+    "has_medium_anti_ground_missile": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:wire_guide_missile"
+              "superbwarfare:medium_anti_ground_missile"
             ]
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:javelin_missile_convert"
+      },
+      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_wire_guide_missile",
+      "has_medium_anti_ground_missile",
       "has_the_recipe"
     ]
   ],

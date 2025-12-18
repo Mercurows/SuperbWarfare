@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
 import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.GrapeshotEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -67,7 +67,7 @@ public class CustomEventHandler {
         GunData data = GunData.from(stack);
         var key = ForgeRegistries.ENTITY_TYPES.getKey(projectile.getType());
         if (key == null) return;
-        if (!data.get(GunProp.PROJECTILE).type.equals(key.toString())) return;
+        if (!data.compute().projectile().type.equals(key.toString())) return;
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);
@@ -85,7 +85,7 @@ public class CustomEventHandler {
         var face = event.getFace();
 
         if (state.getBlock() instanceof BellBlock bell) {
-            if (projectile instanceof ProjectileEntity || projectile instanceof GrapeshotEntity) {
+            if (projectile instanceof ProjectileEntity || projectile instanceof GrapeshotEntity || projectile instanceof SuperStarProjectileEntity) {
                 bell.attemptToRing(projectile.level(), pos, face);
             }
         }

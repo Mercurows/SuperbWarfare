@@ -35,6 +35,6 @@ public class RpgRocketStandardRenderer extends GeoEntityRenderer<RpgRocketStanda
 
     @Override
     protected float getDeathMaxRotation(RpgRocketStandardEntity entityLivingBaseIn) {
-        return 0.0F;
+        return 0;
     }
 }

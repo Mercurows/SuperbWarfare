@@ -43,7 +43,7 @@ public class AwmItemRenderer extends CustomGunRenderer<AwmItem> {
         ItemStack itemStack = player.getMainHandItem();
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn, 0, 0.05, 2.15625, 0.6);
+                AnimationHelper.handleShootFlare(name, stack, itemStack, bone, buffer, packedLightIn);
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
@@ -66,9 +66,8 @@ public class AwmItemRenderer extends CustomGunRenderer<AwmItem> {
                     switch (scopeType) {
                         case 1 ->
                                 AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.275, 30, 1.2f, 255, 0, 0, 255, "dot", false);
-                        case 2 -> {
-                            AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.33, 20, 2f, 255, 0, 0, 255, "elcan", true);
-                        }
+                        case 2 ->
+                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.33, 20, 2f, 255, 0, 0, 255, "elcan", true);
                         case 3 ->
                                 AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.3, 33, 5f, 255, 0, 0, 255, "sniper", true);
                     }

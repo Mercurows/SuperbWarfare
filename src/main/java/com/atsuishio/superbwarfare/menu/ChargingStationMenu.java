@@ -14,6 +14,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import org.jetbrains.annotations.NotNull;
 
 public class ChargingStationMenu extends EnergyMenu {
 
@@ -52,7 +53,7 @@ public class ChargingStationMenu extends EnergyMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player pPlayer, int pIndex) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(pIndex);
         if (slot.hasItem()) {
@@ -99,7 +100,7 @@ public class ChargingStationMenu extends EnergyMenu {
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
+    public boolean stillValid(@NotNull Player pPlayer) {
         return this.container.stillValid(pPlayer);
     }
 
@@ -129,9 +130,5 @@ public class ChargingStationMenu extends EnergyMenu {
             super(pContainer, pSlot, pX, pY);
         }
 
-        @Override
-        public boolean mayPlace(ItemStack pStack) {
-            return super.mayPlace(pStack);
-        }
     }
 }

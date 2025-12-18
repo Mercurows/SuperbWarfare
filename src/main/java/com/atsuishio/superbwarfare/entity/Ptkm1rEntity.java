@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.entity.projectile.MineEntity;
 import com.atsuishio.superbwarfare.entity.projectile.PtkmProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -49,7 +48,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, MineEntity {
+public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
 
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(Ptkm1rEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     protected static final EntityDataAccessor<String> LAST_ATTACKER_UUID = SynchedEntityData.defineId(Ptkm1rEntity.class, EntityDataSerializers.STRING);
@@ -187,7 +186,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
     public void tick() {
         super.tick();
 
-        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04, 0.0));
+        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
 
         if (!this.level().noCollision(this.getBoundingBox())) {
             this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
@@ -202,7 +201,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
         if (this.onGround()) {
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, -0.9, 1.0));
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1, -0.9, 1));
         }
 
         if (this.entityData.get(HEALTH) <= 0) {
@@ -213,7 +212,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
             level().playSound(null, BlockPos.containing(position()), ModSounds.PTKM_1R_DEPLOY.get(), SoundSource.PLAYERS, 1, 1);
         }
 
-        if (tickCount > 20 && onGround()) {
+        if (tickCount > 20 && onGround() && tickCount %10 == 0) {
             findTarget();
         }
 
@@ -221,15 +220,19 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
     }
 
     public void findTarget() {
-        int range = 60;
+        int range = 40;
         Entity target = null;
 
-        for (var entity : SeekTool.getEntityWithinRange(this, level(), range)) {
+        var list = new SeekTool.Builder(this)
+                .withinRange(range)
+                .build();
+
+        for (var entity : list) {
             var condition =
                     entity.onGround()
                     && this.getOwner() != entity
                     && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
-                    && (this.getOwner() != null && !SeekTool.friendlyToPlayer(this.getOwner(), entity) && entity != this.getOwner().getVehicle())
+                    && (this.getOwner() != null && !SeekTool.IS_FRIENDLY.test(this.getOwner(), entity) && entity != this.getOwner().getVehicle())
                     && !entity.isShiftKeyDown()
                     && ((entity.getBoundingBox().getSize() > 1.5 || entity instanceof VehicleEntity || entity instanceof SenpaiEntity) && entity.getDeltaMovement().lengthSqr() > 0.009);
             if (!condition) continue;
@@ -244,9 +247,9 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
 
 
             if (distance < range) {
-                targetXRot = -60;
+                targetXRot = -40;
                 this.look(target.position());
-                if (distance < range - 10) {
+                if (distance < range - 5) {
                     aimingTime++;
 
                 } else if (aimingTime > 0) {
@@ -300,7 +303,7 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity, Mi
         Vec3 vec3 = EntityAnchorArgument.Anchor.EYES.apply(this);
         double d0 = (pTarget.x - vec3.x) * 0.2;
         double d2 = (pTarget.z - vec3.z) * 0.2;
-        float diffY = Mth.wrapDegrees(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F) - this.getYRot());
+        float diffY = Mth.wrapDegrees(Mth.wrapDegrees((float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90F) - this.getYRot());
         this.setYRot(getYRot() + 0.5f * diffY);
     }
 

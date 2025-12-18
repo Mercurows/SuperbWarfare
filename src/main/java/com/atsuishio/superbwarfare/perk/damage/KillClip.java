@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk.damage;
 
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
@@ -14,8 +14,14 @@ public class KillClip extends Perk {
 
     public KillClip() {
         super("kill_clip", Perk.Type.DAMAGE);
-        appendModification(GunProp.DAMAGE, (data, damage) -> data.perk.getTag(this).getInt("KillClipTime") > 0 ?
-                damage * (1.2 + 0.05 * data.perk.getLevel(this)) : damage);
+    }
+
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        if (gunData.perk.getTag(this).getInt("KillClipTime") > 0) {
+            rawData.damage *= (1.2 + 0.05 * gunData.perk.getLevel(this));
+        }
+        return super.computeProperties(gunData, rawData);
     }
 
     @Override

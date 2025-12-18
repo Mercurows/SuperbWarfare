@@ -1,0 +1,10 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/plz_05.animation.json",
+    "Model": "superbwarfare:geo/plz_05.geo.json",
+    "LODModel": [
+      "superbwarfare:geo/vehicle_lod/plz_05_lod1.geo.json"
+    ],
+    "Texture": "superbwarfare:textures/entity/plz_05.png"
+  }
+}

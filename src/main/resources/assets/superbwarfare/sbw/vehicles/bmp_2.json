@@ -1,0 +1,11 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/lav_150.animation.json",
+    "Model": "superbwarfare:geo/bmp_2.geo.json",
+    "LODModel": [
+      "superbwarfare:geo/vehicle_lod/bmp_2_lod1.geo.json",
+      "superbwarfare:geo/vehicle_lod/bmp_2_lod2.geo.json"
+    ],
+    "Texture": "superbwarfare:textures/entity/bmp_2.png"
+  }
+}

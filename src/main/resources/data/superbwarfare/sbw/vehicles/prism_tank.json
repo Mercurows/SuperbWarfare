@@ -1,0 +1,206 @@
+{
+  "MaxHealth": 400,
+  "MaxEnergy": 20000000,
+  "OBB": [
+    {
+      "Size": [2.4, 0.8125, 3.71875],
+      "Position": [0, 1.4375, 0.03125]
+    },
+    {
+      "Size": [2.4, 0.5, 0.375],
+      "Position": [0, 1.4375, 4.125]
+    },
+    {
+      "Size": [0.46875, 0.78125, 3.3125],
+      "Position": [2.09375, 0.84375, 0],
+      "Part": "WheelLeft"
+    },
+    {
+      "Size": [0.46875, 0.78125, 3.3125],
+      "Position": [-2.09375, 0.84375, 0],
+      "Part": "WheelRight"
+    },
+    {
+      "Size": [1.375, 0.28125, 1.375],
+      "Position": [0, 2.53125, 0.765625]
+    },
+    {
+      "Size": [2.0625, 0.78125, 0.8125],
+      "Position": [0, 1.53125, -3.125],
+      "Part": "MainEngine"
+    },
+    {
+      "Size": [0.4375, 0.90625, 1.21875],
+      "Position": [0, 1.59375, -0.390625],
+      "Part": "Turret",
+      "Transform": "Turret",
+      "Rotation": "Turret"
+    }
+  ],
+  "Seats": [
+    {
+      "HidePassenger": true,
+      "Transform": "Turret",
+      "Position": [
+        0,
+        -0.6,
+        0
+      ],
+      "CameraPos": {
+        "Transform": "Barrel",
+        "UseFixedCameraPos": true,
+        "Position": [0.5, 1.2, -0.1],
+        "ZoomPosition": [0, 0.95, 0],
+        "Direction": "Barrel"
+      },
+      "CanRotateHead": false,
+      "MinPitch": -15,
+      "MaxPitch": 32.5,
+      "Weapons": ["Laser"],
+      "Sensitivity": [0.6, 0.78, 1]
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [
+        -0.59375,
+        1,
+        3.0625
+      ],
+      "MinPitch": -25,
+      "MaxPitch": 80,
+      "MinYaw": -105,
+      "MaxYaw": 105
+    }
+  ],
+  "Weapons": {
+    "Laser": {
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/laser.png",
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Projectile": "ray",
+      "Range": 512,
+      "DefaultZoom": 3,
+      "RPM": 30,
+      "Velocity": 6000000000,
+      "Damage": 350,
+      "ExplosionDamage": 72,
+      "ExplosionRadius": 12,
+      "Spread": 0,
+      "HeatPerShoot": 50,
+      "NaturalCooldown": 0.7,
+      "ShootAnimationTime": 3,
+      "AmmoCostPerShoot": 100000,
+      "AmmoType": [
+        "FE",
+        {
+          "Ammo": "FE",
+          "Override": {
+            "Name": "weapon.superbwarfare.laser_auto",
+            "DefaultFireMode": "Auto",
+            "RPM": 1200,
+            "Velocity": 6000000000,
+            "Damage": 15,
+            "HeatPerShoot": 3,
+            "ShootAnimationTime": 1,
+            "AmmoCostPerShoot": 5000,
+            "ExplosionDamage": 0,
+            "ExplosionRadius": 0,
+            "SoundInfo": {
+              "Fire1P": "superbwarfare:prism_tank_fire_low_1p",
+              "Fire3P": "superbwarfare:prism_tank_fire_low_3p",
+              "Fire3PFar": null,
+              "Fire3PVeryFar": null,
+              "Change": "superbwarfare:into_cannon"
+            }
+          }
+        }
+      ],
+      "Crosshair": "@VehicleCommonMissile",
+      "CrosshairColor": "0x00FFF6",
+      "Name": "weapon.superbwarfare.laser_semi",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:prism_tank_fire_high_1p",
+        "Fire3P": "superbwarfare:prism_tank_fire_high_3p",
+        "Change": "superbwarfare:into_missile"
+      },
+      "SoundRadius": 12,
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.5, 0]],
+        "Directions": ["Barrel"]
+      }
+    }
+  },
+  "HUDColor": "0x00FFF6",
+  "EngineType": "Track",
+  "EngineInfo": {
+    "Buoyancy": 0,
+    "EnergyCostRate": 96,
+    "WheelRotSpeed": 1.25,
+    "WheelDifferential": 0.5,
+    "TrackRotSpeed": 1.9,
+    "TrackDifferential": 0.8,
+    "MaxForwardSpeedRate": 1.2,
+    "MaxBackwardSpeedRate": 0.6,
+    "Increment": 0.03,
+    "Decrement": 0.02,
+    "SteeringSpeed": 0.12
+  },
+  "TurretPos": [0, 2.14375, 0.7375],
+  "TurretTurnSpeed": [15, 15],
+  "TurretPitchRange": [-15, 32.5],
+  "BarrelPos": [0, 1.484375, -0.2375],
+  "HasDecoy": true,
+  "UpStep": 2.25,
+  "RotateOffsetHeight": 4,
+  "Mass": 25,
+  "DamageModifiers": [
+    "minecraft:lava - -13",
+    "minecraft:lava * 11.75",
+    "@minecraft:tnt * 5",
+    "@minecraft:tnt_minecart * 5",
+    "All * 0.17",
+    "minecraft:arrow * 1.5",
+    "minecraft:trident * 1.5",
+    "minecraft:mob_attack * 2.5",
+    "minecraft:mob_attack_no_aggro * 2",
+    "minecraft:mob_projectile * 1.5",
+    "minecraft:explosion * 6",
+    "minecraft:player_explosion * 6",
+    "superbwarfare:custom_explosion * 2",
+    "superbwarfare:projectile_explosion * 2",
+    "superbwarfare:mine * 0.7",
+    "superbwarfare:lunge_mine * 0.9",
+    "superbwarfare:projectile_hit * 1.5",
+    "superbwarfare:grapeshot_hit * 0.2",
+    "@#superbwarfare:aerial_bomb * 2",
+    "#superbwarfare:projectile * 0.1",
+    "#superbwarfare:projectile_absolute * 0.7",
+    "@#superbwarfare:at_rocket * 1.3",
+    "superbwarfare:vehicle_strike * 3",
+    "@superbwarfare:gun_grenade * 1.5",
+    "@#superbwarfare:aa_missile * 0.5",
+    "All - 13"
+  ],
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 160,
+    "ExplosionRadius": 8
+  },
+  "ThirdPersonCameraPos": [1, 1, 4],
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/prism_tank_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
+  "Type": "Tank",
+  "CollisionLevel": {
+    "Level": 3,
+    "PowerLimits": [
+      [0, 0, true],
+      [0, 0, true],
+      [0.12, 0.07, false]
+    ]
+  },
+  "EngineSound": "superbwarfare:prism_tank_engine",
+  "HudType": "@Land",
+  "TerrainCompat": [[2, 0, 2.375], [-2, 0, 2.375], [2, 0, 1.156], [-2, 0, 1.156], [2, 0, 0], [-2, 0, 0], [2, 0, -1.156], [-2, 0, -1.156], [2, 0, -2.375], [-2, 0, -2.375]],
+  "InertiaRotateRate": 1
+}

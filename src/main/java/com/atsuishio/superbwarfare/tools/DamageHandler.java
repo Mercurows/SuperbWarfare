@@ -54,7 +54,7 @@ public class DamageHandler {
                 living.walkAnimation.setSpeed(1.5F);
 
                 boolean flag1 = true;
-                if (living.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
+                if (living.invulnerableTime > 10 && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
                     if (damage <= living.lastHurt) {
                         return false;
                     }
@@ -109,8 +109,8 @@ public class DamageHandler {
                         double d0 = entity1.getX() - living.getX();
 
                         double d1;
-                        for (d1 = entity1.getZ() - living.getZ(); d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D) {
-                            d0 = (Math.random() - Math.random()) * 0.01D;
+                        for (d1 = entity1.getZ() - living.getZ(); d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01) {
+                            d0 = (Math.random() - Math.random()) * 0.01;
                         }
 
                         living.knockback(0.4F, d0, d1);

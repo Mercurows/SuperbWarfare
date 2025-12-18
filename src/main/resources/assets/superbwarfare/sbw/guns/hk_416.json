@@ -1,0 +1,16 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/m_4.animation.json",
+    "Model": "superbwarfare:geo/hk_416.geo.json",
+    "Texture": "superbwarfare:textures/item/hk_416.png",
+    "LODModel": "superbwarfare:geo/lod/hk_416.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/hk_416.png"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    1.440625
+  ],
+  "FlareSize": 0.3,
+  "EjectShell": true
+}

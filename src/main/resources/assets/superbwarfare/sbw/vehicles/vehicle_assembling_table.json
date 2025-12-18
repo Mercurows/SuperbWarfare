@@ -1,0 +1,6 @@
+{
+  "Model": {
+    "Model": "superbwarfare:geo/vehicle_assembling_table_vehicle.geo.json",
+    "Texture": "superbwarfare:textures/entity/vehicle_assembling_table.png"
+  }
+}

@@ -1,16 +1,16 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.renderer.gun.BocekItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.BocekImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
+import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -19,12 +19,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -32,13 +29,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -48,7 +43,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class BocekItem extends GunGeoItem {
@@ -74,7 +68,7 @@ public class BocekItem extends GunGeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.bocek.pull"));
         }
 
-        if (player.isSprinting() && player.onGround() && ClientEventHandler.cantSprint == 0 && ClientEventHandler.drawTime < 0.01) {
+        if (player.isSprinting() && player.onGround() && ClientEventHandler.noSprintTicks == 0 && ClientEventHandler.drawTime < 0.01) {
             if (ClientEventHandler.tacticalSprint) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.run_fast"));
             } else {
@@ -129,8 +123,8 @@ public class BocekItem extends GunGeoItem {
     }
 
     @Override
-    public ResourceLocation getGunIcon(GunData data) {
-        return Mod.loc("textures/gun_icon/bocek_icon.png");
+    public boolean useSpecialFireProcedure(GunData data) {
+        return true;
     }
 
     @Override
@@ -139,16 +133,7 @@ public class BocekItem extends GunGeoItem {
     }
 
     @Override
-    public void shoot(
-            @Nullable Entity shooter,
-            @NotNull ServerLevel level,
-            @NotNull Vec3 shootPosition,
-            @NotNull Vec3 shootDirection,
-            @NotNull GunData data,
-            double spread,
-            boolean zoom,
-            @Nullable UUID uuid
-    ) {
+    public void shoot(@NotNull ShootParameters parameters) {
     }
 
     @Override
@@ -162,7 +147,7 @@ public class BocekItem extends GunGeoItem {
         if (player instanceof ServerPlayer serverPlayer) {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
-            Mod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
         }
 
         if (power * 12 >= 6) {
@@ -188,21 +173,23 @@ public class BocekItem extends GunGeoItem {
                 }
             }
 
-            data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
+            data.ammo.set(data.ammo.get() - data.compute().ammoCostPerShoot);
+            data.save();
         }
     }
 
     public void spawnBullet(GunData data, Player player, double power, boolean zoom) {
         ItemStack stack = data.stack;
 
-        float headshot = data.get(GunProp.HEADSHOT).floatValue();
-        float velocity = (float) (data.get(GunProp.VELOCITY) * power);
-        float bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR).floatValue();
-        float explosionRadius = data.get(GunProp.EXPLOSION_RADIUS).floatValue();
-        float explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE).floatValue();
-        int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
+        var computed = data.compute();
+        float headshot = (float) computed.headshot;
+        float velocity = (float) (computed.velocity * power);
+        float bypassArmorRate = (float) computed.bypassesArmor;
+        float explosionRadius = (float) computed.explosionRadius;
+        float explosionDamage = (float) computed.explosionDamage;
+        int projectileAmount = computed.projectileAmount;
 
-        double damage = data.get(GunProp.DAMAGE) * power;
+        double damage = computed.damage * power;
         float spread = 0.01f;
 
         if (!zoom) {

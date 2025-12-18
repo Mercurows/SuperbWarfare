@@ -1,0 +1,20 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/m_79.animation.json",
+    "Model": "superbwarfare:geo/m79.geo.json",
+    "Texture": "superbwarfare:textures/item/m_79.png",
+    "LODModel": "superbwarfare:geo/lod/m_79.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/m_79.png"
+  },
+  "Animation": {
+    "Idle": "animation.m_79.idle",
+    "Reload": "animation.m_79.reload"
+  },
+  "FlarePosition": [
+    0,
+    0,
+    0.59375
+  ],
+  "FlareSize": 1,
+  "UseOldHandRenderer": true
+}

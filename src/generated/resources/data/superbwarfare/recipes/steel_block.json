@@ -4,14 +4,11 @@
   "key": {
     "a": {
       "tag": "superbwarfare:ingots/steel"
-    },
-    "b": {
-      "item": "superbwarfare:steel_ingot"
     }
   },
   "pattern": [
     "aaa",
-    "aba",
+    "aaa",
     "aaa"
   ],
   "result": {

@@ -1,10 +1,9 @@
 package com.atsuishio.superbwarfare.perk;
 
 import com.atsuishio.superbwarfare.data.gun.DamageReduce;
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
-import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -16,8 +15,8 @@ import java.util.function.Supplier;
 public class AmmoPerk extends Perk {
 
     public double bypassArmorRate;
-    public double damageRate;
-    public double speedRate;
+    public double damageRate = 1;
+    public double speedRate = 1;
     public boolean slug;
     public float[] rgb;
     public Supplier<ArrayList<MobEffect>> mobEffects;
@@ -30,36 +29,30 @@ public class AmmoPerk extends Perk {
         this.slug = builder.slug;
         this.rgb = builder.rgb;
         this.mobEffects = () -> builder.mobEffects;
+    }
 
-        appendModification(GunProp.BYPASSES_ARMOR, (data, amount) -> Math.max(0, amount + this.bypassArmorRate));
+    @Override
+    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+        rawData.bypassesArmor = Math.max(0, rawData.bypassesArmor + this.bypassArmorRate);
+        rawData.velocity = Math.max(0, rawData.velocity * this.speedRate);
 
-        appendModification(GunProp.VELOCITY, (data, amount) -> amount * this.speedRate);
-
-        appendModification(GunProp.DAMAGE, (pm, data, damage) -> {
-            if (data.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk) {
-                if (ammoPerk.slug) {
-                    return damage * ammoPerk.damageRate * pm.<Integer>get(GunProp.PROJECTILE_AMOUNT);
-                }
-                return damage * ammoPerk.damageRate;
+        if (gunData.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk) {
+            if (ammoPerk.slug) {
+                rawData.damage *= ammoPerk.damageRate * rawData.projectileAmount;
+            } else {
+                rawData.damage *= ammoPerk.damageRate;
             }
-            return damage;
-        });
+        }
 
-        appendModification(GunProp.PROJECTILE_AMOUNT, (data, amount) -> {
-            var perk = data.perk.get(Perk.Type.AMMO);
-            if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
-                return 1;
-            }
-            return amount;
-        });
+        if (gunData.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+            rawData.projectileAmount = 1;
+        }
 
-        appendModification(GunProp.ZOOM_SPREAD_RATE, (data, amount) -> {
-            var perk = data.perk.get(Perk.Type.AMMO);
-            if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug && data.stack.is(ModTags.Items.SHOTGUN)) {
-                return 0.15;
-            }
-            return amount;
-        });
+        if (gunData.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk && ammoPerk.slug && gunData.isShotgun(rawData)) {
+            rawData.zoomSpreadRate = 0.15;
+        }
+
+        return super.computeProperties(gunData, rawData);
     }
 
     public AmmoPerk(String descriptionId, Type type) {
@@ -111,9 +104,9 @@ public class AmmoPerk extends Perk {
 
         String descriptionId;
         Type type;
-        double bypassArmorRate = 0.0;
-        double damageRate = 1.0;
-        double speedRate = 1.0;
+        double bypassArmorRate = 0;
+        double damageRate = 1;
+        double speedRate = 1;
         boolean slug = false;
         float[] rgb = {1, 222 / 255f, 39 / 255f};
         public ArrayList<MobEffect> mobEffects = new ArrayList<>();

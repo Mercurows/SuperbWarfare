@@ -1,0 +1,16 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/ak_47.animation.json",
+    "Model": "superbwarfare:geo/rpk.geo.json",
+    "Texture": "superbwarfare:textures/item/rpk.png",
+    "LODModel": "superbwarfare:geo/lod/rpk.geo.json",
+    "LODTexture": "superbwarfare:textures/item/lod/rpk.png"
+  },
+  "FlarePosition": [
+    0,
+    0.02,
+    1.12375
+  ],
+  "FlareSize": 0.3,
+  "EjectShell": true
+}

@@ -1,0 +1,165 @@
+{
+  "MaxHealth": 200,
+  "MaxEnergy": 500000,
+  "OBB": [
+    {
+      "Size": [1.5625, 0.75, 3.1875],
+      "Position": [0, 0.875, 0.375]
+    },
+    {
+      "Size": [1.0625, 0.5, 1.90625],
+      "Position": [0, 2.0625, -0.71875]
+    }
+  ],
+  "Seats": [
+    {
+      "Transform": "Vehicle",
+      "Position": [0, 0.6, -0.2],
+      "MinPitch": -25,
+      "MaxPitch": 50,
+      "MinYaw": -105,
+      "MaxYaw": 105,
+      "CameraPos": {
+        "Transform": "Barrel",
+        "ZoomPosition": [0, 0.4, -0.6],
+        "Direction": "Barrel"
+      },
+      "Weapons": ["MachineGun"],
+      "Sensitivity": [0.75, 0.8, 1]
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [-0.8, 0.35, -1.2],
+      "MinYaw": -90,
+      "MaxYaw": 90
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [0.8, 0.35, -1.2],
+      "MinYaw": -90,
+      "MaxYaw": 90
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [-0.8, 0.35, -2.2],
+      "MinYaw": -90,
+      "MaxYaw": 90
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [0.8, 0.35, -2.2],
+      "MinYaw": -90,
+      "MaxYaw": 90
+    }
+  ],
+  "Weapons": {
+    "MachineGun": {
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Spread": 0.25,
+      "CrosshairColor": "0xFFFFFF",
+      "Projectile": "superbwarfare:projectile",
+      "RPM": 450,
+      "Damage": 40,
+      "BypassesArmor": 0.2,
+      "Velocity": 25,
+      "RecoilTime": 20,
+      "RecoilForce": 0.1,
+      "HeatPerShoot": 5,
+      "NaturalCooldown": 1,
+      "ShootAnimationTime": 1,
+      "Name": "weapon.superbwarfare.50_cal_gun",
+      "AmmoType": "@HeavyAmmo",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.2, 1]],
+        "Directions": ["Barrel"]
+      },
+      "Crosshair": "@VehicleDynamicCross",
+      "CrosshairZooming": "@VehicleCommonGun",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:m_2_hb_fire_1p",
+        "Fire3P": "superbwarfare:m_2_hb_fire_3p",
+        "Fire3PFar": "superbwarfare:m_2_hb_far",
+        "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 16
+    }
+  },
+
+  "TurretPos": [0, 2.5616625, -0.565625],
+  "TurretTurnSpeed": [25, 25],
+  "TurretPitchRange": [-25, 50],
+  "BarrelPos": [0, 0.5088375, 0.04173125],
+  "HasDecoy": true,
+  "Mass": 0.7,
+  "RotateOffsetHeight": 1,
+  "DamageModifiers": [
+    "All * 0.5",
+    "minecraft:arrow * 0.2",
+    "minecraft:trident * 0.4",
+    "minecraft:mob_attack * 0.4",
+    "minecraft:mob_attack_no_aggro * 0.4",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:lava - -2",
+    "minecraft:lava * 4",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
+    "minecraft:explosion * 4",
+    "minecraft:player_explosion * 4",
+    "superbwarfare:projectile_hit * 0.8",
+    "superbwarfare:grapeshot_hit * 0.5",
+    "@#superbwarfare:aerial_bomb * 2",
+    "#superbwarfare:projectile * 0.16",
+    "superbwarfare:vehicle_strike * 1",
+    "@superbwarfare:cannon_shell * 0.9",
+    "@superbwarfare:small_cannon_shell * 1.3",
+    "@superbwarfare:gun_grenade * 2.2",
+    "@superbwarfare:rgo_grenade * 6",
+    "@superbwarfare:hand_grenade * 5",
+    "@superbwarfare:mortar_shell * 4",
+    "@#superbwarfare:aa_missile * 1.5",
+    "All - 2"
+  ],
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 80,
+    "ExplosionRadius": 5
+  },
+  "EngineType": "Ship",
+  "EngineInfo": {
+    "Buoyancy": 0.12,
+    "EnergyCostRate": 48,
+    "MaxForwardSpeedRate": 1.5,
+    "MaxBackwardSpeedRate": 1.0,
+    "Increment": 0.035,
+    "Decrement": 0.022,
+    "SteeringSpeed": 0.15,
+    "BodyPitchRate": 1.1,
+    "BodyPitchRoll": 1.0
+  },
+  "ThirdPersonCameraPos": [0, 1.5, 3],
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png",
+  "Type": "Boat",
+  "CollisionLevel": {
+    "Level": 3,
+    "PowerLimits": [
+      [0, 0, true],
+      [0, 0, true],
+      [1, 0.15, false]
+    ]
+  },
+  "EngineSound": "superbwarfare:speedboat_engine",
+  "TerrainCompat": [
+    [0.875, 0, 1.1875], [0, 0, 1.1875], [-0.875, 0, 1.1875],
+    [0.875, 0, 0.1875], [0, 0, 0.1875], [-0.875, 0, 0.1875],
+    [0.875, 0, -0.8125], [0, 0, -0.8125], [-0.875, 0, -0.8125],
+    [0.875, 0, -1.8125], [0, 0, -1.8125], [-0.875, 0, -1.8125],
+    [0.875, 0, -2.6875], [0, 0, -2.6875], [-0.875, 0, -2.6875]
+  ],
+  "InertiaRotateRate": 2
+}
