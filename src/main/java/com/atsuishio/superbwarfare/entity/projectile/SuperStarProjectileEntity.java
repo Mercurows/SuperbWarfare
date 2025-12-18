@@ -107,7 +107,7 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
         BlockState state = this.level().getBlockState(resultPos);
 
         SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
-        this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1, 1);
+        this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, 1, speed/4 + 0.5);
         Vec3 hitVec = result.getLocation();
 
         this.hitBlock(hitVec, result);
