@@ -78,7 +78,8 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
                 SoundEvent event = state.getBlock().getSoundType(state, this.level(), resultPos, this).getBreakSound();
                 double speed = this.getDeltaMovement().length();
                 if (speed > 0.1) {
-                    this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, speed/4 + 0.5, 1);
+                    var volume = (float) speed / 4F + 0.5F;
+                    this.level().playSound(null, result.getLocation().x, result.getLocation().y, result.getLocation().z, event, SoundSource.AMBIENT, volume, 1);
                 }
                 this.bounce(blockResult.getDirection());
 
