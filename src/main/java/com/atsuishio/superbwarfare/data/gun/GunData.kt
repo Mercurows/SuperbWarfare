@@ -832,7 +832,16 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @Deprecated("use selectedFireModeInfo() instead", ReplaceWith("selectedFireModeInfo()"))
     @Suppress("unused")
     @JvmField
-    val fireMode: StringEnumValue<FireMode> = FireModeGetter()
+    val fireMode: StringEnumValue<FireMode> = object : StringEnumValue<FireMode>(
+        CompoundTag(),
+        "DeprecatedFireMode",
+        FireMode.SEMI,
+        { _ -> FireMode.SEMI }) {
+
+        override fun get(): FireMode {
+            return this@GunData.selectedFireModeInfo().mode ?: FireMode.SEMI
+        }
+    }
 
     init {
         require(stack.item is GunItem) { "stack is not GunItem!" }
@@ -898,17 +907,6 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
                 selectedFireMode.defaultValue = i
                 break
             }
-        }
-    }
-
-    @Deprecated("")
-    inner class FireModeGetter : StringEnumValue<FireMode>(
-        CompoundTag(),
-        "DeprecatedFireMode",
-        FireMode.SEMI,
-        { _ -> FireMode.SEMI }) {
-        override fun get(): FireMode {
-            return this@GunData.selectedFireModeInfo().mode ?: FireMode.SEMI
         }
     }
 
