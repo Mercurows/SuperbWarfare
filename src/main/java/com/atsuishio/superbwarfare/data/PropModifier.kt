@@ -8,6 +8,7 @@ class PropModifier<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, RESUL
     private val props =
         mutableMapOf<Prop<DATA, DEFAULT_DATA, *, *, *>, Any>()
 
+    @Suppress("unchecked_cast")
     fun <F> get(prop: Prop<DATA, DEFAULT_DATA, *, F, *>): F {
         return props.getOrPut(prop) {
             prop.getDefault(data.getDefault()) as Any
