@@ -1,5 +1,5 @@
 {
-  "type": "neoforge:add_table",
+  "type": "superbwarfare:superbwarfare_loot_modifier",
   "conditions": [
     {
       "condition": "neoforge:loot_table_id",
