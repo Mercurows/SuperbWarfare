@@ -136,30 +136,30 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         }
     }
 
-    override fun onHitEntity(pResult: EntityHitResult) {
-        super.onHitEntity(pResult)
+    override fun onHitEntity(result: EntityHitResult) {
+        super.onHitEntity(result)
 
         postEvent(
             HitEntity(
                 this.owner,
                 this,
-                pResult.entity,
-                pResult.getLocation()
+                result.entity,
+                result.getLocation()
             )
         )
     }
 
-    override fun onHitBlock(pResult: BlockHitResult) {
-        super.onHitBlock(pResult)
+    override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
 
         postEvent(
             HitBlock(
-                pResult.blockPos,
-                this.level().getBlockState(pResult.blockPos),
-                pResult.direction,
+                result.blockPos,
+                this.level().getBlockState(result.blockPos),
+                result.direction,
                 this.owner,
                 this,
-                pResult.getLocation()
+                result.getLocation()
             )
         )
     }
