@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -31,14 +32,16 @@ public class SuperStarProjectileRenderer extends EntityRenderer<SuperStarProject
 
     public void render(@NotNull SuperStarProjectileEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         pMatrixStack.pushPose();
+        pMatrixStack.translate(0, Math.min(-0.75 + pEntity.tickCount * 0.05, 0), 0);
+        boolean viewXRot = Minecraft.getInstance().gameRenderer.getMainCamera().getXRot() > 0;
         pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180F));
-        pMatrixStack.translate(0, Math.min(-0.5 + pEntity.tickCount * 0.05, 0), -1);
+        pMatrixStack.mulPose(Axis.XP.rotationDegrees(viewXRot ? -90F : 90f));
+        pMatrixStack.translate(0, -1, 0);
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(pEntity.getLerpTick(pPartialTicks) * (viewXRot ? 18 : -18)));
         PoseStack.Pose $$6 = pMatrixStack.last();
         Matrix4f $$7 = $$6.pose();
         Matrix3f $$8 = $$6.normal();
         VertexConsumer $$9 = pBuffer.getBuffer(RenderType.entityCutoutNoCull(texture(pEntity)));
-        pMatrixStack.rotateAround(Axis.ZP.rotationDegrees((System.currentTimeMillis() % 36000000) / 2f), 0, 0, 0);
         vertex($$9, $$7, $$8, pPackedLight, -0.5f, -0.5f, 0, 1);
         vertex($$9, $$7, $$8, pPackedLight, 0.5f, -0.5f, 1, 1);
         vertex($$9, $$7, $$8, pPackedLight, 0.5f, 0.5f, 1, 0);
@@ -47,8 +50,8 @@ public class SuperStarProjectileRenderer extends EntityRenderer<SuperStarProject
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
-    private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
-        pConsumer.vertex(pPose, pX, pY, 0).color(255, 255, 0, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
+    private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pZ, int pU, int pV) {
+        pConsumer.vertex(pPose, pX, 0, pZ).color(255, 255, 0, 255).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
     }
 
     private static ResourceLocation texture(Entity entity) {
