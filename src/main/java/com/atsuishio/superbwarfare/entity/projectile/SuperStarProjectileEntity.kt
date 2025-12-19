@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.plus
+import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -28,7 +29,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.PartEntity
-import net.neoforged.neoforge.network.PacketDistributor
 import kotlin.math.min
 
 class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>, world: Level) :
@@ -97,7 +97,7 @@ class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>,
             val player = this.owner
             if (player is ServerPlayer) {
                 level.playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
-                PacketDistributor.sendToPlayer(player, ClientIndicatorMessage(0, 5))
+                player.sendPacket(ClientIndicatorMessage(0, 5))
             }
         }
     }
