@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,6 +36,9 @@ import static com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity.ray
 
 public class SuperStarProjectileEntity extends FastThrowableProjectile {
     private Entity currentTarget = null;
+
+    public int tickO;
+    public int tick;
 
     public SuperStarProjectileEntity(EntityType<? extends SuperStarProjectileEntity> type, Level world) {
         super(type, world);
@@ -174,7 +178,9 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
 
     @Override
     public void tick() {
+        tickO = tick;
         super.tick();
+        tick++;
 
         if (!this.level().isClientSide()) {
             Vec3 startVec = this.position();
@@ -195,6 +201,10 @@ public class SuperStarProjectileEntity extends FastThrowableProjectile {
         if (this.tickCount > 1200) {
             this.discard();
         }
+    }
+
+    public float getLerpTick(float tickDelta) {
+        return Mth.lerp(tickDelta, tickO, tick);
     }
 
     @Override

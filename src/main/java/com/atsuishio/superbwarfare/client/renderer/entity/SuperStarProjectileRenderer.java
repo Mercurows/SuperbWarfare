@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -29,12 +30,14 @@ public class SuperStarProjectileRenderer extends EntityRenderer<SuperStarProject
 
     public void render(@NotNull SuperStarProjectileEntity pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         pMatrixStack.pushPose();
+        pMatrixStack.translate(0, Math.min(-0.75 + pEntity.tickCount * 0.05, 0), 0);
+        boolean viewXRot = Minecraft.getInstance().gameRenderer.getMainCamera().getXRot() > 0;
         pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180F));
-        pMatrixStack.translate(0, Math.min(-0.5 + pEntity.tickCount * 0.05, 0), -1);
+        pMatrixStack.mulPose(Axis.XP.rotationDegrees(viewXRot ? -90F : 90f));
+        pMatrixStack.translate(0, -1, 0);
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(pEntity.getLerpTick(pPartialTicks) * (viewXRot ? 18 : -18)));
         PoseStack.Pose $$6 = pMatrixStack.last();
         VertexConsumer $$9 = pBuffer.getBuffer(RenderType.entityCutoutNoCull(texture(pEntity)));
-        pMatrixStack.rotateAround(Axis.ZP.rotationDegrees((System.currentTimeMillis() % 36000000) / 2f), 0, 0, 0);
         vertex($$9, $$6, pPackedLight, -0.5f, -0.5f, 0, 1);
         vertex($$9, $$6, pPackedLight, 0.5f, -0.5f, 1, 1);
         vertex($$9, $$6, pPackedLight, 0.5f, 0.5f, 1, 0);
@@ -43,8 +46,8 @@ public class SuperStarProjectileRenderer extends EntityRenderer<SuperStarProject
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
 
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, int lightmapUV, float x, float y, int u, int v) {
-        consumer.addVertex(pose, x - 0.5F, y - 0.25F, 0)
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, int lightmapUV, float x, float z, int u, int v) {
+        consumer.addVertex(pose, x, 0, z)
                 .setColor(255, 255, 0, 255)
                 .setUv((float) u, (float) v)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
