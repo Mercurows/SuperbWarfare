@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.config.server.AmmoConfigKt;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.ChatFormatting;
@@ -73,6 +74,14 @@ public enum Ammo {
         this.serializationName = builder + "Ammo";
     }
 
+    public int getLimit() {
+        return AmmoConfigKt.limit(this);
+    }
+
+    public int getAmmoBoxLimit() {
+        return AmmoConfigKt.ammoBoxLimit(this);
+    }
+
     public ItemStack getItemStack() {
         return getItemStack(1);
     }
@@ -96,12 +105,15 @@ public enum Ammo {
         return count == null ? 0 : count;
     }
 
-    public void set(ItemStack stack, int count) {
+    public boolean set(ItemStack stack, int count) {
+        if (count > getAmmoBoxLimit()) return false;
+
         stack.set(this.dataComponent, count);
+        return true;
     }
 
-    public void add(ItemStack stack, int count) {
-        set(stack, safeAdd(get(stack), count));
+    public boolean add(ItemStack stack, int count) {
+        return set(stack, safeAdd(get(stack), count));
     }
 
     // NBTTag
@@ -109,13 +121,16 @@ public enum Ammo {
         return tag.getInt(this.serializationName);
     }
 
-    public void set(CompoundTag tag, int count) {
+    public boolean set(CompoundTag tag, int count) {
         if (count < 0) count = 0;
+        if (count > getAmmoBoxLimit()) return false;
+
         tag.putInt(this.serializationName, count);
+        return true;
     }
 
-    public void add(CompoundTag tag, int count) {
-        set(tag, safeAdd(get(tag), count));
+    public boolean add(CompoundTag tag, int count) {
+        return set(tag, safeAdd(get(tag), count));
     }
 
     // PlayerVariables
@@ -123,14 +138,16 @@ public enum Ammo {
         return variable.ammo.getOrDefault(this, 0);
     }
 
-    public void set(PlayerVariable variable, int count) {
+    public boolean set(PlayerVariable variable, int count) {
         if (count < 0) count = 0;
+        if (count > getLimit()) return false;
 
         variable.ammo.put(this, count);
+        return true;
     }
 
-    public void add(PlayerVariable variable, int count) {
-        set(variable, safeAdd(get(variable), count));
+    public boolean add(PlayerVariable variable, int count) {
+        return set(variable, safeAdd(get(variable), count));
     }
 
 
@@ -139,17 +156,19 @@ public enum Ammo {
         return get(entity.getData(ModAttachments.PLAYER_VARIABLE));
     }
 
-    public void set(Entity entity, int count) {
-        if (entity.level().isClientSide) return;
-        var cap = entity.getData(ModAttachments.PLAYER_VARIABLE).watch();
+    public boolean set(Entity entity, int count) {
+        if (entity.level().isClientSide || count > getLimit()) return false;
 
+        var cap = entity.getData(ModAttachments.PLAYER_VARIABLE).watch();
         set(cap, count);
         entity.setData(ModAttachments.PLAYER_VARIABLE, cap);
         cap.sync(entity);
+
+        return true;
     }
 
-    public void add(Entity entity, int count) {
-        set(entity, safeAdd(get(entity), count));
+    public boolean add(Entity entity, int count) {
+        return set(entity, safeAdd(get(entity), count));
     }
 
 

@@ -20,7 +20,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -216,7 +215,14 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
         if (type == AmmoConsumeType.PLAYER_AMMO) {
             if (ammoSupplier instanceof Player player) {
                 if (playerAmmoType != null) {
-                    playerAmmoType.add(player, count);
+                    var countToWithdraw = Math.min(count, playerAmmoType.getLimit() - playerAmmoType.get(player));
+                    playerAmmoType.add(player, countToWithdraw);
+
+                    var restItemCount = count - countToWithdraw;
+                    if (restItemCount > 0) {
+                        InventoryTool.insertItem(player, playerAmmoType.getItemStack(), restItemCount);
+                    }
+
                     return count;
                 } else {
                     Mod.LOGGER.warn("withdraw player ammo failed: invalid player ammo type");
@@ -231,12 +237,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             }
         } else {
             if (ammoSupplier instanceof Player player) {
-                var limit = this.stack.getMaxStackSize();
-                while (count > 0) {
-                    var toInsert = Math.min(limit, count);
-                    ItemHandlerHelper.giveItemToPlayer(player, this.stack.copyWithCount(toInsert));
-                    count -= toInsert;
-                }
+                InventoryTool.insertItem(player, this.stack, count);
                 return count;
             } else {
                 var itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY);
@@ -268,23 +269,9 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
             stackToInsert = this.stack;
         }
 
-        int inserted = 0;
-        while (count > 0) {
-            var limit = stackToInsert.getMaxStackSize();
-            var toInsert = Math.min(limit, count);
-            var result = ItemHandlerHelper.insertItemStacked(handler, stackToInsert.copyWithCount(toInsert), false);
-
-            count -= toInsert - result.getCount();
-            inserted += toInsert - result.getCount();
-
-            if (!result.isEmpty()) {
-                Mod.LOGGER.warn("trying to withdraw ammo {} with count {}, but only {} is inserted", stackToInsert, count, inserted);
-                break;
-            }
-        }
-
-        return inserted;
+        return InventoryTool.insertItem(handler, stackToInsert, count);
     }
+
 
     private static final Pattern AMMO_PATTERN = Pattern.compile("^(?<count>(\\d+)?)\\s*(?<prefix>[@#]?)(?<id>\\w+(:\\w+)?)\\s*(?<data>(\\{.*})?)$");
 

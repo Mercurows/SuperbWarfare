@@ -54,7 +54,7 @@ private fun SingleCommand.buildDestroyTypesCommand() {
 
                     saveCollisionConfigs()
 
-                    source.success { Component.translatable("commands.config.collision_destroy.${type.commandName}") }
+                    success { Component.translatable("commands.config.collision_destroy.${type.commandName}") }
 
                     return@execute 0
                 }
@@ -87,7 +87,7 @@ private fun SingleCommand.booleanConfig(
 
                 effect(value)
 
-                getSource().success {
+                success {
                     Component.translatable("$msg.${if (value) "enabled" else "disabled"}")
                 }
 

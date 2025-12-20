@@ -16,4 +16,5 @@ val SERVER_CONFIG = buildConfig(
     ExplosionConfig,
     VehicleConfig,
     MiscConfig,
+    AmmoConfig,
 )
