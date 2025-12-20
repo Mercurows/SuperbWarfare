@@ -13,7 +13,7 @@ class Bl132Entity(type: EntityType<Bl132Entity>, world: Level) : ArtilleryEntity
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         for (i in 1..4) {
-            add("fire$i") {
+            "fire$i" {
                 if (barrelAnim.getOrElse(i) { 0 } > 0) {
                     thenPlay("animation.bl_132.fire_${5 - i}")
                 } else {

@@ -12,7 +12,7 @@ class Mk42Entity(type: EntityType<Mk42Entity>, world: Level) : ArtilleryEntity(t
         .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-        add("shoot") {
+        "shoot" {
             if (getShootAnimationTimer(0, 0) > 0) {
                 thenPlay("animation.mk_42.fire")
             } else {

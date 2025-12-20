@@ -12,14 +12,14 @@ class Lav150Entity(type: EntityType<Lav150Entity>, world: Level) : GeoVehicleEnt
         .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-        add("cannon") {
+        "cannon" {
             if (getShootAnimationTimer(0, 0) > 0) {
                 thenPlay("animation.lav_150.fire")
             } else {
                 thenLoop("animation.lav_150.idle")
             }
         }
-        add("machineGun") {
+        "machineGun" {
             if (getShootAnimationTimer(0, 1) > 0) {
                 thenPlay("animation.lav_150.fire2")
             } else {

@@ -12,21 +12,21 @@ class Yx100Entity(type: EntityType<Yx100Entity>, world: Level) : GeoVehicleEntit
         .custom { source, damage -> getSourceAngle(source, 0.3f) * damage }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-        add("cannon") {
+        "cannon" {
             if (getShootAnimationTimer(0, 0) > 0) {
                 thenPlay("animation.yx_100.fire")
             } else {
                 thenLoop("animation.yx_100.idle")
             }
         }
-        add("coax") {
+        "coax" {
             if (getShootAnimationTimer(0, 1) > 0) {
                 thenPlay("animation.yx_100.fire_coax")
             } else {
                 thenLoop("animation.yx_100.idle_coax")
             }
         }
-        add("passengerWeaponStation") {
+        "passengerWeaponStation" {
             if (getShootAnimationTimer(1, 0) > 0) {
                 thenPlay("animation.yx_100.fire_weapon_station")
             } else {

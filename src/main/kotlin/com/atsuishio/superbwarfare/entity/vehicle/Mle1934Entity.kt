@@ -12,14 +12,14 @@ class Mle1934Entity(type: EntityType<Mle1934Entity>, world: Level) : ArtilleryEn
         .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-        add("fireLeft") {
+        "fireLeft" {
             if (barrelAnim.getOrElse(1) { 0 } > 0) {
                 thenPlay("animation.mle_1934.fire_left")
             } else {
                 thenLoop("animation.mle_1934.idle")
             }
         }
-        add("fireRight") {
+        "fireRight" {
             if (barrelAnim.getOrElse(0) { 0 } > 0) {
                 thenPlay("animation.mle_1934.fire_right")
             } else {
