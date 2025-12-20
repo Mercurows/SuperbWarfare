@@ -118,8 +118,9 @@ private fun SingleCommand.buildAmmoLimitCommand(isAmmoBox: Boolean) {
     }
 
     "set" {
+        requirePermission(2)
+
         enumArg<Ammo> {
-            requirePermission(2)
             intArg {
                 execute {
                     val type = enumArg
