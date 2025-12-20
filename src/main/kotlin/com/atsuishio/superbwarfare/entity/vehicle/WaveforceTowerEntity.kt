@@ -12,7 +12,7 @@ class WaveforceTowerEntity(type: EntityType<WaveforceTowerEntity>, world: Level)
     }
 
     override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
-        add("barrelLight") {
+        "barrelLight" {
             thenLoop("animation.waveforce_tower.idle")
         }
     }

@@ -9,7 +9,7 @@ import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 class SpeedboatEntity(type: EntityType<SpeedboatEntity>, world: Level) : GeoVehicleEntity(type, world) {
 
     override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
-        add("machineGun") {
+        "machineGun" {
             if (getShootAnimationTimer(0, 0) > 0) {
                 thenPlay("animation.speedboat.fire")
             } else {

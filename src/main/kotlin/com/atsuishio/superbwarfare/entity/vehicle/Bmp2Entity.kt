@@ -12,14 +12,14 @@ class Bmp2Entity(type: EntityType<Bmp2Entity>, world: Level) : GeoVehicleEntity(
         .custom { source, damage -> getSourceAngle(source, 0.4f) * damage }
 
     override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
-        add("cannon") {
+        "cannon" {
             if (getShootAnimationTimer(0, 0) > 0) {
                 thenPlay("animation.lav_150.fire")
             } else {
                 thenLoop("animation.lav_150.idle")
             }
         }
-        add("machineGun") {
+        "machineGun" {
             if (getShootAnimationTimer(0, 1) > 0) {
                 thenPlay("animation.lav_150.fire2")
             } else {

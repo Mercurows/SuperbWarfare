@@ -12,6 +12,14 @@ import kotlin.reflect.KProperty
 
 // Geo动画播放Builder
 class ControllerBuilder<T : GeoAnimatable>(val animatable: T, val data: ControllerRegistrar) {
+
+    operator fun String.invoke(
+        transitionTickTime: Int = 0,
+        animationHandler: AnimationState<T>.() -> PlayState
+    ) {
+        add(this, transitionTickTime, animationHandler)
+    }
+
     fun add(
         name: String,
         transitionTickTime: Int = 0,

@@ -45,14 +45,14 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity
     }
 
     override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
-        add("shoot") {
+        "shoot" {
             if (getShootAnimationTimer(1, 0) > 0) {
                 thenPlay("animation.plz_05.shoot")
             } else {
                 thenLoop("animation.plz_05.idle")
             }
         }
-        add("lockTurret", 10) {
+        "lockTurret"(10) {
             if (lockTurret) {
                 thenPlay("animation.plz_05.lock_turret")
             } else {
