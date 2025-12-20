@@ -22,7 +22,6 @@ import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.level.ClipContext
-import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import kotlin.math.min
@@ -72,8 +71,7 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
 
                 // 标记位置
                 val parameters = stack.firingParameters
-                val blockPos = parameters.pos
-                val pos = Vec3(blockPos.x - 0.5, blockPos.y + 0.5, blockPos.z + 0.5)
+                val pos = parameters.pos.center
                 val point = VectorUtil.worldToScreen(pos)
                 if (VectorUtil.canSee(pos)) {
                     val x = point.x.toFloat()

@@ -11,9 +11,10 @@ import com.atsuishio.superbwarfare.item.firingParameters
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector
+import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
 import com.atsuishio.superbwarfare.tools.VectorTool.randomPos
 import net.minecraft.ChatFormatting
+import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -88,7 +89,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         with(builder) {
             define(SHOOT_VEC, forward.toVector3f())
             define(DEPRESSED, false)
-            define(TARGET_POS, Vector3f())
+            define(TARGET_POS, BlockPos(0, 0, 0))
             define(RADIUS, 0)
             define(BARREL_ANIM, List(4) { 0 })
         }
@@ -102,9 +103,9 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
 
         compound.putBoolean("Depressed", depressed)
         compound.putInt("Radius", radius)
-        compound.putFloat("TargetX", targetPos.x)
-        compound.putFloat("TargetY", targetPos.y)
-        compound.putFloat("TargetZ", targetPos.z)
+        compound.putInt("TargetX", targetPos.x)
+        compound.putInt("TargetY", targetPos.y)
+        compound.putInt("TargetZ", targetPos.z)
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -120,29 +121,31 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
             radius = compound.getInt("Radius")
         }
         if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
-            targetPos =
-                Vector3f(compound.getFloat("TargetX"), compound.getFloat("TargetX"), compound.getFloat("TargetZ"))
+            targetPos =BlockPos(compound.getInt("TargetX"), compound.getInt("TargetX"), compound.getInt("TargetZ"))
         }
     }
 
     open fun setTarget(stack: ItemStack, entity: Entity?, weaponName: String) {
         val parameters = stack.firingParameters
-
-        val targetX = parameters.pos.x.toDouble()
-        val targetY = parameters.pos.y.toDouble()
-        val targetZ = parameters.pos.z.toDouble()
         var canAim = true
 
-        targetPos = Vector3f(targetX.toFloat(), targetY.toFloat(), targetZ.toFloat())
+        targetPos = parameters.pos
         depressed = parameters.isDepressed
         radius = parameters.radius
-        val randomPos = randomPos(Vec3(targetPos), radius)
+        val randomPos = randomPos(targetPos.center, radius).add(0.0, -1.0, 0.0)
         val launchVector = calculateLaunchVector(
             getShootPos(weaponName, 1f),
             randomPos,
             getProjectileVelocity(weaponName).toDouble(),
             getProjectileGravity(weaponName).toDouble(),
             depressed
+        )
+        val launchVector2 = calculateLaunchVector(
+                getShootPos(weaponName, 1f),
+                randomPos,
+                getProjectileVelocity(weaponName).toDouble(),
+                getProjectileGravity(weaponName).toDouble(),
+                !depressed
         )
 
         var component = Component.literal("")
@@ -154,16 +157,28 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
             component = Component.translatable("tips.superbwarfare.mortar.out_of_range")
         } else {
             val angle = -getXRotFromVector(launchVector).toFloat()
+            val angle2 = -getXRotFromVector(launchVector2).toFloat()
             if (angle < -turretMaxPitch || angle > -turretMinPitch) {
-                canAim = false
-                component = Component.translatable("tips.superbwarfare.mortar.warn", this.displayName)
-                if (angle < -turretMaxPitch) {
-                    component = Component.translatable("tips.superbwarfare.ballistics.warn")
+                if (angle2 > -turretMaxPitch && angle2 < -turretMinPitch) {
+                    component = Component.translatable("tips.superbwarfare.ballistics.warn2")
+                    canAim = false
+                } else {
+                    component = Component.translatable("tips.superbwarfare.mortar.warn", this.displayName)
+                    if (entity is Player) {
+                        entity.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false)
+                    }
+                    return
                 }
+            }
+
+            if (angle < -turretMaxPitch) {
+                component = Component.translatable("tips.superbwarfare.ballistics.warn")
+                canAim = false
             }
         }
 
         if (canAim) {
+            lockTurret = false
             launchVector?.toVector3f()?.let { shootVec = it }
         } else if (entity is Player) {
             entity.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false)
@@ -171,7 +186,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
     }
 
     open fun resetTarget(weaponName: String) {
-        val randomPos = randomPos(Vec3(targetPos), radius)
+        val randomPos = randomPos(targetPos.center, radius).add(0.0, -1.0, 0.0)
         val launchVector = calculateLaunchVector(
             getShootPos(weaponName, 1f),
             randomPos,
@@ -217,7 +232,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
 
         if (controller != null) {
             shootVec = controller.getViewVector(1f).toVector3f()
-        } else {
+        } else if (!lockTurret) {
             turretAutoAimFromVector(Vec3(shootVec))
         }
     }
@@ -262,8 +277,8 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
             SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         @JvmField
-        val TARGET_POS: EntityDataAccessor<Vector3f> =
-            SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.VECTOR3)
+        val TARGET_POS: EntityDataAccessor<BlockPos> =
+            SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.BLOCK_POS)
 
         @JvmField
         val RADIUS: EntityDataAccessor<Int> =

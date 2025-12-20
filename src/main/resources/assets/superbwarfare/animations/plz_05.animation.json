@@ -1,31 +1,48 @@
 {
-  "format_version": "1.8.0",
-  "animations": {
-    "animation.plz_05.idle": {
-      "loop": true
-    },
-    "animation.plz_05.shoot": {
-      "loop": "hold_on_last_frame",
-      "animation_length": 1,
-      "bones": {
-        "tube": {
-          "position": {
-            "0.0": [0, 0, 0],
-            "0.0167": [0, 0, 11],
-            "0.2917": [0, 0, 0],
-            "0.6583": [0, 0, 0]
-          }
-        },
-        "barrelBase": {
-          "rotation": {
-            "0.0": [0, 0, 0],
-            "0.05": [-3, 0, 0],
-            "0.25": [-2.75, 0, 0],
-            "0.4667": [1, 0, 0],
-            "0.8": [0, 0, 0]
-          }
-        }
-      }
-    }
-  }
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.plz_05.idle": {
+			"loop": true
+		},
+		"animation.plz_05.shoot": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 1,
+			"bones": {
+				"tube": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.0167": [0, 0, 11],
+						"0.2917": [0, 0, 0],
+						"0.6583": [0, 0, 0]
+					}
+				},
+				"barrelBase": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.05": [-3, 0, 0],
+						"0.25": [-2.75, 0, 0],
+						"0.4667": [1, 0, 0],
+						"0.8": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.plz_05.lock_turret": {
+			"loop": true,
+			"bones": {
+				"paojia": {
+					"rotation": [67.5, 0, 0]
+				},
+				"zhuzi": {
+					"rotation": [-7.5, 0, 0]
+				},
+				"paojia2": {
+					"rotation": [67.5, 0, 0]
+				},
+				"shensuo": {
+					"scale": [1, 1.6, 1]
+				}
+			}
+		}
+	}
 }

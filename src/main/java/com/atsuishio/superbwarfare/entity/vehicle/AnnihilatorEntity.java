@@ -35,7 +35,6 @@ import net.minecraft.world.phys.*;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4d;
-import org.joml.Vector3f;
 import org.joml.Vector4d;
 import software.bernie.geckolib.animation.*;
 
@@ -84,12 +83,8 @@ public class AnnihilatorEntity extends ArtilleryEntity {
 
     public void setTarget(ItemStack stack) {
         var parameters = FiringParametersKt.getFiringParameters(stack);
-
         var pos = parameters.pos();
-        int targetX = pos.getX();
-        int targetY = pos.getY();
-        int targetZ = pos.getZ();
-        setTargetPos(new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+        setTargetPos(pos);
     }
 
     @Override

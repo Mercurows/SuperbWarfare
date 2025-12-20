@@ -19,7 +19,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,9 +35,9 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
         boolean lookAtEntity = false;
         Entity lookingEntity = TraceTool.findLookingEntity(player, 520);
 
-        BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-        Vec3 hitPos = result.getLocation();
+            BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
+                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+            BlockPos hitPos = result.getBlockPos();
 
         if (lookingEntity != null && !player.isShiftKeyDown()) {
             lookAtEntity = true;
@@ -48,11 +47,11 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
             var isDepressed = parameters.isDepressed();
             var radius = parameters.radius();
 
-            if (lookAtEntity) {
-                FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed));
-            } else {
-                FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), radius, isDepressed));
-            }
+                if (lookAtEntity) {
+                    FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed));
+                } else {
+                    FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(hitPos, radius, isDepressed));
+                }
 
             var pos = FiringParametersKt.getFiringParameters(stack).pos();
 
@@ -64,16 +63,16 @@ public enum SetFiringParametersMessage implements CustomPacketPayload {
                             + "]")), true);
         }
 
-        if (mainStack.getItem() instanceof ArtilleryIndicator indicator) {
-            BlockPos pos;
-            if (lookAtEntity) {
-                pos = lookingEntity.blockPosition();
-            } else {
-                pos = new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z);
-            }
-            var parameters = FiringParametersKt.getFiringParameters(mainStack);
-            var isDepressed = parameters.isDepressed();
-            var radius = parameters.radius();
+            if (mainStack.getItem() instanceof ArtilleryIndicator indicator) {
+                BlockPos pos;
+                if (lookAtEntity) {
+                    pos = BlockPos.containing(lookingEntity.getBoundingBox().getCenter());
+                } else {
+                    pos = hitPos;
+                }
+                var parameters = FiringParametersKt.getFiringParameters(mainStack);
+                var isDepressed = parameters.isDepressed();
+                var radius = parameters.radius();
 
             FiringParametersKt.setFiringParameters(mainStack, new FiringParameters.Parameters(pos, radius, isDepressed));
 

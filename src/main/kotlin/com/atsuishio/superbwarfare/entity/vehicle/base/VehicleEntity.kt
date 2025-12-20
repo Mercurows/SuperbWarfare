@@ -878,6 +878,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(FIRE_INPUT_DOWN, false)
             define(DECOY_INPUT_DOWN, false)
             define(SPRINT_INPUT_DOWN, false)
+            define(LOCK_TURRET, false)
 
             define(PLANE_BREAK, 0f)
             define(SELECTED_WEAPON, List(maxPassengers) { 0 })
@@ -3886,6 +3887,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     var planeBreak by PLANE_BREAK
     var synchedGearRot by SYNCHED_GEAR_ROT
     var gearUp by GEAR_UP
+    var lockTurret by LOCK_TURRET
 
     var subEngineDamaged by SUB_ENGINE_DAMAGED
     var subEngineHealth by SUB_ENGINE_HEALTH
@@ -4191,6 +4193,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         @JvmField
         val CHARGE_PROGRESS: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val LOCK_TURRET: EntityDataAccessor<Boolean> =
+                SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         // Map SeatIndex -> GunData
         protected val GUN_DATA_MAP: EntityDataAccessor<Map<String, GunData>> =

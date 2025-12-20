@@ -38,13 +38,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import software.bernie.geckolib.animation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector;
+import static com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector;
+
 
 public class MortarEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
@@ -218,29 +218,26 @@ public class MortarEntity extends ArtilleryEntity {
     @Override
     public void setTarget(@NotNull ItemStack stack, Entity entity, @NotNull String weaponName) {
         var parameters = FiringParametersKt.getFiringParameters(stack);
-        double targetX = parameters.pos().getX();
-        double targetY = parameters.pos().getY() - 1;
-        double targetZ = parameters.pos().getZ();
         boolean canAim = true;
 
-        setTargetPos(new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+        setTargetPos(parameters.pos());
         setDepressed(parameters.isDepressed());
         setRadius(parameters.radius());
-        Vec3 randomPos = VectorTool.randomPos(new Vec3(getTargetPos()), getRadius());
-        Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), getDepressed());
-        Vec3 launchVector2 = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), !getDepressed());
+        Vec3 randomPos = VectorTool.randomPos(getTargetPos().getCenter(), getRadius()).add(0, -1, 0);
+        Vec3 flatTrajectory = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), getDepressed());
+        Vec3 highTrajectory = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), !getDepressed());
 
         Component component = Component.literal("");
         Component location = Component.translatable("tips.superbwarfare.mortar.position", this.getDisplayName())
                 .append(Component.literal(" X:" + FormatTool.format0D(getX()) + " Y:" + FormatTool.format0D(getY()) + " Z:" + FormatTool.format0D(getZ()) + " "));
         float angle = getXRot();
 
-        if (launchVector == null || launchVector2 == null) {
+        if (flatTrajectory == null || highTrajectory == null) {
             canAim = false;
             component = Component.translatable("tips.superbwarfare.mortar.out_of_range");
         } else {
-            angle = (float) -VehicleVecUtils.getXRotFromVector(launchVector);
-            float angle2 = (float) -VehicleVecUtils.getXRotFromVector(launchVector2);
+            angle = (float) -VehicleVecUtils.getXRotFromVector(flatTrajectory);
+            float angle2 = (float) -VehicleVecUtils.getXRotFromVector(highTrajectory);
             if (angle < -getTurretMaxPitch() || angle > -getTurretMinPitch()) {
                 if (angle2 > -getTurretMaxPitch() && angle2 < -getTurretMinPitch()) {
                     component = Component.translatable("tips.superbwarfare.ballistics.warn2");
@@ -270,7 +267,7 @@ public class MortarEntity extends ArtilleryEntity {
 
     @Override
     public void resetTarget(@NotNull String weaponName) {
-        Vec3 randomPos = VectorTool.randomPos(new Vec3(getTargetPos()), getRadius());
+        Vec3 randomPos = VectorTool.randomPos(getTargetPos().getCenter(), getRadius()).add(0, -1, 0);
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), getDepressed());
         this.look(randomPos);
 
@@ -296,7 +293,7 @@ public class MortarEntity extends ArtilleryEntity {
         float diffX = Mth.wrapDegrees(entityData.get(TARGET_PITCH) - this.getXRot());
 
         this.setYRot(this.getYRot() + Mth.clamp(0.5f * diffY, -20f, 20f));
-        this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -20f, 20f), -89, -20));
+        this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -20f, 20f), -getTurretMaxPitch(), -getTurretMinPitch()));
     }
 
     private PlayState movementPredicate(AnimationState<MortarEntity> event) {
