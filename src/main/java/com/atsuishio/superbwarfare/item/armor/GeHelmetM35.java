@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.armor;
 
 import com.atsuishio.superbwarfare.client.renderer.armor.GeHelmetM35ArmorRenderer;
-import com.atsuishio.superbwarfare.init.ModArmorMaterials;
+import com.atsuishio.superbwarfare.tiers.ModArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public class GeHelmetM35 extends BulletResistantArmor {
 
     public GeHelmetM35() {
-        super(ModArmorMaterials.STEEL,
+        super(ModArmorMaterial.STEEL,
                 Type.HELMET,
                 new Properties().durability(Type.HELMET.getDurability(35))
         );

@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
+import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
 import net.minecraft.resources.ResourceLocation
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.IEventBus
@@ -61,7 +62,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         ModMenuTypes.REGISTRY.register(bus)
         ModVillagers.register(bus)
         ModRecipes.register(bus)
-        ModArmorMaterials.MATERIALS.register(bus)
+        ModArmorMaterial.MATERIALS.register(bus)
         ModAttributes.ATTRIBUTES.register(bus)
         ModCriteriaTriggers.REGISTRY.register(bus)
         ModAttachments.ATTACHMENT_TYPES.register(bus)
