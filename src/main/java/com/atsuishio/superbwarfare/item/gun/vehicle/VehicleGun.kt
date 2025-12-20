@@ -50,7 +50,7 @@ class VehicleGun : GunItem(Properties()) {
                 && shooter.getAmmo(data) >= data.compute().ammoCostPerShoot
     }
 
-    override fun getEnergyProvider(data: GunData, ammoSupplier: Entity?): LazyOptional<IEnergyStorage?>? {
+    override fun getEnergyProvider(data: GunData, ammoSupplier: Entity?): LazyOptional<IEnergyStorage> {
         return ammoSupplier?.getCapability(ForgeCapabilities.ENERGY, null) ?: return super.getEnergyProvider(data, null)
     }
 

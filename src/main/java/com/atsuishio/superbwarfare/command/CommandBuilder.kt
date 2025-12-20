@@ -106,6 +106,18 @@ open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack
 //    fun CommandContext<CommandSourceStack>.getBool(name: String) =
 //        BoolArgumentType.getBool(this, name)
 
+    fun CommandContext<CommandSourceStack>.success(allowLogging: Boolean = true, msg: () -> Component) {
+        source.success(allowLogging, msg)
+    }
+
+    fun CommandContext<CommandSourceStack>.fail(msg: () -> Component) {
+        fail(msg())
+    }
+
+    fun CommandContext<CommandSourceStack>.fail(msg: Component) {
+        source.sendFailure(msg)
+    }
+
     // 通知
     fun CommandSourceStack.success(allowLogging: Boolean = true, msg: () -> Component) =
         this.sendSuccess(msg, allowLogging)

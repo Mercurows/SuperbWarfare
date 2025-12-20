@@ -1214,7 +1214,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     open fun getDefaultData(data: GunData) = getDefault(data.id)
 
-    open fun getEnergyProvider(data: GunData, ammoSupplier: Entity?): LazyOptional<IEnergyStorage?>? {
+    open fun getEnergyProvider(data: GunData, ammoSupplier: Entity?): LazyOptional<IEnergyStorage> {
         return data.stack.getCapability(ForgeCapabilities.ENERGY)
     }
 

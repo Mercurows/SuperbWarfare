@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.command
 
+import com.atsuishio.superbwarfare.config.server.AmmoConfig
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import net.minecraft.network.chat.Component
 
@@ -14,14 +15,14 @@ val AMMO_COMMAND = buildCommand("ammo") {
                     // 权限不足时，只允许玩家查询自己的弹药数量
                     if (source.isPlayer && !source.hasPermission(2)) {
                         if (source.player != null && source.player?.getUUID() != player.getUUID()) {
-                            source.sendFailure(Component.translatable("commands.ammo.no_permission"))
+                            fail(Component.translatable("commands.ammo.no_permission"))
                             return@execute 0
                         }
                     }
 
                     val type = enumArg
                     val value = type.get(player)
-                    source.success {
+                    success {
                         Component.translatable(
                             "commands.ammo.get",
                             Component.translatable(type.translationKey),
@@ -47,7 +48,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
                             type.set(player, intArg)
                         }
 
-                        getSource().success {
+                        success {
                             Component.translatable(
                                 "commands.ammo.set",
                                 Component.translatable(type.translationKey),
@@ -75,7 +76,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
                             type.add(player, intArg)
                         }
 
-                        getSource().success {
+                        success {
                             Component.translatable(
                                 "commands.ammo.add",
                                 Component.translatable(type.translationKey),
@@ -85,6 +86,53 @@ val AMMO_COMMAND = buildCommand("ammo") {
                         }
                         return@execute 0
                     }
+                }
+            }
+        }
+    }
+
+    "limit" {
+        "ammo" {
+            buildAmmoLimitCommand(false)
+        }
+        "ammoBox" {
+            buildAmmoLimitCommand(true)
+        }
+    }
+}
+
+private fun SingleCommand.buildAmmoLimitCommand(isAmmoBox: Boolean) {
+    "get" {
+        enumArg<Ammo> {
+            execute {
+                val type = enumArg
+                val limit = if (isAmmoBox) type.ammoBoxLimit else type.limit
+
+                success {
+                    // TODO 翻译字段
+                    Component.literal("limit for ${type.serializationName}: $limit")
+                }
+                return@execute 0
+            }
+        }
+    }
+
+    "set" {
+        enumArg<Ammo> {
+            requirePermission(2)
+            intArg {
+                execute {
+                    val type = enumArg
+                    val config = (if (isAmmoBox) AmmoConfig.AMMO_BOX_LIMIT[type] else AmmoConfig.AMMO_LIMIT[type])!!
+                    config.set(intArg)
+                    config.save()
+
+                    success {
+                        // TODO 翻译字段
+                        Component.literal("success")
+                    }
+
+                    return@execute 0
                 }
             }
         }

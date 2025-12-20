@@ -655,7 +655,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         return this.compute().shootPos.shootDirectionForHud
     }
 
-    fun getEnergyProvider(ammoSupplier: Entity?): LazyOptional<IEnergyStorage?>? {
+    fun getEnergyProvider(ammoSupplier: Entity?): LazyOptional<IEnergyStorage> {
         return this.item.getEnergyProvider(this, ammoSupplier)
     }
 

@@ -19,7 +19,7 @@ val TDM_COMMAND = buildCommand("tdm") {
                 tdm.sync()
 
                 // TODO 解决显示问题
-                source.success {
+                success {
                     if (entities.size == 1) {
                         Component.translatable(
                             "commands.tdm.add.single",
@@ -48,11 +48,11 @@ val TDM_COMMAND = buildCommand("tdm") {
                 tdm.sync()
 
                 if (entities.size == 1) {
-                    source.success {
+                    success {
                         Component.translatable("commands.tdm.remove.single", entities.iterator().next())
                     }
                 } else {
-                    getSource().success { Component.translatable("commands.tdm.remove.multiple", entities.size) }
+                    success { Component.translatable("commands.tdm.remove.multiple", entities.size) }
                 }
 
                 return@execute 0

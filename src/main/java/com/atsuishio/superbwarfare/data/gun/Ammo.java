@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
+import com.atsuishio.superbwarfare.config.server.AmmoConfigKt;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -70,6 +71,14 @@ public enum Ammo {
         this.serializationName = builder + "Ammo";
     }
 
+    public int getLimit() {
+        return AmmoConfigKt.limit(this);
+    }
+
+    public int getAmmoBoxLimit() {
+        return AmmoConfigKt.ammoBoxLimit(this);
+    }
+
     public ItemStack getItemStack() {
         return getItemStack(1);
     }
@@ -92,12 +101,14 @@ public enum Ammo {
         return get(stack.getOrCreateTag());
     }
 
-    public void set(ItemStack stack, int count) {
-        set(stack.getOrCreateTag(), count);
+    public boolean set(ItemStack stack, int count) {
+        if (count > getAmmoBoxLimit()) return false;
+
+        return set(stack.getOrCreateTag(), count);
     }
 
-    public void add(ItemStack stack, int count) {
-        add(stack.getOrCreateTag(), count);
+    public boolean add(ItemStack stack, int count) {
+        return add(stack.getOrCreateTag(), count);
     }
 
     // NBTTag
@@ -105,13 +116,16 @@ public enum Ammo {
         return tag.getInt(this.serializationName);
     }
 
-    public void set(CompoundTag tag, int count) {
+    public boolean set(CompoundTag tag, int count) {
         if (count < 0) count = 0;
+        if (count > getAmmoBoxLimit()) return false;
+
         tag.putInt(this.serializationName, count);
+        return true;
     }
 
-    public void add(CompoundTag tag, int count) {
-        set(tag, safeAdd(get(tag), count));
+    public boolean add(CompoundTag tag, int count) {
+        return set(tag, safeAdd(get(tag), count));
     }
 
     public int get(Player player) {
@@ -120,12 +134,14 @@ public enum Ammo {
                 .orElse(0);
     }
 
-    public void set(Player player, int count) {
+    public boolean set(Player player, int count) {
+        if (count > getLimit()) return false;
         PlayerVariable.modify(player, c -> set(c, Math.max(0, count)));
+        return true;
     }
 
-    public void add(Player player, int count) {
-        set(player, safeAdd(get(player), count));
+    public boolean add(Player player, int count) {
+        return set(player, safeAdd(get(player), count));
     }
 
 
@@ -134,14 +150,16 @@ public enum Ammo {
         return variable.ammo.getOrDefault(this, 0);
     }
 
-    public void set(PlayerVariable variable, int count) {
+    public boolean set(PlayerVariable variable, int count) {
         if (count < 0) count = 0;
+        if (count > getLimit()) return false;
 
         variable.ammo.put(this, count);
+        return true;
     }
 
-    public void add(PlayerVariable variable, int count) {
-        set(variable, safeAdd(get(variable), count));
+    public boolean add(PlayerVariable variable, int count) {
+        return set(variable, safeAdd(get(variable), count));
     }
 
     private int safeAdd(int a, int b) {

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -9,10 +10,12 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -80,8 +83,8 @@ public class InventoryTool {
             var stack = handler.getStackInSlot(i);
 
             // AmmoSupplier Item
-            if (stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type) {
-                count += ammoSupplierItem.ammoToAdd * stack.getCount();
+            if (stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.getType() == type) {
+                count += ammoSupplierItem.getAmmoToAdd() * stack.getCount();
             }
 
             // AmmoBox
@@ -131,10 +134,10 @@ public class InventoryTool {
             }
 
             // AmmoSupplier Item
-            if (!(stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.type == type))
+            if (!(stack.getItem() instanceof AmmoSupplierItem ammoSupplierItem && ammoSupplierItem.getType() == type))
                 continue;
 
-            var supplyCount = ammoSupplierItem.ammoToAdd;
+            var supplyCount = ammoSupplierItem.getAmmoToAdd();
             var required = (count % supplyCount == 0) ? count / supplyCount : count / supplyCount + 1;
 
             var countToShrink = Math.min(stack.getCount(), required);
@@ -345,5 +348,37 @@ public class InventoryTool {
         }
 
         return originalCount - stack.getCount();
+    }
+
+    public static int insertItem(IItemHandler handler, ItemStack stack, int count) {
+        int inserted = 0;
+        while (count > 0) {
+            var limit = stack.getMaxStackSize();
+            var toInsert = java.lang.Math.min(limit, count);
+            var result = ItemHandlerHelper.insertItemStacked(handler, stack.copyWithCount(toInsert), false);
+
+            count -= toInsert - result.getCount();
+            inserted += toInsert - result.getCount();
+
+            if (!result.isEmpty()) {
+                Mod.LOGGER.warn("trying to withdraw ammo {} with count {}, but only {} is inserted", stack, count, inserted);
+                break;
+            }
+        }
+
+        return inserted;
+    }
+
+    public static int insertItem(Player player, ItemStack stack, int count) {
+        int inserted = 0;
+        while (count > 0) {
+            var limit = stack.getMaxStackSize();
+            var toInsert = java.lang.Math.min(limit, count);
+            ItemHandlerHelper.giveItemToPlayer(player, stack.copyWithCount(toInsert));
+            count -= toInsert;
+            inserted += toInsert;
+        }
+
+        return inserted;
     }
 }
