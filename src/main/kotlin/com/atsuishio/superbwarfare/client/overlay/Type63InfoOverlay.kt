@@ -9,9 +9,10 @@ import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.FormatTool.format2D
 import com.atsuishio.superbwarfare.tools.OBB
-import com.atsuishio.superbwarfare.tools.RangeTool.calculateLaunchVector
+
 import com.atsuishio.superbwarfare.tools.RangeTool.getRange
 import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
 import com.atsuishio.superbwarfare.tools.VectorUtil
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft

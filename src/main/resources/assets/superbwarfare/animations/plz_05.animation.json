@@ -26,6 +26,23 @@
 					}
 				}
 			}
+		},
+		"animation.plz_05.lock_turret": {
+			"loop": true,
+			"bones": {
+				"paojia": {
+					"rotation": [67.5, 0, 0]
+				},
+				"zhuzi": {
+					"rotation": [-7.5, 0, 0]
+				},
+				"paojia2": {
+					"rotation": [67.5, 0, 0]
+				},
+				"shensuo": {
+					"scale": [1, 1.6, 1]
+				}
+			}
 		}
 	}
 }

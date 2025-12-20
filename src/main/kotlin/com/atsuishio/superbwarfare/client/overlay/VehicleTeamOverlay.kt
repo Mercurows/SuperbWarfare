@@ -49,8 +49,10 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
         )
 
         (player.vehicle as? VehicleEntity)?.let { vehicle ->
-            lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
-            viewVec = vehicle.getViewVec(player, partialTick)
+            if (vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+                lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
+                viewVec = vehicle.getViewVec(player, partialTick)
+            }
         }
 
         val decoy = TraceTool.findLookDecoy(player, cameraPos, viewVec, 512.0)

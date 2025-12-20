@@ -88,12 +88,8 @@ public class AnnihilatorEntity extends ArtilleryEntity {
 
     public void setTarget(ItemStack stack) {
         var parameters = FiringParametersKt.getFiringParameters(stack);
-
         var pos = parameters.pos();
-        int targetX = pos.getX();
-        int targetY = pos.getY();
-        int targetZ = pos.getZ();
-        setTargetPos(new Vector3f((float) targetX, (float) targetY, (float) targetZ));
+        setTargetPos(pos);
     }
 
     @Override

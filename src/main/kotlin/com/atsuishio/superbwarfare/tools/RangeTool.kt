@@ -22,55 +22,6 @@ object RangeTool {
         return t * v * cos(thetaDegrees * Mth.DEG_TO_RAD)
     }
 
-    // 谢谢DeepSeek
-    @JvmStatic
-    fun calculateLaunchVector(pos: Vec3, pos2: Vec3, velocity: Double, gravity: Double, isDepressed: Boolean): Vec3? {
-        val dx = pos2.x - pos.x
-        val dy = pos2.y - pos.y
-        val dz = pos2.z - pos.z
-        val horizontalDistSq = dx * dx + dz * dz
-
-        val g = -gravity
-
-        val a = 0.25 * g * g
-        val b = -velocity * velocity - g * dy
-        val c = horizontalDistSq + dy * dy
-
-        val validT = getDoubles(b, a, c)
-        if (validT.isEmpty()) return null
-
-        val t: Double
-
-        if (isDepressed) {
-            t = Collections.min(validT)
-        } else {
-            t = Collections.max(validT)
-        }
-
-        val vx = dx / t
-        val vz = dz / t
-        val vy = (dy - 0.5 * g * t * t) / t
-
-        return Vec3(vx, vy, vz)
-    }
-
-    private fun getDoubles(b: Double, a: Double, c: Double): MutableList<Double> {
-        val discriminant = b * b - 4 * a * c
-        if (discriminant < 0) {
-            return mutableListOf()
-        }
-
-        val sqrtDisc = sqrt(discriminant)
-        val u1 = (-b + sqrtDisc) / (2 * a)
-        val u2 = (-b - sqrtDisc) / (2 * a)
-
-        val validT = ArrayList<Double>()
-        if (u1 > 0) validT.add(sqrt(u1))
-        if (u2 > 0) validT.add(sqrt(u2))
-
-        return validT
-    }
-
     private const val TOLERANCE = 1e-3 // 牛顿迭代法的容差
     private const val MAX_ITERATIONS = 50 // 最大迭代次数
 

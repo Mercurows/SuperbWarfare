@@ -35,7 +35,7 @@ public enum SetFiringParametersMessage {
 
             BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
                     ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
-            Vec3 hitPos = result.getLocation();
+            BlockPos hitPos = result.getBlockPos();
 
             if (lookingEntity != null && !player.isShiftKeyDown()) {
                 lookAtEntity = true;
@@ -49,7 +49,7 @@ public enum SetFiringParametersMessage {
                 if (lookAtEntity) {
                     FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed));
                 } else {
-                    FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z), radius, isDepressed));
+                    FiringParametersKt.setFiringParameters(stack, new FiringParameters.Parameters(hitPos, radius, isDepressed));
                 }
 
                 var pos = FiringParametersKt.getFiringParameters(stack).pos();
@@ -65,9 +65,9 @@ public enum SetFiringParametersMessage {
             if (mainStack.getItem() instanceof ArtilleryIndicator indicator) {
                 BlockPos pos;
                 if (lookAtEntity) {
-                    pos = lookingEntity.blockPosition();
+                    pos = BlockPos.containing(lookingEntity.getBoundingBox().getCenter());
                 } else {
-                    pos = new BlockPos((int) hitPos.x, (int) hitPos.y, (int) hitPos.z);
+                    pos = hitPos;
                 }
                 var parameters = FiringParametersKt.getFiringParameters(mainStack);
                 var isDepressed = parameters.isDepressed();
