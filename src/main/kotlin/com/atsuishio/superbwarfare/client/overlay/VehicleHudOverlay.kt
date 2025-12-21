@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationTimer
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Aircraft
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -284,7 +285,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
             val name = AtomicReference("---")
 
             if (passenger != null) {
-                name.set(passenger.getName().string)
+                name.set(passenger.name.string)
             }
 
             if (passenger is Player) {
@@ -514,7 +515,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
             RenderHelper.preciseBlit(
                 guiGraphics,
-                weapon!!.compute().icon,
+                weapon!!.get(GunProp.ICON),
                 w - 85 + xOffset,
                 (h - frameIndex * 18 - 20).toFloat(),
                 100f,
@@ -573,12 +574,10 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                 pose.popPose()
             }
 
-            val computed = data.compute()
             if (data.reloading()) {
-                val totalReloadTime: Int
-                val currentReloadTime: Int
-                totalReloadTime = if (data.reload.empty()) computed.emptyReloadTime else computed.normalReloadTime
-                currentReloadTime = data.reload.reloadTimer.get()
+                val totalReloadTime =
+                    if (data.reload.empty()) data.get(GunProp.EMPTY_RELOAD_TIME) else data.get(GunProp.NORMAL_RELOAD_TIME)
+                val currentReloadTime = data.reload.reloadTimer.get()
 
                 val reloadProgress = (totalReloadTime - currentReloadTime).toFloat() / totalReloadTime
                 val alpha = Mth.lerp(progress, 0.4f, 1f)

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.perk.functional;
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.GunType;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
@@ -29,13 +30,12 @@ public class Subsistence extends Perk {
         }
 
         if (DamageTypeTool.isGunDamage(source) && attacker != null) {
-            var computed = data.compute();
-            var type = computed.gunType;
+            var type = data.get(GunProp.GUN_TYPE);
             float rate = instance.level() * (0.1f + (type == GunType.SMG || type == GunType.RIFLE ? 0.07f : 0f));
 
             Player finalAttacker = attacker;
             PlayerVariable.modify(attacker, cap -> {
-                int mag = computed.magazine;
+                int mag = data.get(GunProp.MAGAZINE);
                 int ammo = data.ammo.get();
                 int ammoReload = (int) Math.min(mag, mag * rate);
                 int ammoNeed = Math.min(mag - ammo, ammoReload);

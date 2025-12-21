@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base
 
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
@@ -41,6 +42,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
     var depressed by DEPRESSED
     var targetPos by TARGET_POS
     var radius by RADIUS
+    var lockTurret by LOCK_TURRET
 
     init {
         barrelAnim = List(Math.max(4, this.maxBarrel)) { 0 }
@@ -53,7 +55,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         val item = stack.item
 
         if (this.canBind() && item is ArtilleryIndicator) {
-            if (player.getRootVehicle() === this) return InteractionResult.FAIL
+            if (player.rootVehicle === this) return InteractionResult.FAIL
 
             return item.bind(stack, player, this)
         }
@@ -92,6 +94,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
             define(TARGET_POS, BlockPos(0, 0, 0))
             define(RADIUS, 0)
             define(BARREL_ANIM, List(4) { 0 })
+            define(LOCK_TURRET, false)
         }
     }
 
@@ -121,7 +124,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
             radius = compound.getInt("Radius")
         }
         if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
-            targetPos =BlockPos(compound.getInt("TargetX"), compound.getInt("TargetX"), compound.getInt("TargetZ"))
+            targetPos = BlockPos(compound.getInt("TargetX"), compound.getInt("TargetX"), compound.getInt("TargetZ"))
         }
     }
 
@@ -141,11 +144,11 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
             depressed
         )
         val launchVector2 = calculateLaunchVector(
-                getShootPos(weaponName, 1f),
-                randomPos,
-                getProjectileVelocity(weaponName).toDouble(),
-                getProjectileGravity(weaponName).toDouble(),
-                !depressed
+            getShootPos(weaponName, 1f),
+            randomPos,
+            getProjectileVelocity(weaponName).toDouble(),
+            getProjectileGravity(weaponName).toDouble(),
+            !depressed
         )
 
         var component = Component.literal("")
@@ -165,7 +168,10 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
                 } else {
                     component = Component.translatable("tips.superbwarfare.mortar.warn", this.displayName)
                     if (entity is Player) {
-                        entity.displayClientMessage(location.copy().append(component).withStyle(ChatFormatting.RED), false)
+                        entity.displayClientMessage(
+                            location.copy().append(component).withStyle(ChatFormatting.RED),
+                            false
+                        )
                     }
                     return
                 }
@@ -202,7 +208,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
     }
 
     val maxBarrel: Int
-        get() = getGunData("Main")?.compute()?.magazine ?: 1
+        get() = getGunData("Main")?.get(GunProp.MAGAZINE) ?: 1
 
     override fun baseTick() {
         super.baseTick()
@@ -251,7 +257,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         val data = getGunData("Main")
         if (data != null && data.ammo.get() > 0) {
             val animCounters = barrelAnim.toMutableList()
-            animCounters[data.ammo.get() - 1] = data.compute().shootAnimationTime
+            animCounters[data.ammo.get() - 1] = data.get(GunProp.SHOOT_ANIMATION_TIME)
             barrelAnim = animCounters.toList()
         }
 
@@ -283,5 +289,9 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         @JvmField
         val RADIUS: EntityDataAccessor<Int> =
             SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.INT)
+
+        @JvmField
+        val LOCK_TURRET: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.BOOLEAN)
     }
 }

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
@@ -10,7 +11,10 @@ import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.FiringParametersKt;
 import com.atsuishio.superbwarfare.item.Monitor;
 import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.FormatTool;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SoundTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +37,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -101,7 +104,7 @@ public class MortarEntity extends ArtilleryEntity {
         var gunData = getGunData(weaponName);
         if (gunData == null) return;
         if (entityData.get(FIRE_TIME) != 0) return;
-        var soundInfo = gunData.compute().soundInfo;
+        var soundInfo = gunData.get(GunProp.SOUND_INFO);
 
         this.shooter = living;
         this.entityData.set(FIRE_TIME, 25);
@@ -111,8 +114,8 @@ public class MortarEntity extends ArtilleryEntity {
         }
 
         if (level() instanceof ServerLevel serverLevel) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, position(), (float) (0.25f * gunData.compute().soundRadius), random.nextFloat() * 0.1f + 1, null);
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), (float) gunData.compute().soundRadius, random.nextFloat() * 0.1f + 1, null);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, position(), (float) (0.25f * gunData.get(GunProp.SOUND_RADIUS)), random.nextFloat() * 0.1f + 1, null);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), gunData.get(GunProp.SOUND_RADIUS).floatValue(), random.nextFloat() * 0.1f + 1, null);
         }
     }
 
@@ -202,7 +205,7 @@ public class MortarEntity extends ArtilleryEntity {
             Level level = this.level();
             var gunData = getGunData("Main");
             if (level instanceof ServerLevel server && gunData != null) {
-                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.getItems().get(0), getProjectileGravity("Main"), (float) gunData.compute().damage, (float) gunData.compute().explosionDamage, (float) gunData.compute().explosionRadius);
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.getItems().get(0), getProjectileGravity("Main"), gunData.get(GunProp.DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_RADIUS).floatValue());
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
                 entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, getProjectileVelocity("Main"), getProjectileSpread("Main"));
                 level.addFreshEntity(entityToSpawn);

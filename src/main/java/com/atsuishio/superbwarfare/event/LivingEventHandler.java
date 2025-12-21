@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.ExplosionAccess;
@@ -223,7 +224,7 @@ public class LivingEventHandler {
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
-            if (data.compute().explosionDamage > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
+            if (data.get(GunProp.EXPLOSION_DAMAGE) > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.set(data.exp.get() + amount);
             }
         }
@@ -249,7 +250,7 @@ public class LivingEventHandler {
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
-            if (data.compute().explosionDamage > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
+            if (data.get(GunProp.EXPLOSION_DAMAGE) > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.add(amount);
             }
         }
@@ -377,7 +378,7 @@ public class LivingEventHandler {
 
                         stopGunReloadSound(serverPlayer, oldData);
 
-                        if (oldData.compute().boltActionTime > 0) {
+                        if (oldData.get(GunProp.BOLT_ACTION_TIME) > 0) {
                             oldData.bolt.actionTimer.reset();
                         }
 
@@ -385,7 +386,7 @@ public class LivingEventHandler {
 
                         oldData.reload.setState(ReloadState.NOT_RELOADING);
 
-                        if (oldData.compute().iterativeTime != 0) {
+                        if (oldData.get(GunProp.ITERATIVE_TIME) != 0) {
                             oldData.stopped.set(false);
                             oldData.forceStop.set(false);
                             oldData.reload.setStage(0);
@@ -407,14 +408,14 @@ public class LivingEventHandler {
                     if (newStack.getItem() instanceof GunItem) {
                         var newData = GunData.from(newStack);
 
-                        if (newData.compute().boltActionTime > 0) {
+                        if (newData.get(GunProp.BOLT_ACTION_TIME) > 0) {
                             newData.bolt.actionTimer.reset();
                         }
 
                         newData.reload.setState(ReloadState.NOT_RELOADING);
                         newData.reload.reloadTimer.reset();
 
-                        if (newData.compute().iterativeTime != 0) {
+                        if (newData.get(GunProp.ITERATIVE_TIME) != 0) {
                             newData.forceStop.set(false);
                             newData.stopped.set(false);
                             newData.reload.setStage(0);
@@ -445,7 +446,6 @@ public class LivingEventHandler {
     private static void checkCopyGuns(ItemStack stack, Player player) {
         var data = GunData.from(stack);
         if (!data.initialized()) return;
-        if (data.gunDataTag == null) return;
         var uuid = data.gunDataTag.getUUID("UUID");
 
         for (var item : player.getInventory().items) {
@@ -453,7 +453,6 @@ public class LivingEventHandler {
             if (item.getItem() instanceof GunItem) {
                 var itemData = GunData.from(item);
                 var dataTag = itemData.gunDataTag;
-                if (dataTag == null) continue;
                 if (!dataTag.hasUUID("UUID")) continue;
                 if (dataTag.getUUID("UUID").equals(uuid)) {
                     data.gunDataTag.putUUID("UUID", UUID.randomUUID());
@@ -464,7 +463,7 @@ public class LivingEventHandler {
     }
 
     public static void stopGunReloadSound(ServerPlayer player, GunData data) {
-        var soundInfo = data.compute().soundInfo;
+        var soundInfo = data.get(GunProp.SOUND_INFO);
         soundInfo.cancellableSounds.list
                 .forEach(str -> {
                     var location = ResourceLocation.tryParse(str);

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
@@ -287,10 +288,9 @@ public class Type63Entity extends GeoVehicleEntity {
         OBB obb = this.barrel[i];
         Vec3 shootPos = OBB.vector3dToVec3(obb.center());
 
-        var computed = gunData.compute();
         var entityToSpawn = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), shootPos.x, shootPos.y, shootPos.z, level(),
-                (float) computed.damage, (float) computed.explosionRadius, (float) computed.explosionDamage,
-                0, 0, rocketItem.type, computed.spreadAmount, computed.spreadAngle);
+                gunData.get(GunProp.DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_RADIUS).floatValue(), gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
+                0, 0, rocketItem.type, gunData.get(GunProp.SPREAD_AMOUNT), gunData.get(GunProp.SPREAD_ANGLE));
         entityToSpawn.setGravity(shootGravity);
 
         entityToSpawn.setOwner(player);
@@ -299,7 +299,7 @@ public class Type63Entity extends GeoVehicleEntity {
         entityToSpawn.shoot(barrelVector.x, barrelVector.y, barrelVector.z, shootVelocity, shootSpread);
         level().addFreshEntity(entityToSpawn);
 
-        level().playSound(null, shootPos.x, shootPos.y, shootPos.z, computed.soundInfo.fire3P, SoundSource.PLAYERS, (float) computed.soundRadius, random.nextFloat() * 0.1f + 0.95f);
+        level().playSound(null, shootPos.x, shootPos.y, shootPos.z, gunData.get(GunProp.SOUND_INFO).fire3P, SoundSource.PLAYERS, gunData.get(GunProp.SOUND_RADIUS).floatValue(), random.nextFloat() * 0.1f + 0.95f);
 
         AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(barrelVector.scale(-2)).expandTowards(barrelVector.scale(-5));
 

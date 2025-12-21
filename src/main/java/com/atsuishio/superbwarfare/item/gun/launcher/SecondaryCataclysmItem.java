@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.SecondaryCataclysmItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModRarities;
@@ -184,7 +185,7 @@ public class SecondaryCataclysmItem extends GunGeoItem {
     public void playFireSounds(GunData data, Entity shooter, boolean zoom) {
         data.stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(cap -> {
             if (cap.getEnergyStored() > 3000 && zoom) {
-                float soundRadius = (float) data.compute().soundRadius;
+                float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
 
                 shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
                 shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FAR_CHARGE.get(), soundRadius * 0.7f, 1f);

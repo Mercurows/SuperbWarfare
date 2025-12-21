@@ -1,14 +1,9 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.buildControllers
-import com.atsuishio.superbwarfare.entity.getValue
-import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.toVec3
-import net.minecraft.network.syncher.EntityDataAccessor
-import net.minecraft.network.syncher.EntityDataSerializers
-import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
@@ -16,18 +11,8 @@ import software.bernie.geckolib.core.animation.AnimatableManager
 
 class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity(type, world) {
 
-    var lockTurret by LOCK_TURRET
-
     override fun getDamageModifier() = super.getDamageModifier()
         .custom { source, damage -> getSourceAngle(source, 0.3f) * damage }
-
-    override fun defineSynchedData() {
-        super.defineSynchedData()
-
-        with(entityData) {
-            define(LOCK_TURRET, false)
-        }
-    }
 
     override fun baseTick() {
         super.baseTick()
@@ -62,10 +47,4 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity
     }
 
     override fun canBind() = true
-
-    companion object {
-        @JvmField
-        val LOCK_TURRET: EntityDataAccessor<Boolean> =
-            SynchedEntityData.defineId(Plz05Entity::class.java, EntityDataSerializers.BOOLEAN)
-    }
 }

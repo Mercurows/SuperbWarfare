@@ -4,10 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.api.event.ReloadEvent
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
-import com.atsuishio.superbwarfare.data.gun.Ammo
-import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
-import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.ReloadType
+import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
@@ -57,7 +54,7 @@ object GunEventHandler {
     fun playGunBoltSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.bolt
 
         if (sound != null) {
@@ -137,7 +134,7 @@ object GunEventHandler {
         if (!data.initialized()) {
             data.initialize()
             if (shooter is Player && shooter.isCreative) {
-                data.ammo.set(data.compute().magazine)
+                data.ammo.set(data.get(GunProp.MAGAZINE))
             }
         }
     }
@@ -152,7 +149,8 @@ object GunEventHandler {
     }
 
     fun autoReload(shooter: Entity?, data: GunData, inMainHand: Boolean) {
-        val autoReload = data.compute().autoReload ?: return
+        val autoReload = data.get(GunProp.AUTO_RELOAD) ?: return
+
         if (inMainHand && autoReload && !data.hasEnoughAmmoToShoot(shooter)) {
             tryStartReload(shooter, data)
         }
@@ -168,21 +166,20 @@ object GunEventHandler {
             if (!data.hasBackupAmmo(shooter)) return
 
             // Clip > Magazine > Iterative
-            val computed = data.compute()
-            val reloadTypes = computed.reloadTypes
+            val reloadTypes = data.get(GunProp.RELOAD_TYPES)
             val canMagazineReload = reloadTypes.contains(ReloadType.MAGAZINE) && !reloadTypes.contains(ReloadType.CLIP)
             val canClipLoad = !data.hasEnoughAmmoToShoot(shooter) && reloadTypes.contains(ReloadType.CLIP)
             val canSingleReload = reloadTypes.contains(ReloadType.ITERATIVE)
 
             if (canMagazineReload || canClipLoad) {
-                val magazine = computed.magazine
+                val magazine = data.get(GunProp.MAGAZINE)
                 val extra = if (data.item.isOpenBolt(data) && data.item.hasBulletInBarrel(data)) 1 else 0
                 val maxAmmo = magazine + extra
 
                 if (data.ammo.get() < maxAmmo) {
                     data.startReload()
                 }
-            } else if (canSingleReload && data.ammo.get() < computed.magazine) {
+            } else if (canSingleReload && data.ammo.get() < data.get(GunProp.MAGAZINE)) {
                 data.reload.singleReloadStarter.markStart()
             } else {
                 return
@@ -198,20 +195,20 @@ object GunEventHandler {
      */
     fun handleCooldown(shooter: Entity?, data: GunData) {
         var rate = 1.0
-        val computed = data.compute()
+
         if (shooter != null) {
             if (shooter.wasInPowderSnow) {
-                rate = computed.inSnowCooldownRate
+                rate = data.get(GunProp.IN_SNOW_COOLDOWN_RATE)
             } else if (shooter.isInWaterOrRain) {
-                rate = computed.inWaterCooldownRate
-            } else if (shooter.isOnFire()) {
-                rate = computed.inFireCooldownRate
+                rate = data.get(GunProp.IN_WATER_COOLDOWN_RATE)
+            } else if (shooter.isOnFire) {
+                rate = data.get(GunProp.IN_FIRE_COOLDOWN_RATE)
             } else if (shooter.isInLava) {
-                rate = computed.inLavaCooldownRate
+                rate = data.get(GunProp.IN_LAVA_COOLDOWN_RATE)
             }
         }
 
-        data.heat.set(max(data.heat.get() - computed.naturalCooldown * rate, 0.0))
+        data.heat.set(max(data.heat.get() - data.get(GunProp.NATURAL_COOLDOWN) * rate, 0.0))
 
         if (data.heat.get() < 80 && data.overHeat.get()) {
             data.overHeat.set(false)
@@ -224,7 +221,7 @@ object GunEventHandler {
     fun redrawExtraAmmo(shooter: Entity?, data: GunData) {
         val hasBulletInBarrel = data.item.hasBulletInBarrel(data)
         val ammoCount = data.ammo.get()
-        val magazine = data.compute().magazine
+        val magazine = data.get(GunProp.MAGAZINE)
 
         // TODO 修改为更正确的退弹药方式？
         if ((hasBulletInBarrel && ammoCount > magazine + 1) || (!hasBulletInBarrel && ammoCount > magazine)) {
@@ -251,7 +248,6 @@ object GunEventHandler {
         redrawExtraAmmo(shooter, data)
         data.shootAnimationTimer.set(max(data.shootAnimationTimer.get() - 1, 0))
         data.shootTimer.set(max(data.shootTimer.get() - 1, 0))
-        val computed = data.compute()
 
         if (inMainHand) {
             handleGunBolt(data)
@@ -262,14 +258,14 @@ object GunEventHandler {
                 startReload(shooter, data)
             }
 
-            val soundInfo = computed.soundInfo
+            val soundInfo = data.get(GunProp.SOUND_INFO)
             val sound1p = soundInfo.vehicleReload
 
             if (data.reload.time() == (if (soundInfo.vehicleReloadSoundTime != 0) Mth.clamp(
                     soundInfo.vehicleReloadSoundTime,
                     1,
-                    data.compute().emptyReloadTime - 1
-                ) else data.compute().emptyReloadTime - 1)
+                    data.get(GunProp.EMPTY_RELOAD_TIME) - 1
+                ) else data.get(GunProp.EMPTY_RELOAD_TIME) - 1)
             ) {
                 if (shooter is VehicleEntity) {
                     if (sound1p != null) {
@@ -319,19 +315,18 @@ object GunEventHandler {
     private fun startReload(shooter: Entity?, data: GunData) {
         val reload = data.reload
 
-        val computed = data.compute()
         if (data.item.isOpenBolt(data)) {
             if (!data.hasEnoughAmmoToShoot(shooter)) {
-                reload.setTime(computed.emptyReloadTime + 1)
+                reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME) + 1)
                 reload.setState(ReloadState.EMPTY_RELOADING)
                 playGunEmptyReloadSounds(shooter, data)
             } else {
-                reload.setTime(computed.normalReloadTime + 1)
+                reload.setTime(data.get(GunProp.NORMAL_RELOAD_TIME) + 1)
                 reload.setState(ReloadState.NORMAL_RELOADING)
                 playGunNormalReloadSounds(shooter, data)
             }
         } else {
-            reload.setTime(computed.emptyReloadTime + 2)
+            reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME) + 2)
             reload.setState(ReloadState.EMPTY_RELOADING)
             playGunEmptyReloadSounds(shooter, data)
         }
@@ -351,7 +346,7 @@ object GunEventHandler {
     fun playGunEmptyReloadSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.reloadEmpty
 
         if (sound != null) {
@@ -362,7 +357,7 @@ object GunEventHandler {
     fun playGunNormalReloadSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.reloadNormal
 
         if (sound != null) {
@@ -384,23 +379,22 @@ object GunEventHandler {
         reload.finishTimer.reduce()
 
         // 一阶段
-        val computed = data.compute()
         if (reload.singleReloadStarter.start()) {
             postEvent(ReloadEvent.Pre(shooter, data))
 
-            if (computed.prepareLoadTime != 0 && (!data.hasEnoughAmmoToShoot(shooter) || stack.`is`(ModItems.SECONDARY_CATACLYSM.get()))) {
+            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter) || stack.`is`(ModItems.SECONDARY_CATACLYSM.get()))) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(shooter, data)
-                val prepareLoadTime = computed.prepareLoadTime
+                val prepareLoadTime = data.get(GunProp.PREPARE_LOAD_TIME)
                 reload.prepareLoadTimer.set(prepareLoadTime + 1)
-            } else if (computed.prepareEmptyTime != 0 && !data.hasEnoughAmmoToShoot(shooter)) {
+            } else if (data.get(GunProp.PREPARE_EMPTY_TIME) != 0 && !data.hasEnoughAmmoToShoot(shooter)) {
                 // 此处判断空仓换弹，如莫辛纳甘
                 playGunEmptyPrepareSounds(shooter, data)
-                val prepareEmptyTime = computed.prepareEmptyTime
+                val prepareEmptyTime = data.get(GunProp.PREPARE_EMPTY_TIME)
                 reload.prepareTimer.set(prepareEmptyTime + 1)
             } else {
                 playGunPrepareReloadSounds(shooter, data)
-                val prepareTime = computed.prepareTime
+                val prepareTime = data.get(GunProp.PREPARE_TIME)
                 reload.prepareTimer.set(prepareTime + 1)
             }
 
@@ -410,13 +404,13 @@ object GunEventHandler {
             reload.setState(ReloadState.NORMAL_RELOADING)
         }
 
-        if (reload.prepareLoadTimer.get() == computed.prepareAmmoLoadTime) {
+        if (reload.prepareLoadTimer.get() == data.get(GunProp.PREPARE_AMMO_LOAD_TIME)) {
             iterativeLoad(shooter, data)
         }
 
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
         if ((reload.prepareTimer.get() == 1 || reload.prepareLoadTimer.get() == 1)) {
-            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= computed.magazine) {
+            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= data.get(GunProp.MAGAZINE)) {
                 reload.stage3Starter.markStart()
             } else {
                 reload.setStage(2)
@@ -430,10 +424,12 @@ object GunEventHandler {
 
         // 二阶段
         if ((reload.prepareTimer.get() == 0 || reload.iterativeLoadTimer.get() == 0)
-            && reload.stage() == 2 && reload.iterativeLoadTimer.get() == 0 && !data.stopped.get() && data.ammo.get() < computed.magazine
+            && reload.stage() == 2 && reload.iterativeLoadTimer.get() == 0 && !data.stopped.get() && data.ammo.get() < data.get(
+                GunProp.MAGAZINE
+            )
         ) {
             playGunLoopReloadSounds(shooter, data)
-            val iterativeTime = data.compute().iterativeTime
+            val iterativeTime = data.get(GunProp.ITERATIVE_TIME)
             reload.iterativeLoadTimer.set(iterativeTime)
 
             // 动画播放nbt
@@ -441,14 +437,14 @@ object GunEventHandler {
         }
 
         // 装填
-        if (computed.iterativeAmmoLoadTime == reload.iterativeLoadTimer.get()) {
+        if (data.get(GunProp.ITERATIVE_AMMO_LOAD_TIME) == reload.iterativeLoadTimer.get()) {
             iterativeLoad(shooter, data)
         }
 
         // 二阶段打断
         if (reload.iterativeLoadTimer.get() == 1) {
             // 装满或备弹耗尽结束
-            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= computed.magazine) {
+            if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= data.get(GunProp.MAGAZINE)) {
                 reload.setStage(3)
             }
 
@@ -465,7 +461,7 @@ object GunEventHandler {
             reload.setStage(3)
             reload.stage3Starter.finish()
 
-            val finishTime = data.compute().finishTime
+            val finishTime = data.get(GunProp.FINISH_TIME)
             reload.finishTimer.set(finishTime + 2)
 
             playGunEndReloadSounds(shooter, data)
@@ -479,7 +475,7 @@ object GunEventHandler {
         // 三阶段结束
         if (reload.finishTimer.get() == 1) {
             reload.setStage(0)
-            if (computed.boltActionTime > 0) {
+            if (data.get(GunProp.BOLT_ACTION_TIME) > 0) {
                 data.bolt.needed.set(false)
             }
             reload.setState(ReloadState.NOT_RELOADING)
@@ -490,7 +486,7 @@ object GunEventHandler {
     }
 
     fun iterativeLoad(shooter: Entity?, data: GunData) {
-        val required = min(data.compute().magazine - data.ammo.get(), data.compute().iterativeLoadAmount)
+        val required = min(data.get(GunProp.MAGAZINE) - data.ammo.get(), data.get(GunProp.ITERATIVE_LOAD_AMOUNT))
         val available = min(required, data.countBackupAmmo(shooter))
         data.ammo.add(available)
 
@@ -502,7 +498,7 @@ object GunEventHandler {
     fun playGunPrepareReloadSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.reloadPrepare
 
         if (sound != null) {
@@ -513,7 +509,7 @@ object GunEventHandler {
     fun playGunEmptyPrepareSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.reloadPrepareEmpty
 
         if (sound != null) {
@@ -531,7 +527,7 @@ object GunEventHandler {
             )
         )
 
-        queueServerWork((data.compute().prepareEmptyTime / 2.0 + 3 + 1.5 * shooterHeight).toInt()) {
+        queueServerWork((data.get(GunProp.PREPARE_EMPTY_TIME) / 2.0 + 3 + 1.5 * shooterHeight).toInt()) {
             if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                 val ammoType = data.selectedAmmoConsumer().playerAmmoType
                 when (ammoType) {
@@ -570,7 +566,7 @@ object GunEventHandler {
     fun playGunPrepareLoadReloadSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.reloadPrepareLoad
 
         if (sound != null) {
@@ -627,7 +623,7 @@ object GunEventHandler {
     fun playGunLoopReloadSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.reloadLoop
 
         if (sound != null) {
@@ -638,7 +634,7 @@ object GunEventHandler {
     fun playGunEndReloadSounds(shooter: Entity?, data: GunData) {
         if (shooter !is ServerPlayer) return
 
-        val soundInfo = data.compute().soundInfo
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val sound = soundInfo.reloadEnd
 
         if (sound != null) {

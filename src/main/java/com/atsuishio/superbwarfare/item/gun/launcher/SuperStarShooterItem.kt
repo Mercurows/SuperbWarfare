@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun.launcher
 import com.atsuishio.superbwarfare.client.GunRendererBuilder
 import com.atsuishio.superbwarfare.client.model.item.SuperStarShooterItemModel
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.init.ModRarities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem
@@ -32,7 +33,7 @@ class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.LEGENDAR
     override fun tick(shooter: Entity?, data: GunData, inMainHand: Boolean) {
         val level = shooter?.level() ?: return
 
-        if (level.isNight && level.gameTime % 84L == 0L && data.ammo.get() < data.compute().magazine) {
+        if (level.isNight && level.gameTime % 84L == 0L && data.ammo.get() < data.get(GunProp.MAGAZINE)) {
             data.ammo.add(1)
 
             if (inMainHand && shooter is ServerPlayer) {

@@ -1,12 +1,11 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils
 
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.tools.VectorTool
 import com.mojang.math.Axis
-import net.minecraft.client.CameraType
-import net.minecraft.client.Minecraft
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
@@ -154,7 +153,7 @@ object VehicleVecUtils {
     fun getViewVec(vehicle: VehicleEntity, entity: Entity, partialTicks: Float): Vec3 {
         val data = vehicle.getGunData(vehicle.getSeatIndex(entity)) ?: return vehicle.getViewVector(partialTicks)
 
-        val stringOrVec3 = data.compute().shootPos.viewDirection
+        val stringOrVec3 = data.get(GunProp.SHOOT_POS).viewDirection
 
         if (stringOrVec3 == null) {
             return vehicle.getShootVec(entity, partialTicks)
@@ -169,14 +168,14 @@ object VehicleVecUtils {
         } else {
             val vec3 = stringOrVec3.vec3
             val worldPosition = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
 
             val worldPositionO = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x,
                 vec3.y,
                 vec3.z
@@ -191,13 +190,13 @@ object VehicleVecUtils {
     fun getViewPos(vehicle: VehicleEntity, entity: Entity, partialTicks: Float): Vec3 {
         val data = vehicle.getGunData(vehicle.getSeatIndex(entity)) ?: return entityEyePos(entity, partialTicks)
 
-        val vec3 = data.compute().shootPos.viewPosition
+        val vec3 = data.get(GunProp.SHOOT_POS).viewPosition
 
         return if (vec3 == null) {
             vehicle.getCameraPos(entity, partialTicks)
         } else {
             val worldPosition = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x,
                 vec3.y,
                 vec3.z
@@ -217,7 +216,7 @@ object VehicleVecUtils {
     fun getSeekVec(vehicle: VehicleEntity, entity: Entity?, partialTicks: Float): Vec3? {
         val data = vehicle.getGunData(vehicle.getSeatIndex(entity)) ?: return vehicle.getViewVector(partialTicks)
 
-        val stringOrVec3 = data.compute().seekWeaponInfo.seekDirection
+        val stringOrVec3 = data.get(GunProp.SEEK_WEAPON_INFO).seekDirection
 
         if (stringOrVec3 == null) {
             return vehicle.getShootVec(entity, partialTicks)
@@ -226,14 +225,14 @@ object VehicleVecUtils {
         } else {
             val vec3 = stringOrVec3.vec3
             val worldPosition = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
 
             val worldPositionO = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x,
                 vec3.y,
                 vec3.z
@@ -264,14 +263,14 @@ object VehicleVecUtils {
             val vec3 = data.firePosition()
 
             val worldPosition = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
 
             val worldPositionO = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x,
                 vec3.y,
                 vec3.z
@@ -294,14 +293,14 @@ object VehicleVecUtils {
             val vec3 = data.firePosition()
 
             val worldPosition = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
 
             val worldPositionO = transformPosition(
-                vehicle.getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x,
                 vec3.y,
                 vec3.z

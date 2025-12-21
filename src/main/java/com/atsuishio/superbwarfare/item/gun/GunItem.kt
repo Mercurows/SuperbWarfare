@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.data.gun.*
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.compute
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
@@ -71,7 +70,6 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.common.util.NonNullFunction
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import org.joml.Math
@@ -115,9 +113,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     override fun initCapabilities(stack: ItemStack, nbt: CompoundTag?): ICapabilityProvider? {
         val cap = ItemEnergyStorage(
             stack,
-            { _ -> compute(stack).maxEnergy },
-            { _ -> compute(stack).maxReceiveEnergy },
-            { _ -> compute(stack).maxExtractEnergy }
+            { _ -> GunData.get(stack, GunProp.MAX_ENERGY) },
+            { _ -> GunData.get(stack, GunProp.MAX_RECEIVE_ENERGY) },
+            { _ -> GunData.get(stack, GunProp.MAX_EXTRACT_ENERGY) }
         )
 
         return ItemEnergyProvider(stack, LazyOptional.of { cap })
@@ -125,24 +123,24 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     override fun isBarVisible(stack: ItemStack): Boolean {
         val data = from(stack)
-        if (data.compute().maxDurability > 0) return super.isBarVisible(stack)
+        if (data.get(GunProp.MAX_DURABILITY) > 0) return super.isBarVisible(stack)
 
         return stack.getCapability(ForgeCapabilities.ENERGY)
-            .map(NonNullFunction { cap: IEnergyStorage? -> cap!!.energyStored > 0 && cap.maxEnergyStored > 0 })
+            .map { cap -> cap.energyStored > 0 && cap.maxEnergyStored > 0 }
             .orElse(false)
     }
 
     override fun getBarWidth(stack: ItemStack): Int {
         val data = from(stack)
-        if (data.compute().maxDurability > 0) {
+        if (data.get(GunProp.MAX_DURABILITY) > 0) {
             return super.getBarWidth(stack)
         }
 
-        if (compute(stack).maxEnergy > 0) {
+        if (data.get(GunProp.MAX_ENERGY) > 0) {
             val energy = stack.getCapability(ForgeCapabilities.ENERGY)
-                .map(NonNullFunction { obj -> obj.energyStored })
+                .map { obj -> obj.energyStored }
                 .orElse(0)
-            return Math.round(energy * 13f / compute(stack).maxEnergy)
+            return Math.round(energy * 13f / GunData.get(stack, GunProp.MAX_ENERGY))
         }
 
         return super.getBarWidth(stack)
@@ -150,12 +148,12 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     override fun getBarColor(stack: ItemStack): Int {
         val data = from(stack)
-        if (data.compute().maxDurability > 0) {
+        if (data.get(GunProp.MAX_DURABILITY) > 0) {
             return super.getBarColor(stack)
         }
 
         val resource = GunResource.from(stack)
-        if (data.compute().maxEnergy > 0) {
+        if (data.get(GunProp.MAX_ENERGY) > 0) {
             return this.getEnergyBarColor(resource)
         }
 
@@ -203,24 +201,23 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         if (slot != EquipmentSlot.MAINHAND) return map
 
         val data = from(stack)
-        val computed = data.compute()
         map = HashMultimap.create<Attribute?, AttributeModifier?>(map)
 
         // 移速
         map.put(
             Attributes.MOVEMENT_SPEED, AttributeModifier(
                 uuid, Mod.ATTRIBUTE_MODIFIER,
-                -0.01f - 0.005f * computed.weight,
+                -0.01f - 0.005f * data.get(GunProp.WEIGHT),
                 AttributeModifier.Operation.MULTIPLY_BASE
             )
         )
 
         // 近战伤害
-        if (computed.meleeDamage > 0) {
+        if (data.get(GunProp.MELEE_DAMAGE) > 0) {
             map.put(
                 Attributes.ATTACK_DAMAGE, AttributeModifier(
                     BASE_ATTACK_DAMAGE_UUID, Mod.ATTRIBUTE_MODIFIER,
-                    computed.meleeDamage,
+                    data.get(GunProp.MELEE_DAMAGE),
                     AttributeModifier.Operation.ADDITION
                 )
             )
@@ -234,14 +231,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     open fun getGunIcon(stack: ItemStack) = getGunIcon(from(stack))
 
-    open fun getGunIcon(data: GunData) = data.compute().icon ?: DEFAULT_ICON
+    open fun getGunIcon(data: GunData) = data.get(GunProp.ICON)
 
     override fun isFoil(stack: ItemStack) = false
     override fun isEnchantable(stack: ItemStack) = false
     override fun canApplyAtEnchantingTable(stack: ItemStack?, enchantment: Enchantment?) = false
 
     override fun getMaxDamage(stack: ItemStack): Int {
-        val maxDurability = compute(stack).maxDurability
+        val maxDurability = from(stack).get(GunProp.MAX_DURABILITY)
         isDamageable = maxDurability > 0
         return maxDurability
     }
@@ -306,7 +303,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     /**
      * 武器是否能进行近战攻击
      */
-    open fun hasMeleeAttack(data: GunData) = data.compute().meleeDamage > 0
+    open fun hasMeleeAttack(data: GunData) = data.get(GunProp.MELEE_DAMAGE) > 0
 
     /**
      * 获取额外伤害加成
@@ -412,9 +409,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * 判断武器能否开火
      */
     open fun canShoot(data: GunData, shooter: Entity?): Boolean {
-        return data.compute().projectileAmount > 0
+        return data.get(GunProp.PROJECTILE_AMOUNT) > 0
                 && !data.overHeat.get()
-                && data.compute().heatPerShoot <= (100 + data.compute().heatPerShoot - data.heat.get())
+                && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
                 && !data.reloading()
                 && !data.charging()
                 && !data.bolt.needed.get()
@@ -435,7 +432,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         postEvent(ShootEvent.Pre(parameters))
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        if (data.compute().boltActionTime > 0 && data.hasEnoughAmmoToShoot(ammoSupplier)) {
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(ammoSupplier)) {
             data.bolt.needed.set(true)
         }
 
@@ -467,12 +464,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         postEvent(ShootEvent.Post(parameters))
 
-        val computed = data.compute()
         if (!data.useBackpackAmmo()) {
-            data.ammo.set(data.ammo.get() - computed.ammoCostPerShoot)
+            data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT))
             //            data.item.whenNoAmmo(data);
         } else {
-            data.consumeBackupAmmo(ammoSupplier, computed.ammoCostPerShoot)
+            data.consumeBackupAmmo(ammoSupplier, data.get(GunProp.AMMO_COST_PER_SHOOT))
         }
 
         if (!data.hasEnoughAmmoToShoot(ammoSupplier)) {
@@ -483,11 +479,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         if (this.getMaxDamage(stack) > 0) {
             if (shooter is LivingEntity) {
                 stack.hurtAndBreak(
-                    computed.durabilityPerShoot,
+                    data.get(GunProp.DURABILITY_PER_SHOOT),
                     shooter
                 ) { p -> p!!.broadcastBreakEvent(shooter.usedItemHand) }
             } else {
-                if (stack.hurt(computed.durabilityPerShoot, RandomSource.create(), null)) {
+                if (stack.hurt(data.get(GunProp.DURABILITY_PER_SHOOT), RandomSource.create(), null)) {
                     stack.shrink(1)
                 }
             }
@@ -496,12 +492,13 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         data.closeStrike.set(true)
 
         // 真实后坐（
-        if (shooter != null && computed.recoil != 0.0) {
-            shooter.deltaMovement = shooter.deltaMovement.add(shooter.getViewVector(1f).scale(-computed.recoil))
+        if (shooter != null && data.get(GunProp.RECOIL) != 0.0) {
+            shooter.deltaMovement =
+                shooter.deltaMovement.add(shooter.getViewVector(1f).scale(-data.get(GunProp.RECOIL)))
         }
 
-        val size = computed.shootPos.positions.size
-        if (size > 0 && !computed.shootPos.boundUpWithAmmoAmount) {
+        val size = data.get(GunProp.SHOOT_POS).positions.size
+        if (size > 0 && !data.get(GunProp.SHOOT_POS).boundUpWithAmmoAmount) {
             data.fireIndex.set((data.fireIndex.get() + 1) % size)
         } else {
             data.fireIndex.reset()
@@ -592,7 +589,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         // 开火前事件
         data.item.beforeShoot(parameters)
 
-        val projectileAmount = data.compute().projectileAmount
+        val projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT)
 
         // 生成所有子弹
         repeat(projectileAmount) {
@@ -602,15 +599,15 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         // n连发模式开火数据设置
         if (data.selectedFireModeInfo().mode == FireMode.BURST) {
             val amount = data.burstAmount.get()
-            data.burstAmount.set(if (amount == 0) data.compute().burstAmount - 1 else Math.max(0, amount - 1))
+            data.burstAmount.set(if (amount == 0) data.get(GunProp.BURST_AMOUNT) - 1 else Math.max(0, amount - 1))
         }
 
         // 添加热量
-        data.heat.set(Math.max(data.heat.get() + data.compute().heatPerShoot, 0.0))
+        data.heat.set(Math.max(data.heat.get() + data.get(GunProp.HEAT_PER_SHOOT), 0.0))
 
         if (data.item.enableShootTimer()) {
             // 射击动画时长
-            data.shootAnimationTimer.set(data.compute().shootAnimationTime)
+            data.shootAnimationTimer.set(data.get(GunProp.SHOOT_ANIMATION_TIME))
             // 载具射击后的一个特殊记时器
             data.shootTimer.set(Math.min(data.shootTimer.get() + 3, 5))
         }
@@ -658,8 +655,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             shooter.playSound(ModSounds.HENG.get(), 4f, pitch)
         }
 
-        val soundRadius = data.compute().soundRadius.toFloat()
-        val soundInfo = data.compute().soundInfo
+        val soundRadius = data.get(GunProp.SOUND_RADIUS).toFloat()
+        val soundInfo = data.get(GunProp.SOUND_INFO)
         val isSilent = data.attachment.get(AttachmentType.BARREL) == 2
 
         val sound3p = if (isSilent) soundInfo.fire3PSilent else soundInfo.fire3P
@@ -694,7 +691,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * 服务端处理松开开火按键时的额外行为
      */
     open fun onFireKeyRelease(data: GunData, player: Player, power: Double, zoom: Boolean) {
-        if (player is ServerPlayer && data.compute().seekType == SeekType.HOLD_FIRE) {
+        if (player is ServerPlayer && data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_FIRE) {
             val stack = data.stack
             val origin = stack.item.descriptionId
             val name = origin.substring(origin.lastIndexOf(".") + 1)
@@ -721,8 +718,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         val stack = data.stack
 
-        val computed = data.compute()
-        val projectileInfo = computed.projectile()
+        val projectileInfo = data.get(GunProp.PROJECTILE)
         val projectileType = projectileInfo.type
         val projectileTypeStr = projectileType.trim { it <= ' ' }.lowercase()
 
@@ -732,10 +728,10 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             return this.shootRay(parameters)
         }
 
-        val headshot = computed.headshot
-        val damage = computed.damage
-        var velocity = computed.velocity.toFloat()
-        val bypassArmorRate = computed.bypassesArmor
+        val headshot = data.get(GunProp.HEADSHOT)
+        val damage = data.get(GunProp.DAMAGE)
+        var velocity = data.get(GunProp.VELOCITY).toFloat()
+        val bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR)
 
         if (isInLiquid(level, shootPosition)) {
             velocity = 2 + 0.05f * velocity
@@ -773,36 +769,36 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             }
 
             if (entity is CustomGravityEntity) {
-                entity.setGravity(computed.gravity.toFloat())
+                entity.setGravity(data.get(GunProp.GRAVITY).toFloat())
             }
 
             if (entity is ExplosiveProjectile) {
-                entity.setExplosionDamage(computed.explosionDamage.toFloat())
-                entity.setExplosionRadius(computed.explosionRadius.toFloat())
+                entity.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).toFloat())
+                entity.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).toFloat())
             }
 
             if (entity is WireGuideMissileEntity && shooter != null && shooter.vehicle != null) {
                 entity.setLauncherVehicle(shooter.vehicle!!.getUUID())
             }
 
-            if (entity is SmallCannonShellEntity && computed.isAntiAirProjectile) {
+            if (entity is SmallCannonShellEntity && data.get(GunProp.IS_ANTI_AIR_PROJECTILE)) {
                 entity.antiAir(true)
             }
 
             if (entity is CannonShellEntity) {
-                if (computed.isArmorPiercingProjectile) {
+                if (data.get(GunProp.IS_ARMOR_PIERCING_PROJECTILE)) {
                     entity.setType(CannonShellEntity.Type.AP)
                     entity.durability(100)
-                } else if (computed.isHighExplosiveProjectile) {
+                } else if (data.get(GunProp.IS_HIGH_EXPLOSIVE_PROJECTILE)) {
                     entity.setType(CannonShellEntity.Type.HE)
-                } else if (computed.isClusterMunitionsProjectile) {
+                } else if (data.get(GunProp.IS_CLUSTER_MUNITIONS_PROJECTILE)) {
                     entity.setType(CannonShellEntity.Type.CM)
-                    entity.setSpreadAmount(computed.spreadAmount)
-                    entity.setSpreadAngle(computed.spreadAngle)
-                } else if (computed.isGrapeShotProjectile) {
+                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
+                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                } else if (data.get(GunProp.IS_GRAPE_SHOT_PROJECTILE)) {
                     entity.setType(CannonShellEntity.Type.GRAPE)
-                    entity.setSpreadAmount(computed.spreadAmount)
-                    entity.setSpreadAngle(computed.spreadAngle)
+                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
+                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
                 }
             }
 
@@ -829,9 +825,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     ShootData(
                         shooter?.getUUID(),
                         damage,
-                        computed.explosionDamage,
-                        computed.explosionRadius,
-                        computed.spread
+                        data.get(GunProp.EXPLOSION_DAMAGE),
+                        data.get(GunProp.EXPLOSION_RADIUS),
+                        data.get(GunProp.SPREAD)
                     )
                 )
                 if (tag != null) {
@@ -847,9 +843,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     ShootData(
                         shooter?.getUUID(),
                         damage,
-                        computed.explosionDamage,
-                        computed.explosionRadius,
-                        computed.spread
+                        data.get(GunProp.EXPLOSION_DAMAGE),
+                        data.get(GunProp.EXPLOSION_RADIUS),
+                        data.get(GunProp.SPREAD)
                     )
                 )
                 if (tag != null) {
@@ -871,8 +867,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         val vehicle = shooter?.rootVehicle
-        if (vehicle != null && computed.addShooterDeltaMovement) {
-            velocity = (vehicle.deltaMovement.length() * computed.velocity).toFloat()
+        if (vehicle != null && data.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
+            velocity = (vehicle.deltaMovement.length() * data.get(GunProp.VELOCITY)).toFloat()
         }
 
         // 发射任意实体
@@ -898,7 +894,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     playerVec,
                     targetVec,
                     Vec3.ZERO,
-                    computed.velocity,
+                    data.get(GunProp.VELOCITY),
                     if (hasGravity) 0.03 else 0.0
                 )
                 x = toVec.x
@@ -959,7 +955,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             return false
         }
 
-        val range = data.compute().range
+        val range = data.get(GunProp.RANGE)
 
         var target: Entity? = null
 
@@ -1010,7 +1006,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             val vehicle = shooter.vehicle as? VehicleEntity
             if (vehicle != null) {
                 vehicle.laserLength = range.toFloat()
-                vehicle.laserScale = data.compute().shootAnimationTime.toFloat()
+                vehicle.laserScale = data.get(GunProp.SHOOT_ANIMATION_TIME).toFloat()
             }
         }
 
@@ -1094,8 +1090,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     ) {
         val target = result.entity
 
-        val damage = data.compute().damage.toFloat()
-        val headshot = data.compute().headshot.toFloat()
+        val damage = data.get(GunProp.DAMAGE).toFloat()
+        val headshot = data.get(GunProp.HEADSHOT).toFloat()
 
         var type = 0
 
@@ -1186,7 +1182,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         )
     }
 
-    open fun canEditAttachments(data: GunData) = data.compute().getAmmoConsumers().size > 1
+    open fun canEditAttachments(data: GunData) = data.get(GunProp.AMMO_CONSUMER).size > 1
 
     open fun enableShootTimer() = false
 
@@ -1194,7 +1190,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * 在切枪之后触发
      */
     open fun onChangeSlot(data: GunData, ammoSupplier: Entity) {
-        if (data.compute().withdrawAmmoWhenChangeSlot) {
+        if (data.get(GunProp.WITHDRAW_AMMO_WHEN_CHANGE_SLOT)) {
             data.withdrawAmmo(ammoSupplier)
         }
     }
@@ -1219,7 +1215,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     companion object {
-        protected val DEFAULT_ICON: ResourceLocation = loc("textures/gun_icon/default_icon.png")
+        val DEFAULT_ICON: ResourceLocation = loc("textures/gun_icon/default_icon.png")
 
         protected fun getEntityResult(target: Entity, hitBoxPos: Vec3, hitPos: Vec3?): EntityResult {
             var headshot = false

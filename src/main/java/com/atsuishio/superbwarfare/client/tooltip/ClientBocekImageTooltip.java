@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.tooltip;
 
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.AmmoPerk;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.FormatTool;
@@ -24,14 +25,13 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
             slug = true;
         }
 
-        var computed = data.compute();
-        double damage = computed.damage;
+        double damage = data.get(GunProp.DAMAGE);
 
         if (slug) {
             return super.getDamageComponent();
         } else {
             double shotDamage = damage * 0.1;
-            double explosionDamage = computed.explosionDamage * 0.1;
+            double explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE) * 0.1;
 
             return Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
                     .append(Component.empty().withStyle(ChatFormatting.RESET))

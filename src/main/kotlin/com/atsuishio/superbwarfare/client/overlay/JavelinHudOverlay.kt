@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
@@ -118,10 +119,10 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
             if (decoy == null) {
                 val targetEntity = ClientEventHandler.lockingEntity
                 val entities = SeekTool.Builder(player)
-                    .withinRange(data.compute().seekRange)
-                    .withinAngle(data.compute().seekAngle)
+                    .withinRange(data.get(GunProp.SEEK_RANGE))
+                    .withinAngle(data.get(GunProp.SEEK_ANGLE))
                     .baseFilter()
-                    .heightRange(data.compute().minTargetHeight, data.compute().maxTargetHeight)
+                    .heightRange(data.get(GunProp.MIN_TARGET_HEIGHT), data.get(GunProp.MAX_TARGET_HEIGHT))
                     .smokeFilter()
                     .noVehicle()
                     .noClip()

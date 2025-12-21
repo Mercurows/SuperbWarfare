@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.overlay.weapon.ArtilleryHud
 import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
@@ -125,7 +126,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             )
         }
 
-        val seekInfo = gunData.compute().seekWeaponInfo
+        val seekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
         if (seekInfo == null) {
             poseStack.popPose()
             return

@@ -18,7 +18,7 @@ public class IncendiaryBullet extends AmmoPerk {
 
     @Override
     public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
-        rawData.velocity = gunData.isShotgun(rawData) ? 4.5f : rawData.velocity;
+        rawData.velocity = gunData.isShotgun() ? 4.5f : rawData.velocity;
         return super.computeProperties(gunData, rawData);
     }
 

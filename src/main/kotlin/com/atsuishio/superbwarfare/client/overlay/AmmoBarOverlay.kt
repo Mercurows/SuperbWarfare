@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
@@ -83,8 +84,7 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
             var fireMode: ResourceLocation = getFireMode(data)
 
             val selectedFireMode = data.selectedFireMode.get()
-            val computed = data.compute()
-            val fireModes = computed.availableFireModes()
+            val fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES)
 
             // 如果开火模式种类大于3，渲染开火模式信息
             if (DisplayConfig.ADVANCED_AMMO_HUD.get() && fireModes.size > 3) {
@@ -102,7 +102,7 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
                 // 渲染加特林射速
                 guiGraphics.drawString(
                     font,
-                    computed.rpm.toString() + " RPM",
+                    data.get(GunProp.RPM).toString() + " RPM",
                     x - 111f,
                     (y - 20).toFloat(),
                     0xFFFFFF,
@@ -146,7 +146,7 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
             }
 
             // 如果弹药种类大于1，渲染弹种信息
-            val size = computed.getAmmoConsumers().size
+            val size = data.get(GunProp.AMMO_CONSUMER).size
             if (DisplayConfig.ADVANCED_AMMO_HUD.get()
                 && (size > 1 || size == 1 && data.selectedAmmoConsumer().type != AmmoConsumeType.PLAYER_AMMO)
             ) {
@@ -399,7 +399,7 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
         } else if (consumer.type == AmmoConsumeType.ENERGY) {
             return "Energy"
         } else if (!consumer.stack().isEmpty) {
-            val nameComponent = consumer.stack().getHoverName()
+            val nameComponent = consumer.stack().hoverName
             val contents = nameComponent.contents
             if (contents is TranslatableContents) {
                 return ClientLanguageGetter.EN_US.getOrDefault(contents.key)

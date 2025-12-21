@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -45,7 +46,7 @@ public record EditMessage(int type, boolean add, boolean isVehicle) {
                     stopGunReloadSound(player, data);
                     data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
 
-                    var sound = data.compute().soundInfo.change;
+                    var sound = data.get(GunProp.SOUND_INFO).change;
                     if (sound == null) return;
                     SoundTool.playLocalSound(player, sound, 4f, 1f);
                 });

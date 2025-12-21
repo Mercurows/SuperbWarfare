@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -35,7 +36,6 @@ import net.minecraft.world.phys.*;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Matrix4d;
-import org.joml.Vector3f;
 import org.joml.Vector4d;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -105,12 +105,12 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         String weaponName = "Main";
         var data = getGunData(weaponName);
         if (data != null) {
-            var projectileInfo = data.compute().projectile();
+            var projectileInfo = data.get(GunProp.PROJECTILE);
             var projectileType = projectileInfo.type;
             var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
             int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(weaponName) / 60));
 
-            if (projectileTypeStr.equals("ray") && getChargeProgress() < 1 && getEnergy() > data.compute().ammoCostPerShoot) {
+            if (projectileTypeStr.equals("ray") && getChargeProgress() < 1 && getEnergy() > data.get(GunProp.AMMO_COST_PER_SHOOT)) {
                 float chargeSpeed = 1f / rpm;
                 setChargeProgress(Mth.clamp(getChargeProgress() + chargeSpeed, 0, 1));
             }
@@ -132,7 +132,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         }
 
         causeLaserExplode(hitPos, data, living);
-        this.level().explode(living, hitPos.x, hitPos.y, hitPos.z, (float) (data.compute().explosionRadius * 0.5f), ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
+        this.level().explode(living, hitPos.x, hitPos.y, hitPos.z, (float) (data.get(GunProp.EXPLOSION_RADIUS) * 0.5f), ExplosionConfig.EXPLOSION_DESTROY.get() ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
 
         return (float) pos.distanceTo(hitPos);
     }
@@ -165,7 +165,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
                     Entity passenger = this.getFirstPassenger();
                     Entity target = ((EntityHitResult) hitResult).getEntity();
 
-                    DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), (float) data.compute().damage);
+                    DamageHandler.doDamage(target, ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, passenger), data.get(GunProp.DAMAGE).floatValue());
                     target.invulnerableTime = 0;
                     causeLaserExplode(targetPos, data, living);
                     return (float) pos.distanceTo(hitResult.getLocation());
@@ -176,7 +176,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     private void causeLaserExplode(Vec3 vec3, GunData gunData, Entity living) {
-        float radius = (float) gunData.compute().explosionRadius;
+        float radius = gunData.get(GunProp.EXPLOSION_RADIUS).floatValue();
         ParticleTool.ParticleType particleType;
 
         if (radius <= 4) {
@@ -190,7 +190,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         }
 
         createCustomExplosion()
-                .damage((float) gunData.compute().explosionDamage)
+                .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue())
                 .radius(radius)
                 .attacker(living)
                 .position(vec3)
@@ -214,7 +214,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         if (gunData == null) return;
         if (level() instanceof ServerLevel) {
             setChargeProgress(0f);
-            this.consumeEnergy(gunData.compute().ammoCostPerShoot);
+            this.consumeEnergy(gunData.get(GunProp.AMMO_COST_PER_SHOOT));
 
             Matrix4d transform = getBarrelTransform(1);
             Vector4d worldPosition1 = transformPosition(transform, 2.703, -0.045, 15.75);
@@ -236,7 +236,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
 
             Mod.queueServerWork(reloadTime - 20, () -> {
                 if (this.isAlive()) {
-                    this.level().playSound(null, this.getOnPos(), gunData.compute().soundInfo.vehicleReload, SoundSource.PLAYERS, 1, 1);
+                    this.level().playSound(null, this.getOnPos(), gunData.get(GunProp.SOUND_INFO).vehicleReload, SoundSource.PLAYERS, 1, 1);
                 }
             });
 
@@ -248,7 +248,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     @Override
     public boolean canShoot(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
-        return gunData != null && gunData.canShoot(getAmmoSupplier()) && this.canConsume(gunData.compute().ammoCostPerShoot);
+        return gunData != null && gunData.canShoot(getAmmoSupplier()) && this.canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT));
     }
 
     private PlayState movementPredicate(AnimationState<AnnihilatorEntity> event) {

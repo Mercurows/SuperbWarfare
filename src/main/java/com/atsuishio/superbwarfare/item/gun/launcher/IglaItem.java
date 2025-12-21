@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.launcher;
 
 import com.atsuishio.superbwarfare.client.renderer.gun.IglaItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.IglaMissileEntity;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -66,9 +67,10 @@ public class IglaItem extends GunGeoItem {
             Entity targetEntity = EntityFindUtil.findEntity(serverLevel, String.valueOf(targetUUID));
 
             IglaMissileEntity iglaMissileEntity = new IglaMissileEntity(shooter, level,
-                    (float) data.compute().damage,
-                    (float) data.compute().explosionDamage,
-                    (float) data.compute().explosionRadius);
+                    data.get(GunProp.DAMAGE).floatValue(),
+                    data.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
+                    data.get(GunProp.EXPLOSION_RADIUS).floatValue()
+            );
 
             for (Perk.Type type : Perk.Type.values()) {
                 var instance = data.perk.getInstance(type);
@@ -99,7 +101,7 @@ public class IglaItem extends GunGeoItem {
             SoundTool.playDistantSound(serverLevel, ModSounds.IGLA_FAR.get(), shooter.position(), 10, 1, shooter);
         }
 
-        data.ammo.set(data.ammo.get() - data.compute().ammoCostPerShoot);
+        data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
         data.save();
     }
 }

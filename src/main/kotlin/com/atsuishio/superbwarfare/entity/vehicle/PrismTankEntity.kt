@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -36,7 +37,7 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
     fun hitBlock(pos: Vec3, gunData: GunData, shooter: Entity?) {
         val serverLevel = level() as? ServerLevel ?: return
 
-        if (gunData.compute().explosionRadius > 0) {
+        if (gunData.get(GunProp.EXPLOSION_RADIUS) > 0) {
             findNearEntity(pos, gunData, shooter)
             ParticleTool.sendParticle(
                 serverLevel,
@@ -97,7 +98,7 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
     fun hitEntity(pos: Vec3, gunData: GunData, shooter: Entity?) {
         val serverLevel = level() as? ServerLevel ?: return
 
-        if (gunData.compute().explosionRadius > 0) {
+        if (gunData.get(GunProp.EXPLOSION_RADIUS) > 0) {
             findNearEntity(pos, gunData, shooter)
             ParticleTool.sendParticle(
                 serverLevel,
@@ -158,8 +159,8 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
     fun findNearEntity(vec: Vec3, gunData: GunData, shooter: Entity?) {
         val serverLevel = level() as? ServerLevel ?: return
 
-        val aoeDamage = gunData.compute().explosionDamage
-        val range = gunData.compute().explosionRadius
+        val aoeDamage = gunData.get(GunProp.EXPLOSION_DAMAGE)
+        val range = gunData.get(GunProp.EXPLOSION_RADIUS)
 
         val entities = SeekTool.Builder(this)
             .withinRange(vec, range)
@@ -235,7 +236,7 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
 
     @OnlyIn(Dist.CLIENT)
     override fun firstPersonAmmoComponent(data: GunData, player: Player?): Component {
-        val name = data.compute().name
+        val name = data.get(GunProp.NAME)
         if (name == null || name.isBlank()) return Component.empty()
 
         return Component.translatable(name, (25 + data.heat.get()).toInt().toString() + " " + "°C")

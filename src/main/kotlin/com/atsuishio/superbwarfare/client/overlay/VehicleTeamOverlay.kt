@@ -14,7 +14,7 @@ import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.tools.VectorUtil
-import com.atsuishio.superbwarfare.tools.font
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
@@ -45,7 +45,10 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
             player,
             cameraPos,
             viewVec,
-            VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
+
+            512.0
+            // TODO 为什么读不了配置项？？？
+//            VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
         )
 
         (player.vehicle as? VehicleEntity)?.let { vehicle ->
@@ -72,6 +75,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
         val outOfRange = entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()
 
         if (lookAtEntity && lookingEntity is VehicleEntity && !usingDrone && !outOfRange) {
+            val vehicle = lookingEntity
             if (entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()) return
 
             val pos = lerpGetEntityBoundingBoxCenter(lookingEntity, partialTick)
@@ -101,13 +105,14 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         lookingEntity.getEntityData().get(DroneEntity.CONTROLLER)
                     )
                     if (controller != null) {
-                        color = controller.getTeamColor()
+                        color = controller.teamColor
 
                         val team = player.team
                         if (team is PlayerTeam) {
-                            val info = lookingEntity.displayName.string + " " + controller.getDisplayName()
-                                .string + (if (controller.team == null) "" else " <" + team.displayName
-                                .string + ">")
+                            val info =
+                                lookingEntity.displayName!!.string + " " + controller.displayName!!
+                                    .string + (if (controller.team == null) "" else " <" + team.displayName
+                                    .string + ">")
                             guiGraphics.drawString(
                                 font,
                                 Component.literal(info),
@@ -122,13 +127,13 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false)
                     }
                 } else if (lookingEntity is OwnableEntity) {
-                    val owner = lookingEntity.getOwner()
-                    if (owner is Player) {
-                        color = owner.getTeamColor()
+                    val player1 = vehicle.owner
+                    if (player1 is Player) {
+                        color = player1.teamColor
                         val team = player.team
                         if (team is PlayerTeam) {
-                            val info = lookingEntity.displayName.string + " " + owner.getDisplayName()
-                                .string + (if (owner.team == null) "" else " <" + team.displayName
+                            val info = lookingEntity.displayName!!.string + " " + player1.displayName
+                                ?.string + (if (player1.team == null) "" else " <" + team.displayName
                                 .string + ">")
                             guiGraphics.drawString(
                                 font,
@@ -146,11 +151,11 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 } else {
                     val player1 = lookingEntity.getFirstPassenger()
                     if (lookingEntity.maxPassengers > 0 && player1 is Player) {
-                        color = player1.getTeamColor()
+                        color = player1.teamColor
                         val team = player.team
                         if (team is PlayerTeam) {
-                            val info = lookingEntity.displayName.string + " " + player1.getDisplayName()
-                                .string + (if (player1.team == null) "" else " <" + team.displayName
+                            val info = lookingEntity.displayName!!.string + " " + player1.displayName
+                                ?.string + (if (player1.team == null) "" else " <" + team.displayName
                                 .string + ">")
                             guiGraphics.drawString(
                                 font,
@@ -200,12 +205,12 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 poseStack.pushPose()
                 poseStack.translate(x, y - 12, 0f)
 
-                val font = font
-                val owner = lookingEntity.getOwner()
+                val font = Minecraft.getInstance().font
+                val owner = vehicle.owner
 
                 if (owner != null) {
-                    val color: Int = owner.getTeamColor()
-                    val active: Boolean = lookingEntity.active
+                    val color: Int = owner.teamColor
+                    val active: Boolean = vehicle.active
 
                     val info =
                         if (active) "tips.superbwarfare.auto_aimable_entity.active" else "tips.superbwarfare.auto_aimable_entity.inactive"

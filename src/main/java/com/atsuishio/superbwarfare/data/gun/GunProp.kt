@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.data.gun
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.data.ModColor
 import com.atsuishio.superbwarfare.data.Prop
+import com.atsuishio.superbwarfare.item.gun.GunItem
 import net.minecraft.util.Mth
 import kotlin.math.max
 import kotlin.math.min
@@ -63,6 +63,9 @@ class GunProp<T, R> private constructor(
         val RECOIL_FORCE = plainProp(DefaultGunData::recoilForce)
 
         @JvmField
+        val SHOOT_SHAKE = plainProp(DefaultGunData::shootShake)
+
+        @JvmField
         val SPREAD = plainProp(DefaultGunData::spread)
 
         @JvmField
@@ -82,6 +85,21 @@ class GunProp<T, R> private constructor(
 
         @JvmField
         val ZOOM_SPREAD_RATE = plainProp(DefaultGunData::zoomSpreadRate) { value.coerceIn(0.0, 1.0) }
+
+        @JvmField
+        val SEEK_TIME = plainProp(DefaultGunData::seekTime)
+
+        @JvmField
+        val SEEK_ANGLE = plainProp(DefaultGunData::seekAngle)
+
+        @JvmField
+        val SEEK_RANGE = plainProp(DefaultGunData::seekRange)
+
+        @JvmField
+        val MIN_TARGET_HEIGHT = plainProp(DefaultGunData::minTargetHeight)
+
+        @JvmField
+        val MAX_TARGET_HEIGHT = plainProp(DefaultGunData::maxTargetHeight)
 
         @JvmField
         val RANGE = plainProp(DefaultGunData::range) { max(1, value) }
@@ -224,10 +242,13 @@ class GunProp<T, R> private constructor(
         val AVAILABLE_PERKS = GunProp(DefaultGunData::availablePerks, { it?.list?.filterNotNull().orEmpty() })
 
         @JvmField
-        val ICON = GunProp(DefaultGunData::icon, { it ?: loc("textures/gun_icon/default_icon.png") })
+        val ICON = GunProp(DefaultGunData::icon, { it ?: GunItem.DEFAULT_ICON })
 
         @JvmField
         val CROSSHAIR = GunProp(DefaultGunData::crosshair, { it.ifEmpty { "@GunDefault" }!! })
+
+        @JvmField
+        val CROSSHAIR_ZOOMING = GunProp(DefaultGunData::crosshairZooming, { it.ifEmpty { "@Empty" }!! })
 
         @JvmField
         val CROSSHAIR_COLOR = GunProp(DefaultGunData::crosshairColor, { it ?: ModColor() })
@@ -240,6 +261,36 @@ class GunProp<T, R> private constructor(
         val SHOOT_POS = GunProp(DefaultGunData::shootPos, { it ?: ShootPos() })
 
         @JvmField
+        val SEEK_WEAPON_INFO = plainProp(DefaultGunData::seekWeaponInfo)
+
+        @JvmField
         val SOUND_INFO = GunProp(DefaultGunData::soundInfo, { it ?: SoundInfo() })
+
+        @JvmField
+        val SHOOT_ANIMATION_TIME = plainProp(DefaultGunData::shootAnimationTime)
+
+        @JvmField
+        val SPREAD_AMOUNT = plainProp(DefaultGunData::spreadAmount)
+
+        @JvmField
+        val SPREAD_ANGLE = plainProp(DefaultGunData::spreadAmount)
+
+        @JvmField
+        val ADD_SHOOTER_DELTA_MOVEMENT = plainProp(DefaultGunData::addShooterDeltaMovement)
+
+        @JvmField
+        val IS_ANTI_AIR_PROJECTILE = plainProp(DefaultGunData::isAntiAirProjectile)
+
+        @JvmField
+        val IS_ARMOR_PIERCING_PROJECTILE = plainProp(DefaultGunData::isArmorPiercingProjectile)
+
+        @JvmField
+        val IS_GRAPE_SHOT_PROJECTILE = plainProp(DefaultGunData::isGrapeShotProjectile)
+
+        @JvmField
+        val IS_HIGH_EXPLOSIVE_PROJECTILE = plainProp(DefaultGunData::isHighExplosiveProjectile)
+
+        @JvmField
+        val IS_CLUSTER_MUNITIONS_PROJECTILE = plainProp(DefaultGunData::isClusterMunitionsProjectile)
     }
 }

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -33,7 +34,7 @@ public record FireModeMessage(boolean forward) {
             var data = GunData.from(stack);
 
             var selectedFireMode = data.selectedFireMode.get();
-            var fireModes = data.compute().availableFireModes();
+            var fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES);
 
             if (fireModes.size() > 1) {
                 int mode = (selectedFireMode + (message.forward() ? -1 : 1) + fireModes.size()) % fireModes.size();
