@@ -934,7 +934,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
             return this.energyStorage.energyStored
         }
-        protected set(pEnergy) {
+        set(pEnergy) {
             if (!this.hasEnergyStorage()) {
                 Mod.LOGGER.warn(
                     "Trying to set energy of vehicle {}, but it has no energy storage",
