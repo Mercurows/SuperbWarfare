@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.tooltip;
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent;
 import com.atsuishio.superbwarfare.data.gun.FireMode;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -69,7 +70,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     }
 
     protected boolean shouldRenderBypassAndHeadshotTooltip() {
-        return data.compute().bypassesArmor > 0 || data.compute().headshot > 0;
+        return data.get(GunProp.BYPASSES_ARMOR) > 0 || data.get(GunProp.HEADSHOT) > 0;
     }
 
     protected boolean shouldRenderPerks() {
@@ -103,13 +104,12 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器伤害的文本组件
      */
     protected Component getDamageComponent() {
-        var computed = data.compute();
-        double damage = computed.damage;
-        double explosionDamage = computed.explosionDamage;
+        double damage = data.get(GunProp.DAMAGE);
+        double explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE);
 
         String dmgStr = FormatTool.format1D(damage);
-        if (computed.projectileAmount > 1) {
-            dmgStr = dmgStr + " * " + computed.projectileAmount;
+        if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
+            dmgStr = dmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
         }
 
         var component = Component.translatable("des.superbwarfare.guns.damage").withStyle(ChatFormatting.GRAY)
@@ -118,8 +118,8 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
         if (explosionDamage > 0) {
             String expDmgStr = FormatTool.format1D(explosionDamage);
-            if (computed.projectileAmount > 1) {
-                expDmgStr = expDmgStr + " * " + computed.projectileAmount;
+            if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
+                expDmgStr = expDmgStr + " * " + data.get(GunProp.PROJECTILE_AMOUNT);
             }
             component = component
                     .append(Component.empty().withStyle(ChatFormatting.RESET))
@@ -140,7 +140,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         if (info.mode == FireMode.AUTO || info.mode == FireMode.BURST) {
             return Component.translatable("des.superbwarfare.guns.rpm").withStyle(ChatFormatting.GRAY)
                     .append(Component.empty().withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(FormatTool.format0D(data.compute().rpm))
+                    .append(Component.literal(FormatTool.format0D(data.get(GunProp.RPM)))
                             .withStyle(ChatFormatting.GREEN));
         }
         return Component.empty();
@@ -212,7 +212,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器穿甲比例文本组件
      */
     protected Component getBypassComponent() {
-        double bypassRate = Math.max(data.compute().bypassesArmor, 0);
+        double bypassRate = Math.max(data.get(GunProp.BYPASSES_ARMOR), 0);
         return Component.translatable("des.superbwarfare.guns.bypass").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format2D(bypassRate * 100, "%")).withStyle(ChatFormatting.GOLD));
@@ -222,7 +222,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
      * 获取武器爆头倍率文本组件
      */
     protected Component getHeadshotComponent() {
-        double headshot = data.compute().headshot;
+        double headshot = data.get(GunProp.HEADSHOT);
         return Component.translatable("des.superbwarfare.guns.headshot").withStyle(ChatFormatting.GRAY)
                 .append(Component.empty().withStyle(ChatFormatting.RESET))
                 .append(Component.literal(FormatTool.format1D(headshot, "x")).withStyle(ChatFormatting.AQUA));

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.vehicle
 
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -40,13 +41,13 @@ class VehicleGun : GunItem(Properties()) {
     override fun canShoot(data: GunData, shooter: Entity?): Boolean {
         if (shooter !is VehicleEntity) return false
 
-        return data.compute().projectileAmount > 0
+        return data.get(GunProp.PROJECTILE_AMOUNT) > 0
                 && !data.overHeat.get()
-                && data.compute().heatPerShoot <= (100 + data.compute().heatPerShoot - data.heat.get())
+                && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
                 && !data.reloading()
                 && !data.charging()
                 && !data.bolt.needed.get()
-                && shooter.getAmmo(data) >= data.compute().ammoCostPerShoot
+                && shooter.getAmmo(data) >= data.get(GunProp.AMMO_COST_PER_SHOOT)
     }
 
     override fun getEnergyProvider(data: GunData, ammoSupplier: Entity?): IEnergyStorage? {
@@ -82,7 +83,7 @@ class VehicleGun : GunItem(Properties()) {
 
         val root = prismTank.getShootPos(shooter, 1f)
         prismTank.laserLength = root.distanceTo(result.hitPos).toFloat()
-        prismTank.laserScale = data.compute().shootAnimationTime.toFloat()
+        prismTank.laserScale = data.get(GunProp.SHOOT_ANIMATION_TIME).toFloat()
         prismTank.hitEntity(result.hitPos, data, shooter)
     }
 
@@ -101,7 +102,7 @@ class VehicleGun : GunItem(Properties()) {
 
         val root = prismTank.getShootPos(shooter, 1f)
         prismTank.laserLength = root.distanceTo(result.getLocation()).toFloat()
-        prismTank.laserScale = data.compute().shootAnimationTime.toFloat()
+        prismTank.laserScale = data.get(GunProp.SHOOT_ANIMATION_TIME).toFloat()
         prismTank.hitBlock(result.getLocation(), data, shooter)
     }
 }

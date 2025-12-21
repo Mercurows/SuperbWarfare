@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicatorDynamic
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
@@ -77,7 +78,7 @@ object AircraftHud {
 
         poseStack.pushPose()
 
-        val bomb = gunData.compute().crosshair == "@AirBomb"
+        val bomb = gunData.get(GunProp.CROSSHAIR) == "@AirBomb"
 
         val color = vehicle.hudColor
         RenderSystem.disableDepthTest()
@@ -203,7 +204,7 @@ object AircraftHud {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            if (gunData.compute().crosshair == "@AirCraftMissile") {
+            if (gunData.get(GunProp.CROSSHAIR) == "@AirCraftMissile") {
                 RenderHelper.preciseBlitWithColor(
                     guiGraphics,
                     HUD_BASE_MISSILE,
@@ -476,7 +477,10 @@ object AircraftHud {
             val x = pCross.x.toFloat()
             val y = pCross.y.toFloat()
 
-            if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && (gunData.compute().crosshair != "@AirBomb") && (gunData.compute().crosshair != "@AirCraftMissile")) {
+            if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && (gunData.get(
+                    GunProp.CROSSHAIR
+                ) != "@AirBomb") && (gunData.get(GunProp.CROSSHAIR) != "@AirCraftMissile")
+            ) {
                 RenderSystem.disableDepthTest()
                 RenderSystem.depthMask(false)
                 RenderSystem.enableBlend()
@@ -511,7 +515,7 @@ object AircraftHud {
                 var cross = CROSSHAIR_3P
                 var size = 16f
 
-                if (gunData.compute().crosshair == "@AirBomb") {
+                if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
                     cross = BOMB_RING
                     size = 24f
                 }

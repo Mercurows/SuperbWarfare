@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIn
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicatorDynamic
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.renderWeaponInfoThird
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -77,18 +78,18 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
 
         val poseStack = guiGraphics.pose()
 
-        var crosshairPath = data.compute().crosshair
+        var crosshairPath = data.get(GunProp.CROSSHAIR)
 
         if (crosshairPath == CrossHairOverlay.CROSSHAIR_EMPTY) {
             resetScale()
             return
         }
 
-        if (ClientEventHandler.zoomVehicle && data.compute().crosshairZooming != CrossHairOverlay.CROSSHAIR_EMPTY) {
-            crosshairPath = data.compute().crosshairZooming
+        if (ClientEventHandler.zoomVehicle && data.get(GunProp.CROSSHAIR_ZOOMING) != CrossHairOverlay.CROSSHAIR_EMPTY) {
+            crosshairPath = data.get(GunProp.CROSSHAIR_ZOOMING)
         }
 
-        val color = data.compute().crosshairColor.get()
+        val color = data.get(GunProp.CROSSHAIR_COLOR).get()
 
         poseStack.pushPose()
 
@@ -192,7 +193,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                         x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
                         y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
                     )
-                    val fixedTexture: ResourceLocation? = CROSSHAIR_MAP.get("@VehicleFixedPoint")
+                    val fixedTexture: ResourceLocation? = CROSSHAIR_MAP["@VehicleFixedPoint"]
                     RenderHelper.preciseBlitWithColor(
                         guiGraphics,
                         fixedTexture,
@@ -268,7 +269,10 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                         j.toFloat()
                     )
                     renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
-                } else if (crosshairPath == "@VehicleCommonSeekMissile" && data.compute().seekWeaponInfo != null && data.compute().seekWeaponInfo.onlyLockBlock) {
+                } else if (crosshairPath == "@VehicleCommonSeekMissile" && data.get(GunProp.SEEK_WEAPON_INFO) != null && data.get(
+                        GunProp.SEEK_WEAPON_INFO
+                    ).onlyLockBlock
+                ) {
                     var vec3 = ClientEventHandler.seekingPosVehicle
                     if (ClientEventHandler.seekingTimeVehicle > 0) {
                         vec3 = ClientEventHandler.lockingPosVehicle

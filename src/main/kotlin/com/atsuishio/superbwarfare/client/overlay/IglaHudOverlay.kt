@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
@@ -120,7 +121,7 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
                 lerpSeeking = Mth.lerp(
                     deltaFrame,
                     lerpSeeking,
-                    Mth.clamp(data.compute().seekTime - seekingTime, 0, data.compute().seekTime) * 0.6f
+                    Mth.clamp(data.get(GunProp.SEEK_TIME) - seekingTime, 0, data.get(GunProp.SEEK_TIME)) * 0.6f
                 )
 
                 if (targetEntity != null) {
@@ -185,7 +186,7 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
                     )
 
                     //状态
-                    if (seekingTime >= data.compute().seekTime && data.ammo.get() > 0) {
+                    if (seekingTime >= data.get(GunProp.SEEK_TIME) && data.ammo.get() > 0) {
                         RenderHelper.preciseBlit(guiGraphics, SHOOT, -12f, -26f, 0f, 0f, 24f, 24f, 24f, 24f)
                     } else {
                         RenderHelper.preciseBlit(guiGraphics, HOLD, -12f, -26f, 0f, 0f, 24f, 24f, 24f, 24f)

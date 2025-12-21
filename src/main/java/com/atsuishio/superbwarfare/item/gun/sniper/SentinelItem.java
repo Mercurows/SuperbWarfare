@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun.sniper;
 import com.atsuishio.superbwarfare.client.renderer.gun.SentinelItemRenderer;
 import com.atsuishio.superbwarfare.client.tooltip.component.SentinelImageComponent;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
@@ -95,12 +96,12 @@ public class SentinelItem extends GunGeoItem {
     }
 
     @Override
-    public boolean isOpenBolt(GunData data) {
+    public boolean isOpenBolt(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBulletInBarrel(GunData data) {
+    public boolean hasBulletInBarrel(@NotNull GunData data) {
         return true;
     }
 
@@ -121,7 +122,7 @@ public class SentinelItem extends GunGeoItem {
         var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
 
         if (cap != null && cap.getEnergyStored() > 0) {
-            float soundRadius = (float) data.compute().soundRadius;
+            float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
 
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FAR.get(), soundRadius * 0.7f, 1f);
             shooter.playSound(ModSounds.SENTINEL_CHARGE_FIRE_3P.get(), soundRadius * 0.4f, 1f);

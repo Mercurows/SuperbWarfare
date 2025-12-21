@@ -48,7 +48,10 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
             player,
             cameraPos,
             viewVec,
-            VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
+
+            512.0
+            // TODO 为什么读不了配置项？？？
+//            VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
         )
 
         (player.vehicle as? VehicleEntity)?.let { vehicle ->
@@ -105,12 +108,12 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         vehicle.getEntityData().get(DroneEntity.CONTROLLER)
                     )
                     if (controller != null) {
-                        color = controller.getTeamColor()
+                        color = controller.teamColor
 
                         val team: Team? = player.team
                         if (team is PlayerTeam) {
                             val info =
-                                lookingEntity.displayName!!.string + " " + controller.getDisplayName()!!
+                                lookingEntity.displayName!!.string + " " + controller.displayName!!
                                     .string + (if (controller.team == null) "" else " <" + team.displayName
                                     .string + ">")
                             guiGraphics.drawString(
@@ -127,12 +130,12 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false)
                     }
                 } else if (lookingEntity is OwnableEntity) {
-                    val player1 = vehicle.getOwner()
+                    val player1 = vehicle.owner
                     if (player1 is Player) {
-                        color = player1.getTeamColor()
+                        color = player1.teamColor
                         val team: Team? = player.team
                         if (team is PlayerTeam) {
-                            val info = lookingEntity.displayName!!.string + " " + player1.getDisplayName()
+                            val info = lookingEntity.displayName!!.string + " " + player1.displayName
                                 ?.string + (if (player1.team == null) "" else " <" + team.displayName
                                 .string + ">")
                             guiGraphics.drawString(
@@ -151,10 +154,10 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 } else {
                     val player1 = lookingEntity.getFirstPassenger()
                     if (lookingEntity.maxPassengers > 0 && player1 is Player) {
-                        color = player1.getTeamColor()
+                        color = player1.teamColor
                         val team: Team? = player.team
                         if (team is PlayerTeam) {
-                            val info = lookingEntity.displayName!!.string + " " + player1.getDisplayName()
+                            val info = lookingEntity.displayName!!.string + " " + player1.displayName
                                 ?.string + (if (player1.team == null) "" else " <" + team.displayName
                                 .string + ">")
                             guiGraphics.drawString(
@@ -206,10 +209,10 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 poseStack.translate(x, y - 12, 0f)
 
                 val font = Minecraft.getInstance().font
-                val owner: Entity? = vehicle.getOwner()
+                val owner: Entity? = vehicle.owner
 
                 if (owner != null) {
-                    val color: Int = owner.getTeamColor()
+                    val color: Int = owner.teamColor
                     val active: Boolean = vehicle.active
 
                     val info =

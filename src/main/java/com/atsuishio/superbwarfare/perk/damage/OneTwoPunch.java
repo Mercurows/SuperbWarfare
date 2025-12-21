@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.perk.damage;
 
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +30,7 @@ public class OneTwoPunch extends Perk {
         data.perk.getTag(this).putInt("OneTwoPunchCount", data.perk.getTag(this).getInt("OneTwoPunchCount") + 1);
         data.perk.getTag(this).putInt("OneTwoPunchCountTime", 2);
 
-        double needCount = Math.floor(data.compute().projectileAmount * (1 - 0.05 * (instance.level() - 1)));
+        double needCount = Math.floor(data.get(GunProp.PROJECTILE_AMOUNT) * (1 - 0.05 * (instance.level() - 1)));
 
         if (data.perk.getTag(this).getInt("OneTwoPunchCount") >= needCount) {
             data.perk.getTag(this).putInt("OneTwoPunchTime", 60);

@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier
@@ -687,7 +688,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         orderedPassengers[index] = pPassenger
 
-        pPassenger.getPersistentData().putInt(TAG_SEAT_INDEX, index)
+        pPassenger.persistentData.putInt(TAG_SEAT_INDEX, index)
 
         this.passengers =
             ImmutableList.copyOf(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }.toList())
@@ -753,7 +754,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         orderedPassengers[orderedPassengers.indexOf(entity)] = null
         orderedPassengers[index] = entity
 
-        entity.getPersistentData().putInt(TAG_SEAT_INDEX, index)
+        entity.persistentData.putInt(TAG_SEAT_INDEX, index)
 
         // 在服务端运行时，向所有玩家同步载具座位信息
         val level = this.level()
@@ -783,7 +784,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * @param entity 乘客
      * @return 座位索引
      */
-    open fun getTagSeatIndex(entity: Entity) = entity.getPersistentData().getInt(TAG_SEAT_INDEX)
+    open fun getTagSeatIndex(entity: Entity) = entity.persistentData.getInt(TAG_SEAT_INDEX)
 
     val thirdPersonCameraPosition: Vec3
         get() {
@@ -900,7 +901,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      */
     open fun consumeEnergy(amount: Int) {
         if (!this.hasEnergyStorage()) {
-            Mod.LOGGER.warn("Trying to consume energy of vehicle {}, but it has no energy storage", this.getName())
+            Mod.LOGGER.warn("Trying to consume energy of vehicle {}, but it has no energy storage", this.name)
             return
         }
         if (this.level() is ServerLevel) {
@@ -912,7 +913,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (!this.hasEnergyStorage()) {
             Mod.LOGGER.warn(
                 "Trying to check if can consume energy of vehicle {}, but it has no energy storage",
-                this.getName()
+                this.name
             )
             return false
         }
@@ -924,7 +925,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (!this.hasEnergyStorage()) {
                 Mod.LOGGER.warn(
                     "Trying to get energy of vehicle {}, but it has no energy storage",
-                    this.getName()
+                    this.name
                 )
                 return Int.MAX_VALUE
             }
@@ -934,7 +935,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (!this.hasEnergyStorage()) {
                 Mod.LOGGER.warn(
                     "Trying to set energy of vehicle {}, but it has no energy storage",
-                    this.getName()
+                    this.name
                 )
                 return
             }
@@ -949,7 +950,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun getEnergyStorage(): IEnergyStorage? {
         if (!this.hasEnergyStorage()) {
-            Mod.LOGGER.warn("Trying to get energy storage of vehicle {}, but it has no energy storage", this.getName())
+            Mod.LOGGER.warn("Trying to get energy storage of vehicle {}, but it has no energy storage", this.name)
         }
         return this.energyStorage
     }
@@ -958,7 +959,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         get() = if (!this.hasEnergyStorage()) {
             Mod.LOGGER.warn(
                 "Trying to get max energy of vehicle {}, but it has no energy storage",
-                this.getName()
+                this.name
             )
             Int.MAX_VALUE
         } else computed().maxEnergy
@@ -985,19 +986,19 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      */
     open fun vehicleWeaponRpm(living: LivingEntity?): Int {
         val data = getGunData(getSeatIndex(living))
-        if (data == null || data.compute().rpm <= 0) return 60
-        return data.compute().rpm
+        if (data == null || data.get(GunProp.RPM) <= 0) return 60
+        return data.get(GunProp.RPM)
     }
 
     open fun vehicleWeaponRpm(seatIndex: Int): Int {
         val data = getGunData(seatIndex)
-        if (data == null || data.compute().rpm <= 0) return 60
-        return data.compute().rpm
+        if (data == null || data.get(GunProp.RPM) <= 0) return 60
+        return data.get(GunProp.RPM)
     }
 
     open fun vehicleWeaponRpm(weaponName: String): Int {
         val data = getGunData(weaponName) ?: return 1
-        return data.compute().rpm.coerceAtLeast(1)
+        return data.get(GunProp.RPM).coerceAtLeast(1)
     }
 
     open fun getWeaponHeat(living: LivingEntity?): Int {
@@ -1041,7 +1042,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     getShootPos(weaponName, 1f),
                     getShootVec(weaponName, 1f),
                     data,
-                    data.compute().spread,
+                    data.get(GunProp.SPREAD),
                     true,
                     null,
                     null
@@ -1066,7 +1067,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     getShootPos(living, 1f),
                     getShootVec(living, 1f),
                     data,
-                    data.compute().spread,
+                    data.get(GunProp.SPREAD),
                     true,
                     uuid,
                     targetPos
@@ -1081,10 +1082,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun afterShoot(gunData: GunData?, shootVec: Vec3) {
         if (gunData != null) {
-            val computedGunData = gunData.compute()
-            if (computedGunData.recoilTime > 0) {
-                if (computedGunData.recoilTime > cannonRecoilTime) {
-                    cannonRecoilTime = computedGunData.recoilTime
+            val recoilTime = gunData.get(GunProp.RECOIL_TIME)
+            if (recoilTime > 0) {
+                if (recoilTime > cannonRecoilTime) {
+                    cannonRecoilTime = recoilTime
                 }
 
                 val angle = Mth.wrapDegrees(
@@ -1093,9 +1094,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
                 val vo = Vec3(0.0, 0.0, 1.0)
                 val f =
-                    0.3 * cannonRecoilForce * (cannonRecoilTime / computedGunData.recoilTime).toDouble()
+                    0.3 * cannonRecoilForce * (cannonRecoilTime / recoilTime).toDouble()
                 val v1 = vo.yRot(yawWhileShoot * Mth.DEG_TO_RAD).scale(f)
-                val v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(computedGunData.recoilForce.toDouble())
+                val v2 = vo.yRot(angle * Mth.DEG_TO_RAD).scale(gunData.get(GunProp.RECOIL_FORCE).toDouble())
                 val v3 = v1.add(v2)
 
                 yawWhileShoot =
@@ -1127,8 +1128,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         if (gunData == null) return
 
-        val computedGunData = gunData.compute()
-        val soundInfo = computedGunData.soundInfo
+        val soundInfo = gunData.get(GunProp.SOUND_INFO)
         val pitch = if (getWeaponHeat(living) <= 60) 1f else (1 - 0.011 * abs(60 - getWeaponHeat(living))).toFloat()
 
         val listener: Entity?
@@ -1144,12 +1144,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
+        val soundRadius = gunData.get(GunProp.SOUND_RADIUS)
         if (soundInfo.fire3P != null) {
             SoundTool.playDistantSound(
                 serverLevel,
                 soundInfo.fire3P,
                 pos,
-                (computedGunData.soundRadius * 0.4f).toFloat(),
+                (soundRadius * 0.4f).toFloat(),
                 pitch,
                 listener
             )
@@ -1160,7 +1161,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 serverLevel,
                 soundInfo.fire3PFar,
                 pos,
-                (computedGunData.soundRadius * 0.7f).toFloat(),
+                (soundRadius * 0.7f).toFloat(),
                 pitch,
                 listener
             )
@@ -1171,7 +1172,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 serverLevel,
                 soundInfo.fire3PVeryFar,
                 pos,
-                computedGunData.soundRadius.toFloat(),
+                soundRadius.toFloat(),
                 pitch,
                 listener
             )
@@ -1222,7 +1223,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (oldIndex == selectedWeaponIndex) return
 
         this.modifyGunData(seatIndex, oldIndex) { gunData ->
-            if (gunData.compute().withdrawAmmoWhenChangeSlot) {
+            if (gunData.get(GunProp.WITHDRAW_AMMO_WHEN_CHANGE_SLOT)) {
                 gunData.withdrawAmmo(this.ammoSupplier)
             }
         }
@@ -1256,7 +1257,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.setWeaponIndex(seatIndex, typeIndex)
 
         // 播放武器切换音效
-        val sound = weapon.compute().soundInfo.change
+        val sound = weapon.get(GunProp.SOUND_INFO).change
         if (sound != null) {
             this.level().playSound(null, this, sound, this.soundSource, 1f, 1f)
         }
@@ -1464,7 +1465,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (this.getFirstPassenger() == null) {
                 if (player is FakePlayer) return InteractionResult.PASS
                 VehicleVecUtils.setDriverAngle(this, player)
-                player.setSprinting(false)
+                player.isSprinting = false
                 if (player.level() is ServerLevel) {
                     return if (player.startRiding(this)) InteractionResult.CONSUME else InteractionResult.PASS
                 }
@@ -1472,14 +1473,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 if (player is FakePlayer) return InteractionResult.PASS
                 this.getFirstPassenger()!!.stopRiding()
                 VehicleVecUtils.setDriverAngle(this, player)
-                player.setSprinting(false)
+                player.isSprinting = false
                 if (player.level() is ServerLevel) {
                     return if (player.startRiding(this)) InteractionResult.CONSUME else InteractionResult.PASS
                 }
             }
             if (this.canAddPassenger(player)) {
                 if (player is FakePlayer) return InteractionResult.PASS
-                player.setSprinting(false)
+                player.isSprinting = false
                 if (player.level() is ServerLevel) {
                     return if (player.startRiding(this)) InteractionResult.CONSUME else InteractionResult.PASS
                 }
@@ -1884,20 +1885,20 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 val gunData: GunData? = getGunData(mob)
                 if (gunData != null) {
                     if (gunData.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
-                        if (!canConsume(gunData.compute().ammoCostPerShoot)) {
+                        if (!canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT))) {
                             mob.displayClientMessage(
                                 Component.translatable("tips.superbwarfare.not.enough.energy"),
                                 true
                             )
                         }
                     } else {
-                        if (getAmmoCount(mob) < gunData.compute().ammoCostPerShoot) {
+                        if (getAmmoCount(mob) < gunData.get(GunProp.AMMO_COST_PER_SHOOT)) {
                             val stack = gunData.selectedAmmoConsumer().stack()
                             if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
                                 mob.displayClientMessage(
                                     Component.translatable("tips.superbwarfare.need.ammo")
                                         .append(
-                                            Component.literal("[").append(stack.getHoverName()).append("]")
+                                            Component.literal("[").append(stack.hoverName).append("]")
                                                 .withStyle(ChatFormatting.YELLOW)
                                         ), true
                                 )
@@ -2037,7 +2038,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             // TODO why 0?
             val gunData = getGunData(0)
             if (gunData != null) {
-                val instance = gunData.compute().soundInfo.fireSoundInstances
+                val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
                 if (instance != null) return instance
             } else {
                 return getShootSoundInstance("Main")
@@ -2048,14 +2049,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun getShootSoundInstance(weaponName: String): SoundEvent {
         val gunData = getGunData(weaponName) ?: return SoundEvents.EMPTY
 
-        return gunData.compute().soundInfo.fireSoundInstances ?: SoundEvents.EMPTY
+        return gunData.get(GunProp.SOUND_INFO).fireSoundInstances ?: SoundEvents.EMPTY
     }
 
     val isFiring: Boolean
         get() {
             val gunData = getGunData(0)
             return if (gunData != null) {
-                val instance = gunData.compute().soundInfo.fireSoundInstances
+                val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
                 if (instance != null) {
                     gunData.shootTimer.get() > 0
                 } else {
@@ -2594,7 +2595,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 level(),
                 getShootPosForHud(entity, 1f),
                 getShootVec(entity, 1f),
-                deltaMovement.length() * gunData.compute().velocity,
+                deltaMovement.length() * gunData.get(GunProp.VELOCITY),
                 -getProjectileGravity(entity).toDouble()
             )
         } else {
@@ -2612,7 +2613,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val vec3 = data.firePosition()
 
             val worldPosition = transformPosition(
-                this.getTransformFromString(data.compute().shootPos.transform, ticks),
+                this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
                 vec3.x, vec3.y, vec3.z
             )
 
@@ -2627,7 +2628,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val vec3 = data.firePosition()
 
             val worldPosition = transformPosition(
-                this.getTransformFromString(data.compute().shootPos.transform, ticks),
+                this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
                 vec3.x, vec3.y, vec3.z
             )
 
@@ -2646,7 +2647,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val vec3 = data.firePositionForHud()
 
             val worldPosition = transformPosition(
-                this.getTransformFromString(data.compute().shootPos.transform, ticks),
+                this.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, ticks),
                 vec3.x, vec3.y, vec3.z
             )
 
@@ -2671,14 +2672,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         } else {
             val vec3 = stringOrVec3.vec3
             val worldPosition = transformPosition(
-                getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
 
             val worldPositionO = transformPosition(
-                getTransformFromString(data.compute().shootPos.transform, partialTicks),
+                getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x, vec3.y, vec3.z
             )
 
@@ -2753,37 +2754,37 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      */
     open fun getProjectileVelocity(entity: Entity?): Float {
         val gunData = getGunData(getSeatIndex(entity)) ?: return 25f
-        if (gunData.compute().addShooterDeltaMovement) {
-            return (deltaMovement.length() * gunData.compute().velocity).toFloat()
+        if (gunData.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
+            return (deltaMovement.length() * gunData.get(GunProp.VELOCITY)).toFloat()
         }
 
-        return gunData.compute().velocity.toFloat()
+        return gunData.get(GunProp.VELOCITY).toFloat()
     }
 
     open fun getProjectileVelocity(seatIndex: Int): Float {
         val gunData = getGunData(seatIndex) ?: return 25f
-        if (gunData.compute().addShooterDeltaMovement) {
-            return (deltaMovement.length() * gunData.compute().velocity).toFloat()
+        if (gunData.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
+            return (deltaMovement.length() * gunData.get(GunProp.VELOCITY)).toFloat()
         }
 
-        return gunData.compute().velocity.toFloat()
+        return gunData.get(GunProp.VELOCITY).toFloat()
     }
 
     open fun getProjectileVelocity(weaponName: String): Float {
         val gunData = getGunData(weaponName) ?: return 25f
-        if (gunData.compute().addShooterDeltaMovement) {
-            return (deltaMovement.length() * gunData.compute().velocity).toFloat()
+        if (gunData.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
+            return (deltaMovement.length() * gunData.get(GunProp.VELOCITY)).toFloat()
         }
 
-        return gunData.compute().velocity.toFloat()
+        return gunData.get(GunProp.VELOCITY).toFloat()
     }
 
     open fun getProjectileVelocity(gunData: GunData?): Float {
         if (gunData == null) return 25f
-        if (gunData.compute().addShooterDeltaMovement) {
-            return (deltaMovement.length() * gunData.compute().velocity).toFloat()
+        if (gunData.get(GunProp.ADD_SHOOTER_DELTA_MOVEMENT)) {
+            return (deltaMovement.length() * gunData.get(GunProp.VELOCITY)).toFloat()
         }
-        return gunData.compute().velocity.toFloat()
+        return gunData.get(GunProp.VELOCITY).toFloat()
     }
 
     /**
@@ -2793,24 +2794,24 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun getProjectileGravity(entity: Entity?): Float {
         val gunData = getGunData(getSeatIndex(entity)) ?: return 0f
 
-        return gunData.compute().gravity.toFloat()
+        return gunData.get(GunProp.GRAVITY).toFloat()
     }
 
     open fun getProjectileGravity(seatIndex: Int): Float {
         val gunData = getGunData(seatIndex) ?: return 0f
 
-        return gunData.compute().gravity.toFloat()
+        return gunData.get(GunProp.GRAVITY).toFloat()
     }
 
     open fun getProjectileGravity(weaponName: String): Float {
         val gunData = getGunData(weaponName) ?: return 0f
 
-        return gunData.compute().gravity.toFloat()
+        return gunData.get(GunProp.GRAVITY).toFloat()
     }
 
     open fun getProjectileGravity(gunData: GunData?): Float {
         if (gunData == null) return 0f
-        return gunData.compute().gravity.toFloat()
+        return gunData.get(GunProp.GRAVITY).toFloat()
     }
 
     /**
@@ -2820,24 +2821,24 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun getProjectileSpread(entity: Entity?): Float {
         val gunData = getGunData(getSeatIndex(entity)) ?: return 0.5f
 
-        return gunData.compute().spread.toFloat()
+        return gunData.get(GunProp.SPREAD).toFloat()
     }
 
     open fun getProjectileSpread(seatIndex: Int): Float {
         val gunData = getGunData(seatIndex) ?: return 0.5f
 
-        return gunData.compute().spread.toFloat()
+        return gunData.get(GunProp.SPREAD).toFloat()
     }
 
     open fun getProjectileSpread(weaponName: String): Float {
         val gunData = getGunData(weaponName) ?: return 0.5f
 
-        return gunData.compute().spread.toFloat()
+        return gunData.get(GunProp.SPREAD).toFloat()
     }
 
     open fun getProjectileSpread(gunData: GunData?): Float {
         if (gunData == null) return 0.5f
-        return gunData.compute().spread.toFloat()
+        return gunData.get(GunProp.SPREAD).toFloat()
     }
 
     /**
@@ -3326,7 +3327,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         computed().seats().getOrNull(seatIndex)?.dismountInfo?.canEject ?: false
 
     open fun removeSeatIndexTag(entity: Entity) {
-        entity.getPersistentData().remove(TAG_SEAT_INDEX)
+        entity.persistentData.remove(TAG_SEAT_INDEX)
     }
 
     open fun getEjectionMovement(entity: LivingEntity?, index: Int): Vec3 {
@@ -3601,7 +3602,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (seat != null) {
             val data = seat.cameraPos
             if (data != null) {
-                if (zoom && gunData != null && gunData.compute().shootPos.viewDirection != null) {
+                if (zoom && gunData != null && gunData.get(GunProp.SHOOT_POS).viewDirection != null) {
                     return Vec2(
                         -getYRotFromVector(getViewVec(player, partialTicks)).toFloat(),
                         -getXRotFromVector(getViewVec(player, partialTicks)).toFloat()
@@ -3642,7 +3643,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (data != null) {
                 if (zoom || isFirstPerson) {
                     return if (zoom) {
-                        if (gunData != null && gunData.compute().shootPos.viewPosition != null) {
+                        if (gunData != null && gunData.get(GunProp.SHOOT_POS).viewPosition != null) {
                             getViewPos(player, partialTicks)
                         } else {
                             getZoomPos(player, partialTicks)
@@ -3689,11 +3690,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      */
     open fun getDefaultZoom(entity: Entity?): Double {
         val gunData = getGunData(getSeatIndex(entity))
-        return if (gunData != null) {
-            gunData.compute().defaultZoom
-        } else {
-            1.0
-        }
+        return gunData?.get(GunProp.DEFAULT_ZOOM) ?: 1.0
     }
 
     open fun canCrushEntities() = true
@@ -3961,7 +3958,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     @OnlyIn(Dist.CLIENT)
     open fun firstPersonAmmoComponent(data: GunData, player: Player?): Component {
-        val name = data.compute().name
+        val name = data.get(GunProp.NAME)
         if (name == null || name.isBlank()) return Component.empty()
 
         val ammoCount = this.getAmmoCount(player)

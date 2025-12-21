@@ -321,12 +321,11 @@ public class ClientEventHandler {
             lastOperatingGunUUID = uuid;
 
             if ((holdingFireKey || (zoom && stack.is(ModItems.MINIGUN.get()))) && gunItem.canShoot(data, player)) {
-                var computed = data.compute();
-                holdingFireKeyTicks = Math.min(holdingFireKeyTicks + 1, computed.shootDelay + 1);
+                holdingFireKeyTicks = Math.min(holdingFireKeyTicks + 1, data.get(GunProp.SHOOT_DELAY) + 1);
 
                 // 加特林特有的旋转音效
                 if (stack.is(ModItems.MINIGUN.get())) {
-                    float rpm = (float) computed.rpm / 3600;
+                    float rpm = data.get(GunProp.RPM) / 3600F;
                     player.playSound(ModSounds.MINIGUN_ROTATE.get(), 1, 0.7f + rpm);
                 }
 
@@ -426,12 +425,11 @@ public class ClientEventHandler {
     public static void lockWeaponSeeking(Player player, ItemStack stack) {
         if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
-            var computed = data.compute();
-            int lockTime = computed.seekTime;
+            int lockTime = data.get(GunProp.SEEK_TIME);
             //搜寻角度
             float fovAdjust = (float) Minecraft.getInstance().options.fov().get() / 80;
-            float seekAngle = (float) (computed.seekAngle * fovAdjust);
-            double range = computed.seekRange;
+            float seekAngle = (float) (data.get(GunProp.SEEK_ANGLE) * fovAdjust);
+            double range = data.get(GunProp.SEEK_RANGE);
             Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
             if (zoomTime > 0.7) {
@@ -439,7 +437,7 @@ public class ClientEventHandler {
                         .withinRange(range)
                         .withinAngle(seekAngle)
                         .baseFilter()
-                        .heightRange(computed.minTargetHeight, computed.maxTargetHeight)
+                        .heightRange(data.get(GunProp.MIN_TARGET_HEIGHT), data.get(GunProp.MAX_TARGET_HEIGHT))
                         .smokeFilter()
                         .noVehicle()
                         .noClip()
@@ -451,7 +449,7 @@ public class ClientEventHandler {
                     seekFailure(player);
                 }
 
-                if (computed.seekType == SeekType.HOLD_FIRE) {
+                if (data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_FIRE) {
                     if (nearestEntity == null || player.isShiftKeyDown()) {
                         // 锁定方块
                         BlockHitResult result = player.level().clip(new ClipContext(player.getEyePosition(), player.getEyePosition().add(player.getViewVector(1).scale(512)),
@@ -524,7 +522,7 @@ public class ClientEventHandler {
                             seekFailure(player);
                         }
                     }
-                } else if (computed.seekType == SeekType.HOLD_ZOOM) {
+                } else if (data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_ZOOM) {
                     // 瞄准锁定只能锁实体
                     if (seekingTime > lockTime + 2 && !lockOn) {
                         lockingEntity = seekingEntity;
@@ -588,7 +586,7 @@ public class ClientEventHandler {
         var data = vehicle.getGunData(player);
         if (data == null) return;
 
-        var seekWeaponInfo = data.compute().seekWeaponInfo;
+        var seekWeaponInfo = data.get(GunProp.SEEK_WEAPON_INFO);
         if (seekWeaponInfo == null) return;
 
         // 锁定所需时间
@@ -714,7 +712,7 @@ public class ClientEventHandler {
     }
 
     public static void playLockingSound(GunData data, Player player) {
-        var soundInfo = data.compute().soundInfo;
+        var soundInfo = data.get(GunProp.SOUND_INFO);
         var sound = soundInfo.locking;
         if (sound != null) {
             player.playSound(sound, 2f, 1);
@@ -722,7 +720,7 @@ public class ClientEventHandler {
     }
 
     public static void playLockedSound(GunData data, Player player) {
-        var soundInfo = data.compute().soundInfo;
+        var soundInfo = data.get(GunProp.SOUND_INFO);
         var sound = soundInfo.locked;
         if (sound != null) {
             player.playSound(sound, 2f, 1);
@@ -772,7 +770,7 @@ public class ClientEventHandler {
 
         if (stack.getItem() instanceof GunItem) {
             var data = GunData.from(stack);
-            sprintCost = (float) (0.5 + 0.02 * data.compute().weight);
+            sprintCost = (float) (0.5 + 0.02 * data.get(GunProp.WEIGHT));
         } else {
             sprintCost = 0.5f;
         }
@@ -879,10 +877,10 @@ public class ClientEventHandler {
                     && !data.reloading()
                     && !data.charging() && !player.getCooldowns().isOnCooldown(stack.getItem())
             ) {
-                gunMelee = data.compute().meleeDuration;
+                gunMelee = data.get(GunProp.MELEE_DURATION);
                 fireCooldown = gunMelee + 4;
             }
-            if (gunMelee == data.compute().meleeDuration - data.compute().meleeDamageTime) {
+            if (gunMelee == data.get(GunProp.MELEE_DURATION) - data.get(GunProp.MELEE_DAMAGE_TIME)) {
                 doGunMeleeAttack(player);
             }
         }
@@ -967,8 +965,7 @@ public class ClientEventHandler {
         var partialHoldingFireKeyTicks = Mth.lerp(getDelta(), holdingFireKeyTicks0, holdingFireKeyTicks);
         holdingFireKeyTicks0 = holdingFireKeyTicks;
 
-        var computed = data.compute();
-        if (partialHoldingFireKeyTicks > holdingFireKeyTicks && partialHoldingFireKeyTicks > computed.shootDelay * 0.25 && shouldPlayDischargeSound) {
+        if (partialHoldingFireKeyTicks > holdingFireKeyTicks && partialHoldingFireKeyTicks > data.get(GunProp.SHOOT_DELAY) * 0.25 && shouldPlayDischargeSound) {
             var dischargeSound = resource.dischargeSound;
             if (dischargeSound != null) {
                 player.playSound(dischargeSound, partialHoldingFireKeyTicks * 0.03f, 0.6f + partialHoldingFireKeyTicks * 0.02f);
@@ -988,7 +985,7 @@ public class ClientEventHandler {
         // 精准度
         float times = (float) Math.min(getDelta(), 0.8);
 
-        double basicDev = computed.spread;
+        double basicDev = data.get(GunProp.SPREAD);
         double walk = isMoving() ? 0.3 * basicDev : 0;
         double sprint = player.isSprinting() ? 0.25 * basicDev : 0;
         double crouching = player.isCrouching() ? -0.15 * basicDev : 0;
@@ -996,13 +993,13 @@ public class ClientEventHandler {
         double jump = player.onGround() ? 0 * basicDev : 0.35 * basicDev;
         double ride = player.onGround() ? -0.25 * basicDev : 0;
 
-        double zoomSpread = 1 - (1 - computed.zoomSpreadRate) * zoomTime;
+        double zoomSpread = 1 - (1 - data.get(GunProp.ZOOM_SPREAD_RATE)) * zoomTime;
         double spread = data.isShotgun() || stack.is(ModItems.MINIGUN.get()) ? 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread) : zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread);
 
         gunSpread = Mth.lerp(0.14 * times, gunSpread, spread);
 
         // 开火部分
-        double weight = computed.weight;
+        double weight = data.get(GunProp.WEIGHT);
         double speed = 5 / (weight + 4);
 
         if (noSprintTicks == 0 && player.isSprinting() && !zoom && !holdingFireKey) {
@@ -1011,7 +1008,7 @@ public class ClientEventHandler {
             fireCooldown = Mth.clamp(fireCooldown - 6 * speed * times, 0, 40);
         }
 
-        int rpm = Mth.clamp(computed.rpm + customRpm, 1, 114514);
+        int rpm = Mth.clamp(data.get(GunProp.RPM) + customRpm, 1, 114514);
         double rps = (double) rpm / 60;
 
         // cooldown in ms
@@ -1025,7 +1022,7 @@ public class ClientEventHandler {
             revolverPreTime = Mth.clamp(revolverPreTime - 1.2 * times, 0, 1);
         }
 
-        if (((holdingFireKey || burstFireAmount > 0) && holdingFireKeyTicks >= computed.shootDelay)
+        if (((holdingFireKey || burstFireAmount > 0) && holdingFireKeyTicks >= data.get(GunProp.SHOOT_DELAY))
                 && !(player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player))
                 && !holdFireVehicle
                 && gunItem.canShoot(data, player)
@@ -1098,13 +1095,12 @@ public class ClientEventHandler {
             holdingFireKey = false;
         }
 
-        var computed = data.compute();
-        if (computed.clearHoldProgressAfterShoot) {
+        if (data.get(GunProp.CLEAR_HOLD_PROGRESS_AFTER_SHOOT)) {
             holdingFireKeyTicks = 0;
         }
 
         if (mode == FireMode.BURST && burstFireAmount == 1) {
-            fireCooldown = computed.burstCooldown;
+            fireCooldown = data.get(GunProp.BURST_COOLDOWN);
         }
 
         if (burstFireAmount > 0) {
@@ -1131,7 +1127,7 @@ public class ClientEventHandler {
         }
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        if (computed.boltActionTime > 0 && data.hasEnoughAmmoToShoot(player)) {
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
             data.bolt.needed.set(true);
         }
 
@@ -1158,12 +1154,11 @@ public class ClientEventHandler {
         fireRecoilTime = 10;
 
         // 真实后坐（
-        var computed = data.compute();
-        if (computed.recoil != 0) {
-            player.setDeltaMovement(player.getDeltaMovement().add(player.getViewVector(1).scale(-computed.recoil)));
+        if (data.get(GunProp.RECOIL) != 0) {
+            player.setDeltaMovement(player.getDeltaMovement().add(player.getViewVector(1).scale(-data.get(GunProp.RECOIL))));
         }
 
-        var gunRecoilY = computed.recoilY * 10;
+        var gunRecoilY = data.get(GunProp.RECOIL_Y) * 10;
 
         recoilY = (float) (2 * Math.random() - 1) * gunRecoilY;
 
@@ -1243,7 +1238,7 @@ public class ClientEventHandler {
         var data = GunData.from(stack);
 
         var perk = data.perk.get(Perk.Type.AMMO);
-        SoundInfo soundInfo = data.compute().soundInfo;
+        SoundInfo soundInfo = data.get(GunProp.SOUND_INFO);
 
         float pitch = data.heat.get() <= 75 ? 1 : (float) (1 - 0.02 * Math.abs(75 - data.heat.get()));
 
@@ -1331,7 +1326,7 @@ public class ClientEventHandler {
 
                     clientTimerVehicle.setProgress(newProgress);
                 }
-                if (gunData.compute().defaultFireMode.equals("Semi")) {
+                if (gunData.get(GunProp.DEFAULT_FIRE_MODE).equals("Semi")) {
                     holdFireVehicle = false;
                 }
             } else if (clientTimerVehicle.getProgress() >= cooldown) {
@@ -1346,7 +1341,7 @@ public class ClientEventHandler {
         var gunData = vehicle.getGunData(vehicle.getSeatIndex(player));
         if (gunData == null) return;
 
-        var soundInfo = gunData.compute().soundInfo;
+        var soundInfo = gunData.get(GunProp.SOUND_INFO);
         float pitch = vehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - vehicle.getWeaponHeat(player)));
 
         var sound = soundInfo.fire1P;
@@ -1385,7 +1380,7 @@ public class ClientEventHandler {
             default -> 0.8;
         };
 
-        float customWeight = (float) Mth.clamp(data.compute().weight, 1, 30);
+        float customWeight = (float) Mth.clamp(data.get(GunProp.WEIGHT), 1, 30);
 
         if (!breath && zoom) {
             float newPitch = (float) (player.getXRot() - 0.01f * Mth.sin((float) (0.03 * player.tickCount)) * pose * Mth.nextDouble(RandomSource.create(), 0.1, 1) * times * sway * (1 - 0.03 * customWeight));
@@ -1557,7 +1552,7 @@ public class ClientEventHandler {
                 animSpeed = 0.005;
             }
 
-            float customWeight = (float) Mth.clamp(data.compute().weight, 1, 50);
+            float customWeight = (float) Mth.clamp(data.get(GunProp.WEIGHT), 1, 50);
 
             if (!isEditing) {
                 if (!entity.isSprinting() && Minecraft.getInstance().options.keyUp.isDown() && firePosTimer == 0 && !(stack.getItem() instanceof SuperStarShooterItem)) {
@@ -1676,8 +1671,7 @@ public class ClientEventHandler {
         var data = GunData.from(stack);
         float times = 5 * getDelta();
 
-        var computed = data.compute();
-        double weight = computed.weight;
+        double weight = data.get(GunProp.WEIGHT);
         double speed = 7 / (weight + 2);
 
         if (zoom
@@ -1685,7 +1679,7 @@ public class ClientEventHandler {
                 && !notInGame()
                 && drawTime < 0.01
                 && !isEditing
-                && !(data.reloading() && !computed.zoomReload)) {
+                && !(data.reloading() && !data.get(GunProp.ZOOM_RELOAD))) {
             if (fireCooldown <= 10) {
                 zoomTime = Mth.clamp(zoomTime + 0.03 * speed * times, 0, 1);
             }
@@ -1706,8 +1700,7 @@ public class ClientEventHandler {
         ItemStack stack = entity.getMainHandItem();
 
         var data = GunData.from(stack);
-        var computed = data.compute();
-        double amplitude = 25000 * computed.recoilY * computed.recoilX;
+        double amplitude = 25000 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X);
 
         if (fireRecoilTime > 0) {
             firePosTimer = 0.001;
@@ -1878,16 +1871,15 @@ public class ClientEventHandler {
             default -> 2.0;
         };
 
-        var computed = data.compute();
-        double customWeight = computed.weight;
+        double customWeight = data.get(GunProp.WEIGHT);
 
         double rpm = 1;
 
         if (stack.is(ModItems.MINIGUN.get())) {
-            rpm = (double) computed.rpm / 1800;
+            rpm = (double) data.get(GunProp.RPM) / 1800;
         }
 
-        float gunRecoilX = (float) (computed.recoilX * 60);
+        float gunRecoilX = (float) (data.get(GunProp.RECOIL_X) * 60);
 
         recoilHorizon = Mth.lerp(0.2 * times, recoilHorizon, 0) + recoilY;
         recoilY = 0;
@@ -2108,7 +2100,7 @@ public class ClientEventHandler {
                             if (stack.is(ModItems.BOCEK.get())) {
                                 velocity = zoomTime * 24;
                             } else {
-                                velocity = data.compute().velocity;
+                                velocity = data.get(GunProp.VELOCITY);
                             }
 
                             Vec3 toVec = RangeTool.calculateFiringSolution(playerVec, targetVec, lockedEntity.getDeltaMovement(), velocity, hasGravity ? 0.03 : 0);
@@ -2248,7 +2240,7 @@ public class ClientEventHandler {
         float times = getDelta();
         ItemStack stack = entity.getMainHandItem();
         var data = GunData.from(stack);
-        double weight = data.compute().weight;
+        double weight = data.get(GunProp.WEIGHT);
         double speed = 20 / (weight + 5);
         drawTime = Math.max(drawTime - Math.max(0.2 * speed * times * drawTime, 0.0008), 0);
     }
@@ -2321,7 +2313,7 @@ public class ClientEventHandler {
             var gunData = vehicle.getGunData(player);
             if (gunData == null) return;
 
-            var location = gunData.compute().soundInfo.locking.getLocation();
+            var location = gunData.get(GunProp.SOUND_INFO).locking.getLocation();
             stopSoundEvent(location, SoundSource.PLAYERS);
         }
     }
@@ -2331,7 +2323,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         if (stack.getItem() instanceof GunItem) {
             var gunData = GunData.from(stack);
-            var location = gunData.compute().soundInfo.locking.getLocation();
+            var location = gunData.get(GunProp.SOUND_INFO).locking.getLocation();
             stopSoundEvent(location, SoundSource.PLAYERS);
         }
     }
@@ -2341,7 +2333,7 @@ public class ClientEventHandler {
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             var gunData = vehicle.getGunData(player);
             if (gunData == null) return;
-            var location = gunData.compute().soundInfo.vehicleReload.getLocation();
+            var location = gunData.get(GunProp.SOUND_INFO).vehicleReload.getLocation();
             stopSoundEvent(location, SoundSource.PLAYERS);
         }
     }

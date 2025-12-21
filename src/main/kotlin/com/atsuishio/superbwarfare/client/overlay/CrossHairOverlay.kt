@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -83,7 +84,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
 
         val data = from(stack)
 
-        val crosshair = data.compute().crosshair
+        val crosshair = data.get(GunProp.CROSSHAIR)
         if (crosshair == CROSSHAIR_EMPTY || crosshair == CROSSHAIR_CUSTOM) return
 
         val spread = ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos
@@ -305,7 +306,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
             16f
         )
         if (!player.isSprinting || ClientEventHandler.noSprintTicks > 0) {
-            if (data.compute().projectileAmount > 1) {
+            if (data.get(GunProp.PROJECTILE_AMOUNT) > 1) {
                 shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength)
             } else {
                 normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY)
@@ -322,7 +323,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         moveX: Float,
         moveY: Float
     ) {
-        val range = data.compute().range
+        val range = data.get(GunProp.RANGE)
         val lookingEntity = TraceTool.findLookingEntity(player, range.toDouble())
 
         var health = 0f

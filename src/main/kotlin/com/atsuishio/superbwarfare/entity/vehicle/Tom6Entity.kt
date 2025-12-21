@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
@@ -95,10 +96,10 @@ class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : GeoVehicleEntity(
         get() = getGunData("MelonBomb")
 
     val melonExplosionDamage
-        get() = weaponData?.compute()?.explosionDamage?.toFloat() ?: 0f
+        get() = weaponData?.get(GunProp.EXPLOSION_DAMAGE)?.toFloat() ?: 0f
 
     val melonExplosionRadius
-        get() = weaponData?.compute()?.explosionRadius?.toFloat() ?: 0f
+        get() = weaponData?.get(GunProp.EXPLOSION_RADIUS)?.toFloat() ?: 0f
 
     override fun engineRunning() =
         getFirstPassenger() != null && Math.abs(deltaMovement.length()) > 0

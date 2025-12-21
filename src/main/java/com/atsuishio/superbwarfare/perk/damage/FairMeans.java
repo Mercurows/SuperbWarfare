@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.perk.damage;
 
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
@@ -26,7 +27,7 @@ public class FairMeans extends Perk {
 
     @Override
     public void onHurtEntity(float damage, GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        if (data.compute().bypassesArmor > 0) {
+        if (data.get(GunProp.BYPASSES_ARMOR) > 0) {
             if (source.is(ModTags.DamageTypes.PROJECTILE_ABSOLUTE)) {
                 data.perk.getTag(this).putBoolean("FairMeans", !data.perk.getTag(this).getBoolean("FairMeans"));
             }

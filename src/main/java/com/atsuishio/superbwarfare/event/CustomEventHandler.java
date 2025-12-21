@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
 import com.atsuishio.superbwarfare.api.event.ReloadEvent;
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.GrapeshotEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity;
@@ -66,7 +67,7 @@ public class CustomEventHandler {
 
         GunData data = GunData.from(stack);
         var key = BuiltInRegistries.ENTITY_TYPE.getKey(projectile.getType());
-        if (!data.compute().projectile().type.equals(key.toString())) return;
+        if (!data.get(GunProp.PROJECTILE).type.equals(key.toString())) return;
 
         for (Perk.Type type : Perk.Type.values()) {
             var instance = data.perk.getInstance(type);

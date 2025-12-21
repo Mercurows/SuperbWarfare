@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationTimer
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Aircraft
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -289,13 +290,13 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
             val name = AtomicReference("---")
 
             if (passenger != null) {
-                name.set(passenger.getName().string)
+                name.set(passenger.name.string)
             }
 
             if (passenger is Player) {
                 CuriosApi.getCuriosInventory(passenger)
                     .flatMap { c -> c.findFirstCurio(ModItems.DOG_TAG.get()) }
-                    .ifPresent { s -> name.set(s.stack().getHoverName().string) }
+                    .ifPresent { s -> name.set(s.stack().hoverName.string) }
             }
 
             guiGraphics.drawString(Minecraft.getInstance().font, name.get(), 42, y, 0x66ff00, true)
@@ -515,7 +516,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
             RenderHelper.preciseBlit(
                 guiGraphics,
-                weapon!!.compute().icon,
+                weapon!!.get(GunProp.ICON),
                 w - 85 + xOffset,
                 (h - frameIndex * 18 - 20).toFloat(),
                 100f,
@@ -574,9 +575,9 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                 pose.popPose()
             }
 
-            val computed = data.compute()
             if (data.reloading()) {
-                val totalReloadTime = if (data.reload.empty()) computed.emptyReloadTime else computed.normalReloadTime
+                val totalReloadTime =
+                    if (data.reload.empty()) data.get(GunProp.EMPTY_RELOAD_TIME) else data.get(GunProp.NORMAL_RELOAD_TIME)
                 val currentReloadTime = data.reload.reloadTimer.get()
 
                 val reloadProgress = (totalReloadTime - currentReloadTime).toFloat() / totalReloadTime

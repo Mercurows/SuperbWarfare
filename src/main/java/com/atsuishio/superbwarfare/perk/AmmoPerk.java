@@ -49,7 +49,10 @@ public class AmmoPerk extends Perk {
             rawData.projectileAmount = 1;
         }
 
-        if (gunData.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk && ammoPerk.slug && gunData.isShotgun(rawData)) {
+        if (gunData.perk.get(Type.AMMO) instanceof AmmoPerk ammoPerk && ammoPerk.slug
+            // TODO 正确实现判断
+//                && gunData.isShotgun()
+        ) {
             rawData.zoomSpreadRate = 0.15;
         }
 

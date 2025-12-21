@@ -4,6 +4,17 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier
 import com.atsuishio.superbwarfare.data.JsonPropertyModifier
 import com.atsuishio.superbwarfare.data.StringOrVec3
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_FIRE_MODES
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_PERKS
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.BOLT_ACTION_TIME
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.DEFAULT_ZOOM
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MAGAZINE
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MELEE_DAMAGE
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.PROJECTILE_AMOUNT
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_POS
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_SHAKE
 import com.atsuishio.superbwarfare.data.gun.subdata.*
 import com.atsuishio.superbwarfare.data.gun.value.*
 import com.atsuishio.superbwarfare.event.GunEventHandler
@@ -33,7 +44,9 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.energy.IEnergyStorage
 import net.neoforged.neoforge.items.IItemHandler
 import net.neoforged.neoforge.registries.DeferredHolder
+import org.jetbrains.annotations.ApiStatus
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.math.max
@@ -107,6 +120,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
 
     @JvmOverloads
+    @Deprecated("Use get() instead")
+    @ApiStatus.ScheduledForRemoval
     fun compute(useCache: Boolean = true): DefaultGunData {
         if (cache != null && useCache) return cache!!
 
@@ -149,9 +164,27 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     fun update() {
         this.cache = null
+        this.propCache.clear()
     }
 
-    fun <T> get(prop: GunProp<*, T>): T {
+    private val propCache = ConcurrentHashMap<GunProp<*, *>, Any>()
+
+    // TODO 重新实现get
+    @Suppress("unchecked_cast")
+    @JvmOverloads
+    fun <T> get(prop: GunProp<*, T>, useCache: Boolean = true): T {
+        if (useCache) {
+            val cached = propCache[prop]
+            if (cached == Unit) return null as T
+            if (cached != null) return cached as T
+
+            val computed = prop.asModifier(this).compute(compute(false))
+
+            // 牛魔的 getOrPut为什么值都不能为null
+            propCache[prop] = computed ?: Unit
+
+            return computed
+        }
         return prop.asModifier(this).compute(compute())
     }
 
@@ -166,7 +199,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
      * 武器是否直接使用背包内弹药
      */
     fun useBackpackAmmo(): Boolean {
-        return compute().magazine <= 0
+        return get(MAGAZINE) <= 0
     }
 
     // TODO 这什么b scope判断
@@ -182,12 +215,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     fun zoom(): Double {
-        if (minZoom() >= maxZoom()) return compute().defaultZoom
-        return Mth.clamp(compute().defaultZoom, minZoom(), maxZoom())
+        if (minZoom() >= maxZoom()) return get(DEFAULT_ZOOM)
+        return Mth.clamp(get(DEFAULT_ZOOM), minZoom(), maxZoom())
     }
 
     @JvmOverloads
-    fun selectedAmmoConsumer(consumers: MutableList<AmmoConsumer>? = compute().getAmmoConsumers()): AmmoConsumer {
+    fun selectedAmmoConsumer(consumers: List<AmmoConsumer>? = get(AMMO_CONSUMER)): AmmoConsumer {
         if (consumers.isNullOrEmpty()) {
             return AmmoConsumer.INVALID
         }
@@ -195,7 +228,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     fun changeAmmoConsumer(index: Int, ammoSupplier: Entity?) {
-        val consumers = this.compute().getAmmoConsumers()
+        val consumers = get(AMMO_CONSUMER)
         val targetIndex = index.coerceIn(consumers.indices)
         if (targetIndex == selectedAmmoType.get()) return
 
@@ -222,7 +255,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         this.selectedAmmoType.set(targetIndex)
 
         if (ammoSupplier is Player && ammoSupplier.isCreative) {
-            this.ammo.set(this.compute().magazine)
+            this.ammo.set(get(MAGAZINE))
         }
 
         this.item.whenNoAmmo(this)
@@ -250,7 +283,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     @JvmOverloads
-    fun selectedFireModeInfo(fireModes: MutableList<FireModeInfo>? = compute().availableFireModes()): FireModeInfo {
+    fun selectedFireModeInfo(fireModes: List<FireModeInfo>? = get(AVAILABLE_FIRE_MODES)): FireModeInfo {
         if (fireModes.isNullOrEmpty()) {
             return FireModeInfo()
         }
@@ -294,7 +327,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
      * 开始拉栓流程，换弹将在tick内被执行
      */
     fun startBolt() {
-        this.bolt.actionTimer.set(this.compute().boltActionTime + 1)
+        this.bolt.actionTimer.set(get(BOLT_ACTION_TIME) + 1)
     }
 
     /**
@@ -409,7 +442,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
      * 当前状态在换弹前的可用射击次数
      */
     fun currentAvailableShots(entity: Entity?): Int {
-        val ammoCost = compute().ammoCostPerShoot
+        val ammoCost = get(AMMO_COST_PER_SHOOT)
         if (ammoCost <= 0) return Int.MAX_VALUE
 
         return currentAvailableAmmo(entity) / ammoCost
@@ -426,7 +459,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
      * 当前状态枪内是否拥有足够的弹药进行开火
      */
     fun hasEnoughAmmoToShoot(entity: Entity?): Boolean {
-        return compute().ammoCostPerShoot <= currentAvailableAmmo(entity)
+        return get(AMMO_COST_PER_SHOOT) <= currentAvailableAmmo(entity)
     }
 
     /**
@@ -439,12 +472,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     fun reloadAmmo(entity: Entity?, extraOne: Boolean = false) {
         if (useBackpackAmmo()) return
 
-        val mag = compute().magazine
+        val mag = get(MAGAZINE)
         val ammo = this.ammo.get()
         val ammoNeeded = mag - ammo + (if (extraOne) 1 else 0)
 
         // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
-        if (ammo == 0 && compute().boltActionTime > 0) {
+        if (ammo == 0 && get(BOLT_ACTION_TIME) > 0) {
             bolt.needed.set(false)
         }
 
@@ -532,8 +565,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     fun availablePerks(): MutableList<Perk> {
         val availablePerks = mutableListOf<Perk>()
-        val perkNames = compute().availablePerks()
-        if (perkNames.isNullOrEmpty()) return availablePerks
+        val perkNames = get(AVAILABLE_PERKS)
+        if (perkNames.isEmpty()) return availablePerks
 
         val sortedNames = ArrayList(perkNames)
 
@@ -623,24 +656,20 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         }
 
     fun meleeOnly(): Boolean {
-        return compute().projectileAmount <= 0 && compute().meleeDamage > 0
-    }
-
-    fun isShotgun(gunData: DefaultGunData): Boolean {
-        return gunData.projectileAmount > 1
+        return get(PROJECTILE_AMOUNT) <= 0 && get(MELEE_DAMAGE) > 0
     }
 
     val isShotgun: Boolean
-        get() = isShotgun(compute())
+        get() = get(PROJECTILE_AMOUNT) > 1
 
     fun firePosition(): Vec3 {
-        val list = this.compute().shootPos.positions
+        val list = get(SHOOT_POS).positions
         val size = list.size
         if (size == 0) {
             return Vec3.ZERO
         }
 
-        return if (this.compute().shootPos.boundUpWithAmmoAmount) {
+        return if (get(SHOOT_POS).boundUpWithAmmoAmount) {
             list.getOrNull(Mth.clamp(this.ammo.get() - 1, 0, size)) ?: Vec3.ZERO
         } else {
             list.getOrNull(this.fireIndex.get() % size) ?: Vec3.ZERO
@@ -648,11 +677,11 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     fun firePositionForHud(): Vec3 {
-        return this.compute().shootPos.shootPositionForHud ?: firePosition()
+        return get(SHOOT_POS).shootPositionForHud ?: firePosition()
     }
 
     fun fireDirection(): StringOrVec3 {
-        val list = this.compute().shootPos.directions
+        val list = get(SHOOT_POS).directions
         val size = list.size
         if (size == 0) {
             return StringOrVec3("Default")
@@ -662,7 +691,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     fun fireDirectionForHud(): StringOrVec3? {
-        return this.compute().shootPos.shootDirectionForHud
+        return get(SHOOT_POS).shootDirectionForHud
     }
 
     fun getEnergyProvider(ammoSupplier: Entity?): IEnergyStorage? {
@@ -672,7 +701,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     fun shakePlayers(source: Entity?) {
         if (source == null) return
 
-        val shootShake = compute().shootShake ?: return
+        val shootShake = get(SHOOT_SHAKE) ?: return
 
         ShakeClientMessage.sendToNearbyPlayers(source, shootShake.x, shootShake.y, shootShake.z)
     }
@@ -896,14 +925,11 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         overHeat = BooleanValue(gunDataTag, "OverHeat")
         zooming = BooleanValue(gunDataTag, "Zooming")
 
-        var defaultFireMode = compute(false).defaultFireMode
-        if (defaultFireMode == null) {
-            defaultFireMode = FireMode.SEMI.name
-        }
+        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE, false)
 
-        val fireModes = compute(false).availableFireModes()
+        val fireModes = get(AVAILABLE_FIRE_MODES, false)
         for (i in fireModes.indices) {
-            if (fireModes[i]!!.name == defaultFireMode) {
+            if (fireModes[i].name == defaultFireMode) {
                 selectedFireMode.defaultValue = i
                 break
             }
@@ -930,6 +956,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
             return DATA_CACHE.getUnchecked(stack)
         }
 
+        @JvmOverloads
+        @JvmStatic
+        fun <T> get(stack: ItemStack, prop: GunProp<*, T>, useCache: Boolean = true): T {
+            return from(stack).get(prop, useCache)
+        }
+
         @JvmStatic
         fun getDefault(id: String): DefaultGunData {
             val isDefault = !com.atsuishio.superbwarfare.data.CustomData.GUN_DATA.containsKey(id)
@@ -953,8 +985,11 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         }
 
         @JvmStatic
+        @Suppress("unused")
+        @Deprecated("use get() instead", level = DeprecationLevel.ERROR)
+        @ApiStatus.ScheduledForRemoval
         fun compute(stack: ItemStack): DefaultGunData {
-            return from(stack).compute()
+            error("use get() instead!")
         }
 
         private fun getPerkPriority(s: String): Int {

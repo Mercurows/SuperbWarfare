@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectile
@@ -58,7 +59,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         val stack = player.mainHandItem
 
         if (player.isCrouching) {
-            if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && (getOwner() == null || player === getOwner())) {
+            if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && (owner == null || player === owner)) {
                 val container = ContainerBlockItem.createInstance(this)
                 if (!player.addItem(container)) {
                     player.drop(container, false)
@@ -71,7 +72,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
                     ownerUUID = player.getUUID()
                 }
 
-                if (this.getOwner() === player) {
+                if (this.owner === player) {
                     active = !active
 
                     if (player is ServerPlayer) {
@@ -175,12 +176,12 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
         if (this.energy < seekInfo.seekEnergyCost) return
 
-        val projectileInfo = data.compute().projectile()
+        val projectileInfo = data.get(GunProp.PROJECTILE)
         val projectileType = projectileInfo.type
         val projectileTypeStr = projectileType.trim().lowercase()
         val rpm = Math.ceil(20f / (vehicleWeaponRpm(weaponName).toFloat() / 60)).toInt()
 
-        if (projectileTypeStr == "ray" && chargeProgress < 1 && energy > data.compute().ammoCostPerShoot) {
+        if (projectileTypeStr == "ray" && chargeProgress < 1 && energy > data.get(GunProp.AMMO_COST_PER_SHOOT)) {
             val chargeSpeed = 1f / rpm
             chargeProgress = Mth.clamp(chargeProgress + chargeSpeed, 0f, 1f)
         }
@@ -205,7 +206,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
         val target = EntityFindUtil.findEntity(level(), targetUUID)
 
-        val owner = this.getOwner()
+        val owner = this.owner
         if (target != null && owner is Player && SeekTool.NOT_IN_SMOKE.test(target)) {
             if (SeekTool.IS_INVULNERABLE.test(target)
                 || getSubmergedHeight(target) >= target.bbHeight
@@ -361,11 +362,11 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         DamageHandler.doDamage(
             target,
             ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, living),
-            gunData.compute().damage.toFloat()
+            gunData.get(GunProp.DAMAGE).toFloat()
         )
         target.invulnerableTime = 0
 
-        if (gunData.compute().explosionRadius > 0) {
+        if (gunData.get(GunProp.EXPLOSION_RADIUS) > 0) {
             causeLaserExplode(pos, gunData, living)
         }
 
@@ -382,15 +383,15 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
             targetUUID = ""
         }
 
-        laserScale = gunData.compute().shootAnimationTime.toFloat()
+        laserScale = gunData.get(GunProp.SHOOT_ANIMATION_TIME).toFloat()
         chargeProgress = 0f
         playShootSound3p(living, "Main")
 
-        this.consumeEnergy(gunData.compute().ammoCostPerShoot)
+        this.consumeEnergy(gunData.get(GunProp.AMMO_COST_PER_SHOOT))
     }
 
     private fun causeLaserExplode(vec3: Vec3, gunData: GunData, living: Entity?) {
-        val radius = gunData.compute().explosionRadius.toFloat()
+        val radius = gunData.get(GunProp.EXPLOSION_RADIUS).toFloat()
 
         val particleType = if (radius <= 4) {
             ParticleTool.ParticleType.SMALL
@@ -403,7 +404,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         }
 
         createCustomExplosion()
-            .damage(gunData.compute().explosionDamage.toFloat())
+            .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
             .radius(radius)
             .attacker(living)
             .position(vec3)
@@ -416,7 +417,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
             .damage(5f)
             .radius(1f)
             .keepBlock()
-            .attacker(getOwner())
+            .attacker(owner)
             .position(vec3)
             .withParticleType(ParticleTool.ParticleType.MEDIUM)
             .explode()

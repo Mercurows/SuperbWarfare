@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -89,7 +90,7 @@ public class PlayerEventHandler {
                 if (!InventoryTool.hasCreativeAmmoBox(player)) {
                     data.reloadAmmo(player);
                 } else {
-                    data.ammo.set(data.compute().magazine);
+                    data.ammo.set(data.get(GunProp.MAGAZINE));
                 }
                 data.holdOpen.set(false);
                 data.save();

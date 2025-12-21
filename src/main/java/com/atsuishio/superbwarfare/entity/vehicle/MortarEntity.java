@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
@@ -101,7 +102,7 @@ public class MortarEntity extends ArtilleryEntity {
         var gunData = getGunData(weaponName);
         if (gunData == null) return;
         if (entityData.get(FIRE_TIME) != 0) return;
-        var soundInfo = gunData.compute().soundInfo;
+        var soundInfo = gunData.get(GunProp.SOUND_INFO);
 
         this.shooter = living;
         this.entityData.set(FIRE_TIME, 25);
@@ -111,8 +112,8 @@ public class MortarEntity extends ArtilleryEntity {
         }
 
         if (level() instanceof ServerLevel serverLevel) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, position(), (float) (0.25f * gunData.compute().soundRadius), random.nextFloat() * 0.1f + 1, null);
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), (float) gunData.compute().soundRadius, random.nextFloat() * 0.1f + 1, null);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, position(), (float) (0.25f * gunData.get(GunProp.SOUND_RADIUS)), random.nextFloat() * 0.1f + 1, null);
+            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), gunData.get(GunProp.SOUND_RADIUS).floatValue(), random.nextFloat() * 0.1f + 1, null);
         }
     }
 
@@ -197,7 +198,7 @@ public class MortarEntity extends ArtilleryEntity {
             Level level = this.level();
             var gunData = getGunData("Main");
             if (level instanceof ServerLevel server && gunData != null) {
-                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.getItems().getFirst(), getProjectileGravity("Main"), (float) gunData.compute().damage, (float) gunData.compute().explosionDamage, (float) gunData.compute().explosionRadius);
+                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.getItems().getFirst(), getProjectileGravity("Main"), gunData.get(GunProp.DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_RADIUS).floatValue());
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
                 entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, getProjectileVelocity("Main"), getProjectileSpread("Main"));
                 level.addFreshEntity(entityToSpawn);
