@@ -625,6 +625,7 @@
   "key.superbwarfare.change_fire_mode_forward": "向前切换开火模式",
   "key.superbwarfare.change_fire_mode_backward": "向后切换开火模式",
   "key.superbwarfare.vehicle_seek": "载具锁定目标",
+  "key.superbwarfare.active_thermal_imaging": "开启热成像",
 
   "effect.superbwarfare.shock": "电击",
   "effect.superbwarfare.burn": "点燃",

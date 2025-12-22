@@ -39,6 +39,7 @@ public class ModKeyMappings {
     public static final KeyMapping MELEE = new KeyMapping("key.superbwarfare.melee", GLFW.GLFW_KEY_V, "key.categories.superbwarfare");
     public static final KeyMapping VEHICLE_SEEK = new KeyMapping("key.superbwarfare.vehicle_seek", GLFW.GLFW_KEY_X, "key.categories.superbwarfare");
     public static final KeyMapping MARK = new KeyMapping("key.superbwarfare.mark", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.categories.superbwarfare");
+    public static final KeyMapping ACTIVE_THERMAL_IMAGING = new KeyMapping("key.superbwarfare.active_thermal_imaging", GLFW.GLFW_KEY_K, "key.categories.superbwarfare");
 
     @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
@@ -64,5 +65,6 @@ public class ModKeyMappings {
         event.register(CHANGE_FIRE_MODE_FORWARD);
         event.register(CHANGE_FIRE_MODE_BACKWARD);
         event.register(UNLOAD);
+        event.register(ACTIVE_THERMAL_IMAGING);
     }
 }

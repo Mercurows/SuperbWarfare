@@ -35,7 +35,7 @@ public class LevelRendererMixin {
         VectorUtil.projectionMatrix = RenderSystem.getProjectionMatrix();
     }
 
-    // TODO 把flag换成正确的触发条件，替换正确的渲染类型
+    // TODO 找到真正把实体渲染在世界中的位置进行mixin
     @Inject(method = "renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V",
             at = @At("HEAD"), cancellable = true)
     private void renderEntity(Entity pEntity, double pCamX, double pCamY, double pCamZ, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, CallbackInfo ci) {
