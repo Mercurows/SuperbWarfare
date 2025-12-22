@@ -301,16 +301,7 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         final var tag = NBTTool.getTag(stack);
 
-        //TODO 修改为正确的触发条件
-
-        if (stack.getItem() instanceof GunItem gunItem) {
-            // 应用黑白着色器和热成像
-            activeThermalImaging = true;
-            if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
-            }
-        } else {
-            activeThermalImaging = false;
+        if (!activeThermalImaging) {
             Minecraft.getInstance().gameRenderer.shutdownEffect();
         }
 

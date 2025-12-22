@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
@@ -276,12 +277,22 @@ public class ClickHandler {
             handleDismountPress(player);
         }
 
+
         if (player.isSpectator()) return;
 
         var stack = player.getMainHandItem();
 
         if (event.getAction() == GLFW.GLFW_PRESS) {
             if (player.hasEffect(ModMobEffects.SHOCK)) return;
+
+            if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.getKey().getValue()) {
+                if(!activeThermalImaging && Minecraft.getInstance().gameRenderer.currentEffect() == null) {
+                    Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
+                    activeThermalImaging = true;
+                } else {
+                    activeThermalImaging = false;
+                }
+            }
 
             if (key == Minecraft.getInstance().options.keyJump.getKey().getValue()) {
                 handleDoubleJump(player);
