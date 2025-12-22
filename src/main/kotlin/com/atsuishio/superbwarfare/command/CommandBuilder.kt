@@ -29,7 +29,7 @@ open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack
     fun requirePermission(level: Int) = requires { hasPermission(level) }
 
     // literal命令
-    operator fun String.invoke(builder: SingleCommand.() -> Unit) {
+    inline operator fun String.invoke(builder: SingleCommand.() -> Unit) {
         cmd += SingleCommand(Commands.literal(this), "$name.$this").apply(builder)
     }
 
@@ -39,23 +39,23 @@ open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack
     }
 
     // args
-    fun <A> arg(argName: String = "$name.arg", type: ArgumentType<A>, builder: SingleCommand.() -> Unit) {
+    inline fun <A> arg(argName: String = "$name.arg", type: ArgumentType<A>, builder: SingleCommand.() -> Unit) {
         cmd += SingleCommand(Commands.argument(argName, type), argName).apply(builder)
     }
 
-    fun playerArg(argName: String = "$name.player", builder: CommandWithPlayerArg.() -> Unit) {
+    inline fun playerArg(argName: String = "$name.player", builder: CommandWithPlayerArg.() -> Unit) {
         cmd += CommandWithPlayerArg(Commands.argument(argName, EntityArgument.player()), argName).apply(builder)
     }
 
-    fun playersArg(argName: String = "$name.players", builder: CommandWithPlayersArg.() -> Unit) {
+    inline fun playersArg(argName: String = "$name.players", builder: CommandWithPlayersArg.() -> Unit) {
         cmd += CommandWithPlayersArg(Commands.argument(argName, EntityArgument.players()), argName).apply(builder)
     }
 
-    fun entityArg(argName: String = "$name.entity", builder: CommandWithEntityArg.() -> Unit) {
+    inline fun entityArg(argName: String = "$name.entity", builder: CommandWithEntityArg.() -> Unit) {
         cmd += CommandWithEntityArg(Commands.argument(argName, EntityArgument.entity()), argName).apply(builder)
     }
 
-    fun entitiesArg(argName: String = "$name.entities", builder: CommandWithEntitiesArg.() -> Unit) {
+    inline fun entitiesArg(argName: String = "$name.entities", builder: CommandWithEntitiesArg.() -> Unit) {
         cmd += CommandWithEntitiesArg(Commands.argument(argName, EntityArgument.entities()), argName).apply(builder)
     }
 
@@ -70,11 +70,11 @@ open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack
         ).apply(builder)
     }
 
-    fun intArg(argName: String = "$name.int", builder: CommandWithIntArg.() -> Unit) {
+    inline fun intArg(argName: String = "$name.int", builder: CommandWithIntArg.() -> Unit) {
         cmd += CommandWithIntArg(Commands.argument(argName, IntegerArgumentType.integer()), argName).apply(builder)
     }
 
-    fun boolArg(argName: String = "$name.bool", builder: CommandWithBoolArg.() -> Unit) {
+    inline fun boolArg(argName: String = "$name.bool", builder: CommandWithBoolArg.() -> Unit) {
         cmd += CommandWithBoolArg(Commands.argument(argName, BoolArgumentType.bool()), argName).apply(builder)
     }
 
