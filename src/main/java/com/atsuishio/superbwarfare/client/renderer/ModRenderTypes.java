@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.client.renderer;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.Util;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -73,4 +75,31 @@ public class ModRenderTypes extends RenderType {
                     .setLightmapState(NO_LIGHTMAP)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
+
+    // 方法1：使用白色纹理贴图
+    public static final RenderType WHITE_SOLID = RenderType.create(
+            "white_entity_solid",
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS,
+            256,
+            false,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                    .setTextureState(new RenderStateShard.TextureStateShard(
+                            createWhiteTextureLocation(), // 白色纹理
+                            false,
+                            false
+                    ))
+                    .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
+                    .setCullState(RenderStateShard.CULL)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setOverlayState(RenderStateShard.OVERLAY)
+                    .createCompositeState(false)
+    );
+
+    // 获取白色纹理位置
+    private static net.minecraft.resources.ResourceLocation createWhiteTextureLocation() {
+        return Mod.loc("textures/entity/white.png");
+    }
 }
