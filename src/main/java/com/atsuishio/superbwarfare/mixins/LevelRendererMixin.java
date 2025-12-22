@@ -7,6 +7,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -14,11 +15,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
+
+    @Shadow
+    @Final
+    private EntityRenderDispatcher entityRenderDispatcher;
 
     // 感谢 Minecraft-Ping-Wheel 开源
     // https://github.com/LukenSkyne/Minecraft-Ping-Wheel/blob/ede72b18f57bd9dfe55ef44afe61190421fbc084/common/src/main/java/nx/pingwheel/common/mixin/LevelRendererMixin.java
@@ -29,31 +33,20 @@ public class LevelRendererMixin {
         VectorUtil.projectionMatrix = RenderSystem.getProjectionMatrix();
     }
 
-    @Shadow
-    @Final
-    private EntityRenderDispatcher entityRenderDispatcher;
+    // TODO 把flag换成正确的触发条件，替换正确的渲染类型
+    @Inject(method = "renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V",
+            at = @At("HEAD"), cancellable = true)
+    private void renderEntity(Entity pEntity, double pCamX, double pCamY, double pCamZ, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, CallbackInfo ci) {
+        boolean sbw$flag = true;
+        if (sbw$flag) {
+            ci.cancel();
 
-    //TODO 正确实现mixin
-
-    @ModifyVariable(
-            method = "renderEntity",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/LevelRenderer;renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V",
-                    shift = At.Shift.AFTER
-            ),
-            index = 7, // MultiBufferSource 参数的索引
-            argsOnly = true
-    )
-    private MultiBufferSource modifyBufferSource(
-            MultiBufferSource originalBuffer,
-            Entity entity,
-            double camX, double camY, double camZ,
-            float partialTick,
-            PoseStack poseStack,
-            MultiBufferSource bufferSource // 这是原始的 bufferSource
-    ) {
-
-        return renderType -> bufferSource.getBuffer(RenderType.endPortal());
+            double d0 = Mth.lerp(pPartialTick, pEntity.xOld, pEntity.getX());
+            double d1 = Mth.lerp(pPartialTick, pEntity.yOld, pEntity.getY());
+            double d2 = Mth.lerp(pPartialTick, pEntity.zOld, pEntity.getZ());
+            float f = Mth.lerp(pPartialTick, pEntity.yRotO, pEntity.getYRot());
+            this.entityRenderDispatcher.render(pEntity, d0 - pCamX, d1 - pCamY, d2 - pCamZ, f, pPartialTick, pPoseStack,
+                    renderType -> pBufferSource.getBuffer(RenderType.endPortal()), this.entityRenderDispatcher.getPackedLightCoords(pEntity, pPartialTick));
+        }
     }
 }
