@@ -12,7 +12,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -56,15 +57,14 @@ public class SmallContainerBlock extends BaseEntityBlock {
 
     @Override
     @ParametersAreNonnullByDefault
-    protected @NotNull InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide || state.getValue(OPENED) || !(level.getBlockEntity(pos) instanceof SmallContainerBlockEntity blockEntity)) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.FAIL;
         }
 
-        ItemStack stack = player.getItemInHand(player.getUsedItemHand());
         if (!stack.is(ModTags.Items.TOOLS_CROWBAR)) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true);
-            return InteractionResult.PASS;
+            return ItemInteractionResult.FAIL;
         }
 
         blockEntity.setPlayer(player);
@@ -72,7 +72,7 @@ public class SmallContainerBlock extends BaseEntityBlock {
         level.setBlockAndUpdate(pos, state.setValue(OPENED, true));
         level.playSound(null, BlockPos.containing(pos.getX(), pos.getY(), pos.getZ()), ModSounds.OPEN.get(), SoundSource.BLOCKS, 1, 1);
 
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Nullable
