@@ -41,7 +41,7 @@ fun <T : GeoAnimatable> AnimationState<T>.thenPlay(name: String): PlayState =
 fun <T : GeoAnimatable> AnimationState<T>.thenLoop(name: String): PlayState =
     setAndContinue(RawAnimation.begin().thenLoop(name))
 
-fun <T : GeoAnimatable> T.buildControllers(
+inline fun <T : GeoAnimatable> T.buildControllers(
     data: ControllerRegistrar,
     builder: ControllerBuilder<T>.() -> Unit
 ) {
