@@ -19,7 +19,7 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity
 
         if (getNthEntity(turretControllerIndex) == null) {
             if (deltaMovement.horizontalDistanceSqr() > 0.007) {
-                shootVec = getViewVec(this, 1f).xRot(Mth.DEG_TO_RAD * -2.5f).toVector3f()
+                shootVec = getViewVec(this, 1f).toVector3f()
                 if (VectorTool.calculateAngle(shootVec.toVec3(), getShootVec("Main", 1f)) < 0.1) {
                     lockTurret = true
                 }

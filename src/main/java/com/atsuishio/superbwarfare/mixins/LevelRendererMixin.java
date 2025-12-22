@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.VectorUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -8,6 +9,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import org.joml.Matrix4f;
@@ -37,19 +39,15 @@ public class LevelRendererMixin {
     @Inject(method = "renderEntity(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V",
             at = @At("HEAD"), cancellable = true)
     private void renderEntity(Entity pEntity, double pCamX, double pCamY, double pCamZ, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, CallbackInfo ci) {
-        boolean sbw$flag = false;
-        if (Minecraft.getInstance().player != null) {
-            sbw$flag = Minecraft.getInstance().player.isShiftKeyDown();
-        }
-        if (sbw$flag) {
+        if (ClientEventHandler.activeThermalImaging) {
             ci.cancel();
-
             double d0 = Mth.lerp(pPartialTick, pEntity.xOld, pEntity.getX());
             double d1 = Mth.lerp(pPartialTick, pEntity.yOld, pEntity.getY());
             double d2 = Mth.lerp(pPartialTick, pEntity.zOld, pEntity.getZ());
             float f = Mth.lerp(pPartialTick, pEntity.yRotO, pEntity.getYRot());
             this.entityRenderDispatcher.setRenderHitBoxes(false);
             this.entityRenderDispatcher.setRenderShadow(false);
+            ResourceLocation texture = entityRenderDispatcher.getRenderer(pEntity).getTextureLocation(pEntity);
             this.entityRenderDispatcher.render(pEntity, d0 - pCamX, d1 - pCamY, d2 - pCamZ, f, pPartialTick, pPoseStack,
                     renderType -> pBufferSource.getBuffer(ModRenderTypes.WHITE_SOLID), this.entityRenderDispatcher.getPackedLightCoords(pEntity, pPartialTick));
         }
