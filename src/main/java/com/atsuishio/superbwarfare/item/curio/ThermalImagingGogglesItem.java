@@ -1,0 +1,22 @@
+package com.atsuishio.superbwarfare.item.curio;
+
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
+
+public class ThermalImagingGogglesItem extends Item implements ICurioItem {
+
+    public ThermalImagingGogglesItem() {
+        super(new Properties().stacksTo(1));
+    }
+
+    @Override
+    public boolean canEquip(SlotContext slotContext, ItemStack stack) {
+        return CuriosApi.getCuriosInventory(slotContext.entity())
+                .resolve()
+                .flatMap(c -> c.findFirstCurio(this))
+                .isEmpty();
+    }
+}

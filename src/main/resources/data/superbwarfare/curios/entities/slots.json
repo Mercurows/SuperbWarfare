@@ -3,6 +3,9 @@
     "player"
   ],
   "slots": [
-    "dog_tag","iff","back"
+    "head",
+    "dog_tag",
+    "iff",
+    "back"
   ]
 }
