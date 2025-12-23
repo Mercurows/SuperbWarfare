@@ -173,5 +173,6 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> TERRAIN = REGISTRY.register("terrain", () -> SoundEvent.createVariableRangeEvent(Mod.loc("terrain")));
     public static final RegistryObject<SoundEvent> PULL_UP = REGISTRY.register("pull_up", () -> SoundEvent.createVariableRangeEvent(Mod.loc("pull_up")));
     public static final RegistryObject<SoundEvent> KNIFE_FLESH = REGISTRY.register("knife_flesh", () -> SoundEvent.createVariableRangeEvent(Mod.loc("knife_flesh")));
+    public static final RegistryObject<SoundEvent> NIGHT_VISION_ACTIVATE = REGISTRY.register("night_vision_activate", () -> SoundEvent.createVariableRangeEvent(Mod.loc("night_vision_activate")));
 }
 

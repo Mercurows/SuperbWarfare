@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
+import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.*;
@@ -46,6 +47,7 @@ import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import org.lwjgl.glfw.GLFW;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.*;
 
@@ -288,12 +290,17 @@ public class ClickHandler {
             }
 
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.getKey().getValue()) {
-                if(!activeThermalImaging && Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-                    Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
-                    activeThermalImaging = true;
-                } else {
-                    activeThermalImaging = false;
-                }
+                CuriosApi.getCuriosInventory(player).ifPresent(
+                        c -> c.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()).ifPresent(
+                                s -> {
+                                    activeThermalImaging = !activeThermalImaging;
+                                    if (activeThermalImaging) {
+                                        player.playSound(ModSounds.NIGHT_VISION_ACTIVATE.get());
+                                    }
+                                    player.playSound(ModSounds.CANNON_ZOOM_OUT.get());
+                                }
+                        )
+                );
             }
 
             if (key == Minecraft.getInstance().options.keyJump.getKey().getValue()) {

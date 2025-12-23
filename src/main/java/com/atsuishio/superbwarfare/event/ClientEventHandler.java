@@ -65,10 +65,14 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationProcessor;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+
+import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -296,8 +300,19 @@ public class ClientEventHandler {
 
         ItemStack stack = player.getMainHandItem();
 
-        if (!activeThermalImaging) {
+        AtomicBoolean hasThermalImagingGoggles = new AtomicBoolean(false);
+
+        CuriosApi.getCuriosInventory(player).ifPresent(
+                c -> c.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()).ifPresent(
+                        s -> hasThermalImagingGoggles.set(true)
+                )
+        );
+
+        if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
+            activeThermalImaging = false;
             Minecraft.getInstance().gameRenderer.shutdownEffect();
+        } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
+            Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
         }
 
         // 射击延迟

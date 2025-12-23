@@ -4073,5 +4073,13 @@
         "stream": false
       }
     ]
+  },
+  "night_vision_activate": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:night_vision_activate"
+      }
+    ]
   }
 }
