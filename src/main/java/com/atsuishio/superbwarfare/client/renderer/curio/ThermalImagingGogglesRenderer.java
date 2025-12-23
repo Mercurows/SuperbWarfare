@@ -30,20 +30,12 @@ public class ThermalImagingGogglesRenderer implements ICurioRenderer {
     @Override
     public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext, PoseStack matrixStack, RenderLayerParent<T, M> renderLayerParent, MultiBufferSource renderTypeBuffer, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         matrixStack.pushPose();
-
         LivingEntity entity = slotContext.entity();
         this.model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
         this.model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-
-        // TODO 如果位置不对就调整这个
-        matrixStack.translate(0.12f, -0.1f, 0.0f);
-
         ICurioRenderer.followHeadRotations(entity, this.model.bone);
-
         VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(renderTypeBuffer, RenderType.armorCutoutNoCull(TEXTURE), stack.hasFoil());
-
         model.renderToBuffer(matrixStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
-
         matrixStack.popPose();
     }
 }

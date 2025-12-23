@@ -63,10 +63,12 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -301,8 +303,17 @@ public class ClientEventHandler {
         ItemStack stack = player.getMainHandItem();
         final var tag = NBTTool.getTag(stack);
 
-        if (!activeThermalImaging) {
+        AtomicBoolean hasThermalImagingGoggles = new AtomicBoolean(false);
+
+        CuriosApi.getCuriosInventory(player)
+                .flatMap(c -> c.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()))
+                .ifPresent(s -> hasThermalImagingGoggles.set(true));
+
+        if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
+            activeThermalImaging = false;
             Minecraft.getInstance().gameRenderer.shutdownEffect();
+        } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
+            Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
         }
 
         // 射击延迟
@@ -981,7 +992,7 @@ public class ClientEventHandler {
             burstFireAmount = 0;
         }
 
-        if (!gunItem.canShoot(data, player)){
+        if (!gunItem.canShoot(data, player)) {
             if (!data.meleeOnly()) {
                 holdingFireKey = false;
             }

@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
@@ -49,6 +48,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.*;
 
@@ -286,12 +286,15 @@ public class ClickHandler {
             if (player.hasEffect(ModMobEffects.SHOCK)) return;
 
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.getKey().getValue()) {
-                if(!activeThermalImaging && Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-                    Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
-                    activeThermalImaging = true;
-                } else {
-                    activeThermalImaging = false;
-                }
+                CuriosApi.getCuriosInventory(player)
+                        .flatMap(c -> c.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()))
+                        .ifPresent(s -> {
+                            activeThermalImaging = !activeThermalImaging;
+                            if (activeThermalImaging) {
+                                player.playSound(ModSounds.NIGHT_VISION_ACTIVATE.get());
+                            }
+                            player.playSound(ModSounds.CANNON_ZOOM_OUT.get());
+                        });
             }
 
             if (key == Minecraft.getInstance().options.keyJump.getKey().getValue()) {
