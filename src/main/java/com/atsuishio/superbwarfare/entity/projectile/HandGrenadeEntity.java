@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -35,7 +34,6 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private int fuse = 100;
 
     public HandGrenadeEntity(EntityType<? extends HandGrenadeEntity> type, Level level) {
         super(type, level);
@@ -53,13 +51,12 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
         this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
     }
 
-    public HandGrenadeEntity(LivingEntity entity, Level level, int fuse) {
+    public HandGrenadeEntity(LivingEntity entity, Level level) {
         super(ModEntities.HAND_GRENADE.get(), entity, level);
         this.noCulling = true;
         this.damage = 1;
         this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get();
         this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get();
-        this.fuse = fuse;
     }
 
     @Override
@@ -130,14 +127,6 @@ public class HandGrenadeEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void tick() {
         super.tick();
-        --this.fuse;
-
-        if (this.fuse <= 0) {
-            this.discard();
-            if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
-            }
-        }
 
         if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
             ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,

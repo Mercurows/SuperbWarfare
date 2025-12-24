@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -30,7 +29,6 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    private int fuse = 80;
 
     public RgoGrenadeEntity(EntityType<? extends RgoGrenadeEntity> type, Level level) {
         super(type, level);
@@ -46,26 +44,11 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
         this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
     }
 
-    public RgoGrenadeEntity(LivingEntity entity, Level level, int fuse) {
+    public RgoGrenadeEntity(LivingEntity entity, Level level) {
         super(ModEntities.RGO_GRENADE.get(), entity, level);
         this.noCulling = true;
         this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get();
         this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get();
-        this.fuse = fuse;
-    }
-
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
-        pCompound.putFloat("Fuse", this.fuse);
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        if (pCompound.contains("Fuse")) {
-            this.fuse = pCompound.getInt("Fuse");
-        }
     }
 
     @Override
@@ -105,14 +88,6 @@ public class RgoGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     @Override
     public void tick() {
         super.tick();
-        --this.fuse;
-
-        if (this.fuse <= 0) {
-            this.discard();
-            if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
-            }
-        }
 
         if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
             ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,

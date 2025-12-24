@@ -46,6 +46,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
     @JvmField
     var gravity: Float = 0.05f
 
+    @JvmField
+    var life: Int = 400
+
     private var isFastMoving = false
     private val currentChunks = mutableSetOf<ChunkPos>()
     private var lastChunkPos: ChunkPos? = null
@@ -85,6 +88,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         if (compound.contains("Durability")) {
             this.durability = compound.getInt("Durability")
         }
+        if (compound.contains("Life")) {
+            this.life = compound.getInt("Life")
+        }
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -101,6 +107,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         }
         if (this.durability > 0) {
             compound.putInt("Durability", this.durability)
+        }
+        if (this.life > 0) {
+            compound.putInt("Life", this.life)
         }
     }
 
@@ -133,6 +142,16 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         val level = level()
         if (level is ServerLevel && forceLoadChunk()) {
             updateChunkLoading(level)
+        }
+
+        if (tickCount > life) {
+            if (level() is ServerLevel) {
+                causeExplode(position())
+                if (this is MortarShellEntity) {
+                    this.createAreaCloud(this.level(), position())
+                }
+            }
+            this.discard()
         }
     }
 
@@ -205,6 +224,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
     }
 
     fun causeExplode(vec3: Vec3) {
+        if (explosionRadius == 0f) return
         buildExplosion(vec3).explode()
 
         if (discardAfterExplode()) {
@@ -323,6 +343,10 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
     override fun setGravity(gravity: Float) {
         this.gravity = gravity
+    }
+
+    override fun setLife(life: Int) {
+        this.life = life
     }
 
     open fun largeTrail() {

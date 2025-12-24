@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -104,7 +103,6 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     @Override
     public void tick() {
         super.tick();
-
         mediumTrail();
 
         if (this.tickCount == 3) {
@@ -115,13 +113,6 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
         }
         if (this.tickCount > 2) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.03, 1.03, 1.03));
-        }
-
-        if (this.tickCount > 100 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
         }
         destroyBlock();
     }

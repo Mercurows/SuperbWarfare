@@ -161,15 +161,6 @@ public class Agm65Entity extends MissileProjectile implements GeoEntity {
             }
         }
 
-        if (this.tickCount > 600 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius, 1);
-            }
-            this.discard();
-        }
-
         destroyBlock();
     }
 

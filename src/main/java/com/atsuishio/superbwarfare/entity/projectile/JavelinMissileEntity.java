@@ -4,7 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.tools.*;
+import com.atsuishio.superbwarfare.tools.DamageHandler;
+import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.SeekTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -198,15 +201,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
 
         if (this.tickCount > 3) {
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
-        }
-
-        if (this.tickCount > 200 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
         }
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));

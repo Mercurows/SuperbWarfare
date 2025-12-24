@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -65,7 +64,7 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
                 });
             }
 
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
+            causeExplode(result.getLocation());
             this.discard();
         }
     }
@@ -84,19 +83,7 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
                 });
             }
 
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
-            this.discard();
-        }
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-
-        if (tickCount > 600 || this.entityData.get(HEALTH) <= 0) {
-            if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
-            }
+            causeExplode(blockHitResult.getLocation());
             this.discard();
         }
     }
@@ -128,5 +115,10 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
     @Override
     public boolean shouldSyncMotion() {
         return true;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return 50;
     }
 }

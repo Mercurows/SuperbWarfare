@@ -123,6 +123,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     private String gunItemId;
     // 重力
     private float gravity = 0.05f;
+    private int life = 40;
 
     public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, Level level) {
         super(entityType, level);
@@ -345,7 +346,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
 
         this.setDeltaMovement(this.getDeltaMovement().add(0, -this.gravity, 0));
 
-        if (this.tickCount > (fireLevel > 0 ? 10 : 40)) {
+        if (this.tickCount > (fireLevel > 0 ? 10 : life)) {
             this.discard();
         }
 
@@ -936,5 +937,10 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     public ProjectileEntity setGunItemId(String id) {
         this.gunItemId = id;
         return this;
+    }
+
+    @Override
+    public void setLife(int life) {
+        this.life = life;
     }
 }

@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.core.BlockPos;
@@ -15,11 +14,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -30,8 +27,6 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import javax.annotation.Nullable;
 
 public class SmallRocketEntity extends FastThrowableProjectile implements GeoEntity {
 
@@ -108,7 +103,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void tick() {
         super.tick();
-
         mediumTrail();
 
         if (this.tickCount == 3) {
@@ -117,28 +111,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 10, 0.8, 0.8, 0.8, 0.01, true);
             }
         }
-
-        if (this.tickCount > 100 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                causeRocketExplode(this,
-                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this.explosionDamage, this.explosionRadius, 1);
-            }
-            this.discard();
-        }
         destroyBlock();
-    }
-
-    public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, float damage, float radius, float damageMultiplier) {
-        new CustomExplosion.Builder(projectile)
-                .damageSource(source)
-                .damage(damage)
-                .radius(radius)
-                .damageMultiplier(damageMultiplier)
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
-
-        projectile.discard();
     }
 
     private PlayState movementPredicate(AnimationState<SmallRocketEntity> event) {

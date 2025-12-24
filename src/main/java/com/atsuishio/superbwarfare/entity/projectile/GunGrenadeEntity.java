@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -60,9 +59,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
 
         if (this.tickCount > 0) {
             if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        entity, this.explosionDamage, this.explosionRadius);
+                causeExplode(result.getLocation());
             }
         }
 
@@ -79,9 +76,7 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
             bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
         }
         if (this.level() instanceof ServerLevel) {
-            ProjectileTool.causeCustomExplode(this,
-                    ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                    this, this.explosionDamage, this.explosionRadius);
+            causeExplode(blockHitResult.getLocation());
         }
         this.discard();
     }
@@ -90,14 +85,6 @@ public class GunGrenadeEntity extends FastThrowableProjectile implements GeoEnti
     public void tick() {
         super.tick();
         smallTrail();
-        if (this.tickCount > 200 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
-        }
     }
 
     @Override
