@@ -48,7 +48,7 @@ public class MelonBombEntity extends DestroyableProjectile {
                 });
             }
 
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
+            causeExplode(result.getLocation());
             this.discard();
         }
     }
@@ -67,19 +67,8 @@ public class MelonBombEntity extends DestroyableProjectile {
                 });
             }
 
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
+            causeExplode(blockHitResult.getLocation());
             this.discard();
-        }
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        if (tickCount > 600 || this.entityData.get(HEALTH) <= 0) {
-            this.discard();
-            if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.5f);
-            }
         }
     }
 

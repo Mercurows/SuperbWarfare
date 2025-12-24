@@ -72,7 +72,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
         if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
             return;
         if (this.level() instanceof ServerLevel) {
-            causeMissileExplode(ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
+            causeExplode(result.getLocation());
         }
     }
 
@@ -80,7 +80,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            causeMissileExplode(ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
+            causeExplode(blockHitResult.getLocation());
         }
     }
 
@@ -136,7 +136,7 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
 
             if (dis2 < 1) {
                 if (this.level() instanceof ServerLevel) {
-                    causeMissileExplode(ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
+                    causeExplode(position());
                 }
                 this.discard();
             }
@@ -149,25 +149,6 @@ public class SwarmDroneEntity extends MissileProjectile implements GeoEntity {
         if (this.tickCount > 13) {
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
         }
-
-        if (this.tickCount > 300 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
-            if (this.level() instanceof ServerLevel) {
-                causeMissileExplode(ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()), this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
-        }
-    }
-
-    public void causeMissileExplode(@Nullable DamageSource source, float damage, float radius) {
-        new CustomExplosion.Builder(this)
-                .damageSource(source)
-                .damage(damage)
-                .radius(radius)
-                .damageMultiplier(1.25F)
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
-
-        discard();
     }
 
     private PlayState movementPredicate(AnimationState<SwarmDroneEntity> event) {

@@ -43,8 +43,6 @@ import java.util.Set;
 public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    private int life = 600;
     private Potion potion = Potions.EMPTY;
     private final Set<MobEffectInstance> effects = Sets.newHashSet();
 
@@ -91,7 +89,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.putInt("Life", this.life);
 
         if (this.potion != Potions.EMPTY) {
             pCompound.putString("Potion", Objects.requireNonNullElse(ForgeRegistries.POTIONS.getKey(this.potion), "empty").toString());
@@ -109,12 +106,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-
-        if (pCompound.contains("Life")) {
-            this.life = pCompound.getInt("Life");
-        } else {
-            this.life = 600;
-        }
 
         if (pCompound.contains("Potion", 8)) {
             this.potion = PotionUtils.getPotion(pCompound);
@@ -170,16 +161,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void tick() {
         super.tick();
-
         mediumTrail();
-
-        if (this.tickCount > this.life || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(position());
-                this.createAreaCloud(this.level(), position());
-            }
-            this.discard();
-        }
     }
 
     @Override
@@ -196,7 +178,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         return this.cache;
     }
 
-    private void createAreaCloud(Level level, Vec3 pos) {
+    public void createAreaCloud(Level level, Vec3 pos) {
         if (this.potion == Potions.EMPTY) return;
 
         AreaEffectCloud cloud = new AreaEffectCloud(level, pos.x, pos.y, pos.z);

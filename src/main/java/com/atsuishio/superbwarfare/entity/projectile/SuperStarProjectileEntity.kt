@@ -257,10 +257,6 @@ class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>,
                 vec3.z
             )
         }
-
-        if (this.tickCount > 1200) {
-            this.discard()
-        }
     }
 
     fun getLerpTick(tickDelta: Float) = Mth.lerp(tickDelta, tickO.toFloat(), tick.toFloat())

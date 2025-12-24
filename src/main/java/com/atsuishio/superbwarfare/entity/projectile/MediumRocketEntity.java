@@ -163,17 +163,8 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void tick() {
         super.tick();
-
         largeTrail();
-
         destroyBlock();
-
-        if (this.tickCount > 600 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(position());
-            }
-            this.discard();
-        }
 
         if (type == Type.CM) {
             // 使用Minecraft内置的光线追踪进行碰撞检测

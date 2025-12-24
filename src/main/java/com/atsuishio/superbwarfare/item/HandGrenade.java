@@ -59,7 +59,8 @@ public class HandGrenade extends Item implements DispenserLaunchable {
                     player.getCooldowns().addCooldown(stack.getItem(), 25);
                     float power = Math.min(usingTime / 10.0f, 1.5f);
 
-                    HandGrenadeEntity handGrenade = new HandGrenadeEntity(player, worldIn, 100 - usingTime);
+                    HandGrenadeEntity handGrenade = new HandGrenadeEntity(player, worldIn);
+                    handGrenade.setLife(100 - usingTime);
                     handGrenade.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, power, 0.0f);
                     worldIn.addFreshEntity(handGrenade);
 
@@ -79,7 +80,7 @@ public class HandGrenade extends Item implements DispenserLaunchable {
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!pLevel.isClientSide) {
-            HandGrenadeEntity handGrenade = new HandGrenadeEntity(pLivingEntity, pLevel, 100);
+            HandGrenadeEntity handGrenade = new HandGrenadeEntity(pLivingEntity, pLevel);
 
             new CustomExplosion.Builder(handGrenade)
                     .attacker(pLivingEntity)

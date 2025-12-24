@@ -69,7 +69,7 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
                 });
             }
 
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
+            causeExplode(result.getLocation());
             this.discard();
         }
     }
@@ -88,19 +88,7 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
                 });
             }
 
-            ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
-            this.discard();
-        }
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-
-        if (tickCount > 600 || this.entityData.get(HEALTH) <= 0) {
-            if (!this.level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f);
-            }
+            causeExplode(blockHitResult.getLocation());
             this.discard();
         }
     }
@@ -132,5 +120,10 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
     @Override
     public boolean shouldSyncMotion() {
         return true;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return 50;
     }
 }

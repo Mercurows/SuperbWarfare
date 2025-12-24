@@ -108,7 +108,6 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void tick() {
         super.tick();
-
         mediumTrail();
 
         if (this.tickCount == 3) {
@@ -121,12 +120,6 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.03, 1.03, 1.03));
         }
 
-        if (this.tickCount > 100 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
-        }
         destroyBlock();
     }
 

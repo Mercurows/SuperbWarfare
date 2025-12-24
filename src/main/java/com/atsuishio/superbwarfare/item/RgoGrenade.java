@@ -59,7 +59,8 @@ public class RgoGrenade extends Item implements DispenserLaunchable {
                     player.getCooldowns().addCooldown(stack.getItem(), 20);
                     float power = Math.min(usingTime / 8.0f, 1.8f);
 
-                    RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(player, worldIn, 80 - usingTime);
+                    RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(player, worldIn);
+                    rgoGrenade.setLife(80 - usingTime);
                     rgoGrenade.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, power, 0.0f);
                     worldIn.addFreshEntity(rgoGrenade);
 
@@ -79,7 +80,7 @@ public class RgoGrenade extends Item implements DispenserLaunchable {
     @ParametersAreNonnullByDefault
     public @NotNull ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!pLevel.isClientSide) {
-            RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(pLivingEntity, pLevel, 100);
+            RgoGrenadeEntity rgoGrenade = new RgoGrenadeEntity(pLivingEntity, pLevel);
 
             new CustomExplosion.Builder(rgoGrenade)
                     .attacker(pLivingEntity)

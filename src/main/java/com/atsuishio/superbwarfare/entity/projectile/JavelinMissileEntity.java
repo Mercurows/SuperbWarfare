@@ -204,15 +204,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
             this.setDeltaMovement(this.getDeltaMovement().add(getLookAngle()));
         }
 
-        if (this.tickCount > 200 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
-        }
-
         this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
         destroyBlock();
     }

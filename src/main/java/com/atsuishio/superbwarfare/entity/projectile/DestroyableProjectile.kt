@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
+import com.atsuishio.superbwarfare.tools.ProjectileTool
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -63,5 +64,16 @@ abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotion
             SynchedEntityData.defineId(DestroyableProjectile::class.java, EntityDataSerializers.FLOAT)
 
         private val DAMAGE_MODIFIER = createDefaultModifier()
+    }
+
+    override fun tick() {
+        super.tick()
+
+        if (health <= 0) {
+            if (!level().isClientSide) {
+                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f)
+            }
+            this.discard()
+        }
     }
 }

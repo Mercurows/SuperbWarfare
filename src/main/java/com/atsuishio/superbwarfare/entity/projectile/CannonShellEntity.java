@@ -163,15 +163,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         super.tick();
 
         mediumTrail();
-
         destroyBlock();
-
-        if (this.tickCount > 600) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(position());
-            }
-            this.discard();
-        }
 
         if (type == Type.CM && tickCount > 3) {
             // 使用Minecraft内置的光线追踪进行碰撞检测

@@ -113,7 +113,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void tick() {
         super.tick();
-
         mediumTrail();
 
         if (this.tickCount == 3) {
@@ -122,28 +121,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 10, 0.8, 0.8, 0.8, 0.01, true);
             }
         }
-
-        if (this.tickCount > 100 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                causeRocketExplode(this,
-                        ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this.explosionDamage, this.explosionRadius, 1);
-            }
-            this.discard();
-        }
         destroyBlock();
-    }
-
-    public static void causeRocketExplode(ThrowableItemProjectile projectile, @Nullable DamageSource source, float damage, float radius, float damageMultiplier) {
-        new CustomExplosion.Builder(projectile)
-                .damageSource(source)
-                .damage(damage)
-                .radius(radius)
-                .damageMultiplier(damageMultiplier)
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
-                .explode();
-
-        projectile.discard();
     }
 
     private PlayState movementPredicate(AnimationState<SmallRocketEntity> event) {

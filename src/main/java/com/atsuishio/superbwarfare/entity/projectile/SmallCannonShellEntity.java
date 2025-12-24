@@ -118,14 +118,6 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     @Override
     public void tick() {
         super.tick();
-
-        if (this.tickCount > 200 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel && !onGround()) {
-                causeExplode(position(), false);
-            }
-            this.discard();
-        }
-
         if (aa) {
             crushProjectile(getDeltaMovement());
         }

@@ -130,32 +130,12 @@ public class Ru9m336MissileEntity extends MissileProjectile implements GeoEntity
                 if (!lostTarget) {
                     turn(toVec, Mth.clamp((tickCount - 1) * 0.5f, 0, 15));
                     this.setDeltaMovement(this.getDeltaMovement().scale(0.05).add(getLookAngle().scale(8)));
-
-//                    //近炸
-//                    if (position().distanceToSqr(entity.position()) < 25) {
-//                        DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
-//                        if (entity instanceof LivingEntity) {
-//                            entity.invulnerableTime = 0;
-//                        }
-//                        causeExplode(position());
-//                        this.discard();
-//                    }
-
                 }
 
                 if (lostTarget) {
                     this.entityData.set(TARGET_UUID, "none");
                 }
             }
-        }
-
-        if (this.tickCount > 200 || this.isInWater()) {
-            if (this.level() instanceof ServerLevel) {
-                ProjectileTool.causeCustomExplode(this,
-                        ModDamageTypes.causeProjectileExplosionDamage(this.level().registryAccess(), this, this.getOwner()),
-                        this, this.explosionDamage, this.explosionRadius);
-            }
-            this.discard();
         }
     }
 

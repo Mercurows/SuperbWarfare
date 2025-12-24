@@ -119,12 +119,6 @@ public class WireGuideMissileEntity extends MissileProjectile implements GeoEnti
             turn(toVec, Mth.clamp((tickCount - 1) * 0.4f, 0, 6));
         }
 
-        if (this.tickCount > 400 || this.isInWater() || this.entityData.get(HEALTH) <= 0) {
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(position());
-            }
-            this.discard();
-        }
         destroyBlock();
     }
 
@@ -154,5 +148,10 @@ public class WireGuideMissileEntity extends MissileProjectile implements GeoEnti
 
     public void setLauncherVehicle(UUID uuid) {
         this.launcherVehicle = uuid;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return 20;
     }
 }
