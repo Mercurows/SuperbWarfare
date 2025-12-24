@@ -56,6 +56,8 @@ abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotion
         compound.putFloat("Health", health)
     }
 
+    //TODO 修复读取最大生命值失败导致炸膛的问题
+
     open val maxHealth: Float = 30F
 
     companion object {
