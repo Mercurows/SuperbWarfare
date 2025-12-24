@@ -56,9 +56,7 @@ abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotion
         compound.putFloat("Health", health)
     }
 
-    //TODO 修复读取最大生命值失败导致炸膛的问题
-
-    open val maxHealth: Float = 30F
+    open val maxHealth get() = 30F
 
     companion object {
         @JvmField
@@ -73,7 +71,7 @@ abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotion
 
         if (health <= 0) {
             if (!level().isClientSide) {
-                ProjectileTool.causeCustomExplode(this, this.explosionDamage, this.explosionRadius, 1.2f)
+                causeExplode(position())
             }
             this.discard()
         }
