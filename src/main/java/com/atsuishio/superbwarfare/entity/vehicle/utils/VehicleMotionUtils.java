@@ -35,7 +35,6 @@ import org.joml.Vector4d;
 import java.util.List;
 import java.util.Optional;
 
-import static com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.lerpAngle;
 import static com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition;
 
 /**
@@ -515,5 +514,12 @@ public final class VehicleMotionUtils {
         );
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.getYRot())));
         return transform;
+    }
+
+    public static float lerpAngle(float current, float target, float factor) {
+        float diff = target - current;
+        while (diff < -180) diff += 360;
+        while (diff > 180) diff -= 360;
+        return current + diff * factor;
     }
 }
