@@ -23,7 +23,6 @@
     "ClientPacketListenerMixin",
     "ClientPlayerEntityMixin",
     "EntityRenderDispatcherMixin",
-    "EntityRendererAccessor",
     "GameRendererMixin",
     "ItemInHandLayerMixin",
     "KeyboardInputMixin",
