@@ -49,11 +49,11 @@ import org.joml.Math
 import java.util.*
 
 open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity(type, world), OwnableEntity {
-    var changeTargetTimer: Int = 0
+    open var changeTargetTimer: Int = 0
 
-    var targetUUID by TARGET_UUID
-    var optionalOwnerUUID by OWNER_UUID
-    var active by ACTIVE
+    open var targetUUID by TARGET_UUID
+    open var optionalOwnerUUID by OWNER_UUID
+    open var active by ACTIVE
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         val stack = player.mainHandItem
@@ -104,7 +104,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         }
     }
 
-    fun setOwnerUUID(pUuid: UUID?) {
+    open fun setOwnerUUID(pUuid: UUID?) {
         optionalOwnerUUID = Optional.ofNullable(pUuid)
     }
 
@@ -158,7 +158,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         autoAim()
     }
 
-    fun autoAim() {
+    open fun autoAim() {
         if (this.getFirstPassenger() != null || !active) {
             return
         }
@@ -273,7 +273,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         }
     }
 
-    fun basicEnemyFilter(entity: Entity): Boolean {
+    open fun basicEnemyFilter(entity: Entity): Boolean {
         if (entity is Projectile) return false
         val owner = owner ?: return false
         entity.team ?: return false
@@ -281,7 +281,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         return !entity.isAlliedTo(owner) || TDMSavedData.enabledTDM(entity)
     }
 
-    fun basicEnemyProjectileFilter(projectile: Projectile): Boolean {
+    open fun basicEnemyProjectileFilter(projectile: Projectile): Boolean {
         val owner = owner ?: return false
         val projectileOwner = projectile.owner ?: return false
 
@@ -292,7 +292,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
     }
 
     // 防御类载具实体搜寻周围实体
-    fun seekNearLivingEntity(
+    open fun seekNearLivingEntity(
         pos: Vec3,
         minAngle: Double,
         maxAngle: Double,
@@ -316,7 +316,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         }
 
     // 判断具有威胁的弹射物
-    fun isThreateningEntity(target: Entity, size: Double, pos: Vec3): Boolean {
+    open fun isThreateningEntity(target: Entity, size: Double, pos: Vec3): Boolean {
         if (target is SmallCannonShellEntity) return false
 
         if (!target.onGround() && target is Projectile && (target.bbWidth >= size || target.bbHeight >= size)) {
@@ -327,7 +327,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
     }
 
     // 判断载具和目标之间有无障碍物
-    fun checkNoClip(target: Entity, pos: Vec3): Boolean {
+    open fun checkNoClip(target: Entity, pos: Vec3): Boolean {
         return this.level().clip(
             ClipContext(
                 pos, target.boundingBox.center,
@@ -336,7 +336,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         ).type != HitResult.Type.BLOCK
     }
 
-    fun rayShoot(living: LivingEntity, target: Entity, gunData: GunData) {
+    open fun rayShoot(living: LivingEntity, target: Entity, gunData: GunData) {
         val serverLevel = level() as ServerLevel
         ParticleTool.sendParticle(
             serverLevel,
