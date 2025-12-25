@@ -1,0 +1,25 @@
+{
+  "targets": [
+    "swap",
+    "thermal_buffer"
+  ],
+  "passes": [
+    {
+      "name": "superbwarfare:thermal",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "auxtargets": [
+        {
+          "name": "ThermalSampler",
+          "id": "thermal_buffer"
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}
+
