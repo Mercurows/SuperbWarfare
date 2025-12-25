@@ -5,7 +5,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Quaterniond;
@@ -14,6 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntityRenderer.class)
 public class LivingEntityRendererMixin<T extends LivingEntity> {
@@ -41,6 +44,21 @@ public class LivingEntityRendererMixin<T extends LivingEntity> {
 
             matrices.mulPose(Axis.YP.rotationDegrees(lerpRot));
             matrices.mulPose(quaternionf);
+        }
+    }
+
+    //TODO 正确实现mixin
+
+    @Inject(method = "getRenderType(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;",
+            at = @At("HEAD"), cancellable = true)
+    protected void getRenderType(T pLivingEntity, boolean pBodyVisible, boolean pTranslucent, boolean pGlowing, CallbackInfoReturnable<RenderType> cir) {
+        ResourceLocation resourcelocation = this.getTextureLocation(pLivingEntity);
+        if (pTranslucent) {
+            cir.setReturnValue(RenderType.itemEntityTranslucentCull(resourcelocation));
+        } else if (pBodyVisible) {
+            cir.setReturnValue(this.model.renderType(resourcelocation));
+        } else {
+            cir.setReturnValue(pGlowing ? RenderType.outline(resourcelocation) : null);
         }
     }
 }
