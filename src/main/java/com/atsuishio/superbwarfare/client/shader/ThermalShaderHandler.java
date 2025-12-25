@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Code based on YWZJ Team
  */
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class ThermalShaderHandler implements ResourceManagerReloadListener {
 
     private static final ResourceLocation THERMAL_EFFECT = Mod.loc("shaders/post/thermal.json");
