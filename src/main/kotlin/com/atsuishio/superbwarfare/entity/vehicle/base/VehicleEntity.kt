@@ -107,7 +107,7 @@ import kotlin.math.*
 abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
     VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity, OBBEntity {
 
-    var gunDataMap: Map<String, GunData>
+    open var gunDataMap: Map<String, GunData>
         get() {
             val rawMap = entityData.get(GUN_DATA_MAP)
             val newMap = mutableMapOf<String, GunData>()
@@ -227,33 +227,33 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     private var obbCache: MutableList<OBB>? = null
-    var obb = listOf<OBBInfo>()
-        private set
-    var engineInfo: EngineInfo? = null
-        private set
+    open var obb = listOf<OBBInfo>()
+        protected set
+    open var engineInfo: EngineInfo? = null
+        public set
 
     protected var interpolationSteps = 0
     protected var xO = 0.0
     protected var yO = 0.0
     protected var zO = 0.0
 
-    var roll = 0f
+    open var roll = 0f
 
-    var prevRoll = 0f
-    var repairCoolDown = maxRepairCoolDown()
+    open var prevRoll = 0f
+    open var repairCoolDown = maxRepairCoolDown()
 
-    var crash = false
+    open var crash = false
 
-    var turretYRot = 0f
-    var turretXRot = 0f
-    var turretYRotO = 0f
-    var turretXRotO = 0f
-    var turretYRotLock = 0f
+    open var turretYRot = 0f
+    open var turretXRot = 0f
+    open var turretYRotO = 0f
+    open var turretXRotO = 0f
+    open var turretYRotLock = 0f
 
-    var gunYRot = 0f
-    var gunXRot = 0f
-    var gunYRotO = 0f
-    var gunXRotO = 0f
+    open var gunYRot = 0f
+    open var gunXRot = 0f
+    open var gunYRotO = 0f
+    open var gunXRotO = 0f
 
     protected var noPassengerTime = 0
     protected var damageDebugResultReceiver: Player? = null
@@ -261,12 +261,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
 //    protected var acceleration = 0.0
 
-    var decoyReloadCoolDown = 0
+    open var decoyReloadCoolDown = 0
 
-    var lastTickSpeed = 0.0
+    open var lastTickSpeed = 0.0
     protected var lastTickVerticalSpeed = 0.0
 
-    var collisionCoolDown = 0
+    open var collisionCoolDown = 0
 
     private var wasEngineRunning = false
     private var wasHornWorking = false
@@ -274,55 +274,55 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     //    private var wasInCarMusicPlaying = false;
     private var wasFiring = false
 
-    var targetSpeed = 0.0
+    open var targetSpeed = 0.0
 
-    var rudderRot = 0f
-    var rudderRotO = 0f
-    var leftWheelRot = 0f
-    var rightWheelRot = 0f
-    var leftWheelRotO = 0f
-    var rightWheelRotO = 0f
+    open var rudderRot = 0f
+    open var rudderRotO = 0f
+    open var leftWheelRot = 0f
+    open var rightWheelRot = 0f
+    open var leftWheelRotO = 0f
+    open var rightWheelRotO = 0f
 
-    var leftTrackO = 0f
-    var rightTrackO = 0f
-    var leftTrack = 0f
-    var rightTrack = 0f
+    open var leftTrackO = 0f
+    open var rightTrackO = 0f
+    open var leftTrack = 0f
+    open var rightTrack = 0f
 
-    var propellerRot = 0f
-    var propellerRotO = 0f
+    open var propellerRot = 0f
+    open var propellerRotO = 0f
 
-    var recoilShake = 0.0
-    var recoilShakeO = 0.0
+    open var recoilShake = 0.0
+    open var recoilShakeO = 0.0
 
-    var velocityO = 0.0
-    var velocity = 0.0
+    open var velocityO = 0.0
+    open var velocity = 0.0
 
-    var flap1LRot = 0f
-    var flap1LRotO = 0f
-    var flap1RRot = 0f
-    var flap1RRotO = 0f
-    var flap1L2Rot = 0f
-    var flap1L2RotO = 0f
-    var flap1R2Rot = 0f
-    var flap1R2RotO = 0f
-    var flap2LRot = 0f
-    var flap2LRotO = 0f
-    var flap2RRot = 0f
-    var flap2RRotO = 0f
-    var flap3Rot = 0f
-    var flap3RotO = 0f
+    open var flap1LRot = 0f
+    open var flap1LRotO = 0f
+    open var flap1RRot = 0f
+    open var flap1RRotO = 0f
+    open var flap1L2Rot = 0f
+    open var flap1L2RotO = 0f
+    open var flap1R2Rot = 0f
+    open var flap1R2RotO = 0f
+    open var flap2LRot = 0f
+    open var flap2LRotO = 0f
+    open var flap2RRot = 0f
+    open var flap2RRotO = 0f
+    open var flap3Rot = 0f
+    open var flap3RotO = 0f
     private var gearRotO = 0f
 
-    var gearRot = 0f
+    open var gearRot = 0f
 
-    var engineStart = false
-    var engineStartOver = false
-    var holdTick = 0
-    var holdPowerTick = 0
+    open var engineStart = false
+    open var engineStartOver = false
+    open var holdTick = 0
+    open var holdPowerTick = 0
 
-    var destroyRot = 0f
+    open var destroyRot = 0f
 
-    var jumpCoolDown = 0
+    open var jumpCoolDown = 0
 
     private fun initOBB() {
         this.obb = data().getDefault().copy().obb.filterNotNull().toList()
@@ -356,39 +356,39 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     @get:JvmName("forwardInputDown")
-    var forwardInputDown by FORWARD_INPUT_DOWN
+    open var forwardInputDown by FORWARD_INPUT_DOWN
 
     @get:JvmName("backInputDown")
-    var backInputDown by BACK_INPUT_DOWN
+    open var backInputDown by BACK_INPUT_DOWN
 
     @get:JvmName("leftInputDown")
-    var leftInputDown by LEFT_INPUT_DOWN
+    open var leftInputDown by LEFT_INPUT_DOWN
 
     @get:JvmName("rightInputDown")
-    var rightInputDown by RIGHT_INPUT_DOWN
+    open var rightInputDown by RIGHT_INPUT_DOWN
 
     @get:JvmName("upInputDown")
-    var upInputDown by UP_INPUT_DOWN
+    open var upInputDown by UP_INPUT_DOWN
 
     @get:JvmName("downInputDown")
-    var downInputDown by DOWN_INPUT_DOWN
+    open var downInputDown by DOWN_INPUT_DOWN
 
     @get:JvmName("fireInputDown")
-    var fireInputDown by FIRE_INPUT_DOWN
+    open var fireInputDown by FIRE_INPUT_DOWN
 
     @get:JvmName("decoyInputDown")
-    var decoyInputDown by DECOY_INPUT_DOWN
+    open var decoyInputDown by DECOY_INPUT_DOWN
 
     @get:JvmName("sprintInputDown")
-    var sprintInputDown by SPRINT_INPUT_DOWN
+    open var sprintInputDown by SPRINT_INPUT_DOWN
 
     open fun mouseInput(x: Double, y: Double) {
         mouseMoveSpeedX = x.toFloat()
         mouseMoveSpeedY = y.toFloat()
     }
 
-    var mouseMoveSpeedX by MOUSE_SPEED_X
-    var mouseMoveSpeedY by MOUSE_SPEED_Y
+    open var mouseMoveSpeedX by MOUSE_SPEED_X
+    open var mouseMoveSpeedY by MOUSE_SPEED_Y
 
     // container start
     protected var items: NonNullList<ItemStack> = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
@@ -664,7 +664,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     // 仅在客户端存在的实体顺序获取，用于在客户端正确同步实体座位顺序
-    var entityIndexOverride: Function<Entity, Int>? = null
+    open var entityIndexOverride: Function<Entity, Int>? = null
 
     override fun addPassenger(pPassenger: Entity) {
         check(pPassenger.vehicle === this) { "Use x.startRiding(y), not y.addPassenger(x)" }
@@ -786,7 +786,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      */
     open fun getTagSeatIndex(entity: Entity) = entity.persistentData.getInt(TAG_SEAT_INDEX)
 
-    val thirdPersonCameraPosition: Vec3
+    open val thirdPersonCameraPosition: Vec3
         get() {
             var pos = computed().thirdPersonCameraPos
             if (pos == null) {
@@ -920,7 +920,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return this.energy >= amount
     }
 
-    var energy: Int
+    open var energy: Int
         get() {
             if (!this.hasEnergyStorage()) {
                 Mod.LOGGER.warn(
@@ -955,7 +955,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return this.energyStorage
     }
 
-    val maxEnergy: Int
+    open val maxEnergy: Int
         get() = if (!this.hasEnergyStorage()) {
             Mod.LOGGER.warn(
                 "Trying to get max energy of vehicle {}, but it has no energy storage",
@@ -1489,7 +1489,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return InteractionResult.PASS
     }
 
-    val lastDriver: Entity?
+    open val lastDriver: Entity?
         get() = EntityFindUtil.findEntity(level(), lastDriverUUID)
 
     @Deprecated("")
@@ -1617,7 +1617,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    var health: Float
+    open var health: Float
         get() = this.entityData.get(HEALTH)
         set(value) {
             this.entityData.set(HEALTH, value.coerceIn(0f, this.getMaxHealth()))
@@ -1660,7 +1660,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return this.getPassengers().size < this.maxPassengers
     }
 
-    val maxPassengers: Int
+    open val maxPassengers: Int
         get() = computed().seats().size
 
     /**
@@ -2033,7 +2033,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    val shootSoundInstance: SoundEvent?
+    open val shootSoundInstance: SoundEvent?
         get() {
             // TODO why 0?
             val gunData = getGunData(0)
@@ -2052,7 +2052,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return gunData.get(GunProp.SOUND_INFO).fireSoundInstances ?: SoundEvents.EMPTY
     }
 
-    val isFiring: Boolean
+    open val isFiring: Boolean
         get() {
             val gunData = getGunData(0)
             return if (gunData != null) {
@@ -2103,7 +2103,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    val ammoSupplier: Entity
+    open val ammoSupplier: Entity
         /**
          * 获取开火用AmmoSupplier实体
          */
@@ -3069,7 +3069,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return VehicleVecUtils.getVehicleYOffsetTransform(this, partialTicks)
     }
 
-    val rotateOffsetHeight: Double
+    open val rotateOffsetHeight: Double
         get() = computed().rotateOffsetHeight.toDouble()
 
     open fun getVehicleFlatTransform(partialTicks: Float): Matrix4d {
@@ -3082,95 +3082,95 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun hasTurret() = this.turretPos != null
 
-    val turretPos: Vec3?
+    open val turretPos: Vec3?
         get() = computed().turretPos
 
-    val turretControllerIndex: Int
+    open val turretControllerIndex: Int
         get() = computed().turretControllerIndex
 
-    val turretTurnXSpeed: Float
+    open val turretTurnXSpeed: Float
         /**
          * @return 炮塔最大俯仰速度
          */
         get() = computed().turretTurnSpeed.x
 
-    val turretTurnYSpeed: Float
+    open val turretTurnYSpeed: Float
         /**
          * @return 炮塔最大偏航速度
          */
         get() = computed().turretTurnSpeed.y
 
-    val turretMinYaw: Float
+    open val turretMinYaw: Float
         /**
          * @return 炮塔最小偏航
          */
         get() = computed().turretYawRange.x
 
-    val turretMaxYaw: Float
+    open val turretMaxYaw: Float
         /**
          * @return 炮塔最大偏航
          */
         get() = computed().turretYawRange.y
 
-    val turretMinPitch: Float
+    open val turretMinPitch: Float
         /**
          * @return 炮塔最小俯角
          */
         get() = computed().turretPitchRange.x
 
-    val turretMaxPitch: Float
+    open val turretMaxPitch: Float
         /**
          * @return 炮塔最大仰角
          */
         get() = computed().turretPitchRange.y
 
-    val barrelPosition: Vec3?
+    open val barrelPosition: Vec3?
         get() = computed().barrelPos
 
     open fun hasPassengerWeaponStation(): Boolean {
         return this.passengerWeaponStationPosition != null
     }
 
-    val passengerWeaponStationPosition: Vec3?
+    open val passengerWeaponStationPosition: Vec3?
         get() = computed().passengerWeaponStationPos
 
-    val passengerWeaponStationBarrelPosition: Vec3?
+    open val passengerWeaponStationBarrelPosition: Vec3?
         get() = computed().passengerWeaponStationBarrelPos
 
-    val passengerWeaponStationControllerIndex: Int
+    open val passengerWeaponStationControllerIndex: Int
         get() = computed().passengerWeaponStationControllerIndex
 
-    val passengerWeaponYSpeed: Float
+    open val passengerWeaponYSpeed: Float
         /**
          * @return 乘客武器站最大偏航速度
          */
         get() = computed().passengerWeaponStationTurnSpeed.y
 
-    val passengerWeaponXSpeed: Float
+    open val passengerWeaponXSpeed: Float
         /**
          * @return 乘客武器站最大俯仰速度
          */
         get() = computed().passengerWeaponStationTurnSpeed.x
 
-    val passengerWeaponMinPitch: Float
+    open val passengerWeaponMinPitch: Float
         /**
          * @return 乘客武器站最小仰角
          */
         get() = computed().passengerWeaponStationPitchRange.x
 
-    val passengerWeaponMaxPitch: Float
+    open val passengerWeaponMaxPitch: Float
         /**
          * @return 乘客武器站最大仰角
          */
         get() = computed().passengerWeaponStationPitchRange.y
 
-    val passengerWeaponMinYaw: Float
+    open val passengerWeaponMinYaw: Float
         /**
          * @return 炮塔最小偏航
          */
         get() = computed().passengerWeaponStationYawRange.x
 
-    val passengerWeaponMaxYaw: Float
+    open val passengerWeaponMaxYaw: Float
         /**
          * @return 炮塔最大偏航
          */
@@ -3368,7 +3368,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    val vehicleIcon: ResourceLocation?
+    open val vehicleIcon: ResourceLocation?
         get() = computed().vehicleIcon
 
     open fun allowFreeCam() = computed().allowFreeCam
@@ -3440,12 +3440,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun getMouseSensitivity() = 0.1
 
-    val mouseSpeed: Vec2?
+    open val mouseSpeed: Vec2?
         get() = computed().mouseSpeed
 
     open fun gearRot(tickDelta: Float) = Mth.lerp(tickDelta, gearRotO, this.gearRot)
 
-    val mass: Float
+    open val mass: Float
         get() = computed().mass
 
     override fun setDeltaMovement(pDeltaMovement: Vec3) {
@@ -3730,7 +3730,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         VehicleMotionUtils.collideBlocks(this)
     }
 
-    val lastAttacker: Entity?
+    open val lastAttacker: Entity?
         get() = EntityFindUtil.findEntity(level(), lastAttackerUUID)
 
     override fun move(movementType: MoverType, movement: Vec3) {
@@ -3873,52 +3873,52 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      */
     open fun getRetrieveItems() = listOf(ContainerBlockItem.createInstance(this))
 
-    val hudColor: Int
+    open val hudColor: Int
         get() = computed().hudColor.get()
 
-    var power by POWER
-    var deltaRot by DELTA_ROT
-    var decoyReady by DECOY_READY
-    var synchedPropellerRot by SYNCHED_PROPELLER_ROT
-    var planeBreak by PLANE_BREAK
-    var synchedGearRot by SYNCHED_GEAR_ROT
-    var gearUp by GEAR_UP
+    open var power by POWER
+    open var deltaRot by DELTA_ROT
+    open var decoyReady by DECOY_READY
+    open var synchedPropellerRot by SYNCHED_PROPELLER_ROT
+    open var planeBreak by PLANE_BREAK
+    open var synchedGearRot by SYNCHED_GEAR_ROT
+    open var gearUp by GEAR_UP
 
-    var subEngineDamaged by SUB_ENGINE_DAMAGED
-    var subEngineHealth by SUB_ENGINE_HEALTH
-    var mainEngineDamaged by MAIN_ENGINE_DAMAGED
-    var mainEngineHealth by MAIN_ENGINE_HEALTH
+    open var subEngineDamaged by SUB_ENGINE_DAMAGED
+    open var subEngineHealth by SUB_ENGINE_HEALTH
+    open var mainEngineDamaged by MAIN_ENGINE_DAMAGED
+    open var mainEngineHealth by MAIN_ENGINE_HEALTH
 
-    var leftWheelDamaged by L_WHEEL_DAMAGED
-    var leftWheelHealth by L_WHEEL_HEALTH
-    var rightWheelDamaged by R_WHEEL_DAMAGED
-    var rightWheelHealth by R_WHEEL_HEALTH
+    open var leftWheelDamaged by L_WHEEL_DAMAGED
+    open var leftWheelHealth by L_WHEEL_HEALTH
+    open var rightWheelDamaged by R_WHEEL_DAMAGED
+    open var rightWheelHealth by R_WHEEL_HEALTH
 
-    var turretDamaged by TURRET_DAMAGED
-    var turretHealth by TURRET_HEALTH
+    open var turretDamaged by TURRET_DAMAGED
+    open var turretHealth by TURRET_HEALTH
 
-    var selectedWeapon by SELECTED_WEAPON
-    var chargeProgress by CHARGE_PROGRESS
+    open var selectedWeapon by SELECTED_WEAPON
+    open var chargeProgress by CHARGE_PROGRESS
 
-    var laserScale by LASER_SCALE
-    var laserScaleO by LASER_SCALE_O
-    var laserLength by LASER_LENGTH
+    open var laserScale by LASER_SCALE
+    open var laserScaleO by LASER_SCALE_O
+    open var laserLength by LASER_LENGTH
 
-    var serverYaw by SERVER_YAW
-    var serverPitch by SERVER_PITCH
-    var cannonRecoilTime by CANNON_RECOIL_TIME
-    var cannonRecoilForce by CANNON_RECOIL_FORCE
+    open var serverYaw by SERVER_YAW
+    open var serverPitch by SERVER_PITCH
+    open var cannonRecoilTime by CANNON_RECOIL_TIME
+    open var cannonRecoilForce by CANNON_RECOIL_FORCE
 
-    var override by OVERRIDE
-    var lastAttackerUUID by LAST_ATTACKER_UUID
-    var lastDriverUUID by LAST_DRIVER_UUID
-    var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
-    var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
+    open var override by OVERRIDE
+    open var lastAttackerUUID by LAST_ATTACKER_UUID
+    open var lastDriverUUID by LAST_DRIVER_UUID
+    open var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
+    open var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
 
-    var yawWhileShoot by YAW_WHILE_SHOOT
-    var hornVolume by HORN_VOLUME
+    open var yawWhileShoot by YAW_WHILE_SHOOT
+    open var hornVolume by HORN_VOLUME
 
-    val hornSound: SoundEvent
+    open val hornSound: SoundEvent
         get() = this.computed().hornSound
 
     //    @NotNull
@@ -3942,7 +3942,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun hornWorking() = Math.abs(this.hornVolume) > 0.05
 
-    val vehicleType: VehicleType?
+    open val vehicleType: VehicleType?
         // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
         get() = computed().type
 
@@ -3953,7 +3953,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         VehicleMotionUtils.support(this, entity)
     }
 
-    val isAmphibious: Boolean
+    open val isAmphibious: Boolean
         get() = VehicleMiscUtils.isAmphibious(this)
 
     @OnlyIn(Dist.CLIENT)
@@ -3978,7 +3978,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return this.obbCache!!
     }
 
-    fun getEnergyDataAccessor() = ENERGY
+    open fun getEnergyDataAccessor() = ENERGY
 
     companion object {
         const val TAG_SEAT_INDEX: String = "SBWSeatIndex"

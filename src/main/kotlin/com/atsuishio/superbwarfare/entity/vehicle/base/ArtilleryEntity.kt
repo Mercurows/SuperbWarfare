@@ -37,12 +37,12 @@ import java.util.*
 
 open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity(type, world) {
 
-    var barrelAnim by BARREL_ANIM
-    var shootVec by SHOOT_VEC
-    var depressed by DEPRESSED
-    var targetPos by TARGET_POS
-    var radius by RADIUS
-    var lockTurret by LOCK_TURRET
+    open var barrelAnim by BARREL_ANIM
+    open var shootVec by SHOOT_VEC
+    open var depressed by DEPRESSED
+    open var targetPos by TARGET_POS
+    open var radius by RADIUS
+    open var lockTurret by LOCK_TURRET
 
     init {
         barrelAnim = List(Math.max(4, this.maxBarrel)) { 0 }
@@ -207,7 +207,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         }
     }
 
-    val maxBarrel: Int
+    open val maxBarrel: Int
         get() = getGunData("Main")?.get(GunProp.MAGAZINE) ?: 1
 
     override fun baseTick() {
@@ -253,7 +253,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         super.vehicleShoot(living, uuid, targetPos)
     }
 
-    fun beforeShoot(living: LivingEntity?) {
+    open fun beforeShoot(living: LivingEntity?) {
         val data = getGunData("Main")
         if (data != null && data.ammo.get() > 0) {
             val animCounters = barrelAnim.toMutableList()
