@@ -25,18 +25,20 @@ void main() {
     // 1. 背景处理 (冷色调 + 噪点 + 晕影 + 扫描线)
     float sceneLuma = luma(sceneColor.rgb);
 
-    // 更深邃的冷色调背景
-    vec3 bgDeep = vec3(0.0, 0.02, 0.1);// 深黑蓝
-    vec3 bgMid  = vec3(0.05, 0.1, 0.35);// 蓝紫
-    vec3 bgHigh = vec3(0.0, 0.4, 0.5);// 青绿 (高亮部分)
+//    // 更深邃的冷色调背景
+//    vec3 bgDeep = vec3(0.0, 0.02, 0.1);// 深黑蓝
+//    vec3 bgMid  = vec3(0.05, 0.1, 0.35);// 蓝紫
+//    vec3 bgHigh = vec3(0.0, 0.4, 0.5);// 青绿 (高亮部分)
+//
+//    vec3 bgColor = mix(bgDeep, bgMid, smoothstep(0.0, 0.4, sceneLuma));
+//    bgColor = mix(bgColor, bgHigh, smoothstep(0.4, 1.0, sceneLuma));
 
-    vec3 bgColor = mix(bgDeep, bgMid, smoothstep(0.0, 0.4, sceneLuma));
-    bgColor = mix(bgColor, bgHigh, smoothstep(0.4, 1.0, sceneLuma));
+    // 用这个就是原色背景
+    vec3 bgColor = sceneColor.rgb;
 
-
-    // 添加噪点 (模拟传感器噪声)
-    float noise = random(texCoord * 100.0);
-    bgColor += (noise - 0.5) * 0.08;
+//    // 添加噪点 (模拟传感器噪声)
+//    float noise = random(texCoord * 100.0);
+//    bgColor += (noise - 0.5) * 0.08;
 
     // 添加晕影 (Vignette)
     vec2 uv = texCoord * (1.0 - texCoord.yx);
