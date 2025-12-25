@@ -1,8 +1,10 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.EntityModel;
@@ -22,6 +24,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import static com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener.getSmartBrightenedTexture;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
@@ -64,6 +68,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             at = @At("HEAD"), cancellable = true)
     protected void getRenderType(T pLivingEntity, boolean pBodyVisible, boolean pTranslucent, boolean pGlowing, CallbackInfoReturnable<RenderType> cir) {
         ResourceLocation resourcelocation = this.getTextureLocation(pLivingEntity);
+
+        if (ClientEventHandler.activeThermalImaging) {
+            resourcelocation = getSmartBrightenedTexture(resourcelocation, 2f);
+        }
 
         if (pTranslucent) {
             cir.setReturnValue(RenderType.itemEntityTranslucentCull(resourcelocation));
