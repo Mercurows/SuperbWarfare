@@ -18,7 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 /**
  * Code based on YWZJ Team
  */
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(value = Dist.CLIENT, bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD)
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber(value = Dist.CLIENT, bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.FORGE)
 public class ThermalShaderHandler implements ResourceManagerReloadListener {
 
     private static final ResourceLocation THERMAL_EFFECT = Mod.loc("shaders/post/thermal.json");
