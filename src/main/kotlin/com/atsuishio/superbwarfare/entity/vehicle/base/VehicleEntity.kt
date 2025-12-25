@@ -2090,7 +2090,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         for (i in 0..<this.maxPassengers) {
             val currentData = getGunData(i) ?: continue
 
-            if (currentData.useBackpackAmmo()) {
+            if (!currentData.useBackpackAmmo()) {
                 if (currentData.backupAmmoCount.get() != 0) {
                     modifyGunData(i) { it.backupAmmoCount.reset() }
                 }
