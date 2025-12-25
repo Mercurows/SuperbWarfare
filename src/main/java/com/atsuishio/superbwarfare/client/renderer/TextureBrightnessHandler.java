@@ -51,7 +51,7 @@ public class TextureBrightnessHandler {
         }
     }
 
-    private static NativeImage brightenImage(NativeImage original, float multiplier) {
+    public static NativeImage brightenImage(NativeImage original, float multiplier) {
         // 创建相同尺寸的新图像
         NativeImage brightened = new NativeImage(original.getWidth(), original.getHeight(), false);
 
