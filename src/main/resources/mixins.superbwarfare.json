@@ -30,7 +30,6 @@
     "ClientPlayerEntityMixin",
     "EntityRenderDispatcherMixin",
     "GameRendererMixin",
-    "GeoRendererMixin",
     "ItemInHandLayerMixin",
     "KeyboardInputMixin",
     "KeymappingMixin",
