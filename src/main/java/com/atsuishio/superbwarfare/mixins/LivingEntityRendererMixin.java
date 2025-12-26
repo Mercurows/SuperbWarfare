@@ -69,8 +69,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     protected void getRenderType(T pLivingEntity, boolean pBodyVisible, boolean pTranslucent, boolean pGlowing, CallbackInfoReturnable<RenderType> cir) {
         ResourceLocation resourcelocation = this.getTextureLocation(pLivingEntity);
 
-        if (ClientEventHandler.activeThermalImaging) {
-            resourcelocation = getSmartBrightenedTexture(resourcelocation, 2f);
+        if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) {
+            resourcelocation = getSmartBrightenedTexture(resourcelocation, 5f);
         }
 
         if (pTranslucent) {

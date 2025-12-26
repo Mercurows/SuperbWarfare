@@ -11,9 +11,12 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.thermalImagingMode;
 
 /**
  * Code based on YWZJ Team
@@ -26,7 +29,7 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
     private static PostChain thermalChain;
     private static int lastWidth = 0;
     private static int lastHeight = 0;
-    private static boolean seeThroughWalls = true;
+    private static boolean seeThroughWalls = false;
 
     public static void setSeeThroughWalls(boolean seeThrough) {
         seeThroughWalls = seeThrough;
@@ -59,8 +62,8 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
 
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {
-        setActive(true);
-        setSeeThroughWalls(false);
+
+        RenderSystem.setShaderGameTime(0, event.getPartialTick());
 
         if (!isActive) return;
 
@@ -172,10 +175,6 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
     }
 
     private static boolean isHotEntity(Entity entity) {
-        if (entity == Minecraft.getInstance().player && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
-            return false;
-        }
-//        return entity instanceof LivingEntity || entity.isOnFire();
-        return true;
+        return (entity != Minecraft.getInstance().player || !Minecraft.getInstance().options.getCameraType().isFirstPerson()) && thermalImagingMode == 1;
     }
 }

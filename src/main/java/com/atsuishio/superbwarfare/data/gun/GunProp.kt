@@ -273,7 +273,7 @@ class GunProp<T, R> private constructor(
         val SPREAD_AMOUNT = plainProp(DefaultGunData::spreadAmount)
 
         @JvmField
-        val SPREAD_ANGLE = plainProp(DefaultGunData::spreadAmount)
+        val SPREAD_ANGLE = plainProp(DefaultGunData::spreadAngle)
 
         @JvmField
         val ADD_SHOOTER_DELTA_MOVEMENT = plainProp(DefaultGunData::addShooterDeltaMovement)

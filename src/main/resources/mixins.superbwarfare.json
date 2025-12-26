@@ -8,6 +8,7 @@
     "AnimationProcessorAccessor",
     "BeastMixin",
     "ClientboundSetPassengersPacketMixin",
+    "ClientLevelMixin",
     "EntityMixin",
     "ExplosionMixin",
     "FishingHookMixin",

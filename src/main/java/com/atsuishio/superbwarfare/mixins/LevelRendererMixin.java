@@ -39,7 +39,7 @@ public class LevelRendererMixin {
             at = @At("HEAD"), cancellable = true)
     private void renderEntity(Entity pEntity, double pCamX, double pCamY, double pCamZ, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, CallbackInfo ci) {
         // 这里只改实体的亮度
-        if (ClientEventHandler.activeThermalImaging) {
+        if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) {
             ci.cancel();
             double d0 = Mth.lerp(pPartialTick, pEntity.xOld, pEntity.getX());
             double d1 = Mth.lerp(pPartialTick, pEntity.yOld, pEntity.getY());

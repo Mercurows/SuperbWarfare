@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
+import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.*;
@@ -20,6 +21,7 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -251,6 +253,9 @@ public class ClientEventHandler {
 
     public static boolean activeThermalImaging;
 
+    public static int thermalImagingMode = 0;
+
+
     @SubscribeEvent
     public static void handleWeaponTurn(RenderHandEvent event) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -308,10 +313,30 @@ public class ClientEventHandler {
                 )
         );
 
+        thermalImagingMode = player.isShiftKeyDown() ? 1 : 0;
+
+//        if (thermalImagingMode == 0) {
+//            if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
+//                activeThermalImaging = false;
+//                Minecraft.getInstance().gameRenderer.shutdownEffect();
+//            } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
+//                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
+//            }
+//        } else {
+//            if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
+//                activeThermalImaging = false;
+//                ThermalShaderHandler.setActive(false);
+//            } else {
+//                ThermalShaderHandler.setActive(true);
+//            }
+//        }
+
         if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
             activeThermalImaging = false;
             Minecraft.getInstance().gameRenderer.shutdownEffect();
+            ThermalShaderHandler.setActive(false);
         } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
+            ThermalShaderHandler.setActive(true);
             Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
         }
 

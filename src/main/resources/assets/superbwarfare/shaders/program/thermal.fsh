@@ -35,6 +35,7 @@ void main() {
 
     // 用这个就是原色背景
     vec3 bgColor = sceneColor.rgb;
+//    vec3 bgColor = vec3(sceneColor.r * 0.75, sceneColor.g * 0.75, sceneColor.b * 0.75);
 
 //    // 添加噪点 (模拟传感器噪声)
 //    float noise = random(texCoord * 100.0);
@@ -49,26 +50,26 @@ void main() {
     // 2. 热源处理
     vec3 finalColor = bgColor;
 
-    // 环境热源检测 (岩浆、火、太阳等)
-    // 优化逻辑：使用平滑过渡，结合亮度和暖色调
-    // warmth: 红色分量超出绿/蓝分量的程度
-    float warmth = sceneColor.r - max(sceneColor.g, sceneColor.b);
-
-    // 1. 极亮物体 (太阳、强光源)：亮度极高时直接视为热源
-    float brightHeat = smoothstep(0.92, 1.0, sceneLuma);
-
-    // 2. 暖色高亮物体 (岩浆、火)：亮度中等偏高，且色调偏暖
-    float warmHeat = smoothstep(0.5, 0.9, sceneLuma) * smoothstep(0.05, 0.4, warmth);
-
-    float envHeat = max(brightHeat, warmHeat);
-
-    if (envHeat > 0.01) {
-        // 环境热源色谱：橙红 -> 黄白 (提高饱和度)
-        vec3 envColor = mix(vec3(1.0, 0.15, 0.0), vec3(1.0, 0.9, 0.4), envHeat);
-        // 混合强度优化：增加基础混合权重，防止低热度时被背景冷色淹没
-        // 只要是热源，至少有 40% 的暖色覆盖
-        finalColor = mix(finalColor, envColor, clamp(envHeat + 0.4, 0.0, 1.0));
-    }
+//    // 环境热源检测 (岩浆、火、太阳等)
+//    // 优化逻辑：使用平滑过渡，结合亮度和暖色调
+//    // warmth: 红色分量超出绿/蓝分量的程度
+//    float warmth = sceneColor.r - max(sceneColor.g, sceneColor.b);
+//
+//    // 1. 极亮物体 (太阳、强光源)：亮度极高时直接视为热源
+//    float brightHeat = smoothstep(0.92, 1.0, sceneLuma);
+//
+//    // 2. 暖色高亮物体 (岩浆、火)：亮度中等偏高，且色调偏暖
+//    float warmHeat = smoothstep(0.5, 0.9, sceneLuma) * smoothstep(0.05, 0.4, warmth);
+//
+//    float envHeat = max(brightHeat, warmHeat);
+//
+//    if (envHeat > 0.01) {
+//        // 环境热源色谱：橙红 -> 黄白 (提高饱和度)
+//        vec3 envColor = mix(vec3(1.0, 0.15, 0.0), vec3(1.0, 0.9, 0.4), envHeat);
+//        // 混合强度优化：增加基础混合权重，防止低热度时被背景冷色淹没
+//        // 只要是热源，至少有 40% 的暖色覆盖
+//        finalColor = mix(finalColor, envColor, clamp(envHeat + 0.4, 0.0, 1.0));
+//    }
 
     // 3. 实体热源处理 (最高优先级)
     // 兼容性修改：Oculus/光影可能会修改 Alpha 通道，所以同时检查 RGB 亮度
@@ -79,13 +80,12 @@ void main() {
 
         // 核心改进：提升基础热度。
         // 即使纹理很黑 (texLuma 接近 0)，我们也给它一个基础热度，确保深色实体也会发光
-        float heat = 0.4 + 0.6 * texLuma;
+        float heat = 0.2 + 0.7 * texLuma;
         heat = pow(heat, 0.8);// 增强对比度
 
-        // 改进的色谱：紫 -> 红 -> 橙 -> 黄 -> 白 (Ironbow 风格)
-        vec3 colCold = vec3(0.3, 0.0, 0.5);// 紫 (低温/边缘)
-        vec3 colMid  = vec3(0.9, 0.1, 0.0);// 红 (中温)
-        vec3 colHot  = vec3(1.0, 0.9, 0.5);// 黄白 (高温)
+        vec3 colCold = vec3(0.5, 0.5, 0.5);// 紫 (低温/边缘)
+        vec3 colMid  = vec3(0.75, 0.75, 0.75);// 红 (中温)
+        vec3 colHot  = vec3(1.0, 1.0, 1.0);// 黄白 (高温)
 
         vec3 objectColor;
         if (heat < 0.5) {
@@ -96,6 +96,11 @@ void main() {
 
         finalColor = objectColor;
     }
+
+    // 整体提高对比度
+    float contrast = 1.0; // 调整这个值，1.0为原始对比度，大于1提高对比度，小于1降低对比度
+    finalColor = (finalColor - 0.5) * contrast + 0.5;
+    finalColor = clamp(finalColor, 0.0, 1.0);
 
     fragColor = vec4(finalColor, 1.0);
 }
