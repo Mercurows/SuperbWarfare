@@ -31,6 +31,7 @@ public class ModTags {
         public static final TagKey<Item> MILITARY_ARMOR_HEAVY = modItemTag("military_armor_heavy");
 
         public static final TagKey<Item> INGOTS_STEEL = modItemTag("ingots/steel");
+        public static final TagKey<Item> INGOTS_LEAD = modItemTag("ingots/lead");
         public static final TagKey<Item> STORAGE_BLOCK_STEEL = modItemTag("storage_blocks/steel");
 
         public static final TagKey<Item> INGOTS_CEMENTED_CARBIDE = modItemTag("ingots/cemented_carbide");

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "b": {
+      "tag": "forge:ingots/copper"
+    },
+    "c": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "d": {
+      "item": "superbwarfare:primer"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "result": {
+    "count": 8,
+    "item": "superbwarfare:small_shell_he"
+  },
+  "show_notification": true
+}

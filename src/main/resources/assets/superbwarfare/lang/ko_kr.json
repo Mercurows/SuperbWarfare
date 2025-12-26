@@ -120,7 +120,7 @@
   "item.superbwarfare.ap_5_inches": "철갑탄 포탄",
   "item.superbwarfare.javelin_missile": "재블린 미사일",
   "item.superbwarfare.lunge_mine": "자돌 폭뢰",
-  "item.superbwarfare.small_shell": "소구경 포탄",
+  "item.superbwarfare.small_shell_ap": "소구경 포탄",
   "block.superbwarfare.container": "컨테이너",
   "des.superbwarfare.container.empty": "비어 있음",
   "des.superbwarfare.container.fail.empty": "이 컨테이너는 비어 있습니다",

@@ -145,7 +145,7 @@
   ],
   "Weapons": {
     "Cannon": {
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_25mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_25mm_aa.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
@@ -165,12 +165,12 @@
       "ShootAnimationTime": 3,
       "Crosshair": "@VehicleCommonGunDynamic",
       "CrosshairColor": "0x66FF00",
-      "Name": "weapon.superbwarfare.25mm_cannon",
+      "Name": "weapon.superbwarfare.25mm_cannon_aa",
       "SoundInfo": {
         "FireSoundInstances": "superbwarfare:lav_ad_fire",
         "Change": "superbwarfare:into_cannon"
       },
-      "AmmoType": "superbwarfare:small_shell",
+      "AmmoType": "superbwarfare:small_shell_aa",
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0, 0.12, 1.96]],

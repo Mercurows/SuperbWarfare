@@ -52,7 +52,7 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.SMALL_SHELL.get();
+        return ModItems.SMALL_SHELL_AP.get();
     }
 
     @Override

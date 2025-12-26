@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.ProjectileTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -115,11 +114,6 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
     @Override
     public float getVolume() {
         return 0.7f;
-    }
-
-    @Override
-    public boolean shouldSyncMotion() {
-        return true;
     }
 
     @Override

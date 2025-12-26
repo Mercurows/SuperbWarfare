@@ -30,7 +30,7 @@
   },
   "Weapons": {
     "Main": {
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_ap.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
@@ -48,8 +48,8 @@
       "ShootAnimationTime": 3,
       "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleCnHpjZooming",
-      "Name": "weapon.superbwarfare.30mm_cannon",
-      "AmmoType": "superbwarfare:small_shell",
+      "Name": "weapon.superbwarfare.30mm_cannon_ap",
+      "AmmoType": "superbwarfare:small_shell_ap",
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
         "SeekRange": 384,

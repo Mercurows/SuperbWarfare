@@ -303,7 +303,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
     open fun isFastMoving() = this.deltaMovement.length() >= 0.5
 
-    open fun shouldSyncMotion() = false
+    open fun shouldSyncMotion() = true
 
     override fun writeSpawnData(buffer: FriendlyByteBuf) {
         val motion = this.deltaMovement

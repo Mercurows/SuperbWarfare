@@ -116,7 +116,7 @@
   "item.superbwarfare.ap_5_inches": "Proiettile AP",
   "item.superbwarfare.javelin_missile": "Missile Javelin",
   "item.superbwarfare.lunge_mine": "Mina a impatto",
-  "item.superbwarfare.small_shell": "Proiettili di piccolo calibro",
+  "item.superbwarfare.small_shell_ap": "Proiettili di piccolo calibro",
   "block.superbwarfare.container": "Contenitore",
   "des.superbwarfare.container.empty": "Vuoto",
   "des.superbwarfare.container.fail.empty": "Questo contenitore è vuoto",

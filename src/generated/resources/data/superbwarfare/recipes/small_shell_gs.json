@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "a": {
-      "tag": "superbwarfare:ingots/steel"
+      "tag": "superbwarfare:ingots/lead"
     },
     "b": {
       "tag": "forge:ingots/copper"
@@ -13,19 +13,16 @@
     },
     "d": {
       "item": "superbwarfare:primer"
-    },
-    "e": {
-      "item": "superbwarfare:high_energy_explosives"
     }
   },
   "pattern": [
-    "ea ",
+    " a ",
     "bcb",
     " d "
   ],
   "result": {
-    "count": 8,
-    "item": "superbwarfare:small_shell"
+    "count": 12,
+    "item": "superbwarfare:small_shell_gs"
   },
   "show_notification": true
 }

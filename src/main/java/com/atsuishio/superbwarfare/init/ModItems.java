@@ -126,10 +126,14 @@ public class ModItems {
     public static final RegistryObject<Item> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);
     public static final RegistryObject<Item> RPG_ROCKET_TBG = AMMO.register("rpg_rocket_tbg", RpgRocketTBG::new);
     public static final RegistryObject<Item> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
-    public static final RegistryObject<Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
-    public static final RegistryObject<Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
-    public static final RegistryObject<Item> CM_5_INCHES = AMMO.register("cm_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
-    public static final RegistryObject<Item> GS_5_INCHES = AMMO.register("gs_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> SMALL_SHELL_AP = AMMO.register("small_shell_ap", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> SMALL_SHELL_HE = AMMO.register("small_shell_he", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> SMALL_SHELL_GS = AMMO.register("small_shell_gs", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> SMALL_SHELL_AA = AMMO.register("small_shell_aa", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> CM_5_INCHES = AMMO.register("cm_5_inches", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> GS_5_INCHES = AMMO.register("gs_5_inches", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
     public static final RegistryObject<Item> RGO_GRENADE = AMMO.register("rgo_grenade", RgoGrenade::new);
     public static final RegistryObject<Item> M18_SMOKE_GRENADE = AMMO.register("m18_smoke_grenade", M18SmokeGrenade::new);
@@ -138,7 +142,6 @@ public class ModItems {
     public static final RegistryObject<Item> PTKM_1R = AMMO.register("ptkm_1r", Ptkm1rItem::new);
     public static final RegistryObject<Item> C4_BOMB = AMMO.register("c4_bomb", C4BombItem::new);
     public static final RegistryObject<Item> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
-    public static final RegistryObject<Item> SMALL_SHELL = AMMO.register("small_shell", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SMALL_ROCKET = AMMO.register("small_rocket", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", () -> new MediumRocketItem(500, 6, 100, 0, 0, MediumRocketEntity.Type.AP, 0));
     public static final RegistryObject<Item> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));

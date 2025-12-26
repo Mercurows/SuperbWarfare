@@ -45,8 +45,6 @@ class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>,
 
     override fun getDefaultItem(): Item = Items.AIR
 
-    override fun shouldSyncMotion() = true
-
     override fun onHitEntity(result: EntityHitResult) {
         super.onHitEntity(result)
 

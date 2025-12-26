@@ -103,8 +103,6 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         this.xRotO = this.xRot
     }
 
-    override fun shouldSyncMotion() = true
-
     override fun forceLoadChunk() = true
 
     override fun isNoGravity() = true

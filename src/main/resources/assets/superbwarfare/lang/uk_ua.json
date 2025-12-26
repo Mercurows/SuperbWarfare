@@ -129,7 +129,7 @@
   "item.superbwarfare.ap_5_inches": "Бронебійний снаряд",
   "item.superbwarfare.javelin_missile": "Ракета Javelin",
   "item.superbwarfare.lunge_mine": "Ударна міна",
-  "item.superbwarfare.small_shell": "Снаряди малого калібру",
+  "item.superbwarfare.small_shell_ap": "Снаряди малого калібру",
   "block.superbwarfare.container": "Контейнер",
   "des.superbwarfare.container.empty": "Порожньо",
   "des.superbwarfare.container.fail.empty": "Цей контейнер порожній",

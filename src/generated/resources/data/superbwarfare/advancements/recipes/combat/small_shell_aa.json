@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_high_energy_explosives": {
+    "has_iron_ingot": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:high_energy_explosives"
+              "minecraft:iron_ingot"
             ]
           }
         ]
@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:small_shell"
+        "recipe": "superbwarfare:small_shell_aa"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -35,13 +35,13 @@
   "requirements": [
     [
       "has_primer",
-      "has_high_energy_explosives",
+      "has_iron_ingot",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:small_shell"
+      "superbwarfare:small_shell_aa"
     ]
   },
   "sends_telemetry_event": false

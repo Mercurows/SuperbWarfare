@@ -106,16 +106,15 @@
   ],
   "Weapons": {
     "Cannon": {
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
       "DefaultZoom": 3,
       "RPM": 300,
-      "Velocity": 20,
+      "Velocity": 25,
       "Damage": 45,
-      "ExplosionDamage": 12,
-      "ExplosionRadius": 4,
+      "ExplosionDamage": 6,
+      "ExplosionRadius": 2,
       "RecoilTime": 29,
       "RecoilForce": 0.55,
       "Spread": 0.5,
@@ -124,7 +123,7 @@
       "ShootAnimationTime": 3,
       "Crosshair": "@VehicleUsApc",
       "CrosshairColor": "0x66FF00",
-      "Name": "weapon.superbwarfare.20mm_cannon",
+      "Name": "weapon.superbwarfare.20mm_cannon_ap",
       "SoundInfo": {
         "Fire1P": "superbwarfare:lav_150_cannon_fire_1p",
         "Fire3P": "superbwarfare:lav_150_cannon_fire_3p",
@@ -133,7 +132,38 @@
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,
-      "AmmoType": "superbwarfare:small_shell",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm_ap.png",
+      "AmmoType": [
+        "superbwarfare:small_shell_ap",
+        {
+          "Ammo": "superbwarfare:small_shell_he",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm_he.png",
+            "Velocity": 18,
+            "Damage": 13,
+            "ExplosionDamage": 14,
+            "ExplosionRadius": 4,
+            "Name": "weapon.superbwarfare.20mm_cannon_he"
+          }
+        },
+        {
+          "Ammo": "superbwarfare:small_shell_gs",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm_gs.png",
+            "Spread": 3,
+            "Velocity": 10,
+            "Damage": 8,
+            "ProjectileAmount": 12,
+            "DamageReduce": {
+              "Type": "Shotgun"
+            },
+            "ExplosionDamage": 0,
+            "ExplosionRadius": 0,
+            "Projectile": "superbwarfare:projectile",
+            "Name": "weapon.superbwarfare.20mm_cannon_gs"
+          }
+        }
+      ],
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0.02, 0.0517, 3.2]],
