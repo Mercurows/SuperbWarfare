@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
@@ -25,7 +23,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         texture: ResourceLocation,
         bufferSource: MultiBufferSource?,
         partialTick: Float
-    ): RenderType? = RenderType.entityTranslucent(if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) SmartTextureBrightener.getSmartBrightenedTexture(getTextureLocation(vehicle), 2f) else getTextureLocation(vehicle))
+    ): RenderType? = RenderType.entityTranslucent(getTextureLocation(vehicle))
 
     override fun render(entityIn: T, entityYaw: Float, partialTicks: Float, poseStack: PoseStack, bufferIn: MultiBufferSource, packedLightIn: Int) {
         poseStack.pushPose()
