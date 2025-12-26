@@ -27,6 +27,7 @@ import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.menu.EnergyMenu
 import com.atsuishio.superbwarfare.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.mobeffect.BurnMobEffect
+import com.atsuishio.superbwarfare.mobeffect.PhosphorusFireMobEffect
 import com.atsuishio.superbwarfare.mobeffect.ShockMobEffect
 import com.atsuishio.superbwarfare.mobeffect.TraumaMobEffect
 import com.atsuishio.superbwarfare.perk.functional.PowerfulAttraction
@@ -87,6 +88,7 @@ private val classes = arrayOf(
     BurnMobEffect::class.java,
     ShockMobEffect::class.java,
     TraumaMobEffect::class.java,
+    PhosphorusFireMobEffect::class.java,
     PowerfulAttraction::class.java,
     WelcomeProcedure::class.java,
     ModPotionRecipes::class.java,

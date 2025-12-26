@@ -42,6 +42,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> LUNGE_MINE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("lunge_mine"));
     public static final ResourceKey<DamageType> VEHICLE_EXPLOSION = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("vehicle_explosion"));
     public static final ResourceKey<DamageType> GRAPESHOT_HIT = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("grapeshot_hit"));
+    public static final ResourceKey<DamageType> PHOSPHORUS_FIRE = ResourceKey.create(Registries.DAMAGE_TYPE, Mod.loc("phosphorus_fire"));
 
     public static DamageSource causeGunFireDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GUN_FIRE), directEntity, attacker);
@@ -142,6 +143,10 @@ public class ModDamageTypes {
 
     public static DamageSource causeBeastDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
         return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(BEAST), directEntity, attacker);
+    }
+
+    public static DamageSource causePhosphorusFireDamage(RegistryAccess registryAccess, @Nullable Entity directEntity, @Nullable Entity attacker) {
+        return new DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(PHOSPHORUS_FIRE), directEntity, attacker);
     }
 
     private static class DamageMessages extends DamageSource {
