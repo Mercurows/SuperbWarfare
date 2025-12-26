@@ -1,7 +1,15 @@
 package com.atsuishio.superbwarfare.compat;
 
+import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 
+@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class CompatHolder {
 
     public static final String DMV = "dreamaticvoyage";
@@ -11,14 +19,14 @@ public class CompatHolder {
     public static final String REALCAMERA = "realcamera";
     public static final String NET_MUSIC = "netmusic";
 
-//    @ObjectHolder(registryName = "minecraft:mob_effect", value = DMV + ":bleeding")
-//    public static final MobEffect DMV_BLEEDING = null;
-//
-//    @ObjectHolder(registryName = "minecraft:mob_effect", value = VRC + ":curse_flame")
-//    public static final MobEffect VRC_CURSE_FLAME = null;
-//
-//    @ObjectHolder(registryName = "minecraft:entity_type", value = VRC + ":rain_shower_butterfly")
-//    public static final EntityType<? extends Projectile> VRC_RAIN_SHOWER_BUTTERFLY = null;
+    @SubscribeEvent
+    public static void onInterModEnqueue(final InterModEnqueueEvent event) {
+        event.enqueueWork(() -> hasMod(CLOTH_CONFIG, () -> {
+            if (FMLEnvironment.dist == Dist.CLIENT) {
+                ClothConfigHelper.registerScreen();
+            }
+        }));
+    }
 
     public static void hasMod(String modid, Runnable runnable) {
         if (ModList.get().isLoaded(modid)) {

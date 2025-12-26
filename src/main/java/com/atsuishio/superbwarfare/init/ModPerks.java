@@ -48,6 +48,7 @@ public class ModPerks {
     public static final DeferredHolder<Perk, RiotBullet> RIOT_BULLET = AMMO_PERKS.register("riot_bullet", RiotBullet::new);
     public static final DeferredHolder<Perk, PhasePenetratingBullet> PHASE_PENETRATING_BULLET = AMMO_PERKS.register("phase_penetrating_bullet", PhasePenetratingBullet::new);
     public static final DeferredHolder<Perk, BladeBullet> BLADE_BULLET = AMMO_PERKS.register("blade_bullet", BladeBullet::new);
+    public static final DeferredHolder<Perk, PhosphorusFlameBullet> PHOSPHORUS_FLAME_BULLET = AMMO_PERKS.register("phosphorus_flame_bullet", PhosphorusFlameBullet::new);
 
     /**
      * Functional Perks

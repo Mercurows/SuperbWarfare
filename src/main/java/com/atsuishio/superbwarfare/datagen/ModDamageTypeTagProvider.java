@@ -59,19 +59,23 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 ModDamageTypes.PROJECTILE_HIT,
                 ModDamageTypes.PROJECTILE_EXPLOSION,
                 ModDamageTypes.SUPER_STAR_HIT,
-                ModDamageTypes.SUPER_STAR_SLASH
+                ModDamageTypes.SUPER_STAR_SLASH,
+                ModDamageTypes.PHOSPHORUS_FIRE
         );
 
         this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION,
                 ModDamageTypes.PROJECTILE_HIT, ModDamageTypes.GRAPESHOT_HIT, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT,
-                ModDamageTypes.LASER_STATIC, ModDamageTypes.REPAIR_TOOL, ModDamageTypes.SUPER_STAR_HIT, ModDamageTypes.SUPER_STAR_SLASH);
+                ModDamageTypes.LASER_STATIC, ModDamageTypes.REPAIR_TOOL, ModDamageTypes.SUPER_STAR_HIT, ModDamageTypes.SUPER_STAR_SLASH,
+                ModDamageTypes.PHOSPHORUS_FIRE);
         this.tag(DamageTypeTags.BYPASSES_ARMOR).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
                 ModDamageTypes.SHOCK, ModDamageTypes.PROJECTILE_HIT, ModDamageTypes.GRAPESHOT_HIT, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
-                ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH, ModDamageTypes.REPAIR_TOOL, ModDamageTypes.SUPER_STAR_HIT, ModDamageTypes.SUPER_STAR_SLASH);
-        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.SHOCK);
+                ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH, ModDamageTypes.REPAIR_TOOL, ModDamageTypes.SUPER_STAR_HIT, ModDamageTypes.SUPER_STAR_SLASH,
+                ModDamageTypes.PHOSPHORUS_FIRE);
+        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.SHOCK, ModDamageTypes.PHOSPHORUS_FIRE);
         this.tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(ModDamageTypes.GUN_FIRE_ABSOLUTE, ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
                 ModDamageTypes.SHOCK, ModDamageTypes.PROJECTILE_HIT, ModDamageTypes.GRAPESHOT_HIT, ModDamageTypes.LASER, ModDamageTypes.LASER_HEADSHOT, ModDamageTypes.LASER_STATIC,
-                ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH, ModDamageTypes.SUPER_STAR_HIT, ModDamageTypes.SUPER_STAR_SLASH);
+                ModDamageTypes.VEHICLE_STRIKE, ModDamageTypes.VEHICLE_EXPLOSION, ModDamageTypes.AIR_CRASH, ModDamageTypes.SUPER_STAR_HIT, ModDamageTypes.SUPER_STAR_SLASH,
+                ModDamageTypes.PHOSPHORUS_FIRE);
         this.tag(DamageTypeTags.IS_EXPLOSION).add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.LUNGE_MINE);
         this.tag(DamageTypeTags.IS_FIRE).add(ModDamageTypes.BURN);
         this.tag(ModTags.DamageTypes.BYPASSES_VEHICLE).add(ModDamageTypes.REPAIR_TOOL);
@@ -96,7 +100,8 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 ModDamageTypes.VEHICLE_EXPLOSION,
                 ModDamageTypes.VEHICLE_STRIKE,
                 ModDamageTypes.SUPER_STAR_HIT,
-                ModDamageTypes.SUPER_STAR_SLASH
+                ModDamageTypes.SUPER_STAR_SLASH,
+                ModDamageTypes.PHOSPHORUS_FIRE
         );
     }
 

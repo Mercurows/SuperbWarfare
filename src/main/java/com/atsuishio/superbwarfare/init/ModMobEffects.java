@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.mobeffect.BurnMobEffect;
-import com.atsuishio.superbwarfare.mobeffect.ShockMobEffect;
-import com.atsuishio.superbwarfare.mobeffect.StrikeProtectionMobEffect;
-import com.atsuishio.superbwarfare.mobeffect.TraumaMobEffect;
+import com.atsuishio.superbwarfare.mobeffect.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -17,4 +14,5 @@ public class ModMobEffects {
     public static final DeferredHolder<MobEffect, BurnMobEffect> BURN = REGISTRY.register("burn", BurnMobEffect::new);
     public static final DeferredHolder<MobEffect, StrikeProtectionMobEffect> STRIKE_PROTECTION = REGISTRY.register("strike_protection", StrikeProtectionMobEffect::new);
     public static final DeferredHolder<MobEffect, TraumaMobEffect> TRAUMA = REGISTRY.register("trauma", TraumaMobEffect::new);
+    public static final DeferredHolder<MobEffect, PhosphorusFireMobEffect> PHOSPHORUS_FIRE = REGISTRY.register("phosphorus_fire", PhosphorusFireMobEffect::new);
 }
