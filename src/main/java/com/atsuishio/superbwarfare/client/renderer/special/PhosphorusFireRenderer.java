@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.special;
 
-import com.atsuishio.superbwarfare.init.ModMobEffects;
+import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -23,8 +23,7 @@ public class PhosphorusFireRenderer {
     @SubscribeEvent
     public static void onRenderCurseFlame(RenderLivingEvent<LivingEntity, ? extends EntityModel<? extends LivingEntity>> event) {
         LivingEntity entity = event.getEntity();
-        // TODO 换成cap实现
-        if (!entity.hasEffect(ModMobEffects.PHOSPHORUS_FIRE.get()))
+        if (!PhosphorusFireCapability.of(entity).isOnFire())
             return;
 
         var stack = event.getPoseStack();

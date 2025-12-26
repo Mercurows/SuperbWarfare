@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.mobeffect;
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
+import com.atsuishio.superbwarfare.network.NetworkRegistry;
+import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -9,8 +11,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
 
@@ -57,6 +62,9 @@ public class PhosphorusFireMobEffect extends MobEffect {
     @SubscribeEvent
     public static void onEffectAdded(MobEffectEvent.Added event) {
         LivingEntity living = event.getEntity();
+        if (living == null) {
+            return;
+        }
 
         MobEffectInstance instance = event.getEffectInstance();
         if (!instance.getEffect().equals(ModMobEffects.PHOSPHORUS_FIRE.get())) {
@@ -66,6 +74,8 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (event.getEffectSource() instanceof LivingEntity source) {
             living.getPersistentData().putInt(TAG_PHOSPHORUS_FIRE_ATTACKER, source.getId());
         }
+
+        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> living), new ClientPhosphorusFireMessage(living.getId(), true));
     }
 
     @SubscribeEvent
@@ -95,6 +105,23 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (instance.getEffect().equals(ModMobEffects.PHOSPHORUS_FIRE.get())) {
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_ATTACKER);
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_COUNT);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof LivingEntity living) {
+            if (living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE.get())) {
+                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(event::getEntity), new ClientPhosphorusFireMessage(living.getId(), true));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+        LivingEntity living = event.getEntity();
+        if (!living.level().isClientSide && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE.get()) && living.level().getGameTime() % 1000 == 0) {
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(event::getEntity), new ClientPhosphorusFireMessage(living.getId(), true));
         }
     }
 }

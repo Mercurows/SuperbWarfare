@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
@@ -146,6 +147,18 @@ public class ClientPacketHandler {
             } else {
                 Mod.queueClientWork(time,
                         () -> player.level().playSound(player, message.x(), message.y(), message.z(), sound, SoundSource.BLOCKS, message.radius(), message.pitch()));
+            }
+        }
+    }
+
+    public static void handlePhosphorusFire(ClientPhosphorusFireMessage message, Supplier<NetworkEvent.Context> ctx) {
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+            var level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            var entity = level.getEntity(message.id);
+            if (entity instanceof LivingEntity living) {
+                PhosphorusFireCapability.of(living).setOnFire(message.flag);
             }
         }
     }

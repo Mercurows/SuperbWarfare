@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.capability
 
+import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.network.NetworkRegistry
@@ -8,6 +9,7 @@ import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilitySerializable
@@ -26,8 +28,18 @@ import net.minecraftforge.network.PacketDistributor
 object CapabilityHandler {
     @SubscribeEvent
     fun registerCapabilities(event: AttachCapabilitiesEvent<Entity>) {
-        val player = event.getObject()
-        if (player !is Player) return
+        val entity = event.getObject()
+        if (entity is LivingEntity) {
+            event.addCapability(
+                PhosphorusFireCapability.ID,
+                createProvider(
+                    LazyOptional.of { PhosphorusFireCapability() },
+                    ModCapabilities.PHOSPHORUS_FIRE_CAPABILITY
+                )
+            );
+        }
+
+        if (entity !is Player) return
 
         event.addCapability(
             LaserCapability.ID,
@@ -37,7 +49,7 @@ object CapabilityHandler {
             )
         )
 
-        if (player !is FakePlayer) {
+        if (entity !is FakePlayer) {
             event.addCapability(
                 PlayerVariable.ID,
                 createProvider(
