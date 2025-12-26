@@ -2,7 +2,9 @@ package com.atsuishio.superbwarfare.mobeffect;
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
+import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -12,6 +14,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
@@ -69,6 +74,8 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (event.getEffectSource() instanceof LivingEntity source) {
             living.getPersistentData().putInt(TAG_PHOSPHORUS_FIRE_ATTACKER, source.getId());
         }
+
+        PacketDistributor.sendToPlayersTrackingEntity(living, new ClientPhosphorusFireMessage(living.getId(), true));
     }
 
     @SubscribeEvent
@@ -98,6 +105,26 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (instance.getEffect().value().equals(ModMobEffects.PHOSPHORUS_FIRE.get())) {
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_ATTACKER);
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_COUNT);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof LivingEntity living
+                && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE)
+                && event.getEntity() instanceof ServerPlayer player
+        ) {
+            PacketDistributor.sendToPlayer(player, new ClientPhosphorusFireMessage(living.getId(), true));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingTick(EntityTickEvent.Post event) {
+        var entity = event.getEntity();
+        if (!(entity instanceof LivingEntity living)) return;
+
+        if (!living.level().isClientSide && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE) && living.level().getGameTime() % 1000 == 0) {
+            PacketDistributor.sendToPlayersTrackingEntity(living, new ClientPhosphorusFireMessage(living.getId(), true));
         }
     }
 }

@@ -30,6 +30,7 @@ public class NetworkRegistry {
         playToClient(FinishAssemblingVehicleMessage.TYPE, FinishAssemblingVehicleMessage.STREAM_CODEC, (message3, context3) -> FinishAssemblingVehicleMessage.handler(message3));
         playToClient(TDMSyncMessage.TYPE, TDMSyncMessage.STREAM_CODEC, (message3, context3) -> TDMSyncMessage.handler(message3));
         playToClient(SoundClientMessage.TYPE, SoundClientMessage.STREAM_CODEC, (message3, context3) -> SoundClientMessage.handler(message3));
+        playToClient(ClientPhosphorusFireMessage.TYPE, ClientPhosphorusFireMessage.STREAM_CODEC, (message3, context3) -> ClientPhosphorusFireMessage.handler(message3));
 
         playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);

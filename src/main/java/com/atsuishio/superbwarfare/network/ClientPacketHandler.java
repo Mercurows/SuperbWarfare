@@ -1,14 +1,17 @@
 package com.atsuishio.superbwarfare.network;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability;
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage;
 import com.atsuishio.superbwarfare.network.message.receive.FinishAssemblingVehicleMessage;
 import com.atsuishio.superbwarfare.network.message.receive.SoundClientMessage;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -56,4 +59,13 @@ public class ClientPacketHandler {
         }
     }
 
+    public static void handlePhosphorusFire(ClientPhosphorusFireMessage message) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        var entity = level.getEntity(message.id());
+        if (entity instanceof LivingEntity living) {
+            PhosphorusFireCapability.of(living).setOnFire(message.flag());
+        }
+    }
 }
