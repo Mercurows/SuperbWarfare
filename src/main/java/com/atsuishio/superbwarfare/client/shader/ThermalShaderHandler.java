@@ -17,6 +17,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.NotNull;
 
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.thermalImagingMode;
+
 /**
  * Code based on YWZJ Team
  */
@@ -28,7 +30,7 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
     private static PostChain thermalChain;
     private static int lastWidth = 0;
     private static int lastHeight = 0;
-    private static boolean seeThroughWalls = true;
+    private static boolean seeThroughWalls = false;
 
     public static void setSeeThroughWalls(boolean seeThrough) {
         seeThroughWalls = seeThrough;
@@ -61,8 +63,8 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
 
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {
-        setActive(true);
-        setSeeThroughWalls(false);
+
+        RenderSystem.setShaderGameTime(0, event.getPartialTick().getGameTimeDeltaPartialTick(true));
 
         if (!isActive) return;
 
@@ -174,7 +176,6 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
     }
 
     private static boolean isHotEntity(Entity entity) {
-        return entity != Minecraft.getInstance().player || !Minecraft.getInstance().options.getCameraType().isFirstPerson();
-//        return entity instanceof LivingEntity || entity.isOnFire();
+        return (entity != Minecraft.getInstance().player || !Minecraft.getInstance().options.getCameraType().isFirstPerson()) && thermalImagingMode == 1;
     }
 }

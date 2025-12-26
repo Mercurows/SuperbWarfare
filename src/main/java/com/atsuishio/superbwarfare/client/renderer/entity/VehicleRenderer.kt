@@ -25,7 +25,12 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         texture: ResourceLocation,
         bufferSource: MultiBufferSource?,
         partialTick: Float
-    ): RenderType? = RenderType.entityTranslucent(if (ClientEventHandler.activeThermalImaging) SmartTextureBrightener.getSmartBrightenedTexture(getTextureLocation(vehicle), 2f) else getTextureLocation(vehicle))
+    ): RenderType? = RenderType.entityTranslucent(
+        if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) SmartTextureBrightener.getSmartBrightenedTexture(
+            getTextureLocation(vehicle),
+            2f
+        ) else getTextureLocation(vehicle)
+    )
 
     override fun render(
         entity: T,
