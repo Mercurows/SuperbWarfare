@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter
 import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
+import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper
 import com.atsuishio.superbwarfare.client.screens.modsell.ModSellWarningScreen
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
@@ -98,6 +99,7 @@ private val classes = arrayOf(
     TDMSavedData::class.java,
     ClientMouseHandler::class.java,
     ThermalShaderHandler::class.java,
+    PhosphorusFireRenderer::class.java,
 )
 
 // TODO 转为kt后移除该方法和文件
