@@ -10,7 +10,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Set;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class PhosphorusFireMobEffect extends MobEffect {
@@ -34,7 +38,7 @@ public class PhosphorusFireMobEffect extends MobEffect {
         int fireCount = living.getPersistentData().getInt(TAG_PHOSPHORUS_FIRE_COUNT);
         int fireLevel = fireCount / 4;
 
-        float damage = 1f + 0.5f * amplifier + Math.min((amplifier + 1) * 4.5f, fireLevel * (amplifier * 1.5f + 0.5f));
+        float damage = 1f + 0.5f * amplifier + Math.min((amplifier + 1) * 5f, fireLevel * (amplifier * 0.6f + 1.2f));
 
         DamageHandler.doDamage(living, ModDamageTypes.causePhosphorusFireDamage(living.level().registryAccess(), null, attacker), damage);
         living.invulnerableTime = 0;
@@ -46,6 +50,11 @@ public class PhosphorusFireMobEffect extends MobEffect {
     @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 10 == 0;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
     }
 
     @SubscribeEvent
