@@ -53,6 +53,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "fukamizu_bread_ingot"));
         this.tag(ModTags.Items.INGOTS_CEMENTED_CARBIDE).add(ModItems.CEMENTED_CARBIDE_INGOT.get())
                 .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "hqss_bread_ingot"));
+        this.tag(ModTags.Items.INGOTS_LEAD).addTag(commonItemTag("ingots/lead"));
 
         this.tag(Tags.Items.STORAGE_BLOCKS).addTags(commonItemTag("storage_blocks/lead"), commonItemTag("storage_blocks/steel"), commonItemTag("storage_blocks/tungsten"), commonItemTag("storage_blocks/silver"));
         this.tag(commonItemTag("storage_blocks/lead")).add(ModItems.LEAD_BLOCK.get());

@@ -107,19 +107,18 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm.png",
       "DefaultZoom": 3,
       "RPM": 300,
-      "Velocity": 30,
-      "Damage": 55,
-      "ExplosionDamage": 15,
-      "ExplosionRadius": 4,
+      "Velocity": 25,
+      "Damage": 65,
+      "ExplosionDamage": 8,
+      "ExplosionRadius": 2,
       "HeatPerShoot": 7,
       "NaturalCooldown": 1,
       "RecoilTime": 31,
       "RecoilForce": 0.62,
       "Spread": 0.25,
-      "Name": "weapon.superbwarfare.30mm_2a42",
+      "Name": "weapon.superbwarfare.30mm_2a42_ap",
       "SoundInfo": {
         "Fire1P": "superbwarfare:mi_28_cannon_fire_1p",
         "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
@@ -130,7 +129,21 @@
       "Crosshair": "@VehicleCommonGunDynamic",
       "CrosshairColor": "0xFFC700",
       "SoundRadius": 24,
-      "AmmoType": "superbwarfare:small_shell",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_ap.png",
+      "AmmoType": [
+        "superbwarfare:small_shell_ap",
+        {
+          "Ammo": "superbwarfare:small_shell_he",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_he.png",
+            "Velocity": 18,
+            "Damage": 15,
+            "ExplosionDamage": 18,
+            "ExplosionRadius": 5,
+            "Name": "weapon.superbwarfare.30mm_2a42_he"
+          }
+        }
+      ],
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0, 0.102, 3.013]],

@@ -113,11 +113,6 @@ public class Mk82Entity extends DestroyableProjectile implements GeoEntity {
     }
 
     @Override
-    public boolean shouldSyncMotion() {
-        return true;
-    }
-
-    @Override
     public float getMaxHealth() {
         return 50;
     }

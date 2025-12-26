@@ -9,22 +9,19 @@
       "tag": "c:ingots/copper"
     },
     "c": {
-      "item": "minecraft:gunpowder"
+      "item": "superbwarfare:high_energy_explosives"
     },
     "d": {
       "item": "superbwarfare:primer"
-    },
-    "e": {
-      "item": "superbwarfare:high_energy_explosives"
     }
   },
   "pattern": [
-    "ea ",
+    " a ",
     "bcb",
     " d "
   ],
   "result": {
     "count": 8,
-    "id": "superbwarfare:small_shell"
+    "id": "superbwarfare:small_shell_he"
   }
 }

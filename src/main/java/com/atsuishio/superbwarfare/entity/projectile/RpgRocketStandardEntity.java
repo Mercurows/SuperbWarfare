@@ -136,11 +136,6 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     }
 
     @Override
-    public boolean shouldSyncMotion() {
-        return true;
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }

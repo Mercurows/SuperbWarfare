@@ -137,11 +137,6 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     }
 
     @Override
-    public boolean shouldSyncMotion() {
-        return true;
-    }
-
-    @Override
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }

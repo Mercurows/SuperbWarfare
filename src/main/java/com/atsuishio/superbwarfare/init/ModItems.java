@@ -127,8 +127,12 @@ public class ModItems {
     public static final DeferredHolder<Item, RpgRocketStandard> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);
     public static final DeferredHolder<Item, RpgRocketTBG> RPG_ROCKET_TBG = AMMO.register("rpg_rocket_tbg", RpgRocketTBG::new);
     public static final DeferredHolder<Item, LungeMine> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
-    public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
+    public static final DeferredHolder<Item, Item> SMALL_SHELL_AP = AMMO.register("small_shell_ap", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SMALL_SHELL_HE = AMMO.register("small_shell_he", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SMALL_SHELL_GS = AMMO.register("small_shell_gs", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SMALL_SHELL_AA = AMMO.register("small_shell_aa", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> AP_5_INCHES = AMMO.register("ap_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
+    public static final DeferredHolder<Item, Item> HE_5_INCHES = AMMO.register("he_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> CM_5_INCHES = AMMO.register("cm_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, Item> GS_5_INCHES = AMMO.register("gs_5_inches", () -> new CannonShellItem(new Item.Properties().rarity(Rarity.RARE)));
     public static final DeferredHolder<Item, HandGrenade> HAND_GRENADE = AMMO.register("hand_grenade", HandGrenade::new);
@@ -139,7 +143,6 @@ public class ModItems {
     public static final DeferredHolder<Item, Ptkm1rItem> PTKM_1R = AMMO.register("ptkm_1r", Ptkm1rItem::new);
     public static final DeferredHolder<Item, C4BombItem> C4_BOMB = AMMO.register("c4_bomb", C4BombItem::new);
     public static final DeferredHolder<Item, Blu43MineItem> BLU_43_MINE = AMMO.register("blu_43_mine", Blu43MineItem::new);
-    public static final DeferredHolder<Item, Item> SMALL_SHELL = AMMO.register("small_shell", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SMALL_ROCKET = AMMO.register("small_rocket", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", () -> new MediumRocketItem(500, 6, 100, 0, 0, MediumRocketEntity.Type.AP, 0));
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));

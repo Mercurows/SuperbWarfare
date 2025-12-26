@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:small_shell"
+        "recipe": "superbwarfare:small_shell_he"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -37,7 +37,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:small_shell"
+      "superbwarfare:small_shell_he"
     ]
   }
 }

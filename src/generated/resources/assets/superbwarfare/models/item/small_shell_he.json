@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/small_shell"
+    "layer0": "superbwarfare:item/small_shell_he"
   }
 }

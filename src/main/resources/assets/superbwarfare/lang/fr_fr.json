@@ -113,7 +113,7 @@
   "item.superbwarfare.ap_5_inches": "Obus AP",
   "item.superbwarfare.javelin_missile": "Missile javelin",
   "item.superbwarfare.lunge_mine": "Mine à propulsion",
-  "item.superbwarfare.small_shell": "Obus de petit calibre",
+  "item.superbwarfare.small_shell_ap": "Obus de petit calibre",
   "block.superbwarfare.container": "Conteneur",
   "des.superbwarfare.container.empty": "Vide",
   "des.superbwarfare.container.fail.empty": "Ce conteneur est vide",

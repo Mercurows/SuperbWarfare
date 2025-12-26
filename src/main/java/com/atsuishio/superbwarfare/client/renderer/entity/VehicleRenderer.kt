@@ -28,7 +28,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
     ): RenderType? = RenderType.entityTranslucent(
         if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) SmartTextureBrightener.getSmartBrightenedTexture(
             getTextureLocation(vehicle),
-            2f
+            3f
         ) else getTextureLocation(vehicle)
     )
 

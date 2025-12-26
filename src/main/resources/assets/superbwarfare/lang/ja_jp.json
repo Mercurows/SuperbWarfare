@@ -124,7 +124,7 @@
   "item.superbwarfare.ap_5_inches": "AP砲弾",
   "item.superbwarfare.javelin_missile": "ジャベリンミサイル",
   "item.superbwarfare.lunge_mine": "突進地雷",
-  "item.superbwarfare.small_shell": "小口径砲弾",
+  "item.superbwarfare.small_shell_ap": "小口径砲弾",
   "block.superbwarfare.container": "コンテナ",
   "des.superbwarfare.container.empty": "空",
   "des.superbwarfare.container.fail.empty": "コンテナは空です",

@@ -97,7 +97,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm_he.png",
       "DefaultZoom": 2,
       "RPM": 500,
       "Velocity": 30,
@@ -117,7 +117,7 @@
       },
       "Crosshair": "@Empty",
       "SoundRadius": 24,
-      "AmmoType": "superbwarfare:small_shell",
+      "AmmoType": "superbwarfare:small_shell_he",
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.62, 0.8],

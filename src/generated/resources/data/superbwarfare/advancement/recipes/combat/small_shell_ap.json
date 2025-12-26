@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_primer": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:primer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:small_shell_ap"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_tungsten_rod": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:tungsten_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_primer",
+      "has_tungsten_rod"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:small_shell_ap"
+    ]
+  }
+}
