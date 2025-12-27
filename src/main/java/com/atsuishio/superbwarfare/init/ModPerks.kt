@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.ammo.*
@@ -13,7 +12,6 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.world.effect.MobEffects
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.ModList
 import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.NewRegistryEvent
 import net.minecraftforge.registries.RegistryBuilder
@@ -107,19 +105,7 @@ object ModPerks {
     @JvmField val ONE_TWO_PUNCH = registerDamagePerk("one_two_punch") { OneTwoPunch() }
     // @formatter:on
 
-    fun registerCompatPerks() {
-        if (ModList.get().isLoaded(CompatHolder.DMV)) {
-            registerAmmoPerk("bread_bullet") { BreadBullet() }
-        }
-        if (ModList.get().isLoaded(CompatHolder.VRC)) {
-            registerAmmoPerk("butterfly_bullet") {
-                AmmoPerk(AmmoPerk.Builder("butterfly_bullet", Perk.Type.AMMO).bypassArmorRate(0.0))
-            }
-        }
-    }
-
     fun register(bus: IEventBus) {
-        registerCompatPerks()
         AMMO_PERKS.register(bus)
         FUNC_PERKS.register(bus)
         DAMAGE_PERKS.register(bus)

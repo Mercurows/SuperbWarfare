@@ -64,7 +64,7 @@ class Mod {
 
         bus.addListener<FMLCommonSetupEvent> { onCommonSetup(it) }
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
-        bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior(it) }
+        bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
 
         registerDataTickets()
 

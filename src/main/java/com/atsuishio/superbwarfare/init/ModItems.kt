@@ -40,7 +40,6 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.DispenserBlock
 import net.minecraftforge.common.ForgeSpawnEggItem
 import net.minecraftforge.eventbus.api.IEventBus
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.ForgeRegistries
 import net.minecraftforge.registries.RegistryObject
@@ -398,7 +397,7 @@ object ModItems {
         val trigger: RegistryObject<Item>,
     )
 
-    fun registerMaterials(name: String): Materials {
+    private fun registerMaterials(name: String): Materials {
         return Materials(
             name,
             registerItem(name + "_barrel"),
@@ -429,10 +428,10 @@ object ModItems {
     @JvmField var INTELLIGENT_CHIP: RegistryObject<Item>? = null
     // @formatter:on
 
-    fun registerPerkItems() {
-        ModPerks.AMMO_PERKS.getEntries().forEach { registerSinglePerkItem(it) }
-        ModPerks.FUNC_PERKS.getEntries().forEach { registerSinglePerkItem(it) }
-        ModPerks.DAMAGE_PERKS.getEntries().forEach { registerSinglePerkItem(it) }
+    private fun registerPerkItems() {
+        ModPerks.AMMO_PERKS.entries.forEach { registerSinglePerkItem(it) }
+        ModPerks.FUNC_PERKS.entries.forEach { registerSinglePerkItem(it) }
+        ModPerks.DAMAGE_PERKS.entries.forEach { registerSinglePerkItem(it) }
 
         AP_BULLET = PERK_ITEMS[ModPerks.AP_BULLET]
         INTELLIGENT_CHIP = PERK_ITEMS[ModPerks.INTELLIGENT_CHIP]
@@ -447,13 +446,13 @@ object ModItems {
     @JvmField val EMPTY_PERK = registerPerkItem("empty_perk") { Item(Item.Properties()) }
     // @formatter:on
 
-    fun registerDispenserBehavior(event: FMLCommonSetupEvent) {
+    fun registerDispenserBehavior() {
         val list: MutableList<RegistryObject<Item>> = mutableListOf()
-        list.addAll(AMMO.getEntries())
-        list.addAll(ITEMS.getEntries())
+        list.addAll(AMMO.entries)
+        list.addAll(ITEMS.entries)
 
-        for (item in list) {
-            val item = item.get()
+        for (i in list) {
+            val item = i.get()
             if (item is DispenserLaunchable) {
                 DispenserBlock.registerBehavior(item, item.launchBehavior)
             }
