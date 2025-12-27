@@ -157,8 +157,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.LASER_UNIT);
         simpleItem(ModItems.TOW_DEPLOYER);
         simpleItem(ModItems.VEHICLE_RESET_KIT);
-        simpleItem(ModItems.RPG_ROCKET_STANDARD);
-        simpleItem(ModItems.RPG_ROCKET_TBG);
+        handheldItem(ModItems.RPG_ROCKET_STANDARD);
+        handheldItem(ModItems.RPG_ROCKET_TBG);
 
         simpleItem(ModItems.TUNGSTEN_ROD);
 
@@ -275,7 +275,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .texture("layer0", Mod.loc("item/cannon_blueprint"));
     }
 
-    private ItemModelBuilder handheldItem(DeferredHolder<Item, Item> item) {
+    private ItemModelBuilder handheldItem(DeferredHolder<Item, ? extends Item> item) {
         return withExistingParent(item.getId().getPath(), ResourceLocation.withDefaultNamespace("item/handheld"))
                 .texture("layer0", Mod.loc("item/" + item.getId().getPath()));
     }
