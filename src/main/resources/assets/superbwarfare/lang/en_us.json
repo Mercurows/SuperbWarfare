@@ -452,7 +452,7 @@
   "item.superbwarfare.powerful_cooler": "Powerful Cooler",
   "des.superbwarfare.powerful_cooler": "Enhances the heat dissipation effect of the weapon and slightly reduces the heat generated during firing.",
   "item.superbwarfare.cast_no_shadows": "Cast No Shadows",
-  "des.superbwarfare.cast_no_shadows": "Dealing melee damage loads a certain amount of ammo from reserves.",
+  "des.superbwarfare.cast_no_shadows": "Dealing melee damage loads a certain amount of ammo from reserves and heals you.",
 
   "item.superbwarfare.kill_clip": "Kill Clip",
   "des.superbwarfare.kill_clip": "Increases the damage of weapon after dealing a final blow.",
