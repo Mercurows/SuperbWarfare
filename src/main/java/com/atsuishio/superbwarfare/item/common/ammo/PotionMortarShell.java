@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
+import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -21,8 +22,8 @@ import java.util.List;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PotionMortarShell extends MortarShell {
 
-    public PotionMortarShell() {
-        super();
+    public PotionMortarShell(MortarShellEntity.Type type) {
+        super(type);
     }
 
     @Override

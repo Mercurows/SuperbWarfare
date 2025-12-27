@@ -58,8 +58,11 @@ public class ModEntities {
 
     // Projectiles
     public static final DeferredHolder<EntityType<?>, EntityType<TaserBulletEntity>> TASER_BULLET = register("taser_bullet",
-            EntityType.Builder.<TaserBulletEntity>of(TaserBulletEntity::new, MobCategory.MISC).setTrackingRange(64).noSave()
+            EntityType.Builder.of(TaserBulletEntity::new, MobCategory.MISC).setTrackingRange(64).noSave()
                     .setUpdateInterval(1).sized(0.25f, 0.25f));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<WhitePhosphorusProjectileEntity>> WHITE_PHOSPHORUS_PROJECTILE = register("white_phosphorus_projectile",
+            EntityType.Builder.<WhitePhosphorusProjectileEntity>of(WhitePhosphorusProjectileEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.1f, 0.1f));
 
     // Fast Projectiles
     public static final DeferredHolder<EntityType<?>, EntityType<SuperStarProjectileEntity>> SUPER_STAR_PROJECTILE = register("super_star_projectile",
