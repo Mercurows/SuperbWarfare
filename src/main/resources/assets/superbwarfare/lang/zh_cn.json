@@ -452,7 +452,7 @@
   "item.superbwarfare.powerful_cooler": "强效冷却器",
   "des.superbwarfare.powerful_cooler": "增强武器的散热效果，略微降低开火时产生的热量",
   "item.superbwarfare.cast_no_shadows": "光照无影",
-  "des.superbwarfare.cast_no_shadows": "造成近战伤害会从备弹中填装部分弹药",
+  "des.superbwarfare.cast_no_shadows": "造成近战伤害会从备弹中填装部分弹药并治疗自身",
 
   "item.superbwarfare.kill_clip": "杀戮弹匣",
   "des.superbwarfare.kill_clip": "完成击杀后填装可提升武器伤害",

@@ -31,6 +31,7 @@ public class CastNoShadows extends Perk {
         if (attacker == null) return;
 
         float rate = 0.2f + (instance.level() - 1) * 0.03f;
+        attacker.heal(attacker.getMaxHealth() * rate / 2f);
 
         Player finalAttacker = attacker;
         PlayerVariable.modify(attacker, cap -> {
