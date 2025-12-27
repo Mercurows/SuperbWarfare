@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -90,6 +89,8 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (instance.getEffect().value().equals(ModMobEffects.PHOSPHORUS_FIRE.get())) {
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_ATTACKER);
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_COUNT);
+
+            PacketDistributor.sendToPlayersTrackingEntity(living, new ClientPhosphorusFireMessage(living.getId(), false));
         }
     }
 
@@ -105,16 +106,15 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (instance.getEffect().value().equals(ModMobEffects.PHOSPHORUS_FIRE.get())) {
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_ATTACKER);
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_COUNT);
+
+            PacketDistributor.sendToPlayersTrackingEntity(living, new ClientPhosphorusFireMessage(living.getId(), false));
         }
     }
 
     @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {
-        if (event.getTarget() instanceof LivingEntity living
-                && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE)
-                && event.getEntity() instanceof ServerPlayer player
-        ) {
-            PacketDistributor.sendToPlayer(player, new ClientPhosphorusFireMessage(living.getId(), true));
+        if (event.getTarget() instanceof LivingEntity living && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE)) {
+            PacketDistributor.sendToPlayersTrackingEntity(living, new ClientPhosphorusFireMessage(living.getId(), true));
         }
     }
 
