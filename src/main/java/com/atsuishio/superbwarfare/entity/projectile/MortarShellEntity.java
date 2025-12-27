@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,11 +24,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +45,11 @@ import java.util.Set;
 
 public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity {
 
+    public enum Type {
+        NORMAL, WP
+    }
+
+    private Type type = Type.NORMAL;
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private Potion potion = Potions.EMPTY;
     private final Set<MobEffectInstance> effects = Sets.newHashSet();
@@ -84,6 +92,10 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
             this.potion = Potions.EMPTY;
             this.effects.clear();
         }
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     @Override
@@ -139,6 +151,11 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         BlockPos resultPos = blockHitResult.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
 
+        if (type == Type.WP) {
+            this.discard();
+            return;
+        }
+
         if (this.level() instanceof ServerLevel && ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
             float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
             if (hardness != -1) {
@@ -162,6 +179,36 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     public void tick() {
         super.tick();
         mediumTrail();
+
+        if (type == Type.WP) {
+            // 使用Minecraft内置的光线追踪进行碰撞检测
+            BlockHitResult hitResult = level().clip(new ClipContext(
+                    position(),
+                    position().add(getDeltaMovement().scale(8)),
+                    ClipContext.Block.VISUAL,
+                    ClipContext.Fluid.ANY,
+                    this
+            ));
+
+            if (hitResult.getType() == HitResult.Type.BLOCK) {
+                releaseWp(getOwner());
+            }
+        }
+    }
+
+    private void releaseWp(Entity shooter) {
+        if (level() instanceof ServerLevel serverLevel) {
+            ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
+            for (int index0 = 0; index0 < 32; index0++) {
+                WhitePhosphorusProjectileEntity whitePhosphorusProjectileEntity = new WhitePhosphorusProjectileEntity(shooter, serverLevel);
+
+                whitePhosphorusProjectileEntity.setPos(position().x, position().y, position().z);
+                whitePhosphorusProjectileEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.05f + 0.1f * getDeltaMovement().length()),
+                        35);
+                serverLevel.addFreshEntity(whitePhosphorusProjectileEntity);
+            }
+            discard();
+        }
     }
 
     @Override

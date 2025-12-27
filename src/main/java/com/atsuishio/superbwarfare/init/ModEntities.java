@@ -61,6 +61,9 @@ public class ModEntities {
             EntityType.Builder.<TaserBulletEntity>of(TaserBulletEntity::new, MobCategory.MISC).setTrackingRange(64).noSave()
                     .setUpdateInterval(1).sized(0.25f, 0.25f));
 
+    public static final RegistryObject<EntityType<WhitePhosphorusProjectileEntity>> WHITE_PHOSPHORUS_PROJECTILE = register("white_phosphorus_projectile",
+            EntityType.Builder.<WhitePhosphorusProjectileEntity>of(WhitePhosphorusProjectileEntity::new, MobCategory.MISC).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.1f, 0.1f));
+
     // Fast Projectiles
     public static final RegistryObject<EntityType<SuperStarProjectileEntity>> SUPER_STAR_PROJECTILE = register("super_star_projectile",
             EntityType.Builder.<SuperStarProjectileEntity>of(SuperStarProjectileEntity::new, MobCategory.MISC).setShouldReceiveVelocityUpdates(false).setTrackingRange(64).setUpdateInterval(1).noSave().sized(0.75f, 0.75f));

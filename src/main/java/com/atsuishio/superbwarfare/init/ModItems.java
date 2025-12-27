@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
+import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.item.*;
 import com.atsuishio.superbwarfare.item.armor.*;
 import com.atsuishio.superbwarfare.item.common.BlueprintItem;
@@ -121,8 +122,9 @@ public class ModItems {
     public static final RegistryObject<Item> TASER_ELECTRODE = AMMO.register("taser_electrode", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> GRENADE_40MM = AMMO.register("grenade_40mm", () -> new Item(new Item.Properties()));
 
-    public static final RegistryObject<Item> MORTAR_SHELL = AMMO.register("mortar_shell", MortarShell::new);
-    public static final RegistryObject<Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
+    public static final RegistryObject<Item> MORTAR_SHELL = AMMO.register("mortar_shell", () -> new MortarShell(MortarShellEntity.Type.NORMAL));
+    public static final RegistryObject<Item> MORTAR_SHELL_WP = AMMO.register("mortar_shell_wp", () -> new MortarShell(MortarShellEntity.Type.WP));
+    public static final RegistryObject<Item> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", () -> new PotionMortarShell(MortarShellEntity.Type.NORMAL));
     public static final RegistryObject<Item> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);
     public static final RegistryObject<Item> RPG_ROCKET_TBG = AMMO.register("rpg_rocket_tbg", RpgRocketTBG::new);
     public static final RegistryObject<Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties().stacksTo(4)));

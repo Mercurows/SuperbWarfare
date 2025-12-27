@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
+import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.DispenserLaunchable;
 import net.minecraft.core.BlockSource;
@@ -20,15 +21,16 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class MortarShell extends Item implements DispenserLaunchable {
-
-    public MortarShell() {
-        super(new Properties());
+    public MortarShell(MortarShellEntity.Type type) {
+        super(new Properties().stacksTo(4));
     }
+
 
     public static MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack, float gravity, float damage, float explosionDamage, float explosionRadius) {
         MortarShellEntity shellEntity = new MortarShellEntity(entity, level, damage, explosionDamage, explosionRadius);
         shellEntity.setGravity(gravity);
         shellEntity.setEffectsFromItem(stack);
+        shellEntity.setType(stack.is(ModItems.MORTAR_SHELL_WP.get()) ? MortarShellEntity.Type.WP: MortarShellEntity.Type.NORMAL);
         return shellEntity;
     }
 
