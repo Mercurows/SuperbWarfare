@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.init.ModItems.*
+import com.atsuishio.superbwarfare.init.ModItems
 import net.minecraft.core.registries.Registries
 import net.minecraft.data.loot.LootTableSubProvider
 import net.minecraft.resources.ResourceKey
@@ -156,7 +156,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
     override fun generate(output: BiConsumer<ResourceKey<LootTable>, LootTable.Builder>) {
 
         output += buildLootTable(chests("ancient_cpu")) {
-            addSingleItem(ANCIENT_CPU, 1f, 1f, 1, 1) {
+            addSingleItem(ModItems.ANCIENT_CPU, 1f, 1f, 1, 1) {
                 `when` { LootItemRandomChanceCondition.randomChance(0.4f).build() }
             }
         }
@@ -165,241 +165,241 @@ class ModCustomLootProvider() : LootTableSubProvider {
             addMultiItems(1f, 0f) {
                 withWeight(
                     50,
-                    TASER_BLUEPRINT,
-                    GLOCK_17_BLUEPRINT,
-                    MP_443_BLUEPRINT,
-                    M_1911_BLUEPRINT,
-                    MARLIN_BLUEPRINT,
+                    ModItems.TASER_BLUEPRINT,
+                    ModItems.GLOCK_17_BLUEPRINT,
+                    ModItems.MP_443_BLUEPRINT,
+                    ModItems.M_1911_BLUEPRINT,
+                    ModItems.MARLIN_BLUEPRINT,
                 )
 
                 withWeight(
                     15,
-                    GLOCK_18_BLUEPRINT,
-                    M_79_BLUEPRINT,
-                    M_4_BLUEPRINT,
-                    SKS_BLUEPRINT,
-                    K_98_BLUEPRINT,
-                    MOSIN_NAGANT_BLUEPRINT,
-                    AK_47_BLUEPRINT,
-                    M_870_BLUEPRINT,
-                    HK_416_BLUEPRINT,
-                    AK_12_BLUEPRINT,
-                    QBZ_95_BLUEPRINT,
-                    RPG_BLUEPRINT,
-                    M_2_HB_BLUEPRINT,
-                    MP_5_BLUEPRINT,
-                    HUNTING_RIFLE_BLUEPRINT,
+                    ModItems.GLOCK_18_BLUEPRINT,
+                    ModItems.M_79_BLUEPRINT,
+                    ModItems.M_4_BLUEPRINT,
+                    ModItems.SKS_BLUEPRINT,
+                    ModItems.K_98_BLUEPRINT,
+                    ModItems.MOSIN_NAGANT_BLUEPRINT,
+                    ModItems.AK_47_BLUEPRINT,
+                    ModItems.M_870_BLUEPRINT,
+                    ModItems.HK_416_BLUEPRINT,
+                    ModItems.AK_12_BLUEPRINT,
+                    ModItems.QBZ_95_BLUEPRINT,
+                    ModItems.RPG_BLUEPRINT,
+                    ModItems.M_2_HB_BLUEPRINT,
+                    ModItems.MP_5_BLUEPRINT,
+                    ModItems.HUNTING_RIFLE_BLUEPRINT,
                 )
 
                 withWeight(
                     1,
-                    TRACHELIUM_BLUEPRINT,
-                    SENTINEL_BLUEPRINT,
-                    BOCEK_BLUEPRINT,
-                    RPK_BLUEPRINT,
-                    VECTOR_BLUEPRINT,
-                    MK_14_BLUEPRINT,
-                    M_60_BLUEPRINT,
-                    SVD_BLUEPRINT,
-                    M_98B_BLUEPRINT,
-                    AWM_BLUEPRINT,
-                    DEVOTION_BLUEPRINT,
-                    INSIDIOUS_BLUEPRINT,
-                    QBZ_191_BLUEPRINT,
-                    IGLA_BLUEPRINT,
+                    ModItems.TRACHELIUM_BLUEPRINT,
+                    ModItems.SENTINEL_BLUEPRINT,
+                    ModItems.BOCEK_BLUEPRINT,
+                    ModItems.RPK_BLUEPRINT,
+                    ModItems.VECTOR_BLUEPRINT,
+                    ModItems.MK_14_BLUEPRINT,
+                    ModItems.M_60_BLUEPRINT,
+                    ModItems.SVD_BLUEPRINT,
+                    ModItems.M_98B_BLUEPRINT,
+                    ModItems.AWM_BLUEPRINT,
+                    ModItems.DEVOTION_BLUEPRINT,
+                    ModItems.INSIDIOUS_BLUEPRINT,
+                    ModItems.QBZ_191_BLUEPRINT,
+                    ModItems.IGLA_BLUEPRINT,
                 )
             }
 
             addMultiItems(2f, 0f) {
-                HANDGUN_AMMO_BOX weighted 12 withCount 1..2
-                RIFLE_AMMO_BOX weighted 20 withCount 1..2
-                SNIPER_AMMO_BOX weighted 10 withCount 1..2
-                SHOTGUN_AMMO_BOX weighted 17 withCount 1..2
-                GRENADE_40MM weighted 6 withCount 1..3
-                RPG_ROCKET_TBG weighted 2 withCount 1..2
-                RPG_ROCKET_STANDARD weighted 2 withCount 1..2
-                MORTAR_SHELL weighted 6 withCount 1..4
-                CLAYMORE_MINE weighted 3 withCount 1..3
-                C4_BOMB weighted 1
+                ModItems.HANDGUN_AMMO_BOX weighted 12 withCount 1..2
+                ModItems.RIFLE_AMMO_BOX weighted 20 withCount 1..2
+                ModItems.SNIPER_AMMO_BOX weighted 10 withCount 1..2
+                ModItems.SHOTGUN_AMMO_BOX weighted 17 withCount 1..2
+                ModItems.GRENADE_40MM weighted 6 withCount 1..3
+                ModItems.RPG_ROCKET_TBG weighted 2 withCount 1..2
+                ModItems.RPG_ROCKET_STANDARD weighted 2 withCount 1..2
+                ModItems.MORTAR_SHELL weighted 6 withCount 1..4
+                ModItems.CLAYMORE_MINE weighted 3 withCount 1..3
+                ModItems.C4_BOMB weighted 1
             }
         }
 
         output += buildLootTable(chests("blue_print_rare")) {
             addMultiItems(1f, 0f) {
-                TASER_BLUEPRINT weighted 10
-                GLOCK_17_BLUEPRINT weighted 10
-                MP_443_BLUEPRINT weighted 10
-                M_1911_BLUEPRINT weighted 10
-                MARLIN_BLUEPRINT weighted 10
+                ModItems.TASER_BLUEPRINT weighted 10
+                ModItems.GLOCK_17_BLUEPRINT weighted 10
+                ModItems.MP_443_BLUEPRINT weighted 10
+                ModItems.M_1911_BLUEPRINT weighted 10
+                ModItems.MARLIN_BLUEPRINT weighted 10
 
-                GLOCK_18_BLUEPRINT weighted 30
-                M_79_BLUEPRINT weighted 30
-                M_4_BLUEPRINT weighted 30
-                SKS_BLUEPRINT weighted 30
-                K_98_BLUEPRINT weighted 30
-                MOSIN_NAGANT_BLUEPRINT weighted 30
-                AK_47_BLUEPRINT weighted 30
-                M_870_BLUEPRINT weighted 30
-                HK_416_BLUEPRINT weighted 30
-                AK_12_BLUEPRINT weighted 30
-                QBZ_95_BLUEPRINT weighted 30
-                RPG_BLUEPRINT weighted 30
-                M_2_HB_BLUEPRINT weighted 30
-                HUNTING_RIFLE_BLUEPRINT weighted 30
+                ModItems.GLOCK_18_BLUEPRINT weighted 30
+                ModItems.M_79_BLUEPRINT weighted 30
+                ModItems.M_4_BLUEPRINT weighted 30
+                ModItems.SKS_BLUEPRINT weighted 30
+                ModItems.K_98_BLUEPRINT weighted 30
+                ModItems.MOSIN_NAGANT_BLUEPRINT weighted 30
+                ModItems.AK_47_BLUEPRINT weighted 30
+                ModItems.M_870_BLUEPRINT weighted 30
+                ModItems.HK_416_BLUEPRINT weighted 30
+                ModItems.AK_12_BLUEPRINT weighted 30
+                ModItems.QBZ_95_BLUEPRINT weighted 30
+                ModItems.RPG_BLUEPRINT weighted 30
+                ModItems.M_2_HB_BLUEPRINT weighted 30
+                ModItems.HUNTING_RIFLE_BLUEPRINT weighted 30
 
-                TRACHELIUM_BLUEPRINT weighted 10
-                SENTINEL_BLUEPRINT weighted 10
-                BOCEK_BLUEPRINT weighted 10
-                RPK_BLUEPRINT weighted 10
-                VECTOR_BLUEPRINT weighted 10
-                MK_14_BLUEPRINT weighted 10
-                M_60_BLUEPRINT weighted 10
-                SVD_BLUEPRINT weighted 10
-                M_98B_BLUEPRINT weighted 10
-                AWM_BLUEPRINT weighted 10
-                DEVOTION_BLUEPRINT weighted 10
-                INSIDIOUS_BLUEPRINT weighted 10
-                QBZ_191_BLUEPRINT weighted 10
-                IGLA_BLUEPRINT weighted 7
+                ModItems.TRACHELIUM_BLUEPRINT weighted 10
+                ModItems.SENTINEL_BLUEPRINT weighted 10
+                ModItems.BOCEK_BLUEPRINT weighted 10
+                ModItems.RPK_BLUEPRINT weighted 10
+                ModItems.VECTOR_BLUEPRINT weighted 10
+                ModItems.MK_14_BLUEPRINT weighted 10
+                ModItems.M_60_BLUEPRINT weighted 10
+                ModItems.SVD_BLUEPRINT weighted 10
+                ModItems.M_98B_BLUEPRINT weighted 10
+                ModItems.AWM_BLUEPRINT weighted 10
+                ModItems.DEVOTION_BLUEPRINT weighted 10
+                ModItems.INSIDIOUS_BLUEPRINT weighted 10
+                ModItems.QBZ_191_BLUEPRINT weighted 10
+                ModItems.IGLA_BLUEPRINT weighted 7
 
-                AA_12_BLUEPRINT weighted 3
-                NTW_20_BLUEPRINT weighted 3
-                MINIGUN_BLUEPRINT weighted 3
-                JAVELIN_BLUEPRINT weighted 3
-                SECONDARY_CATACLYSM_BLUEPRINT weighted 3
-                AURELIA_SCEPTRE_BLUEPRINT weighted 2
-                QL_1031_BLUEPRINT weighted 2
-                MK_42_BLUEPRINT weighted 3
-                MLE_1934_BLUEPRINT weighted 2
-                HPJ_11_BLUEPRINT weighted 2
-                BL_132_BLUEPRINT weighted 2
-                ANNIHILATOR_BLUEPRINT weighted 1
+                ModItems.AA_12_BLUEPRINT weighted 3
+                ModItems.NTW_20_BLUEPRINT weighted 3
+                ModItems.MINIGUN_BLUEPRINT weighted 3
+                ModItems.JAVELIN_BLUEPRINT weighted 3
+                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 3
+                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 2
+                ModItems.QL_1031_BLUEPRINT weighted 2
+                ModItems.MK_42_BLUEPRINT weighted 3
+                ModItems.MLE_1934_BLUEPRINT weighted 2
+                ModItems.HPJ_11_BLUEPRINT weighted 2
+                ModItems.BL_132_BLUEPRINT weighted 2
+                ModItems.ANNIHILATOR_BLUEPRINT weighted 1
             }
 
             addMultiItems(2f, 0f) {
-                HANDGUN_AMMO_BOX weighted 12 withCount 1..3
-                RIFLE_AMMO_BOX weighted 20 withCount 1..3
-                SNIPER_AMMO_BOX weighted 10 withCount 1..3
-                SHOTGUN_AMMO_BOX weighted 17 withCount 1..3
-                GRENADE_40MM weighted 6 withCount 2..6
-                RPG_ROCKET_TBG weighted 2 withCount 2..4
-                RPG_ROCKET_STANDARD weighted 2 withCount 2..4
-                MORTAR_SHELL weighted 6 withCount 2..8
-                CLAYMORE_MINE weighted 3 withCount 2..6
-                C4_BOMB weighted 1 withCount 1..2
+                ModItems.HANDGUN_AMMO_BOX weighted 12 withCount 1..3
+                ModItems.RIFLE_AMMO_BOX weighted 20 withCount 1..3
+                ModItems.SNIPER_AMMO_BOX weighted 10 withCount 1..3
+                ModItems.SHOTGUN_AMMO_BOX weighted 17 withCount 1..3
+                ModItems.GRENADE_40MM weighted 6 withCount 2..6
+                ModItems.RPG_ROCKET_TBG weighted 2 withCount 2..4
+                ModItems.RPG_ROCKET_STANDARD weighted 2 withCount 2..4
+                ModItems.MORTAR_SHELL weighted 6 withCount 2..8
+                ModItems.CLAYMORE_MINE weighted 3 withCount 2..6
+                ModItems.C4_BOMB weighted 1 withCount 1..2
             }
         }
 
         output += buildLootTable(chests("blue_print_epic")) {
             addMultiItems(1f, 0f) {
-                TRACHELIUM_BLUEPRINT weighted 10
-                SENTINEL_BLUEPRINT weighted 10
-                BOCEK_BLUEPRINT weighted 10
-                RPK_BLUEPRINT weighted 10
-                VECTOR_BLUEPRINT weighted 10
-                MK_14_BLUEPRINT weighted 10
-                M_60_BLUEPRINT weighted 10
-                SVD_BLUEPRINT weighted 10
-                M_98B_BLUEPRINT weighted 10
-                AWM_BLUEPRINT weighted 10
-                DEVOTION_BLUEPRINT weighted 10
-                INSIDIOUS_BLUEPRINT weighted 10
-                QBZ_191_BLUEPRINT weighted 10
-                IGLA_BLUEPRINT weighted 7
+                ModItems.TRACHELIUM_BLUEPRINT weighted 10
+                ModItems.SENTINEL_BLUEPRINT weighted 10
+                ModItems.BOCEK_BLUEPRINT weighted 10
+                ModItems.RPK_BLUEPRINT weighted 10
+                ModItems.VECTOR_BLUEPRINT weighted 10
+                ModItems.MK_14_BLUEPRINT weighted 10
+                ModItems.M_60_BLUEPRINT weighted 10
+                ModItems.SVD_BLUEPRINT weighted 10
+                ModItems.M_98B_BLUEPRINT weighted 10
+                ModItems.AWM_BLUEPRINT weighted 10
+                ModItems.DEVOTION_BLUEPRINT weighted 10
+                ModItems.INSIDIOUS_BLUEPRINT weighted 10
+                ModItems.QBZ_191_BLUEPRINT weighted 10
+                ModItems.IGLA_BLUEPRINT weighted 7
 
-                AA_12_BLUEPRINT weighted 20
-                NTW_20_BLUEPRINT weighted 20
-                MINIGUN_BLUEPRINT weighted 20
-                JAVELIN_BLUEPRINT weighted 15
-                SECONDARY_CATACLYSM_BLUEPRINT weighted 15
-                AURELIA_SCEPTRE_BLUEPRINT weighted 10
-                QL_1031_BLUEPRINT weighted 10
-                MK_42_BLUEPRINT weighted 10
-                MLE_1934_BLUEPRINT weighted 10
-                BL_132_BLUEPRINT weighted 7
-                HPJ_11_BLUEPRINT weighted 5
-                ANNIHILATOR_BLUEPRINT weighted 5
+                ModItems.AA_12_BLUEPRINT weighted 20
+                ModItems.NTW_20_BLUEPRINT weighted 20
+                ModItems.MINIGUN_BLUEPRINT weighted 20
+                ModItems.JAVELIN_BLUEPRINT weighted 15
+                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 15
+                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 10
+                ModItems.QL_1031_BLUEPRINT weighted 10
+                ModItems.MK_42_BLUEPRINT weighted 10
+                ModItems.MLE_1934_BLUEPRINT weighted 10
+                ModItems.BL_132_BLUEPRINT weighted 7
+                ModItems.HPJ_11_BLUEPRINT weighted 5
+                ModItems.ANNIHILATOR_BLUEPRINT weighted 5
             }
 
             addMultiItems(2f, 0f) {
-                HANDGUN_AMMO_BOX weighted 12 withCount 2..4
-                RIFLE_AMMO_BOX weighted 20 withCount 2..4
-                SNIPER_AMMO_BOX weighted 10 withCount 2..4
-                SHOTGUN_AMMO_BOX weighted 17 withCount 2..4
-                HEAVY_AMMO weighted 10 withCount 10..24
-                GRENADE_40MM weighted 6 withCount 4..12
-                RPG_ROCKET_TBG weighted 2 withCount 4..8
-                RPG_ROCKET_STANDARD weighted 2 withCount 4..8
-                MORTAR_SHELL weighted 6 withCount 4..8
-                CLAYMORE_MINE weighted 3 withCount 4..12
-                C4_BOMB weighted 1 withCount 2..4
-                JAVELIN_MISSILE weighted 1 withCount 1..2
+                ModItems.HANDGUN_AMMO_BOX weighted 12 withCount 2..4
+                ModItems.RIFLE_AMMO_BOX weighted 20 withCount 2..4
+                ModItems.SNIPER_AMMO_BOX weighted 10 withCount 2..4
+                ModItems.SHOTGUN_AMMO_BOX weighted 17 withCount 2..4
+                ModItems.HEAVY_AMMO weighted 10 withCount 10..24
+                ModItems.GRENADE_40MM weighted 6 withCount 4..12
+                ModItems.RPG_ROCKET_TBG weighted 2 withCount 4..8
+                ModItems.RPG_ROCKET_STANDARD weighted 2 withCount 4..8
+                ModItems.MORTAR_SHELL weighted 6 withCount 4..8
+                ModItems.CLAYMORE_MINE weighted 3 withCount 4..12
+                ModItems.C4_BOMB weighted 1 withCount 2..4
+                ModItems.JAVELIN_MISSILE weighted 1 withCount 1..2
             }
         }
 
         output += buildLootTable(containers("blueprints")) {
             addMultiItems(1f, 0f) {
-                GLOCK_17_BLUEPRINT weighted 60
-                MP_443_BLUEPRINT weighted 60
-                TASER_BLUEPRINT weighted 60
-                MARLIN_BLUEPRINT weighted 60
-                M_1911_BLUEPRINT weighted 60
+                ModItems.GLOCK_17_BLUEPRINT weighted 60
+                ModItems.MP_443_BLUEPRINT weighted 60
+                ModItems.TASER_BLUEPRINT weighted 60
+                ModItems.MARLIN_BLUEPRINT weighted 60
+                ModItems.M_1911_BLUEPRINT weighted 60
 
-                GLOCK_18_BLUEPRINT weighted 42
-                M_79_BLUEPRINT weighted 42
-                M_4_BLUEPRINT weighted 42
-                SKS_BLUEPRINT weighted 42
-                M_870_BLUEPRINT weighted 42
-                AK_47_BLUEPRINT weighted 42
-                K_98_BLUEPRINT weighted 42
-                MOSIN_NAGANT_BLUEPRINT weighted 42
-                HK_416_BLUEPRINT weighted 42
-                AK_12_BLUEPRINT weighted 42
-                QBZ_95_BLUEPRINT weighted 42
-                RPG_BLUEPRINT weighted 42
-                HUNTING_RIFLE_BLUEPRINT weighted 42
-                M_2_HB_BLUEPRINT weighted 42
+                ModItems.GLOCK_18_BLUEPRINT weighted 42
+                ModItems.M_79_BLUEPRINT weighted 42
+                ModItems.M_4_BLUEPRINT weighted 42
+                ModItems.SKS_BLUEPRINT weighted 42
+                ModItems.M_870_BLUEPRINT weighted 42
+                ModItems.AK_47_BLUEPRINT weighted 42
+                ModItems.K_98_BLUEPRINT weighted 42
+                ModItems.MOSIN_NAGANT_BLUEPRINT weighted 42
+                ModItems.HK_416_BLUEPRINT weighted 42
+                ModItems.AK_12_BLUEPRINT weighted 42
+                ModItems.QBZ_95_BLUEPRINT weighted 42
+                ModItems.RPG_BLUEPRINT weighted 42
+                ModItems.HUNTING_RIFLE_BLUEPRINT weighted 42
+                ModItems.M_2_HB_BLUEPRINT weighted 42
 
-                TRACHELIUM_BLUEPRINT weighted 15
-                SENTINEL_BLUEPRINT weighted 15
-                BOCEK_BLUEPRINT weighted 15
-                RPK_BLUEPRINT weighted 15
-                VECTOR_BLUEPRINT weighted 15
-                MK_14_BLUEPRINT weighted 15
-                M_60_BLUEPRINT weighted 15
-                SVD_BLUEPRINT weighted 15
-                M_98B_BLUEPRINT weighted 15
-                AWM_BLUEPRINT weighted 15
-                DEVOTION_BLUEPRINT weighted 15
-                INSIDIOUS_BLUEPRINT weighted 15
-                QBZ_191_BLUEPRINT weighted 15
-                IGLA_BLUEPRINT weighted 10
+                ModItems.TRACHELIUM_BLUEPRINT weighted 15
+                ModItems.SENTINEL_BLUEPRINT weighted 15
+                ModItems.BOCEK_BLUEPRINT weighted 15
+                ModItems.RPK_BLUEPRINT weighted 15
+                ModItems.VECTOR_BLUEPRINT weighted 15
+                ModItems.MK_14_BLUEPRINT weighted 15
+                ModItems.M_60_BLUEPRINT weighted 15
+                ModItems.SVD_BLUEPRINT weighted 15
+                ModItems.M_98B_BLUEPRINT weighted 15
+                ModItems.AWM_BLUEPRINT weighted 15
+                ModItems.DEVOTION_BLUEPRINT weighted 15
+                ModItems.INSIDIOUS_BLUEPRINT weighted 15
+                ModItems.QBZ_191_BLUEPRINT weighted 15
+                ModItems.IGLA_BLUEPRINT weighted 10
 
-                AA_12_BLUEPRINT weighted 5
-                NTW_20_BLUEPRINT weighted 5
-                MINIGUN_BLUEPRINT weighted 5
-                JAVELIN_BLUEPRINT weighted 5
-                SECONDARY_CATACLYSM_BLUEPRINT weighted 5
-                AURELIA_SCEPTRE_BLUEPRINT weighted 5
-                QL_1031_BLUEPRINT weighted 5
+                ModItems.AA_12_BLUEPRINT weighted 5
+                ModItems.NTW_20_BLUEPRINT weighted 5
+                ModItems.MINIGUN_BLUEPRINT weighted 5
+                ModItems.JAVELIN_BLUEPRINT weighted 5
+                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 5
+                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 5
+                ModItems.QL_1031_BLUEPRINT weighted 5
             }
         }
 
         output += buildLootTable(containers("common")) {
             addMultiItems(1f, 0f, {
-                EPIC_MATERIAL_PACK weighted 2
-                CEMENTED_CARBIDE_BLOCK weighted 2
+                ModItems.EPIC_MATERIAL_PACK weighted 2
+                ModItems.CEMENTED_CARBIDE_BLOCK weighted 2
                 Items.EXPERIENCE_BOTTLE weighted 2 withCount 4
 
-                RARE_MATERIAL_PACK weighted 4 withCount 2
-                COMMON_MATERIAL_PACK weighted 6 withCount 3
-                STEEL_BLOCK weighted 14
+                ModItems.RARE_MATERIAL_PACK weighted 4 withCount 2
+                ModItems.COMMON_MATERIAL_PACK weighted 6 withCount 3
+                ModItems.STEEL_BLOCK weighted 14
                 Items.GOLD_BLOCK weighted 20
-                HANDGUN_AMMO weighted 6 withCount 64
-                RIFLE_AMMO weighted 6 withCount 64
-                SHOTGUN_AMMO weighted 6 withCount 32
-                SNIPER_AMMO weighted 6 withCount 32
-                HEAVY_AMMO weighted 6 withCount 16
+                ModItems.HANDGUN_AMMO weighted 6 withCount 64
+                ModItems.RIFLE_AMMO weighted 6 withCount 64
+                ModItems.SHOTGUN_AMMO weighted 6 withCount 32
+                ModItems.SNIPER_AMMO weighted 6 withCount 32
+                ModItems.HEAVY_AMMO weighted 6 withCount 16
                 Items.COAL_BLOCK weighted 30 withCount 9
             }, {
                 add(NestedLootTable.lootTableReference(special("common/flags")).setWeight(40))
@@ -422,40 +422,40 @@ class ModCustomLootProvider() : LootTableSubProvider {
             addMultiItems(1f, 0f) {
                 withWeight(
                     4,
-                    GLOCK_17_BLUEPRINT,
-                    MP_443_BLUEPRINT,
-                    M_1911_BLUEPRINT,
-                    MARLIN_BLUEPRINT,
-                    TASER_BLUEPRINT,
+                    ModItems.GLOCK_17_BLUEPRINT,
+                    ModItems.MP_443_BLUEPRINT,
+                    ModItems.M_1911_BLUEPRINT,
+                    ModItems.MARLIN_BLUEPRINT,
+                    ModItems.TASER_BLUEPRINT,
                 )
 
                 withWeight(
                     2,
-                    GLOCK_18_BLUEPRINT,
-                    AK_47_BLUEPRINT,
-                    QBZ_95_BLUEPRINT,
-                    SKS_BLUEPRINT,
-                    MOSIN_NAGANT_BLUEPRINT,
-                    M_870_BLUEPRINT,
-                    M_79_BLUEPRINT,
+                    ModItems.GLOCK_18_BLUEPRINT,
+                    ModItems.AK_47_BLUEPRINT,
+                    ModItems.QBZ_95_BLUEPRINT,
+                    ModItems.SKS_BLUEPRINT,
+                    ModItems.MOSIN_NAGANT_BLUEPRINT,
+                    ModItems.M_870_BLUEPRINT,
+                    ModItems.M_79_BLUEPRINT,
 
-                    BOCEK_BLUEPRINT,
-                    TRACHELIUM_BLUEPRINT,
-                    VECTOR_BLUEPRINT,
-                    DEVOTION_BLUEPRINT,
-                    M_98B_BLUEPRINT,
-                    AWM_BLUEPRINT,
+                    ModItems.BOCEK_BLUEPRINT,
+                    ModItems.TRACHELIUM_BLUEPRINT,
+                    ModItems.VECTOR_BLUEPRINT,
+                    ModItems.DEVOTION_BLUEPRINT,
+                    ModItems.M_98B_BLUEPRINT,
+                    ModItems.AWM_BLUEPRINT,
                 )
 
                 withWeight(
                     1,
-                    AA_12_BLUEPRINT,
-                    NTW_20_BLUEPRINT,
-                    MINIGUN_BLUEPRINT,
-                    JAVELIN_BLUEPRINT,
+                    ModItems.AA_12_BLUEPRINT,
+                    ModItems.NTW_20_BLUEPRINT,
+                    ModItems.MINIGUN_BLUEPRINT,
+                    ModItems.JAVELIN_BLUEPRINT,
 
-                    MK_42_BLUEPRINT,
-                    MLE_1934_BLUEPRINT,
+                    ModItems.MK_42_BLUEPRINT,
+                    ModItems.MLE_1934_BLUEPRINT,
                 )
             }
         }
