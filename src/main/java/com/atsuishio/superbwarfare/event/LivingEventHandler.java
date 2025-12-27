@@ -521,7 +521,7 @@ public class LivingEventHandler {
                     damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
                     instance.perk().onHurtEntity(damage, data, instance, event.getEntity(), source);
                 } else if (source.is(DamageTypes.PLAYER_ATTACK)) {
-                    instance.perk().onMeleeAttack(data, instance, event.getEntity());
+                    instance.perk().onMeleeAttack(data, instance, event.getEntity(), source);
                 }
             }
         }

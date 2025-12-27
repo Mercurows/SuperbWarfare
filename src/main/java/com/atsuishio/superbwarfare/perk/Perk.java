@@ -110,7 +110,7 @@ public class Perk implements GunPropertyModifier {
     /**
      * 用于处理武器近战攻击后的逻辑
      */
-    public void onMeleeAttack(GunData data, PerkInstance instance, Entity target) {
+    public void onMeleeAttack(GunData data, PerkInstance instance, Entity target, DamageSource source) {
     }
 
     public enum Type {
