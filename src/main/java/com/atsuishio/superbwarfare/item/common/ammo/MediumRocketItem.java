@@ -27,7 +27,7 @@ public class MediumRocketItem extends Item implements DispenserLaunchable {
     private final int spreadAmount;
 
     public MediumRocketItem(float damage, float radius, float explosionDamage, float fireProbability, int fireTime, MediumRocketEntity.Type type, int spreadAmount) {
-        super(new Properties());
+        super(new Properties().stacksTo(4));
 
         this.damage = damage;
         this.radius = radius;

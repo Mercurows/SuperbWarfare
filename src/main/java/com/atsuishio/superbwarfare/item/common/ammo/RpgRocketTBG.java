@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.common.ammo;
 
 import com.atsuishio.superbwarfare.advancement.CriteriaRegister;
-import com.atsuishio.superbwarfare.client.renderer.item.RpgRocketTBGRenderer;
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketTBGEntity;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
@@ -9,7 +8,6 @@ import com.atsuishio.superbwarfare.item.DispenserLaunchable;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
@@ -25,43 +23,13 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.function.Consumer;
 
-public class RpgRocketTBG extends Item implements GeoItem, DispenserLaunchable {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
+public class RpgRocketTBG extends Item implements DispenserLaunchable {
     public RpgRocketTBG() {
         super(new Item.Properties().stacksTo(16));
-    }
-
-    @Override
-    public void initializeClient(@NotNull Consumer<IClientItemExtensions> consumer) {
-        super.initializeClient(consumer);
-        consumer.accept(new IClientItemExtensions() {
-            private final BlockEntityWithoutLevelRenderer renderer = new RpgRocketTBGRenderer();
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return renderer;
-            }
-        });
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     @Override
