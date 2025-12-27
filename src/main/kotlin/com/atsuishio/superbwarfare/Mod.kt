@@ -70,7 +70,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
 
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
         bus.addListener<FMLCommonSetupEvent> { onCommonSetup(bus, it) }
-        bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior(it) }
+        bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
 
         bus.addListener<RegisterPayloadHandlersEvent> { NetworkRegistry.register(it) }
 
