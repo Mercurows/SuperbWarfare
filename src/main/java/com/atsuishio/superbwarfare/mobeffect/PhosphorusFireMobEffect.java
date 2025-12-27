@@ -90,6 +90,8 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (instance.getEffect().equals(ModMobEffects.PHOSPHORUS_FIRE.get())) {
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_ATTACKER);
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_COUNT);
+
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> living), new ClientPhosphorusFireMessage(living.getId(), false));
         }
     }
 
@@ -105,6 +107,8 @@ public class PhosphorusFireMobEffect extends MobEffect {
         if (instance.getEffect().equals(ModMobEffects.PHOSPHORUS_FIRE.get())) {
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_ATTACKER);
             living.getPersistentData().remove(TAG_PHOSPHORUS_FIRE_COUNT);
+
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.TRACKING_ENTITY.with(() -> living), new ClientPhosphorusFireMessage(living.getId(), false));
         }
     }
 
