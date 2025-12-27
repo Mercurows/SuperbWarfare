@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
@@ -49,8 +50,8 @@ public class OneTwoPunch extends Perk {
     }
 
     @Override
-    public void onMeleeAttack(GunData data, PerkInstance instance, Entity target) {
-        super.onMeleeAttack(data, instance, target);
+    public void onMeleeAttack(GunData data, PerkInstance instance, Entity target, DamageSource source) {
+        super.onMeleeAttack(data, instance, target, source);
         data.perk.getTag(this).remove("OneTwoPunchTime");
         data.perk.getTag(this).remove("OneTwoPunchCount");
         data.perk.getTag(this).remove("OneTwoPunchCountTime");

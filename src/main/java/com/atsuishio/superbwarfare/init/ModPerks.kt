@@ -79,6 +79,7 @@ object ModPerks {
     @JvmField val INTELLIGENT_CHIP = registerFuncPerk("intelligent_chip") { Perk("intelligent_chip", Perk.Type.FUNCTIONAL) }
     @JvmField val BACKPACK_LINKED_MAGAZINE = registerFuncPerk("backpack_linked_magazine") { BackpackLinkedMagazine() }
     @JvmField val POWERFUL_COOLER = registerFuncPerk("powerful_cooler") { PowerfulCooler() }
+    @JvmField val CAST_NO_SHADOWS = registerFuncPerk("cast_no_shadows") { CastNoShadows() }
     // @formatter:on
 
     /**

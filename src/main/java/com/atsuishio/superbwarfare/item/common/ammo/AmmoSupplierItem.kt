@@ -33,7 +33,7 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
 
         val addedCount = if (offhandItem.`is`(ModItems.AMMO_BOX.get())) {
             val canAddAmount = type.ammoBoxLimit - type.get(offhandItem)
-            val toAddCount = canAddAmount / ammoToAdd
+            val toAddCount = (canAddAmount / ammoToAdd).coerceAtMost(count)
             // TODO 添加失败提示？
             if (toAddCount <= 0) return InteractionResultHolder.fail(stack)
 
@@ -44,7 +44,7 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
             val capability = PlayerVariable.getOrDefault(player)
 
             val canAddAmount = type.limit - type.get(capability)
-            val toAddCount = canAddAmount / ammoToAdd
+            val toAddCount = (canAddAmount / ammoToAdd).coerceAtMost(count)
             // TODO 添加失败提示？
             if (toAddCount <= 0) return InteractionResultHolder.fail(stack)
 
