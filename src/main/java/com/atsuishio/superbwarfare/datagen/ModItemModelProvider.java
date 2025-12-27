@@ -157,6 +157,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.LASER_UNIT);
         simpleItem(ModItems.TOW_DEPLOYER);
         simpleItem(ModItems.VEHICLE_RESET_KIT);
+        simpleItem(ModItems.RPG_ROCKET_STANDARD);
+        simpleItem(ModItems.RPG_ROCKET_TBG);
 
         simpleItem(ModItems.TUNGSTEN_ROD);
 

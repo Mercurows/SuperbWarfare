@@ -126,6 +126,7 @@ public class ModItems {
     public static final DeferredHolder<Item, PotionMortarShell> POTION_MORTAR_SHELL = AMMO.register("potion_mortar_shell", PotionMortarShell::new);
     public static final DeferredHolder<Item, RpgRocketStandard> RPG_ROCKET_STANDARD = AMMO.register("rpg_rocket_standard", RpgRocketStandard::new);
     public static final DeferredHolder<Item, RpgRocketTBG> RPG_ROCKET_TBG = AMMO.register("rpg_rocket_tbg", RpgRocketTBG::new);
+    public static final DeferredHolder<Item, Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties().stacksTo(4)));
     public static final DeferredHolder<Item, LungeMine> LUNGE_MINE = AMMO.register("lunge_mine", LungeMine::new);
     public static final DeferredHolder<Item, Item> SMALL_SHELL_AP = AMMO.register("small_shell_ap", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SMALL_SHELL_HE = AMMO.register("small_shell_he", () -> new Item(new Item.Properties()));
@@ -147,7 +148,6 @@ public class ModItems {
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_AP = AMMO.register("medium_rocket_ap", () -> new MediumRocketItem(500, 6, 100, 0, 0, MediumRocketEntity.Type.AP, 0));
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_HE = AMMO.register("medium_rocket_he", () -> new MediumRocketItem(200, 12, 200, 0.2f, 40, MediumRocketEntity.Type.HE, 0));
     public static final DeferredHolder<Item, MediumRocketItem> MEDIUM_ROCKET_CM = AMMO.register("medium_rocket_cm", () -> new MediumRocketItem(300, 12, 300, 0, 0, MediumRocketEntity.Type.CM, 20));
-    public static final DeferredHolder<Item, Item> JAVELIN_MISSILE = AMMO.register("javelin_missile", () -> new Item(new Item.Properties().stacksTo(4)));
     public static final DeferredHolder<Item, Item> MEDIUM_ANTI_AIR_MISSILE = AMMO.register("medium_anti_air_missile", () -> new Item(new Item.Properties().stacksTo(4)));
     public static final DeferredHolder<Item, Item> MEDIUM_ANTI_GROUND_MISSILE = AMMO.register("medium_anti_ground_missile", () -> new Item(new Item.Properties().stacksTo(4)));
     public static final DeferredHolder<Item, Item> LARGE_ANTI_GROUND_MISSILE = AMMO.register("large_anti_ground_missile", () -> new Item(new Item.Properties().stacksTo(2)));

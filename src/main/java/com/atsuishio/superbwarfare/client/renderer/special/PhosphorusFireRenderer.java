@@ -21,7 +21,7 @@ public class PhosphorusFireRenderer {
 
     @SuppressWarnings("deprecation")
     @SubscribeEvent
-    public static void onRenderCurseFlame(RenderLivingEvent<LivingEntity, ? extends EntityModel<? extends LivingEntity>> event) {
+    public static void onRenderCurseFlame(RenderLivingEvent.Pre<LivingEntity, ? extends EntityModel<? extends LivingEntity>> event) {
         LivingEntity entity = event.getEntity();
         if (!PhosphorusFireCapability.of(entity).isOnFire())
             return;
