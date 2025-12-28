@@ -650,7 +650,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         val pitch = if (data.heat.get() <= 75) 1f else (1 - 0.02 * Math.abs(75 - data.heat.get())).toFloat()
 
-        val perk = data.perk!!.get(Perk.Type.AMMO)
+        val perk = data.perk.get(Perk.Type.AMMO)
         if (perk === ModPerks.BEAST_BULLET.get()) {
             shooter.playSound(ModSounds.HENG.get(), 4f, pitch)
         }
@@ -862,7 +862,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         for (type in Perk.Type.entries.toTypedArray()) {
-            val instance = data.perk?.getInstance(type)
+            val instance = data.perk.getInstance(type)
             instance?.perk?.modifyProjectile(data, instance, entity)
         }
 
@@ -885,7 +885,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         if (uuid != null && zoom && (shooter != null && !shooter.isShiftKeyDown)) {
             val target = EntityFindUtil.findEntity(level, uuid.toString())
             val gunData = from(stack)
-            val intelligentChipLevel = gunData.perk!!.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
+            val intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
             if (intelligentChipLevel > 0 && target != null) {
                 val targetVec = target.eyePosition
                 val playerVec = shooter.eyePosition

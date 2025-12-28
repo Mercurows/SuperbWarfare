@@ -136,12 +136,10 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         rawData = selectedAmmoConsumer(rawData.getAmmoConsumers()).computeProperties(this, rawData)
 
         // perk
-        if (perk != null) {
-            for (type in Perk.Type.entries.toTypedArray()) {
-                val instance = perk.get(type) ?: continue
+        for (type in Perk.Type.entries.toTypedArray()) {
+            val instance = perk.get(type) ?: continue
 
-                rawData = instance.computeProperties(this, rawData)
-            }
+            rawData = instance.computeProperties(this, rawData)
         }
 
         // 临时属性修改
@@ -626,7 +624,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val damageReduceRate: Double
         get() {
             for (type in Perk.Type.entries.toTypedArray()) {
-                val instance = this.perk?.getInstance(type)
+                val instance = this.perk.getInstance(type)
                 if (instance != null) {
                     return instance.perk.getModifiedDamageReduceRate(this.rawDamageReduce)
                 }
@@ -637,7 +635,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val damageReduceMinDistance: Double
         get() {
             for (type in Perk.Type.entries.toTypedArray()) {
-                val instance = this.perk?.getInstance(type)
+                val instance = this.perk.getInstance(type)
                 if (instance != null) {
                     return instance.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce)
                 }
@@ -796,7 +794,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val attachment: Attachment
 
     @JvmField
-    val perk: Perks?
+    val perk: Perks
 
 
     fun save() {

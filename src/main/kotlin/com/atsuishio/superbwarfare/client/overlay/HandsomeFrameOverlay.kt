@@ -34,7 +34,7 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
 
         if (stack.item is GunItem && isFirstPerson) {
             val data = from(stack)
-            val level = data.perk!!.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
+            val level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
             if (level == 0) return
 
             RenderSystem.disableDepthTest()
