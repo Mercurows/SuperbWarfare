@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_blaze_powder": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:blaze_powder"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_grain": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:grain"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:mortar_shell_wp"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_blaze_powder",
+      "has_grain",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:mortar_shell_wp"
+    ]
+  },
+  "sends_telemetry_event": false
+}

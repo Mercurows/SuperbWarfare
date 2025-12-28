@@ -9,20 +9,26 @@
       "tag": "superbwarfare:ingots/steel"
     },
     "c": {
-      "item": "superbwarfare:high_energy_explosives"
+      "item": "minecraft:gunpowder"
     },
     "d": {
       "item": "superbwarfare:grain"
+    },
+    "e": {
+      "item": "minecraft:blaze_powder"
+    },
+    "f": {
+      "item": "minecraft:bone_meal"
     }
   },
   "pattern": [
-    " a ",
+    "eaf",
     "bcb",
-    " d "
+    "fde"
   ],
   "result": {
     "count": 8,
-    "item": "superbwarfare:mortar_shell"
+    "item": "superbwarfare:mortar_shell_wp"
   },
   "show_notification": true
 }
