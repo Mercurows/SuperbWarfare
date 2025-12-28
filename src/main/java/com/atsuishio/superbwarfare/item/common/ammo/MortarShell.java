@@ -21,10 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class MortarShell extends Item implements DispenserLaunchable {
-    public MortarShell(MortarShellEntity.Type type) {
-        super(new Properties().stacksTo(4));
-    }
 
+    public MortarShell() {
+        super(new Properties().stacksTo(8));
+    }
 
     public static MortarShellEntity createShell(@Nullable LivingEntity entity, Level level, ItemStack stack, float gravity, float damage, float explosionDamage, float explosionRadius) {
         MortarShellEntity shellEntity = new MortarShellEntity(entity, level, damage, explosionDamage, explosionRadius);

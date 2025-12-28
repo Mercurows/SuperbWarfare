@@ -30,10 +30,6 @@ import java.util.List;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PotionMortarShell extends MortarShell implements DispenserLaunchable {
 
-    public PotionMortarShell(MortarShellEntity.Type type) {
-        super(type);
-    }
-
     @Override
     public @NotNull ItemStack getDefaultInstance() {
         return PotionUtils.setPotion(super.getDefaultInstance(), Potions.POISON);
