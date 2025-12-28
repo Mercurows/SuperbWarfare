@@ -374,6 +374,11 @@ object VehicleMotionUtils {
      * @param vehicle 载具
      */
     fun collideBlocks(vehicle: VehicleEntity) {
+        if (!VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get()
+                && !VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()
+                && !VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()
+                && !VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return
+
         val collisionLevel = vehicle.computed().collisionLevel
         val limits = collisionLevel.powerLimits
 
