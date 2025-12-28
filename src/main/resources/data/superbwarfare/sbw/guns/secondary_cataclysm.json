@@ -59,7 +59,8 @@
     "superbwarfare:vorpal_weapon",
     "superbwarfare:micro_missile",
     "superbwarfare:regeneration",
-    "superbwarfare:one_two_punch"
+    "superbwarfare:one_two_punch",
+    "superbwarfare:cast_no_shadows"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p",
