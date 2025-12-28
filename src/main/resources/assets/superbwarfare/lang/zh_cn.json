@@ -480,6 +480,8 @@
   "des.superbwarfare.high_impact_reserves": "弹匣中最后的几发弹药可造成更高伤害",
   "item.superbwarfare.one_two_punch": "雪上加霜",
   "des.superbwarfare.one_two_punch": "一发弹药的所有弹片均命中时可在短时间内提高近战伤害",
+  "item.superbwarfare.brain_storm": "脑洞大开",
+  "des.superbwarfare.brain_storm": "增加武器的爆头倍率",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",

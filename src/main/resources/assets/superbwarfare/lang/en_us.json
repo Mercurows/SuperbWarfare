@@ -480,6 +480,8 @@
   "des.superbwarfare.high_impact_reserves": "Rounds at the end of the magazine deal more damage.",
   "item.superbwarfare.one_two_punch": "One-Two Punch",
   "des.superbwarfare.one_two_punch": "Hitting enemies with every pellet in a shot increases melee damage for a short duration.",
+  "item.superbwarfare.brain_storm": "Brain Storm",
+  "des.superbwarfare.brain_storm": "Increases the rate of headshot.",
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",

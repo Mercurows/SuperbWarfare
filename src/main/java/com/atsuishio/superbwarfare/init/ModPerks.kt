@@ -105,6 +105,7 @@ object ModPerks {
     @JvmField val FAIR_MEANS = registerDamagePerk("fair_means") { FairMeans() }
     @JvmField val HIGH_IMPACT_RESERVES = registerDamagePerk("high_impact_reserves") { HighImpactReserves() }
     @JvmField val ONE_TWO_PUNCH = registerDamagePerk("one_two_punch") { OneTwoPunch() }
+    @JvmField val BRAIN_STORM = registerDamagePerk("brain_storm") { BrainStorm() }
     // @formatter:on
 
     fun register(bus: IEventBus) {
