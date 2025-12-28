@@ -288,6 +288,9 @@ class GunProp<T, R> private constructor(
         val IS_GRAPE_SHOT_PROJECTILE = plainProp(DefaultGunData::isGrapeShotProjectile)
 
         @JvmField
+        val IS_WHITE_PHOSPHORUS_PROJECTILE = plainProp(DefaultGunData::isWhitePhosphorusProjectile)
+
+        @JvmField
         val IS_HIGH_EXPLOSIVE_PROJECTILE = plainProp(DefaultGunData::isHighExplosiveProjectile)
 
         @JvmField

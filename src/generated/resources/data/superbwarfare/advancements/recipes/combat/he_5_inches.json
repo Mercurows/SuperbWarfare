@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:he_5_inches"
+        "recipe": "superbwarfare:large_shell_he"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:he_5_inches"
+      "superbwarfare:large_shell_he"
     ]
   },
   "sends_telemetry_event": false

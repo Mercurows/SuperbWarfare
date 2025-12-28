@@ -222,11 +222,11 @@ public class ModVillagers {
                     new ItemStack(ModItems.DEVOTION_BLUEPRINT.get()), 10, 30, 0.05f));
 
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.HE_5_INCHES.get(), 1), 8, 10, 0.05f));
+                    new ItemStack(ModItems.LARGE_SHELL_HE.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.AP_5_INCHES.get(), 1), 8, 10, 0.05f));
+                    new ItemStack(ModItems.LARGE_SHELL_AP.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.CM_5_INCHES.get(), 1), 8, 10, 0.05f));
+                    new ItemStack(ModItems.LARGE_SHELL_CM.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
                     new ItemStack(ModItems.MEDIUM_ROCKET_HE.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
@@ -242,11 +242,11 @@ public class ModVillagers {
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
                     new ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1), 8, 10, 0.05f));
 
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.HE_5_INCHES.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.LARGE_SHELL_HE.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.AP_5_INCHES.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.LARGE_SHELL_AP.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.CM_5_INCHES.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.LARGE_SHELL_CM.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.MEDIUM_ROCKET_HE.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));

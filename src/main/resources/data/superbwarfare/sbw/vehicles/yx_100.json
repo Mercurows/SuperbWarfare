@@ -128,9 +128,9 @@
       "CrosshairColor": "0x00ff66",
       "Name": "weapon.superbwarfare.cannon_ap",
       "AmmoType": [
-        "superbwarfare:ap_5_inches",
+        "superbwarfare:large_shell_ap",
         {
-          "Ammo": "superbwarfare:he_5_inches",
+          "Ammo": "superbwarfare:large_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
             "IsArmorPiercingProjectile": false,
@@ -143,22 +143,7 @@
           }
         },
         {
-          "Ammo": "superbwarfare:cm_5_inches",
-          "Override": {
-            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cm_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsClusterMunitionsProjectile": true,
-            "SpreadAmount": 18,
-            "SpreadAngle": 8,
-            "Velocity": 25,
-            "Damage": 300,
-            "ExplosionDamage": 180,
-            "ExplosionRadius": 6,
-            "Name": "weapon.superbwarfare.cannon_cm"
-          }
-        },
-        {
-          "Ammo": "superbwarfare:gs_5_inches",
+          "Ammo": "superbwarfare:large_shell_gs",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
             "IsArmorPiercingProjectile": false,

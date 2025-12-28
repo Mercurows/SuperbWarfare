@@ -22,11 +22,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
@@ -155,7 +157,7 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
             updateChunkLoading(serverLevel);
         }
 
-        if (tickCount > life) {
+        if (tickCount > getLife()) {
             if (level() instanceof ServerLevel) {
                 causeExplode(position());
                 if (this instanceof MortarShellEntity mortarShell) {
@@ -380,6 +382,10 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         this.life = life;
     }
 
+    public int getLife() {
+        return life;
+    }
+
     public float getGravity() {
         return this.gravity;
     }
@@ -421,5 +427,14 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                 level().addAlwaysVisibleParticle(ParticleTypes.SMOKE, true, pos.x + 0.25f * random, pos.y + 0.25f * random, pos.z + 0.25f * random, 0, 0, 0);
             }
         }
+    }
+
+    public boolean checkNoClip(Entity target, Vec3 pos)  {
+        return this.level().clip(
+                new ClipContext(
+                        pos, target.getBoundingBox().getCenter(),
+                        ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this
+                )
+        ).getType() != HitResult.Type.BLOCK;
     }
 }

@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_ap_5_inches": {
+    "has_large_shell_ap": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:ap_5_inches"
+              "superbwarfare:large_shell_ap"
             ]
           }
         ]
@@ -34,7 +34,7 @@
   },
   "requirements": [
     [
-      "has_ap_5_inches",
+      "has_large_shell_ap",
       "has_calibrated_sculk_sensor",
       "has_the_recipe"
     ]

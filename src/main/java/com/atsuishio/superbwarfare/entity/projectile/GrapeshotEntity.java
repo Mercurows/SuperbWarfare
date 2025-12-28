@@ -48,7 +48,7 @@ public class GrapeshotEntity extends FastThrowableProjectile {
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.GS_5_INCHES.get();
+        return ModItems.LARGE_SHELL_GS.get();
     }
 
     @Override

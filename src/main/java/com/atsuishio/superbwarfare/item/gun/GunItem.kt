@@ -799,6 +799,10 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     entity.setType(CannonShellEntity.Type.GRAPE)
                     entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                     entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                } else if (data.get(GunProp.IS_WHITE_PHOSPHORUS_PROJECTILE)) {
+                    entity.setType(CannonShellEntity.Type.WP)
+                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
+                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
                 }
             }
 
