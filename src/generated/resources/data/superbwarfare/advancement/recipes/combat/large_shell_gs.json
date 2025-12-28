@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_ap_head": {
+    "has_gs_head": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:ap_head"
+            "items": "superbwarfare:gs_head"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:ap_5_inches"
+        "recipe": "superbwarfare:large_shell_gs"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_ap_head"
+      "has_gs_head"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:ap_5_inches"
+      "superbwarfare:large_shell_gs"
     ]
   }
 }

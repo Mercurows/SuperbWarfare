@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "a": {
-      "item": "superbwarfare:ap_head"
+      "item": "superbwarfare:he_head"
     },
     "b": {
       "item": "superbwarfare:grain"
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "superbwarfare:ap_5_inches"
+    "id": "superbwarfare:large_shell_he"
   }
 }

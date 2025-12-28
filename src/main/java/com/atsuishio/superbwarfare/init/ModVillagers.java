@@ -4,12 +4,10 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
@@ -225,11 +223,11 @@ public class ModVillagers {
                     new ItemStack(ModItems.DEVOTION_BLUEPRINT.get()), 10, 30, 0.05f));
 
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.HE_5_INCHES.get(), 1), 8, 10, 0.05f));
+                    new ItemStack(ModItems.LARGE_SHELL_HE.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.AP_5_INCHES.get(), 1), 8, 10, 0.05f));
+                    new ItemStack(ModItems.LARGE_SHELL_AP.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
-                    new ItemStack(ModItems.CM_5_INCHES.get(), 1), 8, 10, 0.05f));
+                    new ItemStack(ModItems.LARGE_SHELL_CM.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
                     new ItemStack(ModItems.MEDIUM_ROCKET_HE.get(), 1), 8, 10, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 8),
@@ -245,11 +243,11 @@ public class ModVillagers {
             trades.get(4).add(new BasicItemListing(new ItemStack(Items.EMERALD, 16),
                     new ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1), 8, 10, 0.05f));
 
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.HE_5_INCHES.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.LARGE_SHELL_HE.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.AP_5_INCHES.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.LARGE_SHELL_AP.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));
-            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.CM_5_INCHES.get(), 1),
+            trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.LARGE_SHELL_CM.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));
             trades.get(4).add(new BasicItemListing(new ItemStack(ModItems.MEDIUM_ROCKET_HE.get(), 1),
                     new ItemStack(Items.EMERALD, 4), 32, 4, 0.05f));
@@ -310,16 +308,6 @@ public class ModVillagers {
                 SmallContainerBlockItem.createInstance(Mod.loc("containers/blueprints")), 10, 0, 0.05f));
         rareTrades.add(new BasicItemListing(new ItemStack(Items.EMERALD, 10),
                 SmallContainerBlockItem.createInstance(Mod.loc("containers/common")), 10, 0, 0.05f));
-    }
-
-    private static Holder<Item> getItemHolder(String name) {
-        var item = BuiltInRegistries.ITEM.getHolder(Mod.loc(name));
-        if (item.isEmpty()) {
-            Mod.LOGGER.error("Item {} not found", name);
-            return Holder.direct(Items.AIR);
-        }
-
-        return item.get();
     }
 
 }

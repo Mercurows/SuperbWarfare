@@ -1,13 +1,11 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEntities;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -22,6 +20,7 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
@@ -144,11 +143,18 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         super.onHitEntity(entityHitResult);
         if (this.tickCount > 1) {
             Entity entity = entityHitResult.getEntity();
+
             DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+
+            if (type == Type.WP) {
+                findNearEntity(entityHitResult.getLocation(), getOwner());
+            }
+
             if (this.level() instanceof ServerLevel) {
                 causeExplode(entityHitResult.getLocation());
                 this.createAreaCloud(this.level(), position());
             }
+
             this.discard();
         }
     }
@@ -169,6 +175,11 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         if (state.getBlock() instanceof BellBlock bell) {
             bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
         }
+
+        if (type == Type.WP) {
+            findNearEntity(blockHitResult.getLocation(), getOwner());
+        }
+
         if (!this.level().isClientSide() && this.level() instanceof ServerLevel) {
             if (this.tickCount > 1) {
                 causeExplode(blockHitResult.getLocation());
@@ -176,6 +187,31 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
             }
         }
         this.discard();
+    }
+
+    public void findNearEntity(Vec3 pos, Entity shooter) {
+        if (this.level() instanceof ServerLevel) {
+
+            var entities = new SeekTool.Builder(shooter)
+                    .withinRange(pos, explosionRadius)
+                    .notItsVehicle()
+                    .baseFilter()
+                    .noVehicle()
+                    .build();
+
+            for (Entity e : entities) {
+                var dis = pos.distanceTo(e.position());
+
+                if (e instanceof LivingEntity living && checkNoClip(e, pos)) {
+                    if (living instanceof Player player && player.isCreative()) {
+                        return;
+                    }
+                    if (!living.level().isClientSide()) {
+                        living.addEffect(new MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, (int) (300 - 30 * dis), (int) Math.max(explosionRadius - dis, 0)), this.getOwner());
+                    }
+                }
+            }
+        }
     }
 
     @Override

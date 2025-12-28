@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_he_head": {
+    "has_ap_head": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:he_head"
+            "items": "superbwarfare:ap_head"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:he_5_inches"
+        "recipe": "superbwarfare:large_shell_ap"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_he_head"
+      "has_ap_head"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:he_5_inches"
+      "superbwarfare:large_shell_ap"
     ]
   }
 }

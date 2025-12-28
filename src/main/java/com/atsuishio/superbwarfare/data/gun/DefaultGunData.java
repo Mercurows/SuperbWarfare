@@ -341,6 +341,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("IsGrapeShotProjectile")
     public boolean isGrapeShotProjectile = false;
 
+    @ServerOnly
+    @SerializedName("IsWhitePhosphorusProjectile")
+    public boolean isWhitePhosphorusProjectile = false;
+
     @SerializedName("AddShooterDeltaMovement")
     public boolean addShooterDeltaMovement = false;
 

@@ -79,9 +79,9 @@
       },
       "SoundRadius": 32,
       "AmmoType": [
-        "superbwarfare:ap_5_inches",
+        "superbwarfare:large_shell_ap",
         {
-          "Ammo": "superbwarfare:he_5_inches",
+          "Ammo": "superbwarfare:large_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
             "IsArmorPiercingProjectile": false,
@@ -93,7 +93,7 @@
           }
         },
         {
-          "Ammo": "superbwarfare:cm_5_inches",
+          "Ammo": "superbwarfare:large_shell_cm",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cm_shell.png",
             "IsArmorPiercingProjectile": false,
@@ -107,17 +107,17 @@
           }
         },
         {
-          "Ammo": "superbwarfare:gs_5_inches",
+          "Ammo": "superbwarfare:large_shell_wp",
           "Override": {
-            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/wp_shell.png",
             "IsArmorPiercingProjectile": false,
-            "IsGrapeShotProjectile": true,
-            "SpreadAmount": 42,
-            "SpreadAngle": 5,
-            "Damage": 1400,
-            "ExplosionDamage": 180,
-            "ExplosionRadius": 6,
-            "Name": "weapon.superbwarfare.cannon_gs"
+            "IsWhitePhosphorusProjectile": true,
+            "SpreadAmount": 128,
+            "SpreadAngle": 16,
+            "Damage": 300,
+            "ExplosionDamage": 40,
+            "ExplosionRadius": 11,
+            "Name": "weapon.superbwarfare.cannon_wp"
           }
         }
       ],

@@ -150,10 +150,11 @@ object ModItems {
     @JvmField val SMALL_SHELL_HE = registerAmmo("small_shell_he")
     @JvmField val SMALL_SHELL_GS = registerAmmo("small_shell_gs")
     @JvmField val SMALL_SHELL_AA = registerAmmo("small_shell_aa")
-    @JvmField val AP_5_INCHES = registerAmmo("ap_5_inches") { Item(Item.Properties().rarity(Rarity.RARE)) }
-    @JvmField val HE_5_INCHES = registerAmmo("he_5_inches") { Item(Item.Properties().rarity(Rarity.RARE)) }
-    @JvmField val CM_5_INCHES = registerAmmo("cm_5_inches") { Item(Item.Properties().rarity(Rarity.RARE)) }
-    @JvmField val GS_5_INCHES = registerAmmo("gs_5_inches") { Item(Item.Properties().rarity(Rarity.RARE)) }
+    @JvmField val LARGE_SHELL_AP = registerAmmo("large_shell_ap") { Item(Item.Properties().rarity(Rarity.RARE)) }
+    @JvmField val LARGE_SHELL_HE = registerAmmo("large_shell_he") { Item(Item.Properties().rarity(Rarity.RARE)) }
+    @JvmField val LARGE_SHELL_CM = registerAmmo("large_shell_cm") { Item(Item.Properties().rarity(Rarity.RARE)) }
+    @JvmField val LARGE_SHELL_GS = registerAmmo("large_shell_gs") { Item(Item.Properties().rarity(Rarity.RARE)) }
+    @JvmField val LARGE_SHELL_WP = registerAmmo("large_shell_wp") { Item(Item.Properties().rarity(Rarity.RARE)) }
     @JvmField val HAND_GRENADE = registerAmmo("hand_grenade") { HandGrenade() }
     @JvmField val RGO_GRENADE = registerAmmo("rgo_grenade") { RgoGrenade() }
     @JvmField val M18_SMOKE_GRENADE = registerAmmo("m18_smoke_grenade") { M18SmokeGrenade() }

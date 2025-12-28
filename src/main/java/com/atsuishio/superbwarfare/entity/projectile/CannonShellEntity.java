@@ -5,18 +5,22 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -24,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -41,7 +46,7 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     private int fireTime = 0;
 
     public enum Type {
-        AP, HE, CM, GRAPE
+        AP, HE, CM, GRAPE, WP
     }
 
     private Type type = Type.AP;
@@ -87,13 +92,18 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     @Override
     protected @NotNull Item getDefaultItem() {
-        return ModItems.HE_5_INCHES.get();
+        return ModItems.LARGE_SHELL_HE.get();
     }
 
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
+            if (type == Type.WP) {
+                findNearEntity(blockHitResult.getLocation(), getOwner());
+                causeExplode(blockHitResult.getLocation());
+                this.discard();
+            }
             if (type != Type.AP) {
                 causeExplode(blockHitResult.getLocation());
                 this.discard();
@@ -137,6 +147,10 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
             }
 
+            if (type == Type.WP) {
+                findNearEntity(entityHitResult.getLocation(), getOwner());
+            }
+
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
             }
@@ -150,6 +164,31 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         }
     }
 
+    public void findNearEntity(Vec3 pos, Entity shooter) {
+        if (this.level() instanceof ServerLevel) {
+
+            var entities = new SeekTool.Builder(shooter)
+                    .withinRange(pos, explosionRadius)
+                    .notItsVehicle()
+                    .baseFilter()
+                    .noVehicle()
+                    .build();
+
+            for (Entity e : entities) {
+                var dis = pos.distanceTo(e.position());
+
+                if (e instanceof LivingEntity living && checkNoClip(e, pos)) {
+                    if (living instanceof Player player && player.isCreative()) {
+                        return;
+                    }
+                    if (!living.level().isClientSide()) {
+                        living.addEffect(new MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, (int) (300 - 30 * dis), (int) Math.max(explosionRadius - dis, 0)), this.getOwner());
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void tick() {
         if (type == Type.GRAPE) {
@@ -160,9 +199,9 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
         mediumTrail();
         destroyBlock();
 
-        if (type == Type.CM && tickCount > 3) {
+        if ((type == Type.CM || type == Type.WP) && tickCount > 3) {
             // 使用Minecraft内置的光线追踪进行碰撞检测
-            int spreadTime = 7;
+            int spreadTime = 8;
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
                     position().add(getDeltaMovement().scale(spreadTime)),
@@ -172,13 +211,21 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
             ));
 
             if (hitResult.getType() == HitResult.Type.BLOCK) {
-                releaseClusterMunitions(getOwner());
+                if (type == Type.CM) {
+                    releaseClusterMunitions(getOwner());
+                } else {
+                    releaseWp(getOwner());
+                }
             }
 
             Entity target = TraceTool.findLookingEntity(this, getDeltaMovement().scale(spreadTime).length());
 
             if (target != null && target != this) {
-                releaseClusterMunitions(getOwner());
+                if (type == Type.CM) {
+                    releaseClusterMunitions(getOwner());
+                } else {
+                    releaseWp(getOwner());
+                }
             }
         }
     }
@@ -210,6 +257,21 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                 grapeProjectileEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.2f + 0.9f * getDeltaMovement().length()),
                         spreadAngle);
                 serverLevel.addFreshEntity(grapeProjectileEntity);
+            }
+            discard();
+        }
+    }
+
+    private void releaseWp(Entity shooter) {
+        if (level() instanceof ServerLevel serverLevel) {
+            ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
+            for (int index0 = 0; index0 < spreadAmount; index0++) {
+                WhitePhosphorusProjectileEntity whitePhosphorusProjectileEntity = new WhitePhosphorusProjectileEntity(shooter, serverLevel);
+
+                whitePhosphorusProjectileEntity.setPos(position().x, position().y, position().z);
+                whitePhosphorusProjectileEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.02f + 0.3f * getDeltaMovement().length()),
+                        spreadAngle);
+                serverLevel.addFreshEntity(whitePhosphorusProjectileEntity);
             }
             discard();
         }
@@ -266,5 +328,10 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
 
     public void setSpreadAngle(int spreadAngle) {
         this.spreadAngle = spreadAngle;
+    }
+
+    @Override
+    public int getLife() {
+        return 800;
     }
 }

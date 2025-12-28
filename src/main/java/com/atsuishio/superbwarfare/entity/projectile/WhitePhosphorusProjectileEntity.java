@@ -89,11 +89,10 @@ public class WhitePhosphorusProjectileEntity extends FastThrowableProjectile {
                     .baseFilter()
                     .noVehicle()
                     .build();
-
             for (Entity e : entities) {
                 var dis = pos.distanceTo(e.position());
 
-                if (e instanceof LivingEntity living) {
+                if (e instanceof LivingEntity living && checkNoClip(e, pos)) {
                     DamageHandler.doDamage(living, ModDamageTypes.causeBurnDamage(this.level().registryAccess(), getOwner()), 1);
                     e.invulnerableTime = 0;
                     if (living instanceof Player player && player.isCreative()) {
@@ -102,12 +101,11 @@ public class WhitePhosphorusProjectileEntity extends FastThrowableProjectile {
                     if (!living.level().isClientSide()) {
                         living.addEffect(new MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, (int) (200 - 30 * dis), (int) Math.max(4 - dis, 0)), this.getOwner());
                     }
-                }
-
-                if (this.getOwner() instanceof LivingEntity living) {
-                    if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                        living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-                        PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                    if (this.getOwner() instanceof ServerPlayer player) {
+                        if (!player.level().isClientSide()) {
+                            player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+                            PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                        }
                     }
                 }
             }
