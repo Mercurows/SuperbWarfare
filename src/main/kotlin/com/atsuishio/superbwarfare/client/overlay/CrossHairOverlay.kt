@@ -363,7 +363,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
     ) {
         if (ClientEventHandler.zoomPos >= 0.7) return
 
-        val perk = data.perk!!.get(Perk.Type.AMMO)
+        val perk = data.perk.get(Perk.Type.AMMO)
 
         RenderHelper.preciseBlit(
             guiGraphics,
