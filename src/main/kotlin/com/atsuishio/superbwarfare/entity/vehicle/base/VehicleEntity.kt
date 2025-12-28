@@ -1841,8 +1841,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             noPassengerTime = 0
         }
 
-        this.clearArrow()
-
         mouseMoveSpeedX *= 0.95f
         mouseMoveSpeedY *= 0.95f
 
@@ -1945,16 +1943,18 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             .pow(4.0) * sin(0.2 * Math.PI * (cannonRecoilTime - 2.5))
         cannonRecoilForce *= 0.93f
 
-        this.preventStacking()
         this.supportEntities()
         this.crushEntities()
-
         this.setDeltaMovement(this.deltaMovement.add(0.0, -this.computed().gravity, 0.0))
-
         this.move(MoverType.SELF, this.deltaMovement)
 
-        this.collideBlocks()
-        this.moveOnDragonTeeth()
+
+        if (tickCount % 4 == 0) {
+            this.clearArrow()
+            this.preventStacking()
+            this.moveOnDragonTeeth()
+            this.collideBlocks()
+        }
 
         if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
             for (stack in this.itemStacks) {
@@ -3766,7 +3766,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun collideBlocks() {
-        if (tickCount % 3 != 0) return
+        if (tickCount % 4 != 0) return
         VehicleMotionUtils.collideBlocks(this)
     }
 
