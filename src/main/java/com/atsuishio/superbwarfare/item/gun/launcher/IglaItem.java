@@ -81,7 +81,7 @@ public class IglaItem extends GunGeoItem {
             iglaMissileEntity.setPos(shooter.getX() + firePos.x, shooter.getEyeY() + firePos.y, shooter.getZ() + firePos.z);
             iglaMissileEntity.shoot(shooter.getLookAngle().x, shooter.getLookAngle().y + 0.3, shooter.getLookAngle().z, 3f, 1);
             if (targetEntity != null) {
-                iglaMissileEntity.setTargetUUID(targetEntity.getStringUUID());
+                iglaMissileEntity.setTargetUuid(targetEntity.getStringUUID());
             }
 
             level.addFreshEntity(iglaMissileEntity);
