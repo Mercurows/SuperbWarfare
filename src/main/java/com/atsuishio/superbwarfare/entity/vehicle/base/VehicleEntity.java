@@ -2011,8 +2011,6 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
             noPassengerTime = 0;
         }
 
-        this.clearArrow();
-
         entityData.set(MOUSE_SPEED_X, getMouseMoveSpeedX() * 0.95f);
         entityData.set(MOUSE_SPEED_Y, getMouseMoveSpeedY() * 0.95f);
 
@@ -2096,16 +2094,19 @@ public abstract class VehicleEntity extends Entity implements VehiclePropertyMod
         this.setRecoilShake(Mth.abs(entityData.get(CANNON_RECOIL_FORCE)) * 0.0000007 * java.lang.Math.pow(entityData.get(CANNON_RECOIL_TIME), 4) * java.lang.Math.sin(0.2 * java.lang.Math.PI * (entityData.get(CANNON_RECOIL_TIME) - 2.5)));
         entityData.set(CANNON_RECOIL_FORCE, entityData.get(CANNON_RECOIL_FORCE) * 0.93f);
 
-        this.preventStacking();
+
         this.supportEntities();
         this.crushEntities();
 
         this.setDeltaMovement(this.getDeltaMovement().add(0, -this.computed().gravity, 0));
-
         this.move(MoverType.SELF, this.getDeltaMovement());
 
-        this.collideBlocks();
-        this.moveOnDragonTeeth();
+        if (tickCount %4 == 0) {
+            this.clearArrow();
+            this.preventStacking();
+            this.moveOnDragonTeeth();
+            this.collideBlocks();
+        }
 
         if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
             for (var stack : this.getItemStacks()) {

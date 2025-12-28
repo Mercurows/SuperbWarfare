@@ -348,6 +348,9 @@ public final class VehicleMotionUtils {
      */
     public static void collideBlocks(VehicleEntity vehicle) {
         var collisionLevel = vehicle.computed().collisionLevel;
+
+        if (collisionLevel.level < 1) return;
+
         var limits = collisionLevel.powerLimits;
 
         float power = vehicle.getEntityData().get(VehicleEntity.POWER);
@@ -439,7 +442,7 @@ public final class VehicleMotionUtils {
                 Vector4d Vector4d = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z);
                 Vec3 p = new Vec3(Vector4d.x, Vector4d.y, Vector4d.z);
                 var level = vehicle.level();
-                var res = level.clip(new ClipContext(p, p.add(0, -512, 0),
+                var res = level.clip(new ClipContext(p, p.add(0, -128, 0),
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle));
 
                 double heightY;
