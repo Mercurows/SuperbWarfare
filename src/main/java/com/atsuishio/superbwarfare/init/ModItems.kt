@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
-import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity
 import com.atsuishio.superbwarfare.item.*
 import com.atsuishio.superbwarfare.item.Blu43MineItem.Blu43MineDispenseBehavior
 import com.atsuishio.superbwarfare.item.C4BombItem.C4DispenseItemBehavior
@@ -140,9 +139,9 @@ object ModItems {
     @JvmField val TASER_ELECTRODE = registerAmmo("taser_electrode")
     @JvmField val GRENADE_40MM = registerAmmo("grenade_40mm")
 
-    @JvmField val MORTAR_SHELL = registerAmmo("mortar_shell") { MortarShell(MortarShellEntity.Type.NORMAL) }
-    @JvmField val MORTAR_SHELL_WP = registerAmmo("mortar_shell_wp") { MortarShell(MortarShellEntity.Type.WP) }
-    @JvmField val POTION_MORTAR_SHELL = registerAmmo("potion_mortar_shell") { PotionMortarShell(MortarShellEntity.Type.NORMAL) }
+    @JvmField val MORTAR_SHELL = registerAmmo("mortar_shell") { MortarShell() }
+    @JvmField val MORTAR_SHELL_WP = registerAmmo("mortar_shell_wp") { MortarShell() }
+    @JvmField val POTION_MORTAR_SHELL = registerAmmo("potion_mortar_shell") { PotionMortarShell() }
     @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandard() }
     @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBG() }
     @JvmField val JAVELIN_MISSILE = registerAmmo("javelin_missile") { Item(Item.Properties().stacksTo(4)) }
