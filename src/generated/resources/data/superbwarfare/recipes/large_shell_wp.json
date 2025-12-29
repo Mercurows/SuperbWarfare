@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "superbwarfare:wp_head"
+    },
+    "b": {
+      "item": "superbwarfare:grain"
+    },
+    "c": {
+      "item": "superbwarfare:fusee"
+    }
+  },
+  "pattern": [
+    "c",
+    "a",
+    "b"
+  ],
+  "result": {
+    "item": "superbwarfare:large_shell_wp"
+  },
+  "show_notification": true
+}

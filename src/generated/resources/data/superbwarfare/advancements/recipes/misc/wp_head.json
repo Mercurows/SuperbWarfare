@@ -1,24 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_calibrated_sculk_sensor": {
+    "has_gunpowder": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:calibrated_sculk_sensor"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_large_shell_ap": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "superbwarfare:large_shell_ap"
+              "minecraft:gunpowder"
             ]
           }
         ]
@@ -27,21 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:ptkm_1r"
+        "recipe": "superbwarfare:wp_head"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_large_shell_ap",
-      "has_calibrated_sculk_sensor",
+      "has_gunpowder",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:ptkm_1r"
+      "superbwarfare:wp_head"
     ]
   },
   "sends_telemetry_event": false

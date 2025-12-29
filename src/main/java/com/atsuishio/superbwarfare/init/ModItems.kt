@@ -235,6 +235,7 @@ object ModItems {
     @JvmField val HE_HEAD = registerItem("he_head")
     @JvmField val CM_HEAD = registerItem("cm_head")
     @JvmField val GS_HEAD = registerItem("gs_head")
+    @JvmField val WP_HEAD = registerItem("wp_head")
     @JvmField val CANNON_CORE = registerItem("cannon_core")
     @JvmField val COPPER_PLATE = registerItem("copper_plate")
     @JvmField val STEEL_INGOT = registerItem("steel_ingot")
