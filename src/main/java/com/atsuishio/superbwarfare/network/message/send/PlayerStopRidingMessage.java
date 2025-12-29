@@ -54,7 +54,7 @@ public class PlayerStopRidingMessage {
                             sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, pPos.x, pPos.y, pPos.z, 15, 0.5, 0.5, 0.5, 0.05, true);
                         }
                     }
-                    Mod.queueServerWork(1, () -> NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientSetMotionMessage(vec, pos)));
+                    Mod.queueServerWork(1, () -> NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientSetMotionMessage(vec.toVector3f(), pos.toVector3f())));
 
                     player.stopRiding();
                     player.setJumping(false);

@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
-import com.tacz.guns.api.event.common.EntityHurtByGunEvent
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
@@ -69,7 +68,7 @@ class Mod {
         registerDataTickets()
 
         if (TACZGunEventHandler.compatCondition()) {
-            MinecraftForge.EVENT_BUS.addListener<EntityHurtByGunEvent.Pre> { TACZGunEventHandler.entityHurtByTACZGun(it) }
+            MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun)
         }
         if (ColdSweatCompatHandler.hasMod()) {
             MinecraftForge.EVENT_BUS.addListener<PlayerTickEvent> { ColdSweatCompatHandler.onPlayerInVehicle(it) }

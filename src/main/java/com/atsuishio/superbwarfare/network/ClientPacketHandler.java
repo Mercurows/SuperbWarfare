@@ -99,16 +99,16 @@ public class ClientPacketHandler {
         }
     }
 
-    public static void handleClientSetMotion(ClientSetMotionMessage message, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            Minecraft minecraft = Minecraft.getInstance();
-            Player player = minecraft.player;
-            if (player != null) {
-                player.setPos(message.position().x, message.position().y, message.position().z);
-                player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
-            }
-        }
-    }
+//    public static void handleClientSetMotion(ClientSetMotionMessage message, Supplier<NetworkEvent.Context> ctx) {
+//        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+//            Minecraft minecraft = Minecraft.getInstance();
+//            Player player = minecraft.player;
+//            if (player != null) {
+//                player.setPos(message.position().x, message.position().y, message.position().z);
+//                player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
+//            }
+//        }
+//    }
 
     public static void handleFinishAssemblingVehicleMessage(FinishAssemblingVehicleMessage message, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
