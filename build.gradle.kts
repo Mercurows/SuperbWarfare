@@ -4,6 +4,7 @@ plugins {
     id("maven-publish")
     id("net.neoforged.moddev") version "2.0.80"
     id("org.jetbrains.kotlin.jvm") version "2.1.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
 }
 
 tasks.named<Wrapper>("wrapper") {
