@@ -160,6 +160,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         handheldItem(ModItems.RPG_ROCKET_STANDARD);
         handheldItem(ModItems.RPG_ROCKET_TBG);
         simpleItem(ModItems.MORTAR_SHELL_WP);
+        simpleItem(ModItems.WP_HEAD);
 
         simpleItem(ModItems.TUNGSTEN_ROD);
 

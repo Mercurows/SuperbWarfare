@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:gunpowder"
+    },
+    "b": {
+      "tag": "c:ingots/iron"
+    },
+    "c": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "d": {
+      "item": "minecraft:bone_meal"
+    },
+    "e": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "pattern": [
+    "ede",
+    "bdb",
+    "cac"
+  ],
+  "result": {
+    "count": 2,
+    "id": "superbwarfare:wp_head"
+  }
+}
