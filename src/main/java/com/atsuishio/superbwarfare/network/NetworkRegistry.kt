@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -43,7 +44,7 @@ private inline fun <reified T : PacketPayload<T>> playTo(reg: (CustomPacketPaylo
     val type = CustomPacketPayload.Type<T>(loc(name))
     payloadTypeMap[T::class.java] = type
 
-    reg(type, codec) { msg, context -> msg.handler(msg, context) }
+    reg(type, codec) { msg, context -> with(msg) { context.handler() } }
 }
 
 private inline fun <reified T : PacketPayload<T>> playToServer() {
@@ -56,4 +57,5 @@ private inline fun <reified T : PacketPayload<T>> playToClient() {
 
 fun register() {
     playToClient<ClientIndicatorMessage>()
+    playToClient<ClientSetMotionMessage>()
 }

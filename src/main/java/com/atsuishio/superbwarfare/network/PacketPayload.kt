@@ -7,5 +7,5 @@ typealias PayloadContext = IPayloadContext
 
 abstract class PacketPayload<T : PacketPayload<T>> : CustomPacketPayload {
     override fun type() = payloadTypeMap[this::class.java]!!
-    abstract fun handler(message: T, context: PayloadContext)
+    abstract fun PayloadContext.handler()
 }
