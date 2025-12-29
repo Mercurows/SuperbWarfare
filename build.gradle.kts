@@ -8,6 +8,7 @@ plugins {
     id("org.spongepowered.mixin") version "0.7.+"
     id("org.parchmentmc.librarian.forgegradle") version "1.+"
     id("org.jetbrains.kotlin.jvm") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
 }
 
 fun getGitCommitHash(): String {
