@@ -139,7 +139,7 @@ public class BulletDecalParticle extends TextureSheetParticle {
 
         // 0 - 30 tick 内，从 15 亮度到 0 亮度
         int light = Math.max(15 - this.age / 2, 0);
-        int lightColor = LightTexture.pack(light, light);
+        int lightColor = LightTexture.FULL_BRIGHT;
 
         // 颜色，逐渐渐变到 0 0 0，也就是黑色
         float colorPercent = light / 15.0f;

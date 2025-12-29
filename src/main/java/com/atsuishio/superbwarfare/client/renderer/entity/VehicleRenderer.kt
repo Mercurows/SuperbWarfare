@@ -28,7 +28,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         texture: ResourceLocation,
         bufferSource: MultiBufferSource?,
         partialTick: Float
-    ): RenderType? = RenderType.entityTranslucent(if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) SmartTextureBrightener.getSmartBrightenedTexture(getTextureLocation(vehicle), 3f) else getTextureLocation(vehicle))
+    ): RenderType? = RenderType.entityTranslucent(if (ClientEventHandler.activeThermalImaging) SmartTextureBrightener.getSmartBrightenedTexture(getTextureLocation(vehicle), 3f) else getTextureLocation(vehicle))
 
     override fun render(entityIn: T, entityYaw: Float, partialTicks: Float, poseStack: PoseStack, bufferIn: MultiBufferSource, packedLightIn: Int) {
         poseStack.pushPose()
@@ -44,7 +44,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
     }
 
     private fun adjustLightBasedOnHealth(packedLight: Int, healthRatio: Float): Int {
-        if (healthRatio > 0.5f || (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0)) {
+        if (healthRatio > 0.5f || (ClientEventHandler.activeThermalImaging)) {
             return packedLight
         }
 

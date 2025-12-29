@@ -21,7 +21,6 @@ import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.resource.gun.GunResource;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.world.TDMSavedData;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -73,8 +72,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
-
-import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -253,9 +250,6 @@ public class ClientEventHandler {
 
     public static boolean activeThermalImaging;
 
-    public static int thermalImagingMode = 0;
-
-
     @SubscribeEvent
     public static void handleWeaponTurn(RenderHandEvent event) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -312,24 +306,6 @@ public class ClientEventHandler {
                         s -> hasThermalImagingGoggles.set(true)
                 )
         );
-
-        thermalImagingMode = player.isShiftKeyDown() ? 1 : 0;
-
-//        if (thermalImagingMode == 0) {
-//            if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
-//                activeThermalImaging = false;
-//                Minecraft.getInstance().gameRenderer.shutdownEffect();
-//            } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-//                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
-//            }
-//        } else {
-//            if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
-//                activeThermalImaging = false;
-//                ThermalShaderHandler.setActive(false);
-//            } else {
-//                ThermalShaderHandler.setActive(true);
-//            }
-//        }
 
         if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
             activeThermalImaging = false;
@@ -2420,5 +2396,14 @@ public class ClientEventHandler {
                 Component.literal("[").append(ModItems.VEHICLE_RESET_KIT.get().getDefaultInstance().getHoverName()).append("]").withStyle(ChatFormatting.GREEN)), false);
         player.displayClientMessage(Component.translatable("tips.superbwarfare.vehicle_reset_kit_3")
                 .withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.UNDERLINE), false);
+    }
+
+    @SubscribeEvent
+    public static void onFogColor(ViewportEvent.ComputeFogColor event) {
+        if (activeThermalImaging) {
+            event.setRed(0.0F);
+            event.setGreen(0.0F);
+            event.setBlue(0.0F);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.RenderPlayerArmEvent;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
+import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -16,6 +17,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -157,25 +159,33 @@ public class AnimationHelper {
 
             int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
-            VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
-            vertexRGB(blackPart, $$7, $$8, 255, 0, 0, 0, 1, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, $$8, 255, size, 0, 1, 1, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, $$8, 255, size, size, 1, 0, r, g, b, alpha, size);
-            vertexRGB(blackPart, $$7, $$8, 255, 0, size, 0, 0, r, g, b, alpha, size);
+            if (ClientEventHandler.activeThermalImaging) {
+                r = 255;
+                g = 255;
+                b = 255;
+                a = 255;
+                tex = SmartTextureBrightener.getSmartBrightenedTexture(tex, 10);
+            }
+
+            VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucentEmissive(tex));
+            vertexRGB(blackPart, $$7, $$8,  0, 0, 0, 1, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, $$8,  size, 0, 1, 1, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, $$8,  size, size, 1, 0, r, g, b, alpha, size);
+            vertexRGB(blackPart, $$7, $$8,  0, size, 0, 0, r, g, b, alpha, size);
 
             VertexConsumer $$9 = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(tex));
-            vertexRGB($$9, $$7, $$8, 255, 0, 0, 0, 1, r, g, b, a, size);
-            vertexRGB($$9, $$7, $$8, 255, size, 0, 1, 1, r, g, b, a, size);
-            vertexRGB($$9, $$7, $$8, 255, size, size, 1, 0, r, g, b, a, size);
-            vertexRGB($$9, $$7, $$8, 255, 0, size, 0, 0, r, g, b, a, size);
+            vertexRGB($$9, $$7, $$8,  0, 0, 0, 1, r, g, b, a, size);
+            vertexRGB($$9, $$7, $$8,  size, 0, 1, 1, r, g, b, a, size);
+            vertexRGB($$9, $$7, $$8,  size, size, 1, 0, r, g, b, a, size);
+            vertexRGB($$9, $$7, $$8,  0, size, 0, 0, r, g, b, a, size);
 
             stack.popPose();
         }
         currentBuffer.getBuffer(renderType);
     }
 
-    private static void vertexRGB(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV, int r, int g, int b, int a, float size) {
-        pConsumer.vertex(pPose, pX - 0.5F * size, pY - 0.5F * size, 0).color(r, g, b, a).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
+    private static void vertexRGB(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, float pX, float pY, int pU, int pV, int r, int g, int b, int a, float size) {
+        pConsumer.vertex(pPose, pX - 0.5F * size, pY - 0.5F * size, 0).color(r, g, b, a).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(pNormal, 0F, 1F, 0F).endVertex();
     }
 
     public static void renderArms(LocalPlayer localPlayer, ItemDisplayContext transformType, PoseStack stack, String name, GeoBone bone,

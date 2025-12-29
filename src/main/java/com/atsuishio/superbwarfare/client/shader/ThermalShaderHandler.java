@@ -11,12 +11,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.thermalImagingMode;
 
 /**
  * Code based on YWZJ Team
@@ -175,6 +172,7 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
     }
 
     private static boolean isHotEntity(Entity entity) {
-        return (entity != Minecraft.getInstance().player || !Minecraft.getInstance().options.getCameraType().isFirstPerson()) && thermalImagingMode == 1;
+        return false;
+//        return (entity != Minecraft.getInstance().player || !Minecraft.getInstance().options.getCameraType().isFirstPerson());
     }
 }

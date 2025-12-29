@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.mixins;
 
-import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
@@ -69,7 +68,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     protected void getRenderType(T pLivingEntity, boolean pBodyVisible, boolean pTranslucent, boolean pGlowing, CallbackInfoReturnable<RenderType> cir) {
         ResourceLocation resourcelocation = this.getTextureLocation(pLivingEntity);
 
-        if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) {
+        if (ClientEventHandler.activeThermalImaging) {
             resourcelocation = getSmartBrightenedTexture(resourcelocation, 5f);
         }
 

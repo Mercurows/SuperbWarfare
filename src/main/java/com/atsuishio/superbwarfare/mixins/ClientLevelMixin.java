@@ -1,21 +1,40 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientLevel.class)
 public abstract class ClientLevelMixin {
 
-//    @Shadow @Final private ClientLevel.ClientLevelData clientLevelData;
+    @Inject(method = "getSkyDarken(F)F",
+            at = @At("RETURN"), cancellable = true)
+    public void getSkyDarken(float pPartialTick, CallbackInfoReturnable<Float> cir) {
+        if (ClientEventHandler.activeThermalImaging) {
+            cir.cancel();
+            cir.setReturnValue(1.14f);
+        }
+    }
 
-    //TODO 找一个更像人类的方式实现降低世界亮度
+    @Inject(method = "getSkyColor(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;",
+            at = @At("RETURN"), cancellable = true)
+    public void getSkyColor(Vec3 pPos, float pPartialTick, CallbackInfoReturnable<Vec3> cir) {
+        if (ClientEventHandler.activeThermalImaging) {
+            cir.cancel();
+            cir.setReturnValue(new Vec3(0, 0, 0));
+        }
+    }
 
-//    @Inject(method = "setDayTime(J)V",
-//            at = @At("RETURN"), cancellable = true)
-//    public void setDayTime(long pTime, CallbackInfo ci) {
-//        if (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0) {
-//            ci.cancel();
-//            this.clientLevelData.setDayTime(18000);
-//        }
-//    }
+    @Inject(method = "getCloudColor(F)Lnet/minecraft/world/phys/Vec3;",
+            at = @At("RETURN"), cancellable = true)
+    public void getCloudColor(float pPartialTick, CallbackInfoReturnable<Vec3> cir) {
+        if (ClientEventHandler.activeThermalImaging) {
+            cir.cancel();
+            cir.setReturnValue(new Vec3(0.1, 0.1, 0.1));
+        }
+    }
 }
