@@ -40,7 +40,6 @@ public class NetworkRegistry {
         playToClient(RadarMenuCloseMessage.INSTANCE, RadarMenuCloseMessage::handler);
         playToClient(ClientTacticalSprintSyncMessage.class, ClientTacticalSprintSyncMessage::encode, ClientTacticalSprintSyncMessage::decode, ClientTacticalSprintSyncMessage::handler);
         playToClient(VehiclesDataMessage.class, VehiclesDataMessage::encode, VehiclesDataMessage::decode, (msg, ctx) -> VehiclesDataMessage.handler(msg));
-        playToClient(ClientSetMotionMessage.class, ClientSetMotionMessage::encode, ClientSetMotionMessage::decode, ClientSetMotionMessage::handler);
         playToClient(FinishAssemblingVehicleMessage.class, FinishAssemblingVehicleMessage::encode, FinishAssemblingVehicleMessage::decode, FinishAssemblingVehicleMessage::handler);
         playToClient(TDMSyncMessage.class, TDMSyncMessage::encode, TDMSyncMessage::decode, TDMSyncMessage::handler);
         playToClient(SoundClientMessage.class, SoundClientMessage::encode, SoundClientMessage::decode, SoundClientMessage::handler);

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network
 
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraftforge.api.distmarker.Dist
@@ -40,4 +41,5 @@ private inline fun <reified T : PacketPayload<T>> playToClient() {
 
 fun register() {
     playToClient<ClientIndicatorMessage>()
+    playToClient<ClientSetMotionMessage>()
 }

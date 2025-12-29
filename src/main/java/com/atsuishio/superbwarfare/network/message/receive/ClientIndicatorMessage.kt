@@ -7,17 +7,17 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ClientIndicatorMessage(
-    val messageType: Int,
+    val type: Int,
     val value: Int,
 ) : PacketPayload<ClientIndicatorMessage>() {
 
-    override fun handler(message: ClientIndicatorMessage, context: PayloadContext) {
+    override fun PayloadContext.handler() {
         // TODO: 这样处理是否存在服务端执行问题？
-        when (message.messageType) {
-            1 -> CrossHairOverlay.headIndicator = message.value
-            2 -> CrossHairOverlay.killIndicator = message.value
-            3 -> CrossHairOverlay.vehicleIndicator = message.value
-            else -> CrossHairOverlay.hitIndicator = message.value
+        when (type) {
+            1 -> CrossHairOverlay.headIndicator = value
+            2 -> CrossHairOverlay.killIndicator = value
+            3 -> CrossHairOverlay.vehicleIndicator = value
+            else -> CrossHairOverlay.hitIndicator = value
         }
     }
 }

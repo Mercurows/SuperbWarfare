@@ -15,12 +15,12 @@ abstract class PacketPayload<T : PacketPayload<T>> {
 
                 // TODO 这样能不能隔离？
                 DistExecutor.safeRunWhenOn(dist) {
-                    DistExecutor.SafeRunnable { handler(message, context) }
+                    DistExecutor.SafeRunnable { with(message) { context.handler() } }
                 }
             }
             packetHandled = true
         }
     }
 
-    abstract fun handler(message: T, context: PayloadContext)
+    abstract fun PayloadContext.handler()
 }
