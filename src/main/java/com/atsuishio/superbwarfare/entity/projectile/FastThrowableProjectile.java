@@ -47,8 +47,6 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     public static Consumer<FastThrowableProjectile> playNearFlySound = projectile -> {
     };
 
-    private static final int CHUNK_RADIUS = 1; // 3x3区块
-
     public float damage = 0;
     public float explosionDamage = 0;
     public float explosionRadius = 0;
@@ -272,24 +270,24 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
 
         // 计算需要加载的新区块
         Set<ChunkPos> neededChunks = new HashSet<>();
-        for (int x = -CHUNK_RADIUS; x <= CHUNK_RADIUS; x++) {
-            for (int z = -CHUNK_RADIUS; z <= CHUNK_RADIUS; z++) {
-                neededChunks.add(new ChunkPos(currentPos.x + x, currentPos.z + z));
-            }
+        for (int i = -1; i <= 5; i++) {
+            Vec3 pos = position().add(getDeltaMovement().scale(i));
+            BlockPos blockPos = BlockPos.containing(pos);
+            neededChunks.add(new ChunkPos(blockPos));
         }
 
         // 释放不再需要的区块
         Set<ChunkPos> toRelease = new HashSet<>(currentChunks);
         toRelease.removeAll(neededChunks);
         for (ChunkPos pos : toRelease) {
-            ChunkLoadManager.releaseChunk(serverLevel, pos);
+            ChunkLoadManager.releaseChunk(serverLevel, pos, getUUID());
             currentChunks.remove(pos);
         }
 
         // 加载新区块
         for (ChunkPos pos : neededChunks) {
             if (!currentChunks.contains(pos)) {
-                ChunkLoadManager.forceChunk(serverLevel, pos);
+                ChunkLoadManager.forceChunk(serverLevel, pos, getUUID());
                 currentChunks.add(pos);
             }
         }
@@ -302,8 +300,9 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         if (!level().isClientSide && level() instanceof ServerLevel serverLevel) {
             // 释放所有加载的区块
             for (ChunkPos pos : currentChunks) {
-                ChunkLoadManager.releaseChunk(serverLevel, pos);
+                ChunkLoadManager.releaseChunk(serverLevel, pos, getUUID());
             }
+            ChunkLoadManager.releaseAllForEntity(serverLevel, getUUID());
             currentChunks.clear();
         }
         super.remove(reason);
