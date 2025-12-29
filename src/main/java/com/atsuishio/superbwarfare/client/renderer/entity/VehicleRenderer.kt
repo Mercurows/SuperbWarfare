@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
+import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.culling.Frustum
@@ -16,6 +17,8 @@ import net.minecraft.world.phys.Vec3
 import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
+import kotlin.math.max
+
 
 abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context, model: GeoModel<T>) :
     GeoEntityRenderer<T>(renderManager, model) where T : VehicleEntity, T : GeoAnimatable {
@@ -42,33 +45,34 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
     ) {
         poseStack.pushPose()
 
-        vehicleAxis(entity, poseStack, entityYaw, partialTick)
-        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight)
-        renderCustomPart(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight)
+        val healthRatio: Float = entity.health / entity.getMaxHealth()
 
+        val adjustedLight = this.adjustLightBasedOnHealth(packedLight, healthRatio)
+
+        vehicleAxis(entity, poseStack, entityYaw, partialTick)
+        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, adjustedLight)
+        renderCustomPart(entity, entityYaw, partialTick, poseStack, bufferSource, adjustedLight)
         poseStack.popPose()
     }
 
-    // TODO 为什么无法重写这个
-    // 见鬼了 为什么会把super.defaultRender的animatable解析成Entity？
-    //    override fun defaultRender(
-//        poseStack: PoseStack,
-//        animatable: T,
-//        bufferSource: MultiBufferSource,
-//        renderType: RenderType?,
-//        buffer: VertexConsumer?,
-//        yaw: Float,
-//        partialTick: Float,
-//        packedLight: Int
-//    ) {
-//        poseStack.pushPose()
-//
-//        vehicleAxis(animatable, poseStack, yaw, partialTick)
-//        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight)
-//        renderCustomPart(animatable, yaw, partialTick, poseStack, bufferSource, packedLight)
-//
-//        poseStack.popPose()
-//    }
+    private fun adjustLightBasedOnHealth(packedLight: Int, healthRatio: Float): Int {
+        if (healthRatio > 0.5f || (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0)) {
+            return packedLight
+        }
+
+        // 提取原始的天空光和方块光
+        var skyLight = LightTexture.sky(packedLight)
+        var blockLight = LightTexture.block(packedLight)
+
+        // 根据生命值比例降低光照
+        val dimFactor = (2.0 * healthRatio + 0.2).coerceAtMost(1.0) // 确保不会完全变黑
+        skyLight = max((skyLight * dimFactor).toInt().toDouble(), 0.0).toInt()
+        blockLight = max((blockLight * dimFactor).toInt().toDouble(), 0.0).toInt()
+
+
+        // 重新打包光照值
+        return LightTexture.pack(blockLight, skyLight)
+    }
 
     open fun vehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
         val root = Vec3(0.0, entityIn.rotateOffsetHeight, 0.0)
