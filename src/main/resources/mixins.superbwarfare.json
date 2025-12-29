@@ -29,6 +29,7 @@
     "KeyboardInputMixin",
     "KeymappingMixin",
     "LevelRendererMixin",
+    "LightTextureMixin",
     "LivingEntityRendererMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",

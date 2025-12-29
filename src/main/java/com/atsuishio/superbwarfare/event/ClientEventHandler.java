@@ -249,9 +249,6 @@ public class ClientEventHandler {
 
     public static boolean activeThermalImaging;
 
-    public static int thermalImagingMode = 0;
-
-
     @SubscribeEvent
     public static void handleWeaponTurn(RenderHandEvent event) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -312,24 +309,6 @@ public class ClientEventHandler {
         CuriosApi.getCuriosInventory(player)
                 .flatMap(c -> c.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()))
                 .ifPresent(s -> hasThermalImagingGoggles.set(true));
-
-        thermalImagingMode = player.isShiftKeyDown() ? 1 : 0;
-
-//        if (thermalImagingMode == 0) {
-//            if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
-//                activeThermalImaging = false;
-//                Minecraft.getInstance().gameRenderer.shutdownEffect();
-//            } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-//                Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
-//            }
-//        } else {
-//            if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
-//                activeThermalImaging = false;
-//                ThermalShaderHandler.setActive(false);
-//            } else {
-//                ThermalShaderHandler.setActive(true);
-//            }
-//        }
 
         if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
             activeThermalImaging = false;
@@ -2405,5 +2384,14 @@ public class ClientEventHandler {
                 Component.literal("[").append(ModItems.VEHICLE_RESET_KIT.get().getDefaultInstance().getHoverName()).append("]").withStyle(ChatFormatting.GREEN)), false);
         player.displayClientMessage(Component.translatable("tips.superbwarfare.vehicle_reset_kit_3")
                 .withStyle(ChatFormatting.AQUA).withStyle(ChatFormatting.UNDERLINE), false);
+    }
+
+    @SubscribeEvent
+    public static void onFogColor(ViewportEvent.ComputeFogColor event) {
+        if (activeThermalImaging) {
+            event.setRed(0.0F);
+            event.setGreen(0.0F);
+            event.setBlue(0.0F);
+        }
     }
 }

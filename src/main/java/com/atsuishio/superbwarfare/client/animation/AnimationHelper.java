@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.RenderPlayerArmEvent;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes;
+import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -167,7 +168,15 @@ public class AnimationHelper {
 
             int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
-            VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucent(tex));
+            if (ClientEventHandler.activeThermalImaging) {
+                r = 255;
+                g = 255;
+                b = 255;
+                a = 255;
+                tex = SmartTextureBrightener.getSmartBrightenedTexture(tex, 10);
+            }
+
+            VertexConsumer blackPart = buffer.getBuffer(RenderType.entityTranslucentEmissive(tex));
             vertexRGB(blackPart, $$7, pose, 255, 0, 0, 0, 1, r, g, b, alpha, size);
             vertexRGB(blackPart, $$7, pose, 255, size, 0, 1, 1, r, g, b, alpha, size);
             vertexRGB(blackPart, $$7, pose, 255, size, size, 1, 0, r, g, b, alpha, size);
@@ -192,8 +201,6 @@ public class AnimationHelper {
                 .setLight(pLightmapUV)
                 .setNormal(pNormal, 0, 1, 0);
     }
-
-    public static final float SCALE_RECIPROCAL = 1 / 16.0f;
 
     public static void renderArms(LocalPlayer localPlayer, ItemDisplayContext transformType, PoseStack stack, String name, GeoBone bone,
                                   MultiBufferSource currentBuffer, RenderType renderType, int packedLightIn, boolean useOldHandRender) {

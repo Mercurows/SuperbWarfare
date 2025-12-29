@@ -17,8 +17,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.NotNull;
 
-import static com.atsuishio.superbwarfare.event.ClientEventHandler.thermalImagingMode;
-
 /**
  * Code based on YWZJ Team
  */
@@ -176,6 +174,7 @@ public class ThermalShaderHandler implements ResourceManagerReloadListener {
     }
 
     private static boolean isHotEntity(Entity entity) {
-        return (entity != Minecraft.getInstance().player || !Minecraft.getInstance().options.getCameraType().isFirstPerson()) && thermalImagingMode == 1;
+        return false;
+//        return (entity != Minecraft.getInstance().player || !Minecraft.getInstance().options.getCameraType().isFirstPerson());
     }
 }
