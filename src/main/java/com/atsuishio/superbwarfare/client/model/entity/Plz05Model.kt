@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
+import com.atsuishio.superbwarfare.client.model.entity.VehicleModel.TransformContext
 import com.atsuishio.superbwarfare.entity.vehicle.Plz05Entity
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
@@ -12,6 +13,33 @@ class Plz05Model : VehicleModel<Plz05Entity>() {
             "titop1" -> TransformContext { bone, vehicle, _ ->
                 bone.isHidden =
                     vehicle.getNthEntity(vehicle.turretControllerIndex) === localPlayer && options.cameraType == CameraType.FIRST_PERSON
+            }
+
+            "barrel" -> {
+                return TransformContext { bone, vehicle, _ ->
+                    val a = turretYaw
+                    val r = (Mth.abs(a) - 90f) / 90f
+
+                    val r2 = if (Mth.abs(a) <= 90f) {
+                        a / 90f
+                    } else {
+                        if (a < 0) {
+                            -(180f + a) / 90f
+                        } else {
+                            (180f - a) / 90f
+                        }
+                    }
+
+                    bone.rotX = if (!vehicle.lockTurret) {
+                        Mth.clamp(
+                            -turretXRot - r * pitch - r2 * roll,
+                            vehicle.turretMinPitch,
+                            vehicle.turretMaxPitch
+                    ) * Mth.DEG_TO_RAD
+                    } else {
+                        1.2f * Mth.DEG_TO_RAD
+                    }
+                }
             }
 
             else -> super.collectTransform(boneName)
