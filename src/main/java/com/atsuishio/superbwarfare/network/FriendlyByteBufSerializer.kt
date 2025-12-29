@@ -2,9 +2,7 @@
 
 package com.atsuishio.superbwarfare.network
 
-import io.netty.buffer.Unpooled
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.AbstractEncoder
@@ -12,7 +10,6 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
 
 
@@ -103,31 +100,4 @@ class ByteBufDecoder(private val buf: FriendlyByteBuf, var elementIndex: Int = 0
     }
 
     override fun decodeSequentially() = true
-}
-
-@Serializable
-data class D(
-    val a: Int = 114,
-    val b: String = "514",
-    val c: Float? = null
-)
-
-inline fun <reified T> encodeTo(output: FriendlyByteBuf, value: T) {
-    ByteBufEncoder(output).encodeSerializableValue(serializer(), value)
-}
-
-inline fun <reified T> decodeFrom(input: FriendlyByteBuf): T {
-    return ByteBufDecoder(input).decodeSerializableValue(serializer())
-}
-
-fun test() {
-    val buf = FriendlyByteBuf(Unpooled.buffer())
-    encodeTo(buf, D())
-    val d = decodeFrom<D>(FriendlyByteBuf(buf.copy()))
-    println(d)
-
-    val buf2 = FriendlyByteBuf(Unpooled.buffer())
-    encodeTo(buf2, D(114514, "1919810", 114.514F))
-    val d2 = decodeFrom<D>(FriendlyByteBuf(buf2.copy()))
-    println(d2)
 }
