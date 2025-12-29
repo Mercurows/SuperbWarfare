@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
+import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.culling.Frustum
@@ -16,6 +17,8 @@ import net.minecraft.world.phys.Vec3
 import software.bernie.geckolib.core.animatable.GeoAnimatable
 import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
+import kotlin.math.max
+
 
 abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context, model: GeoModel<T>) :
     GeoEntityRenderer<T>(renderManager, model) where T : VehicleEntity, T : GeoAnimatable {
@@ -29,10 +32,34 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
 
     override fun render(entityIn: T, entityYaw: Float, partialTicks: Float, poseStack: PoseStack, bufferIn: MultiBufferSource, packedLightIn: Int) {
         poseStack.pushPose()
+
+        val healthRatio: Float = entityIn.health / entityIn.getMaxHealth()
+
+        val adjustedLight = this.adjustLightBasedOnHealth(packedLightIn, healthRatio)
+
         vehicleAxis(entityIn, poseStack, entityYaw, partialTicks)
-        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn)
-        renderCustomPart(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn)
+        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, adjustedLight)
+        renderCustomPart(entityIn, entityYaw, partialTicks, poseStack, bufferIn, adjustedLight)
         poseStack.popPose()
+    }
+
+    private fun adjustLightBasedOnHealth(packedLight: Int, healthRatio: Float): Int {
+        if (healthRatio > 0.5f || (ClientEventHandler.activeThermalImaging && ClientEventHandler.thermalImagingMode == 0)) {
+            return packedLight
+        }
+
+        // 提取原始的天空光和方块光
+        var skyLight = LightTexture.sky(packedLight)
+        var blockLight = LightTexture.block(packedLight)
+
+        // 根据生命值比例降低光照
+        val dimFactor = Math.min(2.0 * healthRatio + 0.2, 1.0) // 确保不会完全变黑
+        skyLight = max((skyLight * dimFactor).toInt().toDouble(), 0.0).toInt()
+        blockLight = max((blockLight * dimFactor).toInt().toDouble(), 0.0).toInt()
+
+
+        // 重新打包光照值
+        return LightTexture.pack(blockLight, skyLight)
     }
 
     open fun vehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
