@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.network;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability;
-import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
@@ -42,16 +41,16 @@ public class ClientPacketHandler {
         }
     }
 
-    public static void handleClientIndicatorMessage(ClientIndicatorMessage message, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            switch (message.type) {
-                case 1 -> CrossHairOverlay.headIndicator = message.value;
-                case 2 -> CrossHairOverlay.killIndicator = message.value;
-                case 3 -> CrossHairOverlay.vehicleIndicator = message.value;
-                default -> CrossHairOverlay.hitIndicator = message.value;
-            }
-        }
-    }
+//    public static void handleClientIndicatorMessage(ClientIndicatorMessage message, Supplier<NetworkEvent.Context> ctx) {
+//        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+//            switch (message.type) {
+//                case 1 -> CrossHairOverlay.headIndicator = message.value;
+//                case 2 -> CrossHairOverlay.killIndicator = message.value;
+//                case 3 -> CrossHairOverlay.vehicleIndicator = message.value;
+//                default -> CrossHairOverlay.hitIndicator = message.value;
+//            }
+//        }
+//    }
 
     public static void handleContainerDataMessage(int containerId, List<ContainerDataMessage.Pair> data, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
