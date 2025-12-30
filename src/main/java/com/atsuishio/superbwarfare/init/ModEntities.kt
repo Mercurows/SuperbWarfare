@@ -88,7 +88,7 @@ object ModEntities {
     @JvmField
     val PTKM_1R = register(
         "ptkm_1r",
-        misc(::Ptkm1rEntity).setTrackingRange(64).setUpdateInterval(1).sized(0.2f, 0.7f).eyeHeight(0.2f)
+        misc(::Ptkm1rEntity).setTrackingRange(64).setUpdateInterval(1).sized(0.2f, 0.7f)
     )
 
     @JvmField
@@ -128,7 +128,7 @@ object ModEntities {
         register("rpg_rocket_standard", fastProjectile(::RpgRocketStandardEntity).sized(0.5f, 0.5f))
 
     @JvmField
-    val MORTAR_SHELL = register("mortar_shell", fastProjectile(::MortarShellEntity).sized(0.5f, 0.5f).eyeHeight(0.2f))
+    val MORTAR_SHELL = register("mortar_shell", fastProjectile(::MortarShellEntity).sized(0.5f, 0.5f))
 
     @JvmField
     val PROJECTILE = register("projectile", fastProjectile(::ProjectileEntity).sized(0.25f, 0.25f))
