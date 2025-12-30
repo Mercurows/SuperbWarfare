@@ -18,7 +18,7 @@ class SodayoPickUpHmgModel : VehicleModel<SodayoPickUpHmgEntity>() {
                     state.partialTick,
                     vehicle.rudderRotO,
                     vehicle.rudderRot
-                ) * vehicle.deltaMovement.dot(vehicle.getViewVector(1f))).toFloat()
+                ) * vehicle.deltaMovement.horizontalDistance()).toFloat()
                 bone.rotZ *= 0.8f
                 bone.rotX += -0.1f * vehicle.getAcceleration().toFloat()
                 bone.rotX *= 0.8f
