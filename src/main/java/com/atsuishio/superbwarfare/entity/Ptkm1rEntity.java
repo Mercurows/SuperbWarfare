@@ -113,11 +113,6 @@ public class Ptkm1rEntity extends Entity implements GeoEntity, OwnableEntity {
     }
 
     @Override
-    protected float getEyeHeight(@NotNull Pose pPose, @NotNull EntityDimensions pSize) {
-        return 0.2F;
-    }
-
-    @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         compound.putFloat("Health", this.entityData.get(HEALTH));
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID));

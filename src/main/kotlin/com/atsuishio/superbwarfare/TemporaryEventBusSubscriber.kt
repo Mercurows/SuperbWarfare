@@ -12,7 +12,10 @@ import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.event.*
-import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.init.ModAttributes
+import com.atsuishio.superbwarfare.init.ModLootModifier
+import com.atsuishio.superbwarfare.init.ModTabs
+import com.atsuishio.superbwarfare.init.ModVillagers
 import com.atsuishio.superbwarfare.item.Hammer
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.mobeffect.BurnMobEffect
@@ -47,9 +50,7 @@ private val classes = arrayOf(
     LivingEventHandler::class.java,
     PlayerEventHandler::class.java,
     ModAttributes::class.java,
-    ModEntities::class.java,
     ModLootModifier::class.java,
-    ModPerks::class.java,
     ModTabs::class.java,
     ModVillagers::class.java,
     Hammer::class.java,
