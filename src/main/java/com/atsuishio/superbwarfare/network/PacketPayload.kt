@@ -11,10 +11,8 @@ abstract class PacketPayload<T : PacketPayload<T>> {
     fun handleInternal(message: T, context: PayloadContext, dist: Dist) {
         with(context.get()) {
             enqueueWork {
-//                DistExecutor.unsafeRunWhenOn(dist) { Runnable { handler(message, context) } }
-
                 // TODO 这样能不能隔离？
-                DistExecutor.safeRunWhenOn(dist) {
+                DistExecutor.unsafeRunWhenOn(dist) {
                     DistExecutor.SafeRunnable { with(message) { context.handler() } }
                 }
             }
