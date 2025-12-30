@@ -97,6 +97,8 @@
   "Mass": 0.7,
   "RotateOffsetHeight": 1,
   "DamageModifiers": [
+    "All - 2",
+    "minecraft:lava + 2",
     "All * 0.5",
     "minecraft:arrow * 0.2",
     "minecraft:trident * 0.4",
@@ -104,7 +106,6 @@
     "minecraft:mob_attack_no_aggro * 0.4",
     "minecraft:mob_projectile * 0.4",
     "minecraft:player_attack * 0.4",
-    "minecraft:lava - -2",
     "minecraft:lava * 4",
     "@minecraft:tnt * 3",
     "@minecraft:tnt_minecart * 3",
@@ -121,8 +122,7 @@
     "@superbwarfare:rgo_grenade * 6",
     "@superbwarfare:hand_grenade * 5",
     "@superbwarfare:mortar_shell * 4",
-    "@#superbwarfare:aa_missile * 1.5",
-    "All - 2"
+    "@#superbwarfare:aa_missile * 1.5"
   ],
   "DestroyInfo": {
     "ParticleType": "Medium",

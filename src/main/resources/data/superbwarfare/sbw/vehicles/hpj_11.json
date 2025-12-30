@@ -71,7 +71,8 @@
   },
   "Mass": 30,
   "DamageModifiers": [
-    "minecraft:lava - -8",
+    "All - 8",
+    "minecraft:lava + 8",
     "minecraft:lava * 6.66",
     "@minecraft:tnt * 3",
     "@minecraft:tnt_minecart * 3",
@@ -96,8 +97,7 @@
     "@superbwarfare:mortar_shell * 1.25",
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
-    "@#superbwarfare:aa_missile * 0.75",
-    "All - 8"
+    "@#superbwarfare:aa_missile * 0.75"
   ],
   "ThirdPersonCameraPos": [0, 1, 2],
   "EngineType": "Fixed",
