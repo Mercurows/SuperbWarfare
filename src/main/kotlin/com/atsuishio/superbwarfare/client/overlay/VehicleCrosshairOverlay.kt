@@ -49,6 +49,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         "@VehicleCommonCannonZooming" to loc("textures/overlay/vehicle/crosshair/common_cannon_zooming.png"),
         "@VehicleLaserCannon" to loc("textures/overlay/vehicle/crosshair/laser_cannon.png"),
         "@AirCraftCommon" to loc("textures/overlay/vehicle/aircraft/common.png"),
+        "@NoCross" to loc("textures/overlay/vehicle/crosshair/empty.png"),
     )
 
     private val CROSSHAIR_THIRD_CAMERA = loc("textures/overlay/vehicle/crosshair/third_camera.png")

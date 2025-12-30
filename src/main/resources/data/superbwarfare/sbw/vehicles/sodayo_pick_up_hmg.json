@@ -1,6 +1,11 @@
 {
   "MaxHealth": 175,
   "MaxEnergy": 5000000,
+  "TurretPos": [0, 2.4257, -1.198],
+  "TurretTurnSpeed": [12, 12],
+  "TurretPitchRange": [-45, 85],
+  "BarrelPos": [0, 0, 0],
+  "TurretControllerIndex": 2,
   "OBB": [
     {
       "Size": [0.25, 0.5, 0.5],
@@ -71,71 +76,62 @@
       }
     },
     {
-      "Transform": "Vehicle",
-      "Position": [1.05, 0.75, -0.7],
-      "Orientation": 45,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [1.5, 0.75, -0.7]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [-1.05, 0.75, -0.7],
-      "Orientation": -45,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [-1.5, 0.75, -0.7]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0.42, 0.125, -2.18],
-      "Orientation": -90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [1.5, 0.75, -2.18]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [-0.42, 0.125, -2.18],
-      "Orientation": 90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [-1.5, 0.75, -2.18]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0, 0.125, -1.31],
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [0, 0.75, -3]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0, 0.75, -2.75],
-      "Orientation": 180,
-      "MinYaw": -80,
-      "MaxYaw": 80,
+      "Transform": "Turret",
+      "Position": [0, -1.4, -1],
+      "MinPitch": -45,
+      "MaxPitch": 85,
+      "CameraPos": {
+        "Transform": "Barrel",
+        "UseFixedCameraPos": true,
+        "Position": [
+          0, 0.35, -1.25
+        ],
+        "Direction": "Barrel"
+      },
+      "Weapons": ["MachineGun"],
+      "Sensitivity": [0.7, 0.75, 1],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [0, 0.75, -3]
       }
     }
   ],
+  "Weapons": {
+    "MachineGun": {
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Spread": 0.25,
+      "CrosshairColor": "0xFFFFFF",
+      "Projectile": "superbwarfare:projectile",
+      "RPM": 450,
+      "DefaultZoom": 1.5,
+      "Damage": 40,
+      "BypassesArmor": 0.2,
+      "Velocity": 25,
+      "RecoilTime": 23,
+      "RecoilForce": 0.15,
+      "HeatPerShoot": 5,
+      "NaturalCooldown": 1,
+      "ShootAnimationTime": 1,
+      "Name": "weapon.superbwarfare.50_cal_gun",
+      "AmmoType": "@HeavyAmmo",
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.2, 1]],
+        "Directions": ["Barrel"]
+      },
+      "Crosshair": "@NoCross",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:m_2_hb_fire_1p",
+        "Fire3P": "superbwarfare:m_2_hb_fire_3p",
+        "Fire3PFar": "superbwarfare:m_2_hb_far",
+        "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "SoundRadius": 16
+    }
+  },
   "EngineType": "Wheel",
   "EngineInfo": {
     "Buoyancy": 0,
@@ -187,7 +183,7 @@
     "ExplosionRadius": 5
   },
   "ThirdPersonCameraPos": [0, 0.5, 3],
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/sodayo_pick_up_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/sodayo_pick_up_hmg_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
   "Type": "Car",
   "CollisionLevel": {

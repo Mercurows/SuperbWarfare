@@ -1818,6 +1818,18 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.SODAYO_PICK_UP.get())))
+            VehicleAssemblingRecipeBuilder.entity(
+                ModEntities.SODAYO_PICK_UP_HMG.get(),
+                VehicleAssemblingRecipe.Category.CIVILIAN
+            )
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 2)
+                .require(Items.CHEST, 1)
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.WHEEL.get(), 4)
+                .require(ModItems.LARGE_MOTOR.get())
+                .require(ModItems.M_2_HB.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, loc(getEntityTypeName(ModEntities.SODAYO_PICK_UP_HMG.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.MI_28.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
                 .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
