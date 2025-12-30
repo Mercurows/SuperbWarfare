@@ -226,7 +226,8 @@
   "RotateOffsetHeight": 2.2,
   "Mass": 13.6,
   "DamageModifiers": [
-    "minecraft:lava - -11",
+    "All - 11",
+    "minecraft:lava + 11",
     "minecraft:lava * 10",
     "All * 0.2",
     "minecraft:arrow * 1.5",
@@ -249,8 +250,7 @@
     "@superbwarfare:mortar_shell * 1.25",
     "@superbwarfare:gun_grenade * 1.5",
     "@superbwarfare:javelin_missile * 0.8",
-    "@#superbwarfare:aa_missile * 0.75",
-    "All - 11"
+    "@#superbwarfare:aa_missile * 0.75"
   ],
   "VehicleContainerType": "Medium",
   "DestroyInfo": {
