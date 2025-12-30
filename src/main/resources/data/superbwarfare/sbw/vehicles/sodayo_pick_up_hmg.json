@@ -196,6 +196,6 @@
   "EngineSound": "superbwarfare:sodayo_pick_up_engine",
   "HornSound": "superbwarfare:car_horn",
   "TerrainCompat": [[1, 0, 2.875], [-1, 0, 2.875], [1, 0, -1.28], [-1, 0, -1.28]],
-  "TerrainCompatRotateRate": 6,
+  "TerrainCompatRotateRate": 1.5,
   "InertiaRotateRate": 0.6
 }
