@@ -607,6 +607,7 @@
   "entity.superbwarfare.truck": "泥头车",
   "entity.superbwarfare.tow": "陶式反坦克导弹发射器",
   "entity.superbwarfare.plz_05": "PLZ-05自行火炮",
+  "entity.superbwarfare.sodayo_pick_up": "速德优 TenEven9型 皮卡车",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -772,6 +773,7 @@
   "info.superbwarfare.mi_28": "Mi-28武装直升机是专业的坦克猎手。其主要武器为一门30毫米机炮、42枚火箭弹及高达18枚各型导弹。它专为猎杀坦克、装甲车等重型地面目标而设计，具备强大的装甲和全天候作战能力，能在复杂战场环境中发起致命一击",
   "info.superbwarfare.plz_05": "PLZ-05自行榴弹炮是陆军远程打击的核心。其主武器为一门52倍口径155毫米榴弹炮，配备自动装填系统，可使用多种弹药。它专为在纵深区域压制和摧毁敌方工事、装甲集群及后勤节点而设计，具备优异的机动性和快速反应能力，能在现代战场上提供决定性的火力支援",
   "info.superbwarfare.lav_ad": "LAV-AD是美军专用防空车，配备25mm加特林机炮与“毒刺”导弹，专为拦截直升机、无人机等低空目标而生，具备优异的机动性与两栖能力",
+  "info.superbwarfare.sodayo_pick_up": "速德优TenEven9型是一款无武装民用电动皮卡。它采用电力驱动，实现零排放与低噪音运行，兼顾绿色节能与实用载货能力，主要服务于日常运输与商业载货等民用领域",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",

@@ -1,0 +1,14 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "civilian",
+  "inputs": [
+    "2 #superbwarfare:storage_blocks/steel",
+    "minecraft:chest",
+    "superbwarfare:medium_battery_pack",
+    "4 superbwarfare:wheel",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:sodayo_pick_up"
+  }
+}

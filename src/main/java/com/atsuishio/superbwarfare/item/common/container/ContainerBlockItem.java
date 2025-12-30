@@ -45,6 +45,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void registerContainers(RegisterContainersEvent event) {
         event.add(ModEntities.WHEEL_CHAIR);
+        event.add(ModEntities.SODAYO_PICK_UP.get());
         event.add(ModEntities.TRUCK.get());
         event.add(ModEntities.TYPE_63);
         event.add(ModEntities.MK_42);

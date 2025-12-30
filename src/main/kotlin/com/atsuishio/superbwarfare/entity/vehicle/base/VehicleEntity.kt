@@ -2437,12 +2437,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         if (seat.transform == "Vehicle" || seat.transform == "VehicleFlat") {
             if (!seat.canRotateHead) {
-                entity.yRot = yaw + seat.orientation
+                entity.yRot = yaw
             }
         }
 
         if (!seat.canRotateBody) {
-            entity.setYBodyRot(yaw + seat.orientation)
+            entity.setYBodyRot(yaw)
         }
     }
 
@@ -2451,6 +2451,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val seat = computed().seats()[index]
         val passengerRot = seat.orientation
         val transform = getTransformFromString(seat.transform, ticks).rotate(Axis.YP.rotationDegrees(-passengerRot))
+        val posO = transformPosition(transform, 0.0, 0.0, 0.0)
+        val pos = transformPosition(transform, 0.0, 0.0, 1.0)
+        return Vec3(posO.x, posO.y, posO.z).vectorTo(Vec3(pos.x, pos.y, pos.z))
+    }
+
+    open fun getTransformDirectionNoOrientation(ticks: Float, entity: Entity) : Vec3{
+        val index = getSeatIndex(entity)
+        val seat = computed().seats()[index]
+        val transform = getTransformFromString(seat.transform, ticks)
         val posO = transformPosition(transform, 0.0, 0.0, 0.0)
         val pos = transformPosition(transform, 0.0, 0.0, 1.0)
         return Vec3(posO.x, posO.y, posO.z).vectorTo(Vec3(pos.x, pos.y, pos.z))
