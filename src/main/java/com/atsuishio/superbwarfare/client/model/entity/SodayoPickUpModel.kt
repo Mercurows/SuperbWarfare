@@ -15,7 +15,7 @@ class SodayoPickUpModel : VehicleModel<SodayoPickUpEntity>() {
 
         if (boneName == "head") {
             return TransformContext { bone, vehicle, state ->
-                bone.rotZ += (0.2f * Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot) * vehicle.deltaMovement.dot(vehicle.getViewVector(1f))).toFloat()
+                bone.rotZ += (0.2f * Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot) * vehicle.deltaMovement.horizontalDistance()).toFloat()
                 bone.rotZ *= 0.8f
                 bone.rotX += -0.1f * vehicle.getAcceleration().toFloat()
                 bone.rotX *= 0.8f
