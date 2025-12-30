@@ -42,7 +42,7 @@ public record EditMessage(int type, boolean add, boolean isVehicle) {
                 if (message.type != 5) return;
 
                 vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
-                    int size = data.getDefault().getAmmoConsumers().size();
+                    int size = data.get(GunProp.AMMO_CONSUMER).size();
                     stopGunReloadSound(player, data);
                     data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
 
@@ -83,7 +83,7 @@ public record EditMessage(int type, boolean add, boolean isVehicle) {
                         data.attachment.set(AttachmentType.MAGAZINE, att);
                     }
                     case 5 -> {
-                        int size = data.getDefault().getAmmoConsumers().size();
+                        int size = data.get(GunProp.AMMO_CONSUMER).size();
                         data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, player);
                     }
                 }

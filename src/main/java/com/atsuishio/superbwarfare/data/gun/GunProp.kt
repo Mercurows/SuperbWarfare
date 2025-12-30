@@ -164,7 +164,10 @@ class GunProp<T, R> private constructor(
         val BYPASSES_ARMOR = plainProp(DefaultGunData::bypassesArmor)
 
         @JvmField
-        val AMMO_CONSUMER = GunProp(DefaultGunData::ammoConsumers, { it?.list?.map { l -> l.value!! } ?: listOf() })
+        val AMMO_CONSUMER = GunProp(
+            DefaultGunData::ammoConsumers,
+            { it?.list?.map { l -> l.value!!.also { consumer -> consumer.init() } } ?: listOf() }
+        )
 
         @JvmField
         val NORMAL_RELOAD_TIME = plainProp(DefaultGunData::normalReloadTime)

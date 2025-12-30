@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen;
 import com.atsuishio.superbwarfare.compat.CompatHolder;
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper;
@@ -16,7 +15,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.ItemScreenProvider;
-import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.*;
@@ -183,7 +181,7 @@ public class ClickHandler {
         if (fireModeKey.getType() == InputConstants.Type.MOUSE && button == fireModeKey.getValue()) {
             if (player.getVehicle() instanceof VehicleEntity vehicle) {
                 var data = vehicle.getGunData(player);
-                if (data != null && data.getDefault().getAmmoConsumers().size() > 1) {
+                if (data != null && data.get(GunProp.AMMO_CONSUMER).size() > 1) {
                     NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true, true));
                 }
             } else {
@@ -360,7 +358,7 @@ public class ClickHandler {
             // 玩家位于载具上时，处理切换弹种
             if (player.getVehicle() instanceof VehicleEntity vehicle) {
                 var data = vehicle.getGunData(player);
-                if (data != null && data.getDefault().getAmmoConsumers().size() > 1) {
+                if (data != null && data.get(GunProp.AMMO_CONSUMER).size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
                         NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, false, true));
                         burstFireAmount = 0;
