@@ -529,7 +529,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
             )
 
             // 这里不知道为什么不能合并，会导致上面那个渲染出错
-            val size = data.getDefault().getAmmoConsumers().size
+            val size = data.get(GunProp.AMMO_CONSUMER).size
             if (selected && size > 1) {
                 RenderHelper.preciseBlit(
                     guiGraphics,
