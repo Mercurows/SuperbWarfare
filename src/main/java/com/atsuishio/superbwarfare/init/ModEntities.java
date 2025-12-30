@@ -176,6 +176,8 @@ public class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<VehicleAssemblingTableVehicleEntity>> VEHICLE_ASSEMBLING_TABLE = register("vehicle_assembling_table",
             EntityType.Builder.<VehicleAssemblingTableVehicleEntity>of(VehicleAssemblingTableVehicleEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2, 1.875f));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<SodayoPickUpEntity>> SODAYO_PICK_UP = register("sodayo_pick_up",
+            EntityType.Builder.of(SodayoPickUpEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.4f, 1.55f));
     public static final DeferredHolder<EntityType<?>, EntityType<TruckEntity>> TRUCK = register("truck",
             EntityType.Builder.of(TruckEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.6f, 3f));
 

@@ -607,6 +607,7 @@
   "entity.superbwarfare.truck": "Truck",
   "entity.superbwarfare.tow": "TOW Anti-tank Missile Launcher",
   "entity.superbwarfare.plz_05": "PLZ-05 Self-Propelled Artillery",
+  "entity.superbwarfare.sodayo_pick_up": "Sodayo TenEven9 Pickup",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
@@ -770,6 +771,7 @@
   "info.superbwarfare.mi_28": "The Mi-28 Attack Helicopter is a dedicated tank hunter. Its primary armament consists of a 30mm automatic cannon, 42 unguided rockets, and up to 18 various types of missiles. It is designed to destroy heavy ground targets like tanks and armored vehicles. With its heavy armor and all-weather operational capability, it can deliver a decisive blow in complex battlefield environments.",
   "info.superbwarfare.plz_05": "The PLZ-05 self-propelled howitzer is a cornerstone of the army's long-range strike capability. Its primary weapon is a 155mm/L52 gun with an automatic loading system, capable of firing various types of ammunition. It is designed to suppress and destroy enemy fortifications, armored concentrations, and logistical hubs in deep battle areas. With excellent mobility and rapid response capability, it provides decisive fire support on the modern battlefield.",
   "info.superbwarfare.lav_ad": "The LAV-AD is a US self-propelled air defense vehicle. Armed with a 25mm Gatling gun and Stinger missiles, it specializes in engaging low-altitude threats like helicopters and UAVs, offering high mobility and amphibious capability.",
+  "info.superbwarfare.sodayo_pick_up": "The Sodayo TenEven9 is an unarmed civilian electric pickup truck. Utilizing electric drive, it achieves zero emissions and low-noise operation, balancing eco-friendliness with practical cargo capacity, and primarily serves civilian purposes such as daily transport and commercial haulage.",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",

@@ -50,7 +50,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
                 lerpRot = entity.yBodyRot;
             }
 
-            float transformYaw = (float) VehicleVecUtils.getYRotFromVector(vehicle.getTransformDirection(partialTick, entity));
+            float transformYaw = (float) VehicleVecUtils.getYRotFromVector(vehicle.getTransformDirectionNoOrientation(partialTick, entity));
             var bodyDiffY = lerpRot + transformYaw;
             var passengerWeaponStationYawRot = Axis.YP.rotationDegrees(-bodyDiffY);
 
@@ -62,7 +62,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         }
     }
 
-    //TODO 正确实现mixin
     @Inject(method = "getRenderType(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;",
             at = @At("HEAD"), cancellable = true)
     protected void getRenderType(T pLivingEntity, boolean pBodyVisible, boolean pTranslucent, boolean pGlowing, CallbackInfoReturnable<RenderType> cir) {

@@ -4081,5 +4081,23 @@
         "name": "superbwarfare:night_vision_activate"
       }
     ]
+  },
+  "sodayo_pick_up_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 48,
+        "stream": true,
+        "name": "superbwarfare:vehicle/sodayo_pick_up/sodayo_pick_up_engine"
+      }
+    ]
+  },
+  "car_horn": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:car_horn"
+      }
+    ]
   }
 }
