@@ -178,6 +178,8 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<SodayoPickUpEntity>> SODAYO_PICK_UP = register("sodayo_pick_up",
             EntityType.Builder.of(SodayoPickUpEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.4f, 1.55f));
+    public static final RegistryObject<EntityType<SodayoPickUpHmgEntity>> SODAYO_PICK_UP_HMG = register("sodayo_pick_up_hmg",
+            EntityType.Builder.of(SodayoPickUpHmgEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.4f, 1.55f));
     public static final RegistryObject<EntityType<TruckEntity>> TRUCK = register("truck",
             EntityType.Builder.of(TruckEntity::new, MobCategory.MISC).setTrackingRange(512).setUpdateInterval(1).fireImmune().sized(2.6f, 3f));
 

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
+import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpHmgEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -127,6 +128,40 @@ public class PlayerModelMixin<T extends LivingEntity> {
 
                 model.rightArm.xRot = -112.5f * Mth.DEG_TO_RAD;
                 model.rightSleeve.xRot = -112.5f * Mth.DEG_TO_RAD;
+            }
+
+            // 机枪皮卡
+            if (player.getVehicle() instanceof SodayoPickUpHmgEntity sodayoPickUpHmgEntity && sodayoPickUpHmgEntity.getNthEntity(2) == player) {
+                var x = -110;
+
+                model.leftArm.xRot = x * Mth.DEG_TO_RAD;
+                model.leftSleeve.xRot = x * Mth.DEG_TO_RAD;
+                model.leftArm.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftSleeve.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftArm.zRot = 0 * Mth.DEG_TO_RAD;
+                model.leftSleeve.zRot = 0 * Mth.DEG_TO_RAD;
+
+                model.rightArm.xRot = x * Mth.DEG_TO_RAD;
+                model.rightSleeve.xRot = x * Mth.DEG_TO_RAD;
+                model.rightArm.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightSleeve.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightArm.zRot = 0 * Mth.DEG_TO_RAD;
+                model.rightSleeve.zRot = 0 * Mth.DEG_TO_RAD;
+
+                model.leftLeg.xRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.xRot = 0 * Mth.DEG_TO_RAD;
+                model.leftLeg.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftLeg.zRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.zRot = 0 * Mth.DEG_TO_RAD;
+
+
+                model.rightLeg.xRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.xRot = 0 * Mth.DEG_TO_RAD;
+                model.rightLeg.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightLeg.zRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.zRot = 0 * Mth.DEG_TO_RAD;
             }
 
             // 趴下持枪
