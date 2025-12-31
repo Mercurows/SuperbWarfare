@@ -3,17 +3,13 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Quaterniond;
@@ -23,9 +19,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import static com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener.getSmartBrightenedTexture;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
@@ -63,29 +56,30 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         }
     }
 
-    @Inject(method = "getRenderType(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;",
-            at = @At("HEAD"), cancellable = true)
-    protected void getRenderType(T pLivingEntity, boolean pBodyVisible, boolean pTranslucent, boolean pGlowing, CallbackInfoReturnable<RenderType> cir) {
-        ResourceLocation resourcelocation = this.getTextureLocation(pLivingEntity);
+//    @Inject(method = "getRenderType(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;",
+//            at = @At("HEAD"), cancellable = true)
+//    protected void getRenderType(T pLivingEntity, boolean pBodyVisible, boolean pTranslucent, boolean pGlowing, CallbackInfoReturnable<RenderType> cir) {
+//        ResourceLocation resourcelocation = this.getTextureLocation(pLivingEntity);
+//
+//        if (ClientEventHandler.activeThermalImaging) {
+//            resourcelocation = getSmartBrightenedTexture(resourcelocation, 5f);
+//        }
+//
+//        if (pTranslucent) {
+//            cir.setReturnValue(RenderType.itemEntityTranslucentCull(resourcelocation));
+//        } else if (pBodyVisible) {
+//            cir.setReturnValue(this.model.renderType(resourcelocation));
+//        } else {
+//            cir.setReturnValue(pGlowing ? RenderType.outline(resourcelocation) : null);
+//        }
+//    }
 
-        if (ClientEventHandler.activeThermalImaging) {
-            resourcelocation = getSmartBrightenedTexture(resourcelocation, 5f);
-        }
-
-        if (pTranslucent) {
-            cir.setReturnValue(RenderType.itemEntityTranslucentCull(resourcelocation));
-        } else if (pBodyVisible) {
-            cir.setReturnValue(this.model.renderType(resourcelocation));
-        } else {
-            cir.setReturnValue(pGlowing ? RenderType.outline(resourcelocation) : null);
-        }
-    }
-
-    @Inject(method = "getOverlayCoords", at = @At("HEAD"), cancellable = true)
-    private static void getOverlayCoords(LivingEntity pLivingEntity, float pU, CallbackInfoReturnable<Integer> cir) {
-        if (ClientEventHandler.activeThermalImaging) {
-            cir.cancel();
-            cir.setReturnValue(OverlayTexture.pack(OverlayTexture.u(1), 10));
-        }
-    }
+//    @Inject(method = "getOverlayCoords", at = @At("HEAD"), cancellable = true)
+//    private static void getOverlayCoords(LivingEntity pLivingEntity, float pU, CallbackInfoReturnable<Integer> cir) {
+////        if (ClientEventHandler.activeThermalImaging) {
+////
+////        }
+//        cir.cancel();
+//        cir.setReturnValue(OverlayTexture.pack(OverlayTexture.u(1), OverlayTexture.v(false)));
+//    }
 }
