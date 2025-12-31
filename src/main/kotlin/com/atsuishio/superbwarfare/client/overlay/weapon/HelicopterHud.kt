@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.re
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.renderWeaponInfoThird
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -95,7 +94,7 @@ object HelicopterHud {
                     COMPASS,
                     screenWidth.toFloat() / 2 - 128,
                     10f,
-                    (128 - (64f / 45 * getYRotFromVector(vehicle.getBarrelVector(partialTick)))).toFloat(),
+                    128 - (64f / 45 * vehicle.getYaw(partialTick)),
                     0f,
                     256f,
                     16f,
@@ -164,7 +163,7 @@ object HelicopterHud {
                     mc.font,
                     Component.literal(
                         format0D(
-                            vehicle.deltaMovement.dot(vehicle.getViewVector(partialTick)) * 72,
+                            vehicle.deltaMovement.length() * 72,
                             " km/h"
                         )
                     ),

@@ -240,7 +240,7 @@ object AircraftHud {
                 COMPASS,
                 x - 128,
                 y - 122,
-                128 + (64f / 45 * vehicle.yRot),
+                128 + (64f / 45 * vehicle.getYaw(partialTick)),
                 0f,
                 256f,
                 16f,
@@ -268,16 +268,100 @@ object AircraftHud {
             )
             poseStack.popPose()
 
+            //一些文本
+
+            poseStack.pushPose()
+            poseStack.translate(x.toDouble(), y.toDouble(), 0.0)
             //时速
             guiGraphics.drawString(
-                mc.font, Component.literal(format0D(vehicle.deltaMovement.dot(vehicle.getViewVector(1f)) * 72)),
-                x.toInt() - 105, y.toInt() - 61, color, false
+                    mc.font, Component.literal(format0D(vehicle.deltaMovement.length() * 72)),
+                    -105, -61, color, false
             )
+
             //高度
             guiGraphics.drawString(
-                mc.font, Component.literal(format0D(vehicle.y)),
-                x.toInt() + 111 - 36, y.toInt() - 61, color, false
+                    mc.font, Component.literal(format0D(vehicle.y)),
+                    75, -61, color, false
             )
+
+            //垂直速度
+            guiGraphics.drawString(
+                    mc.font,
+                    Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy.toDouble())),
+                    -96,
+                    60,
+                    color,
+                    false
+            )
+            //加速度
+            lerpG =
+                    Mth.lerp((0.1f * partialTick).toDouble(), lerpG.toDouble(), vehicle.getAcceleration() / 9.8).toFloat()
+            guiGraphics.drawString(mc.font, Component.literal("M"), -105, 70, color, false)
+            guiGraphics.drawString(mc.font, Component.literal("0.2"), -96, 70, color, false)
+            guiGraphics.drawString(mc.font, Component.literal("G"), -105, 78, color, false)
+            guiGraphics.drawString(
+                    mc.font,
+                    Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG.toDouble())),
+                    -96,
+                    78,
+                    color,
+                    false
+            )
+
+            // 热诱弹
+            if (vehicle.hasDecoy()) {
+                if (vehicle.decoyReady) {
+                    guiGraphics.drawString(
+                            Minecraft.getInstance().font,
+                            Component.translatable("tips.superbwarfare.flare.ready").append(
+                                    Component.literal(
+                                            " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
+                                    )
+                            ),
+                            72,
+                            0,
+                            color,
+                            false
+                    )
+                } else {
+                    guiGraphics.drawString(
+                            Minecraft.getInstance().font,
+                            Component.translatable("tips.superbwarfare.flare.reloading"),
+                            72,
+                            0,
+                            0xFF0000,
+                            false
+                    )
+                }
+            }
+            guiGraphics.drawString(mc.font, Component.literal("TGT"), 76, 78, color, false)
+
+            // 武器名
+            val heat = vehicle.getWeaponHeat(player)
+            val component = vehicle.firstPersonAmmoComponent(gunData, player)
+
+            guiGraphics.drawString(
+                    mc.font, component, -mc.font.width(component) / 2, 91,
+                    getGradientColor(color, 0xFF0000, heat, 2), false
+            )
+
+            // 能量警告
+            if (vehicle.hasEnergyStorage()) {
+                if (vehicle.energy < 0.02 * vehicle.maxEnergy) {
+                    guiGraphics.drawString(
+                            mc.font, Component.literal("NO POWER!"),
+                            -144, 14, -65536, false
+                    )
+                } else if (vehicle.energy < 0.2 * vehicle.maxEnergy) {
+                    guiGraphics.drawString(
+                            mc.font, Component.literal("LOW POWER"),
+                            -144, 14, 0xFF6B00, false
+                    )
+                }
+            }
+
+            poseStack.popPose()
+
             //框
             RenderHelper.preciseBlitWithColor(
                 guiGraphics,
@@ -304,66 +388,6 @@ object AircraftHud {
                 36f,
                 12f,
                 color
-            )
-            //垂直速度
-            guiGraphics.drawString(
-                mc.font,
-                Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy.toDouble())),
-                x.toInt() - 96,
-                y.toInt() + 60,
-                color,
-                false
-            )
-            //加速度
-            lerpG =
-                Mth.lerp((0.1f * partialTick).toDouble(), lerpG.toDouble(), vehicle.getAcceleration() / 9.8).toFloat()
-            guiGraphics.drawString(mc.font, Component.literal("M"), x.toInt() - 105, y.toInt() + 70, color, false)
-            guiGraphics.drawString(mc.font, Component.literal("0.2"), x.toInt() - 96, y.toInt() + 70, color, false)
-            guiGraphics.drawString(mc.font, Component.literal("G"), x.toInt() - 105, y.toInt() + 78, color, false)
-            guiGraphics.drawString(
-                mc.font,
-                Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG.toDouble())),
-                x.toInt() - 96,
-                y.toInt() + 78,
-                color,
-                false
-            )
-
-            // 热诱弹
-            if (vehicle.hasDecoy()) {
-                if (vehicle.decoyReady) {
-                    guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        Component.translatable("tips.superbwarfare.flare.ready").append(
-                            Component.literal(
-                                " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
-                            )
-                        ),
-                        x.toInt() + 72,
-                        y.toInt(),
-                        color,
-                        false
-                    )
-                } else {
-                    guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        Component.translatable("tips.superbwarfare.flare.reloading"),
-                        x.toInt() + 72,
-                        y.toInt(),
-                        0xFF0000,
-                        false
-                    )
-                }
-            }
-            guiGraphics.drawString(mc.font, Component.literal("TGT"), x.toInt() + 76, y.toInt() + 78, color, false)
-
-            // 武器名
-            val heat = vehicle.getWeaponHeat(player)
-            val component = vehicle.firstPersonAmmoComponent(gunData, player)
-
-            guiGraphics.drawString(
-                mc.font, component, x.toInt() - mc.font.width(component) / 2, y.toInt() + 91,
-                getGradientColor(color, 0xFF0000, heat, 2), false
             )
 
             //角度
@@ -454,21 +478,6 @@ object AircraftHud {
             }
 
             poseStack.popPose()
-
-            // 能量警告
-            if (vehicle.hasEnergyStorage()) {
-                if (vehicle.energy < 0.02 * vehicle.maxEnergy) {
-                    guiGraphics.drawString(
-                        mc.font, Component.literal("NO POWER!"),
-                        x.toInt() - 144, y.toInt() + 14, -65536, false
-                    )
-                } else if (vehicle.energy < 0.2 * vehicle.maxEnergy) {
-                    guiGraphics.drawString(
-                        mc.font, Component.literal("LOW POWER"),
-                        x.toInt() - 144, y.toInt() + 14, 0xFF6B00, false
-                    )
-                }
-            }
         }
 
         poseStack.pushPose()

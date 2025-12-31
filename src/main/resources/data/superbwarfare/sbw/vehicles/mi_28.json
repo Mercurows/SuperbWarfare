@@ -64,7 +64,7 @@
       "Sensitivity": [0, 0, 0],
       "CameraPos": {
         "Transform": "Vehicle",
-        "Position": [0, 3.5625, 2.25],
+        "Position": [0, 3.61, 2.55],
         "UseFixedCameraPos": true,
         "UseAircraftCamera": true,
         "AircraftCameraPos": [-3.8, 3.5, -15]
