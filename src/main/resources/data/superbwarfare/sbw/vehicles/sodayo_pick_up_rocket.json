@@ -1,45 +1,11 @@
 {
   "MaxHealth": 175,
   "MaxEnergy": 5000000,
-  "TurretPos": [0, 2.4257, -1.198],
-  "TurretTurnSpeed": [12, 12],
-  "TurretPitchRange": [-45, 85],
-  "BarrelPos": [0, 0, 0],
+  "TurretPos": [0, 1.85, -1.288],
+  "TurretTurnSpeed": [4, 4],
+  "TurretPitchRange": [-10, 60],
+  "BarrelPos": [0, 0.65, -0.203125],
   "TurretControllerIndex": 2,
-  "OBB": [
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [1, 0.5, 2.875],
-      "Part": "WheelLeft"
-    },
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [-1, 0.5, 2.875],
-      "Part": "WheelRight"
-    },
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [1, 0.5, -1.28],
-      "Part": "WheelLeft"
-    },
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [-1, 0.5, -1.28],
-      "Part": "WheelRight"
-    },
-    {
-      "Size": [1.1875, 0.5, 3.41],
-      "Position": [0, 1, 0.593]
-    },
-    {
-      "Size": [1.1875, 0.375, 0.1875],
-      "Position": [0, 1.875, 0.375]
-    },
-    {
-      "Size": [1.1875, 0.094, 0.34375],
-      "Position": [0, 2.15625, 0.9]
-    }
-  ],
   "Seats": [
     {
       "IsEnclosed": true,
@@ -74,62 +40,49 @@
         "Transform": "Vehicle",
         "Position": [-1.5, 0.11, 0.81]
       }
-    },
-    {
-      "Transform": "Turret",
-      "Position": [0, -1.4, -1],
-      "MinPitch": -45,
-      "MaxPitch": 85,
-      "CameraPos": {
-        "Transform": "Barrel",
-        "UseFixedCameraPos": true,
-        "Position": [
-          0, 0.35, -1.25
-        ],
-        "Direction": "Barrel"
-      },
-      "Weapons": ["MachineGun"],
-      "Sensitivity": [0.7, 0.75, 1],
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [0, 0.75, -3]
-      }
     }
   ],
   "Weapons": {
-    "MachineGun": {
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",
-      "DefaultFireMode": "Auto",
-      "AvailableFireModes": "Auto",
-      "Spread": 0.25,
-      "CrosshairColor": "0xFFFFFF",
-      "Projectile": "superbwarfare:projectile",
-      "RPM": 450,
-      "DefaultZoom": 1.5,
-      "Damage": 40,
-      "BypassesArmor": 0.2,
-      "Velocity": 25,
-      "RecoilTime": 23,
-      "RecoilForce": 0.15,
-      "HeatPerShoot": 5,
-      "NaturalCooldown": 1,
-      "ShootAnimationTime": 1,
-      "Name": "weapon.superbwarfare.50_cal_gun",
-      "AmmoType": "@HeavyAmmo",
+    "@Rocket": {
+      "Velocity": 10,
+      "Gravity": 0.05,
+      "Spread": 0.5,
+      "ShootShake": [8, 8, 20],
+      "SoundInfo": {
+        "Fire3P": "superbwarfare:medium_rocket_fire",
+        "VehicleReload3p": "ty63_reload"
+      },
       "ShootPos": {
         "Transform": "Barrel",
-        "Positions": [[0, 0.2, 1]],
+        "Positions": [[0, 0, -0.44625]],
         "Directions": ["Barrel"]
       },
-      "Crosshair": "@NoCross",
-      "SoundInfo": {
-        "Fire1P": "superbwarfare:m_2_hb_fire_1p",
-        "Fire3P": "superbwarfare:m_2_hb_fire_3p",
-        "Fire3PFar": "superbwarfare:m_2_hb_far",
-        "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
-        "Change": "superbwarfare:into_cannon"
-      },
-      "SoundRadius": 16
+      "SoundRadius": 4
+    },
+    "Main": {
+      "Template": "@Rocket"
+    },
+    "AP": {
+      "Template": "@Rocket",
+      "Damage": 500,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 5,
+      "IsArmorPiercingProjectile": true
+    },
+    "HE": {
+      "Template": "@Rocket",
+      "Damage": 200,
+      "ExplosionDamage": 200,
+      "ExplosionRadius": 12,
+      "IsHighExplosiveProjectile": true
+    },
+    "CM": {
+      "Template": "@Rocket",
+      "Damage": 300,
+      "ExplosionDamage": 300,
+      "ExplosionRadius": 6,
+      "IsClusterMunitionsProjectile": true,
+      "SpreadAmount": 12
     }
   },
   "EngineType": "Wheel",
@@ -176,7 +129,7 @@
     "@superbwarfare:mortar_shell * 4",
     "@#superbwarfare:aa_missile * 1.5"
   ],
-  "VehicleContainerType": "Huge",
+  "VehicleContainerType": "Special",
   "DestroyInfo": {
     "ParticleType": "Large",
     "ExplosionDamage": 40,

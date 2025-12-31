@@ -67,8 +67,8 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
                             max(
                                 getRange(
                                     lookingEntity.getEntityData().get(Type63Entity.SHOOT_PITCH).toDouble(),
-                                    10.0,
-                                    0.05
+                                        lookingEntity.getProjectileVelocity("Main").toDouble(),
+                                        lookingEntity.getProjectileGravity("Main").toDouble()
                                 ).toInt(), 0
                             ).toDouble(), "m"
                         )
@@ -134,7 +134,10 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
 
             val targetPos = Vec3(targetX, targetY, targetZ)
             val launchVector =
-                calculateLaunchVector(lookingEntity.getShootPos(partialTick), targetPos, 10.0, 0.05, isDepressed)
+                calculateLaunchVector(lookingEntity.getShootPos(partialTick), targetPos,
+                        lookingEntity.getProjectileVelocity("Main").toDouble(),
+                        lookingEntity.getProjectileGravity("Main").toDouble(),
+                        isDepressed)
 
             val vec3 = EntityAnchorArgument.Anchor.EYES.apply(lookingEntity)
             val d0 = (targetPos.x - vec3.x) * 0.2

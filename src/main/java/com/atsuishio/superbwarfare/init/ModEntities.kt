@@ -271,10 +271,13 @@ object ModEntities {
         register("vehicle_assembling_table", vehicle(::VehicleAssemblingTableVehicleEntity).sized(2f, 1.875f))
 
     @JvmField
-    val SODAYO_PICK_UP = register("sodayo_pick_up", vehicle(::SodayoPickUpEntity).sized(2.4f, 1.55f))
+    val SODAYO_PICK_UP = register("sodayo_pick_up", vehicle(::SodayoPickUpEntity).sized(2.4f, 2f))
 
     @JvmField
-    val SODAYO_PICK_UP_HMG = register("sodayo_pick_up_hmg", vehicle(::SodayoPickUpHmgEntity).sized(2.4f, 1.55f))
+    val SODAYO_PICK_UP_HMG = register("sodayo_pick_up_hmg", vehicle(::SodayoPickUpHmgEntity).sized(2.4f, 2f))
+
+    @JvmField
+    val SODAYO_PICK_UP_ROCKET = register("sodayo_pick_up_rocket", vehicle(::SodayoPickUpRocketEntity).sized(2.4f, 2f))
 
     @JvmField
     val TRUCK = register("truck", vehicle(::TruckEntity).sized(2.6f, 3f))

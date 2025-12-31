@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
@@ -43,7 +44,7 @@ public enum ArtilleryIndicatorFireMessage {
                         var tag = tags.getCompound(i);
                         Entity entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"));
 
-                        if (entity instanceof ArtilleryEntity artilleryEntity) {
+                        if (entity instanceof ArtilleryEntity artilleryEntity && !(entity instanceof SodayoPickUpRocketEntity)) {
                             var gunData = artilleryEntity.getGunData("Main");
                             if (gunData != null) {
                                 if (entity instanceof MortarEntity mortarEntity) {
@@ -58,6 +59,10 @@ public enum ArtilleryIndicatorFireMessage {
                                     });
                                 }
                             }
+                        }
+
+                        if (entity instanceof SodayoPickUpRocketEntity sodayoPickUpRocketEntity) {
+                            sodayoPickUpRocketEntity.vehicleShoot(player, "Main");
                         }
                     }
                 }
