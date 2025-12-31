@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -77,6 +78,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             cir.setReturnValue(this.model.renderType(resourcelocation));
         } else {
             cir.setReturnValue(pGlowing ? RenderType.outline(resourcelocation) : null);
+        }
+    }
+
+    @Inject(method = "getOverlayCoords", at = @At("HEAD"), cancellable = true)
+    private static void getOverlayCoords(LivingEntity pLivingEntity, float pU, CallbackInfoReturnable<Integer> cir) {
+        if (ClientEventHandler.activeThermalImaging) {
+            cir.cancel();
+            cir.setReturnValue(OverlayTexture.pack(OverlayTexture.u(1), 10));
         }
     }
 }
