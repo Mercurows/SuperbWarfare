@@ -73,6 +73,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TRUCK.get(), TruckRenderer::new);
         event.registerEntityRenderer(ModEntities.SODAYO_PICK_UP.get(), SodayoPickUpRenderer::new);
         event.registerEntityRenderer(ModEntities.SODAYO_PICK_UP_HMG.get(), SodayoPickUpHmgRenderer::new);
+        event.registerEntityRenderer(ModEntities.SODAYO_PICK_UP_ROCKET.get(), SodayoPickUpRocketRenderer::new);
         event.registerEntityRenderer(ModEntities.TOW.get(), TowRenderer::new);
 //        event.registerEntityRenderer(ModEntities.STEEL_COIL.get(), SteelCoilRenderer::new);
         event.registerEntityRenderer(ModEntities.MI_28.get(), Mi28Renderer::new);

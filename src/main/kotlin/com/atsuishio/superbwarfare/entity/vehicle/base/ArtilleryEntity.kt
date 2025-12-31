@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.base
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
+import com.atsuishio.superbwarfare.entity.vehicle.Plz05Entity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSerializers
@@ -234,6 +235,10 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
                     InventoryTool.consumeItem(controller, gunData.selectedAmmoConsumer().stack().item, 1)
                 }
             }
+        }
+
+        if (deltaMovement.horizontalDistanceSqr() > 0.007 && this !is Plz05Entity) {
+            lockTurret = true
         }
 
         if (controller != null) {

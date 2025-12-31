@@ -308,9 +308,7 @@ public class Type63Entity extends GeoVehicleEntity {
         AABB ab = new AABB(getBoundingBox().getCenter(), getBoundingBox().getCenter()).inflate(0.75).move(barrelVector.scale(-2)).expandTowards(barrelVector.scale(-5));
 
         // 尾焰
-        for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab,
-                target -> target != this && target != getFirstPassenger() && target.getVehicle() == null)
-        ) {
+        for (var entity : level().getEntities(EntityTypeTest.forClass(Entity.class), ab, target -> target != this)) {
             entity.hurt(ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), player), 30 - 2 * entity.distanceTo(this));
             double force = 4 - 0.7 * entity.distanceTo(this);
             entity.push(-force * barrelVector.x, -force * barrelVector.y, -force * barrelVector.z);

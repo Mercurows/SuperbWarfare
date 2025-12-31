@@ -1,40 +1,11 @@
 {
   "MaxHealth": 175,
   "MaxEnergy": 5000000,
-  "OBB": [
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [1, 0.5, 2.875],
-      "Part": "WheelLeft"
-    },
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [-1, 0.5, 2.875],
-      "Part": "WheelRight"
-    },
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [1, 0.5, -1.28],
-      "Part": "WheelLeft"
-    },
-    {
-      "Size": [0.25, 0.5, 0.5],
-      "Position": [-1, 0.5, -1.28],
-      "Part": "WheelRight"
-    },
-    {
-      "Size": [1.1875, 0.5, 3.41],
-      "Position": [0, 1, 0.593]
-    },
-    {
-      "Size": [1.1875, 0.375, 0.1875],
-      "Position": [0, 1.875, 0.375]
-    },
-    {
-      "Size": [1.1875, 0.094, 0.34375],
-      "Position": [0, 2.15625, 0.9]
-    }
-  ],
+  "TurretPos": [0, 1.85, -1.288],
+  "TurretTurnSpeed": [4, 4],
+  "TurretPitchRange": [-10, 60],
+  "BarrelPos": [0, 0.65, -0.203125],
+  "TurretControllerIndex": 2,
   "Seats": [
     {
       "IsEnclosed": true,
@@ -69,73 +40,51 @@
         "Transform": "Vehicle",
         "Position": [-1.5, 0.11, 0.81]
       }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [1.05, 0.75, -0.7],
-      "Orientation": 45,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [1.5, 0.75, -0.7]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [-1.05, 0.75, -0.7],
-      "Orientation": -45,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [-1.5, 0.75, -0.7]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0.42, 0.125, -2.18],
-      "Orientation": -90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [1.5, 0.75, -2.18]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [-0.42, 0.125, -2.18],
-      "Orientation": 90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [-1.5, 0.75, -2.18]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0, 0.125, -1.31],
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [0, 0.75, -3]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0, 0.75, -2.75],
-      "Orientation": 180,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [0, 0.75, -3]
-      }
     }
   ],
+  "Weapons": {
+    "@Rocket": {
+      "Velocity": 10,
+      "Gravity": 0.05,
+      "Spread": 0.5,
+      "ShootShake": [8, 8, 20],
+      "SoundInfo": {
+        "Fire3P": "superbwarfare:medium_rocket_fire",
+        "VehicleReload3p": "ty63_reload"
+      },
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0, -0.44625]],
+        "Directions": ["Barrel"]
+      },
+      "SoundRadius": 4
+    },
+    "Main": {
+      "Template": "@Rocket"
+    },
+    "AP": {
+      "Template": "@Rocket",
+      "Damage": 500,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 5,
+      "IsArmorPiercingProjectile": true
+    },
+    "HE": {
+      "Template": "@Rocket",
+      "Damage": 200,
+      "ExplosionDamage": 200,
+      "ExplosionRadius": 12,
+      "IsHighExplosiveProjectile": true
+    },
+    "CM": {
+      "Template": "@Rocket",
+      "Damage": 300,
+      "ExplosionDamage": 300,
+      "ExplosionRadius": 6,
+      "IsClusterMunitionsProjectile": true,
+      "SpreadAmount": 12
+    }
+  },
   "EngineType": "Wheel",
   "EngineInfo": {
     "Buoyancy": 0,
@@ -180,14 +129,14 @@
     "@superbwarfare:mortar_shell * 4",
     "@#superbwarfare:aa_missile * 1.5"
   ],
-  "VehicleContainerType": "Huge",
+  "VehicleContainerType": "Special",
   "DestroyInfo": {
     "ParticleType": "Large",
     "ExplosionDamage": 40,
     "ExplosionRadius": 5
   },
   "ThirdPersonCameraPos": [0, 0.5, 3],
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/sodayo_pick_up_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/sodayo_pick_up_hmg_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
   "Type": "Car",
   "CollisionLevel": {
