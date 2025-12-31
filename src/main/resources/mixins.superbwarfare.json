@@ -39,6 +39,7 @@
     "MinecraftMixin",
     "MouseHandlerMixin",
     "MultiPlayerGameModeMixin",
+    "OverlayTextureMixin",
     "PlayerItemInHandLayerMixin",
     "PlayerModelMixin"
   ],
