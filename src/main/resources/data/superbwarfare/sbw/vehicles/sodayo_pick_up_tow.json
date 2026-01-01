@@ -1,6 +1,11 @@
 {
   "MaxHealth": 175,
   "MaxEnergy": 5000000,
+  "TurretPos": [0, 1.766, -1.5],
+  "TurretTurnSpeed": [10, 10],
+  "TurretPitchRange": [-20, 40],
+  "BarrelPos": [0, 0.206, 0],
+  "TurretControllerIndex": 2,
   "OBB": [
     {
       "Size": [0.25, 0.5, 0.5],
@@ -71,73 +76,57 @@
       }
     },
     {
-      "Transform": "Vehicle",
-      "Position": [1.05, 0.75, -0.7],
-      "Orientation": 45,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [1.5, 0.75, -0.7]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [-1.05, 0.75, -0.7],
-      "Orientation": -45,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [-1.5, 0.75, -0.7]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0.42, 0.125, -2.18],
-      "Orientation": -90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [1.5, 0.75, -2.18]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [-0.42, 0.125, -2.18],
-      "Orientation": 90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [-1.5, 0.75, -2.18]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0, 1.2, 0],
-      "MinYaw": -70,
-      "MaxYaw": 70,
-      "MinPitch": -30,
-      "MaxPitch": 90,
-      "DismountInfo": {
-        "Transform": "Vehicle",
-        "Position": [0, 0.75, -3]
-      }
-    },
-    {
-      "Transform": "Vehicle",
-      "Position": [0, 0.75, -2.75],
-      "Orientation": 180,
-      "MinYaw": -80,
-      "MaxYaw": 80,
+      "Transform": "Turret",
+      "Position": [0.3, -1.3689, -0.6],
+      "MinPitch": -20,
+      "MaxPitch": 40,
+      "CameraPos": {
+        "Transform": "Turret",
+        "UseFixedCameraPos": true,
+        "Position": [
+          0.2535875, 0.36360625, 0.121875
+        ],
+        "Direction": "Barrel"
+      },
+      "Weapons": ["Missile"],
+      "Sensitivity": [0.55, 0.75, 1],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [0, 0.75, -3]
       }
     }
   ],
+  "Weapons": {
+    "Missile": {
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Name": "weapon.superbwarfare.tow_missile",
+      "AmmoType": "superbwarfare:medium_anti_ground_missile",
+      "Projectile": "superbwarfare:wire_guide_missile",
+      "DefaultZoom": 3,
+      "Magazine": 1,
+      "Damage": 600,
+      "ExplosionDamage": 60,
+      "ExplosionRadius": 8,
+      "EmptyReloadTime": 150,
+      "Velocity": 3,
+      "ShootShake": [6, 6, 14],
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [[0, 0.035, 0]],
+        "Directions": ["Barrel"]
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bmp_2_missile_fire_1p",
+        "Fire3P": "superbwarfare:bmp_2_missile_fire_3p",
+        "VehicleReload3p": "superbwarfare:ty63_reload",
+        "VehicleReloadSoundTime": 24
+      },
+      "SoundRadius": 12,
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/missile_tow.png",
+      "Crosshair": "@Custom"
+    }
+  },
   "EngineType": "Wheel",
   "EngineInfo": {
     "Buoyancy": 0,
@@ -189,7 +178,7 @@
     "ExplosionRadius": 5
   },
   "ThirdPersonCameraPos": [0, 0.5, 3],
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/sodayo_pick_up_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/sodayo_pick_up_tow_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
   "Type": "Car",
   "CollisionLevel": {

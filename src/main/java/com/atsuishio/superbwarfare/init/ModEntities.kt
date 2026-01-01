@@ -280,6 +280,9 @@ object ModEntities {
     val SODAYO_PICK_UP_ROCKET = register("sodayo_pick_up_rocket", vehicle(::SodayoPickUpRocketEntity).sized(2.4f, 2f))
 
     @JvmField
+    val SODAYO_PICK_UP_TOW = register("sodayo_pick_up_tow", vehicle(::SodayoPickUpTowEntity).sized(2.4f, 2f))
+
+    @JvmField
     val TRUCK = register("truck", vehicle(::TruckEntity).sized(2.6f, 3f))
 
 

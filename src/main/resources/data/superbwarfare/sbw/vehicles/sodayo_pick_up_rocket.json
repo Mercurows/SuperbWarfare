@@ -57,7 +57,7 @@
         "Positions": [[0, 0, -0.44625]],
         "Directions": ["Barrel"]
       },
-      "SoundRadius": 4
+      "SoundRadius": 8
     },
     "Main": {
       "Template": "@Rocket"

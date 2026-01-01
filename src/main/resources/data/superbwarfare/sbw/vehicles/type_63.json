@@ -16,7 +16,7 @@
         "Fire3P": "superbwarfare:medium_rocket_fire",
         "VehicleReload3p": "ty63_reload"
       },
-      "SoundRadius": 4
+      "SoundRadius": 8
     },
     "AP": {
       "Template": "@Rocket",
