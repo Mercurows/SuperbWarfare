@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "minecraft:emerald"
+    },
+    "b": {
+      "tag": "c:glass_panes"
+    },
+    "c": {
+      "item": "minecraft:spider_eye"
+    },
+    "d": {
+      "item": "superbwarfare:cell"
+    },
+    "e": {
+      "item": "minecraft:observer"
+    },
+    "f": {
+      "item": "minecraft:daylight_detector"
+    }
+  },
+  "pattern": [
+    "aba",
+    "cfc",
+    "ede"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:thermal_imaging_goggles"
+  }
+}
