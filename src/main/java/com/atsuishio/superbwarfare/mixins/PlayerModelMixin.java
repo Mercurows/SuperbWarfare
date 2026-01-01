@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
-import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpHmgEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.TowEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.Yx100Entity;
+import com.atsuishio.superbwarfare.entity.vehicle.*;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -69,7 +67,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
             }
 
             // Tow
-            if (player.getVehicle() instanceof TowEntity) {
+            if (player.getVehicle() instanceof TowEntity || (player.getVehicle() instanceof SodayoPickUpTowEntity sodayoPickUpTowEntity && sodayoPickUpTowEntity.getTurretControllerIndex() == sodayoPickUpTowEntity.getSeatIndex(player))) {
                 model.head.xRot = 0;
                 model.hat.xRot = 0;
                 model.head.y = 0;
@@ -128,6 +126,24 @@ public class PlayerModelMixin<T extends LivingEntity> {
 
                 model.rightArm.xRot = -112.5f * Mth.DEG_TO_RAD;
                 model.rightSleeve.xRot = -112.5f * Mth.DEG_TO_RAD;
+            }
+
+            // 站姿
+            if (player.getVehicle() instanceof SodayoPickUpEntity sodayoPickUpEntity && sodayoPickUpEntity.getNthEntity(6) == player) {
+                model.leftLeg.xRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.xRot = 0 * Mth.DEG_TO_RAD;
+                model.leftLeg.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.yRot = 0 * Mth.DEG_TO_RAD;
+                model.leftLeg.zRot = 0 * Mth.DEG_TO_RAD;
+                model.leftPants.zRot = 0 * Mth.DEG_TO_RAD;
+
+
+                model.rightLeg.xRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.xRot = 0 * Mth.DEG_TO_RAD;
+                model.rightLeg.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.yRot = 0 * Mth.DEG_TO_RAD;
+                model.rightLeg.zRot = 0 * Mth.DEG_TO_RAD;
+                model.rightPants.zRot = 0 * Mth.DEG_TO_RAD;
             }
 
             // 机枪皮卡

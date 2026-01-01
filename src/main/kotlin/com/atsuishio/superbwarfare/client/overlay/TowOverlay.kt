@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpTowEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.platform.GlStateManager
@@ -22,7 +23,10 @@ object TowOverlay : CommonOverlay("tow") {
     override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
 
-        if (player.vehicle is TowEntity && (ClientEventHandler.zoomVehicle || mc.options.cameraType == CameraType.FIRST_PERSON)) {
+        val vehicle = player.vehicle;
+
+        if ((vehicle is TowEntity || (vehicle is SodayoPickUpTowEntity && vehicle.turretControllerIndex == vehicle.getSeatIndex(player)))
+                && (ClientEventHandler.zoomVehicle || mc.options.cameraType == CameraType.FIRST_PERSON)) {
             poseStack.pushPose()
             RenderSystem.disableDepthTest()
             RenderSystem.depthMask(false)

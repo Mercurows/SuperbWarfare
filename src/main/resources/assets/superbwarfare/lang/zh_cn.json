@@ -610,6 +610,7 @@
   "entity.superbwarfare.sodayo_pick_up": "速德优 TenEven9型 皮卡车",
   "entity.superbwarfare.sodayo_pick_up_hmg": "速德优 TenEven9型 皮卡车(重机枪)",
   "entity.superbwarfare.sodayo_pick_up_rocket": "速德优 TenEven9型 皮卡车(火箭炮)",
+  "entity.superbwarfare.sodayo_pick_up_tow": "速德优 TenEven9型 皮卡车(陶氏)",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -778,6 +779,7 @@
   "info.superbwarfare.sodayo_pick_up": "速德优TenEven9型是一款无武装民用电动皮卡。它采用电力驱动，实现零排放与低噪音运行，兼顾绿色节能与实用载货能力，主要服务于日常运输与商业载货等民用领域",
   "info.superbwarfare.sodayo_pick_up_hmg": "带有重机枪的速德优TenEven9型皮卡车",
   "info.superbwarfare.sodayo_pick_up_rocket": "带有多管火箭炮的速德优TenEven9型皮卡车",
+  "info.superbwarfare.sodayo_pick_up_tow": "带有陶氏反坦克导弹的速德优TenEven9型皮卡车",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",

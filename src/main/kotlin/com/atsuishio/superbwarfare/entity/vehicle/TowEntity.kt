@@ -30,7 +30,6 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import java.util.*
-import java.util.function.Predicate
 
 class TowEntity(type: EntityType<TowEntity>, world: Level) : GeoVehicleEntity(type, world) {
 
@@ -134,9 +133,8 @@ class TowEntity(type: EntityType<TowEntity>, world: Level) : GeoVehicleEntity(ty
         reloadCooldown = coolDown
 
         // 尾焰伤害
-        for (entity in level().getEntities(
-            EntityTypeTest.forClass(Entity::class.java), ab,
-            Predicate { target -> target !== this && target !== getFirstPassenger() && target.vehicle == null })
+        for (entity in level().getEntities(EntityTypeTest.forClass(Entity::class.java), ab) {
+            target -> target !== this && target !== getFirstPassenger() && target.vehicle == null }
         ) {
             entity.hurt(
                 ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), living),

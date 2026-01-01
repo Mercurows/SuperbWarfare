@@ -47,6 +47,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
         event.add(ModEntities.WHEEL_CHAIR);
         event.add(ModEntities.SODAYO_PICK_UP.get());
         event.add(ModEntities.SODAYO_PICK_UP_HMG.get());
+        event.add(ModEntities.SODAYO_PICK_UP_TOW.get());
         event.add(ModEntities.SODAYO_PICK_UP_ROCKET.get());
         event.add(ModEntities.TRUCK.get());
         event.add(ModEntities.TYPE_63);
