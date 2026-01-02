@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateY
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
@@ -87,11 +86,11 @@ object VehicleEngineUtils {
         }
 
         if (forwardInputDown) {
-            power = Math.min(power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (power / 1.02f)), 1f)
+            power = Math.min(power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (Mth.abs(power) / 1.02f)), 1f)
         }
 
         if (backInputDown) {
-            power = Math.max(power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (power / 1.02f)), -1f)
+            power = Math.max(power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (Mth.abs(power) / 1.02f)), -1f)
             if (rightInputDown) {
                 deltaRot += steeringSpeed
 
@@ -276,13 +275,13 @@ object VehicleEngineUtils {
 
         if (forwardInputDown) {
             power = Math.min(
-                power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (power / 1.02f)), 1f
+                power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (Mth.abs(power) / 1.02f)), 1f
             )
         }
 
         if (backInputDown) {
             power = Math.max(
-                power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (power / 1.02f)), -1f
+                power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (Mth.abs(power) / 1.02f)), -1f
             )
         }
 
@@ -377,6 +376,7 @@ object VehicleEngineUtils {
         val maxForwardSpeedRate = engineInfo.maxForwardSpeedRate
         val maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate
         val powerAdd = engineInfo.increment
+        val powerReduce = engineInfo.decrement
         val steeringSpeed = engineInfo.steeringSpeed
         val bodyPitchRate = engineInfo.bodyPitchRate
         val bodyRollRate = engineInfo.bodyRollRate
@@ -467,11 +467,15 @@ object VehicleEngineUtils {
         }
 
         if (forwardInputDown) {
-            power = Math.min(power + (if (power < 0) powerAdd * 2f else powerAdd), 1f)
+            power = Math.min(
+                    power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (Mth.abs(power) / 1.02f)), 1f
+            )
         }
 
         if (backInputDown) {
-            power = Math.min(power - (if (power < 0) powerAdd * 2f else powerAdd), -1f)
+            power = Math.max(
+                    power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (Mth.abs(power) / 1.02f)), -1f
+            )
         }
 
         targetSpeed = if (power > 0) {
