@@ -61,7 +61,7 @@ public class ClientPacketHandler {
         }
     }
 
-    public static void handleRadarMenuOpen(RadarMenuOpenMessage message, Supplier<NetworkEvent.Context> ctx) {
+    public static void handleRadarMenuOpen(RadarMenuOpenMessage message) {
         FuMO25ScreenHelper.resetEntities();
         FuMO25ScreenHelper.pos = message.pos;
     }
@@ -94,8 +94,8 @@ public class ClientPacketHandler {
 
     public static void handleClientTacticalSprintSync(boolean flag, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            MiscConfig.ALLOW_TACTICAL_SPRINT.set(flag);
-            MiscConfig.ALLOW_TACTICAL_SPRINT.save();
+            MiscConfig.TACTICAL_SPRINT.set(flag);
+            MiscConfig.TACTICAL_SPRINT.save();
         }
     }
 

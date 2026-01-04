@@ -27,7 +27,7 @@ public class RadarMenuOpenMessage {
 
     public static void handler(RadarMenuOpenMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                () -> () -> ClientPacketHandler.handleRadarMenuOpen(message, ctx)));
+                () -> () -> ClientPacketHandler.handleRadarMenuOpen(message)));
         ctx.get().setPacketHandled(true);
     }
 }

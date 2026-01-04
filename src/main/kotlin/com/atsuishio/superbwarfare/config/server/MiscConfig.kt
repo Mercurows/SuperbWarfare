@@ -4,8 +4,9 @@ import com.atsuishio.superbwarfare.config.buildServerConfig
 
 object MiscConfig {
 
+    // TODO 是否考虑重命名该属性？
     @JvmField
-    val ALLOW_TACTICAL_SPRINT = buildServerConfig {
+    val TACTICAL_SPRINT = buildServerConfig {
         push("misc")
 
         comment("Set true to enable tactical sprint")

@@ -771,7 +771,7 @@ public class ClientEventHandler {
             return;
         }
 
-        tacticalSprint = MiscConfig.ALLOW_TACTICAL_SPRINT.get()
+        tacticalSprint = MiscConfig.TACTICAL_SPRINT.get()
                 && !exhaustion
                 && !zoom
                 && isMoving()

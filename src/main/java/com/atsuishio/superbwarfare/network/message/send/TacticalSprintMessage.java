@@ -23,7 +23,7 @@ public record TacticalSprintMessage(boolean sprint) {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player == null) return;
-            PlayerVariable.modify(player, capability -> capability.tacticalSprint = MiscConfig.ALLOW_TACTICAL_SPRINT.get() && message.sprint);
+            PlayerVariable.modify(player, capability -> capability.tacticalSprint = MiscConfig.TACTICAL_SPRINT.get() && message.sprint);
         });
         context.setPacketHandled(true);
     }
