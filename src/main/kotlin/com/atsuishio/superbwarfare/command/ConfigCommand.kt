@@ -1,29 +1,45 @@
 package com.atsuishio.superbwarfare.command
 
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig
-import com.atsuishio.superbwarfare.config.server.MiscConfig
-import com.atsuishio.superbwarfare.config.server.ProjectileConfig
-import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.config.server.*
 import com.atsuishio.superbwarfare.network.message.receive.ClientTacticalSprintSyncMessage
 import com.atsuishio.superbwarfare.tools.sendPacketToAll
 import net.minecraft.network.chat.Component
 import net.minecraftforge.common.ForgeConfigSpec
+import kotlin.reflect.KProperty0
 
 val CONFIG_COMMAND = buildCommand("config") {
     requirePermission(0)
 
     buildDestroyTypesCommand()
 
+    // TODO 干掉这些翻译字段
     booleanConfig(
         "tacticalSprint",
         MiscConfig.ALLOW_TACTICAL_SPRINT,
         "commands.config.tactical_sprint"
     ) { sendPacketToAll(ClientTacticalSprintSyncMessage(it)) }
 
-    booleanConfig("explosionDestroy", ExplosionConfig.EXPLOSION_DESTROY, "commands.config.explosion_destroy")
+    booleanConfig(SpawnConfig::SPAWN_SENPAI)
+    booleanConfig(SpawnConfig::SPAWN_MOB_WITH_GUNS)
+
+    booleanConfig(ExplosionConfig::EXPLOSION_DESTROY, "commands.config.explosion_destroy")
+    booleanConfig(ExplosionConfig::EXTRA_EXPLOSION_EFFECT)
+
     booleanConfig("blockDestroy", ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS, "commands.config.block_destroy")
+
+    booleanConfig(VehicleConfig::COLLECT_DROPS_BY_CRASHING)
+    booleanConfig(VehicleConfig::VEHICLE_ITEM_PICKUP)
+    booleanConfig(VehicleConfig::COLLISION_DESTROY_SOFT_BLOCKS)
+    booleanConfig(VehicleConfig::COLLISION_DESTROY_NORMAL_BLOCKS)
+    booleanConfig(VehicleConfig::COLLISION_DESTROY_HARD_BLOCKS)
+    booleanConfig(VehicleConfig::COLLISION_DESTROY_BLOCKS_BEASTLY)
+
     booleanConfig("forceDamage", MiscConfig.ALLOW_FORCE_DAMAGE, "commands.config.force_damage")
-    booleanConfig("dropAmmoBox", MiscConfig.DROP_AMMO_BOX, "commands.config.drop_ammo_box")
+    booleanConfig(MiscConfig::DROP_AMMO_BOX, "commands.config.drop_ammo_box")
+    booleanConfig(MiscConfig::SEND_KILL_FEEDBACK)
+    booleanConfig(MiscConfig::MINE_HITBOX_INVISIBLE)
+    booleanConfig(MiscConfig::DROP_AMMO_BOX)
+    booleanConfig(MiscConfig::SMOKE_HIDE_TARGET)
 }
 
 private enum class DestroyType(
@@ -71,9 +87,38 @@ private fun saveCollisionConfigs() {
 }
 
 private fun SingleCommand.booleanConfig(
+    prop: KProperty0<ForgeConfigSpec.BooleanValue>,
+    msg: String = "",
+    effect: (Boolean) -> Unit = {}
+) {
+    val name = buildString {
+        val propName = prop.name
+        append(propName[0].lowercase())
+
+        var isUpperCase = false
+        for (i in 1..<propName.length) {
+            val c = propName[i]
+            if (c == '_') {
+                isUpperCase = true
+                continue
+            }
+
+            if (isUpperCase) {
+                append(c.uppercase())
+                isUpperCase = false
+            } else {
+                append(c.lowercase())
+            }
+        }
+    }
+
+    booleanConfig(name, prop.get(), msg, effect)
+}
+
+private fun SingleCommand.booleanConfig(
     name: String,
     config: ForgeConfigSpec.BooleanValue,
-    msg: String,
+    msg: String = "",
     effect: (Boolean) -> Unit = {}
 ) {
     name {

@@ -297,7 +297,7 @@ object IncrementalTagUpdater {
                 if (op != Operation.REMOVE) {
                     val tagType = readByte().toInt()
                     tag = TagTypes.getType(tagType)
-                        .load(ByteBufWrapper(this@readTagPatch), 0, NbtAccounter(1145141919810))
+                        .load(ByteBufWrapper(this@readTagPatch), 0, NbtAccounter.UNLIMITED)
                 }
 
                 add(Patch(op, ArrayDeque(path), name, tag))
