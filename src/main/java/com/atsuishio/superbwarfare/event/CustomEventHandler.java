@@ -91,7 +91,7 @@ public class CustomEventHandler {
         }
 
         if (projectile instanceof ProjectileEntity p) {
-            if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && state.is(ModTags.Blocks.BULLET_CAN_DESTROY)) {
+            if (ProjectileConfig.BLOCK_DESTROY.get() && state.is(ModTags.Blocks.BULLET_CAN_DESTROY)) {
                 p.level().destroyBlock(pos, false, p.getShooter());
             }
 
@@ -100,7 +100,7 @@ public class CustomEventHandler {
             }
         }
         if (projectile instanceof GrapeshotEntity grapeshotEntity) {
-            if (ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS.get() && state.is(ModTags.Blocks.CANNON_SHOT_CAN_DESTROY)) {
+            if (ProjectileConfig.BLOCK_DESTROY.get() && state.is(ModTags.Blocks.CANNON_SHOT_CAN_DESTROY)) {
                 grapeshotEntity.level().destroyBlock(pos, false, grapeshotEntity.getOwner());
             }
         }
