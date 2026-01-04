@@ -23,7 +23,7 @@ public record TacticalSprintMessage(boolean sprint) implements CustomPacketPaylo
         var player = context.player();
 
         var cap = player.getData(ModAttachments.PLAYER_VARIABLE).watch();
-        cap.tacticalSprint = MiscConfig.ALLOW_TACTICAL_SPRINT.get() && message.sprint;
+        cap.tacticalSprint = MiscConfig.TACTICAL_SPRINT.get() && message.sprint;
         cap.sync(player);
     }
 

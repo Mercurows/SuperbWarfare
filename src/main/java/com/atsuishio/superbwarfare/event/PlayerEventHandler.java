@@ -146,7 +146,7 @@ public class PlayerEventHandler {
             attr.removeModifier(TACTICAL_SPRINT);
         }
 
-        if (MiscConfig.ALLOW_TACTICAL_SPRINT.get() && player.getData(ModAttachments.PLAYER_VARIABLE).tacticalSprint) {
+        if (MiscConfig.TACTICAL_SPRINT.get() && player.getData(ModAttachments.PLAYER_VARIABLE).tacticalSprint) {
             player.setSprinting(true);
             attr.addTransientModifier(new AttributeModifier(TACTICAL_SPRINT, 0.25, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }

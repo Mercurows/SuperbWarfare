@@ -18,8 +18,8 @@ public record ClientTacticalSprintSyncMessage(boolean flag) implements CustomPac
     );
 
     public static void handler(ClientTacticalSprintSyncMessage message) {
-        MiscConfig.ALLOW_TACTICAL_SPRINT.set(message.flag);
-        MiscConfig.ALLOW_TACTICAL_SPRINT.save();
+        MiscConfig.TACTICAL_SPRINT.set(message.flag);
+        MiscConfig.TACTICAL_SPRINT.save();
     }
 
     @Override

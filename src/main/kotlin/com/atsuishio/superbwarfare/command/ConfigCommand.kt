@@ -13,11 +13,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     buildDestroyTypesCommand()
 
     // TODO 干掉这些翻译字段
-    booleanConfig(
-        "tacticalSprint",
-        MiscConfig.ALLOW_TACTICAL_SPRINT,
-        "commands.config.tactical_sprint"
-    ) { sendPacketToAll(ClientTacticalSprintSyncMessage(it)) }
+    booleanConfig(MiscConfig::TACTICAL_SPRINT) { sendPacketToAll(ClientTacticalSprintSyncMessage(it)) }
 
     booleanConfig(SpawnConfig::SPAWN_SENPAI)
     booleanConfig(SpawnConfig::SPAWN_MOB_WITH_GUNS)
