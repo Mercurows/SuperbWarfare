@@ -4,8 +4,9 @@ import com.atsuishio.superbwarfare.config.buildServerConfig
 
 object ProjectileConfig {
 
+    // TODO 是否考虑重命名该属性？
     @JvmField
-    val ALLOW_PROJECTILE_DESTROY_BLOCKS = buildServerConfig {
+    val BLOCK_DESTROY = buildServerConfig {
         push("projectile")
 
         comment("Set true to allow projectiles to destroy certain blocks")

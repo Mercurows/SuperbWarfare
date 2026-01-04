@@ -22,10 +22,10 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(SpawnConfig::SPAWN_SENPAI)
     booleanConfig(SpawnConfig::SPAWN_MOB_WITH_GUNS)
 
-    booleanConfig(ExplosionConfig::EXPLOSION_DESTROY, "commands.config.explosion_destroy")
+    booleanConfig(ExplosionConfig::EXPLOSION_DESTROY)
     booleanConfig(ExplosionConfig::EXTRA_EXPLOSION_EFFECT)
 
-    booleanConfig("blockDestroy", ProjectileConfig.ALLOW_PROJECTILE_DESTROY_BLOCKS, "commands.config.block_destroy")
+    booleanConfig(ProjectileConfig::BLOCK_DESTROY)
 
     booleanConfig(VehicleConfig::COLLECT_DROPS_BY_CRASHING)
     booleanConfig(VehicleConfig::VEHICLE_ITEM_PICKUP)
@@ -34,8 +34,8 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(VehicleConfig::COLLISION_DESTROY_HARD_BLOCKS)
     booleanConfig(VehicleConfig::COLLISION_DESTROY_BLOCKS_BEASTLY)
 
-    booleanConfig("forceDamage", MiscConfig.ALLOW_FORCE_DAMAGE, "commands.config.force_damage")
-    booleanConfig(MiscConfig::DROP_AMMO_BOX, "commands.config.drop_ammo_box")
+    booleanConfig(MiscConfig::FORCE_DAMAGE)
+    booleanConfig(MiscConfig::DROP_AMMO_BOX)
     booleanConfig(MiscConfig::SEND_KILL_FEEDBACK)
     booleanConfig(MiscConfig::MINE_HITBOX_INVISIBLE)
     booleanConfig(MiscConfig::DROP_AMMO_BOX)
@@ -88,7 +88,7 @@ private fun saveCollisionConfigs() {
 
 private fun SingleCommand.booleanConfig(
     prop: KProperty0<ForgeConfigSpec.BooleanValue>,
-    msg: String = "",
+    msg: String? = null,
     effect: (Boolean) -> Unit = {}
 ) {
     val name = buildString {
@@ -112,13 +112,13 @@ private fun SingleCommand.booleanConfig(
         }
     }
 
-    booleanConfig(name, prop.get(), msg, effect)
+    booleanConfig(name, prop.get(), msg ?: "commands.config.${prop.name.lowercase()}", effect)
 }
 
 private fun SingleCommand.booleanConfig(
     name: String,
     config: ForgeConfigSpec.BooleanValue,
-    msg: String = "",
+    msg: String,
     effect: (Boolean) -> Unit = {}
 ) {
     name {

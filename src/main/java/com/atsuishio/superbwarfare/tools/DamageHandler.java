@@ -28,7 +28,7 @@ public class DamageHandler {
         if (entity.hurt(source, damage)) {
             return true;
         } else if (entity instanceof LivingEntity living) {
-            if (!MiscConfig.ALLOW_FORCE_DAMAGE.get()) {
+            if (!MiscConfig.FORCE_DAMAGE.get()) {
                 return false;
             }
             if (living.isInvulnerableTo(source)) {

@@ -18,8 +18,9 @@ object MiscConfig {
         define("send_kill_feedback", true)
     }
 
+    // TODO 是否考虑重命名该属性？
     @JvmField
-    val ALLOW_FORCE_DAMAGE = buildServerConfig {
+    val FORCE_DAMAGE = buildServerConfig {
         comment("Set true to enable force damage")
         define("allow_force_damage", false)
     }
