@@ -89,6 +89,12 @@ class GunProp<T, R> private constructor(
         val MELEE_DURATION = plainProp(DefaultGunData::meleeDuration) { max(1, value) }
 
         @JvmField
+        val MELEE_RANGE = plainProp(DefaultGunData::meleeRange)
+
+        @JvmField
+        val MELEE_ANGLE = plainProp(DefaultGunData::meleeAngle) { value.coerceIn(1, 180) }
+
+        @JvmField
         val ZOOM_SPREAD_RATE = plainProp(DefaultGunData::zoomSpreadRate) { value.coerceIn(0.0, 1.0) }
 
         @JvmField

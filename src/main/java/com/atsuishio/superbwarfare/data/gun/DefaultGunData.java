@@ -92,6 +92,12 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("MeleeDamageTime")
     public int meleeDamageTime = 6;
 
+    @SerializedName("MeleeAngle")
+    public int meleeAngle = 30;
+
+    @SerializedName("MeleeRange")
+    public double meleeRange;
+
     @ServerOnly
     @SerializedName("Projectile")
     public StringToObject<ProjectileInfo> projectile = new StringToObject<>(new ProjectileInfo());
@@ -381,6 +387,9 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
         maxExtractEnergy = temp < 0 ? maxEnergy : temp;
 
         meleeDuration = Math.max(1, meleeDuration);
+
+        meleeAngle = Mth.clamp(meleeAngle, 1, 180);
+
         zoomSpreadRate = Mth.clamp(zoomSpreadRate, 0, 1);
         range = Math.max(1, range);
 

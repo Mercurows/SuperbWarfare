@@ -6,6 +6,7 @@
   "Headshot": 1.5,
   "MeleeDamage": 15,
   "MeleeDuration": 20,
+  "MeleeAngle": 100,
   "Velocity": 17,
   "Magazine": 8,
   "ZoomSpreadRate": 0.75,
