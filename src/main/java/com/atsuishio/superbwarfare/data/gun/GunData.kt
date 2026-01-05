@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.data.gun
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier
 import com.atsuishio.superbwarfare.data.JsonPropertyModifier
 import com.atsuishio.superbwarfare.data.StringOrVec3
@@ -18,7 +17,6 @@ import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_SHAKE
 import com.atsuishio.superbwarfare.data.gun.subdata.*
 import com.atsuishio.superbwarfare.data.gun.value.*
 import com.atsuishio.superbwarfare.event.GunEventHandler
-import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.perk.Perk
@@ -38,7 +36,6 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.IItemHandler
-import net.minecraftforge.registries.RegistryManager
 import org.jetbrains.annotations.ApiStatus
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -556,54 +553,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         selectedAmmoConsumer().withdraw(handler, itemAmount)
     }
 
-    fun availablePerks(): MutableList<Perk> {
-        val availablePerks = mutableListOf<Perk>()
-        val perkNames = get(AVAILABLE_PERKS).ifEmpty { return availablePerks }
-
-        val sortedNames = perkNames.distinct().sortedWith { s1, s2 ->
-            val p1 = getPerkPriority(s1)
-            val p2 = getPerkPriority(s2)
-            if (p1 != p2) {
-                return@sortedWith p1.compareTo(p2)
-            } else {
-                return@sortedWith s1.compareTo(s2)
-            }
-        }
-
-        val perks = RegistryManager.ACTIVE.getRegistry(ModPerks.PERK_KEY).getEntries()
-
-        val perkValues = perks.mapNotNull { obj -> obj?.value }
-        val perkKeys = perks.mapNotNull { perk -> perk?.key?.location().toString() }
-
-        for (name in sortedNames) {
-            if (name.startsWith("@")) {
-                when (name.substring(1)) {
-                    "Ammo" -> Perk.Type.AMMO
-                    "Functional" -> Perk.Type.FUNCTIONAL
-                    "Damage" -> Perk.Type.DAMAGE
-                    else -> null
-                }?.let { type ->
-                    availablePerks.addAll(perkValues.filter { it.type == type })
-                }
-            } else if (name.startsWith("!")) {
-                val n = name.substring(1)
-                val index = perkKeys.indexOf(n)
-                if (index != -1) {
-                    availablePerks.remove(perkValues[index])
-                } else {
-                    Mod.LOGGER.info("Perk {} not found", n)
-                }
-            } else {
-                val index = perkKeys.indexOf(name)
-                if (index != -1) {
-                    availablePerks.add(perkValues[index])
-                } else {
-                    Mod.LOGGER.info("Perk {} not found", name)
-                }
-            }
-        }
-        return availablePerks
-    }
+    fun availablePerks() = get(AVAILABLE_PERKS)
 
     fun canApplyPerk(perk: Perk) = availablePerks().contains(perk)
 
@@ -962,7 +912,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
             error("use get() instead!")
         }
 
-        private fun getPerkPriority(s: String): Int {
+        fun getPerkPriority(s: String): Int {
             if (s.isEmpty()) return 2
 
             return when (s[0]) {

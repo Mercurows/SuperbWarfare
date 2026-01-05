@@ -1,9 +1,14 @@
 package com.atsuishio.superbwarfare.data.gun
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.ModColor
 import com.atsuishio.superbwarfare.data.Prop
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
+import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.perk.Perk
 import net.minecraft.util.Mth
+import net.minecraftforge.registries.RegistryManager
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KMutableProperty1
@@ -242,7 +247,54 @@ class GunProp<T, R> private constructor(
         val IN_LAVA_COOLDOWN_RATE = plainProp(DefaultGunData::inLavaCooldownRate)
 
         @JvmField
-        val AVAILABLE_PERKS = GunProp(DefaultGunData::availablePerks, { it?.list?.filterNotNull().orEmpty() })
+        val AVAILABLE_PERKS = GunProp(DefaultGunData::availablePerks, {
+            val availablePerks = mutableListOf<Perk>()
+            val perkNames = it?.list?.filterNotNull().orEmpty().ifEmpty { return@GunProp availablePerks }
+
+            val sortedNames = perkNames.distinct().sortedWith { s1, s2 ->
+                val p1 = getPerkPriority(s1)
+                val p2 = getPerkPriority(s2)
+                if (p1 != p2) {
+                    return@sortedWith p1.compareTo(p2)
+                } else {
+                    return@sortedWith s1.compareTo(s2)
+                }
+            }
+
+            val perks = RegistryManager.ACTIVE.getRegistry(ModPerks.PERK_KEY).getEntries()
+
+            val perkValues = perks.mapNotNull { obj -> obj?.value }
+            val perkKeys = perks.mapNotNull { perk -> perk?.key?.location().toString() }
+
+            for (name in sortedNames) {
+                if (name.startsWith("@")) {
+                    when (name.substring(1)) {
+                        "Ammo" -> Perk.Type.AMMO
+                        "Functional" -> Perk.Type.FUNCTIONAL
+                        "Damage" -> Perk.Type.DAMAGE
+                        else -> null
+                    }?.let { type ->
+                        availablePerks.addAll(perkValues.filter { it.type == type })
+                    }
+                } else if (name.startsWith("!")) {
+                    val n = name.substring(1)
+                    val index = perkKeys.indexOf(n)
+                    if (index != -1) {
+                        availablePerks.remove(perkValues[index])
+                    } else {
+                        Mod.LOGGER.info("Perk {} not found", n)
+                    }
+                } else {
+                    val index = perkKeys.indexOf(name)
+                    if (index != -1) {
+                        availablePerks.add(perkValues[index])
+                    } else {
+                        Mod.LOGGER.info("Perk {} not found", name)
+                    }
+                }
+            }
+            return@GunProp availablePerks.toList()
+        })
 
         @JvmField
         val ICON = GunProp(DefaultGunData::icon, { it ?: GunItem.DEFAULT_ICON })
