@@ -43,7 +43,6 @@ import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.energy.IEnergyStorage
 import net.neoforged.neoforge.items.IItemHandler
-import net.neoforged.neoforge.registries.DeferredHolder
 import org.jetbrains.annotations.ApiStatus
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -563,46 +562,37 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     fun availablePerks(): MutableList<Perk> {
         val availablePerks = mutableListOf<Perk>()
-        val perkNames = get(AVAILABLE_PERKS)
-        if (perkNames.isEmpty()) return availablePerks
+        val perkNames = get(AVAILABLE_PERKS).ifEmpty { return availablePerks }
 
-        val sortedNames = ArrayList(perkNames)
-
-        sortedNames.sortWith { s1, s2 ->
+        val sortedNames = perkNames.distinct().sortedWith { s1, s2 ->
             val p1 = getPerkPriority(s1)
             val p2 = getPerkPriority(s2)
             if (p1 != p2) {
-                return@sortWith p1.compareTo(p2)
+                return@sortedWith p1.compareTo(p2)
             } else {
-                return@sortWith s1.compareTo(s2)
+                return@sortedWith s1.compareTo(s2)
             }
         }
 
         // TODO 正确实现注册项读取
-        val perks = ArrayList<DeferredHolder<Perk, out Perk>>()
-        perks.addAll(ModPerks.AMMO_PERKS.getEntries())
-        perks.addAll(ModPerks.DAMAGE_PERKS.getEntries())
-        perks.addAll(ModPerks.FUNC_PERKS.getEntries())
+        val perks = buildList {
+            addAll(ModPerks.AMMO_PERKS.getEntries())
+            addAll(ModPerks.DAMAGE_PERKS.getEntries())
+            addAll(ModPerks.FUNC_PERKS.getEntries())
+        }
 
-        val perkValues = perks.stream().map { obj -> obj!!.get() }.toList()
-        val perkKeys = perks.stream()
-            .map { perk -> perk!!.getKey()!!.location().toString() }
-            .toList()
+        val perkValues = perks.mapNotNull { obj -> obj?.get() }
+        val perkKeys = perks.mapNotNull { perk -> perk?.getKey()?.location().toString() }
 
         for (name in sortedNames) {
             if (name.startsWith("@")) {
                 when (name.substring(1)) {
-                    "Ammo" -> availablePerks.addAll(
-                        perkValues.stream().filter { perk -> perk!!.type == Perk.Type.AMMO }.toList()
-                    )
-
-                    "Functional" -> availablePerks.addAll(
-                        perkValues.stream().filter { perk -> perk!!.type == Perk.Type.FUNCTIONAL }.toList()
-                    )
-
-                    "Damage" -> availablePerks.addAll(
-                        perkValues.stream().filter { perk -> perk!!.type == Perk.Type.DAMAGE }.toList()
-                    )
+                    "Ammo" -> Perk.Type.AMMO
+                    "Functional" -> Perk.Type.FUNCTIONAL
+                    "Damage" -> Perk.Type.DAMAGE
+                    else -> null
+                }?.let { type ->
+                    availablePerks.addAll(perkValues.filter { it.type == type })
                 }
             } else if (name.startsWith("!")) {
                 val n = name.substring(1)
@@ -624,9 +614,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         return availablePerks
     }
 
-    fun canApplyPerk(perk: Perk): Boolean {
-        return availablePerks().contains(perk)
-    }
+    fun canApplyPerk(perk: Perk) = availablePerks().contains(perk)
 
     val rawDamageReduce: DamageReduce?
         get() = getDefault().damageReduce
