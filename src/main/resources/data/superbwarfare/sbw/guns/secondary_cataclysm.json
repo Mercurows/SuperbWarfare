@@ -6,6 +6,7 @@
   "Damage": 30,
   "MeleeDamage": 19,
   "MeleeDuration": 20,
+  "MeleeRange": 1,
   "ExplosionDamage": 50,
   "ExplosionRadius": 5,
   "Headshot": 0,

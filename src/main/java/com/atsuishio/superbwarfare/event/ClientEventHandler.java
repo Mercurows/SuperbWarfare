@@ -66,9 +66,7 @@ import software.bernie.geckolib.animation.AnimationProcessor;
 import software.bernie.geckolib.cache.object.GeoBone;
 import top.theillusivec4.curios.api.CuriosApi;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
@@ -901,7 +899,7 @@ public class ClientEventHandler {
                 fireCooldown = gunMelee + 4;
             }
             if (gunMelee == data.get(GunProp.MELEE_DURATION) - data.get(GunProp.MELEE_DAMAGE_TIME)) {
-                doGunMeleeAttack(player);
+                doGunMeleeAttack(player, data.get(GunProp.MELEE_ANGLE), data.get(GunProp.MELEE_RANGE));
             }
         }
 
@@ -910,10 +908,39 @@ public class ClientEventHandler {
         }
     }
 
-    public static void doGunMeleeAttack(Player player) {
+    public static void doGunMeleeAttack(Player player, double angle, double customRange) {
         player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1);
-        Entity lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange());
-        if (lookingEntity != null) {
+
+        Entity lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange() + customRange);
+        List<Entity> targetEntities = SeekTool.seekLivingEntities(player, player.entityInteractionRange() + customRange, angle / 2);
+
+        if (targetEntities != null && !targetEntities.isEmpty()) {
+            Optional<Entity> nearestEntity = targetEntities.stream()
+                    .filter(entity -> entity != null && entity.isAlive())
+                    .min(Comparator.comparingDouble(entity -> VectorTool.calculateAngle(player.getLookAngle(), player.getEyePosition().vectorTo(entity.getEyePosition()))));
+
+            Entity nearest = null;
+
+            if (nearestEntity.isPresent()) {
+                nearest = nearestEntity.get();
+            }
+
+            List<Entity> newTargetEntities = new ArrayList<>();
+
+            if (lookingEntity != null) {
+                newTargetEntities.add(lookingEntity);
+            }
+
+            if (nearest != null) {
+                newTargetEntities.add(nearest);
+            }
+
+            newTargetEntities.addAll(targetEntities);
+
+            for (var entity : newTargetEntities) {
+                PacketDistributor.sendToServer(new MeleeAttackMessage(entity.getUUID()));
+            }
+        } else if (lookingEntity != null) {
             PacketDistributor.sendToServer(new MeleeAttackMessage(lookingEntity.getUUID()));
         }
     }
@@ -1362,7 +1389,7 @@ public class ClientEventHandler {
         if (gunData == null) return;
 
         var soundInfo = gunData.get(GunProp.SOUND_INFO);
-        float pitch = vehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * java.lang.Math.abs(60 - vehicle.getWeaponHeat(player)));
+        float pitch = vehicle.getWeaponHeat(player) <= 60 ? 1 : (float) (1 - 0.011 * Math.abs(60 - vehicle.getWeaponHeat(player)));
 
         var sound = soundInfo.fire1P;
         if (sound != null) {

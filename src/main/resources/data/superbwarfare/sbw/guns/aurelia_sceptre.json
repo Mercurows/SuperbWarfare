@@ -8,6 +8,7 @@
   "Velocity": 8,
   "Weight": 1,
   "MeleeDamage": 10,
+  "MeleeRange": 1.5,
   "NormalReloadTime": 20,
   "EmptyReloadTime": 20,
   "BypassesArmor": 0.26,
