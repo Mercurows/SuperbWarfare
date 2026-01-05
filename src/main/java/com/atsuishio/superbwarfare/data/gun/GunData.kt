@@ -558,41 +558,32 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     fun availablePerks(): MutableList<Perk> {
         val availablePerks = mutableListOf<Perk>()
-        val perkNames = get(AVAILABLE_PERKS)
-        if (perkNames.isEmpty()) return availablePerks
+        val perkNames = get(AVAILABLE_PERKS).ifEmpty { return availablePerks }
 
-        val sortedNames = ArrayList(perkNames)
-
-        sortedNames.sortWith { s1, s2 ->
+        val sortedNames = perkNames.distinct().sortedWith { s1, s2 ->
             val p1 = getPerkPriority(s1)
             val p2 = getPerkPriority(s2)
             if (p1 != p2) {
-                return@sortWith p1.compareTo(p2)
+                return@sortedWith p1.compareTo(p2)
             } else {
-                return@sortWith s1.compareTo(s2)
+                return@sortedWith s1.compareTo(s2)
             }
         }
 
         val perks = RegistryManager.ACTIVE.getRegistry(ModPerks.PERK_KEY).getEntries()
-        val perkValues = perks.stream().map { it.value }.toList()
-        val perkKeys = perks.stream().map { perk ->
-            perk!!.key!!.location().toString()
-        }.toList()
+
+        val perkValues = perks.mapNotNull { obj -> obj?.value }
+        val perkKeys = perks.mapNotNull { perk -> perk?.key?.location().toString() }
 
         for (name in sortedNames) {
             if (name.startsWith("@")) {
                 when (name.substring(1)) {
-                    "Ammo" -> availablePerks.addAll(
-                        perkValues.stream().filter { perk -> perk!!.type == Perk.Type.AMMO }.toList()
-                    )
-
-                    "Functional" -> availablePerks.addAll(
-                        perkValues.stream().filter { perk -> perk!!.type == Perk.Type.FUNCTIONAL }.toList()
-                    )
-
-                    "Damage" -> availablePerks.addAll(
-                        perkValues.stream().filter { perk -> perk!!.type == Perk.Type.DAMAGE }.toList()
-                    )
+                    "Ammo" -> Perk.Type.AMMO
+                    "Functional" -> Perk.Type.FUNCTIONAL
+                    "Damage" -> Perk.Type.DAMAGE
+                    else -> null
+                }?.let { type ->
+                    availablePerks.addAll(perkValues.filter { it.type == type })
                 }
             } else if (name.startsWith("!")) {
                 val n = name.substring(1)
@@ -614,9 +605,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         return availablePerks
     }
 
-    fun canApplyPerk(perk: Perk): Boolean {
-        return availablePerks().contains(perk)
-    }
+    fun canApplyPerk(perk: Perk) = availablePerks().contains(perk)
 
     val rawDamageReduce: DamageReduce?
         get() = getDefault().damageReduce
