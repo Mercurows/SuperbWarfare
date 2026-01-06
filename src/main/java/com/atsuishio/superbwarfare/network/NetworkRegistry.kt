@@ -28,7 +28,7 @@ private inline fun <reified T : PacketPayload> playTo(
     )
 }
 
-private inline fun <reified T : PacketPayload> playToServer() {
+private inline fun <reified T : ServerPacketPayload> playToServer() {
     playTo<T>(Dist.DEDICATED_SERVER) { enc, dec, handler ->
         NetworkRegistry.playToServer(T::class.java, enc, dec, handler)
     }

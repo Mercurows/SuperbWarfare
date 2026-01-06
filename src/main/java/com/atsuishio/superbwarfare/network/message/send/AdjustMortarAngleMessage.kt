@@ -2,18 +2,17 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.network.PacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
+import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import kotlinx.serialization.Serializable
-import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.Mth
 
 @Serializable
-data class AdjustMortarAngleMessage(val scroll: Double) : PacketPayload() {
+data class AdjustMortarAngleMessage(val scroll: Double) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
-        val player = player() as ServerPlayer
+        val player = sender()
         val looking = TraceTool.findLookingEntity(player, 6.0) as? MortarEntity ?: return
 
         looking.getEntityData().set(

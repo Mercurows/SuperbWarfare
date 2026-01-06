@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network
 
+import net.minecraft.server.level.ServerPlayer
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.fml.DistExecutor
 import net.minecraftforge.network.NetworkEvent
@@ -21,6 +22,10 @@ abstract class PacketPayload {
     }
 
     abstract fun PayloadContext.handler()
-
-    fun PayloadContext.player() = get().sender!!
 }
+
+abstract class ServerPacketPayload : PacketPayload() {
+    fun PayloadContext.sender() = get().sender as ServerPlayer
+}
+
+// abstract class ClientPacketPayload : PacketPayload()
