@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage
+import com.atsuishio.superbwarfare.network.message.send.*
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -20,7 +21,7 @@ private inline fun <reified T> decodeFrom(input: FriendlyByteBuf): T {
     return ByteBufDecoder(input).decodeSerializableValue(serializer())
 }
 
-private inline fun <reified T : PacketPayload<T>> playTo(reg: (CustomPacketPayload.Type<T>, StreamCodec<in RegistryFriendlyByteBuf, T>, IPayloadHandler<T>) -> Unit) {
+private inline fun <reified T : PacketPayload> playTo(reg: (CustomPacketPayload.Type<T>, StreamCodec<in RegistryFriendlyByteBuf, T>, IPayloadHandler<T>) -> Unit) {
 
     val codec: StreamCodec<FriendlyByteBuf, T> = StreamCodec.of(
         { buf, value -> encodeTo(buf, value) },
@@ -47,15 +48,21 @@ private inline fun <reified T : PacketPayload<T>> playTo(reg: (CustomPacketPaylo
     reg(type, codec) { msg, context -> with(msg) { context.handler() } }
 }
 
-private inline fun <reified T : PacketPayload<T>> playToServer() {
+private inline fun <reified T : PacketPayload> playToServer() {
     playTo<T> { type, codec, handler -> NetworkRegistry.playToServer(type, codec, handler) }
 }
 
-private inline fun <reified T : PacketPayload<T>> playToClient() {
+private inline fun <reified T : PacketPayload> playToClient() {
     playTo<T> { type, codec, handler -> NetworkRegistry.playToClient(type, codec, handler) }
 }
 
 fun register() {
     playToClient<ClientIndicatorMessage>()
     playToClient<ClientSetMotionMessage>()
+
+    playToServer<AdjustMortarAngleMessage>()
+    playToServer<AdjustZoomFovMessage>()
+    playToServer<AimVillagerMessage>()
+    playToServer<AssembleVehicleMessage>()
+    playToServer<ChangeVehicleSeatMessage>()
 }

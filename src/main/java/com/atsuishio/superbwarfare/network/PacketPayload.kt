@@ -5,7 +5,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext
 
 typealias PayloadContext = IPayloadContext
 
-abstract class PacketPayload<T : PacketPayload<T>> : CustomPacketPayload {
+abstract class PacketPayload : CustomPacketPayload {
     override fun type() = payloadTypeMap[this::class.java]!!
     abstract fun PayloadContext.handler()
 }

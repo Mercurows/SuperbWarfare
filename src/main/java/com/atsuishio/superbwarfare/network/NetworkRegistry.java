@@ -40,7 +40,6 @@ public class NetworkRegistry {
         playToServer(MeleeAttackMessage.TYPE, MeleeAttackMessage.STREAM_CODEC, MeleeAttackMessage::handler);
         playToServer(LungeMineAttackMessage.TYPE, LungeMineAttackMessage.STREAM_CODEC, LungeMineAttackMessage::handler);
         playToServer(VehicleFireMessage.TYPE, VehicleFireMessage.STREAM_CODEC, VehicleFireMessage::handler);
-        playToServer(AimVillagerMessage.TYPE, AimVillagerMessage.STREAM_CODEC, AimVillagerMessage::handler);
         playToServer(RadarChangeModeMessage.TYPE, RadarChangeModeMessage.STREAM_CODEC, RadarChangeModeMessage::handler);
         playToServer(RadarSetParametersMessage.TYPE, RadarSetParametersMessage.STREAM_CODEC, RadarSetParametersMessage::handler);
         playToServer(RadarSetPosMessage.TYPE, RadarSetPosMessage.STREAM_CODEC, RadarSetPosMessage::handler);
@@ -48,7 +47,6 @@ public class NetworkRegistry {
         playToServer(GunReforgeMessage.TYPE, GunReforgeMessage.STREAM_CODEC, (message1, context1) -> GunReforgeMessage.handler(context1));
         playToServer(SetPerkLevelMessage.TYPE, SetPerkLevelMessage.STREAM_CODEC, SetPerkLevelMessage::handler);
         playToServer(SwitchVehicleWeaponMessage.TYPE, SwitchVehicleWeaponMessage.STREAM_CODEC, SwitchVehicleWeaponMessage::handler);
-        playToServer(AdjustZoomFovMessage.TYPE, AdjustZoomFovMessage.STREAM_CODEC, AdjustZoomFovMessage::handler);
         playToServer(SwitchScopeMessage.TYPE, SwitchScopeMessage.STREAM_CODEC, SwitchScopeMessage::handler);
         playToServer(FireKeyMessage.TYPE, FireKeyMessage.STREAM_CODEC, FireKeyMessage::handler);
         playToServer(ReloadMessage.TYPE, ReloadMessage.STREAM_CODEC, (message2, context2) -> ReloadMessage.handler(context2));
@@ -61,15 +59,12 @@ public class NetworkRegistry {
         playToServer(SensitivityMessage.TYPE, SensitivityMessage.STREAM_CODEC, SensitivityMessage::handler);
         playToServer(EditMessage.TYPE, EditMessage.STREAM_CODEC, EditMessage::handler);
         playToServer(InteractMessage.TYPE, InteractMessage.STREAM_CODEC, (interactMessage, context) -> InteractMessage.handler(context));
-        playToServer(AdjustMortarAngleMessage.TYPE, AdjustMortarAngleMessage.STREAM_CODEC, AdjustMortarAngleMessage::handler);
-        playToServer(ChangeVehicleSeatMessage.TYPE, ChangeVehicleSeatMessage.STREAM_CODEC, ChangeVehicleSeatMessage::handler);
         playToServer(ShowChargingRangeMessage.TYPE, ShowChargingRangeMessage.STREAM_CODEC, ShowChargingRangeMessage::handler);
         playToServer(TacticalSprintMessage.TYPE, TacticalSprintMessage.STREAM_CODEC, TacticalSprintMessage::handler);
         playToServer(DogTagFinishEditMessage.TYPE, DogTagFinishEditMessage.STREAM_CODEC, DogTagFinishEditMessage::handler);
         playToServer(MouseMoveMessage.TYPE, MouseMoveMessage.STREAM_CODEC, MouseMoveMessage::handler);
         playToServer(FiringParametersEditMessage.TYPE, FiringParametersEditMessage.STREAM_CODEC, FiringParametersEditMessage::handler);
         playToServer(UnloadMessage.TYPE, UnloadMessage.STREAM_CODEC, (msg, ctx) -> UnloadMessage.handler(ctx));
-        playToServer(AssembleVehicleMessage.TYPE, AssembleVehicleMessage.STREAM_CODEC, AssembleVehicleMessage::handler);
         playToServer(SeekingWeaponWarningMessage.TYPE, SeekingWeaponWarningMessage.STREAM_CODEC, SeekingWeaponWarningMessage::handler);
         playToServer(WeaponZoomingMessage.TYPE, WeaponZoomingMessage.STREAM_CODEC, WeaponZoomingMessage::handler);
     }

@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class ClientIndicatorMessage(
     val type: Int,
     val value: Int,
-) : PacketPayload<ClientIndicatorMessage>() {
+) : PacketPayload() {
 
     override fun PayloadContext.handler() {
         when (type) {
