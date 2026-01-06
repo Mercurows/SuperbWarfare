@@ -1,3 +1,5 @@
+@file:JvmName("MinecraftUtil")
+
 package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.network.NetworkRegistry
@@ -11,6 +13,7 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -53,6 +56,24 @@ fun Vec3?.toFormattedString(): String {
     return "[ " + format0D(x) + ", " + format0D(y) + ", " + format0D(z) + " ]"
 }
 
+fun isSameItemStack(a: ItemStack, b: ItemStack) = a sameWith b
+
+// 为空tag添加特判后的比较，专治乱用getOrCreateTag（恼）
+infix fun ItemStack.sameWith(that: ItemStack): Boolean {
+    if (this.tag == null && that.hasEmptyTag() || that.tag == null && this.hasEmptyTag()) {
+        val a = this.copy().apply { tag = null }
+        val b = that.copy().apply { tag = null }
+
+        return ItemStack.isSameItemSameTags(a, b)
+    }
+
+    return ItemStack.isSameItemSameTags(this, that)
+}
+
+// 判断是否tag不为null且内容为空
+private fun ItemStack.hasEmptyTag() = this.tag?.isEmpty ?: false
+
+// Network
 fun Player.sendPacket(packet: Any) = sendPacketTo(this, packet)
 
 fun sendPacketTo(player: Player, packet: Any) {

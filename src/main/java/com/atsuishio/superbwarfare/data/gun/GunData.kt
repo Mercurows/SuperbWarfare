@@ -22,6 +22,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.invoke
+import com.atsuishio.superbwarfare.tools.sameWith
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -737,7 +738,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
 
     fun save() {
-        if (ItemStack.isSameItemSameTags(stack, originalItemStack)) return
+        if (stack sameWith originalItemStack) return
 
         // TODO 实现正确的清理空tag的方式
 //        var keysToRemove = new ArrayList<String>();
@@ -766,7 +767,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     override fun equals(other: Any?): Boolean {
         if (other !is GunData) return false
 
-        return ItemStack.isSameItemSameTags(other.stack, this.stack)
+        return other.stack sameWith this.stack
     }
 
     fun copy(): GunData {

@@ -253,9 +253,7 @@ public class InventoryTool {
      * @param count  要消耗的数量
      */
     public static void consumeItem(LivingEntity living, Item item, int count) {
-        living.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-            InventoryTool.consumeItem(handler, item, count);
-        });
+        living.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> InventoryTool.consumeItem(handler, item, count));
     }
 
 
@@ -335,7 +333,7 @@ public class InventoryTool {
         for (int i = 0; i < itemList.size(); i++) {
             var currentStack = itemList.get(i);
 
-            if (ItemStack.isSameItemSameTags(stack, currentStack) && currentStack.getCount() < maxStackSize) {
+            if (MinecraftUtil.isSameItemStack(stack, currentStack) && currentStack.getCount() < maxStackSize) {
                 var countToAdd = Math.min(maxStackSize - currentStack.getCount(), stack.getCount());
                 currentStack.grow(countToAdd);
                 stack.setCount(stack.getCount() - countToAdd);

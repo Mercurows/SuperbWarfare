@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.block.entity;
 import com.atsuishio.superbwarfare.block.SuperbItemInterfaceBlock;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.menu.SuperbItemInterfaceMenu;
+import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -79,7 +80,7 @@ public class SuperbItemInterfaceBlockEntity extends BaseContainerBlockEntity {
                 int inserted;
                 for (inserted = stack.getCount(); inserted > 0; inserted--) {
                     var insertedStack = itemHandler.insertItem(ii, stack.copyWithCount(inserted), true);
-                    if (insertedStack.getCount() != inserted || !ItemStack.isSameItemSameTags(insertedStack, stack)) {
+                    if (insertedStack.getCount() != inserted || !MinecraftUtil.isSameItemStack(insertedStack, stack)) {
                         break;
                     }
                 }

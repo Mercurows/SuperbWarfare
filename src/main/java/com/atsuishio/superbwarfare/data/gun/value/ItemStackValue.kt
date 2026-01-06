@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun.value
 
 import com.atsuishio.superbwarfare.data.gun.value.base.TagValue
+import com.atsuishio.superbwarfare.tools.sameWith
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.ItemStack
 
@@ -30,7 +31,7 @@ class ItemStackValue(
     }
 
     override fun set(value: ItemStack) {
-        if (ItemStack.isSameItemSameTags(value, defaultValue)) {
+        if (value sameWith defaultValue) {
             tag.remove(name)
         } else {
             tag.put(name, value.save(CompoundTag()))

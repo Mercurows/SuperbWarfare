@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.DeserializeFromString;
 import com.atsuishio.superbwarfare.data.JsonPropertyModifier;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
+import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.nbt.CompoundTag;
@@ -75,7 +76,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     }
 
     public boolean isAmmoItem(ItemStack stack) {
-        return ItemStack.isSameItemSameTags(stack, this.stack);
+        return MinecraftUtil.isSameItemStack(stack, this.stack);
     }
 
     /**

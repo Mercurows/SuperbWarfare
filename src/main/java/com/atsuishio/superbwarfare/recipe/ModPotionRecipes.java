@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.recipe;
 
 import com.atsuishio.superbwarfare.init.ModPotions;
+import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
@@ -50,13 +51,13 @@ public class ModPotionRecipes {
         @Override
         public boolean isInput(@NotNull ItemStack stack) {
             ItemStack[] matchingStacks = this.input.getItems();
-            return matchingStacks.length == 0 ? stack.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> ItemStack.isSameItemSameTags(itemstack, stack));
+            return matchingStacks.length == 0 ? stack.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> MinecraftUtil.isSameItemStack(itemstack, stack));
         }
 
         @Override
-        public boolean isIngredient(ItemStack ingredient) {
+        public boolean isIngredient(@NotNull ItemStack ingredient) {
             ItemStack[] matchingStacks = this.ingredient.getItems();
-            return matchingStacks.length == 0 ? ingredient.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> ItemStack.isSameItemSameTags(itemstack, ingredient));
+            return matchingStacks.length == 0 ? ingredient.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> MinecraftUtil.isSameItemStack(itemstack, ingredient));
         }
     }
 }

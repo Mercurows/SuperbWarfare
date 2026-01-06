@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.menu.ChargingStationMenu;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
+import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -33,6 +34,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -253,7 +255,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public void load(CompoundTag pTag) {
+    public void load(@NotNull CompoundTag pTag) {
         super.load(pTag);
 
         if (pTag.contains("Energy")) {
@@ -267,7 +269,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
+    protected void saveAdditional(@NotNull CompoundTag pTag) {
         super.saveAdditional(pTag);
 
         getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> pTag.put("Energy", ((EnergyStorage) handler).serializeNBT()));
@@ -278,17 +280,17 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public int[] getSlotsForFace(Direction pSide) {
+    public int @NotNull [] getSlotsForFace(@NotNull Direction pSide) {
         return new int[]{SLOT_FUEL};
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int pIndex, ItemStack pItemStack, @Nullable Direction pDirection) {
+    public boolean canPlaceItemThroughFace(int pIndex, @NotNull ItemStack pItemStack, @Nullable Direction pDirection) {
         return pIndex == SLOT_FUEL;
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int pIndex, ItemStack pStack, Direction pDirection) {
+    public boolean canTakeItemThroughFace(int pIndex, @NotNull ItemStack pStack, @NotNull Direction pDirection) {
         return false;
     }
 
@@ -309,24 +311,24 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public ItemStack getItem(int pSlot) {
+    public @NotNull ItemStack getItem(int pSlot) {
         return this.items.get(pSlot);
     }
 
     @Override
-    public ItemStack removeItem(int pSlot, int pAmount) {
+    public @NotNull ItemStack removeItem(int pSlot, int pAmount) {
         return ContainerHelper.removeItem(this.items, pSlot, pAmount);
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int pSlot) {
+    public @NotNull ItemStack removeItemNoUpdate(int pSlot) {
         return ContainerHelper.takeItem(this.items, pSlot);
     }
 
     @Override
     public void setItem(int pSlot, ItemStack pStack) {
         ItemStack itemstack = this.items.get(pSlot);
-        boolean flag = !pStack.isEmpty() && ItemStack.isSameItemSameTags(itemstack, pStack);
+        boolean flag = !pStack.isEmpty() && MinecraftUtil.isSameItemStack(itemstack, pStack);
         this.items.set(pSlot, pStack);
         if (pStack.getCount() > this.getMaxStackSize()) {
             pStack.setCount(this.getMaxStackSize());
@@ -338,7 +340,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
+    public boolean stillValid(@NotNull Player pPlayer) {
         return Container.stillValidBlockEntity(this, pPlayer);
     }
 
@@ -348,13 +350,13 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("container.superbwarfare.charging_station");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+    public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, @NotNull Player pPlayer) {
         return new ChargingStationMenu(pContainerId, pPlayerInventory, this, this.dataAccess);
     }
 
@@ -364,7 +366,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         CompoundTag compoundtag = new CompoundTag();
         ContainerHelper.saveAllItems(compoundtag, this.items, true);
         compoundtag.putBoolean("ShowRange", this.showRange);
@@ -372,7 +374,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
         if (cap == ForgeCapabilities.ENERGY) {
             return energyHandler.cast();
         }
@@ -402,7 +404,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     }
 
     @Override
-    public void saveToItem(ItemStack pStack) {
+    public void saveToItem(@NotNull ItemStack pStack) {
         CompoundTag tag = new CompoundTag();
         this.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> tag.put("Energy", ((EnergyStorage) handler).serializeNBT()));
         BlockItem.setBlockEntityData(pStack, this.getType(), tag);
