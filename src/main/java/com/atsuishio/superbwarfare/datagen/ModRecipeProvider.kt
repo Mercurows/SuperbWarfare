@@ -1488,7 +1488,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .requires(ModTags.Items.HAMMER)
                 .unlockedBy(getHasName(ModItems.HAMMER.get()), has(ModTags.Items.HAMMER))
                 .save(writer, loc(getItemName(ModItems.TUNGSTEN_POWDER.get())))
-            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TUNGSTEN_ROD.get())
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TUNGSTEN_ROD.get(), 4)
                 .pattern("a")
                 .pattern("a")
                 .define('a', INGOTS_TUNGSTEN)
