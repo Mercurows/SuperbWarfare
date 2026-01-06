@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.menu.ChargingStationMenu;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
+import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -349,7 +350,7 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     @Override
     public void setItem(int pSlot, ItemStack pStack) {
         ItemStack itemstack = this.items.get(pSlot);
-        boolean flag = !pStack.isEmpty() && ItemStack.isSameItem(itemstack, pStack);
+        boolean flag = !pStack.isEmpty() && MinecraftUtil.isSameItemStack(itemstack, pStack);
         this.items.set(pSlot, pStack);
         if (pStack.getCount() > this.getMaxStackSize()) {
             pStack.setCount(this.getMaxStackSize());

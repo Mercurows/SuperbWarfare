@@ -336,7 +336,7 @@ public class InventoryTool {
         for (int i = 0; i < itemList.size(); i++) {
             var currentStack = itemList.get(i);
 
-            if (ItemStack.isSameItemSameComponents(stack, currentStack) && currentStack.getCount() < maxStackSize) {
+            if (MinecraftUtil.isSameItemStack(stack, currentStack) && currentStack.getCount() < maxStackSize) {
                 var countToAdd = Math.min(maxStackSize - currentStack.getCount(), stack.getCount());
                 currentStack.grow(countToAdd);
                 stack.setCount(stack.getCount() - countToAdd);

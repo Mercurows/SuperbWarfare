@@ -1,3 +1,5 @@
+@file:JvmName("MinecraftUtil")
+
 package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
@@ -11,6 +13,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
@@ -52,6 +55,9 @@ fun Vec3?.toFormattedString(): String {
     if (this == null) return "[ ---, ---, --- ]"
     return "[ " + format0D(x) + ", " + format0D(y) + ", " + format0D(z) + " ]"
 }
+
+fun isSameItemStack(a: ItemStack, b: ItemStack) = a sameWith b
+infix fun ItemStack.sameWith(that: ItemStack) = ItemStack.isSameItemSameComponents(this, that)
 
 fun Player.sendPacket(packet: CustomPacketPayload) = sendPacketTo(this, packet)
 

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.recipe;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModPotions;
+import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
@@ -49,13 +50,13 @@ public class ModPotionRecipes {
             @Override
             public boolean isInput(@NotNull ItemStack stack) {
                 ItemStack[] matchingStacks = input.getItems();
-                return matchingStacks.length == 0 ? stack.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> ItemStack.isSameItemSameComponents(itemstack, stack));
+                return matchingStacks.length == 0 ? stack.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> MinecraftUtil.isSameItemStack(itemstack, stack));
             }
 
             @Override
             public boolean isIngredient(@NotNull ItemStack stack) {
                 ItemStack[] matchingStacks = ingredient.getItems();
-                return matchingStacks.length == 0 ? stack.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> ItemStack.isSameItemSameComponents(itemstack, stack));
+                return matchingStacks.length == 0 ? stack.isEmpty() : Arrays.stream(matchingStacks).anyMatch((itemstack) -> MinecraftUtil.isSameItemStack(itemstack, stack));
             }
         };
     }

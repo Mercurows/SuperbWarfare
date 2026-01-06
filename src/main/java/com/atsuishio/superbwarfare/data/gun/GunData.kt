@@ -23,6 +23,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.invoke
+import com.atsuishio.superbwarfare.tools.sameWith
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -780,7 +781,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     override fun equals(other: Any?): Boolean {
         if (other !is GunData) return false
 
-        return ItemStack.isSameItemSameComponents(other.stack, this.stack)
+        return other.stack sameWith this.stack
     }
 
     fun copy(): GunData {
