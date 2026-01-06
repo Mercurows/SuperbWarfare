@@ -45,6 +45,9 @@ import java.util.function.Supplier
 import kotlin.math.max
 import kotlin.math.min
 
+fun ItemStack.isGunItem() = this.item is GunItem
+fun ItemStack.toGunData() = if (isGunItem()) GunData.from(this) else null
+
 class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<DefaultGunData> {
     @JvmField
     val stack: ItemStack

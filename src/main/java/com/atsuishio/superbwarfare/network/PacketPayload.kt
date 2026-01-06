@@ -7,8 +7,8 @@ import java.util.function.Supplier
 
 typealias PayloadContext = Supplier<NetworkEvent.Context>
 
-abstract class PacketPayload<T : PacketPayload<T>> {
-    fun handleInternal(message: T, context: PayloadContext, dist: Dist) {
+abstract class PacketPayload {
+    fun handleInternal(message: PacketPayload, context: PayloadContext, dist: Dist) {
         with(context.get()) {
             enqueueWork {
                 // TODO 这样能不能隔离？
@@ -21,4 +21,6 @@ abstract class PacketPayload<T : PacketPayload<T>> {
     }
 
     abstract fun PayloadContext.handler()
+
+    fun PayloadContext.player() = get().sender!!
 }

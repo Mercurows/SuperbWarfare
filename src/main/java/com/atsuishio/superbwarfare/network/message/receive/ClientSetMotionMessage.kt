@@ -12,7 +12,7 @@ import org.joml.Vector3f
 data class ClientSetMotionMessage(
     @Contextual val motion: Vector3f,
     @Contextual val position: Vector3f,
-) : PacketPayload<ClientSetMotionMessage>() {
+) : PacketPayload() {
 
     override fun PayloadContext.handler() {
         val player = localPlayer ?: return
