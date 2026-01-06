@@ -11,9 +11,9 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
-import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.ResourceOnceLogger
 import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.toFormattedString
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -281,7 +281,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                         vec3 = ClientEventHandler.lockingPosVehicle
                     }
                     if (vec3 != null) {
-                        val string = "[ " + format0D(vec3.x) + ", " + format0D(vec3.y) + ", " + format0D(vec3.z) + " ]"
+                        val string = vec3.toFormattedString()
                         val width = Minecraft.getInstance().font.width(string)
                         RenderHelper.blit(
                             poseStack,
