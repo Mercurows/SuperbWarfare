@@ -48,7 +48,7 @@ private inline fun <reified T : PacketPayload> playTo(reg: (CustomPacketPayload.
     reg(type, codec) { msg, context -> with(msg) { context.handler() } }
 }
 
-private inline fun <reified T : PacketPayload> playToServer() {
+private inline fun <reified T : ServerPacketPayload> playToServer() {
     playTo<T> { type, codec, handler -> NetworkRegistry.playToServer(type, codec, handler) }
 }
 
