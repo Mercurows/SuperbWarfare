@@ -572,7 +572,14 @@ public class ClickHandler {
         }
 
         if (stack.getItem() instanceof GunItem) {
+
             var data = GunData.from(stack);
+            var fireMode = data.selectedFireModeInfo().mode;
+
+            if (fireMode != FireMode.BURST) {
+                burstFireAmount = 0;
+            }
+
             if (data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_FIRE) {
                 ClientEventHandler.stopWeaponSeekSound(Minecraft.getInstance().player);
             }

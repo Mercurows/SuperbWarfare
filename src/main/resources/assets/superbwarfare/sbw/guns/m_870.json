@@ -6,7 +6,10 @@
     "LODModel": "superbwarfare:geo/lod/m_870.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/m_870.png"
   },
-  "FlarePosition": [0, 0, 1.4209],
-  "FlareSize": 0.8,
-  "UseOldHandRenderer": true
+  "FlarePosition": [
+    0,
+    0,
+    1.4209
+  ],
+  "FlareSize": 0.8
 }

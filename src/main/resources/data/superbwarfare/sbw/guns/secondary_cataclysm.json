@@ -19,7 +19,7 @@
   "PrepareTime": 31,
   "PrepareLoadTime": 31,
   "PrepareAmmoLoadTime": 3,
-  "IterativeTime": 20,
+  "IterativeTime": 18,
   "FinishTime": 22,
   "SoundRadius": 8,
   "RPM": 300,

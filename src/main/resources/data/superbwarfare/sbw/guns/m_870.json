@@ -5,7 +5,7 @@
   "Damage": 3,
   "Headshot": 1.5,
   "MeleeDamage": 15,
-  "MeleeDuration": 20,
+  "MeleeDuration": 18,
   "MeleeAngle": 100,
   "Velocity": 17,
   "Magazine": 8,
@@ -15,15 +15,15 @@
   "ReloadTypes": [
     "Iterative"
   ],
-  "PrepareTime": 7,
-  "PrepareLoadTime": 36,
+  "PrepareTime": 6,
+  "PrepareLoadTime": 34,
   "PrepareAmmoLoadTime": 10,
-  "IterativeTime": 16,
+  "IterativeTime": 12,
   "IterativeAmmoLoadTime": 3,
   "FinishTime": 12,
   "BypassesArmor": 0.05,
   "SoundRadius": 16,
-  "BoltActionTime": 11,
+  "BoltActionTime": 7,
   "GunType": "Shotgun",
   "DamageReduce": {
     "Type": "Shotgun"
@@ -55,6 +55,9 @@
     "Fire3P": "superbwarfare:m_870_fire_3p",
     "Fire3PFar": "superbwarfare:m_870_far",
     "Fire3PVeryFar": "superbwarfare:m_870_veryfar",
+    "Fire1PSilent": "superbwarfare:m_870_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:m_870_fire_3p_s",
+    "Fire3PFarSilent": "superbwarfare:m_870_far_s",
     "ReloadPrepareLoad": "superbwarfare:m_870_prepare_load",
     "ReloadLoop": "superbwarfare:m_870_loop",
     "Bolt": "superbwarfare:m_870_bolt",
