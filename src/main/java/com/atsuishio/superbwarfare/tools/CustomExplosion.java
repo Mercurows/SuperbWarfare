@@ -102,9 +102,6 @@ public class CustomExplosion extends Explosion {
 
     @Override
     public void explode() {
-        this.level.gameEvent(this.source, GameEvent.EXPLODE, new Vec3(this.x, this.y, this.z));
-        Set<BlockPos> set = Sets.newHashSet();
-
         // 这个效果更好但是性能损耗巨大
 //        int sampleCount = (int) Mth.clamp(Math.PI * this.radius * this.radius, 64, 4096);
 //
@@ -160,6 +157,9 @@ public class CustomExplosion extends Explosion {
 //        }
 
         if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+            this.level.gameEvent(this.source, GameEvent.EXPLODE, new Vec3(this.x, this.y, this.z));
+            Set<BlockPos> set = Sets.newHashSet();
+
             Vec3 center = new Vec3(this.x, this.y, this.z);
             RandomSource random = level.random;
 
