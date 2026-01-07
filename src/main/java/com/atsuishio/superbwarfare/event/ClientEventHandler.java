@@ -2358,8 +2358,7 @@ public class ClientEventHandler {
     }
 
     public static void editModelShake() {
-        movePosY = -0.8;
-        fireRotTimer = 0.4;
+        velocityY = 0.2;
     }
 
     public static void stopSoundEvent(ResourceLocation location, SoundSource source) {
@@ -2429,9 +2428,9 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onFogColor(ViewportEvent.ComputeFogColor event) {
         if (activeThermalImaging) {
-            event.setRed(0.0F);
-            event.setGreen(0.0F);
-            event.setBlue(0.0F);
+            event.setRed(0.1F);
+            event.setGreen(0.1F);
+            event.setBlue(0.1F);
         }
     }
 }

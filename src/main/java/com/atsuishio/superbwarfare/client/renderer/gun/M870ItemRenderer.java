@@ -2,12 +2,12 @@ package com.atsuishio.superbwarfare.client.renderer.gun;
 
 import com.atsuishio.superbwarfare.client.ItemModelHelper;
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
-import com.atsuishio.superbwarfare.client.model.item.VectorItemModel;
+import com.atsuishio.superbwarfare.client.model.item.M870ItemModel;
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.gun.smg.VectorItem;
+import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -18,14 +18,14 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-public class VectorItemRenderer extends CustomGunRenderer<VectorItem> {
+public class M870ItemRenderer extends CustomGunRenderer<M870Item> {
 
-    public VectorItemRenderer() {
-        super(new VectorItemModel());
+    public M870ItemRenderer() {
+        super(new M870ItemModel());
     }
 
     @Override
-    public void renderRecursively(PoseStack stack, VectorItem animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, float red,
+    public void renderRecursively(PoseStack stack, M870Item animatable, GeoBone bone, RenderType type, MultiBufferSource buffer, VertexConsumer bufferIn, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, float red,
                                   float green, float blue, float alpha) {
         Minecraft mc = Minecraft.getInstance();
         String name = bone.getName();
@@ -41,18 +41,13 @@ public class VectorItemRenderer extends CustomGunRenderer<VectorItem> {
         if (player == null) return;
         ItemStack itemStack = player.getMainHandItem();
 
-        boolean needHide = name.equals("tuoxin");
-
         if (itemStack.getItem() instanceof GunItem && GeoItem.getId(itemStack) == this.getInstanceId(animatable)) {
             if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || this.renderPerspective == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
 
                 if (this.renderPerspective == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
                     int scopeType = GunData.from(itemStack).attachment.get(AttachmentType.SCOPE);
-                    switch (scopeType) {
-                        case 1 ->
-                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.29, 18, 1, 255, 0, 0, 255, "dot", false);
-                        case 2 ->
-                                AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.3, 16, 1, 255, 0, 0, 255, "apex_2x", true);
+                    if (scopeType == 1 && !GunData.from(itemStack).reloading()) {
+                        AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.23, 18, 1, 255, 0, 0, 255, "dot", false);
                     }
                 }
 
@@ -60,15 +55,9 @@ public class VectorItemRenderer extends CustomGunRenderer<VectorItem> {
                 ItemModelHelper.handleGunAttachments(bone, itemStack, name);
             } else {
                 ItemModelHelper.hideAllAttachments(bone, name);
-                if (needHide) {
-                    bone.setHidden(true);
-                }
             }
         } else {
             ItemModelHelper.hideAllAttachments(bone, name);
-            if (needHide) {
-                bone.setHidden(true);
-            }
         }
 
         if (renderingArms) {

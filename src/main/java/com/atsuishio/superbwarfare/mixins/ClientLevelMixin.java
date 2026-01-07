@@ -11,21 +11,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ClientLevel.class)
 public abstract class ClientLevelMixin {
 
-    @Inject(method = "getSkyDarken(F)F",
-            at = @At("RETURN"), cancellable = true)
-    public void getSkyDarken(float pPartialTick, CallbackInfoReturnable<Float> cir) {
-        if (ClientEventHandler.activeThermalImaging) {
-            cir.cancel();
-            cir.setReturnValue(1.14f);
-        }
-    }
+//    @Inject(method = "getSkyDarken(F)F",
+//            at = @At("RETURN"), cancellable = true)
+//    public void getSkyDarken(float pPartialTick, CallbackInfoReturnable<Float> cir) {
+//        if (ClientEventHandler.activeThermalImaging) {
+//            cir.cancel();
+//            cir.setReturnValue(1.14f);
+//        }
+//    }
 
     @Inject(method = "getSkyColor(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;",
             at = @At("RETURN"), cancellable = true)
     public void getSkyColor(Vec3 pPos, float pPartialTick, CallbackInfoReturnable<Vec3> cir) {
         if (ClientEventHandler.activeThermalImaging) {
             cir.cancel();
-            cir.setReturnValue(new Vec3(0, 0, 0));
+            cir.setReturnValue(new Vec3(0.1, 0.1, 0.1));
         }
     }
 
@@ -34,7 +34,7 @@ public abstract class ClientLevelMixin {
     public void getCloudColor(float pPartialTick, CallbackInfoReturnable<Vec3> cir) {
         if (ClientEventHandler.activeThermalImaging) {
             cir.cancel();
-            cir.setReturnValue(new Vec3(0.1, 0.1, 0.1));
+            cir.setReturnValue(new Vec3(0.2, 0.2, 0.2));
         }
     }
 }

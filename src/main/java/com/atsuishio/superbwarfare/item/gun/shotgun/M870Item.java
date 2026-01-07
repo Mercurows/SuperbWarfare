@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.shotgun;
 
-import com.atsuishio.superbwarfare.client.GunRendererBuilder;
-import com.atsuishio.superbwarfare.client.model.item.M870ItemModel;
+import com.atsuishio.superbwarfare.client.renderer.gun.M870ItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
@@ -30,7 +29,7 @@ public class M870Item extends GunGeoItem {
 
     @Override
     public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-        return GunRendererBuilder.simple(M870ItemModel::new);
+        return M870ItemRenderer::new;
     }
 
     private PlayState fireAnimPredicate(AnimationState<M870Item> event) {
@@ -70,6 +69,16 @@ public class M870Item extends GunGeoItem {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
     }
 
+    private PlayState editPredicate(AnimationState<M870Item> event) {
+        if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
+
+        if (ClientEventHandler.isEditing) {
+            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.m_870.edit"));
+        }
+        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
+    }
+
     private PlayState meleePredicate(AnimationState<M870Item> event) {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.m_870.idle"));
@@ -87,5 +96,32 @@ public class M870Item extends GunGeoItem {
         data.add(fireAnimController);
         var meleeController = new AnimationController<>(this, "meleeController", 0, this::meleePredicate);
         data.add(meleeController);
+        var editController = new AnimationController<>(this, "editController", 1, this::editPredicate);
+        data.add(editController);
+    }
+
+    @Override
+    public int[] getValidScopes() {
+        return new int[]{0, 1};
+    }
+
+    @Override
+    public int[] getValidBarrels() {
+        return new int[]{0, 2};
+    }
+
+    @Override
+    public boolean hasCustomBarrel(GunData data) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomScope(GunData data) {
+        return true;
+    }
+
+    @Override
+    public boolean canEditAttachments(GunData data) {
+        return true;
     }
 }

@@ -1343,6 +1343,30 @@
       }
     ]
   },
+  "m_870_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_870/m_870_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "m_870_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_870/m_870_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
+  "m_870_far_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_870/m_870_far_s",
+        "stream": false
+      }
+    ]
+  },
   "m_870_prepare_load": {
     "sounds": [
       {

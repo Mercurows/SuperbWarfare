@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item;
 import net.minecraft.client.Minecraft;
@@ -27,10 +28,16 @@ public class M870ItemModel extends CustomGunModel<M870Item> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
+        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+
+        float posY = switch (type) {
+            case 1 -> -0.1f;
+            default -> 1.12f;
+        };
 
         gun.setPosX(1.7f * (float) zp);
 
-        gun.setPosY(1.12f * (float) zp - (float) (0.2f * zpz));
+        gun.setPosY(posY * (float) zp - (float) (0.2f * zpz));
 
         gun.setPosZ(1.5f * (float) zp + (float) (0.9f * zpz));
 
