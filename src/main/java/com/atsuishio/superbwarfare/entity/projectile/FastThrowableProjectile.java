@@ -59,6 +59,8 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     private final Set<ChunkPos> currentChunks = new HashSet<>();
     private ChunkPos lastChunkPos;
 
+    public boolean exploded;
+
     public FastThrowableProjectile(EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -229,7 +231,10 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
     }
 
     public void causeExplode(Vec3 vec3) {
-        buildExplosion(vec3).explode();
+        if (!exploded) {
+            exploded = true;
+            buildExplosion(vec3).explode();
+        }
 
         if (discardAfterExplode()) {
             this.discard();
