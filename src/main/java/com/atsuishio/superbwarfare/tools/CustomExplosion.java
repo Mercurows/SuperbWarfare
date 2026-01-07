@@ -9,8 +9,10 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.google.common.collect.Sets;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +25,6 @@ import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -32,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -90,56 +90,103 @@ public class CustomExplosion extends Explosion {
         return this;
     }
 
-    public CustomExplosion bulletExplode() {
-        return this;
-    }
-
     @Override
     public void explode() {
         this.level.gameEvent(this.source, GameEvent.EXPLODE, new Vec3(this.x, this.y, this.z));
         Set<BlockPos> set = Sets.newHashSet();
 
-        for (int j = 0; j < 16; ++j) {
-            for (int k = 0; k < 16; ++k) {
-                for (int l = 0; l < 16; ++l) {
-                    if (j == 0 || j == 15 || k == 0 || k == 15 || l == 0 || l == 15) {
-                        double d0 = (float) j / 15F * 2 - 1;
-                        double d1 = (float) k / 15F * 2 - 1;
-                        double d2 = (float) l / 15F * 2 - 1;
-                        double d3 = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-                        d0 /= d3;
-                        d1 /= d3;
-                        d2 /= d3;
-                        float f = this.radius * (0.2F + this.level.random.nextFloat() * 0.15F);
-                        double d4 = this.x;
-                        double d6 = this.y;
-                        double d8 = this.z;
+        // 这个效果更好但是性能损耗巨大
+//        int sampleCount = (int) Mth.clamp(Math.PI * this.radius * this.radius, 64, 4096);
+//
+//        for (int i = 0; i < sampleCount; ++i) {
+//            double theta = 2 * Math.PI * this.level.random.nextDouble();
+//            double phi = Math.acos(2 * this.level.random.nextDouble() - 1);
+//
+//            double d0 = Math.sin(phi) * Math.cos(theta);
+//            double d1 = Math.sin(phi) * Math.sin(theta);
+//            double d2 = Math.cos(phi);
+//
+//            d0 += (this.level.random.nextDouble() - 0.5) * 0.2;
+//            d1 += (this.level.random.nextDouble() - 0.5) * 0.2;
+//            d2 += (this.level.random.nextDouble() - 0.5) * 0.2;
+//
+//            double length = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+//            d0 /= length;
+//            d1 /= length;
+//            d2 /= length;
+//
+//            float rayStrength = this.radius * (0.7F + this.level.random.nextFloat() * 0.6F);
+//            double currentX = this.x;
+//            double currentY = this.y;
+//            double currentZ = this.z;
+//
+//            for (; rayStrength > 0.0F; rayStrength -= 0.22500001F) {
+//                BlockPos blockpos = BlockPos.containing(currentX, currentY, currentZ);
+//                BlockState blockstate = this.level.getBlockState(blockpos);
+//                FluidState fluidstate = this.level.getFluidState(blockpos);
+//
+//                if (!this.level.isInWorldBounds(blockpos)) {
+//                    break;
+//                }
+//
+//                Optional<Float> optional = this.damageCalculator.getBlockExplosionResistance(
+//                        this, this.level, blockpos, blockstate, fluidstate
+//                );
+//
+//                if (optional.isPresent()) {
+//                    rayStrength -= (optional.get() + 0.3F) * 0.3F;
+//                }
+//
+//                if (rayStrength > 0.0F && this.damageCalculator.shouldBlockExplode(
+//                        this, this.level, blockpos, blockstate, rayStrength
+//                )) {
+//                    set.add(blockpos);
+//                }
+//
+//                currentX += d0 * 0.3;
+//                currentY += d1 * 0.3;
+//                currentZ += d2 * 0.3;
+//            }
+//        }
 
-                        for (; f > 0; f -= 0.22500001F) {
-                            BlockPos blockpos = BlockPos.containing(d4, d6, d8);
-                            BlockState blockstate = this.level.getBlockState(blockpos);
-                            FluidState fluidstate = this.level.getFluidState(blockpos);
-                            if (!this.level.isInWorldBounds(blockpos)) {
-                                break;
-                            }
+        Vec3 center = new Vec3(this.x, this.y, this.z);
+        RandomSource random = level.random;
 
-                            Optional<Float> optional = this.damageCalculator.getBlockExplosionResistance(this, this.level, blockpos, blockstate, fluidstate);
-                            if (optional.isPresent()) {
-                                f -= (optional.get() + 1F) * 0.3F;
-                            }
+        AABB aabb = new AABB(x - 0.5 * radius, y - 0.5 * radius, z - 0.5 * radius, x + 0.5 * radius, y + 0.5 * radius, z + 0.5 * radius);
 
-                            if (f > 0 && this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockstate, f)) {
-                                set.add(blockpos);
-                            }
+        BlockPos minPos = new BlockPos(
+                (int) Math.floor(aabb.minX),
+                (int) Math.floor(aabb.minY),
+                (int) Math.floor(aabb.minZ)
+        );
 
-                            d4 += d0 * (double) 0.3F;
-                            d6 += d1 * (double) 0.3F;
-                            d8 += d2 * (double) 0.3F;
-                        }
+        BlockPos maxPos = new BlockPos(
+                (int) Math.floor(aabb.maxX),
+                (int) Math.floor(aabb.maxY),
+                (int) Math.floor(aabb.maxZ)
+        );
+
+        BlockPos.betweenClosedStream(minPos, maxPos).forEach(blockpos -> {
+            double effectiveRadius = 0.4 * radius;
+            float distanceSqr = (float) blockpos.getCenter().distanceToSqr(center);
+            float force = this.radius * (0.25F + random.nextFloat() * 0.15F) * 0.02f * damage;
+
+            if(distanceSqr > radius * radius * 0.15) {
+                effectiveRadius += (random.nextDouble() - 0.5) * radius * 0.2;
+            }
+
+            if (level.isInWorldBounds(blockpos) && blockpos.getCenter().distanceToSqr(center) <= effectiveRadius * effectiveRadius) {
+                BlockState blockstate = this.level.getBlockState(blockpos);
+                float resistance = blockstate.getBlock().defaultDestroyTime();
+                force *= (float) (1 - (distanceSqr / (effectiveRadius * effectiveRadius)));
+
+                if (resistance != -1 && force > resistance && this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockstate, force)) {
+                    if (level instanceof ServerLevel serverLevel) {
+                        serverLevel.destroyBlock(blockpos, true);
                     }
                 }
             }
-        }
+        });
 
         this.getToBlow().addAll(set);
 
