@@ -149,46 +149,48 @@ public class CustomExplosion extends Explosion {
 //            }
 //        }
 
-        Vec3 center = new Vec3(this.x, this.y, this.z);
-        RandomSource random = level.random;
+        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+            Vec3 center = new Vec3(this.x, this.y, this.z);
+            RandomSource random = level.random;
 
-        AABB aabb = new AABB(x - 0.5 * radius, y - 0.5 * radius, z - 0.5 * radius, x + 0.5 * radius, y + 0.5 * radius, z + 0.5 * radius);
+            AABB aabb = new AABB(x - 0.5 * radius, y - 0.5 * radius, z - 0.5 * radius, x + 0.5 * radius, y + 0.5 * radius, z + 0.5 * radius);
 
-        BlockPos minPos = new BlockPos(
-                (int) Math.floor(aabb.minX),
-                (int) Math.floor(aabb.minY),
-                (int) Math.floor(aabb.minZ)
-        );
+            BlockPos minPos = new BlockPos(
+                    (int) Math.floor(aabb.minX),
+                    (int) Math.floor(aabb.minY),
+                    (int) Math.floor(aabb.minZ)
+            );
 
-        BlockPos maxPos = new BlockPos(
-                (int) Math.floor(aabb.maxX),
-                (int) Math.floor(aabb.maxY),
-                (int) Math.floor(aabb.maxZ)
-        );
+            BlockPos maxPos = new BlockPos(
+                    (int) Math.floor(aabb.maxX),
+                    (int) Math.floor(aabb.maxY),
+                    (int) Math.floor(aabb.maxZ)
+            );
 
-        BlockPos.betweenClosedStream(minPos, maxPos).forEach(blockpos -> {
-            double effectiveRadius = 0.4 * radius;
-            float distanceSqr = (float) blockpos.getCenter().distanceToSqr(center);
-            float force = this.radius * (0.25F + random.nextFloat() * 0.15F) * 0.02f * damage;
+            BlockPos.betweenClosedStream(minPos, maxPos).forEach(blockpos -> {
+                double effectiveRadius = 0.4 * radius;
+                float distanceSqr = (float) blockpos.getCenter().distanceToSqr(center);
+                float force = this.radius * (0.25F + random.nextFloat() * 0.15F) * 0.02f * damage;
 
-            if(distanceSqr > radius * radius * 0.15) {
-                effectiveRadius += (random.nextDouble() - 0.5) * radius * 0.2;
-            }
+                if(distanceSqr > radius * radius * 0.15) {
+                    effectiveRadius += (random.nextDouble() - 0.5) * radius * 0.2;
+                }
 
-            if (level.isInWorldBounds(blockpos) && blockpos.getCenter().distanceToSqr(center) <= effectiveRadius * effectiveRadius) {
-                BlockState blockstate = this.level.getBlockState(blockpos);
-                float resistance = blockstate.getBlock().defaultDestroyTime();
-                force *= (float) (1 - (distanceSqr / (effectiveRadius * effectiveRadius)));
+                if (level.isInWorldBounds(blockpos) && blockpos.getCenter().distanceToSqr(center) <= effectiveRadius * effectiveRadius) {
+                    BlockState blockstate = this.level.getBlockState(blockpos);
+                    float resistance = blockstate.getBlock().defaultDestroyTime();
+                    force *= (float) (1 - (distanceSqr / (effectiveRadius * effectiveRadius)));
 
-                if (resistance != -1 && force > resistance && this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockstate, force)) {
-                    if (level instanceof ServerLevel serverLevel) {
-                        serverLevel.destroyBlock(blockpos, true);
+                    if (resistance != -1 && force > resistance && this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockstate, force)) {
+                        if (level instanceof ServerLevel serverLevel) {
+                            serverLevel.destroyBlock(blockpos, true);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        this.getToBlow().addAll(set);
+            this.getToBlow().addAll(set);
+        }
 
         float diameter = this.radius * 2;
         int x0 = Mth.floor(this.x - (double) diameter - 1);
