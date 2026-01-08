@@ -6,7 +6,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext
 
 typealias PayloadContext = IPayloadContext
 
-abstract class PacketPayload : CustomPacketPayload {
+sealed class PacketPayload : CustomPacketPayload {
     override fun type() = payloadTypeMap[this::class.java]!!
     abstract fun PayloadContext.handler()
 }
@@ -15,4 +15,4 @@ abstract class ServerPacketPayload : PacketPayload() {
     fun PayloadContext.sender() = player() as ServerPlayer
 }
 
-// abstract class ClientPacketPayload : PacketPayload()
+abstract class ClientPacketPayload : PacketPayload()

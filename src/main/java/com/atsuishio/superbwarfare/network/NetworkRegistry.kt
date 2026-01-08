@@ -52,7 +52,7 @@ private inline fun <reified T : ServerPacketPayload> playToServer() {
     playTo<T> { type, codec, handler -> NetworkRegistry.playToServer(type, codec, handler) }
 }
 
-private inline fun <reified T : PacketPayload> playToClient() {
+private inline fun <reified T : ClientPacketPayload> playToClient() {
     playTo<T> { type, codec, handler -> NetworkRegistry.playToClient(type, codec, handler) }
 }
 
