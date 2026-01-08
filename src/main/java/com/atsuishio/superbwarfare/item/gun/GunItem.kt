@@ -857,8 +857,10 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         for (type in Perk.Type.entries.toTypedArray()) {
-            val instance = data.perk.getInstance(type)
-            instance?.perk?.modifyProjectile(data, instance, entity)
+            val instance = data.perk.getInstances(type)
+            instance.forEach {
+                it.perk?.modifyProjectile(data, it, entity)
+            }
         }
 
         val vehicle = shooter?.rootVehicle

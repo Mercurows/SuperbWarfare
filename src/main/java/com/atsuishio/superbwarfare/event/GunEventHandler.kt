@@ -136,7 +136,10 @@ object GunEventHandler {
      */
     fun tickPerk(shooter: Entity?, data: GunData) {
         for (type in Perk.Type.entries.toTypedArray()) {
-            data.perk.getInstance(type)?.perk?.tick(data, data.perk.getInstance(type), shooter)
+            val instance = data.perk.getInstances(type)
+            instance.forEach {
+                it.perk?.tick(data, it, shooter)
+            }
         }
     }
 

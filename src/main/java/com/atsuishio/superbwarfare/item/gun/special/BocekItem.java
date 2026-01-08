@@ -197,10 +197,8 @@ public class BocekItem extends GunGeoItem {
         projectile.setExplosionRadius(explosionRadius);
 
         for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().modifyProjectile(data, instance, projectile);
-            }
+            var instance = data.perk.getInstances(type);
+            instance.forEach(perk -> perk.perk().modifyProjectile(data, perk, projectile));
         }
 
         projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);

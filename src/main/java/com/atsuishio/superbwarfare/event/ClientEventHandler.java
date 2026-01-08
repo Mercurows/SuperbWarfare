@@ -1155,10 +1155,8 @@ public class ClientEventHandler {
         }
 
         for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                customRpm = instance.perk().getModifiedCustomRPM(customRpm, data, instance);
-            }
+            var instance = data.perk.getInstances(type);
+            customRpm = instance.stream().mapToInt(perk -> perk.perk().getModifiedCustomRPM(customRpm, data, perk)).max().orElse(customRpm);
         }
 
         if (stack.is(ModItems.DEVOTION.get())) {

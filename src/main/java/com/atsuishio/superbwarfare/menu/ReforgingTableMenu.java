@@ -193,7 +193,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         var data = getGunData();
         if (data == null) return 0;
 
-        var totalLevel = data.level.get();
+        int totalLevel = data.level.get();
         totalLevel -= Math.max(0, this.ammoPerkLevel.get() - 1);
         totalLevel -= Math.max(0, this.funcPerkLevel.get() - 1);
         totalLevel -= Math.max(0, this.damagePerkLevel.get() - 1);
@@ -327,8 +327,9 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         var data = GunData.from(stack);
 
         for (var type : Perk.Type.values()) {
-            var perkInstance = data.perk.getInstance(type);
-            if (perkInstance != null) {
+            var list = data.perk.getInstances(type);
+            if (!list.isEmpty()) {
+                var perkInstance = list.getFirst();
                 switch (type) {
                     case AMMO -> this.ammoPerkLevel.set(perkInstance.level());
                     case FUNCTIONAL -> this.funcPerkLevel.set(perkInstance.level());
@@ -336,7 +337,6 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                 }
 
                 var ammoPerkItem = perkInstance.perk().getItem().get();
-
                 this.container.setItem(switch (type) {
                     case AMMO -> AMMO_PERK_SLOT;
                     case FUNCTIONAL -> FUNC_PERK_SLOT;

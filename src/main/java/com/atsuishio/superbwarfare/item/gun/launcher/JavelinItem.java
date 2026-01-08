@@ -75,10 +75,8 @@ public class JavelinItem extends GunGeoItem {
                     targetPos);
 
             for (Perk.Type type : Perk.Type.values()) {
-                var instance = data.perk.getInstance(type);
-                if (instance != null) {
-                    instance.perk().modifyProjectile(data, instance, missileEntity);
-                }
+                var instance = data.perk.getInstances(type);
+                instance.forEach(perk -> perk.perk().modifyProjectile(data, perk, missileEntity));
             }
 
             missileEntity.setPos(shooter.getX() + firePos.x, shooter.getEyeY() + firePos.y, shooter.getZ() + firePos.z);

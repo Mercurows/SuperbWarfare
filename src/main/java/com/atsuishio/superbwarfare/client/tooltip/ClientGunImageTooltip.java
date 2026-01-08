@@ -188,9 +188,12 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     protected Component getUpgradePointComponent() {
         int upgradePoint = data.level.get();
         for (var type : Perk.Type.values()) {
-            var perkInstance = data.perk.getInstance(type);
-            if (perkInstance == null) continue;
-            upgradePoint -= perkInstance.level() - 1;
+            var list = data.perk.getInstances(type);
+            if (list.isEmpty()) continue;
+
+            for (var perkInstance : list) {
+                upgradePoint -= perkInstance.level() - 1;
+            }
         }
         upgradePoint = Math.max(upgradePoint, 0);
 
@@ -294,18 +297,20 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         int xOffset = -20;
 
         for (var type : Perk.Type.values()) {
-            var perkInstance = data.perk.getInstance(type);
-            if (perkInstance == null) continue;
+            var list = data.perk.getInstances(type);
+            if (list.isEmpty()) continue;
 
-            xOffset += 20;
+            for (var perkInstance : list) {
+                xOffset += 20;
 
-            var ammoItem = perkInstance.perk().getItem().get();
-            ItemStack perkStack = ammoItem.getDefaultInstance();
+                var ammoItem = perkInstance.perk().getItem().get();
+                ItemStack perkStack = ammoItem.getDefaultInstance();
 
-            int level = perkInstance.level();
-            perkStack.setCount(level);
-            guiGraphics.renderItem(perkStack, x + xOffset, y + 2);
-            guiGraphics.renderItemDecorations(font, perkStack, x + xOffset, y + 2);
+                int level = perkInstance.level();
+                perkStack.setCount(level);
+                guiGraphics.renderItem(perkStack, x + xOffset, y + 2);
+                guiGraphics.renderItemDecorations(font, perkStack, x + xOffset, y + 2);
+            }
         }
 
         guiGraphics.pose().popPose();
@@ -322,24 +327,25 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         int yOffset = -5;
 
         for (var type : Perk.Type.values()) {
-            var perkInstance = data.perk.getInstance(type);
-            if (perkInstance == null) continue;
+            var list = data.perk.getInstances(type);
+            if (list.isEmpty()) continue;
 
-            yOffset += 25;
+            for (var perkInstance : list) {
+                yOffset += 25;
 
-            var ammoItem = perkInstance.perk().getItem().get();
-            guiGraphics.renderItem(ammoItem.getDefaultInstance(), x, y + 4 + yOffset);
+                var ammoItem = perkInstance.perk().getItem().get();
+                guiGraphics.renderItem(ammoItem.getDefaultInstance(), x, y + 4 + yOffset);
 
-            var id = perkInstance.perk().descriptionId;
+                var id = perkInstance.perk().descriptionId;
 
-            var component = Component.translatable("item.superbwarfare." + id).withStyle(type.getColor())
-                    .append(Component.literal(" ").withStyle(ChatFormatting.RESET))
-                    .append(Component.literal(" Lvl. " + perkInstance.level()).withStyle(ChatFormatting.WHITE));
-            var descComponent = Component.translatable("des.superbwarfare." + id).withStyle(ChatFormatting.GRAY);
+                var component = Component.translatable("item.superbwarfare." + id).withStyle(type.getColor())
+                        .append(Component.literal(" ").withStyle(ChatFormatting.RESET))
+                        .append(Component.literal(" Lvl. " + perkInstance.level()).withStyle(ChatFormatting.WHITE));
+                var descComponent = Component.translatable("des.superbwarfare." + id).withStyle(ChatFormatting.GRAY);
 
-            guiGraphics.drawString(font, component, x + 20, y + yOffset + 2, 0xFFFFFF);
-            guiGraphics.drawString(font, descComponent, x + 20, y + yOffset + 12, 0xFFFFFF);
-
+                guiGraphics.drawString(font, component, x + 20, y + yOffset + 2, 0xFFFFFF);
+                guiGraphics.drawString(font, descComponent, x + 20, y + yOffset + 12, 0xFFFFFF);
+            }
         }
 
         guiGraphics.pose().popPose();
@@ -364,13 +370,15 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         int width = 0;
 
         for (var type : Perk.Type.values()) {
-            var perkInstance = data.perk.getInstance(type);
-            if (perkInstance == null) continue;
+            var list = data.perk.getInstances(type);
+            if (list.isEmpty()) continue;
 
-            var id = perkInstance.perk().descriptionId;
+            for (var perkInstance : list) {
+                var id = perkInstance.perk().descriptionId;
 
-            var ammoDesComponent = Component.translatable("des.superbwarfare." + id).withStyle(ChatFormatting.GRAY);
-            width = Math.max(width, font.width(ammoDesComponent));
+                var ammoDesComponent = Component.translatable("des.superbwarfare." + id).withStyle(ChatFormatting.GRAY);
+                width = Math.max(width, font.width(ammoDesComponent));
+            }
         }
 
         return width + 25;
@@ -388,9 +396,7 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
             if (Screen.hasShiftDown()) {
                 for (var type : Perk.Type.values()) {
-                    if (data.perk.has(type)) {
-                        height += 25;
-                    }
+                    height += 25 * data.perk.getInstances(type).size();
                 }
             }
         }
