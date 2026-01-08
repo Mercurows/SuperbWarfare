@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
+import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -20,7 +21,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClientGunImageTooltip implements ClientTooltipComponent {
+
+    public static final int PAGE_SIZE = 4;
 
     protected final int width;
     protected final int height;
@@ -294,13 +300,16 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
 
         int xOffset = -20;
 
+        int count = 0;
         for (var type : Perk.Type.values()) {
             var list = data.perk.getInstances(type);
             if (list.isEmpty()) continue;
 
             for (var perkInstance : list) {
-                xOffset += 20;
+                count++;
+                if (count > 5) continue;
 
+                xOffset += 20;
                 var ammoItem = perkInstance.perk().getItem().get();
                 ItemStack perkStack = ammoItem.getDefaultInstance();
 
@@ -309,6 +318,10 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
                 guiGraphics.renderItem(perkStack, x + xOffset, y + 2);
                 guiGraphics.renderItemDecorations(font, perkStack, x + xOffset, y + 2);
             }
+        }
+
+        if (count > 5) {
+            guiGraphics.drawString(font, "(+" + (count - 5) + ")", x + xOffset + 20, y + 8, 11184810);
         }
 
         guiGraphics.pose().popPose();
@@ -320,30 +333,40 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
     protected void renderPerks(Font font, GuiGraphics guiGraphics, int x, int y) {
         guiGraphics.pose().pushPose();
 
-        guiGraphics.drawString(font, Component.translatable("perk.superbwarfare.tips").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.UNDERLINE), x, y + 10, 0xFFFFFF);
-
+        var tip = Component.empty().append(Component.translatable("perk.superbwarfare.tips").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.UNDERLINE));
         int yOffset = -5;
 
+        List<PerkInstance> list = new ArrayList<>();
         for (var type : Perk.Type.values()) {
-            var list = data.perk.getInstances(type);
-            if (list.isEmpty()) continue;
+            list.addAll(data.perk.getInstances(type));
+        }
 
-            for (var perkInstance : list) {
-                yOffset += 25;
+        int page = (getCurrentPage(list.size()) - 1);
+        int count = page * PAGE_SIZE;
+        int maxPage = (int) Math.ceil(list.size() / (PAGE_SIZE * 1.0));
 
-                var ammoItem = perkInstance.perk().getItem().get();
-                guiGraphics.renderItem(ammoItem.getDefaultInstance(), x, y + 4 + yOffset);
+        if (maxPage > 1) {
+            tip = tip.append(Component.empty().withStyle(ChatFormatting.RESET).append(Component.literal(" (" + (page + 1) + " / " + maxPage + ")").withStyle(ChatFormatting.GRAY)));
+        }
 
-                var id = perkInstance.perk().descriptionId;
+        guiGraphics.drawString(font, tip, x, y + 10, 0xFFFFFF);
 
-                var component = Component.translatable("item.superbwarfare." + id).withStyle(type.getColor())
-                        .append(Component.literal(" ").withStyle(ChatFormatting.RESET))
-                        .append(Component.literal(" Lvl. " + perkInstance.level()).withStyle(ChatFormatting.WHITE));
-                var descComponent = Component.translatable("des.superbwarfare." + id).withStyle(ChatFormatting.GRAY);
+        for (int i = count; i < Math.min(list.size(), count + PAGE_SIZE); i++) {
+            yOffset += 25;
 
-                guiGraphics.drawString(font, component, x + 20, y + yOffset + 2, 0xFFFFFF);
-                guiGraphics.drawString(font, descComponent, x + 20, y + yOffset + 12, 0xFFFFFF);
-            }
+            var perkInstance = list.get(i);
+            var ammoItem = perkInstance.perk().getItem().get();
+            guiGraphics.renderItem(ammoItem.getDefaultInstance(), x, y + 4 + yOffset);
+
+            var id = perkInstance.perk().descriptionId;
+
+            var component = Component.translatable("item.superbwarfare." + id).withStyle(perkInstance.perk().type.getColor())
+                    .append(Component.literal(" ").withStyle(ChatFormatting.RESET))
+                    .append(Component.literal(" Lvl. " + perkInstance.level()).withStyle(ChatFormatting.WHITE));
+            var descComponent = Component.translatable("des.superbwarfare." + id).withStyle(ChatFormatting.GRAY);
+
+            guiGraphics.drawString(font, component, x + 20, y + yOffset + 2, 0xFFFFFF);
+            guiGraphics.drawString(font, descComponent, x + 20, y + yOffset + 12, 0xFFFFFF);
         }
 
         guiGraphics.pose().popPose();
@@ -393,9 +416,12 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
             height += 16;
 
             if (Screen.hasShiftDown()) {
+                int count = 0;
                 for (var type : Perk.Type.values()) {
-                    height += 25 * data.perk.getInstances(type).size();
+                    count += data.perk.getInstances(type).size();
+                    if (count >= PAGE_SIZE) break;
                 }
+                height += 25 * Math.min(count, PAGE_SIZE);
             }
         }
 
@@ -421,5 +447,12 @@ public class ClientGunImageTooltip implements ClientTooltipComponent {
         }
 
         return width;
+    }
+
+    public static int getCurrentPage(int size) {
+        if (size <= PAGE_SIZE) return 1;
+        int totalPages = (int) Math.ceil(size / (PAGE_SIZE * 1.0));
+        if (totalPages <= 1) return 1;
+        return (int) (System.currentTimeMillis() / 5000 % totalPages) + 1;
     }
 }
