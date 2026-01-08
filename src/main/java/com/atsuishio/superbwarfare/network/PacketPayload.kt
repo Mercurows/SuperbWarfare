@@ -9,7 +9,7 @@ import java.util.function.Supplier
 typealias PayloadContext = Supplier<NetworkEvent.Context>
 
 abstract class PacketPayload {
-    fun handleInternal(message: PacketPayload, context: PayloadContext, dist: Dist) {
+    open fun handleInternal(message: PacketPayload, context: PayloadContext, dist: Dist) {
         with(context.get()) {
             enqueueWork {
                 // TODO 这样能不能隔离？
@@ -26,6 +26,19 @@ abstract class PacketPayload {
 
 abstract class ServerPacketPayload : PacketPayload() {
     fun PayloadContext.sender() = get().sender as ServerPlayer
+
+    override fun handleInternal(
+        message: PacketPayload,
+        context: PayloadContext,
+        dist: Dist
+    ) {
+        with(context.get()) {
+            enqueueWork {
+                with(message) { context.handler() }
+            }
+            packetHandled = true
+        }
+    }
 }
 
 // abstract class ClientPacketPayload : PacketPayload()
