@@ -87,8 +87,8 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("UpStep")
     public float upStep = 0;
 
-    @SerializedName("MouseSpeed")
-    public Vec2 mouseSpeed = new Vec2(0.4f, 0.4f);
+    @SerializedName("MouseSensitivity")
+    public double mouseSensitivity = 0.4;
 
     @SerializedName("AllowFreeCam")
     public boolean allowFreeCam = false;

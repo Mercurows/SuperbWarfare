@@ -27,6 +27,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import static com.atsuishio.superbwarfare.event.ClientEventHandler.isFreeCam;
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.zoomVehicle;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientMouseHandler {
@@ -44,6 +45,9 @@ public class ClientMouseHandler {
 
     public static double custom3pDistance = 0;
     public static double custom3pDistanceLerp = 0;
+
+    public static double mouseXMoveTick = 0;
+    public static double mouseYMoveTick = 0;
 
     private static boolean notInGame() {
         Minecraft mc = Minecraft.getInstance();
@@ -89,9 +93,8 @@ public class ClientMouseHandler {
                 speedX = (drone.getMouseSensitivity() / ClientEventHandler.droneFovLerp) * (posN.x - posO.x);
                 speedY = (drone.getMouseSensitivity() / ClientEventHandler.droneFovLerp) * (posN.y - posO.y);
 
-                var mouseSpeed = drone.getMouseSpeed();
-                lerpSpeedX = Mth.lerp(mouseSpeed.x, lerpSpeedX, speedX);
-                lerpSpeedY = Mth.lerp(mouseSpeed.y, lerpSpeedY, speedY);
+                lerpSpeedX = Mth.lerp(0.3, lerpSpeedX, speedX);
+                lerpSpeedY = Mth.lerp(0.3, lerpSpeedY, speedY);
 
                 NetworkRegistry.PACKET_HANDLER.sendToServer(new MouseMoveMessage(lerpSpeedX, lerpSpeedY));
             }
@@ -110,12 +113,19 @@ public class ClientMouseHandler {
                 y = -1;
             }
 
-            speedX = vehicle.getMouseSensitivity() * (posN.x - posO.x);
-            speedY = y * vehicle.getMouseSensitivity() * (posN.y - posO.y);
+            speedX = vehicle.getMouseSensitivity() * (posN.x - posO.x) * (zoomVehicle ? 0.3 : 1);
+            speedY = y * vehicle.getMouseSensitivity() * (posN.y - posO.y) * (zoomVehicle ? 0.6 : 1);
 
-            var mouseSpeed = vehicle.getMouseSpeed();
-            lerpSpeedX = Mth.lerp(mouseSpeed.x, lerpSpeedX, speedX);
-            lerpSpeedY = Mth.lerp(mouseSpeed.y, lerpSpeedY, speedY);
+            mouseXMoveTick = Mth.lerp(0.015, mouseXMoveTick, Mth.abs((float) speedX));
+            mouseYMoveTick = Mth.lerp(0.015, mouseYMoveTick, Mth.abs((float) speedY));
+
+            if (vehicle.getVehicleType() == VehicleType.AIRPLANE) {
+                lerpSpeedX = Mth.lerp(0.015 * mouseXMoveTick, lerpSpeedX, speedX);
+                lerpSpeedY = Mth.lerp(0.0075 * mouseYMoveTick, lerpSpeedY, speedY);
+            } else {
+                lerpSpeedX = Mth.lerp(0.0045 * mouseXMoveTick, lerpSpeedX, speedX);
+                lerpSpeedY = Mth.lerp(0.0035 * mouseYMoveTick, lerpSpeedY, speedY);
+            }
 
             double i = 0;
 
@@ -161,8 +171,8 @@ public class ClientMouseHandler {
 
         float times = Minecraft.getInstance().getDeltaFrameTime();
 
-        freeCameraYaw -= 0.4f * times * lerpSpeedX;
-        freeCameraPitch += 0.3f * times * lerpSpeedY;
+        freeCameraYaw -= 0.2f * times * lerpSpeedX;
+        freeCameraPitch += 0.15f * times * lerpSpeedY;
         if (!isFreeCam(player)) {
             freeCameraYaw = Mth.lerp(0.6 * times, freeCameraYaw, 0);
             freeCameraPitch = Mth.lerp(0.6 * times, freeCameraPitch, 0);

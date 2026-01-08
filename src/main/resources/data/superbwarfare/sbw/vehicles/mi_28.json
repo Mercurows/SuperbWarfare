@@ -55,7 +55,7 @@
       "Part": "MainEngine"
     }
   ],
-  "MouseSpeed": [0.28, 0.19],
+  "MouseSensitivity": 0.35,
   "Seats": [
     {
       "IsEnclosed": true,

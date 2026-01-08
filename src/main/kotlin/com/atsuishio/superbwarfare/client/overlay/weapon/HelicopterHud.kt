@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.re
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
@@ -51,10 +52,14 @@ object HelicopterHud {
 
     private val COMPASS = loc("textures/overlay/vehicle/base/compass.png")
     private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
+    private val RING = loc("textures/overlay/crosshair/rex_circle.png")
 
     private var scopeScale = 1f
     private var lerpVy = 1f
     private var lerpPower = 1f
+
+    private var mouseX = 0f;
+    private var mouseY = 0f;
 
     fun render(
         vehicle: VehicleEntity,
@@ -495,6 +500,11 @@ object HelicopterHud {
                     y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
                 )
             } else if (VectorUtil.canSee(pos)) {
+
+                mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
+                mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
+                RenderHelper.preciseBlit(guiGraphics, RING, x - 8 + mouseX, y - 8 + mouseY, 0f, 0f, 16f, 16f, 16f, 16f)
+
                 poseStack.pushPose()
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
                 RenderHelper.preciseBlit(guiGraphics, CROSSHAIR_3P, x - 8, y - 8, 0f, 0f, 16f, 16f, 16f, 16f)

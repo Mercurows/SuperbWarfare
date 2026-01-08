@@ -20,7 +20,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
 
-class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : GeoVehicleEntity(type, world) {
+open class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : GeoVehicleEntity(type, world) {
 
     val hasMelon
         get() = weaponData?.hasEnoughAmmoToShoot(this) ?: false
@@ -108,11 +108,12 @@ class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : GeoVehicleEntity(
         deltaMovement.length().toFloat()
 
     override fun getSensitivity(original: Double, zoom: Boolean, seatIndex: Int, isOnGround: Boolean) =
-        if (ModKeyMappings.FREE_CAMERA.isDown()) 0.0 else 0.6
+        if (ModKeyMappings.FREE_CAMERA.isDown) 0.0 else 0.6
 
     override fun useAircraftCamera(seatIndex: Int) =
-        ModKeyMappings.FREE_CAMERA.isDown() && !ClientEventHandler.zoom
+        ModKeyMappings.FREE_CAMERA.isDown && !ClientEventHandler.zoom
 
-    override fun getMouseSensitivity() =
-        if (ModKeyMappings.FREE_CAMERA.isDown()) 0.3 else 0.0
+    override val mouseSensitivity: Double?
+        get() = if (ModKeyMappings.FREE_CAMERA.isDown) 0.3 else 0.0
+
 }

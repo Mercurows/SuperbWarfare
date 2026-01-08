@@ -62,6 +62,9 @@ object AircraftHud {
     private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private val BOMB_RING = loc("textures/overlay/crosshair/rex_circle.png")
 
+    private var mouseX = 0f;
+    private var mouseY = 0f;
+
     fun render(
         vehicle: VehicleEntity,
         player: Player,
@@ -418,11 +421,6 @@ object AircraftHud {
                     color
                 )
             } else if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
-                poseStack.pushPose()
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
-                poseStack.pushPose()
-                poseStack.translate(x, y, 0f)
-                poseStack.scale(0.75f, 0.75f, 1f)
 
                 var cross = CROSSHAIR_3P
                 var size = 16f
@@ -430,7 +428,17 @@ object AircraftHud {
                 if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
                     cross = BOMB_RING
                     size = 24f
+                } else {
+                    mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
+                    mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
+                    RenderHelper.preciseBlit(guiGraphics, BOMB_RING, x - 8 + mouseX, y - 8 + mouseY, 0f, 0f, 16f, 16f, 16f, 16f)
                 }
+
+                poseStack.pushPose()
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
+                poseStack.pushPose()
+                poseStack.translate(x, y, 0f)
+                poseStack.scale(0.75f, 0.75f, 1f)
 
                 val heat = vehicle.getWeaponHeat(player) / 100f
                 val component = vehicle.thirdPersonAmmoComponent(gunData, player)
@@ -475,6 +483,7 @@ object AircraftHud {
                     size,
                     size
                 )
+
                 renderKillIndicatorDynamic(
                     guiGraphics,
                     x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
