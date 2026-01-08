@@ -430,10 +430,8 @@ public class LivingEventHandler {
                         }
 
                         for (Perk.Type type : Perk.Type.values()) {
-                            var instance = newData.perk.getInstance(type);
-                            if (instance != null) {
-                                instance.perk().onChangeSlot(newData, instance, player);
-                            }
+                            var instance = newData.perk.getInstances(type);
+                            instance.forEach(perk -> perk.perk().onChangeSlot(newData, perk, player));
                         }
 
                         newData.save();
@@ -531,22 +529,24 @@ public class LivingEventHandler {
             return;
         }
 
-        float damage = event.getAmount();
+        float[] damage = {event.getAmount()};
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                if (DamageTypeTool.isGunDamage(source)) {
-                    damage = instance.perk().getModifiedDamage(damage, data, instance, event.getEntity(), source);
-                    instance.perk().onHurtEntity(damage, data, instance, event.getEntity(), source);
-                } else if (source.is(DamageTypes.PLAYER_ATTACK)) {
-                    instance.perk().onMeleeAttack(data, instance, event.getEntity(), source);
-                }
-            }
+            var instance = data.perk.getInstances(type);
+
+            instance.forEach(perk -> {
+                        if (DamageTypeTool.isGunDamage(source)) {
+                            damage[0] = perk.perk().getModifiedDamage(damage[0], data, perk, event.getEntity(), source);
+                            perk.perk().onHurtEntity(damage[0], data, perk, event.getEntity(), source);
+                        } else if (source.is(DamageTypes.PLAYER_ATTACK)) {
+                            perk.perk().onMeleeAttack(data, perk, event.getEntity(), source);
+                        }
+                    }
+            );
         }
 
-        event.setAmount(damage);
+        event.setAmount(damage[0]);
     }
 
     private static void handleGunPerksWhenDeath(LivingDeathEvent event) {
@@ -571,10 +571,8 @@ public class LivingEventHandler {
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().onKill(data, instance, event.getEntity(), source);
-            }
+            var instance = data.perk.getInstances(type);
+            instance.forEach(perk -> perk.perk().onKill(data, perk, event.getEntity(), source));
         }
     }
 

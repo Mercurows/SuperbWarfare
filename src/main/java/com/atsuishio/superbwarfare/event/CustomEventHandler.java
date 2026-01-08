@@ -30,10 +30,8 @@ public class CustomEventHandler {
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().preReload(data, instance, shooter);
-            }
+            var instance = data.perk.getInstances(type);
+            instance.forEach(perk -> perk.perk().preReload(data, perk, shooter));
         }
     }
 
@@ -47,10 +45,8 @@ public class CustomEventHandler {
 
         GunData data = GunData.from(stack);
         for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().postReload(data, instance, shooter);
-            }
+            var instance = data.perk.getInstances(type);
+            instance.forEach(perk -> perk.perk().postReload(data, perk, shooter));
         }
     }
 
@@ -71,10 +67,8 @@ public class CustomEventHandler {
         if (!data.get(GunProp.PROJECTILE).type.equals(key.toString())) return;
 
         for (Perk.Type type : Perk.Type.values()) {
-            var instance = data.perk.getInstance(type);
-            if (instance != null) {
-                instance.perk().onHit(attacker, data, instance, event.getTarget());
-            }
+            var instance = data.perk.getInstances(type);
+            instance.forEach(perk -> perk.perk().onHit(attacker, data, perk, event.getTarget()));
         }
     }
 
