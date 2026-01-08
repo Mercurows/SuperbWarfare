@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
-import com.atsuishio.superbwarfare.network.PacketPayload
+import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.toVec3
@@ -12,7 +12,7 @@ import org.joml.Vector3f
 data class ClientSetMotionMessage(
     @Contextual val motion: Vector3f,
     @Contextual val position: Vector3f,
-) : PacketPayload() {
+) : ClientPacketPayload() {
 
     override fun PayloadContext.handler() {
         val player = localPlayer ?: return

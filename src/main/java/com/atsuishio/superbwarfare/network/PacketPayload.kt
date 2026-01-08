@@ -8,19 +8,8 @@ import java.util.function.Supplier
 
 typealias PayloadContext = Supplier<NetworkEvent.Context>
 
-abstract class PacketPayload {
-    open fun handleInternal(message: PacketPayload, context: PayloadContext, dist: Dist) {
-        with(context.get()) {
-            enqueueWork {
-                // TODO 这样能不能隔离？
-                DistExecutor.unsafeRunWhenOn(dist) {
-                    DistExecutor.SafeRunnable { with(message) { context.handler() } }
-                }
-            }
-            packetHandled = true
-        }
-    }
-
+sealed class PacketPayload {
+    abstract fun handleInternal(message: PacketPayload, context: PayloadContext)
     abstract fun PayloadContext.handler()
 }
 
@@ -30,7 +19,6 @@ abstract class ServerPacketPayload : PacketPayload() {
     override fun handleInternal(
         message: PacketPayload,
         context: PayloadContext,
-        dist: Dist
     ) {
         with(context.get()) {
             enqueueWork {
@@ -41,4 +29,16 @@ abstract class ServerPacketPayload : PacketPayload() {
     }
 }
 
-// abstract class ClientPacketPayload : PacketPayload()
+abstract class ClientPacketPayload : PacketPayload() {
+    override fun handleInternal(message: PacketPayload, context: PayloadContext) {
+        with(context.get()) {
+            enqueueWork {
+                // TODO 这样能不能隔离？
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT) {
+                    DistExecutor.SafeRunnable { with(message) { context.handler() } }
+                }
+            }
+            packetHandled = true
+        }
+    }
+}

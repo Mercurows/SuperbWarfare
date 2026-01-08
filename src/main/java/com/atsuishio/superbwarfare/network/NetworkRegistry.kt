@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessag
 import com.atsuishio.superbwarfare.network.message.send.*
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraftforge.api.distmarker.Dist
 import java.util.function.BiConsumer
 import java.util.function.Function
 
@@ -18,24 +17,23 @@ private inline fun <reified T> decodeFrom(input: FriendlyByteBuf): T {
 }
 
 private inline fun <reified T : PacketPayload> playTo(
-    dist: Dist,
     reg: (BiConsumer<T, FriendlyByteBuf>, Function<FriendlyByteBuf, T>, BiConsumer<T, PayloadContext>) -> Unit
 ) {
     reg(
         { value, buf -> encodeTo(buf, value) },
         { buf -> decodeFrom(buf) },
-        { msg, context -> msg.handleInternal(msg, context, dist) }
+        { msg, context -> msg.handleInternal(msg, context) }
     )
 }
 
 private inline fun <reified T : ServerPacketPayload> playToServer() {
-    playTo<T>(Dist.DEDICATED_SERVER) { enc, dec, handler ->
+    playTo<T> { enc, dec, handler ->
         NetworkRegistry.playToServer(T::class.java, enc, dec, handler)
     }
 }
 
-private inline fun <reified T : PacketPayload> playToClient() {
-    playTo<T>(Dist.CLIENT) { enc, dec, handler ->
+private inline fun <reified T : ClientPacketPayload> playToClient() {
+    playTo<T> { enc, dec, handler ->
         NetworkRegistry.playToClient(T::class.java, enc, dec, handler)
     }
 }
