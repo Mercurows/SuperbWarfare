@@ -590,7 +590,7 @@ object VehicleEngineUtils {
                 backInputDown = false
                 upInputDown = false
                 downInputDown = false
-                setZRot(roll * 0.98f)
+                setZRot(roll * 0.99f)
                 xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
                 deltaMovement.multiply(0.96, 0.98, 0.96)
                 if (!hasPassenger) {
@@ -599,10 +599,10 @@ object VehicleEngineUtils {
             } else {
                 if (rightInputDown) {
                     holdTick++
-                    deltaRot -= 2f * Math.min(holdTick, 7) * power
+                    deltaRot -= 1f * Math.min(holdTick, 7) * power
                 } else if (leftInputDown) {
                     holdTick++
-                    deltaRot += 2f * Math.min(holdTick, 7) * power
+                    deltaRot += 1f * Math.min(holdTick, 7) * power
                 } else {
                     holdTick = 0
                 }

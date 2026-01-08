@@ -3447,10 +3447,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return VehicleVecUtils.getZoomDirection(this, entity, partialTicks)
     }
 
-    open fun getMouseSensitivity() = 0.1
-
-    open val mouseSpeed: Vec2?
-        get() = computed().mouseSpeed
+    open val mouseSensitivity: Double?
+        get() = computed().mouseSensitivity
 
     open fun gearRot(tickDelta: Float) = Mth.lerp(tickDelta, gearRotO, this.gearRot)
 

@@ -49,7 +49,7 @@
       "Position": [2.703125, 1.921875, 0.03125]
     }
   ],
-  "MouseSpeed": [0.3, 0.3],
+  "MouseSensitivity": 0.25,
   "Seats": {
     "IsEnclosed": true,
     "Transform": "Vehicle",

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
-import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.EntityType
@@ -55,6 +54,4 @@ class A10Entity(type: EntityType<A10Entity>, world: Level) : GeoVehicleEntity(ty
             )
         }
     }
-
-    override fun getMouseSensitivity() = if (ClientEventHandler.zoomVehicle) 0.03 else 0.07
 }
