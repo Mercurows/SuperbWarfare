@@ -572,7 +572,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val damageReduceRate: Double
         get() {
             for (type in Perk.Type.entries.toTypedArray()) {
-                return this.perk.getInstances(type).minOf { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) }
+                return this.perk.getInstances(type)
+                    .minOfOrNull { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) } ?: continue
             }
             return this.rawDamageReduce!!.rate
         }
@@ -581,7 +582,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         get() {
             for (type in Perk.Type.entries.toTypedArray()) {
                 return this.perk.getInstances(type)
-                    .minOf { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) }
+                    .minOfOrNull { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) } ?: continue
             }
             return this.rawDamageReduce!!.minDistance
         }
