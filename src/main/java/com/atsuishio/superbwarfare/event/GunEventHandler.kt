@@ -408,7 +408,7 @@ object GunEventHandler {
         }
 
         if (reload.prepareLoadTimer.get() == data.get(GunProp.PREPARE_AMMO_LOAD_TIME)) {
-            iterativeLoad(shooter, data)
+            prepareLoad(shooter, data)
         }
 
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
@@ -485,6 +485,16 @@ object GunEventHandler {
             reload.singleReloadStarter.finish()
 
             postEvent(ReloadEvent.Post(shooter, data))
+        }
+    }
+
+    fun prepareLoad(shooter: Entity?, data: GunData) {
+        val required = min(data.get(GunProp.MAGAZINE) - data.ammo.get(), 1)
+        val available = min(required, data.countBackupAmmo(shooter))
+        data.ammo.add(available)
+
+        if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
+            data.consumeBackupAmmo(shooter, available)
         }
     }
 
