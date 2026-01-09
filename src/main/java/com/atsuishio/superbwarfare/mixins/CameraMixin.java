@@ -87,21 +87,6 @@ public abstract class CameraMixin implements ICustomCamera {
         }
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
-//                // TODO 完善四元数相关
-//                var quat = vehicle.getCameraQuat(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
-//                if (quat != null) {
-//                    this.rotation.set(quat);
-//
-//                    this.xRot = quat.x;
-//                    this.yRot = quat.y;
-//
-//                    this.forwards.set(0, 0, 1F).rotate(this.rotation);
-//                    this.up.set(0, 1F, 0).rotate(this.rotation);
-//                    this.left.set(1F, 0, 0).rotate(this.rotation);
-//
-//                    info.cancel();
-//                }
-
             var rotation = vehicle.getCameraRotation(partialTicks, player, ClientEventHandler.zoomVehicle, Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON);
             if (rotation != null) {
                 setRotation(rotation.x, rotation.y);

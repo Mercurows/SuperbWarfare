@@ -101,6 +101,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         rawData.weight += getCustomWeight(gunData)
         rawData.velocity += getCustomVelocity(gunData)
         rawData.soundRadius += getCustomSoundRadius(gunData)
+        rawData.boltActionTime += getCustomBoltActionTime(gunData)
 
         return rawData
     }
@@ -315,6 +316,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * 获取额外弹匣容量加成
      */
     open fun getCustomMagazine(data: GunData) = 0
+
+    /**
+     * 获取额外拉栓时间加成
+     */
+    open fun getCustomBoltActionTime(data: GunData) = 0
 
     /**
      * 获取额外缩放倍率加成

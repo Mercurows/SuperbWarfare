@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.gun.shotgun;
 
 import com.atsuishio.superbwarfare.client.renderer.gun.M870ItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -108,12 +109,29 @@ public class M870Item extends GunGeoItem {
     }
 
     @Override
+    public int[] getValidGrips() {
+        return new int[]{0, 1};
+    }
+
+    @Override
+    public int getCustomBoltActionTime(@NotNull GunData data) {
+        int gripType = data.attachment.get(AttachmentType.GRIP);
+        if (gripType == 1) return -2;
+        return super.getCustomBoltActionTime(data);
+    }
+
+    @Override
     public boolean hasCustomBarrel(@NotNull GunData data) {
         return true;
     }
 
     @Override
     public boolean hasCustomScope(@NotNull GunData data) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomGrip(GunData data) {
         return true;
     }
 
