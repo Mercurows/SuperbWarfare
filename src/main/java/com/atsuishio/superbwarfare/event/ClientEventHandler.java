@@ -212,6 +212,8 @@ public class ClientEventHandler {
     public static int holdToEjection;
     public static boolean isEditing = false;
 
+    public static int shootCoolDown;
+
     // 锁定类武器用
     @Nullable
     public static Entity nearestEntity;
@@ -407,11 +409,16 @@ public class ClientEventHandler {
 
         if ((stack.is(ModItems.ARTILLERY_INDICATOR.get()) || (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get()))) && holdingFireKey) {
             holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 20);
-            if (holdArtilleryIndicator >= 19) {
+            if (holdArtilleryIndicator >= 19 && shootCoolDown == 0) {
                 NetworkRegistry.PACKET_HANDLER.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
+                shootCoolDown = 10;
             }
         } else {
             holdArtilleryIndicator = 0;
+        }
+
+        if (shootCoolDown > 0) {
+            shootCoolDown--;
         }
 
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowEjection(vehicle.getSeatIndex(player)) && ModKeyMappings.DISMOUNT.isDown()) {
