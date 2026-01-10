@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.EntityModel;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
@@ -46,6 +48,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
             matrices.mulPose(quaternionf);
             matrices.mulPose(Axis.YP.rotationDegrees(180.0F - pRotationYaw));
+        }
+    }
+
+    @Inject(method = "isBodyVisible(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
+    protected void isBodyVisible(T pLivingEntity, CallbackInfoReturnable<Boolean> cir) {
+        if (ClientEventHandler.activeThermalImaging) {
+            cir.cancel();
+            cir.setReturnValue(true);
         }
     }
 }
