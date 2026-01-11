@@ -224,6 +224,9 @@ object ModEntities {
     @JvmField
     val SPEEDBOAT = register("speedboat", vehicle(::SpeedboatEntity).sized(3.0f, 2.0f))
 
+    @JvmField
+    val TINY_SPEEDBOAT = register("tiny_speedboat", vehicle(::TinySpeedboatEntity).sized(1.4f, 0.6f))
+
     // Land Vehicles
     @JvmField
     val WHEEL_CHAIR = register("wheel_chair", vehicle(::WheelChairEntity).sized(1.0f, 1.0f))

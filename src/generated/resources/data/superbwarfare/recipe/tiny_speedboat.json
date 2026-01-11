@@ -1,0 +1,14 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "water",
+  "inputs": [
+    "5 minecraft:iron_ingot",
+    "#minecraft:boats",
+    "superbwarfare:battery",
+    "superbwarfare:propeller",
+    "superbwarfare:motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:tiny_speedboat"
+  }
+}

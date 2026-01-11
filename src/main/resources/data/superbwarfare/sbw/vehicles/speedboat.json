@@ -138,7 +138,7 @@
     "Decrement": 0.022,
     "SteeringSpeed": 0.15,
     "BodyPitchRate": 1.1,
-    "BodyPitchRoll": 1.0
+    "BodyRollRate": 1.0
   },
   "ThirdPersonCameraPos": [0, 1.5, 3],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
