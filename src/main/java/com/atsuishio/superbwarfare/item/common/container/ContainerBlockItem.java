@@ -58,6 +58,7 @@ public class ContainerBlockItem extends BlockItem implements GeoItem {
         event.add(ModEntities.LASER_TOWER);
         event.add(ModEntities.WAVEFORCE_TOWER);
         event.add(ModEntities.ANNIHILATOR);
+        event.add(ModEntities.TINY_SPEEDBOAT);
         event.add(ModEntities.SPEEDBOAT);
         event.add(ModEntities.LAV_150);
         event.add(ModEntities.BMP_2);

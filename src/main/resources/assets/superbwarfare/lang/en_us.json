@@ -611,6 +611,7 @@
   "entity.superbwarfare.sodayo_pick_up_hmg": "Sodayo TenEven9 Pickup(HMG)",
   "entity.superbwarfare.sodayo_pick_up_rocket": "Sodayo TenEven9 Pickup(Rocket)",
   "entity.superbwarfare.sodayo_pick_up_tow": "Sodayo TenEven9 Pickup(Tow)",
+  "entity.superbwarfare.tiny_speedboat": "Tiny Speedboat",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
@@ -780,6 +781,7 @@
   "info.superbwarfare.sodayo_pick_up_hmg": "The Sodayo TenEven9 pickup truck with a heavy machine gun",
   "info.superbwarfare.sodayo_pick_up_rocket": "The Sodayo TenEven9 pickup truck with a multiple rocket launcher",
   "info.superbwarfare.sodayo_pick_up_tow": "The Sodayo TenEven9 pickup truck with TOW Anti-tank Missile Launcher",
+  "info.superbwarfare.tiny_speedboat": "The Tiny Speedboat is an unarmed, compact leisure craft. Typically equipped with a small engine, it is designed for agility and is dedicated to short-range sightseeing and recreation on calm waters such as parks and lakes",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",
