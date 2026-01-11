@@ -18,7 +18,8 @@ class Perks(gun: GunData) {
         return if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
         } else {
-            ListTag().also { rootTag.put(typeName, it) }
+            val tag = rootTag.getCompound(typeName);
+            ListTag().also { rootTag.put(typeName, tag) }
         }
     }
 
@@ -76,15 +77,25 @@ class Perks(gun: GunData) {
     }
 
     fun getInstances(type: Perk.Type): List<PerkInstance> {
-        val list = rootTag.getList(type.getName(), Tag.TAG_COMPOUND.toInt())
+        val typeName = type.getName()
         val instances = mutableListOf<PerkInstance>()
+        if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
+            val list = rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
+            for (i in 0 until list.size) {
+                val tag = list.getCompound(i)
+                val name = tag.getString("Name")
+                val level = tag.getShort("Level")
 
-        for (i in 0 until list.size) {
-            val tag = list.getCompound(i)
+                val perk = findPerkByName(name)
+                if (perk != null) {
+                    instances.add(PerkInstance(perk, level))
+                }
+            }
+        } else {
+            val tag = rootTag.getCompound(typeName)
             val name = tag.getString("Name")
             val level = tag.getShort("Level")
 
-            // 这里的 findPerkByName 建议参考上一轮回复中的缓存优化
             val perk = findPerkByName(name)
             if (perk != null) {
                 instances.add(PerkInstance(perk, level))
@@ -102,9 +113,14 @@ class Perks(gun: GunData) {
     }
 
     fun get(type: Perk.Type): Perk? {
-        val list = rootTag.getList(type.getName(), Tag.TAG_COMPOUND.toInt())
-        if (list.isEmpty()) return null
-        return findPerkByName(list.getCompound(0).getString("Name"))
+        val typeName = type.getName()
+        if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
+            val list = rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
+            if (list.isEmpty()) return null
+            return findPerkByName(list.getCompound(0).getString("Name"))
+        } else {
+            return findPerkByName(rootTag.getCompound(typeName).getString("Name"))
+        }
     }
 
     fun reduceCooldown(perk: Perk, cooldownKey: String) {
@@ -140,20 +156,6 @@ class Perks(gun: GunData) {
         rootTag.remove(type.getName())
     }
 
-    // -----------Old--------------
-//    fun has(perk: Perk): Boolean {
-//        if (!has(perk.type)) return false
-//        return getTag(perk).getString("Name") == perk.name
-//    }
-//
-//    fun has(type: Perk.Type): Boolean {
-//        return rootTag.contains(type.getName()) && !rootTag.getCompound(type.getName()).getString("Name").isEmpty()
-//    }
-//
-//    fun set(instance: PerkInstance) {
-//        set(instance.perk, instance.level)
-//    }
-
     fun getTag(registry: RegistryObject<Perk>): CompoundTag {
         return getTag(registry.get().type ?: Perk.Type.AMMO)
     }
@@ -175,81 +177,4 @@ class Perks(gun: GunData) {
         }
         return rootTag.getCompound(type.getName())
     }
-
-//    fun set(perk: Perk, level: Short) {
-//        getOrCreateTag(perk).putString("Name", perk.name)
-//        getOrCreateTag(perk).putShort("Level", level)
-//    }
-
-//    fun getLevel(item: PerkItem): Short {
-//        return getLevel(item.perk)
-//    }
-//
-//    fun getLevel(perk: RegistryObject<Perk>): Short {
-//        return getLevel(perk.get())
-//    }
-//
-//    fun getLevel(perk: Perk): Short {
-//        val name = perk.name
-//        val tag = getTag(perk)
-//        if (tag.getString("Name") != name) return 0
-//        return getLevel(perk.type)
-//    }
-//
-//    fun getLevel(type: Perk.Type): Short {
-//        return getTag(type).getShort("Level")
-//    }
-
-//    fun get(type: Perk.Type): Perk? {
-//        val perksRegistry = mutableListOf<RegistryObject<Perk>>()
-//        perksRegistry.addAll(ModPerks.AMMO_PERKS.getEntries())
-//        perksRegistry.addAll(ModPerks.FUNC_PERKS.getEntries())
-//        perksRegistry.addAll(ModPerks.DAMAGE_PERKS.getEntries())
-//
-//        for (registry in perksRegistry) {
-//            val name = getTag(type).getString("Name")
-//            if (registry.get().name == name) {
-//                return registry.get()
-//            }
-//        }
-//        return null
-//    }
-
-//    fun getInstance(perk: Perk): PerkInstance? {
-//        return getInstance(perk.type)
-//    }
-//
-//    fun getInstance(type: Perk.Type): PerkInstance? {
-//        val perk = get(type) ?: return null
-//
-//        return PerkInstance(perk, getLevel(type))
-//    }
-
-//    fun reduceCooldown(registry: RegistryObject<Perk>, name: String) {
-//        reduceCooldown(registry.get(), name)
-//    }
-//
-//    fun reduceCooldown(perk: Perk, name: String) {
-//        reduceCooldown(perk.type, name)
-//    }
-
-//    fun reduceCooldown(type: Perk.Type, name: String) {
-//        val tag = getTag(type)
-//        var value = tag.getInt(name)
-//        value--
-//
-//        if (value <= 0) {
-//            tag.remove(name)
-//        } else {
-//            tag.putInt(name, value)
-//        }
-//    }
-
-//    fun remove(perk: Perk) {
-//        remove(perk.type)
-//    }
-
-//    fun remove(type: Perk.Type) {
-//        rootTag.remove(type.getName())
-//    }
 }
