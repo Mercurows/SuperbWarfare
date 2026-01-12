@@ -389,10 +389,10 @@ object VehicleEngineUtils {
         if (onGround()) {
             deltaMovement = deltaMovement.multiply(0.2, 0.99, 0.2)
         } else if (isInFluidType) {
-            val f = (0.75f - (0.04f * min(
+            val f = (0.835f - (0.04f * min(
                 VehicleVecUtils.getSubmergedHeight(this),
                 bbHeight.toDouble()
-            )) + 0.09f * Mth.abs(
+            )) + 0.005f * Mth.abs(
                 90 - VehicleVecUtils.calculateAngle(
                     deltaMovement,
                     getViewVector(1f)
@@ -543,13 +543,14 @@ object VehicleEngineUtils {
         val yawSpeed = engineInfo.yawSpeed
         val rollSpeed = engineInfo.rollSpeed
         val lift = engineInfo.liftSpeed
+        val speed = engineInfo.speed
 
         if (onGround()) {
             deltaMovement = deltaMovement.multiply(0.8, 1.0, 0.8)
         } else {
             setZRot(roll * (if (backInputDown) 0.9f else 0.99f))
             val f = Mth.clamp(
-                0.95f - 0.015 * deltaMovement.length() + 0.02f * Mth.abs(
+                0.88999f - 0.015 * deltaMovement.length() + (0.07 * speed) + 0.00001f * Mth.abs(
                     90 - VehicleVecUtils.calculateAngle(
                         deltaMovement,
                         getViewVector(1f)
@@ -729,8 +730,8 @@ object VehicleEngineUtils {
 
         val f = Mth.clamp(
             Math.max(
-                (if (onGround()) 0.819f else 0.82f) - 0.005 * deltaMovement.length(), 0.5
-            ) + 0.001f * Mth.abs(
+                (if (onGround()) 0.8199f else 0.8209f) - 0.005 * deltaMovement.length(), 0.5
+            ) + 0.0001f * Mth.abs(
                 90 - VehicleVecUtils.calculateAngle(
                     deltaMovement,
                     getViewVector(1f)
