@@ -2465,6 +2465,15 @@
       }
     ]
   },
+  "tiny_speedboat_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "stream": false,
+        "name": "superbwarfare:vehicle/tiny_speedboat/tiny_speedboat_engine"
+      }
+    ]
+  },
   "vehicle_strike": {
     "sounds": [
       {
@@ -3126,7 +3135,7 @@
   "rocket_fly": {
     "sounds": [
       {
-        "attenuation_distance": 192,
+        "attenuation_distance": 128,
         "stream": true,
         "name": "superbwarfare:rocket_fly"
       }
@@ -3135,7 +3144,7 @@
   "shell_fly": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 96,
         "stream": true,
         "name": "superbwarfare:shell_fly"
       }
@@ -3144,7 +3153,7 @@
   "rocket_engine": {
     "sounds": [
       {
-        "attenuation_distance": 48,
+        "attenuation_distance": 32,
         "stream": true,
         "name": "superbwarfare:rocket_engine"
       }
@@ -3153,7 +3162,7 @@
   "vehicle_swim": {
     "sounds": [
       {
-        "attenuation_distance": 48,
+        "attenuation_distance": 24,
         "stream": true,
         "name": "superbwarfare:vehicle/common/vehicle_swim"
       }
@@ -4044,7 +4053,7 @@
   "lav_ad_fire": {
     "sounds": [
       {
-        "attenuation_distance": 192,
+        "attenuation_distance": 256,
         "stream": true,
         "name": "superbwarfare:vehicle/lav_ad/lav_ad_fire"
       }

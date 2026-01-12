@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.DyeColor;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
@@ -43,7 +44,7 @@ public class TinySpeedBoatColorLayer extends GeoRenderLayer<TinySpeedboatEntity>
             glowRenderType = RenderType.entityTranslucentEmissive(LAYER);
         }
 
-        var intColor = 0xFF000000 | Math.round(color[0] * 255) << 16 | Math.round(color[1] * 255) << 8 | Math.round(color[2] * 255);
+        var intColor = FastColor.ARGB32.colorFromFloat(color[0], color[1], color[2], color[3]);
 
         getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, intColor);
     }

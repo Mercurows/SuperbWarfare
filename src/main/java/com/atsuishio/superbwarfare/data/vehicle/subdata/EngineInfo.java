@@ -107,6 +107,9 @@ public abstract class EngineInfo {
         @SerializedName("LiftSpeed")
         public float liftSpeed = 1;
 
+        @SerializedName("Speed")
+        public float speed = 1;
+
         // 引擎启动音效
         @SerializedName("EngineStartSound")
         public SoundEvent engineStartSound = SoundEvents.EMPTY;

@@ -171,6 +171,7 @@
     "YawSpeed": 1,
     "RollSpeed": 0.75,
     "LiftSpeed": 1,
+    "Speed": 1.2,
     "EngineStartSound": "superbwarfare:ah_6_engine_start",
     "EngineSoundVolume": 2
   },
