@@ -4132,5 +4132,23 @@
         "name": "superbwarfare:car_horn"
       }
     ]
+  },
+  "kv_16_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 128,
+        "stream": true,
+        "name": "superbwarfare:vehicle/kv_16/kv_16_engine"
+      }
+    ]
+  },
+  "kv_16_engine_start": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/kv_16/kv_16_engine_start"
+      }
+    ]
   }
 }

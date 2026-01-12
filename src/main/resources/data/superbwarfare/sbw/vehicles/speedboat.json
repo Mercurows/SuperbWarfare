@@ -62,7 +62,7 @@
       "Projectile": "superbwarfare:projectile",
       "RPM": 450,
       "Damage": 40,
-      "BypassesArmor": 0.2,
+      "BypassesArmor": 0.6,
       "Velocity": 25,
       "RecoilTime": 20,
       "RecoilForce": 0.1,

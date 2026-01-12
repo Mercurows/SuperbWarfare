@@ -107,7 +107,7 @@
       "RPM": 450,
       "DefaultZoom": 1.5,
       "Damage": 40,
-      "BypassesArmor": 0.2,
+      "BypassesArmor": 0.6,
       "Velocity": 25,
       "RecoilTime": 23,
       "RecoilForce": 0.15,

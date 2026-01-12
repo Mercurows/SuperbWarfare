@@ -725,12 +725,13 @@ object VehicleEngineUtils {
         val rollSpeed = engineInfo.rollSpeed
         val lift = engineInfo.liftSpeed
         val speedRate = engineInfo.speedRate
+        val resistance = engineInfo.resistance
         val gearRotateAngle = engineInfo.gearRotateAngle
         val energyCost = (engineInfo.energyCostRate * Mth.abs(power)).toInt()
 
         val f = Mth.clamp(
             Math.max(
-                (if (onGround()) 0.8199f else 0.8209f) - 0.005 * deltaMovement.length(), 0.5
+                (if (onGround()) 0.7700f else 0.7709f) + (0.05 * 1 / resistance) - 0.005 * deltaMovement.length(), 0.5
             ) + 0.0001f * Mth.abs(
                 90 - VehicleVecUtils.calculateAngle(
                     deltaMovement,
@@ -793,19 +794,22 @@ object VehicleEngineUtils {
                 if (energy >= energyCost) {
                     if (forwardInputDown) {
                         power = Mth.clamp(
-                            (power + 0.0045f * powerAdd).toDouble(), -0.1, 1.0
+                            (power + 0.0045f * powerAdd).toDouble(),
+                            -0.1,
+                            if (sprintInputDown || onGround()) 2.2 else 1.0
                         ).toFloat()
                     }
 
                     if (backInputDown) {
                         power = Math.max(
-                            power - 0.006f * powerReduce, if (onGround()) -0.2f else 0.4f
+                            power - 0.006f * powerReduce, if (onGround()) -0.2f else 0.05f
                         )
                     }
                 }
 
                 if (!forwardInputDown && !backInputDown) {
-                    power *= 0.995f
+                    power *= 0.996f
+                    deltaMovement = deltaMovement.multiply(0.996, 1.0, 0.996)
                 }
 
                 if (!onGround()) {
@@ -822,7 +826,7 @@ object VehicleEngineUtils {
                         power *= 0.92f
                         deltaMovement = deltaMovement.multiply(0.97, 1.0, 0.97)
                     } else {
-                        power *= 0.97f
+                        power = Math.max(power * 0.97f, if (onGround()) -0.3f else 0.05f)
                         deltaMovement = deltaMovement.multiply(0.994, 1.0, 0.994)
                     }
 
@@ -957,7 +961,7 @@ object VehicleEngineUtils {
         )
         deltaMovement = deltaMovement.add(
             getViewVector(1f).scale(
-                0.03 * speedRate * power * (if (sprintInputDown) 2.2 else 1.0)
+                0.03 * speedRate * power
             )
         )
 

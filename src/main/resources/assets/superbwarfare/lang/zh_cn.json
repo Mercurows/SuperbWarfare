@@ -612,6 +612,7 @@
   "entity.superbwarfare.sodayo_pick_up_rocket": "速德优 TenEven9型 皮卡车(火箭炮)",
   "entity.superbwarfare.sodayo_pick_up_tow": "速德优 TenEven9型 皮卡车(陶氏)",
   "entity.superbwarfare.tiny_speedboat": "迷你快艇",
+  "entity.superbwarfare.kv_16": "KV-16 “幽灵” 战斗机",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -780,6 +781,7 @@
   "info.superbwarfare.sodayo_pick_up_rocket": "带有多管火箭炮的速德优TenEven9型皮卡车",
   "info.superbwarfare.sodayo_pick_up_tow": "带有陶氏反坦克导弹的速德优TenEven9型皮卡车",
   "info.superbwarfare.tiny_speedboat": "迷你快艇是一款无武装小型休闲艇。它通常配备小型发动机，设计紧凑灵活，专为公园、湖泊等平静水域的短程观光、休闲娱乐而设计",
+  "info.superbwarfare.kv_16": "KV-16 “幽灵” 战斗机是一款由铁桶和废旧材料拼凑起来的简易飞行器，虽然看上去毫不起眼，但她却能够凭借其神出鬼没的行踪，在保卫我们神圣首都领空的战斗中击落多架来袭敌机，令敌军飞行员心惊胆战，因此被誉为“幽灵”",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",
@@ -819,6 +821,7 @@
   "weapon.superbwarfare.laser": "激光炮 %1$s",
   "weapon.superbwarfare.laser_semi": "激光炮 %1$s 爆发",
   "weapon.superbwarfare.laser_auto": "激光炮 %1$s 速射",
+  "weapon.superbwarfare.mortar_shell": "迫击炮弹 %1$s",
 
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",

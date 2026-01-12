@@ -1,0 +1,184 @@
+{
+  "MaxHealth": 100,
+  "MaxEnergy": 500000,
+  "MouseSensitivity": 0.25,
+  "OBB": [
+    {
+      "Size": [0.4375, 0.4375, 0.734],
+      "Position": [0, 0.6875, -0.15625]
+    },
+    {
+      "Size": [0.84375, 0.03125, 0.2344],
+      "Position": [0, 1.15, 0.4375]
+    },
+    {
+      "Size": [0.84375, 0.03125, 0.2344],
+      "Position": [0, 0.253, 0.4375]
+    }
+  ],
+  "Seats": {
+    "Transform": "Vehicle",
+    "Position": [0, -0.0875, -0.4375],
+    "CanRotateHead": false,
+    "Sensitivity": [0, 0, 0],
+    "CameraPos": {
+      "Transform": "Vehicle",
+      "Position": [0, 1.5125, -0.4375],
+      "UseFixedCameraPos": true,
+      "UseAircraftCamera": true,
+      "AircraftCameraPos": [0, 2.1, -5]
+    },
+    "DismountInfo": {
+      "Transform": "Vehicle",
+      "Position": [1.6, 0.225, -0.4375],
+      "CanEject": true,
+      "EjectPosition": [0, 0.225, -0.4375],
+      "EjectDirection": "Up",
+      "EjectForce": 4
+    },
+    "Weapons": ["MachineGun", "Bomb"]
+  },
+  "HudType": "@Aircraft",
+  "HUDColor": "0xFFC700",
+  "Weapons": {
+    "MachineGun": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "Projectile": "superbwarfare:projectile",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",
+      "DefaultZoom": 1.5,
+      "RPM": 600,
+      "Velocity": 22,
+      "Damage": 40,
+      "HeatPerShoot": 3,
+      "NaturalCooldown": 1.5,
+      "BypassesArmor": 0.6,
+      "Spread": 0.5,
+      "Name": "weapon.superbwarfare.50_cal_gun",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:m_2_hb_fire_1p",
+        "Fire3P": "superbwarfare:m_2_hb_fire_3p",
+        "Fire3PFar": "superbwarfare:m_2_hb_far",
+        "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "Crosshair": "@AirCraftCommon",
+      "CrosshairColor": "0xFFC700",
+      "SoundRadius": 16,
+      "AmmoType": "@HeavyAmmo",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 0.356, 0.98],
+        "ShootDirectionForHud": [0, 0.018, 1],
+        "Positions": [[-0.64, 0.256, 0.98], [0.64, 0.256, 0.98]],
+        "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
+      }
+    },
+    "Bomb": {
+      "AmmoType": "superbwarfare:mortar_shell",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/mortar_shell.png",
+      "DefaultZoom": 1.5,
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Semi",
+      "Magazine": 6,
+      "EmptyReloadTime": 300,
+      "Projectile": "superbwarfare:mortar_shell",
+      "Gravity": 0.07,
+      "Spread": 0.5,
+      "Name": "weapon.superbwarfare.mortar_shell",
+      "Damage": 60,
+      "ExplosionDamage": 100,
+      "ExplosionRadius": 8,
+      "AddShooterDeltaMovement": true,
+      "Velocity": 1,
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 0.156, 0.45],
+        "ShootDirectionForHud": "Bomb",
+        "Positions": [
+          [-0.671, 0.156, 0.45],
+          [-0.234, 0.156, 0.45],
+          [-0.08, 0.156, 0.45],
+          [0.08, 0.156, 0.45],
+          [0.234, 0.156, 0.45],
+          [0.671, 0.156, 0.45]
+        ],
+        "BoundUpWithAmmoAmount": true,
+        "Directions": ["DeltaMovement"],
+        "ViewPosition": [0, 0.156, 0.45],
+        "ViewDirection": "Bomb"
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bomb_release",
+        "Fire3P": "superbwarfare:bomb_release",
+        "VehicleReload3p": "superbwarfare:bomb_reload",
+        "VehicleReloadSoundTime": 11,
+        "Change": "superbwarfare:into_missile"
+      },
+      "Crosshair": "@AirBomb",
+      "CrosshairColor": "0xFFC700",
+      "SoundRadius": 2
+    }
+  },
+  "UpStep": 1.1,
+  "Mass": 0.2,
+  "AllowFreeCam": true,
+  "HasDecoy": true,
+  "SendHitParticles": false,
+  "DamageModifiers": [
+    "All - 2",
+    "minecraft:lava + 2",
+    "All * 0.6",
+    "minecraft:arrow * 0.2",
+    "minecraft:trident * 0.4",
+    "minecraft:mob_attack * 0.4",
+    "minecraft:mob_attack_no_aggro * 0.4",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:lava * 4",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
+    "minecraft:explosion * 5",
+    "minecraft:player_explosion * 5",
+    "superbwarfare:projectile_hit * 1.1",
+    "superbwarfare:grapeshot_hit * 0.8",
+    "@#superbwarfare:aerial_bomb * 2",
+    "#superbwarfare:projectile * 0.7",
+    "superbwarfare:vehicle_strike * 1.4",
+    "@superbwarfare:cannon_shell * 1.3",
+    "@superbwarfare:small_cannon_shell * 1.3",
+    "@superbwarfare:gun_grenade * 3",
+    "@superbwarfare:rgo_grenade * 6",
+    "@superbwarfare:hand_grenade * 5",
+    "@superbwarfare:mortar_shell * 4",
+    "@#superbwarfare:aa_missile * 1.5"
+  ],
+  "RotateOffsetHeight": 0.5,
+  "DestroyInfo": {
+    "ParticleType": "Medium",
+    "ExplosionDamage": 80,
+    "ExplosionRadius": 6,
+    "CrashPassengers": true
+  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/kv_16_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "Type": "Airplane",
+  "EngineType": "Aircraft",
+  "EngineInfo": {
+    "EnergyCostRate": 16,
+    "Increment": 8,
+    "Decrement": 8,
+    "PitchSpeed": 0.8,
+    "YawSpeed": 1.2,
+    "RollSpeed": 1.1,
+    "LiftSpeed": 1.8,
+    "SpeedRate": 0.7,
+    "Resistance": 1.2,
+    "HasGear": false,
+    "EngineStartSound": "superbwarfare:kv_16_engine_start",
+    "EngineSoundVolume": 0.8
+  },
+  "TerrainCompat": [[0.4375, 0, 0.625], [-0.4375, 0, 0.625], [0.4375, 0, -0.625], [-0.4375, 0, -0.625]],
+  "TerrainCompatRotateRate": 6,
+  "EngineSound": "superbwarfare:kv_16_engine"
+}

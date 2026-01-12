@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "2 minecraft:bucket",
+    "#superbwarfare:storage_blocks/steel",
+    "2 #minecraft:planks",
+    "2 superbwarfare:m_2_hb",
+    "superbwarfare:small_battery_pack",
+    "superbwarfare:large_propeller",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:kv_16"
+  }
+}
