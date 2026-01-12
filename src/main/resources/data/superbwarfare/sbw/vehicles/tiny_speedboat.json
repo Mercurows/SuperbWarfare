@@ -63,8 +63,8 @@
     "BodyPitchRate": 2,
     "BodyRollRate": 1.3
   },
-  "ThirdPersonCameraPos": [0, 1.5, 3],
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
+  "ThirdPersonCameraPos": [0, 0.5, 1.5],
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/tiny_speedboat_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png",
   "Type": "Boat",
   "CollisionLevel": {

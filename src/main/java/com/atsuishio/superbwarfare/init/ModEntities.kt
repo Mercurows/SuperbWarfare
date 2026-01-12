@@ -260,6 +260,9 @@ object ModEntities {
     val MI_28 = register("mi_28", vehicle(::Mi28Entity).sized(4.5f, 4.5f))
 
     @JvmField
+    val KV_16 = register("kv_16", vehicle(::Kv16Entity).sized(1f, 1f))
+
+    @JvmField
     val A_10A = register("a_10a", vehicle(::A10Entity).sized(4.5f, 3.5f))
 
     // Special

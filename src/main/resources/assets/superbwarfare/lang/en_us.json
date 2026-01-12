@@ -612,6 +612,7 @@
   "entity.superbwarfare.sodayo_pick_up_rocket": "Sodayo TenEven9 Pickup(Rocket)",
   "entity.superbwarfare.sodayo_pick_up_tow": "Sodayo TenEven9 Pickup(Tow)",
   "entity.superbwarfare.tiny_speedboat": "Tiny Speedboat",
+  "entity.superbwarfare.kv_16": "KV-16 Ghost Fighter",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
@@ -782,6 +783,7 @@
   "info.superbwarfare.sodayo_pick_up_rocket": "The Sodayo TenEven9 pickup truck with a multiple rocket launcher",
   "info.superbwarfare.sodayo_pick_up_tow": "The Sodayo TenEven9 pickup truck with TOW Anti-tank Missile Launcher",
   "info.superbwarfare.tiny_speedboat": "The Tiny Speedboat is an unarmed, compact leisure craft. Typically equipped with a small engine, it is designed for agility and is dedicated to short-range sightseeing and recreation on calm waters such as parks and lakes",
+  "info.superbwarfare.kv_16": "The KV-16 \"Ghost\" fighter is a rudimentary aircraft cobbled together from oil drums and scrap materials. Despite its unassuming appearance, it has managed to shoot down multiple enemy aircraft in the battles defending our sacred capital's airspace, relying on its ghostly maneuvers. Its elusive operations strike fear into the hearts of enemy pilots, earning it the name \"Ghost.",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",
@@ -821,6 +823,7 @@
   "weapon.superbwarfare.laser": "LASER %1$s",
   "weapon.superbwarfare.laser_semi": "LASER %1$s Semi",
   "weapon.superbwarfare.laser_auto": "LASER %1$s Auto",
+  "weapon.superbwarfare.mortar_shell": "Mortar Shells %1$s",
 
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",

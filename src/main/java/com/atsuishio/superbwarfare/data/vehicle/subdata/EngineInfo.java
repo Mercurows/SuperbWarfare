@@ -128,6 +128,9 @@ public abstract class EngineInfo {
         @SerializedName("HasGear")
         public boolean hasGear = true;
 
+        @SerializedName("Resistance")
+        public float resistance = 1;
+
         @Override
         public void work(VehicleEntity vehicle) {
             VehicleEngineUtils.aircraftEngine(vehicle, this);
