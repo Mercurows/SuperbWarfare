@@ -15,11 +15,11 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay
 
 @OnlyIn(Dist.CLIENT)
 class RenderContext(
-    val gui: ForgeGui,
-    val guiGraphics: GuiGraphics,
-    val partialTick: Float,
-    val screenWidth: Int,
-    val screenHeight: Int
+    var gui: ForgeGui,
+    var guiGraphics: GuiGraphics,
+    var partialTick: Float,
+    var screenWidth: Int,
+    var screenHeight: Int
 ) {
     val w by ::screenWidth
     val h by ::screenHeight
@@ -59,6 +59,8 @@ abstract class CommonOverlay(id: String) : IGuiOverlay {
 
     open fun shouldRender() = !options.hideGui && !localPlayer.isNullOrSpector()
 
+    private lateinit var context: RenderContext
+
     override fun render(
         gui: ForgeGui,
         guiGraphics: GuiGraphics,
@@ -68,7 +70,17 @@ abstract class CommonOverlay(id: String) : IGuiOverlay {
     ) {
         if (!shouldRender()) return
 
-        with(RenderContext(gui, guiGraphics, partialTick, screenWidth, screenHeight)) {
+        if (!this::context.isInitialized) {
+            context = RenderContext(gui, guiGraphics, partialTick, screenWidth, screenHeight)
+        } else {
+            context.gui = gui
+            context.guiGraphics = guiGraphics
+            context.partialTick = partialTick
+            context.screenWidth = screenWidth
+            context.screenHeight = screenHeight
+        }
+
+        with(context) {
             preRender()
             render()
         }
