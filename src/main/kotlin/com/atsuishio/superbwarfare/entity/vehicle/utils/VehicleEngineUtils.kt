@@ -768,7 +768,8 @@ object VehicleEngineUtils {
             backInputDown = false
             engineStart = false
             engineStartOver = false
-            power *= 0.95f
+            power *= 0.996f
+            deltaMovement = deltaMovement.multiply(0.998, 1.0, 0.998)
         } else {
             consumeEnergy(energyCost)
         }
@@ -1020,7 +1021,7 @@ object VehicleEngineUtils {
             backInputDown = false
             engineStart = false
             engineStartOver = false
-            power *= 0.95f
+            power *= 0.996f
         } else {
             consumeEnergy(energyCost)
         }
@@ -1038,7 +1039,7 @@ object VehicleEngineUtils {
             }
         } else if (passenger is Player) {
             if (forwardInputDown) {
-                power = Mth.clamp(power + 0.045f * powerAdd, -0.1f, 1f)
+                power = Mth.clamp(power + 0.045f * powerAdd, -0.1f, (if (sprintInputDown) 2.2f else 1f))
             }
 
             if (backInputDown) {
@@ -1121,7 +1122,7 @@ object VehicleEngineUtils {
         )
         deltaMovement = deltaMovement.add(
             getViewVector(1f).scale(
-                0.1 * speedRate * power * (if (sprintInputDown) 2.2 else 1.0)
+                0.1 * speedRate * power
             )
         )
     }
