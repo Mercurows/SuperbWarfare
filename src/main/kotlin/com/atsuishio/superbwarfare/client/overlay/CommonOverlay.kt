@@ -14,7 +14,7 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 
 @OnlyIn(Dist.CLIENT)
-class RenderContext(val guiGraphics: GuiGraphics, val deltaTracker: DeltaTracker) {
+class RenderContext(var guiGraphics: GuiGraphics, var deltaTracker: DeltaTracker) {
     val screenWidth get() = guiGraphics.guiWidth()
     val screenHeight get() = guiGraphics.guiHeight()
 
@@ -57,13 +57,22 @@ abstract class CommonOverlay(id: String) : LayeredDraw.Layer {
 
     open fun shouldRender() = !options.hideGui && !localPlayer.isNullOrSpector()
 
+    private lateinit var context: RenderContext
+
     override fun render(
         guiGraphics: GuiGraphics,
         deltaTracker: DeltaTracker
     ) {
         if (!shouldRender()) return
 
-        with(RenderContext(guiGraphics, deltaTracker)) {
+        if (!this::context.isInitialized) {
+            context = RenderContext(guiGraphics, deltaTracker)
+        } else {
+            context.guiGraphics = guiGraphics
+            context.deltaTracker = deltaTracker
+        }
+
+        with(context) {
             preRender()
             render()
         }
