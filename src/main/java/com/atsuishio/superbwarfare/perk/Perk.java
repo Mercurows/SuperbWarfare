@@ -4,12 +4,15 @@ import com.atsuishio.superbwarfare.data.gun.DamageReduce;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.PerkItem;
 import net.minecraft.ChatFormatting;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,6 +114,10 @@ public class Perk implements GunPropertyModifier {
      * 用于处理武器近战攻击后的逻辑
      */
     public void onMeleeAttack(GunData data, PerkInstance instance, Entity target, DamageSource source) {
+    }
+
+    public boolean is(TagKey<Perk> tag) {
+        return RegistryManager.ACTIVE.getRegistry(ModPerks.PERK_KEY).getHolder(this).map(a -> a.is(tag)).orElse(false);
     }
 
     public enum Type {

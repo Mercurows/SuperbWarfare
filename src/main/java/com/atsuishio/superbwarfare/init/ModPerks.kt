@@ -20,20 +20,24 @@ import net.minecraftforge.registries.RegistryObject
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD)
 @Suppress("unused")
 object ModPerks {
+    @JvmField
+    val LOCATION = loc("perk")
 
     @JvmField
-    val PERK_KEY: ResourceKey<Registry<Perk>> = ResourceKey.createRegistryKey(loc("perk"))
+    val PERK_KEY: ResourceKey<Registry<Perk>> = ResourceKey.createRegistryKey(LOCATION)
 
     @SubscribeEvent
     fun registry(event: NewRegistryEvent) {
-        event.create(RegistryBuilder<Perk>().setName(loc("perk")))
+        event.create(
+            RegistryBuilder<Perk>().setName(LOCATION).setDefaultKey(loc("ap_bullet")).hasTags()
+        )
     }
 
     /**
      * Ammo Perks
      */
     @JvmField
-    val AMMO_PERKS: DeferredRegister<Perk> = DeferredRegister.create(loc("perk"), Mod.MODID)
+    val AMMO_PERKS: DeferredRegister<Perk> = DeferredRegister.create(LOCATION, Mod.MODID)
     private fun registerAmmoPerk(id: String, perk: () -> Perk): RegistryObject<Perk> =
         AMMO_PERKS.register(id, perk)
 
@@ -64,7 +68,7 @@ object ModPerks {
      * Functional Perks
      */
     @JvmField
-    val FUNC_PERKS: DeferredRegister<Perk> = DeferredRegister.create(loc("perk"), Mod.MODID)
+    val FUNC_PERKS: DeferredRegister<Perk> = DeferredRegister.create(LOCATION, Mod.MODID)
     private fun registerFuncPerk(id: String, perk: () -> Perk): RegistryObject<Perk> =
         FUNC_PERKS.register(id, perk)
 
@@ -86,7 +90,7 @@ object ModPerks {
      * Damage Perks
      */
     @JvmField
-    val DAMAGE_PERKS: DeferredRegister<Perk> = DeferredRegister.create(loc("perk"), Mod.MODID)
+    val DAMAGE_PERKS: DeferredRegister<Perk> = DeferredRegister.create(LOCATION, Mod.MODID)
     private fun registerDamagePerk(id: String, perk: () -> Perk): RegistryObject<Perk> =
         DAMAGE_PERKS.register(id, perk)
 
