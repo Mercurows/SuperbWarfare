@@ -15,27 +15,15 @@ class Kv16Model : VehicleModel<Kv16Entity>() {
                 bone.rotZ = Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot)
             }
 
-            "shell" -> TransformContext { bone, vehicle, _ ->
-                bone.isHidden = shouldHideBomb(vehicle, 6)
-            }
-
-            "shell2" -> TransformContext { bone, vehicle, _ ->
-                bone.isHidden = shouldHideBomb(vehicle, 5)
-            }
-
-            "shell3" -> TransformContext { bone, vehicle, _ ->
-                bone.isHidden = shouldHideBomb(vehicle, 4)
-            }
-
-            "shell4" -> TransformContext { bone, vehicle, _ ->
+            "shell1" -> TransformContext { bone, vehicle, _ ->
                 bone.isHidden = shouldHideBomb(vehicle, 3)
             }
 
-            "shell5" -> TransformContext { bone, vehicle, _ ->
+            "shell2" -> TransformContext { bone, vehicle, _ ->
                 bone.isHidden = shouldHideBomb(vehicle, 2)
             }
 
-            "shell6" -> TransformContext { bone, vehicle, _ ->
+            "shell3" -> TransformContext { bone, vehicle, _ ->
                 bone.isHidden = shouldHideBomb(vehicle, 1)
             }
 
@@ -45,11 +33,6 @@ class Kv16Model : VehicleModel<Kv16Entity>() {
 
     fun shouldHideBomb(vehicle: VehicleEntity, ammo: Int): Boolean {
         val gunData = vehicle.getGunData("Bomb") ?: return false
-        return gunData.ammo.get() < ammo
-    }
-
-    fun shouldHideMissile(vehicle: VehicleEntity, ammo: Int): Boolean {
-        val gunData = vehicle.getGunData("Missile") ?: return false
         return gunData.ammo.get() < ammo
     }
 }
