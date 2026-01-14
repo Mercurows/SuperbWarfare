@@ -1635,6 +1635,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
+    override fun makeStuckInBlock(pState: BlockState, pMotionMultiplier: Vec3) {
+        //留空
+    }
+
     @ParametersAreNonnullByDefault
     override fun playStepSound(pPos: BlockPos, pState: BlockState) {
         this.playSound(
