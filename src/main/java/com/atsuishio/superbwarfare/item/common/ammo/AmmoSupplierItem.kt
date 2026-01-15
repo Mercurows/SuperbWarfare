@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.tools.InventoryTool
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundSource
@@ -27,7 +28,11 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
 
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack?> {
         val stack = player.getItemInHand(hand)
-        val count = stack.count
+        var count = stack.count
+
+        if (player.isShiftKeyDown) {
+            count = InventoryTool.countItem(player, stack.item)
+        }
 
         val offhandItem = player.offhandItem
 
@@ -56,7 +61,8 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
         player.cooldowns.addCooldown(this, 10)
 
         if (!player.isCreative) {
-            stack.shrink(addedCount)
+            InventoryTool.consumeItem(player, stack.item, addedCount)
+//            stack.shrink(addedCount)
         }
 
         if (!level.isClientSide()) {
