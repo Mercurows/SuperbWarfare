@@ -266,15 +266,10 @@ class GunProp<T, R> private constructor(
                 }
             }
 
-            // TODO 正确实现注册项读取
-            val perks = buildList {
-                addAll(ModPerks.AMMO_PERKS.getEntries())
-                addAll(ModPerks.DAMAGE_PERKS.getEntries())
-                addAll(ModPerks.FUNC_PERKS.getEntries())
-            }
+            val perks = ModPerks.PERK_REGISTRY.entrySet()
 
-            val perkValues = perks.mapNotNull { obj -> obj?.get() }
-            val perkKeys = perks.mapNotNull { perk -> perk?.getKey()?.location().toString() }
+            val perkValues = perks.mapNotNull { obj -> obj?.value }
+            val perkKeys = perks.mapNotNull { perk -> perk?.key?.location().toString() }
 
             for (name in sortedNames) {
                 if (name.startsWith("@")) {
