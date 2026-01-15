@@ -4,6 +4,7 @@ package com.atsuishio.superbwarfare.network
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.modules.SerializersModule
@@ -12,7 +13,12 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.util.*
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
+
 
 private val module = SerializersModule {
     contextual(ResourceLocation::class, ResourceLocationSerializer)
@@ -109,6 +115,54 @@ class ByteBufDecoder(private val buf: FriendlyByteBuf, var elementIndex: Int = 0
     }
 
     override fun decodeSequentially() = true
+}
+
+typealias CompressedString = @Serializable(CompressedStringSerializer::class) String
+
+object CompressedStringSerializer : KSerializer<String> {
+    override val descriptor = PrimitiveSerialDescriptor("CompressedString", PrimitiveKind.STRING)
+
+    private fun compress(data: ByteArray): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        GZIPOutputStream(outputStream).use { output ->
+            output.write(data)
+            output.finish()
+        }
+        return outputStream.toByteArray()
+    }
+
+    private fun decompress(compressedData: ByteArray): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+
+        GZIPInputStream(ByteArrayInputStream(compressedData)).use { input ->
+            val buffer = ByteArray(1024)
+            var len: Int
+            while ((input.read(buffer).also { len = it }) != -1) {
+                outputStream.write(buffer, 0, len)
+            }
+        }
+        return outputStream.toByteArray()
+    }
+
+    override fun serialize(encoder: Encoder, value: String) {
+        val compressed = compress(value.toByteArray())
+
+        encoder.encodeInt(compressed.size)
+        compressed.forEach {
+            encoder.encodeByte(it)
+        }
+    }
+
+    override fun deserialize(decoder: Decoder): String {
+        val size = decoder.decodeInt()
+        val bytes = ByteArray(size)
+
+        repeat(size) { index ->
+            bytes[index] = decoder.decodeByte()
+        }
+
+        return String(decompress(bytes))
+    }
 }
 
 object ResourceLocationSerializer : KSerializer<ResourceLocation> {
