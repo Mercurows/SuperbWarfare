@@ -70,6 +70,8 @@ import net.minecraft.util.Mth
 import net.minecraft.util.RandomSource
 import net.minecraft.world.*
 import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.item.ItemEntity
@@ -1884,29 +1886,37 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 }
             }
             if (mob is Player && level() is ServerLevel) {
-                val gunData: GunData? = getGunData(mob)
-                if (gunData != null) {
-                    if (gunData.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
-                        if (!canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT))) {
-                            mob.displayClientMessage(
-                                Component.translatable("tips.superbwarfare.not.enough.energy"),
-                                true
-                            )
-                        }
-                    } else {
-                        if (getAmmoCount(mob) < gunData.get(GunProp.AMMO_COST_PER_SHOOT)) {
-                            val stack = gunData.selectedAmmoConsumer().stack()
-                            if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
+                if (tickCount % 5 == 0) {
+                    val gunData: GunData? = getGunData(mob)
+                    if (gunData != null) {
+                        if (gunData.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
+                            if (!canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT))) {
                                 mob.displayClientMessage(
-                                    Component.translatable("tips.superbwarfare.need.ammo")
-                                        .append(
-                                            Component.literal("[").append(stack.hoverName).append("]")
-                                                .withStyle(ChatFormatting.YELLOW)
-                                        ), true
+                                    Component.translatable("tips.superbwarfare.not.enough.energy"),
+                                    true
                                 )
+                            }
+                        } else {
+                            if (getAmmoCount(mob) < gunData.get(GunProp.AMMO_COST_PER_SHOOT)) {
+                                val stack = gunData.selectedAmmoConsumer().stack()
+                                if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
+                                    mob.displayClientMessage(
+                                        Component.translatable("tips.superbwarfare.need.ammo")
+                                            .append(
+                                                Component.literal("[").append(stack.hoverName).append("]")
+                                                    .withStyle(ChatFormatting.YELLOW)
+                                            ), true
+                                    )
+                                }
                             }
                         }
                     }
+                }
+
+                val index: Int = getSeatIndex(mob)
+                val seat: SeatInfo = computed().seats()[index]
+                if (mob.getData(ModAttachments.PLAYER_VARIABLE).activeThermalImaging && seat.hasThermalImaging) {
+                    mob.addEffect(MobEffectInstance(MobEffects.NIGHT_VISION, 5, 0, false, false))
                 }
             }
         }

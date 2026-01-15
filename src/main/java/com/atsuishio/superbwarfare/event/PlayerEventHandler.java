@@ -1,25 +1,24 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -34,8 +33,6 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @EventBusSubscriber
 public class PlayerEventHandler {
-
-    public static final ResourceLocation TACTICAL_SPRINT = Mod.loc("tactical_sprint");
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
@@ -63,10 +60,6 @@ public class PlayerEventHandler {
 
         if (stack.getItem() instanceof GunItem) {
             handleSpecialWeaponAmmo(player);
-        }
-
-        if (!player.level().isClientSide) {
-            handleTacticalAttribute(player);
         }
     }
 
@@ -133,23 +126,6 @@ public class PlayerEventHandler {
         }
 
         NBTTool.saveTag(armor, tag);
-    }
-
-    public static void handleTacticalAttribute(Player player) {
-        if (player == null) {
-            return;
-        }
-        var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (attr == null) return;
-
-        if (attr.getModifier(TACTICAL_SPRINT) != null) {
-            attr.removeModifier(TACTICAL_SPRINT);
-        }
-
-        if (MiscConfig.TACTICAL_SPRINT.get() && player.getData(ModAttachments.PLAYER_VARIABLE).tacticalSprint) {
-            player.setSprinting(true);
-            attr.addTransientModifier(new AttributeModifier(TACTICAL_SPRINT, 0.25, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
-        }
     }
 
     @SubscribeEvent

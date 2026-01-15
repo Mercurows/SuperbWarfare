@@ -41,14 +41,13 @@ public record FireKeyMessage(int msgType, double power, boolean zoom) implements
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        handleGunBolt(player, stack);
-
         if (type == 0) {
             // 按下开火
             data.item.onFireKeyPress(data, player, zoom);
         } else if (type == 1) {
             // 松开开火
             data.item.onFireKeyRelease(data, player, power, zoom);
+            handleGunBolt(player, stack);
         }
 
         data.save();

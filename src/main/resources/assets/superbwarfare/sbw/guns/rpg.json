@@ -3,8 +3,7 @@
     "Idle": "animation.rpg.idle",
     "Edit": "animation.rpg.edit",
     "Reload": "animation.rpg.reload",
-    "Run": "animation.rpg.run",
-    "Sprint": "animation.rpg.run_fast"
+    "Run": "animation.rpg.run"
   },
   "Model": {
     "Animation": "superbwarfare:animations/rpg.animation.json",

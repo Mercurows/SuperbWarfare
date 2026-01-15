@@ -111,9 +111,7 @@ public abstract class GunGeoItem extends GunItem implements GeoItem, CustomRende
 
         // Run & Sprint
         if (player.isSprinting() && player.onGround() && ClientEventHandler.noSprintTicks == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (animation.sprint != null && ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop(animation.sprint));
-            } else if (animation.run != null) {
+            if (animation.run != null) {
                 return event.setAndContinue(RawAnimation.begin().thenLoop(animation.run));
             }
         }

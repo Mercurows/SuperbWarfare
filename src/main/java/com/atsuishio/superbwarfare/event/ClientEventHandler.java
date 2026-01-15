@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
-import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.*;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
@@ -153,8 +152,6 @@ public class ClientEventHandler {
 
     public static boolean zoom = false;
     public static boolean breath = false;
-
-    public static boolean tacticalSprint = false;
     public static float stamina = 0;
     public static double switchTime = 0;
     public static double moveFadeTime = 0;
@@ -351,6 +348,16 @@ public class ClientEventHandler {
             turnOffThermalImaging();
         } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
             turnOnThermalImaging();
+        }
+
+        boolean active = player.getData(ModAttachments.PLAYER_VARIABLE).activeThermalImaging;
+
+        if (activeThermalImaging && !active) {
+            PacketDistributor.sendToServer(new ActiveThermalImagingMessage(true));
+        }
+
+        if (active && !activeThermalImaging) {
+            PacketDistributor.sendToServer(new ActiveThermalImagingMessage(false));
         }
     }
 
@@ -812,29 +819,8 @@ public class ClientEventHandler {
             return;
         }
 
-        tacticalSprint = MiscConfig.TACTICAL_SPRINT.get()
-                && !exhaustion
-                && !zoom
-                && isMoving()
-                && player.isSprinting()
-                && player.getVehicle() == null
-                && !player.getAbilities().flying;
-
-        ItemStack stack = player.getMainHandItem();
-
-        float sprintCost;
-
-        if (stack.getItem() instanceof GunItem) {
-            var data = GunData.from(stack);
-            sprintCost = (float) (0.5 + 0.02 * data.get(GunProp.WEIGHT));
-        } else {
-            sprintCost = 0.5f;
-        }
-
         if (breath) {
             stamina += 0.5f;
-        } else if (tacticalSprint) {
-            stamina += sprintCost;
         } else if (stamina > 0) {
             stamina = Math.max(stamina - 0.5f, 0);
         }
@@ -842,27 +828,16 @@ public class ClientEventHandler {
         if (stamina >= 100) {
             exhaustion = true;
             breath = false;
-            tacticalSprint = false;
         }
 
         if (exhaustion && stamina <= 0) {
             exhaustion = false;
         }
 
-        if ((ModKeyMappings.BREATH.isDown() && zoom) || tacticalSprint) {
+        if ((ModKeyMappings.BREATH.isDown() && zoom)) {
             switchTime = Math.min(switchTime + 0.65, 5);
         } else if (switchTime > 0 && stamina == 0) {
             switchTime = Math.max(switchTime - 0.15, 0);
-        }
-
-        if (zoom) {
-            tacticalSprint = false;
-        }
-
-        if (tacticalSprint && (player.onGround() || player.jumping)) {
-            PacketDistributor.sendToServer(new TacticalSprintMessage(true));
-        } else {
-            PacketDistributor.sendToServer(new TacticalSprintMessage(false));
         }
     }
 

@@ -36,23 +36,21 @@ public record PlayerVariablesSyncMessage(int target, Map<Byte, Integer> data) im
         var entity = Minecraft.getInstance().player.level().getEntity(message.target());
         if (entity == null) return;
 
-        var variable = entity.getData(ModAttachments.PLAYER_VARIABLE);
-        var map = message.data();
+        var variables = entity.getData(ModAttachments.PLAYER_VARIABLE);
 
-        for (var entry : map.entrySet()) {
+        for (var entry : message.data.entrySet()) {
             var type = entry.getKey();
             if (type == -1) {
-                variable.tacticalSprint = entry.getValue() == 1;
+                variables.activeThermalImaging = entry.getValue() == 1;
             } else {
-                var ammoTypes = Ammo.values();
-                if (type < ammoTypes.length) {
-                    var ammo = ammoTypes[type];
-                    variable.ammo.put(ammo, entry.getValue());
+                var types = Ammo.values();
+                if (type < types.length) {
+                    types[type].set(variables, entry.getValue());
                 }
             }
         }
 
-        entity.setData(ModAttachments.PLAYER_VARIABLE, variable);
+        entity.setData(ModAttachments.PLAYER_VARIABLE, variables);
     }
 
     @Override
