@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.overlay
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
@@ -29,14 +28,10 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.client.event.ClientTickEvent
 import kotlin.math.max
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = Mod.MODID, value = [Dist.CLIENT])
 object CrossHairOverlay : CommonOverlay("cross_hair") {
     const val CROSSHAIR_EMPTY: String = "@Empty"
     const val CROSSHAIR_CUSTOM: String = "@Custom"
@@ -459,8 +454,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
     }
 
-    @SubscribeEvent
-    fun onClientTick(event: ClientTickEvent.Post?) {
+    @JvmStatic
+    fun handleRenderDamageIndicator() {
         headIndicator = max(0, headIndicator - 1)
         hitIndicator = max(0, hitIndicator - 1)
         killIndicator = max(0, killIndicator - 1)

@@ -286,6 +286,19 @@ public class ClickHandler {
             if (player.hasEffect(ModMobEffects.SHOCK)) return;
 
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.getKey().getValue()) {
+                if (player.getVehicle() instanceof VehicleEntity vehicle) {
+                    var index = vehicle.getSeatIndex(player);
+                    var seat = vehicle.computed().seats().get(index);
+                    if (seat != null && seat.hasThermalImaging) {
+                        activeThermalImaging = !activeThermalImaging;
+                        if (activeThermalImaging) {
+                            player.playSound(ModSounds.CANNON_ZOOM_IN.get());
+                        }
+                        player.playSound(ModSounds.CANNON_ZOOM_OUT.get());
+                    }
+                    return;
+                }
+
                 CuriosApi.getCuriosInventory(player)
                         .flatMap(c -> c.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()))
                         .ifPresent(s -> {

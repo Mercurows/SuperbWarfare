@@ -37,7 +37,8 @@
     "MultiPlayerGameModeMixin",
     "OverlayTextureMixin",
     "PlayerItemInHandLayerMixin",
-    "PlayerModelMixin"
+    "PlayerModelMixin",
+    "PlayerRendererMixin"
   ],
   "minVersion": "0.8",
   "injectors": {
