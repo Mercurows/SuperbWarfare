@@ -21,20 +21,26 @@ import net.neoforged.neoforge.registries.RegistryBuilder
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 @Suppress("unused")
 object ModPerks {
+    @JvmField
+    val LOCATION = loc("perk")
 
     @JvmField
-    val PERK_KEY: ResourceKey<Registry<Perk>> = ResourceKey.createRegistryKey(loc("perk"))
+    val PERK_KEY: ResourceKey<Registry<Perk>> = ResourceKey.createRegistryKey(LOCATION)
+
+    @JvmField
+    val PERK_REGISTRY: Registry<Perk> = RegistryBuilder<Perk>(ResourceKey.createRegistryKey(LOCATION))
+        .sync(true).defaultKey(loc("ap_bullet")).create()
 
     @SubscribeEvent
     fun registry(event: NewRegistryEvent) {
-        event.create<Perk>(RegistryBuilder(ResourceKey.createRegistryKey(loc("perk"))))
+        event.register(PERK_REGISTRY)
     }
 
     /**
      * Ammo Perks
      */
     @JvmField
-    val AMMO_PERKS: DeferredRegister<Perk> = DeferredRegister.create(loc("perk"), Mod.MODID)
+    val AMMO_PERKS: DeferredRegister<Perk> = DeferredRegister.create(LOCATION, Mod.MODID)
     private fun registerAmmoPerk(id: String, perk: () -> Perk): DeferredHolder<Perk, Perk> =
         AMMO_PERKS.register(id, perk)
 
@@ -65,7 +71,7 @@ object ModPerks {
      * Functional Perks
      */
     @JvmField
-    val FUNC_PERKS: DeferredRegister<Perk> = DeferredRegister.create(loc("perk"), Mod.MODID)
+    val FUNC_PERKS: DeferredRegister<Perk> = DeferredRegister.create(LOCATION, Mod.MODID)
     private fun registerFuncPerk(id: String, perk: () -> Perk): DeferredHolder<Perk, Perk> =
         FUNC_PERKS.register(id, perk)
 
@@ -87,7 +93,7 @@ object ModPerks {
      * Damage Perks
      */
     @JvmField
-    val DAMAGE_PERKS: DeferredRegister<Perk> = DeferredRegister.create(loc("perk"), Mod.MODID)
+    val DAMAGE_PERKS: DeferredRegister<Perk> = DeferredRegister.create(LOCATION, Mod.MODID)
     private fun registerDamagePerk(id: String, perk: () -> Perk): DeferredHolder<Perk, Perk> =
         DAMAGE_PERKS.register(id, perk)
 

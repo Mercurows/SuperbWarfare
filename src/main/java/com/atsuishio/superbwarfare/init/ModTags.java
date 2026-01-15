@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.perk.Perk;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -123,5 +124,9 @@ public class ModTags {
 
     private static TagKey<EntityType<?>> modEntityTag(String name) {
         return TagKey.create(Registries.ENTITY_TYPE, Mod.loc(name));
+    }
+
+    public static class Perks {
+        public static final TagKey<Perk> TEST = TagKey.create(ModPerks.PERK_KEY, Mod.loc("test"));
     }
 }
