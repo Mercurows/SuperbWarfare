@@ -242,13 +242,9 @@ public class ClientEventHandler {
     public static Vec3 lockingPosVehicle;
     public static int seekingTimeVehicle;
     public static boolean lockOnVehicle;
-
     public static UUID lastOperatingGunUUID = null;
-
     protected static short keysCache = 0;
-
     public static TDMSavedData tdmSavedData = new TDMSavedData();
-
     public static boolean activeThermalImaging;
 
     @SubscribeEvent
@@ -300,23 +296,73 @@ public class ClientEventHandler {
 
         ItemStack stack = player.getMainHandItem();
 
+        if (notInGame() && !ClickHandler.switchZoom) {
+            zoom = false;
+        }
+
+        if (player.onGround() && canDoubleJump) {
+            canDoubleJump = false;
+        }
+
+        isProne(player);
+        handleVariableDecrease();
+        aimAtVillager(player);
+        CrossHairOverlay.handleRenderDamageIndicator();
+        staminaSystem();
+        handlePlayerSprint();
+        handleLungeAttack(player, stack);
+        handleGunMelee(player, stack);
+        weaponZooming(stack);
+        lockWeaponSeeking(player, stack);
+        vehicleWeaponSeeking(player);
+        handleThermalImaging(player);
+        handleShootDelay(player, stack);
+        handleControlVehicle(player, stack);
+        handleArtilleryIndicator(player, stack);
+    }
+
+    public static boolean hasThermalImagingGoggles() {
         AtomicBoolean hasThermalImagingGoggles = new AtomicBoolean(false);
 
-        CuriosApi.getCuriosInventory(player).ifPresent(
+        CuriosApi.getCuriosInventory(Minecraft.getInstance().player).ifPresent(
                 c -> c.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()).ifPresent(
                         s -> hasThermalImagingGoggles.set(true)
                 )
         );
 
-        if (!activeThermalImaging || !hasThermalImagingGoggles.get()) {
-            activeThermalImaging = false;
-            Minecraft.getInstance().gameRenderer.shutdownEffect();
-            ThermalShaderHandler.setActive(false);
-        } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
-            ThermalShaderHandler.setActive(true);
-            Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
+        return hasThermalImagingGoggles.get();
+    }
+
+    public static void handleThermalImaging(Player player) {
+        boolean hasThermalImagingGoggles = hasThermalImagingGoggles();
+
+        if (player.getVehicle() instanceof VehicleEntity vehicle) {
+            var index = vehicle.getSeatIndex(player);
+            var seat = vehicle.computed().seats().get(index);
+            if (seat != null && seat.hasThermalImaging) {
+                hasThermalImagingGoggles = true;
+            }
         }
 
+        if (!activeThermalImaging || !hasThermalImagingGoggles) {
+            activeThermalImaging = false;
+            turnOffThermalImaging();
+        } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
+            turnOnThermalImaging();
+        }
+    }
+
+    public static void turnOnThermalImaging() {
+        ThermalShaderHandler.setActive(true);
+        Minecraft.getInstance().gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"));
+    }
+
+    public static void turnOffThermalImaging() {
+        Minecraft.getInstance().gameRenderer.shutdownEffect();
+        ThermalShaderHandler.setActive(false);
+    }
+
+    public static void handleShootDelay(Player player, ItemStack stack) {
         // 射击延迟
         if (stack.getItem() instanceof GunItem gunItem) {
             var data = GunData.from(stack);
@@ -357,11 +403,25 @@ public class ClientEventHandler {
             lastOperatingGunUUID = null;
             resetGunStatus();
         }
+    }
 
-        if (notInGame() && !ClickHandler.switchZoom) {
-            zoom = false;
+    public static void handleArtilleryIndicator(Player player, ItemStack stack) {
+        if ((stack.is(ModItems.ARTILLERY_INDICATOR.get()) || (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get()))) && holdingFireKey) {
+            holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 20);
+            if (holdArtilleryIndicator >= 19 && shootCoolDown == 0) {
+                NetworkRegistry.PACKET_HANDLER.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
+                shootCoolDown = 10;
+            }
+        } else {
+            holdArtilleryIndicator = 0;
         }
 
+        if (shootCoolDown > 0) {
+            shootCoolDown--;
+        }
+    }
+
+    public static void handleControlVehicle(Player player, ItemStack stack) {
         var options = Minecraft.getInstance().options;
         short keys = 0;
 
@@ -403,24 +463,6 @@ public class ClientEventHandler {
             keysCache = keys;
         }
 
-        if (player.onGround() && canDoubleJump) {
-            canDoubleJump = false;
-        }
-
-        if ((stack.is(ModItems.ARTILLERY_INDICATOR.get()) || (stack.is(ModItems.MONITOR.get()) && player.getOffhandItem().is(ModItems.ARTILLERY_INDICATOR.get()))) && holdingFireKey) {
-            holdArtilleryIndicator = Mth.clamp(holdArtilleryIndicator + 1, 0, 20);
-            if (holdArtilleryIndicator >= 19 && shootCoolDown == 0) {
-                NetworkRegistry.PACKET_HANDLER.sendToServer(ArtilleryIndicatorFireMessage.INSTANCE);
-                shootCoolDown = 10;
-            }
-        } else {
-            holdArtilleryIndicator = 0;
-        }
-
-        if (shootCoolDown > 0) {
-            shootCoolDown--;
-        }
-
         if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.allowEjection(vehicle.getSeatIndex(player)) && ModKeyMappings.DISMOUNT.isDown()) {
             holdToEjection = Mth.clamp(holdToEjection + 1, 0, 10);
             if (holdToEjection >= 10) {
@@ -430,18 +472,6 @@ public class ClientEventHandler {
         } else {
             holdToEjection = 0;
         }
-
-        isProne(player);
-        handleVariableDecrease();
-        aimAtVillager(player);
-        CrossHairOverlay.handleRenderDamageIndicator();
-        staminaSystem();
-        handlePlayerSprint();
-        handleLungeAttack(player, stack);
-        handleGunMelee(player, stack);
-        weaponZooming(stack);
-        lockWeaponSeeking(player, stack);
-        vehicleWeaponSeeking(player);
     }
 
     public static void lockWeaponSeeking(Player player, ItemStack stack) {
@@ -2432,7 +2462,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onFogColor(ViewportEvent.ComputeFogColor event) {
-        if (activeThermalImaging) {
+         if (activeThermalImaging) {
             event.setRed(0.1F);
             event.setGreen(0.1F);
             event.setBlue(0.1F);

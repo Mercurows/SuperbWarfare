@@ -30,6 +30,9 @@ public class SeatInfo {
     @SerializedName("CanRotateHead")
     public Boolean canRotateHead = true;
 
+    @SerializedName("HasThermalImaging")
+    public Boolean hasThermalImaging = true;
+
     @SerializedName("MinPitch")
     public float minPitch = -90;
 

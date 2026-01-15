@@ -36,6 +36,8 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationProcessor;
 import software.bernie.geckolib.util.RenderUtils;
 
+import static com.atsuishio.superbwarfare.event.ClientEventHandler.activeThermalImaging;
+
 public class AnimationHelper {
 
     public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float alpha) {
@@ -159,7 +161,7 @@ public class AnimationHelper {
 
             int alpha = hasBlackPart ? a : (int) (0.12 * a);
 
-            if (ClientEventHandler.activeThermalImaging) {
+            if (activeThermalImaging) {
                 r = 255;
                 g = 255;
                 b = 255;
@@ -217,6 +219,13 @@ public class AnimationHelper {
             ResourceLocation loc = localPlayer.getSkinTextureLocation();
             VertexConsumer armBuilder = currentBuffer.getBuffer(RenderType.entitySolid(loc));
             VertexConsumer sleeveBuilder = currentBuffer.getBuffer(RenderType.entityTranslucent(loc));
+
+            int overlayTexture = activeThermalImaging ? OverlayTexture.pack(15, 10) : OverlayTexture.NO_OVERLAY;
+
+            if (activeThermalImaging) {
+                packedLightIn = LightTexture.FULL_BRIGHT;
+            }
+
             if (arm == HumanoidArm.LEFT) {
                 if (!model.leftArm.visible) {
                     model.leftArm.visible = true;
@@ -227,11 +236,11 @@ public class AnimationHelper {
 
                 stack.translate(-1.0f * CustomGunRenderer.SCALE_RECIPROCAL, 2.0f * CustomGunRenderer.SCALE_RECIPROCAL, 0.0f);
                 if (useOldHandRender) {
-                    AnimationHelper.renderPartOverBone(model.leftArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                    AnimationHelper.renderPartOverBone(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                    AnimationHelper.renderPartOverBone(model.leftArm, bone, stack, armBuilder, packedLightIn, overlayTexture, 1);
+                    AnimationHelper.renderPartOverBone(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, overlayTexture, 1);
                 } else {
-                    AnimationHelper.renderPartOverBone2(model.leftArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                    AnimationHelper.renderPartOverBone2(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                    AnimationHelper.renderPartOverBone2(model.leftArm, bone, stack, armBuilder, packedLightIn, overlayTexture, 1);
+                    AnimationHelper.renderPartOverBone2(model.leftSleeve, bone, stack, sleeveBuilder, packedLightIn, overlayTexture, 1);
                 }
             } else {
                 if (!model.rightArm.visible) {
@@ -243,11 +252,11 @@ public class AnimationHelper {
 
                 stack.translate(CustomGunRenderer.SCALE_RECIPROCAL, 2.0f * CustomGunRenderer.SCALE_RECIPROCAL, 0.0f);
                 if (useOldHandRender) {
-                    AnimationHelper.renderPartOverBone(model.rightArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                    AnimationHelper.renderPartOverBone(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                    AnimationHelper.renderPartOverBone(model.rightArm, bone, stack, armBuilder, packedLightIn, overlayTexture, 1);
+                    AnimationHelper.renderPartOverBone(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, overlayTexture, 1);
                 } else {
-                    AnimationHelper.renderPartOverBone2(model.rightArm, bone, stack, armBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
-                    AnimationHelper.renderPartOverBone2(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1);
+                    AnimationHelper.renderPartOverBone2(model.rightArm, bone, stack, armBuilder, packedLightIn, overlayTexture, 1);
+                    AnimationHelper.renderPartOverBone2(model.rightSleeve, bone, stack, sleeveBuilder, packedLightIn, overlayTexture, 1);
                 }
             }
 

@@ -16,7 +16,7 @@ public class LightTextureMixin {
     private void getDarknessGamma(float pPartialTick, CallbackInfoReturnable<Float> cir) {
         if (ClientEventHandler.activeThermalImaging) {
             cir.cancel();
-            cir.setReturnValue(5f);
+            cir.setReturnValue(8f);
         }
     }
 
@@ -25,7 +25,7 @@ public class LightTextureMixin {
     private void calculateDarknessScale(LivingEntity pEntity, float pGamma, float pPartialTick, CallbackInfoReturnable<Float> cir) {
         if (ClientEventHandler.activeThermalImaging) {
             cir.cancel();
-            cir.setReturnValue(0.4f);
+            cir.setReturnValue(0.25f);
         }
     }
 }
