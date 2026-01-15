@@ -45,7 +45,7 @@ public class PlayerVariablesSyncMessage {
             for (var entry : message.data.entrySet()) {
                 var type = entry.getKey();
                 if (type == -1) {
-                    variables.tacticalSprint = entry.getValue() == 1;
+                    variables.activeThermalImaging = entry.getValue() == 1;
                 } else {
                     var types = Ammo.values();
                     if (type < types.length) {

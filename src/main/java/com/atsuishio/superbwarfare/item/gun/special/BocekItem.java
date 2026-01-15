@@ -70,11 +70,7 @@ public class BocekItem extends GunGeoItem {
         }
 
         if (player.isSprinting() && player.onGround() && ClientEventHandler.noSprintTicks == 0 && ClientEventHandler.drawTime < 0.01) {
-            if (ClientEventHandler.tacticalSprint) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.run_fast"));
-            } else {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.run"));
-            }
+            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.run"));
         }
 
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));

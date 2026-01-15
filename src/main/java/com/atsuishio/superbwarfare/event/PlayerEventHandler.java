@@ -1,8 +1,5 @@
 package com.atsuishio.superbwarfare.event;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.capability.ModCapabilities;
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.config.common.GameplayConfig;
 import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
@@ -21,8 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -32,14 +27,10 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.UUID;
-
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber
 public class PlayerEventHandler {
-
-    public static final UUID TACTICAL_SPRINT_UUID = UUID.fromString("fe8a1213-cf3d-4ec2-8ea8-29acca64b301");
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
@@ -75,10 +66,6 @@ public class PlayerEventHandler {
         if (event.phase == TickEvent.Phase.END) {
             if (stack.getItem() instanceof GunItem) {
                 handleSpecialWeaponAmmo(player);
-            }
-
-            if (event.side.isServer()) {
-                handleTacticalAttribute(player);
             }
         }
     }
@@ -140,23 +127,6 @@ public class PlayerEventHandler {
                     }
                 }
             }
-        }
-    }
-
-    public static void handleTacticalAttribute(Player player) {
-        if (player == null) {
-            return;
-        }
-        var attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (attr == null) return;
-        if (attr.getModifier(TACTICAL_SPRINT_UUID) != null) {
-            attr.removeModifier(TACTICAL_SPRINT_UUID);
-        }
-
-        if (MiscConfig.TACTICAL_SPRINT.get() && player.getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(new PlayerVariable()).tacticalSprint) {
-            player.setSprinting(true);
-            attr.addTransientModifier(new AttributeModifier(TACTICAL_SPRINT_UUID, Mod.ATTRIBUTE_MODIFIER,
-                    0.25, AttributeModifier.Operation.MULTIPLY_BASE));
         }
     }
 

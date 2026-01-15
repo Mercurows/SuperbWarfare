@@ -38,9 +38,6 @@ public class GunAnimation {
     @SerializedName("Run")
     public String run;
 
-    @SerializedName("Sprint")
-    public String sprint;
-
     @SerializedName("Melee")
     public String melee;
 }

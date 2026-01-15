@@ -106,7 +106,7 @@ object CapabilityHandler {
             type.set(clone, type.get(original))
         }
 
-        clone.tacticalSprint = original.tacticalSprint
+        clone.activeThermalImaging = original.activeThermalImaging
 
         val player = event.entity
         if (player.level().isClientSide()) return

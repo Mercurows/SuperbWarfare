@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.command
 
 import com.atsuishio.superbwarfare.config.server.*
-import com.atsuishio.superbwarfare.network.message.receive.ClientTacticalSprintSyncMessage
-import com.atsuishio.superbwarfare.tools.sendPacketToAll
 import net.minecraft.network.chat.Component
 import net.minecraftforge.common.ForgeConfigSpec
 import kotlin.reflect.KProperty0
@@ -13,7 +11,6 @@ val CONFIG_COMMAND = buildCommand("config") {
     buildDestroyTypesCommand()
 
     // TODO 干掉这些翻译字段
-    booleanConfig(MiscConfig::TACTICAL_SPRINT) { sendPacketToAll(ClientTacticalSprintSyncMessage(it)) }
 
     booleanConfig(SpawnConfig::SPAWN_SENPAI)
     booleanConfig(SpawnConfig::SPAWN_MOB_WITH_GUNS)

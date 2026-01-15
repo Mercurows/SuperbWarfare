@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability;
 import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper;
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen;
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig;
-import com.atsuishio.superbwarfare.config.server.MiscConfig;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.event.KillMessageHandler;
 import com.atsuishio.superbwarfare.menu.EnergyMenu;
@@ -91,24 +90,6 @@ public class ClientPacketHandler {
             }
         }
     }
-
-    public static void handleClientTacticalSprintSync(boolean flag, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            MiscConfig.TACTICAL_SPRINT.set(flag);
-            MiscConfig.TACTICAL_SPRINT.save();
-        }
-    }
-
-//    public static void handleClientSetMotion(ClientSetMotionMessage message, Supplier<NetworkEvent.Context> ctx) {
-//        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-//            Minecraft minecraft = Minecraft.getInstance();
-//            Player player = minecraft.player;
-//            if (player != null) {
-//                player.setPos(message.position().x, message.position().y, message.position().z);
-//                player.setDeltaMovement(message.motion().x, message.motion().y, message.motion().z);
-//            }
-//        }
-//    }
 
     public static void handleFinishAssemblingVehicleMessage(FinishAssemblingVehicleMessage message, Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {

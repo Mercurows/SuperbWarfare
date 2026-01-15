@@ -38,7 +38,6 @@ public class NetworkRegistry {
         playToClient(ResetCameraTypeMessage.INSTANCE, ResetCameraTypeMessage::handler);
         playToClient(RadarMenuOpenMessage.class, RadarMenuOpenMessage::encode, RadarMenuOpenMessage::decode, RadarMenuOpenMessage::handler);
         playToClient(RadarMenuCloseMessage.INSTANCE, RadarMenuCloseMessage::handler);
-        playToClient(ClientTacticalSprintSyncMessage.class, ClientTacticalSprintSyncMessage::encode, ClientTacticalSprintSyncMessage::decode, ClientTacticalSprintSyncMessage::handler);
         playToClient(VehiclesDataMessage.class, VehiclesDataMessage::encode, VehiclesDataMessage::decode, (msg, ctx) -> VehiclesDataMessage.handler(msg));
         playToClient(FinishAssemblingVehicleMessage.class, FinishAssemblingVehicleMessage::encode, FinishAssemblingVehicleMessage::decode, FinishAssemblingVehicleMessage::handler);
         playToClient(TDMSyncMessage.class, TDMSyncMessage::encode, TDMSyncMessage::decode, TDMSyncMessage::handler);
@@ -74,7 +73,7 @@ public class NetworkRegistry {
         playToServer(EditMessage.class, EditMessage::encode, EditMessage::decode, EditMessage::handler);
         playToServer(InteractMessage.INSTANCE, InteractMessage::handler);
         playToServer(ShowChargingRangeMessage.class, ShowChargingRangeMessage::encode, ShowChargingRangeMessage::decode, ShowChargingRangeMessage::handler);
-        playToServer(TacticalSprintMessage.class, TacticalSprintMessage::encode, TacticalSprintMessage::decode, TacticalSprintMessage::handler);
+        playToServer(ActiveThermalImagingMessage.class, ActiveThermalImagingMessage::encode, ActiveThermalImagingMessage::decode, ActiveThermalImagingMessage::handler);
         playToServer(DogTagFinishEditMessage.class, DogTagFinishEditMessage::encode, DogTagFinishEditMessage::decode, DogTagFinishEditMessage::handler);
         playToServer(MouseMoveMessage.class, MouseMoveMessage::encode, MouseMoveMessage::decode, MouseMoveMessage::handler);
         playToServer(FiringParametersEditMessage.class, FiringParametersEditMessage::encode, FiringParametersEditMessage::decode, FiringParametersEditMessage::handler);

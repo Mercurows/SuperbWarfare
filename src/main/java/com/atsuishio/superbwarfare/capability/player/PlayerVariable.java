@@ -25,7 +25,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
     private PlayerVariable old = null;
 
     public Map<Ammo, Integer> ammo = new HashMap<>();
-    public boolean tacticalSprint = false;
+    public boolean activeThermalImaging = false;
 
     public void sync(Entity entity) {
         if (!entity.getCapability(ModCapabilities.PLAYER_VARIABLE).isPresent()) return;
@@ -66,7 +66,8 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             map.put((byte) type.ordinal(), type.get(this));
         }
 
-        map.put((byte) -1, this.tacticalSprint ? 1 : 0);
+        map.put((byte) -1, this.activeThermalImaging ? 1 : 0);
+
 
         return map;
     }
@@ -84,8 +85,8 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             }
         }
 
-        if (old.tacticalSprint != this.tacticalSprint) {
-            map.put((byte) -1, this.tacticalSprint ? 1 : 0);
+        if (old.activeThermalImaging != this.activeThermalImaging) {
+            map.put((byte) -1, this.activeThermalImaging ? 1 : 0);
         }
 
         return map;
@@ -98,7 +99,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(nbt, type.get(this));
         }
 
-        nbt.putBoolean("TacticalSprint", tacticalSprint);
+        nbt.putBoolean("ActiveThermalImaging", activeThermalImaging);
 
         return nbt;
     }
@@ -108,7 +109,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(this, type.get(tag));
         }
 
-        tacticalSprint = tag.getBoolean("TacticalSprint");
+        activeThermalImaging = tag.getBoolean("ActiveThermalImaging");
     }
 
     public PlayerVariable copy() {
@@ -118,7 +119,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             type.set(clone, type.get(this));
         }
 
-        clone.tacticalSprint = this.tacticalSprint;
+        clone.activeThermalImaging = this.activeThermalImaging;
 
         return clone;
     }
@@ -131,7 +132,7 @@ public class PlayerVariable implements INBTSerializable<CompoundTag> {
             if (type.get(this) != type.get(other)) return false;
         }
 
-        return tacticalSprint == other.tacticalSprint;
+        return activeThermalImaging == other.activeThermalImaging;
     }
 
     @Override
