@@ -7,13 +7,9 @@
     },
     "b": {
       "item": "superbwarfare:grain"
-    },
-    "c": {
-      "item": "superbwarfare:fusee"
     }
   },
   "pattern": [
-    "c",
     "a",
     "b"
   ],

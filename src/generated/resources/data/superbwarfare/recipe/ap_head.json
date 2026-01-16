@@ -13,10 +13,13 @@
     },
     "d": {
       "item": "superbwarfare:tungsten_rod"
+    },
+    "e": {
+      "item": "superbwarfare:fusee"
     }
   },
   "pattern": [
-    " b ",
+    " e ",
     "bdb",
     "cac"
   ],
