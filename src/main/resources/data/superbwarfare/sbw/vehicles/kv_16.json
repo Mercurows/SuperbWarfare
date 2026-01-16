@@ -51,7 +51,7 @@
       "Velocity": 22,
       "Damage": 40,
       "HeatPerShoot": 5,
-      "NaturalCooldown": 2,
+      "NaturalCooldown": 1,
       "BypassesArmor": 0.6,
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.50_cal_gun",
@@ -69,7 +69,7 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.256, 0.98],
-        "ShootDirectionForHud": [0, -0.03, 1],
+        "ShootDirectionForHud": [0, -0.035, 1],
         "Positions": [[-0.64, 0.256, 0.98], [0.64, 0.256, 0.98]],
         "Directions": [[0.004, -0.025, 1], [-0.004, -0.025, 1]]
       }
