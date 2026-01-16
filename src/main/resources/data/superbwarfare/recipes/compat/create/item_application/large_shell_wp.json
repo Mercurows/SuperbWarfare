@@ -1,0 +1,22 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "item": "superbwarfare:grain"
+    },
+    {
+      "item": "superbwarfare:wp_head"
+    }
+  ],
+  "results": [
+    {
+      "item": "superbwarfare:large_shell_wp"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

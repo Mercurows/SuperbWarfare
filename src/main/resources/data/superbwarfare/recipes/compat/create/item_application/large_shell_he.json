@@ -1,0 +1,22 @@
+{
+  "type": "create:item_application",
+  "ingredients": [
+    {
+      "item": "superbwarfare:grain"
+    },
+    {
+      "item": "superbwarfare:he_head"
+    }
+  ],
+  "results": [
+    {
+      "item": "superbwarfare:large_shell_he"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ]
+}

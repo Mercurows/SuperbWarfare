@@ -10,10 +10,13 @@
     },
     "c": {
       "tag": "superbwarfare:ingots/steel"
+    },
+    "e": {
+      "item": "superbwarfare:fusee"
     }
   },
   "pattern": [
-    " b ",
+    " e ",
     "bab",
     "cac"
   ],
