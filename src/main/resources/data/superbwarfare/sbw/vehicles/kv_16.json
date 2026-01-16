@@ -50,8 +50,8 @@
       "RPM": 600,
       "Velocity": 22,
       "Damage": 40,
-      "HeatPerShoot": 3,
-      "NaturalCooldown": 1.5,
+      "HeatPerShoot": 5,
+      "NaturalCooldown": 2,
       "BypassesArmor": 0.6,
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.50_cal_gun",
@@ -68,10 +68,10 @@
       "AmmoType": "@HeavyAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
-        "ShootPositionForHud": [0, 0.356, 0.98],
-        "ShootDirectionForHud": [0, 0.018, 1],
+        "ShootPositionForHud": [0, 0.256, 0.98],
+        "ShootDirectionForHud": [0, -0.03, 1],
         "Positions": [[-0.64, 0.256, 0.98], [0.64, 0.256, 0.98]],
-        "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
+        "Directions": [[0.004, -0.025, 1], [-0.004, -0.025, 1]]
       }
     },
     "Bomb": {
@@ -80,7 +80,7 @@
       "DefaultZoom": 2,
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Semi",
-      "Magazine": 6,
+      "Magazine": 3,
       "EmptyReloadTime": 300,
       "Projectile": "superbwarfare:mortar_shell",
       "Gravity": 0.07,
@@ -90,7 +90,7 @@
       "ExplosionDamage": 100,
       "ExplosionRadius": 8,
       "AddShooterDeltaMovement": true,
-      "Velocity": 1,
+      "Velocity": 0.8,
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.156, 0.45],
@@ -168,6 +168,7 @@
     "SpeedRate": 1.6,
     "Resistance": 2.1,
     "HasGear": false,
+    "HasStukaSound": true,
     "EngineStartSound": "superbwarfare:kv_16_engine_start",
     "EngineSoundVolume" : 0.8
   },

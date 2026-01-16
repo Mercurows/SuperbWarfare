@@ -6,12 +6,14 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.NBTTool;
+import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance {
 
@@ -144,6 +146,30 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
         @Override
         protected float getVolume(VehicleEntity mobileVehicle) {
             return (float) Mth.lerp(Mth.clamp(mobileVehicle.getDeltaMovement().horizontalDistance() * (mobileVehicle.isInWater() ? 1.2 : 0), 0F, 0.6F), 0, 0.6F);
+        }
+    }
+
+    public static class StukaSound extends VehicleSoundInstance {
+
+        public StukaSound(VehicleEntity mobileVehicle) {
+            super(ModSounds.STUKA.get(), Minecraft.getInstance(), mobileVehicle);
+        }
+
+        @Override
+        protected boolean canPlay(VehicleEntity mobileVehicle) {
+            return mobileVehicle.engineRunning() && mobileVehicle.stuka();
+        }
+
+        @Override
+        protected float getPitch(VehicleEntity mobileVehicle) {
+            return 1;
+        }
+
+        @Override
+        protected float getVolume(VehicleEntity mobileVehicle) {
+            float angle = Math.max((float) VectorTool.calculateAngle(mobileVehicle.getLookAngle(), new Vec3(0, 1, 0)) - 95, 0) / 85;
+
+            return (float) Mth.clamp((-mobileVehicle.getDeltaMovement().y - 0.4) * angle, 0F, 5F);
         }
     }
 }
