@@ -127,6 +127,8 @@ public abstract class EngineInfo {
         public float gearRotateAngle = 85;
         @SerializedName("HasGear")
         public boolean hasGear = true;
+        @SerializedName("HasStukaSound")
+        public boolean hasStukaSound = false;
 
         @SerializedName("Resistance")
         public float resistance = 1;

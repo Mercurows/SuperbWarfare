@@ -275,6 +275,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     private var wasEngineRunning = false
     private var wasHornWorking = false
+    private var wasStuka = false
 
     //    private var wasInCarMusicPlaying = false;
     private var wasFiring = false
@@ -1699,6 +1700,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 playHornSound.accept(this)
             }
 
+            if (!this.wasStuka && this.stuka() && engineInfo is Aircraft && (engineInfo as Aircraft).hasStukaSound) {
+                playStukaSound.accept(this)
+            }
+
             //            if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
 //                playInCarMusic.accept(this);
 //            }
@@ -1723,6 +1728,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         this.wasEngineRunning = this.engineRunning()
         this.wasHornWorking = this.hornWorking()
+        this.wasStuka = this.stuka()
 
         //        this.wasInCarMusicPlaying = this.inCarMusicPlaying();
         turretYRotO = this.turretYRot
@@ -4005,6 +4011,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun hornWorking() = Math.abs(this.hornVolume) > 0.05
 
+    open fun stuka() = xRot > 5 && xRot < 175 && deltaMovement.y < -0.4 && !onGround()
+
     open val vehicleType: VehicleType?
         // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
         get() = computed().type
@@ -4143,6 +4151,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         @JvmField
         var playHornSound: Consumer<VehicleEntity?> = Consumer { }
+
+        @JvmField
+        var playStukaSound: Consumer<VehicleEntity?> = Consumer { }
 
         //    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
         //    };

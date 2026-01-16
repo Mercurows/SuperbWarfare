@@ -222,10 +222,11 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     @Override
     public void tick() {
         super.tick();
-        mediumTrail();
+        if (getDeltaMovement().lengthSqr() > 25) {
+            mediumTrail();
+        }
 
         if (type == Type.WP) {
-            // 使用Minecraft内置的光线追踪进行碰撞检测
             BlockHitResult hitResult = level().clip(new ClipContext(
                     position(),
                     position().add(getDeltaMovement().scale(8)),

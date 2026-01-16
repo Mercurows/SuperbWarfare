@@ -116,15 +116,15 @@ public class ClientMouseHandler {
             speedX = vehicle.getMouseSensitivity() * (posN.x - posO.x) * (zoomVehicle ? 0.3 : 1);
             speedY = y * vehicle.getMouseSensitivity() * (posN.y - posO.y) * (zoomVehicle ? 0.4 : 1);
 
-            mouseXMoveTick = Mth.lerp(0.015, mouseXMoveTick, Mth.abs((float) speedX));
-            mouseYMoveTick = Mth.lerp(0.015, mouseYMoveTick, Mth.abs((float) speedY));
+            mouseXMoveTick = Mth.lerp(0.1, mouseXMoveTick, speedX);
+            mouseYMoveTick = Mth.lerp(0.1, mouseYMoveTick, speedY);
 
             if (vehicle.getVehicleType() == VehicleType.AIRPLANE) {
-                lerpSpeedX = Mth.lerp(0.3, lerpSpeedX, speedX);
-                lerpSpeedY = Mth.lerp(0.3, lerpSpeedY, speedY);
+                lerpSpeedX = Mth.lerp(Math.max(0.006 * Mth.abs((float) mouseXMoveTick), 0.12), lerpSpeedX, speedX);
+                lerpSpeedY = Mth.lerp(Math.max(0.005 * Mth.abs((float) mouseYMoveTick), 0.12), lerpSpeedY, speedY);
             } else {
-                lerpSpeedX = Mth.lerp(0.0045 * mouseXMoveTick, lerpSpeedX, speedX);
-                lerpSpeedY = Mth.lerp(0.0035 * mouseYMoveTick, lerpSpeedY, speedY);
+                lerpSpeedX = Mth.lerp(Math.max(0.0045 * Mth.abs((float) mouseXMoveTick), 0.1), lerpSpeedX, speedX * 0.5);
+                lerpSpeedY = Mth.lerp(Math.max(0.0035 * Mth.abs((float) mouseYMoveTick), 0.1), lerpSpeedY, speedY * 0.5);
             }
 
             double i = 0;

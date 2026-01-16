@@ -171,6 +171,8 @@ object ModSounds {
     @JvmField val PULL_UP = register("pull_up")
     @JvmField val KNIFE_FLESH = register("knife_flesh")
     @JvmField val NIGHT_VISION_ACTIVATE = register("night_vision_activate")
+
+    @JvmField val STUKA = register("stuka")
     // @formatter:on
 
     fun register(name: String): RegistryObject<SoundEvent> =

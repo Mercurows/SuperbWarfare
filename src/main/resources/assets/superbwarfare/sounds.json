@@ -4150,5 +4150,14 @@
         "name": "superbwarfare:vehicle/kv_16/kv_16_engine_start"
       }
     ]
+  },
+  "stuka": {
+    "sounds": [
+      {
+        "attenuation_distance": 384,
+        "stream": true,
+        "name": "superbwarfare:vehicle/common/stuka"
+      }
+    ]
   }
 }
