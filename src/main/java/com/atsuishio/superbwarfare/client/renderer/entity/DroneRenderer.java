@@ -4,11 +4,8 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.layer.vehicle.DroneLayer;
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -16,8 +13,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -43,17 +38,9 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
 		poseStack.mulPose(Axis.ZP.rotationDegrees(entityIn.getRoll(partialTicks)));
 		super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
 
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            ItemStack stack = player.getMainHandItem();
-            DroneEntity drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone"));
-
-			boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
-
-			if (!(stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked") && drone != null && drone.getUUID() == entityIn.getUUID()) || !firstPerson) {
-				renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-            }
-        }
+		if (Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(entityIn.position()) > 0.0625) {
+			renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+		}
 
 		poseStack.popPose();
 	}

@@ -2,16 +2,13 @@ package com.atsuishio.superbwarfare.client.sound;
 
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.VectorTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance {
@@ -73,12 +70,8 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
             this.lastDistance = 0;
         }
 
-        ItemStack stack = player.getMainHandItem();
-        if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")) {
-            DroneEntity drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone"));
-            if (this.mobileVehicle == drone) {
-                pitch = 1;
-            }
+        if (this.mobileVehicle instanceof DroneEntity drone && Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(drone.position()) < 0.0625) {
+            pitch = 1;
         }
     }
 
@@ -168,7 +161,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
         protected float getVolume(VehicleEntity mobileVehicle) {
             float angle = Math.max((float) VectorTool.calculateAngle(mobileVehicle.getLookAngle(), new Vec3(0, 1, 0)) - 95, 0) / 85;
 
-            return (float) Mth.clamp((-mobileVehicle.getDeltaMovement().y - 0.4) * angle, 0F, 5F);
+            return (float) Mth.clamp((-mobileVehicle.getDeltaMovement().y - 0.4) * angle * 0.2, 0F, 5F);
         }
     }
 }

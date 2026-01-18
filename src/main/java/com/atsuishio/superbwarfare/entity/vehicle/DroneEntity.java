@@ -578,7 +578,7 @@ public class DroneEntity extends GeoVehicleEntity {
         ItemStack stack = player.getMainHandItem();
 
         if (stack.is(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag().getBoolean("Linked")) {
-            return getPower() * 0.25f;
+            return getPower() * 0.5f;
         }
         return getPower() * 2f;
     }
