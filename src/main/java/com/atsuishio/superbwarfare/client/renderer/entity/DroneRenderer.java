@@ -4,13 +4,9 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 import com.atsuishio.superbwarfare.client.layer.vehicle.DroneLayer;
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
-import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.NBTTool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -18,8 +14,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -45,17 +39,8 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
         poseStack.mulPose(Axis.ZP.rotationDegrees(animatable.getRoll(partialTick)));
         super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
 
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            ItemStack stack = player.getMainHandItem();
-            var tag = NBTTool.getTag(stack);
-            DroneEntity drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone"));
-
-            boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
-
-            if (!(stack.is(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked") && drone != null && drone.getUUID() == animatable.getUUID()) || !firstPerson) {
-                renderAttachments(animatable, yaw, partialTick, poseStack, bufferSource, packedLight);
-            }
+        if (Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(animatable.position()) > 0.0625) {
+            renderAttachments(animatable, yaw, partialTick, poseStack, bufferSource, packedLight);
         }
 
         poseStack.popPose();
