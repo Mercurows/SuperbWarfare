@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.event.GunEventHandler;
@@ -57,7 +58,7 @@ public class FireKeyMessage {
         } else if (type == 1) {
             // 松开开火
             data.item.onFireKeyRelease(data, player, power, zoom);
-            handleGunBolt(player, stack);
+            Mod.queueServerWork(3, () -> handleGunBolt(player, stack));
         }
 
         data.save();
