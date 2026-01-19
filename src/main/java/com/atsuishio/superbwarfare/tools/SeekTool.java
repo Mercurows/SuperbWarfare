@@ -34,34 +34,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
-// TODO 0.8.9把下面的废弃方法都删了
 public class SeekTool {
-
-    @Deprecated(forRemoval = true)
-    public static boolean baseFilter(Entity entity) {
-        return BASIC_FILTER.test(entity);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static boolean smokeFilter(Entity pEntity) {
-        return NOT_IN_SMOKE.test(pEntity);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static boolean friendlyToPlayer(Entity e, Entity entity) {
-        return IS_FRIENDLY.test(e, entity);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static boolean teamFilter(Entity e, Entity entity) {
-        return IN_SAME_TEAM.test(e, entity);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static Entity seekEntity(Entity entity, Level level, double seekRange, double seekAngle) {
-        return seekEntity(entity, seekRange, seekAngle);
-    }
-
     public static Entity seekEntity(Entity entity, double range, double angle) {
         return new Builder(entity)
                 .withinRange(range)
@@ -71,30 +44,6 @@ public class SeekTool {
                 .noVehicle()
                 .noClip()
                 .buildWithClosest();
-    }
-
-    @Deprecated(forRemoval = true)
-    public static Entity seekCustomSizeEntity(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
-                            && e != entity
-                            && baseFilter(e)
-                            && (!checkOnGround || ON_GROUND_HEIGHT.test(e, 10d))
-                            && e.getBoundingBox().getSize() >= size
-                            && smokeFilter(e)
-                            && e.getVehicle() == null
-                    ) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-                    }
-                    return false;
-                }).min(Comparator.comparingDouble(e -> calculateAngle(e, entity))).orElse(null);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static Entity seekLivingEntity(Entity entity, Level level, double seekRange, double seekAngle) {
-        return seekLivingEntity(entity, seekRange, seekAngle);
     }
 
     @Nullable
@@ -111,11 +60,6 @@ public class SeekTool {
                 .buildWithClosest();
     }
 
-    @Deprecated(forRemoval = true)
-    public static List<Entity> seekLivingEntities(Entity entity, Level level, double seekRange, double seekAngle) {
-        return seekLivingEntities(entity, seekRange, seekAngle);
-    }
-
     public static List<Entity> seekLivingEntities(Entity entity, double seekRange, double seekAngle) {
         return new Builder(entity)
                 .withinRange(seekRange)
@@ -128,30 +72,6 @@ public class SeekTool {
                 .build();
     }
 
-    @Deprecated(forRemoval = true)
-    public static List<Entity> seekCustomSizeEntities(Entity entity, Level level, double seekRange, double seekAngle, double size, boolean checkOnGround) {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
-                .filter(e -> {
-                    if (e.distanceTo(entity) <= seekRange && calculateAngle(e, entity) < seekAngle
-                            && e != entity
-                            && e.getBoundingBox().getSize() >= size
-                            && baseFilter(e)
-                            && (!checkOnGround || ON_GROUND_HEIGHT.test(e, 10d))
-                            && smokeFilter(e)
-                            && e.getVehicle() == null
-                            && !friendlyToPlayer(entity, e)) {
-                        return level.clip(new ClipContext(entity.getEyePosition(), e.getEyePosition(),
-                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() != HitResult.Type.BLOCK;
-                    }
-                    return false;
-                }).toList();
-    }
-
-    @Deprecated(forRemoval = true)
-    public static List<Entity> seekLivingEntitiesThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
-        return seekLivingEntitiesThroughWall(entity, seekRange, seekAngle);
-    }
-
     public static List<Entity> seekLivingEntitiesThroughWall(Entity entity, double range, double angle) {
         return new Builder(entity)
                 .withinRange(range)
@@ -160,11 +80,6 @@ public class SeekTool {
                 .noVehicle()
                 .notFriendly()
                 .build();
-    }
-
-    @Deprecated(forRemoval = true)
-    public static Entity seekEntityThroughWall(Entity entity, Level level, double seekRange, double seekAngle) {
-        return seekEntityThroughWall(entity, seekRange, seekAngle);
     }
 
     @Nullable
