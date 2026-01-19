@@ -48,6 +48,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
             matrices.mulPose(quaternionf);
             matrices.mulPose(Axis.YP.rotationDegrees(180.0F - pRotationYaw));
+
+            float scale = vehicle.getPassengerRenderScale();
+            matrices.scale(scale, scale, scale);
         }
     }
 

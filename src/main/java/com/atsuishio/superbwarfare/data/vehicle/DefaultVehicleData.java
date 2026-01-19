@@ -90,6 +90,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("MouseSensitivity")
     public double mouseSensitivity = 0.4;
 
+    @SerializedName("PassengerRenderScale")
+    public float passengerRenderScale = 1;
+
     @SerializedName("AllowFreeCam")
     public boolean allowFreeCam = false;
 
