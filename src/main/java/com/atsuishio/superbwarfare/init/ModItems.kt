@@ -55,7 +55,7 @@ import java.util.function.Supplier
 @Suppress("unused")
 object ModItems {
 
-    val legendary: Rarity by lazy { ModEnumExtensions.getLegendary() }
+    val legendary: Rarity by lazy { ModRarities.LEGENDARY }
 
     /**
      * guns

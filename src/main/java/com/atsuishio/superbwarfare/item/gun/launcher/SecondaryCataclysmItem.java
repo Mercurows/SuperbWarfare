@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModEnumExtensions;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 public class SecondaryCataclysmItem extends GunGeoItem {
 
     public SecondaryCataclysmItem() {
-        super(new Properties().fireResistant().rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().fireResistant().rarity(ModRarities.LEGENDARY));
     }
 
     @Override

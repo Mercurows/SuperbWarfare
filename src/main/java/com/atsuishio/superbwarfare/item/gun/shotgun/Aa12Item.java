@@ -3,9 +3,10 @@ package com.atsuishio.superbwarfare.item.gun.shotgun;
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
 import com.atsuishio.superbwarfare.client.model.item.Aa12ItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.init.ModEnumExtensions;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.function.Supplier;
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
 public class Aa12Item extends GunGeoItem {
 
     public Aa12Item() {
-        super(new Properties().rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().rarity(ModRarities.LEGENDARY));
     }
 
     @Override
@@ -22,12 +23,12 @@ public class Aa12Item extends GunGeoItem {
     }
 
     @Override
-    public boolean isOpenBolt(GunData data) {
+    public boolean isOpenBolt(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasBulletInBarrel(GunData data) {
+    public boolean hasBulletInBarrel(@NotNull GunData data) {
         return true;
     }
 }

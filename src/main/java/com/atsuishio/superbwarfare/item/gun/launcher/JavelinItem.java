@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
-import com.atsuishio.superbwarfare.init.ModEnumExtensions;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class JavelinItem extends GunGeoItem {
 
     public JavelinItem() {
-        super(new Properties().rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().rarity(ModRarities.LEGENDARY));
     }
 
     @Override

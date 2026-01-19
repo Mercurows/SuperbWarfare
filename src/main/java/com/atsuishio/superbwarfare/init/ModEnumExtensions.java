@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.Rarity;
@@ -9,6 +10,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.common.asm.enumextension.EnumProxy;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
+
+import java.util.function.UnaryOperator;
 
 public class ModEnumExtensions {
 
@@ -21,6 +24,28 @@ public class ModEnumExtensions {
 
     public static Rarity getLegendary() {
         return SUPERBWARFARE_LEGENDARY.getValue();
+    }
+
+    public static final EnumProxy<Rarity> SUPERBWARFARE_SUPERB = new EnumProxy<>(
+            Rarity.class,
+            -1,
+            "superbwarfare:superb",
+            ChatFormatting.RED
+    );
+
+    public static Rarity getSuperb() {
+        return SUPERBWARFARE_SUPERB.getValue();
+    }
+
+    public static final EnumProxy<Rarity> SUPERBWARFARE_VIRTUAL = new EnumProxy<>(
+            Rarity.class,
+            -1,
+            "superbwarfare:virtual",
+            (UnaryOperator<Style>) style -> style.withColor(0xF4ADB4)
+    );
+
+    public static Rarity getVirtual() {
+        return SUPERBWARFARE_VIRTUAL.getValue();
     }
 
     @OnlyIn(Dist.CLIENT)

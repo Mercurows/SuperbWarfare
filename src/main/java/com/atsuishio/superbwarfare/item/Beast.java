@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import com.atsuishio.superbwarfare.entity.mixin.BeastEntityKiller;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModEnumExtensions;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage;
@@ -41,7 +41,7 @@ public class Beast extends SwordItem {
     public Beast() {
         super(Tiers.NETHERITE, new CustomDamageProperty(false)
                 .stacksTo(1)
-                .rarity(ModEnumExtensions.getLegendary())
+                .rarity(ModRarities.LEGENDARY)
                 .setNoRepair()
         );
     }

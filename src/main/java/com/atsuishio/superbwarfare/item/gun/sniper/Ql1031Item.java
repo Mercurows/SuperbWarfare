@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
-import com.atsuishio.superbwarfare.init.ModEnumExtensions;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 public class Ql1031Item extends GunGeoItem {
 
     public Ql1031Item() {
-        super(new Properties().rarity(ModEnumExtensions.getLegendary()));
+        super(new Properties().rarity(ModRarities.LEGENDARY));
     }
 
     @Override
@@ -167,32 +167,32 @@ public class Ql1031Item extends GunGeoItem {
     }
 
     @Override
-    public boolean hasBulletInBarrel(GunData data) {
+    public boolean hasBulletInBarrel(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomBarrel(GunData data) {
+    public boolean hasCustomBarrel(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomGrip(GunData data) {
+    public boolean hasCustomGrip(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomScope(GunData data) {
+    public boolean hasCustomScope(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomStock(GunData data) {
+    public boolean hasCustomStock(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean canEditAttachments(GunData data) {
+    public boolean canEditAttachments(@NotNull GunData data) {
         return true;
     }
 }
