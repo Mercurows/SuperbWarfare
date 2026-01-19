@@ -27,6 +27,19 @@
   "AmmoType": [
     "@HandgunAmmo",
     {
+      "Ammo": "@HeavyAmmo",
+      "AmmoSlot": "Default",
+      "Override": {
+        "Damage": 20,
+        "Headshot": 2.5,
+        "RPM": 500,
+        "HeatPerShoot": 3,
+        "BypassesArmor": 0.45,
+        "ProjectileAmount": 1,
+        "Velocity": 6
+      }
+    },
+    {
       "AmmoSlot": "Melee",
       "Override": {
         "ProjectileAmount": 0,

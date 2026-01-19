@@ -2,17 +2,30 @@
   "Spread": 3,
   "RecoilX": 0.005,
   "RecoilY": 0.032,
-  "Damage": 21,
+  "Damage": 24,
   "Headshot": 2.5,
   "Velocity": 24,
   "Magazine": 6,
   "Weight": 2,
   "EmptyReloadTime": 65,
-  "BypassesArmor": 0.4,
+  "BypassesArmor": 0.5,
   "SoundRadius": 10,
   "RPM": 240,
   "GunType": "Handgun",
-  "AmmoType": "@RifleAmmo",
+  "AmmoType": [
+    "@RifleAmmo",
+    {
+      "Ammo": "@ShotgunAmmo",
+      "AmmoSlot": "Default",
+      "Override": {
+        "Damage": 6.5,
+        "Headshot": 2,
+        "BypassesArmor": 0.25,
+        "ProjectileAmount": 4,
+        "Velocity": 12
+      }
+    }
+  ],
   "DamageReduce": {
     "Type": "Rifle"
   },

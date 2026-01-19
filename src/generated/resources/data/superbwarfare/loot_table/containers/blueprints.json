@@ -101,11 +101,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:trachelium_blueprint",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:sentinel_blueprint",
           "weight": 15
         },
@@ -171,6 +166,26 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:trachelium_blueprint",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:secondary_cataclysm_blueprint",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:aurelia_sceptre_blueprint",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:ql_1031_blueprint",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:aa_12_blueprint",
           "weight": 5
         },
@@ -187,21 +202,6 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:javelin_blueprint",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:secondary_cataclysm_blueprint",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:aurelia_sceptre_blueprint",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:ql_1031_blueprint",
           "weight": 5
         }
       ],

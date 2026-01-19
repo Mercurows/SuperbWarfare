@@ -34,7 +34,6 @@ private fun special(name: String): ResourceKey<LootTable> {
     return ResourceKey.create(Registries.LOOT_TABLE, loc("special/$name"))
 }
 
-
 private fun singleItem(item: ItemLike, weight: Int): LootPool.Builder {
     return singleItem(item, 1f, 0f, weight, 0)
 }
@@ -193,7 +192,6 @@ class ModCustomLootProvider() : LootTableSubProvider {
 
                 withWeight(
                     1,
-                    ModItems.TRACHELIUM_BLUEPRINT,
                     ModItems.SENTINEL_BLUEPRINT,
                     ModItems.BOCEK_BLUEPRINT,
                     ModItems.RPK_BLUEPRINT,
@@ -247,7 +245,6 @@ class ModCustomLootProvider() : LootTableSubProvider {
                 ModItems.M_2_HB_BLUEPRINT weighted 30
                 ModItems.HUNTING_RIFLE_BLUEPRINT weighted 30
 
-                ModItems.TRACHELIUM_BLUEPRINT weighted 10
                 ModItems.SENTINEL_BLUEPRINT weighted 10
                 ModItems.BOCEK_BLUEPRINT weighted 10
                 ModItems.RPK_BLUEPRINT weighted 10
@@ -262,13 +259,15 @@ class ModCustomLootProvider() : LootTableSubProvider {
                 ModItems.QBZ_191_BLUEPRINT weighted 10
                 ModItems.IGLA_BLUEPRINT weighted 7
 
+                ModItems.TRACHELIUM_BLUEPRINT weighted 5
+                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 5
+                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 5
+                ModItems.QL_1031_BLUEPRINT weighted 5
+
                 ModItems.AA_12_BLUEPRINT weighted 3
                 ModItems.NTW_20_BLUEPRINT weighted 3
                 ModItems.MINIGUN_BLUEPRINT weighted 3
                 ModItems.JAVELIN_BLUEPRINT weighted 3
-                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 3
-                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 2
-                ModItems.QL_1031_BLUEPRINT weighted 2
                 ModItems.MK_42_BLUEPRINT weighted 3
                 ModItems.MLE_1934_BLUEPRINT weighted 2
                 ModItems.HPJ_11_BLUEPRINT weighted 2
@@ -292,7 +291,6 @@ class ModCustomLootProvider() : LootTableSubProvider {
 
         output += buildLootTable(chests("blue_print_epic")) {
             addMultiItems(1f, 0f) {
-                ModItems.TRACHELIUM_BLUEPRINT weighted 10
                 ModItems.SENTINEL_BLUEPRINT weighted 10
                 ModItems.BOCEK_BLUEPRINT weighted 10
                 ModItems.RPK_BLUEPRINT weighted 10
@@ -305,15 +303,17 @@ class ModCustomLootProvider() : LootTableSubProvider {
                 ModItems.DEVOTION_BLUEPRINT weighted 10
                 ModItems.INSIDIOUS_BLUEPRINT weighted 10
                 ModItems.QBZ_191_BLUEPRINT weighted 10
-                ModItems.IGLA_BLUEPRINT weighted 7
+                ModItems.IGLA_BLUEPRINT weighted 10
+
+                ModItems.TRACHELIUM_BLUEPRINT weighted 15
+                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 15
+                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 15
+                ModItems.QL_1031_BLUEPRINT weighted 15
 
                 ModItems.AA_12_BLUEPRINT weighted 20
                 ModItems.NTW_20_BLUEPRINT weighted 20
                 ModItems.MINIGUN_BLUEPRINT weighted 20
                 ModItems.JAVELIN_BLUEPRINT weighted 15
-                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 15
-                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 10
-                ModItems.QL_1031_BLUEPRINT weighted 10
                 ModItems.MK_42_BLUEPRINT weighted 10
                 ModItems.MLE_1934_BLUEPRINT weighted 10
                 ModItems.BL_132_BLUEPRINT weighted 7
@@ -360,7 +360,6 @@ class ModCustomLootProvider() : LootTableSubProvider {
                 ModItems.HUNTING_RIFLE_BLUEPRINT weighted 42
                 ModItems.M_2_HB_BLUEPRINT weighted 42
 
-                ModItems.TRACHELIUM_BLUEPRINT weighted 15
                 ModItems.SENTINEL_BLUEPRINT weighted 15
                 ModItems.BOCEK_BLUEPRINT weighted 15
                 ModItems.RPK_BLUEPRINT weighted 15
@@ -375,13 +374,15 @@ class ModCustomLootProvider() : LootTableSubProvider {
                 ModItems.QBZ_191_BLUEPRINT weighted 15
                 ModItems.IGLA_BLUEPRINT weighted 10
 
+                ModItems.TRACHELIUM_BLUEPRINT weighted 8
+                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 8
+                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 8
+                ModItems.QL_1031_BLUEPRINT weighted 8
+
                 ModItems.AA_12_BLUEPRINT weighted 5
                 ModItems.NTW_20_BLUEPRINT weighted 5
                 ModItems.MINIGUN_BLUEPRINT weighted 5
                 ModItems.JAVELIN_BLUEPRINT weighted 5
-                ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 5
-                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 5
-                ModItems.QL_1031_BLUEPRINT weighted 5
             }
         }
 
