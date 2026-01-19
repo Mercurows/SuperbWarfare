@@ -58,6 +58,7 @@ class Perks(gun: GunData) {
             }
             list.add(newEntry)
         }
+        rootTag.put(perk.type.getName(), list)
     }
 
     fun set(instance: PerkInstance) {
