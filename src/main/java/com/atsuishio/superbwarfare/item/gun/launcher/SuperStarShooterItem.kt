@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack
 import software.bernie.geckolib.renderer.GeoItemRenderer
 import java.util.function.Supplier
 
-class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.LEGENDARY)) {
+class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.SUPERB)) {
 
     override fun getRenderer(): Supplier<out GeoItemRenderer<*>> =
         GunRendererBuilder.simple { SuperStarShooterItemModel() }

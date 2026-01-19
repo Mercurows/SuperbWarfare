@@ -44,6 +44,8 @@ public class ModTags {
         public static final TagKey<Item> RARE_BLUEPRINT = modItemTag("blueprint/rare");
         public static final TagKey<Item> EPIC_BLUEPRINT = modItemTag("blueprint/epic");
         public static final TagKey<Item> LEGENDARY_BLUEPRINT = modItemTag("blueprint/legendary");
+        public static final TagKey<Item> SUPERB_BLUEPRINT = modItemTag("blueprint/superb");
+        public static final TagKey<Item> VIRTUAL_BLUEPRINT = modItemTag("blueprint/virtual");
         public static final TagKey<Item> CANNON_BLUEPRINT = modItemTag("blueprint/cannon");
 
         public static final TagKey<Item> HAMMER = modItemTag("hammer");

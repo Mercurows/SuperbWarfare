@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.renderer.gun.TracheliumItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -13,7 +14,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
@@ -25,7 +30,7 @@ import java.util.function.Supplier;
 public class TracheliumItem extends GunGeoItem {
 
     public TracheliumItem() {
-        super(new Properties().rarity(Rarity.EPIC));
+        super(new Item.Properties().rarity(ModRarities.VIRTUAL));
     }
 
     @Override
@@ -157,12 +162,12 @@ public class TracheliumItem extends GunGeoItem {
     }
 
     @Override
-    public int[] getValidStocks() {
+    public int @NotNull [] getValidStocks() {
         return new int[]{0, 2};
     }
 
     @Override
-    public int[] getValidScopes() {
+    public int @NotNull [] getValidScopes() {
         return new int[]{0, 1, 2};
     }
 
@@ -178,7 +183,7 @@ public class TracheliumItem extends GunGeoItem {
     }
 
     @Override
-    public double getCustomDamage(GunData data) {
+    public double getCustomDamage(@NotNull GunData data) {
         if (useSpecialAttributes(data)) {
             return 3;
         }
@@ -193,7 +198,7 @@ public class TracheliumItem extends GunGeoItem {
     }
 
     @Override
-    public double getCustomVelocity(GunData data) {
+    public double getCustomVelocity(@NotNull GunData data) {
         if (useSpecialAttributes(data)) {
             return 15;
         }
@@ -201,7 +206,7 @@ public class TracheliumItem extends GunGeoItem {
     }
 
     @Override
-    public double getCustomHeadshot(GunData data) {
+    public double getCustomHeadshot(@NotNull GunData data) {
         if (useSpecialAttributes(data)) {
             return 0.5;
         }
@@ -209,7 +214,7 @@ public class TracheliumItem extends GunGeoItem {
     }
 
     @Override
-    public double getCustomBypassArmor(GunData data) {
+    public double getCustomBypassArmor(@NotNull GunData data) {
         if (useSpecialAttributes(data)) {
             return 0.1;
         }
@@ -217,27 +222,27 @@ public class TracheliumItem extends GunGeoItem {
     }
 
     @Override
-    public boolean hasCustomBarrel(GunData data) {
+    public boolean hasCustomBarrel(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomGrip(GunData data) {
+    public boolean hasCustomGrip(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomScope(GunData data) {
+    public boolean hasCustomScope(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean hasCustomStock(GunData data) {
+    public boolean hasCustomStock(@NotNull GunData data) {
         return true;
     }
 
     @Override
-    public boolean canEditAttachments(GunData data) {
+    public boolean canEditAttachments(@NotNull GunData data) {
         return true;
     }
 }

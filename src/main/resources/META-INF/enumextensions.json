@@ -10,6 +10,24 @@
       }
     },
     {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SUPERBWARFARE_SUPERB",
+      "constructor": "(ILjava/lang/String;Lnet/minecraft/ChatFormatting;)V",
+      "parameters": {
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions",
+        "field": "SUPERBWARFARE_SUPERB"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "SUPERBWARFARE_VIRTUAL",
+      "constructor": "(ILjava/lang/String;Ljava/util/function/UnaryOperator;)V",
+      "parameters": {
+        "class": "com/atsuishio/superbwarfare/init/ModEnumExtensions",
+        "field": "SUPERBWARFARE_VIRTUAL"
+      }
+    },
+    {
       "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
       "name": "SUPERBWARFARE_LUNGE_MINE_POSE",
       "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",

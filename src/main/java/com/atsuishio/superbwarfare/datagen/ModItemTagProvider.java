@@ -178,15 +178,19 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 ModItems.MOSIN_NAGANT_BLUEPRINT.get(), ModItems.M_2_HB_BLUEPRINT.get(), ModItems.HK_416_BLUEPRINT.get(), ModItems.AK_12_BLUEPRINT.get(),
                 ModItems.QBZ_95_BLUEPRINT.get(), ModItems.RPG_BLUEPRINT.get(), ModItems.HUNTING_RIFLE_BLUEPRINT.get());
 
-        this.tag(ModTags.Items.EPIC_BLUEPRINT).add(ModItems.TRACHELIUM_BLUEPRINT.get(), ModItems.BOCEK_BLUEPRINT.get(), ModItems.RPK_BLUEPRINT.get(),
-                ModItems.VECTOR_BLUEPRINT.get(), ModItems.MK_14_BLUEPRINT.get(), ModItems.M_60_BLUEPRINT.get(), ModItems.SVD_BLUEPRINT.get(),
-                ModItems.M_98B_BLUEPRINT.get(), ModItems.DEVOTION_BLUEPRINT.get(), ModItems.INSIDIOUS_BLUEPRINT.get(), ModItems.QBZ_191_BLUEPRINT.get(),
-                ModItems.AWM_BLUEPRINT.get(), ModItems.IGLA_BLUEPRINT.get(), ModItems.SENTINEL_BLUEPRINT.get());
+        this.tag(ModTags.Items.EPIC_BLUEPRINT).add(ModItems.BOCEK_BLUEPRINT.get(), ModItems.RPK_BLUEPRINT.get(), ModItems.VECTOR_BLUEPRINT.get(),
+                ModItems.MK_14_BLUEPRINT.get(), ModItems.M_60_BLUEPRINT.get(), ModItems.SVD_BLUEPRINT.get(), ModItems.M_98B_BLUEPRINT.get(),
+                ModItems.DEVOTION_BLUEPRINT.get(), ModItems.INSIDIOUS_BLUEPRINT.get(), ModItems.QBZ_191_BLUEPRINT.get(), ModItems.AWM_BLUEPRINT.get(),
+                ModItems.IGLA_BLUEPRINT.get(), ModItems.SENTINEL_BLUEPRINT.get());
 
         this.tag(ModTags.Items.LEGENDARY_BLUEPRINT).add(ModItems.AA_12_BLUEPRINT.get(), ModItems.NTW_20_BLUEPRINT.get(), ModItems.MINIGUN_BLUEPRINT.get(),
-                ModItems.JAVELIN_BLUEPRINT.get(), ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(), ModItems.MK_42_BLUEPRINT.get(),
-                ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(), ModItems.HPJ_11_BLUEPRINT.get(), ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(),
-                ModItems.BL_132_BLUEPRINT.get(), ModItems.QL_1031_BLUEPRINT.get());
+                ModItems.JAVELIN_BLUEPRINT.get(), ModItems.MK_42_BLUEPRINT.get(), ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(),
+                ModItems.HPJ_11_BLUEPRINT.get(), ModItems.BL_132_BLUEPRINT.get());
+
+        this.tag(ModTags.Items.SUPERB_BLUEPRINT).add(ModItems.SUPER_STAR_SHOOTER_BLUEPRINT.get());
+
+        this.tag(ModTags.Items.VIRTUAL_BLUEPRINT).add(ModItems.TRACHELIUM_BLUEPRINT.get(), ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(),
+                ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(), ModItems.QL_1031_BLUEPRINT.get());
 
         this.tag(ModTags.Items.CANNON_BLUEPRINT).add(ModItems.MK_42_BLUEPRINT.get(), ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(),
                 ModItems.HPJ_11_BLUEPRINT.get(), ModItems.BL_132_BLUEPRINT.get());

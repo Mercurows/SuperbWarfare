@@ -41,7 +41,7 @@ public class ModEnumExtensions {
             Rarity.class,
             -1,
             "superbwarfare:virtual",
-            (UnaryOperator<Style>) style -> style.withColor(0xF4ADB4)
+            (UnaryOperator<Style>) style -> style.withColor(0xFF9AAF)
     );
 
     public static Rarity getVirtual() {
