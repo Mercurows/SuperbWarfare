@@ -106,10 +106,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:trachelium_blueprint"
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:sentinel_blueprint"
         },
         {
