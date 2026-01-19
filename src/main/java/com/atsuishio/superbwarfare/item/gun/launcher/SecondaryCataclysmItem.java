@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 public class SecondaryCataclysmItem extends GunGeoItem {
 
     public SecondaryCataclysmItem() {
-        super(new Properties().fireResistant().rarity(ModRarities.LEGENDARY));
+        super(new Properties().fireResistant().rarity(ModRarities.VIRTUAL));
     }
 
     @Override

@@ -4,13 +4,10 @@
     "superbwarfare:ntw_20_blueprint",
     "superbwarfare:minigun_blueprint",
     "superbwarfare:javelin_blueprint",
-    "superbwarfare:secondary_cataclysm_blueprint",
     "superbwarfare:mk_42_blueprint",
     "superbwarfare:mle_1934_blueprint",
     "superbwarfare:annihilator_blueprint",
     "superbwarfare:hpj_11_blueprint",
-    "superbwarfare:aurelia_sceptre_blueprint",
-    "superbwarfare:bl_132_blueprint",
-    "superbwarfare:ql_1031_blueprint"
+    "superbwarfare:bl_132_blueprint"
   ]
 }

@@ -46,7 +46,7 @@ import java.util.function.Supplier;
 public class Ql1031Item extends GunGeoItem {
 
     public Ql1031Item() {
-        super(new Properties().rarity(ModRarities.LEGENDARY));
+        super(new Properties().rarity(ModRarities.VIRTUAL));
     }
 
     @Override

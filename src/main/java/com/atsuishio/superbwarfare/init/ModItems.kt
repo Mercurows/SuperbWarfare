@@ -47,6 +47,8 @@ import net.minecraftforge.registries.RegistryObject
 object ModItems {
 
     val legendary: Rarity by lazy { ModRarities.LEGENDARY }
+    val superb: Rarity by lazy { ModRarities.SUPERB }
+    val virtual: Rarity by lazy { ModRarities.VIRTUAL }
 
     /**
      * guns
@@ -81,7 +83,6 @@ object ModItems {
     @JvmField val K_98 = registerGun("k_98") { K98Item() }
     @JvmField val MOSIN_NAGANT = registerGun("mosin_nagant") { MosinNagantItem() }
     @JvmField val SVD = registerGun("svd") { SvdItem() }
-
     @JvmField val AWM = registerGun("awm") { AwmItem() }
     @JvmField val M_98B = registerGun("m_98b") { M98bItem() }
     @JvmField val SENTINEL = registerGun("sentinel") { SentinelItem() }
@@ -284,7 +285,7 @@ object ModItems {
     @JvmField val MEDIUM_ARMAMENT_MODULE = registerItem("medium_armament_module") { Item(Item.Properties().rarity(Rarity.EPIC)) }
     @JvmField val HEAVY_ARMAMENT_MODULE = registerItem("heavy_armament_module") { Item(Item.Properties().rarity(legendary)) }
 
-    @JvmField val TRACHELIUM_BLUEPRINT = registerBlueprint("trachelium_blueprint", Rarity.EPIC)
+    @JvmField val TRACHELIUM_BLUEPRINT = registerBlueprint("trachelium_blueprint", virtual)
     @JvmField val GLOCK_17_BLUEPRINT = registerBlueprint("glock_17_blueprint", Rarity.COMMON)
     @JvmField val MP_443_BLUEPRINT = registerBlueprint("mp_443_blueprint", Rarity.COMMON)
     @JvmField val GLOCK_18_BLUEPRINT = registerBlueprint("glock_18_blueprint", Rarity.RARE)
@@ -321,10 +322,12 @@ object ModItems {
     @JvmField val IGLA_BLUEPRINT = registerBlueprint("igla_9k38_blueprint", Rarity.EPIC)
     @JvmField val JAVELIN_BLUEPRINT = registerBlueprint("javelin_blueprint", legendary)
     @JvmField val M_2_HB_BLUEPRINT = registerBlueprint("m_2_hb_blueprint", Rarity.RARE)
-    @JvmField val SECONDARY_CATACLYSM_BLUEPRINT = registerBlueprint("secondary_cataclysm_blueprint", legendary)
+    @JvmField val SECONDARY_CATACLYSM_BLUEPRINT = registerBlueprint("secondary_cataclysm_blueprint", virtual)
     @JvmField val INSIDIOUS_BLUEPRINT = registerBlueprint("insidious_blueprint", Rarity.EPIC)
-    @JvmField val AURELIA_SCEPTRE_BLUEPRINT = registerBlueprint("aurelia_sceptre_blueprint", legendary)
-    @JvmField val QL_1031_BLUEPRINT = registerBlueprint("ql_1031_blueprint", legendary)
+    @JvmField val AURELIA_SCEPTRE_BLUEPRINT = registerBlueprint("aurelia_sceptre_blueprint", virtual)
+    @JvmField val QL_1031_BLUEPRINT = registerBlueprint("ql_1031_blueprint", virtual)
+    @JvmField val SUPER_STAR_SHOOTER_BLUEPRINT = registerBlueprint("super_star_shooter_blueprint", superb)
+
     @JvmField val MK_42_BLUEPRINT = registerBlueprint("mk_42_blueprint", legendary)
     @JvmField val MLE_1934_BLUEPRINT = registerBlueprint("mle_1934_blueprint", legendary)
     @JvmField val BL_132_BLUEPRINT = registerBlueprint("bl_132_blueprint", legendary)

@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 public class AureliaSceptreItem extends GunGeoItem {
 
     public AureliaSceptreItem() {
-        super(new Properties().rarity(ModRarities.LEGENDARY));
+        super(new Properties().rarity(ModRarities.VIRTUAL));
     }
 
     @Override
