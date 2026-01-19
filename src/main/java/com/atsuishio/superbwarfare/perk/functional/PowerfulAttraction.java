@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +30,7 @@ public class PowerfulAttraction extends Perk {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
         int level = GunData.from(stack).perk.getLevel(ModPerks.POWERFUL_ATTRACTION);
-        if (level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source))) {
+        if (level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source) || source.is(DamageTypes.PLAYER_ATTACK))) {
             var drops = event.getDrops();
             drops.forEach(itemEntity -> {
                 ItemStack item = itemEntity.getItem();
@@ -45,14 +46,31 @@ public class PowerfulAttraction extends Perk {
     public static void onLivingExperienceDrop(LivingExperienceDropEvent event) {
         Player player = event.getAttackingPlayer();
         if (player == null) return;
+        DamageSource source = event.getEntity().lastDamageSource;
 
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof GunItem)) return;
 
         int level = GunData.from(stack).perk.getLevel(ModPerks.POWERFUL_ATTRACTION);
-        if (level > 0) {
+        if (source != null && level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source) || source.is(DamageTypes.PLAYER_ATTACK))) {
             player.giveExperiencePoints((int) (event.getDroppedExperience() * (0.8f + 0.2f * level)));
             event.setCanceled(true);
         }
     }
+
+    // TODO LootingLevelEvent?
+//    @SubscribeEvent
+//    public static void onLootingLevel(LootingLevelEvent event) {
+//        DamageSource source = event.getDamageSource();
+//        if (source == null) return;
+//        Entity sourceEntity = source.getEntity();
+//        if (!(sourceEntity instanceof LivingEntity living)) return;
+//        ItemStack stack = living.getMainHandItem();
+//        if (!(stack.getItem() instanceof GunItem)) return;
+//
+//        int level = GunData.from(stack).perk.getLevel(ModPerks.POWERFUL_ATTRACTION);
+//        if (level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isExplosionDamage(source) || source.is(DamageTypes.PLAYER_ATTACK))) {
+//            event.setLootingLevel(level / 4);
+//        }
+//    }
 }
