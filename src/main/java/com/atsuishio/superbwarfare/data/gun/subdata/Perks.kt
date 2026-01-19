@@ -157,16 +157,22 @@ class Perks(gun: GunData) {
         rootTag.remove(type.getName())
     }
 
-    fun getTag(registry: RegistryObject<Perk>): CompoundTag {
-        return getTag(registry.get().type ?: Perk.Type.AMMO)
+    fun getTag(registry: RegistryObject<Perk>): CompoundTag? {
+        return getTag(registry.get())
     }
 
-    fun getTag(perk: Perk): CompoundTag {
-        return getTag(perk.type)
+    fun getTag(perk: Perk): CompoundTag? {
+        return getTagList(perk.type).filterIsInstance<CompoundTag>().firstOrNull { perk.name == it.getString("Name") }
     }
 
-    fun getTag(type: Perk.Type): CompoundTag {
-        return rootTag.getCompound(type.getName())
+    fun getTagList(type: Perk.Type): ListTag {
+        val typeName = type.getName()
+        return if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
+            rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
+        } else {
+            val tag = rootTag.getCompound(typeName);
+            ListTag().also { rootTag.put(typeName, tag) }
+        }
     }
 
     fun getOrCreateTag(perk: Perk): CompoundTag {
