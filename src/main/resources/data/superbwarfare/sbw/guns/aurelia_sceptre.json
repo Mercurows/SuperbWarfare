@@ -27,12 +27,12 @@
   "AmmoType": [
     "@HandgunAmmo",
     {
-      "Ammo": "@HeavyAmmo",
+      "Ammo": "5 @HeavyAmmo",
       "AmmoSlot": "Default",
       "Override": {
-        "Damage": 20,
-        "Headshot": 2.5,
-        "RPM": 500,
+        "Damage": 18,
+        "Headshot": 2.0,
+        "RPM": 600,
         "HeatPerShoot": 3,
         "BypassesArmor": 0.45,
         "ProjectileAmount": 1,
