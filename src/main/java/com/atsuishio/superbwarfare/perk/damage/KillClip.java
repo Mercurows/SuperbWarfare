@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.perk.damage;
 
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.data.gun.GunData;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.perk.Perk;
 import com.atsuishio.superbwarfare.perk.PerkInstance;
 import com.atsuishio.superbwarfare.tools.DamageTypeTool;
@@ -53,7 +52,7 @@ public class KillClip extends Perk {
 
     @Override
     public void onKill(GunData data, PerkInstance instance, Entity target, DamageSource source) {
-        if (DamageTypeTool.isGunDamage(source) || source.is(ModDamageTypes.PROJECTILE_EXPLOSION)) {
+        if (DamageTypeTool.isGunDamage(source)) {
             int killClipLevel = instance.level();
             if (killClipLevel != 0) {
                 data.perk.getTag(this).putInt("KillClipReloadTime", 80);

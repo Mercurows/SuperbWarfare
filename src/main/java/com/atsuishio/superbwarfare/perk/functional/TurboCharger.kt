@@ -10,6 +10,6 @@ class TurboCharger : Perk("turbo_charger", Type.FUNCTIONAL) {
         data: GunData,
         instance: PerkInstance
     ): Int {
-        return (rpm + 5 + 3 * instance.level()).coerceAtMost(1200)
+        return (rpm + 5 + 3 * instance.level).coerceAtMost(1200)
     }
 }

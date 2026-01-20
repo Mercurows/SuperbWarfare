@@ -23,7 +23,7 @@ class FieldDoctor : Perk("field_doctor", Type.FUNCTIONAL) {
             return
         }
         if (target is LivingEntity) {
-            target.heal(damage * 1.0f.coerceAtMost(0.25f + 0.05f * instance.level()))
+            target.heal(damage * 1.0f.coerceAtMost(0.25f + 0.05f * instance.level))
         }
     }
 
