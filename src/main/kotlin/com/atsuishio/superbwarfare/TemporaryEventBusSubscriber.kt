@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.command.CommandRegister
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.data.container.ContainerDataManager
-import com.atsuishio.superbwarfare.data.vehicle.VehicleDataTool
 import com.atsuishio.superbwarfare.datagen.DataGenerators
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
@@ -39,7 +38,6 @@ private val classes = arrayOf(
     DataLoader::class.java,
     DataLoader.ClientReloadListener::class.java,
     ContainerDataManager::class.java,
-    VehicleDataTool::class.java,
     DataGenerators::class.java,
     DPSGeneratorEntity::class.java,
     SenpaiEntity::class.java,

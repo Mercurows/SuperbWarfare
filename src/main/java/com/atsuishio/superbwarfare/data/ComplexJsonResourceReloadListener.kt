@@ -13,7 +13,7 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
     @ParametersAreNonnullByDefault
     override fun prepare(resourceManager: ResourceManager, profiler: ProfilerFiller): Any {
         this.data.forEach { (name, value) ->
-            val map = value.data
+            val map = value.dataMap
             map.clear()
 
             val converter = FileToIdConverter.json(name)

@@ -31,14 +31,12 @@ public class NetworkRegistry {
         playToClient(ShakeClientMessage.class, ShakeClientMessage::encode, ShakeClientMessage::decode, ShakeClientMessage::handler);
         playToClient(ClientMotionSyncMessage.class, ClientMotionSyncMessage::encode, ClientMotionSyncMessage::decode, ClientMotionSyncMessage::handler);
         playToClient(LivingGunKillMessage.class, LivingGunKillMessage::encode, LivingGunKillMessage::decode, LivingGunKillMessage::handler);
-        playToClient(GunsDataMessage.class, GunsDataMessage::encode, GunsDataMessage::decode, (message, ctx) -> GunsDataMessage.handler(message));
         playToClient(ContainerDataMessage.class, ContainerDataMessage::encode, ContainerDataMessage::decode, ContainerDataMessage::handler);
         playToClient(ShootClientMessage.class, ShootClientMessage::encode, ShootClientMessage::decode, (message, context) -> ShootClientMessage.handler(context));
         playToClient(DrawClientMessage.INSTANCE, DrawClientMessage::handler);
         playToClient(ResetCameraTypeMessage.INSTANCE, ResetCameraTypeMessage::handler);
         playToClient(RadarMenuOpenMessage.class, RadarMenuOpenMessage::encode, RadarMenuOpenMessage::decode, RadarMenuOpenMessage::handler);
         playToClient(RadarMenuCloseMessage.INSTANCE, RadarMenuCloseMessage::handler);
-        playToClient(VehiclesDataMessage.class, VehiclesDataMessage::encode, VehiclesDataMessage::decode, (msg, ctx) -> VehiclesDataMessage.handler(msg));
         playToClient(FinishAssemblingVehicleMessage.class, FinishAssemblingVehicleMessage::encode, FinishAssemblingVehicleMessage::decode, FinishAssemblingVehicleMessage::handler);
         playToClient(TDMSyncMessage.class, TDMSyncMessage::encode, TDMSyncMessage::decode, TDMSyncMessage::handler);
         playToClient(SoundClientMessage.class, SoundClientMessage::encode, SoundClientMessage::decode, SoundClientMessage::handler);
