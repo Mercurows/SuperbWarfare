@@ -337,9 +337,11 @@ public class ClientEventHandler {
 
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
             var index = vehicle.getSeatIndex(player);
-            var seat = vehicle.computed().seats().get(index);
-            if (seat != null && seat.hasThermalImaging) {
-                hasThermalImagingGoggles = true;
+            if (index != -1) {
+                var seat = vehicle.computed().seats().get(index);
+                if (seat != null && seat.hasThermalImaging) {
+                    hasThermalImagingGoggles = true;
+                }
             }
         }
 
@@ -1034,7 +1036,7 @@ public class ClientEventHandler {
             burstFireAmount = 0;
         }
 
-        if (!gunItem.canShoot(data, player)){
+        if (!gunItem.canShoot(data, player)) {
             if (!data.meleeOnly()) {
                 holdingFireKey = false;
             }
@@ -2439,7 +2441,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onFogColor(ViewportEvent.ComputeFogColor event) {
-         if (activeThermalImaging) {
+        if (activeThermalImaging) {
             event.setRed(0.1F);
             event.setGreen(0.1F);
             event.setBlue(0.1F);

@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 
-class BladeBullet : AmmoPerk(
+object BladeBullet : AmmoPerk(
     Builder("blade_bullet", Type.AMMO).damageRate(0.6).speedRate(0.8).rgb(0xB4, 0x4B, 0x88)
         .mobEffect(ModMobEffects.TRAUMA)
 ) {

@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 
-class Firefly : Perk("firefly", Type.DAMAGE) {
+object Firefly : Perk("firefly", Type.DAMAGE) {
     override fun onKill(
         data: GunData,
         instance: PerkInstance,

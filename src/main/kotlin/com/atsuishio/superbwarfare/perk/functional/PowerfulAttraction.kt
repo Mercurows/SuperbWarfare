@@ -14,7 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-class PowerfulAttraction : Perk("powerful_attraction", Type.FUNCTIONAL) {
+object PowerfulAttraction : Perk("powerful_attraction", Type.FUNCTIONAL) {
     @SubscribeEvent
     fun onLivingDrops(event: LivingDropsEvent) {
         val source = event.source ?: return

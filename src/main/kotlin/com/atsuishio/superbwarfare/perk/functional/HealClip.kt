@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 
-class HealClip : Perk("heal_clip", Type.FUNCTIONAL) {
+object HealClip : Perk("heal_clip", Type.FUNCTIONAL) {
     override fun tick(data: GunData, instance: PerkInstance, entity: Entity?) {
         data.perk.reduceCooldown(this, "HealClipTime")
     }
@@ -66,7 +66,7 @@ class HealClip : Perk("heal_clip", Type.FUNCTIONAL) {
         val absorption = healAmount - entity.maxHealth + entity.health
         entity.heal(healAmount)
         if (absorption > 0) {
-            entity.setAbsorptionAmount(absorption * 0.3f)
+            entity.absorptionAmount = absorption * 0.3f
         }
 
         entity.level().getEntitiesOfClass(Player::class.java, entity.boundingBox.inflate(5.toDouble()))

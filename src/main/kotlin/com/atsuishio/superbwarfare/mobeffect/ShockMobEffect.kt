@@ -26,11 +26,9 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.network.PacketDistributor
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-class ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
-    companion object {
-        // 为什么这里还是 Target
-        const val TAG_ATTACKER = "TargetShockAttacker"
-    }
+object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
+    // 为什么这里还是 Target
+    const val TAG_ATTACKER = "TargetShockAttacker"
 
     init {
         addAttributeModifier(

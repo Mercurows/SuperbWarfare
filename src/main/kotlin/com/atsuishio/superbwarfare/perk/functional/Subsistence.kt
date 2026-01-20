@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import kotlin.math.min
 
-class Subsistence : Perk("subsistence", Type.FUNCTIONAL) {
+object Subsistence : Perk("subsistence", Type.FUNCTIONAL) {
     override fun onKill(
         data: GunData,
         instance: PerkInstance,

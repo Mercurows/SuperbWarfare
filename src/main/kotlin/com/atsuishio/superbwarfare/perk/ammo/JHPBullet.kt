@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.Attributes
 import kotlin.math.pow
 
-class JHPBullet : AmmoPerk(
+object JHPBullet : AmmoPerk(
     Builder("jhp_bullet", Type.AMMO).bypassArmorRate(-0.2).damageRate(1.1).speedRate(0.95).slug().rgb(230, 131, 65)
 ) {
     override fun getModifiedDamage(

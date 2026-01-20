@@ -22,10 +22,8 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.network.PacketDistributor
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-class BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
-    companion object {
-        const val TAG_ATTACKER = "BurnAttacker"
-    }
+object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
+    const val TAG_ATTACKER = "BurnAttacker"
 
     override fun applyEffectTick(entity: LivingEntity?, amplifier: Int) {
         if (entity == null) return

@@ -9,7 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-class TraumaMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xF4ADB4) {
+object TraumaMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xF4ADB4) {
     @SubscribeEvent
     fun onLivingHeal(event: LivingHealEvent) {
         val entity = event.entity

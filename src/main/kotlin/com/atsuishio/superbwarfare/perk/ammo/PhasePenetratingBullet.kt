@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.entity.Entity
 
-class PhasePenetratingBullet : AmmoPerk(
+object PhasePenetratingBullet : AmmoPerk(
     Builder("phase_penetrating_bullet", Type.AMMO).damageRate(0.2).speedRate(1.5).rgb(255, 255, 255)
 ) {
     override fun computeProperties(

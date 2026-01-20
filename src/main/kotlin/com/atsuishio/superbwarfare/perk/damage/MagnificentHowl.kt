@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
-class MagnificentHowl : Perk("magnificent_howl", Type.DAMAGE) {
+object MagnificentHowl : Perk("magnificent_howl", Type.DAMAGE) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
-class HeadSeeker : Perk("head_seeker", Type.DAMAGE) {
+object HeadSeeker : Perk("head_seeker", Type.DAMAGE) {
     override fun getModifiedDamage(
         damage: Float,
         data: GunData,

@@ -17,11 +17,9 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.network.PacketDistributor
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-class PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) {
-    companion object {
-        const val TAG_PHOSPHORUS_FIRE_COUNT = "SbwPhosphorusFireCount"
-        const val TAG_PHOSPHORUS_FIRE_ATTACKER = "SbwPhosphorusFireAttacker"
-    }
+object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) {
+    const val TAG_PHOSPHORUS_FIRE_COUNT = "SbwPhosphorusFireCount"
+    const val TAG_PHOSPHORUS_FIRE_ATTACKER = "SbwPhosphorusFireAttacker"
 
     override fun applyEffectTick(entity: LivingEntity?, amplifier: Int) {
         if (entity == null) return

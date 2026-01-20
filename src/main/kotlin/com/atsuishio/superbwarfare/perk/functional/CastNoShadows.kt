@@ -10,7 +10,7 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 
-class CastNoShadows : Perk("cast_no_shadows", Type.FUNCTIONAL) {
+object CastNoShadows : Perk("cast_no_shadows", Type.FUNCTIONAL) {
     override fun onMeleeAttack(
         data: GunData,
         instance: PerkInstance,

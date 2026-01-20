@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.perk.Perk
 
-class BackpackLinkedMagazine : Perk("backpack_linked_magazine", Type.FUNCTIONAL) {
+object BackpackLinkedMagazine : Perk("backpack_linked_magazine", Type.FUNCTIONAL) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

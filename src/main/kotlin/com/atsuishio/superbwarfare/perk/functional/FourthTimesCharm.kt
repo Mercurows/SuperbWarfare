@@ -9,7 +9,7 @@ import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
-class FourthTimesCharm : Perk("fourth_times_charm", Type.FUNCTIONAL) {
+object FourthTimesCharm : Perk("fourth_times_charm", Type.FUNCTIONAL) {
     override fun tick(
         data: GunData,
         instance: PerkInstance,
