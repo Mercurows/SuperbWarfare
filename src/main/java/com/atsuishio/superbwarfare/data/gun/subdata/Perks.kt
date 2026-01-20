@@ -14,7 +14,7 @@ class Perks(gun: GunData) {
     private val rootTag: CompoundTag = gun.perk()
 
     private fun getOrCreateList(type: Perk.Type): ListTag {
-        val typeName = type.getName()
+        val typeName = type.typeName
         return if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
         } else {
@@ -32,12 +32,12 @@ class Perks(gun: GunData) {
     }
 
     fun has(perk: Perk): Boolean {
-        val list = rootTag.getList(perk.type.getName(), Tag.TAG_COMPOUND.toInt())
+        val list = rootTag.getList(perk.type.typeName, Tag.TAG_COMPOUND.toInt())
         return list.any { (it as CompoundTag).getString("Name") == perk.name }
     }
 
     fun has(type: Perk.Type): Boolean {
-        val list = rootTag.getList(type.getName(), Tag.TAG_COMPOUND.toInt())
+        val list = rootTag.getList(type.typeName, Tag.TAG_COMPOUND.toInt())
         return !list.isEmpty()
     }
 
@@ -58,7 +58,7 @@ class Perks(gun: GunData) {
             }
             list.add(newEntry)
         }
-        rootTag.put(perk.type.getName(), list)
+        rootTag.put(perk.type.typeName, list)
     }
 
     fun set(instance: PerkInstance) {
@@ -66,7 +66,7 @@ class Perks(gun: GunData) {
     }
 
     fun getLevel(perk: Perk): Short {
-        val list = rootTag.getList(perk.type.getName(), Tag.TAG_COMPOUND.toInt())
+        val list = rootTag.getList(perk.type.typeName, Tag.TAG_COMPOUND.toInt())
         val entry = list.firstOrNull { (it as CompoundTag).getString("Name") == perk.name } as? CompoundTag
         return entry?.getShort("Level") ?: 0
     }
@@ -78,7 +78,7 @@ class Perks(gun: GunData) {
     }
 
     fun getInstances(type: Perk.Type): List<PerkInstance> {
-        val typeName = type.getName()
+        val typeName = type.typeName
         val instances = mutableListOf<PerkInstance>()
         if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             val list = rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
@@ -114,7 +114,7 @@ class Perks(gun: GunData) {
     }
 
     fun get(type: Perk.Type): Perk? {
-        val typeName = type.getName()
+        val typeName = type.typeName
         if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             val list = rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
             if (list.isEmpty()) return null
@@ -125,7 +125,7 @@ class Perks(gun: GunData) {
     }
 
     fun reduceCooldown(perk: Perk, cooldownKey: String) {
-        val list = rootTag.getList(perk.type.getName(), Tag.TAG_COMPOUND.toInt())
+        val list = rootTag.getList(perk.type.typeName, Tag.TAG_COMPOUND.toInt())
         val entry = list.firstOrNull { (it as CompoundTag).getString("Name") == perk.name } as? CompoundTag
 
         entry?.let { tag ->
@@ -140,7 +140,7 @@ class Perks(gun: GunData) {
     }
 
     fun remove(perk: Perk) {
-        val typeName = perk.type.getName()
+        val typeName = perk.type.typeName
         if (!rootTag.contains(typeName, Tag.TAG_LIST.toInt())) return
 
         val list = rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
@@ -154,7 +154,7 @@ class Perks(gun: GunData) {
     }
 
     fun removeAll(type: Perk.Type) {
-        rootTag.remove(type.getName())
+        rootTag.remove(type.typeName)
     }
 
     fun getTag(registry: DeferredHolder<Perk, out Perk>): CompoundTag? {
@@ -166,7 +166,7 @@ class Perks(gun: GunData) {
     }
 
     fun getTagList(type: Perk.Type): ListTag {
-        val typeName = type.getName()
+        val typeName = type.typeName
         return if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
         } else {
@@ -178,10 +178,10 @@ class Perks(gun: GunData) {
     fun getOrCreateTag(perk: Perk): CompoundTag {
         val typeTag: CompoundTag?
         val type = perk.type
-        if (!rootTag.contains(type.getName())) {
+        if (!rootTag.contains(type.typeName)) {
             typeTag = CompoundTag()
-            rootTag.put(type.getName(), typeTag)
+            rootTag.put(type.typeName, typeTag)
         }
-        return rootTag.getCompound(type.getName())
+        return rootTag.getCompound(type.typeName)
     }
 }

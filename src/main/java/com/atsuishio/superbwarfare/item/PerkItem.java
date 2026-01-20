@@ -33,16 +33,16 @@ public class PerkItem<T extends Perk> extends Item {
     @Override
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        ChatFormatting chatFormatting = switch (this.getPerk().type) {
+        ChatFormatting chatFormatting = switch (this.getPerk().getType()) {
             case AMMO -> ChatFormatting.YELLOW;
             case FUNCTIONAL -> ChatFormatting.GREEN;
             case DAMAGE -> ChatFormatting.RED;
         };
 
-        tooltipComponents.add(Component.translatable("des.superbwarfare." + this.getPerk().descriptionId).withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("des.superbwarfare." + this.getPerk().getDescriptionId()).withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.empty());
         tooltipComponents.add(Component.translatable("perk.superbwarfare.slot").withStyle(ChatFormatting.GOLD)
-                .append(Component.translatable("perk.superbwarfare.slot_" + this.getPerk().type.getName()).withStyle(chatFormatting)));
+                .append(Component.translatable("perk.superbwarfare.slot_" + this.getPerk().getType().getTypeName()).withStyle(chatFormatting)));
         if (this.getPerk() instanceof AmmoPerk ammoPerk) {
             if (ammoPerk.damageRate < 1) {
                 tooltipComponents.add(Component.translatable("des.superbwarfare.perk_damage_reduce").withStyle(ChatFormatting.RED));
