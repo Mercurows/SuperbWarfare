@@ -17,10 +17,6 @@ import com.atsuishio.superbwarfare.init.ModTabs
 import com.atsuishio.superbwarfare.init.ModVillagers
 import com.atsuishio.superbwarfare.item.Hammer
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
-import com.atsuishio.superbwarfare.mobeffect.BurnMobEffect
-import com.atsuishio.superbwarfare.mobeffect.PhosphorusFireMobEffect
-import com.atsuishio.superbwarfare.mobeffect.ShockMobEffect
-import com.atsuishio.superbwarfare.mobeffect.TraumaMobEffect
 import com.atsuishio.superbwarfare.perk.functional.PowerfulAttraction
 import com.atsuishio.superbwarfare.procedures.WelcomeProcedure
 import com.atsuishio.superbwarfare.recipe.ModPotionRecipes
@@ -53,10 +49,6 @@ private val classes = arrayOf(
     ModVillagers::class.java,
     Hammer::class.java,
     ContainerBlockItem::class.java,
-    BurnMobEffect::class.java,
-    ShockMobEffect::class.java,
-    TraumaMobEffect::class.java,
-    PhosphorusFireMobEffect::class.java,
     PowerfulAttraction::class.java,
     WelcomeProcedure::class.java,
     ModPotionRecipes::class.java,
