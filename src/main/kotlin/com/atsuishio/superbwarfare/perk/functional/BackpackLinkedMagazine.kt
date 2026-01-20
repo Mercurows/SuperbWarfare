@@ -8,7 +8,7 @@ class BackpackLinkedMagazine : Perk("backpack_linked_magazine", Type.FUNCTIONAL)
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData
-    ): DefaultGunData? {
+    ): DefaultGunData {
         rawData.magazine = 0
         rawData.heatPerShoot += (20 - data.perk.getLevel(this)) * 0.15
         return super.computeProperties(data, rawData)
