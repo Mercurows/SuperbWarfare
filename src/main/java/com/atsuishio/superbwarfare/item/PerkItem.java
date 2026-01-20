@@ -46,19 +46,19 @@ public class PerkItem extends Item {
         tooltips.add(Component.translatable("perk.superbwarfare.slot").withStyle(ChatFormatting.GOLD)
                 .append(Component.translatable("perk.superbwarfare.slot_" + this.getPerk().getType().getTypeName()).withStyle(chatFormatting)));
         if (this.getPerk() instanceof AmmoPerk ammoPerk) {
-            if (ammoPerk.damageRate < 1) {
+            if (ammoPerk.getDamageRate() < 1) {
                 tooltips.add(Component.translatable("des.superbwarfare.perk_damage_reduce").withStyle(ChatFormatting.RED));
-            } else if (ammoPerk.damageRate > 1) {
+            } else if (ammoPerk.getDamageRate() > 1) {
                 tooltips.add(Component.translatable("des.superbwarfare.perk_damage_plus").withStyle(ChatFormatting.GREEN));
             }
 
-            if (ammoPerk.speedRate < 1) {
+            if (ammoPerk.getSpeedRate() < 1) {
                 tooltips.add(Component.translatable("des.superbwarfare.perk_speed_reduce").withStyle(ChatFormatting.RED));
-            } else if (ammoPerk.speedRate > 1) {
+            } else if (ammoPerk.getSpeedRate() > 1) {
                 tooltips.add(Component.translatable("des.superbwarfare.perk_speed_plus").withStyle(ChatFormatting.GREEN));
             }
 
-            if (ammoPerk.slug) {
+            if (ammoPerk.getSlug()) {
                 tooltips.add(Component.translatable("des.superbwarfare.perk_slug").withStyle(ChatFormatting.YELLOW));
             }
         }
