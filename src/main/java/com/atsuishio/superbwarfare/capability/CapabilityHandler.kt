@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.capability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.data.gun.Ammo
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage
+import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerPlayer
@@ -22,7 +22,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimension
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import net.minecraftforge.network.PacketDistributor
 
 @EventBusSubscriber
 object CapabilityHandler {
@@ -36,7 +35,7 @@ object CapabilityHandler {
                     LazyOptional.of { PhosphorusFireCapability() },
                     ModCapabilities.PHOSPHORUS_FIRE_CAPABILITY
                 )
-            );
+            )
         }
 
         if (entity !is Player) return
@@ -65,10 +64,7 @@ object CapabilityHandler {
         val player = event.entity
         if (player !is ServerPlayer) return
 
-        NetworkRegistry.PACKET_HANDLER.send(
-            PacketDistributor.PLAYER.with { player },
-            PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).compareAndUpdate())
-        )
+        player.sendPacket(PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).compareAndUpdate()))
     }
 
     @SubscribeEvent
@@ -76,10 +72,7 @@ object CapabilityHandler {
         val player = event.entity
         if (player !is ServerPlayer) return
 
-        NetworkRegistry.PACKET_HANDLER.send(
-            PacketDistributor.PLAYER.with { player },
-            PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).compareAndUpdate())
-        )
+        player.sendPacket(PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).compareAndUpdate()))
     }
 
     @SubscribeEvent
@@ -87,10 +80,7 @@ object CapabilityHandler {
         val player = event.entity
         if (player !is ServerPlayer) return
 
-        NetworkRegistry.PACKET_HANDLER.send(
-            PacketDistributor.PLAYER.with { player },
-            PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).forceUpdate())
-        )
+        player.sendPacket(PlayerVariablesSyncMessage(player.id, PlayerVariable.getOrDefault(player).forceUpdate()))
     }
 
     @SubscribeEvent

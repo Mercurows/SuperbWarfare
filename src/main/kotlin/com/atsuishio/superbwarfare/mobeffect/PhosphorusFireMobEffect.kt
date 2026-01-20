@@ -2,9 +2,9 @@ package com.atsuishio.superbwarfare.mobeffect
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
+import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.entity.LivingEntity
@@ -14,7 +14,6 @@ import net.minecraftforge.event.entity.living.MobEffectEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.network.PacketDistributor
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) {
@@ -65,10 +64,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.putInt(TAG_PHOSPHORUS_FIRE_ATTACKER, source.id)
         }
 
-        NetworkRegistry.PACKET_HANDLER.send(
-            PacketDistributor.TRACKING_ENTITY.with { living },
-            ClientPhosphorusFireMessage(living.id, true)
-        )
+        living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, true))
     }
 
     @SubscribeEvent
@@ -80,10 +76,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 
-            NetworkRegistry.PACKET_HANDLER.send(
-                PacketDistributor.TRACKING_ENTITY.with { living },
-                ClientPhosphorusFireMessage(living.id, false)
-            )
+            living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, false))
         }
     }
 
@@ -96,10 +89,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 
-            NetworkRegistry.PACKET_HANDLER.send(
-                PacketDistributor.TRACKING_ENTITY.with { living },
-                ClientPhosphorusFireMessage(living.id, false)
-            )
+            living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, false))
         }
     }
 
@@ -108,13 +98,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
         val target = event.target
         if (target is LivingEntity) {
             if (target.hasEffect(ModMobEffects.PHOSPHORUS_FIRE.get())) {
-                NetworkRegistry.PACKET_HANDLER.send(
-                    PacketDistributor.TRACKING_ENTITY.with(event::getEntity),
-                    ClientPhosphorusFireMessage(
-                        target.id,
-                        true
-                    )
-                )
+                event.entity.sendPacketToTrackingThis(ClientPhosphorusFireMessage(target.id, true))
             }
         }
     }
@@ -123,13 +107,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
     fun onLivingTick(event: LivingEvent.LivingTickEvent) {
         val living = event.entity
         if (!living.level().isClientSide && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE.get()) && living.level().gameTime % 1000 == 0.toLong()) {
-            NetworkRegistry.PACKET_HANDLER.send(
-                PacketDistributor.TRACKING_ENTITY.with(event::getEntity),
-                ClientPhosphorusFireMessage(
-                    living.id,
-                    true
-                )
-            )
+            event.entity.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, true))
         }
     }
 }

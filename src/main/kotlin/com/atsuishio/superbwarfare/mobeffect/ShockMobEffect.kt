@@ -3,9 +3,9 @@ package com.atsuishio.superbwarfare.mobeffect
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
+import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -23,7 +23,6 @@ import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.entity.living.MobEffectEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.network.PacketDistributor
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
@@ -58,7 +57,7 @@ object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
         val player = attacker as? ServerPlayer ?: return
         if (level is ServerLevel) {
             level.playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
-            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with { player }, ClientIndicatorMessage(0, 5))
+            player.sendPacket(ClientIndicatorMessage(0, 5))
         }
     }
 
