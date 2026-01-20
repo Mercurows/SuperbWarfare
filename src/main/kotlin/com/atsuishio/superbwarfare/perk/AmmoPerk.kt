@@ -33,7 +33,7 @@ open class AmmoPerk : Perk {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData
-    ): DefaultGunData? {
+    ): DefaultGunData {
         rawData.bypassesArmor = 0.0.coerceAtLeast(rawData.bypassesArmor + this.bypassArmorRate)
         rawData.velocity = 0.0.coerceAtLeast(rawData.velocity * this.speedRate)
 
