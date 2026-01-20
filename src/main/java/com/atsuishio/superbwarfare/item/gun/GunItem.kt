@@ -836,7 +836,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 }
             } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileType)) {
                 val newInfo = ProjectileInfo()
-                newInfo.data = CustomData.LAUNCHABLE_ENTITY.get(projectileType)!!.data
+                newInfo.data = CustomData.LAUNCHABLE_ENTITY[projectileType]!!.data
                 newInfo.type = projectileType
 
                 val tag = LaunchableEntityTool.getModifiedTag(
@@ -865,7 +865,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         for (type in Perk.Type.entries.toTypedArray()) {
             val instance = data.perk.getInstances(type)
             instance.forEach {
-                it.perk?.modifyProjectile(data, it, entity)
+                it.perk.modifyProjectile(data, it, entity)
             }
         }
 
@@ -1102,14 +1102,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             val iCustomKnockback = ICustomKnockback.getInstance(target)
             iCustomKnockback.`superbWarfare$setKnockbackStrength`(0.0)
 
-            if (result.isHeadshot) {
+            if (result.headshot) {
                 DamageHandler.doDamage(
                     target,
                     ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), null, shooter),
                     damage * headshot
                 )
                 type = 1
-            } else if (result.isLegShot) {
+            } else if (result.legShot) {
                 DamageHandler.doDamage(
                     target,
                     ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter),
@@ -1127,14 +1127,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
             iCustomKnockback.`superbWarfare$resetKnockbackStrength`()
         } else {
-            if (result.isHeadshot) {
+            if (result.headshot) {
                 DamageHandler.doDamage(
                     target,
                     ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), null, shooter),
                     damage * headshot
                 )
                 type = 1
-            } else if (result.isLegShot) {
+            } else if (result.legShot) {
                 DamageHandler.doDamage(
                     target,
                     ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter),
@@ -1157,7 +1157,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             shooter.level().playSound(
                 null,
                 shooter.blockPosition(),
-                if (result.isHeadshot) ModSounds.HEADSHOT.get() else ModSounds.INDICATION.get(),
+                if (result.headshot) ModSounds.HEADSHOT.get() else ModSounds.INDICATION.get(),
                 SoundSource.VOICE,
                 0.1f,
                 1f
@@ -1167,9 +1167,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         level.playSound(
             null,
-            result.hitPos.x,
-            result.hitPos.y,
-            result.hitPos.z,
+            result.hitVec.x,
+            result.hitVec.y,
+            result.hitVec.z,
             this.getRayHitEntitySound(data),
             SoundSource.PLAYERS,
             0.7f,
@@ -1222,7 +1222,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         private val SPEED_ID = loc("gun_movement_speed")
 
-        protected fun getEntityResult(target: Entity, hitBoxPos: Vec3, hitPos: Vec3?): EntityResult {
+        protected fun getEntityResult(target: Entity, hitBoxPos: Vec3, hitPos: Vec3): EntityResult {
             var headshot = false
             var legShot = false
             val eyeHeight = target.eyeHeight

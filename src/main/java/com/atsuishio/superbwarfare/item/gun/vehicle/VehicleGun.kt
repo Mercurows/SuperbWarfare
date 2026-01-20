@@ -82,9 +82,9 @@ class VehicleGun : GunItem(Properties()) {
         val prismTank = shooter?.vehicle as? PrismTankEntity ?: return
 
         val root = prismTank.getShootPos(shooter, 1f)
-        prismTank.laserLength = root.distanceTo(result.hitPos).toFloat()
+        prismTank.laserLength = root.distanceTo(result.hitVec).toFloat()
         prismTank.laserScale = data.get(GunProp.SHOOT_ANIMATION_TIME).toFloat()
-        prismTank.hitEntity(result.hitPos, data, shooter)
+        prismTank.hitEntity(result.hitVec, data, shooter)
     }
 
     override fun onRayHitBlock(
