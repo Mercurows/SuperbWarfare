@@ -429,7 +429,7 @@ public class LivingEventHandler {
                             newData.charge.timer.reset();
                         }
 
-                        for (Perk.Type type : Perk.Type.values()) {
+                        for (Perk.Type type : Perk.Type.getEntries()) {
                             var instance = newData.perk.getInstances(type);
                             instance.forEach(perk -> perk.perk().onChangeSlot(newData, perk, player));
                         }
@@ -532,7 +532,7 @@ public class LivingEventHandler {
         float[] damage = {event.getAmount()};
 
         GunData data = GunData.from(stack);
-        for (Perk.Type type : Perk.Type.values()) {
+        for (Perk.Type type : Perk.Type.getEntries()) {
             var instance = data.perk.getInstances(type);
 
             instance.forEach(perk -> {
@@ -570,7 +570,7 @@ public class LivingEventHandler {
         }
 
         GunData data = GunData.from(stack);
-        for (Perk.Type type : Perk.Type.values()) {
+        for (Perk.Type type : Perk.Type.getEntries()) {
             var instance = data.perk.getInstances(type);
             instance.forEach(perk -> perk.perk().onKill(data, perk, event.getEntity(), source));
         }
