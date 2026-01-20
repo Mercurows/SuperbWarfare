@@ -9,7 +9,7 @@ import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
-class FairMeans : Perk("fair_means", Type.DAMAGE) {
+object FairMeans : Perk("fair_means", Type.DAMAGE) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

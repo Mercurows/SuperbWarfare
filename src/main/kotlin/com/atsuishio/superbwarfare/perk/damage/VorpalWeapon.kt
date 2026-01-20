@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import kotlin.math.pow
 
-class VorpalWeapon : Perk("vorpal_weapon", Type.DAMAGE) {
+object VorpalWeapon : Perk("vorpal_weapon", Type.DAMAGE) {
     override fun getModifiedDamage(
         damage: Float,
         data: GunData,

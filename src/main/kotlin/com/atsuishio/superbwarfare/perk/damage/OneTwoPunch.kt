@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import kotlin.math.floor
 
-class OneTwoPunch : Perk("one_two_punch", Type.DAMAGE) {
+object OneTwoPunch : Perk("one_two_punch", Type.DAMAGE) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

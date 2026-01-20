@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.perk.Perk
 
-class HighImpactReserves : Perk("high_impact_reserves", Type.DAMAGE) {
+object HighImpactReserves : Perk("high_impact_reserves", Type.DAMAGE) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

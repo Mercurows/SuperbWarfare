@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
-class KillingTally : Perk("killing_tally", Type.DAMAGE) {
+object KillingTally : Perk("killing_tally", Type.DAMAGE) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

@@ -7,7 +7,7 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.monster.Monster
 
-class MonsterHunter : Perk("monster_hunter", Type.DAMAGE) {
+object MonsterHunter : Perk("monster_hunter", Type.DAMAGE) {
     override fun getModifiedDamage(
         damage: Float,
         data: GunData,

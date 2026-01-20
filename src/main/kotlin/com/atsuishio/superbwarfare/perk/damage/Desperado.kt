@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
-class Desperado : Perk("desperado", Type.DAMAGE) {
+object Desperado : Perk("desperado", Type.DAMAGE) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

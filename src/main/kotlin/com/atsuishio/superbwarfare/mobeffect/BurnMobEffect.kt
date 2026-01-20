@@ -21,10 +21,8 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent
 import net.neoforged.neoforge.event.tick.EntityTickEvent
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
-class BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
-    companion object {
-        const val TAG_ATTACKER = "BurnAttacker"
-    }
+object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
+    const val TAG_ATTACKER = "BurnAttacker"
 
     override fun applyEffectTick(entity: LivingEntity, amplifier: Int): Boolean {
         val attacker = if (!entity.persistentData.contains(TAG_ATTACKER)) {

@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.perk.AmmoPerk
 
-class HEBullet : AmmoPerk(
+object HEBullet : AmmoPerk(
     Builder("he_bullet", Type.AMMO).bypassArmorRate(-0.3).damageRate(0.5).speedRate(0.85).slug().rgb(240, 20, 10)
 ) {
     override fun computeProperties(

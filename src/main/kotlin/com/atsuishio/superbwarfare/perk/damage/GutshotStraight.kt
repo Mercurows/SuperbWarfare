@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
-class GutshotStraight : Perk("gutshot_straight", Type.DAMAGE) {
+object GutshotStraight : Perk("gutshot_straight", Type.DAMAGE) {
     override fun getModifiedDamage(
         damage: Float,
         data: GunData,

@@ -9,7 +9,7 @@ import net.neoforged.neoforge.event.entity.living.LivingHealEvent
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
-class TraumaMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xF4ADB4) {
+object TraumaMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xF4ADB4) {
     @SubscribeEvent
     fun onLivingHeal(event: LivingHealEvent) {
         val entity = event.entity

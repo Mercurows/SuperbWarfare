@@ -12,7 +12,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
-class PowerfulAttraction : Perk("powerful_attraction", Type.FUNCTIONAL) {
+object PowerfulAttraction : Perk("powerful_attraction", Type.FUNCTIONAL) {
     @SubscribeEvent
     fun onLivingDrops(event: LivingDropsEvent) {
         val source = event.source ?: return

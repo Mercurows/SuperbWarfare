@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.entity.Entity
 import net.neoforged.neoforge.capabilities.Capabilities
 
-class Regeneration : Perk("regeneration", Type.FUNCTIONAL) {
+object Regeneration : Perk("regeneration", Type.FUNCTIONAL) {
     override fun tick(
         data: GunData,
         instance: PerkInstance,

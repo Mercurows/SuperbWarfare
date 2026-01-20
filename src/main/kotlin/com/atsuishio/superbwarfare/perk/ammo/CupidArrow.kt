@@ -18,7 +18,7 @@ import net.minecraft.world.entity.npc.Villager
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.schedule.Activity
 
-class CupidArrow : AmmoPerk(Builder("cupid_arrow", Type.AMMO).damageRate(0.0).slug().rgb(255, 185, 215)) {
+object CupidArrow : AmmoPerk(Builder("cupid_arrow", Type.AMMO).damageRate(0.0).slug().rgb(255, 185, 215)) {
     override fun onHit(
         attacker: LivingEntity,
         data: GunData,

@@ -8,7 +8,7 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 
-class SilverBullet : AmmoPerk(
+object SilverBullet : AmmoPerk(
     Builder("silver_bullet", Type.AMMO).bypassArmorRate(0.05).damageRate(0.8).speedRate(1.1).rgb(87, 166, 219)
 ) {
     override fun getModifiedDamage(

@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.perk.Perk
 
-class BrainStorm : Perk("brain_storm", Type.DAMAGE) {
+object BrainStorm : Perk("brain_storm", Type.DAMAGE) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

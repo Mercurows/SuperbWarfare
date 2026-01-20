@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.entity.Entity
 
-class VoltOverload : Perk("volt_overload", Type.DAMAGE) {
+object VoltOverload : Perk("volt_overload", Type.DAMAGE) {
     override fun modifyProjectile(
         data: GunData,
         instance: PerkInstance,

@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.entity.Entity
 
-class LongerWire : AmmoPerk("longer_wire", Type.AMMO) {
+object LongerWire : AmmoPerk("longer_wire", Type.AMMO) {
     override fun modifyProjectile(
         data: GunData,
         instance: PerkInstance,

@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.entity.Entity
 
-class MicroMissile : AmmoPerk(Builder("micro_missile", Type.AMMO).speedRate(1.2)) {
+object MicroMissile : AmmoPerk(Builder("micro_missile", Type.AMMO).speedRate(1.2)) {
     override fun computeProperties(
         data: GunData,
         rawData: DefaultGunData

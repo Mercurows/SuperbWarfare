@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
 
-class FieldDoctor : Perk("field_doctor", Type.FUNCTIONAL) {
+object FieldDoctor : Perk("field_doctor", Type.FUNCTIONAL) {
     override fun onHurtEntity(
         damage: Float,
         data: GunData,
