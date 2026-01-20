@@ -21,7 +21,7 @@ public class ClientBocekImageTooltip extends ClientGunImageTooltip {
 
         var data = GunData.from(stack);
         var perk = data.perk.get(Perk.Type.AMMO);
-        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug) {
+        if (perk instanceof AmmoPerk ammoPerk && ammoPerk.getSlug()) {
             slug = true;
         }
 

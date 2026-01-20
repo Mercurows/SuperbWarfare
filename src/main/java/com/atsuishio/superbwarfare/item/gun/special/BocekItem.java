@@ -142,7 +142,7 @@ public class BocekItem extends GunGeoItem {
                 SoundTool.playLocalSound(player, ModSounds.BOCEK_ZOOM_FIRE_1P.get(), 10, 1);
                 player.playSound(ModSounds.BOCEK_ZOOM_FIRE_3P.get(), 2, 1);
             } else {
-                for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.slug ? 1 : 10); i++) {
+                for (int i = 0; i < (perk instanceof AmmoPerk ammoPerk && ammoPerk.getSlug() ? 1 : 10); i++) {
                     spawnBullet(data, player, power, false);
                 }
 
@@ -192,7 +192,7 @@ public class BocekItem extends GunGeoItem {
         projectile.setExplosionDamage(explosionDamage);
         projectile.setExplosionRadius(explosionRadius);
 
-        for (Perk.Type type : Perk.Type.values()) {
+        for (Perk.Type type : Perk.Type.getEntries()) {
             var instance = data.perk.getInstances(type);
             instance.forEach(perk -> perk.perk().modifyProjectile(data, perk, projectile));
         }
