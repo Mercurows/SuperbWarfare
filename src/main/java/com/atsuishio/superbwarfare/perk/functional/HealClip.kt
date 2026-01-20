@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.perk.functional
 
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import com.atsuishio.superbwarfare.tools.DamageTypeTool
@@ -23,8 +22,8 @@ class HealClip : Perk("heal_clip", Type.FUNCTIONAL) {
         source: DamageSource
     ) {
         val tag = data.perk.getTag(this) ?: return
-        if (DamageTypeTool.isGunDamage(source) || source.`is`(ModDamageTypes.PROJECTILE_EXPLOSION)) {
-            val healClipLevel = instance.level()
+        if (DamageTypeTool.isGunDamage(source)) {
+            val healClipLevel = instance.level
             if (healClipLevel != 0.toShort()) {
                 tag.putInt("HealClipTime", 80 + healClipLevel * 20)
             }
@@ -58,7 +57,7 @@ class HealClip : Perk("heal_clip", Type.FUNCTIONAL) {
             return
         }
 
-        var healClipLevel = instance.level()
+        var healClipLevel = instance.level
         if (healClipLevel == 0.toShort()) {
             healClipLevel = 1
         }

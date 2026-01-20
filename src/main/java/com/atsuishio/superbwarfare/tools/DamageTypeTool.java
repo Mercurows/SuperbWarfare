@@ -22,10 +22,6 @@ public class DamageTypeTool {
         return holder != null && holder.is(ModTags.DamageTypes.GUN_DAMAGE);
     }
 
-    public static boolean isExplosionDamage(DamageSource source) {
-        return source.is(ModDamageTypes.CUSTOM_EXPLOSION) || source.is(ModDamageTypes.PROJECTILE_EXPLOSION);
-    }
-
     public static boolean isHeadshotDamage(DamageSource source) {
         return source.is(ModDamageTypes.GUN_FIRE_HEADSHOT) || source.is(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE) || source.is(ModDamageTypes.LASER_HEADSHOT);
     }

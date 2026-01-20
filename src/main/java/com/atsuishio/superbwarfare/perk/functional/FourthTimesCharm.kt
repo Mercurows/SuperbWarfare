@@ -55,7 +55,7 @@ class FourthTimesCharm : Perk("fourth_times_charm", Type.FUNCTIONAL) {
         val tag = data.perk.getTag(this) ?: return
         val fourthTimesCharmTick = tag.getInt("FourthTimesCharmTick")
         if (fourthTimesCharmTick <= 0) {
-            tag.putInt("FourthTimesCharmTick", 40 + 10 * instance.level())
+            tag.putInt("FourthTimesCharmTick", 40 + 10 * instance.level)
             tag.putInt("FourthTimesCharmCount", 1)
         } else {
             val count = tag.getInt("FourthTimesCharmCount")
