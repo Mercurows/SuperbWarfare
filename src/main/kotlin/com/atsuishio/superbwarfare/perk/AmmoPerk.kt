@@ -136,7 +136,7 @@ open class AmmoPerk : Perk {
             return this
         }
 
-        fun mobEffect(mobEffect: Supplier<MobEffect>): Builder {
+        fun mobEffect(mobEffect: Supplier<out MobEffect>): Builder {
             this.mobEffects += mobEffect.get()
             return this
         }
