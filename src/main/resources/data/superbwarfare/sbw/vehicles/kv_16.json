@@ -38,7 +38,7 @@
     },
     "Weapons": ["MachineGun", "Bomb"]
   },
-  "HudType": "@Aircraft",
+  "HudType": "@OldAircraft",
   "HUDColor": "0xFFC700",
   "Weapons": {
     "MachineGun": {
@@ -62,16 +62,14 @@
         "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
-      "Crosshair": "@AirCraftCommon",
-      "CrosshairColor": "0xFFC700",
       "SoundRadius": 16,
       "AmmoType": "@HeavyAmmo",
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.256, 0.98],
-        "ShootDirectionForHud": [0, -0.035, 1],
+        "ShootDirectionForHud": [0, 0, 1],
         "Positions": [[-0.64, 0.256, 0.98], [0.64, 0.256, 0.98]],
-        "Directions": [[0.004, -0.025, 1], [-0.004, -0.025, 1]]
+        "Directions": [[0.004, 0.005, 1], [-0.004, 0.005, 1]]
       }
     },
     "Bomb": {
@@ -116,7 +114,6 @@
   "UpStep": 1.1,
   "Mass": 0.2,
   "AllowFreeCam": true,
-  "HasDecoy": true,
   "SendHitParticles": false,
   "DamageModifiers": [
     "All - 2",

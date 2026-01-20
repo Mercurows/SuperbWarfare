@@ -2,10 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
-import com.atsuishio.superbwarfare.client.overlay.weapon.AircraftHud
-import com.atsuishio.superbwarfare.client.overlay.weapon.ArtilleryHud
-import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud
-import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud
+import com.atsuishio.superbwarfare.client.overlay.weapon.*
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -103,8 +100,32 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 screenHeight
             )
 
-            ArtilleryHud.ID -> ArtilleryHud.render(vehicle, player, guiGraphics, partialTick, screenWidth, screenHeight)
-            AircraftHud.ID -> AircraftHud.render(vehicle, player, guiGraphics, partialTick, screenWidth, screenHeight)
+            ArtilleryHud.ID -> ArtilleryHud.render(
+                vehicle,
+                player,
+                guiGraphics,
+                partialTick,
+                screenWidth,
+                screenHeight
+            )
+
+            AircraftHud.ID -> AircraftHud.render(
+                vehicle,
+                player,
+                guiGraphics,
+                partialTick,
+                screenWidth,
+                screenHeight
+            )
+
+            OldAircraftHud.ID -> OldAircraftHud.render(
+                vehicle,
+                player,
+                guiGraphics,
+                partialTick,
+                screenWidth,
+                screenHeight
+            )
         }
 
         val seekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
