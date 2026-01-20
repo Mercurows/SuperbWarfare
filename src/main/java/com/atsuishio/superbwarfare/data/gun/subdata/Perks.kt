@@ -13,7 +13,15 @@ import net.neoforged.neoforge.registries.DeferredHolder
 class Perks(gun: GunData) {
     private val rootTag: CompoundTag = gun.perk()
 
-    private fun getOrCreateList(type: Perk.Type): ListTag {
+    private fun findPerkByName(name: String): Perk? {
+        val allEntries = ModPerks.AMMO_PERKS.entries +
+                ModPerks.FUNC_PERKS.entries +
+                ModPerks.DAMAGE_PERKS.entries
+
+        return allEntries.firstOrNull { it.get().name == name }?.get()
+    }
+
+    fun getOrCreateList(type: Perk.Type): ListTag {
         val typeName = type.typeName
         return if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
@@ -21,14 +29,6 @@ class Perks(gun: GunData) {
             val tag = rootTag.getCompound(typeName);
             ListTag().also { rootTag.put(typeName, tag) }
         }
-    }
-
-    private fun findPerkByName(name: String): Perk? {
-        val allEntries = ModPerks.AMMO_PERKS.entries +
-                ModPerks.FUNC_PERKS.entries +
-                ModPerks.DAMAGE_PERKS.entries
-
-        return allEntries.firstOrNull { it.get().name == name }?.get()
     }
 
     fun has(perk: Perk): Boolean {
@@ -162,17 +162,8 @@ class Perks(gun: GunData) {
     }
 
     fun getTag(perk: Perk): CompoundTag? {
-        return getTagList(perk.type).filterIsInstance<CompoundTag>().firstOrNull { perk.name == it.getString("Name") }
-    }
-
-    fun getTagList(type: Perk.Type): ListTag {
-        val typeName = type.typeName
-        return if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
-            rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
-        } else {
-            val tag = rootTag.getCompound(typeName);
-            ListTag().also { rootTag.put(typeName, tag) }
-        }
+        return getOrCreateList(perk.type).filterIsInstance<CompoundTag>()
+            .firstOrNull { perk.name == it.getString("Name") }
     }
 
     fun getOrCreateTag(perk: Perk): CompoundTag {

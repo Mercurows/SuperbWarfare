@@ -62,8 +62,7 @@ public class ModDamageTypeTagProvider extends DamageTypeTagsProvider {
                 ModDamageTypes.SUPER_STAR_SLASH,
                 ModDamageTypes.PHOSPHORUS_FIRE,
                 ModDamageTypes.CUSTOM_EXPLOSION,
-                ModDamageTypes.PROJECTILE_EXPLOSION,
-                DamageTypes.PLAYER_ATTACK
+                ModDamageTypes.PROJECTILE_EXPLOSION
         );
 
         this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION,

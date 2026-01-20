@@ -15,7 +15,6 @@
     "superbwarfare:super_star_slash",
     "superbwarfare:phosphorus_fire",
     "superbwarfare:custom_explosion",
-    "superbwarfare:projectile_explosion",
-    "minecraft:player_attack"
+    "superbwarfare:projectile_explosion"
   ]
 }
