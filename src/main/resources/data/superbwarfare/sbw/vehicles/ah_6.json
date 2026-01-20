@@ -3,48 +3,49 @@
   "MaxEnergy": 5000000,
   "OBB": [
     {
-      "Size": [1.0625, 1.18125, 1.625],
-      "Position": [0, 1.86875, -0.15625]
+      "Size": [0.797, 0.886, 1.219],
+      "Position": [0, 1.401, -0.117]
     },
     {
-      "Size": [0.875, 0.6875, 0.59375],
-      "Position": [0, 1.5, 1.90625]
+      "Size": [0.656, 0.516, 0.445],
+      "Position": [0, 1.125, 1.43]
     },
     {
-      "Size": [0.25, 0.3125, 2.25],
-      "Position": [0, 2.3125, -4.1875]
+      "Size": [0.188, 0.234, 1.688],
+      "Position": [0, 1.734, -3.14]
     },
     {
-      "Size": [0.0625, 1.15625, 0.40625],
-      "Position": [-0.125, 2.34375, -6.34375]
+      "Size": [0.047, 0.867, 0.305],
+      "Position": [-0.09, 1.758, -4.758]
     },
     {
-      "Size": [1, 0.25, 0.21875],
-      "Position": [-0.125, 3.5625, -6.65625]
+      "Size": [0.75, 0.188, 0.164],
+      "Position": [-0.093, 2.672, -4.992]
     },
     {
-      "Size": [0.3125, 0.40625, 0.84375],
-      "Position": [0, 3.28125, -0.53125],
+      "Size": [0.234, 0.305, 0.633],
+      "Position": [0, 2.461, -0.398],
       "Part": "MainEngine"
     },
     {
-      "Size": [0.3125, 0.40625, 0.40625],
-      "Position": [0.1875, 2.09375, -6.15625],
+      "Size": [0.234, 0.305, 0.305],
+      "Position": [0.141, 1.57, -4.6171875],
       "Part": "SubEngine"
     }
   ],
   "MouseSensitivity": 0.5,
+  "PassengerRenderScale": 0.75,
   "Seats": [
     {
       "Transform": "Vehicle",
-      "Position": [0.45, 0.85, 1],
+      "Position": [0.338, 0.638, 0.75],
       "Sensitivity": [0, 0, 0],
       "CameraPos": {
         "Transform": "Vehicle",
-        "Position": [0.45, 2.45, 1],
+        "Position": [0.3375, 1.838, 0.75],
         "UseFixedCameraPos": true,
         "UseAircraftCamera": true,
-        "AircraftCameraPos": [-2.1, 2.45, -10]
+        "AircraftCameraPos": [-1.575, 1.838, -7.5]
       },
       "CanRotateHead": false,
       "MinPitch": -80,
@@ -54,41 +55,41 @@
       "Weapons": ["Cannon", "Rocket"],
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [2, 1.2, 1]
+        "Position": [1.5, 0.9, 0.75]
       }
     },
     {
       "Transform": "Vehicle",
-      "Position": [-0.45, 0.85, 1],
+      "Position": [-0.3375, 0.638, 0.75],
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,
       "MaxYaw": 80,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [-2, 1.2, 1]
+        "Position": [-1.5, 0.9, 0.75]
       }
     },
     {
       "Transform": "Vehicle",
-      "Position": [-1.4, 0.4, 0],
+      "Position": [-1.05, 0.3, 0],
       "Orientation": 90,
       "MinYaw": -80,
       "MaxYaw": 80,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [-2, 1.2, 0]
+        "Position": [-1.5, 0.9, 0]
       }
     },
     {
       "Transform": "Vehicle",
-      "Position": [1.4, 0.4, 0],
+      "Position": [1.05, 0.3, 0],
       "Orientation": -90,
       "MinYaw": -80,
       "MaxYaw": 80,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [2, 1.2, 0]
+        "Position": [1.5, 0.9, 0]
       }
     }
   ],
@@ -120,9 +121,9 @@
       "AmmoType": "superbwarfare:small_shell_he",
       "ShootPos": {
         "Transform": "Vehicle",
-        "ShootPositionForHud": [0, 0.62, 0.8],
+        "ShootPositionForHud": [0, 0.465, 0.6],
         "ShootDirectionForHud": [0, 0.018, 1],
-        "Positions": [[-1.15, 0.62, 0.8], [1.15, 0.62, 0.8]],
+        "Positions": [[-0.863, 0.465, 0.6], [0.863, 0.465, 0.6]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
       }
     },
@@ -146,9 +147,9 @@
       "Velocity": 16,
       "ShootPos": {
         "Transform": "Vehicle",
-        "ShootPositionForHud": [0, 0.62, 0.8],
+        "ShootPositionForHud": [0, 0.465, 0.6],
         "ShootDirectionForHud": [0, 0.018, 1],
-        "Positions": [[-1.7, 0.62, 0.8], [1.7, 0.62, 0.8]],
+        "Positions": [[-1.275, 0.465, 0.6], [1.275, 0.465, 0.6]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
       },
       "SoundInfo": {
@@ -173,12 +174,12 @@
     "LiftSpeed": 1,
     "Speed": 1.05,
     "EngineStartSound": "superbwarfare:ah_6_engine_start",
-    "EngineSoundVolume": 2
+    "EngineSoundVolume" : 2
   },
   "EngineSound": "superbwarfare:ah_6_engine",
-  "ThirdPersonCameraPos": [0, 1, 7],
+  "ThirdPersonCameraPos": [0, 0.75, 5.25],
   "UpStep": 1.1,
-  "RotateOffsetHeight": 1.45,
+  "RotateOffsetHeight": 1.088,
   "Mass": 1.2,
   "AllowFreeCam": true,
   "HasDecoy": true,
@@ -220,13 +221,6 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/ah_6_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "Type": "Helicopter",
-  "TerrainCompat": [
-    [1.156, 0, 1.875],
-    [-1.156, 0, 1.875],
-    [1.156, 0, 0.875],
-    [-1.156, 0, 0.875],
-    [1.156, 0, -0.875],
-    [-1.156, 0, -0.875]
-  ],
+  "TerrainCompat": [[0.867, 0, 1.406], [-0.867, 0, 1.406], [0.867, 0, 0.656], [-0.867, 0, 0.656], [0.867, 0, -0.656], [-0.867, 0, -0.656]],
   "HudType": "@Helicopter"
 }

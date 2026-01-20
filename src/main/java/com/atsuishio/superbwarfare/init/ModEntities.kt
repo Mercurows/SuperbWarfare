@@ -254,10 +254,10 @@ object ModEntities {
     val TOM_6 = register("tom_6", vehicle(::Tom6Entity).sized(1.05f, 1.0f))
 
     @JvmField
-    val AH_6 = register("ah_6", vehicle(::Ah6Entity).sized(3f, 2.9f))
+    val AH_6 = register("ah_6", vehicle(::Ah6Entity).sized(2.25f, 2.175f))
 
     @JvmField
-    val MI_28 = register("mi_28", vehicle(::Mi28Entity).sized(4.5f, 4.5f))
+    val MI_28 = register("mi_28", vehicle(::Mi28Entity).sized(3.375f, 3.375f))
 
     @JvmField
     val KV_16 = register("kv_16", vehicle(::Kv16Entity).sized(1f, 1f))

@@ -9,12 +9,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
 class A10Entity(type: EntityType<A10Entity>, world: Level) : GeoVehicleEntity(type, world) {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage ->
-            getSourceAngle(source, 0.25f) * damage * (if (health > 0.1f) 0.4f else 0.05f)
-        }
-
     override fun onEngine1Damaged(pos: Vec3) {
         if (level().isClientSide) {
             val random = 2 * (this.random.nextFloat() - 0.5f)
