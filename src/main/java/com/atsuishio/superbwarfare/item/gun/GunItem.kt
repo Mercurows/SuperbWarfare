@@ -339,7 +339,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     /**
      * 获取额外RPM加成
      */
-    open fun getCustomRPM(data: GunData?) = 0
+    open fun getCustomRPM(data: GunData) = 0
 
     /**
      * 获取额外总重量加成

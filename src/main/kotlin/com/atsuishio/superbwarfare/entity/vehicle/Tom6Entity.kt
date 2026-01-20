@@ -113,7 +113,7 @@ open class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : GeoVehicleEn
     override fun useAircraftCamera(seatIndex: Int) =
         ModKeyMappings.FREE_CAMERA.isDown && !ClientEventHandler.zoom
 
-    override val mouseSensitivity: Double?
+    override val mouseSensitivity
         get() = if (ModKeyMappings.FREE_CAMERA.isDown) 0.3 else 0.0
 
 }
