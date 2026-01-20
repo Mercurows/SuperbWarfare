@@ -41,11 +41,7 @@ object OldAircraftHud {
 
     private val BOMB_SCOPE = loc("textures/overlay/vehicle/aircraft/bomb_scope.png")
     private val BOMB_SCOPE_PITCH = loc("textures/overlay/vehicle/aircraft/bomb_scope_pitch.png")
-    private val CROSS_HAIR = loc("textures/overlay/vehicle/aircraft/common.png")
-    private val HUD_BASE = loc("textures/overlay/vehicle/aircraft/hud_base2.png")
-    private val COMPASS_IND = loc("textures/overlay/vehicle/aircraft/compass_ind.png")
-
-    private val COMPASS = loc("textures/overlay/vehicle/base/compass.png")
+    private val HUD_BASE = loc("textures/overlay/vehicle/crosshair/old_aircraft_gun.png")
     private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private val BOMB_RING = loc("textures/overlay/crosshair/rex_circle.png")
 
@@ -192,25 +188,12 @@ object OldAircraftHud {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE, x - 36, y - 36, 0f, 0f, 72f, 72f, 72f, 72f, color)
-            RenderHelper.preciseBlitWithColor(
-                guiGraphics,
-                CROSS_HAIR,
-                x - 160,
-                y - 160,
-                0f,
-                0f,
-                320f,
-                320f,
-                320f,
-                320f,
-                color
-            )
+            RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE, x - 24, y - 18, 0f, 0f, 48f, 48f, 48f, 48f, color)
 
             renderKillIndicatorDynamic(
                 guiGraphics,
                 x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+                y - 1.5f + (2 * (Math.random() - 0.5f)).toFloat()
             )
 
         }
