@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -50,6 +51,11 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - yBodyRot));
 
             float renderScale = vehicle.getPassengerRenderScale();
+
+            if (Minecraft.getInstance().player != null && ClientEventHandler.zoomVehicle && entity.getRootVehicle() == Minecraft.getInstance().player.getRootVehicle()) {
+                renderScale = 0;
+            }
+
             poseStack.scale(renderScale, renderScale, renderScale);
         }
     }
