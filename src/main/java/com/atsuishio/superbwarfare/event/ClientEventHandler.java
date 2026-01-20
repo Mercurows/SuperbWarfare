@@ -2217,9 +2217,9 @@ public class ClientEventHandler {
         if (otherPlayer.getVehicle() instanceof VehicleEntity vehicle && vehicle.hidePassenger(otherPlayer)) {
             event.setCanceled(true);
         }
-        if (player != null && player.getVehicle() instanceof VehicleEntity && player == otherPlayer && zoomVehicle) {
-            event.setCanceled(true);
-        }
+//        if (player != null && player.getVehicle() instanceof VehicleEntity && player == otherPlayer && zoomVehicle) {
+//            event.setCanceled(true);
+//        }
     }
 
     @SubscribeEvent
