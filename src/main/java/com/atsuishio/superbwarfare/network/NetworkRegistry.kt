@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage
+import com.atsuishio.superbwarfare.network.message.receive.DataSyncMessage
 import com.atsuishio.superbwarfare.network.message.send.*
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
@@ -59,6 +60,7 @@ private inline fun <reified T : ClientPacketPayload> playToClient() {
 fun register() {
     playToClient<ClientIndicatorMessage>()
     playToClient<ClientSetMotionMessage>()
+    playToClient<DataSyncMessage>()
 
     playToServer<AdjustMortarAngleMessage>()
     playToServer<AdjustZoomFovMessage>()

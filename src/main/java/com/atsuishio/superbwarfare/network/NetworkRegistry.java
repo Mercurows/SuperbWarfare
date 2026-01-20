@@ -18,7 +18,6 @@ public class NetworkRegistry {
         playToClient(ShakeClientMessage.TYPE, ShakeClientMessage.STREAM_CODEC, ShakeClientMessage::handler);
         playToClient(ClientMotionSyncMessage.TYPE, ClientMotionSyncMessage.STREAM_CODEC, ClientMotionSyncMessage::handler);
         playToClient(LivingGunKillMessage.TYPE, LivingGunKillMessage.STREAM_CODEC, LivingGunKillMessage::handler);
-        playToClient(GunsDataMessage.TYPE, GunsDataMessage.STREAM_CODEC, GunsDataMessage::handler);
         playToClient(ContainerDataMessage.TYPE, ContainerDataMessage.STREAM_CODEC, ContainerDataMessage::handler);
         playToClient(ShootClientMessage.TYPE, ShootClientMessage.STREAM_CODEC, ShootClientMessage::handler);
         playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, (msg, ctx) -> DrawClientMessage.handler());
@@ -26,7 +25,6 @@ public class NetworkRegistry {
         playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
         playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, (message1, context1) -> RadarMenuCloseMessage.handler());
         playToClient(ActiveThermalImagingMessage.TYPE, ActiveThermalImagingMessage.STREAM_CODEC, ActiveThermalImagingMessage::handler);
-        playToClient(VehiclesDataMessage.TYPE, VehiclesDataMessage.STREAM_CODEC, (msg, ctx) -> VehiclesDataMessage.handler(msg));
         playToClient(FinishAssemblingVehicleMessage.TYPE, FinishAssemblingVehicleMessage.STREAM_CODEC, (message3, context3) -> FinishAssemblingVehicleMessage.handler(message3));
         playToClient(TDMSyncMessage.TYPE, TDMSyncMessage.STREAM_CODEC, (message3, context3) -> TDMSyncMessage.handler(message3));
         playToClient(SoundClientMessage.TYPE, SoundClientMessage.STREAM_CODEC, (message3, context3) -> SoundClientMessage.handler(message3));
