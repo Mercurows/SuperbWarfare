@@ -86,7 +86,7 @@ public class GunPerksCategory implements IRecipeCategory<ItemStack> {
         sortedPerks.sort((a, b) -> {
             int aIndex = getIndex(a);
             int bIndex = getIndex(b);
-            return (aIndex == bIndex) ? a.name.compareTo(b.name) : aIndex - bIndex;
+            return (aIndex == bIndex) ? a.getName().compareTo(b.getName()) : aIndex - bIndex;
         });
 
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addItemStack(stack);
@@ -98,7 +98,7 @@ public class GunPerksCategory implements IRecipeCategory<ItemStack> {
     }
 
     private static int getIndex(Perk perk) {
-        return switch (perk.type) {
+        return switch (perk.getType()) {
             case AMMO -> 0;
             case FUNCTIONAL -> 1;
             case DAMAGE -> 2;

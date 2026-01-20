@@ -112,7 +112,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                         return ItemStack.EMPTY;
                     }
                 } else if (stack.getItem() instanceof PerkItem perkItem) {
-                    Perk.Type type = perkItem.getPerk().type;
+                    Perk.Type type = perkItem.getPerk().getType();
                     if (type == Perk.Type.AMMO) {
                         if (!this.moveItemStackTo(stack, AMMO_PERK_SLOT, AMMO_PERK_SLOT + 1, false)) {
                             return ItemStack.EMPTY;
@@ -243,12 +243,12 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                     && item.getItem() instanceof PerkItem perkItem
                     && GunData.from(container.getItem(INPUT_SLOT)).canApplyPerk(perkItem.getPerk())
             ) {
-                data.perk.set(new PerkInstance(perkItem.getPerk(), (short) switch (perkItem.getPerk().type) {
+                data.perk.set(new PerkInstance(perkItem.getPerk(), (short) switch (perkItem.getPerk().getType()) {
                     case AMMO -> this.ammoPerkLevel.get();
                     case FUNCTIONAL -> this.funcPerkLevel.get();
                     case DAMAGE -> this.damagePerkLevel.get();
                 }));
-                this.container.setItem(switch (perkItem.getPerk().type) {
+                this.container.setItem(switch (perkItem.getPerk().getType()) {
                     case AMMO -> AMMO_PERK_SLOT;
                     case FUNCTIONAL -> FUNC_PERK_SLOT;
                     case DAMAGE -> DAMAGE_PERK_SLOT;
@@ -279,7 +279,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
         }
 
         if (perk.getItem() instanceof PerkItem perkItem) {
-            switch (perkItem.getPerk().type) {
+            switch (perkItem.getPerk().getType()) {
                 case AMMO -> this.ammoPerkLevel.set(0);
                 case FUNCTIONAL -> this.funcPerkLevel.set(0);
                 case DAMAGE -> this.damagePerkLevel.set(0);
@@ -311,7 +311,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
             return;
         }
 
-        switch (perkItem.getPerk().type) {
+        switch (perkItem.getPerk().getType()) {
             case AMMO -> this.ammoPerkLevel.set(1);
             case FUNCTIONAL -> this.funcPerkLevel.set(1);
             case DAMAGE -> this.damagePerkLevel.set(1);
@@ -459,7 +459,7 @@ public class ReforgingTableMenu extends AbstractContainerMenu {
                 case DAMAGE -> DAMAGE_PERK_SLOT;
             };
 
-            return pStack.getItem() instanceof PerkItem perkItem && perkItem.getPerk().type == type
+            return pStack.getItem() instanceof PerkItem perkItem && perkItem.getPerk().getType() == type
                     && !container.getItem(INPUT_SLOT).isEmpty() && container.getItem(INPUT_SLOT).getItem() instanceof GunItem
                     && GunData.from(container.getItem(INPUT_SLOT)).canApplyPerk(perkItem.getPerk()) && container.getItem(slot).isEmpty();
         }
