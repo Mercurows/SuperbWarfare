@@ -24,7 +24,6 @@
       "ExplosionRadius": 11
     }
   },
-  "HasDecoy": true,
   "UpStep": 1.1,
   "Mass": 0.02,
   "RotateOffsetHeight": 0.5,

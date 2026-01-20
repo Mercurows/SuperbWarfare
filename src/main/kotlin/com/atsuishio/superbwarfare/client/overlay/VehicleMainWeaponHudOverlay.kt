@@ -2,10 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
-import com.atsuishio.superbwarfare.client.overlay.weapon.AircraftHud
-import com.atsuishio.superbwarfare.client.overlay.weapon.ArtilleryHud
-import com.atsuishio.superbwarfare.client.overlay.weapon.HelicopterHud
-import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud
+import com.atsuishio.superbwarfare.client.overlay.weapon.*
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -123,6 +120,16 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 partialTick,
                 screenWidth,
                 screenHeight
+            )
+
+            OldAircraftHud.ID -> OldAircraftHud.render(
+                    vehicle,
+                    player,
+                    gui,
+                    guiGraphics,
+                    partialTick,
+                    screenWidth,
+                    screenHeight
             )
         }
 
