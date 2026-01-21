@@ -165,7 +165,6 @@
     "SpeedRate": 1.6,
     "Resistance": 2.1,
     "HasGear": false,
-    "HasStukaSound": true,
     "EngineStartSound": "superbwarfare:kv_16_engine_start",
     "EngineSoundVolume" : 0.8
   },
