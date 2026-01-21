@@ -62,12 +62,12 @@ public class ClientPacketHandler {
 
     public static void handleRadarMenuOpen(RadarMenuOpenMessage message) {
         FuMO25ScreenHelper.resetEntities();
-        FuMO25ScreenHelper.pos = message.pos;
+        FuMO25ScreenHelper.setPos(message.pos);
     }
 
     public static void handleRadarMenuClose() {
         FuMO25ScreenHelper.resetEntities();
-        FuMO25ScreenHelper.pos = null;
+        FuMO25ScreenHelper.setPos(null);
     }
 
     public static void handleResetCameraType(Supplier<NetworkEvent.Context> ctx) {

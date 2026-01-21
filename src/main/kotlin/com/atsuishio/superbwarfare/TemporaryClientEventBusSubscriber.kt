@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
-import com.atsuishio.superbwarfare.client.screens.FuMO25ScreenHelper
 import com.atsuishio.superbwarfare.client.screens.modsell.ModSellWarningScreen
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -27,7 +26,6 @@ fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
         ClientRenderHandler::class.java,
         ParachuteRenderer::class.java,
         ContainerBlockPreview::class.java,
-        FuMO25ScreenHelper::class.java,
         ModSellWarningScreen::class.java,
         ClientEventHandler::class.java,
         KillMessageHandler::class.java,
