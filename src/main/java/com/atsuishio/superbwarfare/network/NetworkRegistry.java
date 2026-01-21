@@ -22,7 +22,7 @@ public class NetworkRegistry {
         playToClient(ShootClientMessage.TYPE, ShootClientMessage.STREAM_CODEC, ShootClientMessage::handler);
         playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, (msg, ctx) -> DrawClientMessage.handler());
         playToClient(ResetCameraTypeMessage.TYPE, ResetCameraTypeMessage.STREAM_CODEC, (message2, context2) -> ResetCameraTypeMessage.handler());
-        playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, RadarMenuOpenMessage::handler);
+        playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, (message4, context4) -> RadarMenuOpenMessage.handler(message4));
         playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, (message1, context1) -> RadarMenuCloseMessage.handler());
         playToClient(ActiveThermalImagingMessage.TYPE, ActiveThermalImagingMessage.STREAM_CODEC, ActiveThermalImagingMessage::handler);
         playToClient(FinishAssemblingVehicleMessage.TYPE, FinishAssemblingVehicleMessage.STREAM_CODEC, (message3, context3) -> FinishAssemblingVehicleMessage.handler(message3));

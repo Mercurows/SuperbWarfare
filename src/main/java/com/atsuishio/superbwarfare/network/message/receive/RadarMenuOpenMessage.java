@@ -6,7 +6,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record RadarMenuOpenMessage(BlockPos pos) implements CustomPacketPayload {
@@ -18,9 +17,9 @@ public record RadarMenuOpenMessage(BlockPos pos) implements CustomPacketPayload 
             RadarMenuOpenMessage::new
     );
 
-    public static void handler(RadarMenuOpenMessage message, final IPayloadContext context) {
+    public static void handler(RadarMenuOpenMessage message) {
         FuMO25ScreenHelper.resetEntities();
-        FuMO25ScreenHelper.pos = message.pos;
+        FuMO25ScreenHelper.setPos(message.pos);
     }
 
     @Override

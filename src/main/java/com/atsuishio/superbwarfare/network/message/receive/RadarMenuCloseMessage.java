@@ -16,7 +16,7 @@ public enum RadarMenuCloseMessage implements CustomPacketPayload {
 
     public static void handler() {
         FuMO25ScreenHelper.resetEntities();
-        FuMO25ScreenHelper.pos = null;
+        FuMO25ScreenHelper.setPos(null);
     }
 
     @Override

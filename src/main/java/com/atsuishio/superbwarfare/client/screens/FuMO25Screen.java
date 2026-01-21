@@ -100,9 +100,9 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
     }
 
     private void renderTargets(GuiGraphics guiGraphics) {
-        var entities = FuMO25ScreenHelper.entities;
+        var entities = FuMO25ScreenHelper.getEntities();
         if (entities == null || entities.isEmpty()) return;
-        var pos = FuMO25ScreenHelper.pos;
+        var pos = FuMO25ScreenHelper.getPos();
         if (pos == null) return;
         if (!FuMO25Screen.this.menu.isPowered()) return;
 
@@ -163,9 +163,8 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
 
         if (this.currentTarget != null) {
             StringBuilder sb = new StringBuilder();
-            if (currentTarget.getDisplayName() != null) {
-                sb.append(currentTarget.getDisplayName().getString());
-            }
+            currentTarget.getDisplayName();
+            sb.append(currentTarget.getDisplayName().getString());
             if (currentTarget instanceof LivingEntity living) {
                 sb.append(" (HP: ").append(FormatTool.format1D(living.getHealth()))
                         .append("/").append(FormatTool.format1D(living.getMaxHealth())).append(")");
@@ -193,9 +192,9 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        var entities = FuMO25ScreenHelper.entities;
+        var entities = FuMO25ScreenHelper.getEntities();
         if (entities == null || entities.isEmpty()) return super.mouseClicked(pMouseX, pMouseY, pButton);
-        var pos = FuMO25ScreenHelper.pos;
+        var pos = FuMO25ScreenHelper.getPos();
         if (pos == null) return super.mouseClicked(pMouseX, pMouseY, pButton);
         if (pButton != 0) return super.mouseClicked(pMouseX, pMouseY, pButton);
         if (!FuMO25Screen.this.menu.isPowered()) return super.mouseClicked(pMouseX, pMouseY, pButton);
