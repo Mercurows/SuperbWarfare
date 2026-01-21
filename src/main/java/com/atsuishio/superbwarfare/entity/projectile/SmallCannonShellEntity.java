@@ -121,6 +121,12 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
         if (aa) {
             crushProjectile(getDeltaMovement());
         }
+        if (getOwner() != null && distanceToSqr(getOwner()) > 1048576) {
+            if (level() instanceof ServerLevel) {
+                causeExplode(position());
+            }
+            this.discard();
+        }
     }
 
     public void crushProjectile(Vec3 velocity) {
