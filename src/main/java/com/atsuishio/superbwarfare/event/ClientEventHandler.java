@@ -111,10 +111,6 @@ public class ClientEventHandler {
     public static double firePos = 0;
     public static double firePosZ = 0;
 
-    public static double fireRot = 0;
-    public static double fireRotY = 0f;
-    public static double fireRotZ = 0f;
-
     public static double customAnimSpeed = 1f;
 
     public static double recoilTime = 0;
@@ -1775,14 +1771,14 @@ public class ClientEventHandler {
         }
 
         fireSpread = Mth.clamp(fireSpread - 0.1 * (Math.pow(fireSpread, 2) * times), 0, 2);
-        firePosZ = Mth.clamp(firePosZ - 1.2 * (Math.pow(firePosZ, 2) * times), 0, 2.5);
-        firePosZ *= 0.98f;
+        firePosZ = Mth.clamp(firePosZ - 0.7 * (Math.pow(firePosZ, 2) * times), 0, 2.5);
+        firePosZ *= 0.99f;
 
         if (0 < firePosTimer) {
-            firePosTimer += 0.2 * (2.05 - firePosTimer) * times;
+            firePosTimer += 0.16 * times;
         }
         if (0 < fireRotTimer) {
-            fireRotTimer += 0.1 * (3.1 - fireRotTimer) * times;
+            fireRotTimer += 0.24 * times;
         }
 
         if (firePosTimer >= 2) {
@@ -1793,14 +1789,6 @@ public class ClientEventHandler {
         }
 
         firePos = MathTool.decayingOscillation(2.5f, 2, 0.5f, (float) firePosTimer);
-        fireRot = MathTool.decayingOscillation(0.2f, 3, 0.5f, (float) fireRotTimer) * Mth.sin((float) fireRotTimer);
-
-        if (fireRot < 0) {
-            fireRot *= 0.5;
-        }
-
-        fireRotZ = MathTool.decayingOscillation((float) (1f * recoilHorizon), 3, 0.5f, (float) fireRotTimer);
-        fireRotY = MathTool.decayingOscillation((float) (0.1f * recoilHorizon), 3, 0.5f, (float) fireRotTimer);
 
         if (entity instanceof Player player && player.isSpectator()) return;
 
@@ -1875,13 +1863,80 @@ public class ClientEventHandler {
         float zoom = (float) (1 - zoomMultiply * zoomTime) * pose;
 
         if (bone != null) {
-            bone.setPosX(zoom * x * (float) (ClientEventHandler.recoilHorizon * (0.12f * firePos)));
-            bone.setPosY(zoom * y * (float) (0.05f * firePos));
-            bone.setPosZ(zoom * z * (float) (firePos + 0.3f * firePosZ) * (float) (1 - 0.25 * zoomTime));
-            bone.setRotX(zoom * rotX * (float) (fireRot + 0.03f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime) * zoomRecoil);
-            bone.setRotY(2 * zoom * rotY * (float) fireRotY * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime) * zoomRecoil);
-            bone.setRotZ(zoom * rotZ * (float) fireRotZ * gripRecoilY * recoil * (float) (1 - 0.25 * zoomTime) * zoomRecoil);
+            bone.setPosX(zoom * x * (float) (recoilHorizon * (0.2f * firePos)));
+            bone.setPosY(zoom * y * (float) (getBoneMoveY((float) firePosTimer) * 0.25));
+            bone.setPosZ(zoom * z * (float) (getBoneMoveZ((float) firePosTimer) * 0.5 + 0.3f * firePosZ) * (float) (1 - 0.25 * zoomTime));
+            bone.setRotX(zoom * rotX * (float) (-getBoneRotX((float) fireRotTimer) * Mth.DEG_TO_RAD * 0.4f + 0.04f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime) * zoomRecoil);
+            bone.setRotY((float) (3 * zoom * rotY * getBoneRotY((float) fireRotTimer) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime) * zoomRecoil));
+            bone.setRotZ((float) (2 * zoom * rotZ * getBoneRotZ((float) fireRotTimer) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil * (float) (1 - 0.25 * zoomTime) * zoomRecoil));
         }
+    }
+
+    public static float getBoneRotX(float t) {
+        if (t <= 0.25) return Mth.lerp(t / (0.25F - 0F), 0F, -5.82024F);
+        if (t <= 0.5) return Mth.lerp((t - 0.25F) / (0.5F - 0.25F), -5.82024F, -6.38564F);
+        if (t <= 0.75) return Mth.lerp((t - 0.5F) / (0.75F - 0.5F), -6.38564F, -6.0138F);
+        if (t <= 1) return Mth.lerp((t - 0.75F) / (1F - 0.75F), -6.0138F, -3.22698F);
+        if (t <= 1.3333) return Mth.lerp((t - 1F) / (1.3333F - 1F), -3.22698F, -0.42425F);
+        if (t <= 1.75) return Mth.lerp((t - 1.3333F) / (1.75F - 1.3333F), -0.42425F, 0.23068F);
+        if (t <= 2.0833) return Mth.lerp((t - 1.75F) / (2.0833F - 1.75F), 0.23068F, -0.09988F);
+        if (t <= 2.4167) return Mth.lerp((t - 2.0833F) / (2.4167F - 2.0833F), -0.09988F, 0.04509F);
+
+        return Mth.lerp((t - 2.4167F) / (3F - 2.4167F), 0.04509F, 0F);
+    }
+
+    public static float getBoneRotY(float t) {
+        if (t <= 0.25) return Mth.lerp(t / (0.25F - 0F), 0F, 1.33042F);
+        if (t <= 0.5) return Mth.lerp((t - 0.25F) / (0.5F - 0.25F), 1.33042F, -0.61289F);
+        if (t <= 0.75) return Mth.lerp((t - 0.5F) / (0.75F - 0.5F), -0.61289F, -0.64862F);
+        if (t <= 1) return Mth.lerp((t - 0.75F) / (1F - 0.75F), -0.64862F, -0.95049F);
+        if (t <= 1.3333) return Mth.lerp((t - 1F) / (1.3333F - 1F), -0.95049F, 0.27786F);
+        if (t <= 1.75) return Mth.lerp((t - 1.3333F) / (1.75F - 1.3333F), 0.27786F, -0.21405F);
+        if (t <= 2.0833) return Mth.lerp((t - 1.75F) / (2.0833F - 1.75F), -0.21405F, 0.076F);
+        if (t <= 2.4167) return Mth.lerp((t - 2.0833F) / (2.4167F - 2.0833F), 0.076F, 0.01634F);
+
+        return Mth.lerp((t - 2.4167F) / (3F - 2.4167F), 0.01634F, 0F);
+    }
+
+    public static float getBoneRotZ(float t) {
+        if (t <= 0.25) return Mth.lerp(t / (0.25F - 0F), 0F, 5.79388F);
+        if (t <= 0.5) return Mth.lerp((t - 0.25F) / (0.5F - 0.25F), 5.79388F, -1.91761F);
+        if (t <= 0.75) return Mth.lerp((t - 0.5F) / (0.75F - 0.5F), -1.91761F, -3.1926F);
+        if (t <= 1) return Mth.lerp((t - 0.75F) / (1F - 0.75F), -3.1926F, 1.89646F);
+        if (t <= 1.3333) return Mth.lerp((t - 1F) / (1.3333F - 1F), 1.89646F, 0.43549F);
+        if (t <= 1.75) return Mth.lerp((t - 1.3333F) / (1.75F - 1.3333F), 0.43549F, -0.46178F);
+        if (t <= 2.0833) return Mth.lerp((t - 1.75F) / (2.0833F - 1.75F), -0.46178F, 0.12379F);
+        if (t <= 2.4167) return Mth.lerp((t - 2.0833F) / (2.4167F - 2.0833F), 0.12379F, -0.04605F);
+
+        return Mth.lerp((t - 2.4167F) / (3F - 2.4167F), -0.04605F, 0F);
+    }
+
+    public static float getBoneMoveY(float t) {
+        if (t <= 0.1667) return Mth.lerp(t / (0.1667F - 0F), 0F, 0.25313F);
+        if (t <= 0.3333) return Mth.lerp((t - 0.1667F) / (0.3333F - 0.1667F), 0.25313F, 0.69563F);
+        if (t <= 0.5) return Mth.lerp((t - 0.3333F) / (0.5F - 0.3333F), 0.69563F, 0.54937F);
+        if (t <= 0.6667) return Mth.lerp((t - 0.5F) / (0.6667F - 0.5F), 0.54937F, 0.05688F);
+        if (t <= 0.8333) return Mth.lerp((t - 0.6667F) / (0.8333F - 0.6667F), 0.05688F, -0.17F);
+        if (t <= 1) return Mth.lerp((t - 0.8333F) / (1F - 0.8333F), -0.17F, -0.28F);
+        if (t <= 1.1667) return Mth.lerp((t - 1F) / (1.1667F - 1F), -0.28F, -0.065F);
+        if (t <= 1.3333) return Mth.lerp((t - 1.1667F) / (1.3333F - 1.1667F), -0.065F, 0.05F);
+        if (t <= 1.5833) return Mth.lerp((t - 1.3333F) / (1.5833F - 1.3333F), 0.05F, 0.03F);
+
+        return Mth.lerp((t - 1.5833F) / (2F - 1.5833F), 0.03F, 0F);
+    }
+
+    public static float getBoneMoveZ(float t) {
+        if (t <= 0.1667) return Mth.lerp(t / (0.1667F - 0F), 0F, 5.205F);
+        if (t <= 0.3333) return Mth.lerp((t - 0.1667F) / (0.3333F - 0.1667F), 5.205F, 2.775F);
+        if (t <= 0.4167) return Mth.lerp((t - 0.3333F) / (0.4167F - 0.3333F), 2.775F, 0.66F);
+        if (t <= 0.5833) return Mth.lerp((t - 0.4167F) / (0.5833F - 0.4167F), 0.66F, -0.005F);
+        if (t <= 0.75) return Mth.lerp((t - 0.5833F) / (0.75F - 0.5833F), -0.005F, -0.485F);
+        if (t <= 0.9167) return Mth.lerp((t - 0.75F) / (0.9167F - 0.75F), -0.485F, -0.095F);
+        if (t <= 1.1667) return Mth.lerp((t - 0.9167F) / (1.1667F - 0.9167F), -0.095F, 0.06F);
+        if (t <= 1.3333) return Mth.lerp((t - 1.1667F) / (1.3333F - 1.1667F), 0.06F, 0.1F);
+        if (t <= 1.5833) return Mth.lerp((t - 1.3333F) / (1.5833F - 1.3333F), 0.1F, -0.03F);
+
+        return Mth.lerp((t - 1.5833F) / (2F - 1.5833F), -0.03F, 0F);
     }
 
     private static void handleWeaponShell() {

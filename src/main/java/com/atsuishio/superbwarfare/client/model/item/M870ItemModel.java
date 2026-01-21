@@ -45,7 +45,7 @@ public class M870ItemModel extends CustomGunModel<M870Item> {
 
         gun.setScaleZ(1f - (0.2f * (float) zp));
 
-        ClientEventHandler.handleShootAnimation(shen, 0.5f, 8f, 4f, 2.5f, 0.3f, 0.5f, 0.4f, 0.45f);
+        ClientEventHandler.handleShootAnimation(shen, 0.5f, 2f, 3f, 2.5f, 0.3f, 0.5f, 0.4f, 0.45f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

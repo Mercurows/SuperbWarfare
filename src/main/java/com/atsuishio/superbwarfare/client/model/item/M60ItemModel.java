@@ -76,9 +76,6 @@ public class M60ItemModel extends CustomGunModel<M60Item> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        double fp = ClientEventHandler.firePos;
-        double fr = ClientEventHandler.fireRot;
-
         gun.setPosX(3.74f * (float) zp);
 
         gun.setPosY(-0.1f * (float) zp - (float) (0.1f * zpz));
@@ -90,8 +87,6 @@ public class M60ItemModel extends CustomGunModel<M60Item> {
         ClientEventHandler.handleShootAnimation(shen, 0.7f, -0.4f, 1.5f, 1.1f, 1, 1, 0.7f, 0.7f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
-
-        tiba.setRotZ((float) (-0.25f * fp + 0.4 * fr));
 
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 3, 0, 0, false);
 

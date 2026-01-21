@@ -109,7 +109,7 @@ public class AnimationHelper {
     public static void handleShootFlare(String name, PoseStack stack, ItemStack itemStack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, double size) {
         var data = GunData.from(itemStack);
 
-        if (name.equals("flare") && ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.5 && data.attachment.get(AttachmentType.BARREL) != 2) {
+        if (name.equals("flare") && ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.2 && data.attachment.get(AttachmentType.BARREL) != 2) {
             bone.setScaleX((float) (size + 0.8 * size * (Math.random() - 0.5)));
             bone.setScaleY((float) (size + 0.8 * size * (Math.random() - 0.5)));
             bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
