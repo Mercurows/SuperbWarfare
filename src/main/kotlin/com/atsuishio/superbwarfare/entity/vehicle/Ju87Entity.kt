@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import java.util.*
 
-class Kv16Entity(type: EntityType<Kv16Entity>, world: Level) : GeoVehicleEntity(type, world) {
+class Ju87Entity(type: EntityType<Ju87Entity>, world: Level) : GeoVehicleEntity(type, world) {
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
         if (level is ServerLevel) {
