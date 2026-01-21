@@ -815,10 +815,16 @@ object VehicleEngineUtils {
 
                 if (!onGround()) {
                     if (rightInputDown) {
-                        deltaRot -= 0.6f
+                        holdTick++
+                        deltaRot -= 0.05f * Math.min(holdTick, 12)
                     } else if (leftInputDown) {
-                        deltaRot += 0.6f
+                        holdTick++
+                        deltaRot += 0.05f * Math.min(holdTick, 12)
+                    } else {
+                        holdTick = 0
                     }
+                } else {
+                    holdTick = 0
                 }
 
                 // 刹车
@@ -844,7 +850,7 @@ object VehicleEngineUtils {
             )
             val addX = Mth.clamp(
                 Math.min(
-                    Math.max(deltaMovement.dot(getViewVector(1f)) - 0.24, 0.15).toFloat(), 0.4f
+                    Math.max(deltaMovement.dot(getViewVector(1f)) - 0.24, 0.15).toFloat(), 0.15f
                 ) * mouseMoveSpeedY, -3.5f, 3.5f
             )
             val addZ = deltaRot - (if (onGround()) 0f else 0.004f) * mouseMoveSpeedX * deltaMovement
@@ -895,38 +901,38 @@ object VehicleEngineUtils {
             }
 
             val flapX =
-                (1 - (Mth.abs(roll)) / 90) * Mth.clamp(mouseMoveSpeedY, -22.5f, 22.5f) - calculateY(
+                (1 - (Mth.abs(roll)) / 90) * Mth.clamp(mouseMoveSpeedY * 3, -15f, 15f) - calculateY(
                     roll
-                ) * Mth.clamp(mouseMoveSpeedX, -22.5f, 22.5f)
+                ) * Mth.clamp(mouseMoveSpeedX * 3, -15f, 15f)
 
             flap1LRot = Mth.clamp(
-                -flapX - 4 * addZ - planeBreak,
-                -22.5f,
-                22.5f
+                -flapX - 15 * addZ - planeBreak,
+                -15f,
+                15f
             )
             flap1RRot = Mth.clamp(
-                -flapX + 4 * addZ - planeBreak,
-                -22.5f,
-                22.5f
+                -flapX + 15 * addZ - planeBreak,
+                -15f,
+                15f
             )
             flap1L2Rot = Mth.clamp(
-                -flapX - 4 * addZ + planeBreak,
-                -22.5f,
-                22.5f
+                -flapX - 15 * addZ + planeBreak,
+                -15f,
+                15f
             )
             flap1R2Rot = Mth.clamp(
-                -flapX + 4 * addZ + planeBreak,
-                -22.5f,
-                22.5f
+                -flapX + 15 * addZ + planeBreak,
+                -15f,
+                15f
             )
 
-            flap2LRot = Mth.clamp(flapX - 4 * addZ, -22.5f, 22.5f)
-            flap2RRot = Mth.clamp(flapX + 4 * addZ, -22.5f, 22.5f)
+            flap2LRot = Mth.clamp(flapX - 15 * addZ, -15f, 15f)
+            flap2RRot = Mth.clamp(flapX + 15 * addZ, -15f, 15f)
 
             val flapY =
-                (1 - (Mth.abs(roll)) / 90) * Mth.clamp(mouseMoveSpeedX, -22.5f, 22.5f) + calculateY(
+                (1 - (Mth.abs(roll)) / 90) * Mth.clamp(mouseMoveSpeedX * 3, -15f, 15f) + calculateY(
                     roll
-                ) * Mth.clamp(mouseMoveSpeedY, -22.5f, 22.5f)
+                ) * Mth.clamp(mouseMoveSpeedY * 3, -15f, 15f)
             flap3Rot = flapY * 5
         } else if (!onGround()) {
             power = Math.max(power - 0.0003f, 0.02f)
@@ -938,7 +944,7 @@ object VehicleEngineUtils {
             deltaMovement = deltaMovement.add(0.0, -destroyRot * 0.005, 0.0)
         }
 
-        deltaRot *= 0.85f
+        deltaRot *= 0.9f
         planeBreak *= 0.8f
         if (onGround()) {
             power *= 0.995f
