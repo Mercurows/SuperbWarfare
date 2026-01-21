@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.client.ClickHandler
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
-import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter
 import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
@@ -26,7 +25,6 @@ fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
         ClickHandler::class.java,
         ClientRenderHandler::class.java,
-        ClientLanguageGetter::class.java,
         ParachuteRenderer::class.java,
         ContainerBlockPreview::class.java,
         FuMO25ScreenHelper::class.java,
