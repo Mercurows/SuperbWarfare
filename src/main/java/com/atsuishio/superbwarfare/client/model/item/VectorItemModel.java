@@ -68,7 +68,7 @@ public class VectorItemModel extends CustomGunModel<VectorItem> {
             };
         }
 
-        ClientEventHandler.handleShootAnimation(shen, 1f, -0.75f, 1f, 0.9f, 1f, 1f, 0.5f, 0.85f);
+        ClientEventHandler.handleShootAnimation(shen, 2.2f, -0.75f, 1.2f, 0.3f, 1.6f, 1f, 0.5f, 0.7f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
