@@ -50,7 +50,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
             }
 
             // 飞行器
-            if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && (vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER)) {
+            if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player) && vehicle.getFirstPassenger() == player && (vehicle.getVehicleType() == VehicleType.AIRPLANE || vehicle.getVehicleType() == VehicleType.HELICOPTER)) {
                 model.head.xRot = 0;
                 model.head.yRot = 0;
                 model.head.zRot = 0;

@@ -26,7 +26,9 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
     protected void addTags(HolderLookup.@NotNull Provider pProvider) {
         this.tag(ModTags.EntityTypes.AERIAL_BOMB).add(
                 ModEntities.MELON_BOMB.get(),
-                ModEntities.MK_82.get()
+                ModEntities.MK_82.get(),
+                ModEntities.SC_50.get(),
+                ModEntities.SC_250.get()
         );
 
         this.tag(ModTags.EntityTypes.DESTROYABLE_PROJECTILE).add(

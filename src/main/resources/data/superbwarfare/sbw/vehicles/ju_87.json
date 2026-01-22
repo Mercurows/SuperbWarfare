@@ -3,29 +3,108 @@
   "MaxEnergy": 5000000,
   "MouseSensitivity": 0.25,
   "PassengerRenderScale": 0.65,
-  "Seats": {
-    "IsEnclosed": true,
-    "Transform": "Vehicle",
-    "Position": [0, 1.4, 1.25],
-    "CanRotateHead": false,
-    "Sensitivity": [0, 0, 0],
-    "CameraPos": {
-      "Transform": "Vehicle",
-      "Position": [0, 2.563, 1.4],
-      "UseFixedCameraPos": true,
-      "UseAircraftCamera": true,
-      "AircraftCameraPos": [0, 3.5, -10.5]
+  "TurretPos": [0, 2.355, -0.21],
+  "TurretTurnSpeed": [20, 20],
+  "TurretPitchRange": [-20, 60],
+  "BarrelPos": [0, 0, 0],
+  "TurretControllerIndex": 1,
+  "OBB": [
+    {
+      "Size": [0.5, 0.625, 2.5],
+      "Position": [0, 1.625, 2.063]
     },
-    "DismountInfo": {
-      "Transform": "Vehicle",
-      "Position": [1.2, 0.375, 1.25],
-      "CanEject": true,
-      "EjectPosition": [0, 3, 1.25],
-      "EjectDirection": "Up",
-      "EjectForce": 4
+    {
+      "Size": [0.375, 0.531, 2.625],
+      "Position": [0, 1.656, -2.625]
     },
-    "Weapons": ["MachineGun", "Bomb", "BombSmall"]
-  },
+    {
+      "Size": [2.313, 0.094, 0.531],
+      "Position": [0, 2.156, -4.25]
+    },
+    {
+      "Size": [2.3125, 0.28125, 1.313],
+      "Position": [0, 1.406, 1.219]
+    },
+    {
+      "Size": [0.1875, 0.8125, 0.46875],
+      "Position": [1.375, 0.3125, 2.125]
+    },
+    {
+      "Size": [0.1875, 0.8125, 0.46875],
+      "Position": [-1.375, 0.3125, 2.125]
+    },
+    {
+      "Size": [1.09375, 0.28125, 1],
+      "Position": [3.40625, 1.59375, 1.40625]
+    },
+    {
+      "Size": [1.09375, 0.28125, 1],
+      "Position": [-3.40625, 1.59375, 1.40625]
+    },
+    {
+      "Size": [0.969, 0.281, 0.688],
+      "Position": [5.469, 1.781, 1.594]
+    },
+    {
+      "Size": [0.969, 0.281, 0.688],
+      "Position": [-5.469, 1.781, 1.594]
+    },
+    {
+      "Size": [0.094, 0.969, 0.719],
+      "Position": [0, 2.469, -4.531]
+    }
+  ],
+  "Seats": [
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [0, 1.4, 1.25],
+      "CanRotateHead": false,
+      "Sensitivity": [0, 0, 0],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "Position": [0, 2.563, 1.4],
+        "UseFixedCameraPos": true,
+        "UseAircraftCamera": true,
+        "AircraftCameraPos": [0, 3.5, -10.5]
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [1.2, 0.375, 1.25],
+        "CanEject": true,
+        "EjectPosition": [0, 3, 1.25],
+        "EjectDirection": "Up",
+        "EjectForce": 4
+      },
+      "Weapons": ["MachineGun", "Bomb", "BombSmall"]
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [0, 1.4, 0.375],
+      "Orientation": 180,
+      "MinYaw": -55,
+      "MaxYaw": 55,
+      "MinPitch": -10,
+      "MaxPitch": 55,
+      "CameraPos": {
+        "Transform": "Barrel",
+        "Direction": "Barrel",
+        "UseFixedCameraPos": true,
+        "Position": [0, 0.105, -0.25]
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [1.2, 0.375, 0.375],
+        "CanEject": true,
+        "EjectPosition": [0, 3, 0.375],
+        "EjectDirection": "Up",
+        "EjectForce": 4
+      },
+      "Weapons": "PassengerGun",
+      "Sensitivity": [0.58, 0.77, 0.9]
+    }
+  ],
   "HudType": "@OldAircraft",
   "HUDColor": "0xFFC700",
   "Weapons": {
@@ -40,15 +119,17 @@
       "Velocity": 25,
       "Damage": 15,
       "BypassesArmor": 0.8,
-      "HeatPerShoot": 1.5,
+      "HeatPerShoot": 1.2,
       "NaturalCooldown": 0.5,
       "Spread": 0.5,
+      "RecoilTime": 20,
+      "RecoilForce": 0.1,
       "Name": "weapon.superbwarfare.7_92mm_mg_17",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:minigun_fire_1p",
-        "Fire3P": "superbwarfare:minigun_fire_3p",
-        "Fire3PFar": "superbwarfare:minigun_far",
-        "Fire3PVeryFar": "superbwarfare:minigun_veryfar",
+        "Fire1P": "superbwarfare:mg_17_fire_1p_inside",
+        "Fire3P": "superbwarfare:mg_17_fire_3p",
+        "Fire3PFar": "superbwarfare:mg_17_far",
+        "Fire3PVeryFar": "superbwarfare:mg_17_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 16,
@@ -60,6 +141,25 @@
         "Directions": [[0.007, 0.005, 1], [-0.007, 0.005, 1]]
       }
     },
+    "PassengerGun": {
+      "Template": "MachineGun",
+      "Crosshair": "@NoCross",
+      "ShootAnimationTime": 1,
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:mg_17_fire_1p",
+        "Fire3P": "superbwarfare:mg_17_fire_3p",
+        "Fire3PFar": "superbwarfare:mg_17_far",
+        "Fire3PVeryFar": "superbwarfare:mg_17_veryfar",
+        "Change": "superbwarfare:into_cannon"
+      },
+      "ShootPos": {
+        "Transform": "Barrel",
+        "Positions": [
+          [0, -0.01, 1]
+        ],
+        "Directions": ["Barrel"]
+      }
+    },
     "Bomb": {
       "AmmoType": "superbwarfare:medium_aerial_bomb",
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/sc_250.png",
@@ -67,8 +167,8 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Semi",
       "Magazine": 1,
-      "EmptyReloadTime": 240,
-      "Projectile": "superbwarfare:mk_82",
+      "EmptyReloadTime": 360,
+      "Projectile": "superbwarfare:sc_250",
       "Gravity": 0.06,
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.sc_250_bomb",
@@ -98,14 +198,14 @@
       "SoundRadius": 8
     },
     "BombSmall": {
-      "AmmoType": "superbwarfare:medium_aerial_bomb",
+      "AmmoType": "superbwarfare:small_aerial_bomb",
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/sc_50.png",
       "DefaultZoom": 2,
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Semi",
       "Magazine": 4,
-      "EmptyReloadTime": 300,
-      "Projectile": "superbwarfare:mortar_shell",
+      "EmptyReloadTime": 400,
+      "Projectile": "superbwarfare:sc_50",
       "Gravity": 0.06,
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.sc_50_bomb",
@@ -197,5 +297,5 @@
   },
   "TerrainCompat": [[-1.388, 0, 2.414], [1.388, 0, 2.414], [0, 1.1, -4.544]],
   "TerrainCompatRotateRate" : 0.75,
-  "EngineSound": "superbwarfare:kv_16_engine"
+  "EngineSound": "superbwarfare:ju_87_engine"
 }

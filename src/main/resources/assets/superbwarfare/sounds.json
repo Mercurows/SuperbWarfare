@@ -4159,5 +4159,54 @@
         "name": "superbwarfare:vehicle/common/stuka"
       }
     ]
+  },
+  "mg_17_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ju_87/mg_17_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "mg_17_fire_1p_inside": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ju_87/mg_17_fire_1p_inside",
+        "stream": false
+      }
+    ]
+  },
+  "mg_17_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ju_87/mg_17_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "mg_17_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ju_87/mg_17_far",
+        "stream": false
+      }
+    ]
+  },
+  "mg_17_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ju_87/mg_17_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "ju_87_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 256,
+        "stream": true,
+        "name": "superbwarfare:vehicle/ju_87/ju_87_engine"
+      }
+    ]
   }
 }
