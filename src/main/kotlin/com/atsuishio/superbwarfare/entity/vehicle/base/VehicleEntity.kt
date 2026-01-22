@@ -3205,6 +3205,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
          */
         get() = computed().passengerWeaponStationYawRange.y
 
+
+    open val turretCustomPitch: Float
+        /**
+         * @return 炮塔最小俯角
+         */
+        get() = computed().turretCustomPitch
+
+
     open fun getTurretTransform(partialTicks: Float): Matrix4d {
         return VehicleVecUtils.getTurretTransform(this, partialTicks)
     }

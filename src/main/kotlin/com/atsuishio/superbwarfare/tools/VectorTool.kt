@@ -82,7 +82,9 @@ object VectorTool {
     @JvmStatic
     fun combineRotationsTurret(partialTicks: Float, entity: VehicleEntity): Quaterniond {
         val turretYawRot = Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.turretYRotO, entity.turretYRot))
+        val turretPitchRot = Axis.XP.rotationDegrees(entity.turretCustomPitch)
         return combineRotations(partialTicks, entity)
+            .mul(Quaterniond(turretPitchRot))
             .mul(Quaterniond(turretYawRot))
     }
 

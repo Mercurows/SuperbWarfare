@@ -216,6 +216,8 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public Vec2 turretPitchRange = new Vec2(-10, 30);
     @SerializedName("TurretControllerIndex")
     public int turretControllerIndex = 0;
+    @SerializedName("TurretCustomPitch")
+    public float turretCustomPitch = 0;
 
     @SerializedName("HudType")
     public String hudType = "@Empty";
