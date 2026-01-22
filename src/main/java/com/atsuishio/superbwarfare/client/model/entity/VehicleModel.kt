@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.model.entity
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.model.entity.VehicleModel.TransformContext
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource
@@ -316,7 +317,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
         val partialTick = animationState.partialTick
 
-        pitch = vehicle.getPitch(partialTick)
+        pitch = vehicle.getPitch(partialTick) + vehicle.turretCustomPitch
         yaw = vehicle.getYaw(partialTick)
         roll = vehicle.getRoll(partialTick)
 
