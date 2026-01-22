@@ -20,6 +20,7 @@
       "MinYaw": -105,
       "MaxYaw": 105,
       "CameraPos": {
+        "UseFixedCameraPos": true,
         "Transform": "Barrel",
         "ZoomPosition": [0, 0.4, -0.6],
         "Direction": "Barrel"

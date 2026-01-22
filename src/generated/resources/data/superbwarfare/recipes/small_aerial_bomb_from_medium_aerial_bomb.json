@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:medium_aerial_bomb"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "item": "superbwarfare:small_aerial_bomb"
+  }
+}

@@ -3,13 +3,15 @@ package com.atsuishio.superbwarfare.client.model.entity
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModel.TransformContext
 import com.atsuishio.superbwarfare.entity.vehicle.Ju87Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler
+import net.minecraft.client.Minecraft
 import net.minecraft.util.Mth
 
 class Ju87Model : VehicleModel<Ju87Entity>() {
     override fun collectTransform(boneName: String): TransformContext<Ju87Entity>? {
         return when (boneName) {
             "root" -> TransformContext { bone, vehicle, _ ->
-                bone.isHidden = hideForTurretControllerWhileZooming && (vehicle.getWeaponIndex(0) == 1 || vehicle.getWeaponIndex(0) == 2)
+                bone.isHidden = ClientEventHandler.zoomVehicle && vehicle.firstPassenger == Minecraft.getInstance().player && (vehicle.getWeaponIndex(0) == 1 || vehicle.getWeaponIndex(0) == 2)
             }
 
             "wingLR", "wingLR2", "wingLR3" -> TransformContext { bone, vehicle, state ->
@@ -84,7 +86,7 @@ class Ju87Model : VehicleModel<Ju87Entity>() {
                 bone.isHidden = shouldHideBigBomb(vehicle, 1)
             }
 
-            else -> null
+            else -> super.collectTransform(boneName)
         }
     }
 

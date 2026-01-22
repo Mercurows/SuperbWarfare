@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_medium_aerial_bomb": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:medium_aerial_bomb"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:small_aerial_bomb_from_medium_aerial_bomb"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_medium_aerial_bomb",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:small_aerial_bomb_from_medium_aerial_bomb"
+    ]
+  },
+  "sends_telemetry_event": false
+}

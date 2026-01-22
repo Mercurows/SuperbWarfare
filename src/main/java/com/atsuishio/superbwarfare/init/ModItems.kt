@@ -166,6 +166,7 @@ object ModItems {
     @JvmField val MEDIUM_ANTI_GROUND_MISSILE = registerAmmo("medium_anti_ground_missile") { Item(Item.Properties().stacksTo(4)) }
     @JvmField val LARGE_ANTI_GROUND_MISSILE = registerAmmo("large_anti_ground_missile") { Item(Item.Properties().stacksTo(2)) }
     @JvmField val SWARM_DRONE = registerAmmo("swarm_drone") { Item(Item.Properties().stacksTo(14)) }
+    @JvmField val SMALL_AERIAL_BOMB = registerAmmo("small_aerial_bomb") { Item(Item.Properties().stacksTo(4)) }
     @JvmField val MEDIUM_AERIAL_BOMB = registerAmmo("medium_aerial_bomb") { Item(Item.Properties().stacksTo(2)) }
     // @formatter:on
 

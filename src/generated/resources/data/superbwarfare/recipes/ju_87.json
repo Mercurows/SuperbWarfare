@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "3 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:medium_armament_module",
+    "minecraft:goat_horn",
+    "superbwarfare:medium_battery_pack",
+    "superbwarfare:large_propeller",
+    "2 superbwarfare:propeller",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:ju_87"
+  }
+}

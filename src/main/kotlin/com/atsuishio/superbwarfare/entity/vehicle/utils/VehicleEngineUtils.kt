@@ -761,8 +761,6 @@ object VehicleEngineUtils {
             crash = true
         }
 
-        val passenger = getFirstPassenger()
-
         if (energy <= energyCost || (maxEnergy > 0 && energy <= 0)) {
             forwardInputDown = false
             backInputDown = false
@@ -775,18 +773,21 @@ object VehicleEngineUtils {
         }
 
         if (health > 0.1f * getMaxHealth()) {
-            if (passenger == null || isInFluidType) {
+            if (getPassengers().isEmpty() || isInFluidType) {
                 leftInputDown = false
                 rightInputDown = false
                 forwardInputDown = false
                 backInputDown = false
-                power *= 0.95f
                 if (onGround()) {
+                    power *= 0.95f
                     deltaMovement = deltaMovement.multiply(0.94, 1.0, 0.94)
                 } else {
+                    power *= 0.995f
                     xRot = Mth.clamp(xRot + 0.1f, -89f, 89f)
                 }
-            } else if (passenger is Player) {
+            }
+
+            if (firstPassenger is Player) {
                 if (!engineStart && forwardInputDown && power > 0.01f) {
                     engineStart = true
                     level().playSound(null, this, engineInfo.engineStartSound, soundSource, 3f, 1f)
@@ -799,7 +800,7 @@ object VehicleEngineUtils {
 
                     if (backInputDown) {
                         power = Math.max(
-                            power - 0.006f * powerReduce, if (onGround()) -0.2f else 0.05f
+                                power - 0.006f * powerReduce, if (onGround()) -0.2f else 0.05f
                         )
                     }
                 }
