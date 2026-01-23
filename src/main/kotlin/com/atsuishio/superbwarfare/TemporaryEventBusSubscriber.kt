@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.advancement.CriteriaRegister
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.data.container.ContainerDataManager
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
@@ -25,7 +24,6 @@ import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 
 private val classes = arrayOf(
-    CriteriaRegister::class.java,
     CompatHolder::class.java,
     ContainerDataManager::class.java,
     DPSGeneratorEntity::class.java,
