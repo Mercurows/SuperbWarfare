@@ -316,6 +316,12 @@
   "item.superbwarfare.vehicle_reset_kit": "Vehicle Reset Kit",
   "des.superbwarfare.vehicle_reset_kit_1": "Craft with a vehicle container can completely reset the status of the vehicle",
   "des.superbwarfare.vehicle_reset_kit_2": "A mysterious oil paper bag with some small parts inside",
+  "item.superbwarfare.common_blueprint_data_chip": "Common Blueprint Data Chip",
+  "item.superbwarfare.rare_blueprint_data_chip": "Rare Blueprint Data Chip",
+  "item.superbwarfare.epic_blueprint_data_chip": "Epic Blueprint Data Chip",
+  "item.superbwarfare.legendary_blueprint_data_chip": "Legendary Blueprint Data Chip",
+  "item.superbwarfare.superb_blueprint_data_chip": "Superb Blueprint Data Chip",
+  "item.superbwarfare.virtual_blueprint_data_chip": "Virtual Blueprint Data Chip",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 
