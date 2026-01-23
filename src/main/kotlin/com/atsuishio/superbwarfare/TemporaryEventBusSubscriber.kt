@@ -5,8 +5,6 @@ import com.atsuishio.superbwarfare.data.container.ContainerDataManager
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.atsuishio.superbwarfare.entity.TargetEntity
-import com.atsuishio.superbwarfare.event.EntityUseGunEventHandler
-import com.atsuishio.superbwarfare.event.HitboxHelperEventHandler
 import com.atsuishio.superbwarfare.event.LivingEventHandler
 import com.atsuishio.superbwarfare.event.PlayerEventHandler
 import com.atsuishio.superbwarfare.init.ModAttributes
@@ -29,8 +27,6 @@ private val classes = arrayOf(
     DPSGeneratorEntity::class.java,
     SenpaiEntity::class.java,
     TargetEntity::class.java,
-    EntityUseGunEventHandler::class.java,
-    HitboxHelperEventHandler::class.java,
     LivingEventHandler::class.java,
     PlayerEventHandler::class.java,
     ModAttributes::class.java,

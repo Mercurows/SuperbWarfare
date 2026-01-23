@@ -9,8 +9,6 @@ import com.atsuishio.superbwarfare.client.screens.modsell.ModSellWarningScreen
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
-import com.atsuishio.superbwarfare.event.KillMessageHandler
-import com.atsuishio.superbwarfare.event.ModVersionEventHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.common.ammo.PotionMortarShell
 import com.atsuishio.superbwarfare.menu.EnergyMenu
@@ -28,8 +26,6 @@ fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
         ContainerBlockPreview::class.java,
         ModSellWarningScreen::class.java,
         ClientEventHandler::class.java,
-        KillMessageHandler::class.java,
-        ModVersionEventHandler::class.java,
         ModEntityRenderers::class.java,
         ModKeyMappings::class.java,
         ModParticles::class.java,
