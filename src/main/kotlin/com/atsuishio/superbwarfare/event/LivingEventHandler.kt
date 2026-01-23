@@ -45,11 +45,12 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.event.level.ExplosionEvent
 import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber
+@Mod.EventBusSubscriber
 object LivingEventHandler {
     @SubscribeEvent
     fun onLivingChangeTargetEvent(event: LivingChangeTargetEvent) {

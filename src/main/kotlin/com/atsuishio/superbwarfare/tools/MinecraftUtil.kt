@@ -11,6 +11,7 @@ import net.minecraft.client.gui.Font
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.protocol.Packet
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
@@ -82,7 +83,11 @@ fun Player.sendPacket(packet: Any) = sendPacketTo(this, packet)
 
 fun sendPacketTo(player: Player, packet: Any) {
     if (player !is ServerPlayer) return
-    NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with { player }, packet)
+    if (packet is Packet<*>) {
+        player.connection.send(packet)
+    } else {
+        NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with { player }, packet)
+    }
 }
 
 fun sendPacketToAll(packet: Any) {

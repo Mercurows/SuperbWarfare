@@ -5,10 +5,11 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
+import java.util.*
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object KillMessageHandler {
-    val QUEUE: ArrayDeque<LivingKillRecord> = ArrayDeque()
+    val QUEUE: Queue<LivingKillRecord> = ArrayDeque()
 
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
@@ -20,7 +21,7 @@ object KillMessageHandler {
             }
             record.tick++
             if (record.fastRemove && record.tick >= 82 || record.tick >= 100) {
-                QUEUE.removeFirst()
+                QUEUE.poll()
             }
         }
     }
