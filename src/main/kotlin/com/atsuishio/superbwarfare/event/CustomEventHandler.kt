@@ -22,7 +22,7 @@ import net.minecraftforge.registries.ForgeRegistries
 object CustomEventHandler {
     @SubscribeEvent
     fun onPreReload(event: ReloadEvent.Pre) {
-        val shooter = event.shooter ?: return
+        val shooter = event.entity ?: return
         val stack = event.stack
         if (stack.item !is GunItem || shooter.level().isClientSide) return
 
@@ -35,7 +35,7 @@ object CustomEventHandler {
 
     @SubscribeEvent
     fun onPostReload(event: ReloadEvent.Post) {
-        val shooter = event.shooter ?: return
+        val shooter = event.entity ?: return
         val stack = event.stack
         if (stack.item !is GunItem || shooter.level().isClientSide) return
 

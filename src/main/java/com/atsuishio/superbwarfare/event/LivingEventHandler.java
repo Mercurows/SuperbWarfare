@@ -496,11 +496,13 @@ public class LivingEventHandler {
             }
         }
 
+        if (attacker == null) return;
+
         if (MinecraftForge.EVENT_BUS.post(new PreKillEvent.SendKillMessage(attacker, source, entity))) {
             return;
         }
 
-        if (attacker != null && MiscConfig.SEND_KILL_FEEDBACK.get()) {
+        if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
             if (DamageTypeTool.isHeadshotDamage(source)) {
                 NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), new LivingGunKillMessage(attacker.getId(), entity.getId(), true, damageTypeResourceKey));
             } else {
