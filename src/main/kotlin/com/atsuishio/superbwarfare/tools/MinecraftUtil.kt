@@ -106,9 +106,9 @@ fun Entity.sendPacketToTrackingThis(packet: Any) {
 
 fun <T : Event> postEvent(event: T) = MinecraftForge.EVENT_BUS.post(event)
 
-fun queueClientWorkIfDelayed(delay: Int, block: () -> Unit) {
+inline fun queueClientWorkIfDelayed(delay: Int, crossinline block: () -> Unit) {
     if (delay > 0) {
-        queueClientWork(delay, block)
+        queueClientWork(delay) { block() }
     } else {
         block()
     }
