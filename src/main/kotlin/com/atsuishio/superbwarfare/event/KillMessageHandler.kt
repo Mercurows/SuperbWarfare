@@ -5,10 +5,11 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.ClientTickEvent
+import java.util.*
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
 object KillMessageHandler {
-    val QUEUE: ArrayDeque<LivingKillRecord> = ArrayDeque()
+    val QUEUE: Queue<LivingKillRecord> = ArrayDeque()
 
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent.Post) {
@@ -18,7 +19,7 @@ object KillMessageHandler {
             }
             record.tick++
             if (record.fastRemove && record.tick >= 82 || record.tick >= 100) {
-                QUEUE.removeFirst()
+                QUEUE.poll()
             }
         }
     }

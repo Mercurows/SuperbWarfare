@@ -39,10 +39,10 @@ data class LivingGunKillMessage(
         val target = level.getEntity(targetId) ?: return
 
         if (KillMessageHandler.QUEUE.size >= KillMessageConfig.KILL_MESSAGE_COUNT.get()) {
-            KillMessageHandler.QUEUE.removeFirst()
+            KillMessageHandler.QUEUE.poll()
         }
 
-        KillMessageHandler.QUEUE.addFirst(
+        KillMessageHandler.QUEUE.offer(
             LivingKillRecord(
                 attacker,
                 target,

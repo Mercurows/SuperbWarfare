@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Font
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
@@ -64,9 +65,16 @@ fun isSameItemStack(a: ItemStack, b: ItemStack) = a sameWith b
 infix fun ItemStack.sameWith(that: ItemStack) = ItemStack.isSameItemSameComponents(this, that)
 
 fun Player.sendPacket(packet: CustomPacketPayload) = sendPacketTo(this, packet)
+fun Player.sendPacket(packet: Packet<*>) = sendPacketTo(this, packet)
+
+fun sendPacketTo(player: Player, packet: Packet<*>) {
+    if (player !is ServerPlayer) return
+    player.connection.send(packet)
+}
 
 fun sendPacketTo(player: Player, packet: CustomPacketPayload) {
     if (player !is ServerPlayer) return
+
     PacketDistributor.sendToPlayer(player, packet)
 }
 
