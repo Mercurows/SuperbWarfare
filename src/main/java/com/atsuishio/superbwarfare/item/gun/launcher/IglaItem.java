@@ -72,7 +72,7 @@ public class IglaItem extends GunGeoItem {
                     data.get(GunProp.EXPLOSION_RADIUS).floatValue()
             );
 
-            for (Perk.Type type : Perk.Type.values()) {
+            for (Perk.Type type : Perk.Type.getEntries()) {
                 var instance = data.perk.getInstances(type);
                 instance.forEach(perk -> perk.perk().modifyProjectile(data, perk, iglaMissileEntity));
             }
@@ -92,7 +92,7 @@ public class IglaItem extends GunGeoItem {
 
             if (shooter instanceof ServerPlayer serverPlayer) {
                 SoundTool.playLocalSound(serverPlayer, ModSounds.IGLA_FIRE_1P.get(), 2, 1);
-                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
+                NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), ShootClientMessage.INSTANCE);
             }
 
             SoundTool.playDistantSound(serverLevel, ModSounds.IGLA_FIRE_3P.get(), shooter.position(), 4, 1, shooter);

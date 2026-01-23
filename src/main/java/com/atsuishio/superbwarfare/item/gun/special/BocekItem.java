@@ -144,7 +144,7 @@ public class BocekItem extends GunGeoItem {
         if (player instanceof ServerPlayer serverPlayer) {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
-            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new ShootClientMessage(10));
+            NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), ShootClientMessage.INSTANCE);
         }
 
         if (power * 12 >= 6) {
@@ -204,7 +204,7 @@ public class BocekItem extends GunGeoItem {
         projectile.setExplosionDamage(explosionDamage);
         projectile.setExplosionRadius(explosionRadius);
 
-        for (Perk.Type type : Perk.Type.values()) {
+        for (Perk.Type type : Perk.Type.getEntries()) {
             var instance = data.perk.getInstances(type);
             instance.forEach(perk -> perk.perk().modifyProjectile(data, perk, projectile));
         }

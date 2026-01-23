@@ -2,6 +2,7 @@
 
 package com.atsuishio.superbwarfare.tools
 
+import com.atsuishio.superbwarfare.Mod.Companion.queueClientWork
 import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import net.minecraft.client.Minecraft
@@ -28,6 +29,9 @@ val mc: Minecraft get() = Minecraft.getInstance()
 
 @get:OnlyIn(Dist.CLIENT)
 val localPlayer get() = mc.player
+
+@get:OnlyIn(Dist.CLIENT)
+val clientLevel get() = mc.level
 
 @get:OnlyIn(Dist.CLIENT)
 val font: Font get() = mc.font
@@ -101,3 +105,11 @@ fun Entity.sendPacketToTrackingThis(packet: Any) {
 }
 
 fun <T : Event> postEvent(event: T) = MinecraftForge.EVENT_BUS.post(event)
+
+fun queueClientWorkIfDelayed(delay: Int, block: () -> Unit) {
+    if (delay > 0) {
+        queueClientWork(delay, block)
+    } else {
+        block()
+    }
+}

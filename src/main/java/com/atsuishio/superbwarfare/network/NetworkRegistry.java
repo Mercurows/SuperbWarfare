@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.network;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
-import com.atsuishio.superbwarfare.network.message.receive.*;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -26,21 +25,6 @@ public class NetworkRegistry {
 
     public static void register() {
         NetworkRegistryKt.register();
-
-        playToClient(PlayerVariablesSyncMessage.class, PlayerVariablesSyncMessage::buffer, PlayerVariablesSyncMessage::new, PlayerVariablesSyncMessage::handler);
-        playToClient(ShakeClientMessage.class, ShakeClientMessage::encode, ShakeClientMessage::decode, ShakeClientMessage::handler);
-        playToClient(ClientMotionSyncMessage.class, ClientMotionSyncMessage::encode, ClientMotionSyncMessage::decode, ClientMotionSyncMessage::handler);
-        playToClient(LivingGunKillMessage.class, LivingGunKillMessage::encode, LivingGunKillMessage::decode, LivingGunKillMessage::handler);
-        playToClient(ContainerDataMessage.class, ContainerDataMessage::encode, ContainerDataMessage::decode, ContainerDataMessage::handler);
-        playToClient(ShootClientMessage.class, ShootClientMessage::encode, ShootClientMessage::decode, (message, context) -> ShootClientMessage.handler(context));
-        playToClient(DrawClientMessage.INSTANCE, DrawClientMessage::handler);
-        playToClient(ResetCameraTypeMessage.INSTANCE, ResetCameraTypeMessage::handler);
-        playToClient(RadarMenuOpenMessage.class, RadarMenuOpenMessage::encode, RadarMenuOpenMessage::decode, RadarMenuOpenMessage::handler);
-        playToClient(RadarMenuCloseMessage.INSTANCE, RadarMenuCloseMessage::handler);
-        playToClient(FinishAssemblingVehicleMessage.class, FinishAssemblingVehicleMessage::encode, FinishAssemblingVehicleMessage::decode, FinishAssemblingVehicleMessage::handler);
-        playToClient(TDMSyncMessage.class, TDMSyncMessage::encode, TDMSyncMessage::decode, TDMSyncMessage::handler);
-        playToClient(SoundClientMessage.class, SoundClientMessage::encode, SoundClientMessage::decode, SoundClientMessage::handler);
-        playToClient(ClientPhosphorusFireMessage.class, ClientPhosphorusFireMessage::encode, ClientPhosphorusFireMessage::decode, ClientPhosphorusFireMessage::handler);
 
         playToServer(LaserShootMessage.class, LaserShootMessage::encode, LaserShootMessage::decode, LaserShootMessage::handler);
         playToServer(ShootMessage.class, ShootMessage::encode, ShootMessage::decode, ShootMessage::handler);

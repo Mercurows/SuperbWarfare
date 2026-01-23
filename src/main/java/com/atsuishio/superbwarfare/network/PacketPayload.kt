@@ -33,7 +33,6 @@ abstract class ClientPacketPayload : PacketPayload() {
     override fun handleInternal(message: PacketPayload, context: PayloadContext) {
         with(context.get()) {
             enqueueWork {
-                // TODO 这样能不能隔离？
                 DistExecutor.unsafeRunWhenOn(Dist.CLIENT) {
                     DistExecutor.SafeRunnable { with(message) { context.handler() } }
                 }

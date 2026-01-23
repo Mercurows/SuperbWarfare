@@ -12,7 +12,6 @@ data class ClientIndicatorMessage(
 ) : ClientPacketPayload() {
 
     override fun PayloadContext.handler() {
-        // TODO: 这样处理是否存在服务端执行问题？
         when (type) {
             1 -> CrossHairOverlay.headIndicator = value
             2 -> CrossHairOverlay.killIndicator = value
