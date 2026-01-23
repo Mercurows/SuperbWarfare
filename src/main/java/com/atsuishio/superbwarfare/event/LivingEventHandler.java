@@ -476,11 +476,13 @@ public class LivingEventHandler {
             }
         }
 
+        if (attacker == null) return;
+
         if (NeoForge.EVENT_BUS.post(new PreKillEvent.SendKillMessage(attacker, source, entity)).isCanceled()) {
             return;
         }
 
-        if (attacker != null && MiscConfig.SEND_KILL_FEEDBACK.get()) {
+        if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
             if (DamageTypeTool.isHeadshotDamage(source)) {
                 PacketDistributor.sendToAllPlayers(new LivingGunKillMessage(attacker.getId(), entity.getId(), true, damageTypeResourceKey));
             } else {
