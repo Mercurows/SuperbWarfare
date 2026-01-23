@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.event
 
-import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.api.event.ReloadEvent
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.data.gun.*
@@ -19,18 +17,16 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.registries.MissingMappingsEvent
 import kotlin.math.max
 import kotlin.math.min
 
-
-@EventBusSubscriber
+@Mod.EventBusSubscriber
 object GunEventHandler {
     /**
      * 拉大栓
@@ -72,7 +68,7 @@ object GunEventHandler {
             )
         )
 
-        queueServerWork((data.bolt.actionTimer.get() / 2.0 + 1.5 * shooterHeight).toInt()) {
+        com.atsuishio.superbwarfare.Mod.queueServerWork((data.bolt.actionTimer.get() / 2.0 + 1.5 * shooterHeight).toInt()) {
             if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                 val ammoType = data.selectedAmmoConsumer().playerAmmoType
                 when (ammoType) {
@@ -146,7 +142,7 @@ object GunEventHandler {
         for (type in Perk.Type.entries.toTypedArray()) {
             val instance = data.perk.getInstances(type)
             instance.forEach {
-                it.perk?.tick(data, it, shooter)
+                it.perk.tick(data, it, shooter)
             }
         }
     }
@@ -385,7 +381,8 @@ object GunEventHandler {
         if (reload.singleReloadStarter.start()) {
             postEvent(ReloadEvent.Pre(shooter, data))
 
-            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter) || stack.`is`(ModItems.SECONDARY_CATACLYSM.get()))) {
+            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter) || stack.`is`(
+                    ModItems.SECONDARY_CATACLYSM.get()))) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(shooter, data)
                 val prepareLoadTime = data.get(GunProp.PREPARE_LOAD_TIME)
@@ -499,7 +496,10 @@ object GunEventHandler {
     }
 
     fun iterativeLoad(shooter: Entity?, data: GunData) {
-        val required = min(data.get(GunProp.MAGAZINE) - data.ammo.get(), data.get(GunProp.ITERATIVE_LOAD_AMOUNT))
+        val required = min(
+            data.get(GunProp.MAGAZINE) - data.ammo.get(),
+            data.get(GunProp.ITERATIVE_LOAD_AMOUNT)
+        )
         val available = min(required, data.countBackupAmmo(shooter))
         data.ammo.add(available)
 
@@ -540,7 +540,7 @@ object GunEventHandler {
             )
         )
 
-        queueServerWork((data.get(GunProp.PREPARE_EMPTY_TIME) / 2.0 + 3 + 1.5 * shooterHeight).toInt()) {
+        com.atsuishio.superbwarfare.Mod.queueServerWork((data.get(GunProp.PREPARE_EMPTY_TIME) / 2.0 + 3 + 1.5 * shooterHeight).toInt()) {
             if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                 val ammoType = data.selectedAmmoConsumer().playerAmmoType
                 when (ammoType) {
@@ -597,7 +597,7 @@ object GunEventHandler {
             )
         )
 
-        queueServerWork((8 + 1.5 * shooterHeight).toInt()) {
+        com.atsuishio.superbwarfare.Mod.queueServerWork((8 + 1.5 * shooterHeight).toInt()) {
             if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                 val ammoType = data.selectedAmmoConsumer().playerAmmoType
                 when (ammoType) {
@@ -667,7 +667,7 @@ object GunEventHandler {
 
         // TODO 为什么要特判这个
         if (data.stack.`is`(ModItems.MARLIN.get())) {
-            queueServerWork((5 + 1.5 * shooterHeight).toInt()) {
+            com.atsuishio.superbwarfare.Mod.queueServerWork((5 + 1.5 * shooterHeight).toInt()) {
                 SoundTool.playLocalSound(
                     shooter,
                     ModSounds.SHELL_CASING_NORMAL.get(),
@@ -728,8 +728,8 @@ object GunEventHandler {
 
     @SubscribeEvent
     fun onMissingMappings(event: MissingMappingsEvent) {
-        for (mapping in event.getAllMappings<Item?>(Registries.ITEM)) {
-            if (Mod.MODID == mapping.getKey().namespace) {
+        for (mapping in event.getAllMappings(Registries.ITEM)) {
+            if (com.atsuishio.superbwarfare.Mod.MODID == mapping.getKey().namespace) {
                 val item = mapping.getKey().path
                 when (item) {
                     "abekiri" -> mapping.remap(ModItems.HOMEMADE_SHOTGUN.get())
