@@ -132,7 +132,7 @@ public class BocekItem extends GunGeoItem {
         if (player instanceof ServerPlayer serverPlayer) {
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_1P.getId(), SoundSource.PLAYERS);
             SoundTool.stopSound(serverPlayer, ModSounds.BOCEK_PULL_3P.getId(), SoundSource.PLAYERS);
-            PacketDistributor.sendToPlayer(serverPlayer, new ShootClientMessage(10));
+            PacketDistributor.sendToPlayer(serverPlayer, ShootClientMessage.INSTANCE);
         }
 
         if (power * 12 >= 6) {

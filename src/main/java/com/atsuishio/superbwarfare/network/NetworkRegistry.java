@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.network;
 
-import com.atsuishio.superbwarfare.network.message.receive.*;
 import com.atsuishio.superbwarfare.network.message.send.*;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -13,22 +12,6 @@ public class NetworkRegistry {
 
     private static void register() {
         NetworkRegistryKt.register();
-
-        playToClient(PlayerVariablesSyncMessage.TYPE, PlayerVariablesSyncMessage.STREAM_CODEC, (msg, ctx) -> PlayerVariablesSyncMessage.handler(msg));
-        playToClient(ShakeClientMessage.TYPE, ShakeClientMessage.STREAM_CODEC, ShakeClientMessage::handler);
-        playToClient(ClientMotionSyncMessage.TYPE, ClientMotionSyncMessage.STREAM_CODEC, ClientMotionSyncMessage::handler);
-        playToClient(LivingGunKillMessage.TYPE, LivingGunKillMessage.STREAM_CODEC, LivingGunKillMessage::handler);
-        playToClient(ContainerDataMessage.TYPE, ContainerDataMessage.STREAM_CODEC, ContainerDataMessage::handler);
-        playToClient(ShootClientMessage.TYPE, ShootClientMessage.STREAM_CODEC, ShootClientMessage::handler);
-        playToClient(DrawClientMessage.TYPE, DrawClientMessage.STREAM_CODEC, (msg, ctx) -> DrawClientMessage.handler());
-        playToClient(ResetCameraTypeMessage.TYPE, ResetCameraTypeMessage.STREAM_CODEC, (message2, context2) -> ResetCameraTypeMessage.handler());
-        playToClient(RadarMenuOpenMessage.TYPE, RadarMenuOpenMessage.STREAM_CODEC, (message4, context4) -> RadarMenuOpenMessage.handler(message4));
-        playToClient(RadarMenuCloseMessage.TYPE, RadarMenuCloseMessage.STREAM_CODEC, (message1, context1) -> RadarMenuCloseMessage.handler());
-        playToClient(ActiveThermalImagingMessage.TYPE, ActiveThermalImagingMessage.STREAM_CODEC, ActiveThermalImagingMessage::handler);
-        playToClient(FinishAssemblingVehicleMessage.TYPE, FinishAssemblingVehicleMessage.STREAM_CODEC, (message3, context3) -> FinishAssemblingVehicleMessage.handler(message3));
-        playToClient(TDMSyncMessage.TYPE, TDMSyncMessage.STREAM_CODEC, (message3, context3) -> TDMSyncMessage.handler(message3));
-        playToClient(SoundClientMessage.TYPE, SoundClientMessage.STREAM_CODEC, (message3, context3) -> SoundClientMessage.handler(message3));
-        playToClient(ClientPhosphorusFireMessage.TYPE, ClientPhosphorusFireMessage.STREAM_CODEC, (message3, context3) -> ClientPhosphorusFireMessage.handler(message3));
 
         playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);

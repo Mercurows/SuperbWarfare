@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.network
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage
-import com.atsuishio.superbwarfare.network.message.receive.DataSyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.*
 import com.atsuishio.superbwarfare.network.message.send.*
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
@@ -24,10 +22,16 @@ private inline fun <reified T> decodeFrom(input: FriendlyByteBuf): T {
 
 private inline fun <reified T : PacketPayload> playTo(reg: (CustomPacketPayload.Type<T>, StreamCodec<in RegistryFriendlyByteBuf, T>, IPayloadHandler<T>) -> Unit) {
 
-    val codec: StreamCodec<FriendlyByteBuf, T> = StreamCodec.of(
-        { buf, value -> encodeTo(buf, value) },
-        { buf -> decodeFrom(buf) },
-    )
+    val instance = T::class.objectInstance
+
+    val codec: StreamCodec<FriendlyByteBuf, T> = if (instance != null) {
+        StreamCodec.unit(instance)
+    } else {
+        StreamCodec.of(
+            { buf, value -> encodeTo(buf, value) },
+            { buf -> decodeFrom(buf) },
+        )
+    }
 
     val className = T::class.java.simpleName.substringBefore("Message")
 
@@ -61,6 +65,20 @@ fun register() {
     playToClient<ClientIndicatorMessage>()
     playToClient<ClientSetMotionMessage>()
     playToClient<DataSyncMessage>()
+    playToClient<ClientMotionSyncMessage>()
+    playToClient<ClientPhosphorusFireMessage>()
+    playToClient<ContainerDataMessage>()
+    playToClient<DrawClientMessage>()
+    playToClient<FinishAssemblingVehicleMessage>()
+    playToClient<LivingGunKillMessage>()
+    playToClient<PlayerVariablesSyncMessage>()
+    playToClient<RadarMenuCloseMessage>()
+    playToClient<RadarMenuOpenMessage>()
+    playToClient<ResetCameraTypeMessage>()
+    playToClient<ShakeClientMessage>()
+    playToClient<ShootClientMessage>()
+    playToClient<SoundClientMessage>()
+    playToClient<TDMSyncMessage>()
 
     playToServer<AdjustMortarAngleMessage>()
     playToServer<AdjustZoomFovMessage>()
