@@ -87,7 +87,7 @@ public class M98bItemModel extends CustomGunModel<M98bItem> {
 
         GeoBone shen = getAnimationProcessor().getBone("fire");
 
-        ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
+        ClientEventHandler.handleShootAnimation(shen, 0.5f, 2f, 3f, 2.5f, 0.3f, 0.5f, 0.4f, 0.45f);
 
         shen.setPosX((float) (shen.getPosX() * (1 - 0.4 * zt)));
         shen.setPosY((float) (shen.getPosY() * (-1 + 0.8 * zt)));

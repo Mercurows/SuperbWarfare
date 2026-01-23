@@ -85,7 +85,7 @@ public class SvdItemModel extends CustomGunModel<SvdItem> {
             };
         }
 
-        ClientEventHandler.handleShootAnimation(shen, 2.5f, 0.5f, 2f, 1.5f, 2f, 1.4f, 0.4f, 0.7f);
+        ClientEventHandler.handleShootAnimation(shen, 0.8f, 0.5f, 2f, 1.5f, 2f, 1.4f, 0.4f, 0.7f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

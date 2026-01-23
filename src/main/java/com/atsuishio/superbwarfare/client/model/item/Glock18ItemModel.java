@@ -49,7 +49,7 @@ public class Glock18ItemModel extends CustomGunModel<Glock18Item> {
 
         GeoBone body = getAnimationProcessor().getBone("gun");
 
-        ClientEventHandler.handleShootAnimation(body, 1.25f, -2.5f, 1.35f, 4.5f, 1.3f, 1f, 0.2f, 1);
+        ClientEventHandler.handleShootAnimation(body, 1.25f, -2.5f, 1.35f, 4.5f, 1.3f, 1f, 0.2f, 0.8f);
 
         CrossHairOverlay.gunRot = body.getRotZ();
 

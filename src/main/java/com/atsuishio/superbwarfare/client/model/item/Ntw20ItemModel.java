@@ -70,7 +70,7 @@ public class Ntw20ItemModel extends CustomGunModel<Ntw20Item> {
 
         GeoBone shen = getAnimationProcessor().getBone("fire");
 
-        ClientEventHandler.handleShootAnimation(shen, 1.25f, 3f, 2.5f, 2.5f, 0.7f, 0.5f, 0.4f, 0.45f);
+        ClientEventHandler.handleShootAnimation(shen, 0.5f, 2f, 3f, 2.5f, 0.3f, 0.5f, 0.4f, 0.45f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

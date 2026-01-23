@@ -33,7 +33,7 @@ public class Aa12ItemModel extends CustomGunModel<Aa12Item> {
         gun.setRotZ((float) (0.02f * zpz));
         gun.setScaleZ(1f - (0.4f * (float) zp));
 
-        ClientEventHandler.handleShootAnimation(shen, 1.25f, 1.7f, 2f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
+        ClientEventHandler.handleShootAnimation(shen, 0.5f, 0.5f, 1f, 1f, 1, 1f, 0.4f, 0.55f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

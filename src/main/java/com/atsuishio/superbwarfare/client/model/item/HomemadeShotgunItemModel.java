@@ -32,7 +32,7 @@ public class HomemadeShotgunItemModel extends CustomGunModel<HomemadeShotgunItem
         gun.setPosZ(1.2f * (float) zp + (float) (0.3f * zpz));
         gun.setRotZ((float) (0.05f * zpz));
 
-        ClientEventHandler.handleShootAnimation(fireRoot, 1.25f, -2f, 2.5f, 4.5f, 1.3f, 1f, 0.2f, 1);
+        ClientEventHandler.handleShootAnimation(fireRoot, 1.25f, -2f, 2.5f, 4.5f, 1.3f, 1f, 0.2f, 0.55f);
 
         CrossHairOverlay.gunRot = fireRoot.getRotZ();
 

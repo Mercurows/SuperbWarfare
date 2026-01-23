@@ -33,7 +33,7 @@ public class HuntingRifleItemModel extends CustomGunModel<HuntingRifleItem> {
         gun.setRotZ((float) (0.05f * zpz));
         gun.setScaleZ(1f - (0.5f * (float) zp));
 
-        ClientEventHandler.handleShootAnimation(fireRoot, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
+        ClientEventHandler.handleShootAnimation(fireRoot, 0.5f, 2f, 3f, 2.5f, 0.3f, 0.5f, 0.4f, 0.45f);
 
         CrossHairOverlay.gunRot = fireRoot.getRotZ();
 

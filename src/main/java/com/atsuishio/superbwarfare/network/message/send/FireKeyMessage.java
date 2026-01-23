@@ -47,7 +47,7 @@ public record FireKeyMessage(int msgType, double power, boolean zoom) implements
         } else if (type == 1) {
             // 松开开火
             data.item.onFireKeyRelease(data, player, power, zoom);
-            Mod.queueServerWork(3, () -> handleGunBolt(player, stack));
+            Mod.queueServerWork(4, () -> handleGunBolt(player, stack));
         }
 
         data.save();

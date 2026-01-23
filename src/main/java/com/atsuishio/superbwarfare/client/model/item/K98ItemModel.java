@@ -44,7 +44,7 @@ public class K98ItemModel extends CustomGunModel<K98Item> {
         gun.setPosZ(10f * (float) zp + (float) (0.3f * zpz));
         gun.setScaleZ(1f - (0.7f * (float) zp));
 
-        ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 0.8f, 1f, 0.4f, 0.55f);
+        ClientEventHandler.handleShootAnimation(shen, 0.5f, 2f, 3f, 2.5f, 0.3f, 0.5f, 0.4f, 0.45f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

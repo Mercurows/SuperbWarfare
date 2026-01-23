@@ -82,7 +82,7 @@ public class AwmItemModel extends CustomGunModel<AwmItem> {
 
         GeoBone shen = getAnimationProcessor().getBone("fire");
 
-        ClientEventHandler.handleShootAnimation(shen, 1.25f, 2f, 3f, 2.5f, 1.3f, 1f, 0.4f, 0.55f);
+        ClientEventHandler.handleShootAnimation(shen, 0.5f, 2f, 3f, 2.5f, 0.3f, 0.5f, 0.4f, 0.45f);
 
         GeoBone l = getAnimationProcessor().getBone("l");
         GeoBone r = getAnimationProcessor().getBone("r");
