@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.LivingEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -13,8 +14,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
-
-import static com.atsuishio.superbwarfare.event.LivingEventHandler.stopGunReloadSound;
 
 public record EditMessage(int type, boolean add, boolean isVehicle) {
 
@@ -43,7 +42,7 @@ public record EditMessage(int type, boolean add, boolean isVehicle) {
 
                 vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
                     int size = data.get(GunProp.AMMO_CONSUMER).size();
-                    stopGunReloadSound(player, data);
+                    LivingEventHandler.stopGunReloadSound(player, data);
                     data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
 
                     var sound = data.get(GunProp.SOUND_INFO).change;
