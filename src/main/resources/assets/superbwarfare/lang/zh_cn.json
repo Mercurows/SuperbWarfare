@@ -316,6 +316,12 @@
   "item.superbwarfare.vehicle_reset_kit": "载具重置套件",
   "des.superbwarfare.vehicle_reset_kit_1": "将其与装有载具的集装箱一起合成，能够完全重置载具状态",
   "des.superbwarfare.vehicle_reset_kit_2": "一个神秘的油纸包，里面是一些小零件",
+  "item.superbwarfare.common_blueprint_data_chip": "普通蓝图数据芯片",
+  "item.superbwarfare.rare_blueprint_data_chip": "稀有蓝图数据芯片",
+  "item.superbwarfare.epic_blueprint_data_chip": "史诗蓝图数据芯片",
+  "item.superbwarfare.legendary_blueprint_data_chip": "传说蓝图数据芯片",
+  "item.superbwarfare.superb_blueprint_data_chip": "卓越蓝图数据芯片",
+  "item.superbwarfare.virtual_blueprint_data_chip": "虚幻蓝图数据芯片",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

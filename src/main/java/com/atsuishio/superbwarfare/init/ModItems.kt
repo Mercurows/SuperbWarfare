@@ -303,6 +303,13 @@ object ModItems {
     @JvmField val MEDIUM_ARMAMENT_MODULE = registerItem("medium_armament_module") { Item(Item.Properties().rarity(Rarity.EPIC)) }
     @JvmField val HEAVY_ARMAMENT_MODULE = registerItem("heavy_armament_module") { Item(Item.Properties().rarity(legendary)) }
 
+    @JvmField val COMMON_BLUEPRINT_DATA_CHIP = registerItem("common_blueprint_data_chip")
+    @JvmField val RARE_BLUEPRINT_DATA_CHIP = registerItem("rare_blueprint_data_chip") { Item(Item.Properties().rarity(Rarity.RARE)) }
+    @JvmField val EPIC_BLUEPRINT_DATA_CHIP = registerItem("epic_blueprint_data_chip") { Item(Item.Properties().rarity(Rarity.EPIC)) }
+    @JvmField val LEGENDARY_BLUEPRINT_DATA_CHIP = registerItem("legendary_blueprint_data_chip") { Item(Item.Properties().rarity(legendary)) }
+    @JvmField val SUPERB_BLUEPRINT_DATA_CHIP = registerItem("superb_blueprint_data_chip") { Item(Item.Properties().rarity(superb)) }
+    @JvmField val VIRTUAL_BLUEPRINT_DATA_CHIP = registerItem("virtual_blueprint_data_chip") { Item(Item.Properties().rarity(virtual)) }
+
     @JvmField val TRACHELIUM_BLUEPRINT = registerBlueprint("trachelium_blueprint", virtual)
     @JvmField val GLOCK_17_BLUEPRINT = registerBlueprint("glock_17_blueprint", Rarity.COMMON)
     @JvmField val MP_443_BLUEPRINT = registerBlueprint("mp_443_blueprint", Rarity.COMMON)

@@ -182,6 +182,13 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.US_CHEST_IOTV);
         simpleItem(ModItems.GE_HELMET_M_35);
 
+        simpleItem(ModItems.COMMON_BLUEPRINT_DATA_CHIP);
+        simpleItem(ModItems.RARE_BLUEPRINT_DATA_CHIP);
+        simpleItem(ModItems.EPIC_BLUEPRINT_DATA_CHIP);
+        simpleItem(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP);
+        simpleItem(ModItems.SUPERB_BLUEPRINT_DATA_CHIP);
+        simpleItem(ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP);
+
         // blueprints
         gunBlueprintItem(ModItems.TRACHELIUM_BLUEPRINT);
         gunBlueprintItem(ModItems.GLOCK_17_BLUEPRINT);
