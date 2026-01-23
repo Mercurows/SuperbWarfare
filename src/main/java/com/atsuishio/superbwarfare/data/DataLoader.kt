@@ -141,7 +141,8 @@ object DataLoader {
         LOADED_DATA.filter { it.value.synced }.forEach { (key, data) ->
             val packet = DataSyncMessage(key, data.serializeToString())
 
-            for (player in event.playerList.players) {
+            val player = event.player
+            for (player in if (player != null) listOf(player) else event.playerList.players) {
                 if (server.isSingleplayerOwner(player.gameProfile)) continue
 
                 player.sendPacket(packet)
