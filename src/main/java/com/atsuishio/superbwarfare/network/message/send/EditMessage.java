@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.LivingEventHandler;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -19,8 +20,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-
-import static com.atsuishio.superbwarfare.event.LivingEventHandler.stopGunReloadSound;
 
 public record EditMessage(int msgType, boolean add, boolean isVehicle) implements CustomPacketPayload {
     public static final Type<EditMessage> TYPE = new Type<>(Mod.loc("edit"));
@@ -46,7 +45,7 @@ public record EditMessage(int msgType, boolean add, boolean isVehicle) implement
 
             vehicle.modifyGunData(vehicle.getSeatIndex(player), data -> {
                 int size = data.get(GunProp.AMMO_CONSUMER).size();
-                stopGunReloadSound((ServerPlayer) player, data);
+                LivingEventHandler.stopGunReloadSound((ServerPlayer) player, data);
                 data.changeAmmoConsumer((data.selectedAmmoType.get() + (message.add ? 1 : -1) + size) % size, vehicle.getAmmoSupplier());
 
                 var sound = data.get(GunProp.SOUND_INFO).change;
