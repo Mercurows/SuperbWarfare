@@ -110,14 +110,11 @@ public class ClientEventHandler {
 
     public static double firePos = 0;
     public static double firePosZ = 0;
-
     public static double customAnimSpeed = 1f;
-
-    public static double recoilTime = 0;
 
     public static double recoilHorizon = 0;
     public static double recoilY = 0;
-
+    public static double recoilForce = 0;
     public static double droneFov = 1;
     public static double droneFovLerp = 1;
     public static double fov = 0;
@@ -299,6 +296,8 @@ public class ClientEventHandler {
         if (player.onGround() && canDoubleJump) {
             canDoubleJump = false;
         }
+
+        recoilForce *= 0.55;
 
         isProne(player);
         handleVariableDecrease();
@@ -1767,7 +1766,7 @@ public class ClientEventHandler {
             fireRecoilTime -= 7 * times;
             fireSpread += 0.1 * times;
             firePosZ += (0.8 * firePosZ + 0.4) * (4 * Math.random() + 0.85) * times;
-            recoilTime = 0.01;
+            recoilForce += 0.75;
         }
 
         fireSpread = Mth.clamp(fireSpread - 0.1 * (Math.pow(fireSpread, 2) * times), 0, 2);
@@ -1863,12 +1862,12 @@ public class ClientEventHandler {
         float zoom = (float) (1 - zoomMultiply * zoomTime) * pose;
 
         if (bone != null) {
-            bone.setPosX(zoom * x * (float) (recoilHorizon * (0.2f * firePos)));
+            bone.setPosX(zoom * x * (float) (recoilHorizon * (1.5f * firePos)));
             bone.setPosY(zoom * y * (float) (getBoneMoveY((float) firePosTimer) * 0.25));
             bone.setPosZ(zoom * z * (float) (getBoneMoveZ((float) firePosTimer) * 0.5 + 0.3f * firePosZ) * (float) (1 - 0.25 * zoomTime));
             bone.setRotX(zoom * rotX * (float) (-getBoneRotX((float) fireRotTimer) * Mth.DEG_TO_RAD * 0.4f + 0.04f * firePosZ) * gripRecoilX * recoil * (float) (1 - 0.75 * zoomTime) * zoomRecoil);
             bone.setRotY((float) (3 * zoom * rotY * getBoneRotY((float) fireRotTimer) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil * (float) (1 - 0.3 * zoomTime) * zoomRecoil));
-            bone.setRotZ((float) (2 * zoom * rotZ * getBoneRotZ((float) fireRotTimer) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil * (float) (1 - 0.25 * zoomTime) * zoomRecoil));
+            bone.setRotZ((float) (5 * zoom * rotZ * getBoneRotZ((float) fireRotTimer) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil * (float) (1 - 0.5 * zoomTime) * zoomRecoil));
         }
     }
 
@@ -1997,7 +1996,7 @@ public class ClientEventHandler {
             rpm = (double) data.get(GunProp.RPM) / 1800;
         }
 
-        float gunRecoilX = (float) (data.get(GunProp.RECOIL_X) * 60);
+        double gunRecoilX = data.get(GunProp.RECOIL_X);
 
         recoilHorizon = Mth.lerp(0.2 * times, recoilHorizon, 0) + recoilY;
         recoilY = 0;
@@ -2015,36 +2014,16 @@ public class ClientEventHandler {
         }
 
         // 水平后坐
-        float newYaw = player.getYRot() - (float) (0.6 * recoilHorizon * pose * times * (0.5 + fireSpread) * recoil * (4 / (customWeight + 4)) * gripRecoilX * rpm);
+        float newYaw = player.getYRot() - (float) (0.6 * recoilHorizon * pose * times * (0.5 + fireSpread) * recoil * (4 / (customWeight + 4)) * gripRecoilX);
         player.setYRot(newYaw);
         player.yRotO = player.getYRot();
 
-        double sinRes = 0;
 
-        // 竖直后坐
-        if (0 < recoilTime && recoilTime < 0.5) {
-            float newPitch = (float) (player.getXRot() - 0.02f * gunRecoilX * times * recoil * (4 / (customWeight + 4)) * gripRecoilY * rpm);
+        if (firePosTimer > 0) {
+            float newPitch = player.getXRot() - (float) (140 * pose * gunRecoilX * Math.sin(firePosTimer * Mth.PI * 2) * (2.2 - firePosTimer) * recoil * (4 / (customWeight + 4)) * gripRecoilY + 4 * recoilForce * recoilForce * gunRecoilX) * times;
             player.setXRot(newPitch);
             player.xRotO = player.getXRot();
         }
-
-        if (0 < recoilTime && recoilTime < 2) {
-            recoilTime = recoilTime + 0.3 * times;
-            sinRes = Math.sin(Math.PI * recoilTime);
-        }
-
-        if (2 <= recoilTime && recoilTime < 2.5) {
-            recoilTime = recoilTime + 0.17 * times;
-            sinRes = 0.4 * Math.sin(2 * Math.PI * recoilTime);
-        }
-
-        if (0 < recoilTime && recoilTime < 2.5) {
-            float newPitch = player.getXRot() - (float) (1.5 * pose * gunRecoilX * (sinRes + Mth.clamp(0.5 - recoilTime, 0, 0.5)) * times * (0.5 + fireSpread) * recoil * (4 / (customWeight + 4)) * gripRecoilY * rpm);
-            player.setXRot(newPitch);
-            player.xRotO = player.getXRot();
-        }
-
-        if (recoilTime >= 2.5) recoilTime = 0;
     }
 
     private static void handleShockCamera(ViewportEvent.ComputeCameraAngles event, LivingEntity entity) {

@@ -35,7 +35,7 @@ public class Glock17ItemModel extends CustomGunModel<Glock17Item> {
 
         CoreGeoBone body = getAnimationProcessor().getBone("gun");
 
-        ClientEventHandler.handleShootAnimation(body, 1.25f, -2f, 1.35f, 4.5f, 1.3f, 1f, 0.2f, 1);
+        ClientEventHandler.handleShootAnimation(body, 1.25f, -2f, 1.35f, 4.5f, 1.3f, 1f, 0.2f, 0.8f);
 
         CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
         huatao.setPosZ(1.5f * (float) ClientEventHandler.firePos);

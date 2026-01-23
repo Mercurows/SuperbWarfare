@@ -40,7 +40,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
 
         CoreGeoBone body = getAnimationProcessor().getBone("gun");
 
-        ClientEventHandler.handleShootAnimation(body, 1.25f, -2f, 1.6f, 5f, 1.3f, 1f, 0.2f, 1);
+        ClientEventHandler.handleShootAnimation(body, 1.25f, -2f, 1.6f, 5f, 1.3f, 1f, 0.2f, 0.8f);
 
         CrossHairOverlay.gunRot = body.getRotZ();
         hammer.setRotX(60 * Mth.DEG_TO_RAD + (120 * Mth.DEG_TO_RAD * (float) fp));
