@@ -54,7 +54,7 @@ public class SoundTool {
 
         for (var serverPlayer : players) {
             PacketDistributor.sendToPlayer(serverPlayer,
-                    new SoundClientMessage(soundEvent.getLocation(), pos.toVector3f(), radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
+                    new SoundClientMessage(soundEvent.getLocation(), pos.x, pos.y, pos.z, radius, pitch, sender == null ? UUID.randomUUID() : sender.getUUID()));
         }
     }
 }
