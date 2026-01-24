@@ -4001,6 +4001,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open val hornSound: SoundEvent
         get() = this.computed().hornSound
 
+    // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
+
     //    @NotNull
     //    public SoundEvent getInCarMusicSound() {
     //        var passenger = this.getFirstPassenger();
@@ -4025,7 +4027,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun stuka() = xRot > 5 && xRot < 175 && deltaMovement.y < -0.4 && !onGround()
 
     open val vehicleType: VehicleType?
-        // TODO 以更好的方式播放车载音乐，现在是读取副手的唱片
         get() = computed().type
 
     /**
