@@ -63,8 +63,8 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
     public boolean showRange = false;
 
     protected final ContainerEnergyData dataAccess = new ContainerEnergyData() {
-        public long get(int pIndex) {
-            return switch (pIndex) {
+        public long get(int index) {
+            return switch (index) {
                 case 0 -> ChargingStationBlockEntity.this.fuelTick;
                 case 1 -> ChargingStationBlockEntity.this.maxFuelTick;
                 case 2 -> {
@@ -77,19 +77,19 @@ public class ChargingStationBlockEntity extends BlockEntity implements WorldlyCo
             };
         }
 
-        public void set(int pIndex, long pValue) {
-            switch (pIndex) {
+        public void set(int index, long value) {
+            switch (index) {
                 case 0:
-                    ChargingStationBlockEntity.this.fuelTick = (int) pValue;
+                    ChargingStationBlockEntity.this.fuelTick = (int) value;
                     break;
                 case 1:
-                    ChargingStationBlockEntity.this.maxFuelTick = (int) pValue;
+                    ChargingStationBlockEntity.this.maxFuelTick = (int) value;
                     break;
                 case 2:
-                    ChargingStationBlockEntity.this.getCapability(ForgeCapabilities.ENERGY).ifPresent(consumer -> consumer.receiveEnergy((int) pValue, false));
+                    ChargingStationBlockEntity.this.getCapability(ForgeCapabilities.ENERGY).ifPresent(consumer -> consumer.receiveEnergy((int) value, false));
                     break;
                 case 3:
-                    ChargingStationBlockEntity.this.showRange = pValue == 1;
+                    ChargingStationBlockEntity.this.showRange = value == 1;
                     break;
             }
         }

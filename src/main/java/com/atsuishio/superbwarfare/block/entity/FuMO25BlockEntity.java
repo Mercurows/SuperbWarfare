@@ -71,8 +71,8 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
     protected final ContainerEnergyData dataAccess = new ContainerEnergyData() {
 
         @Override
-        public long get(int pIndex) {
-            return switch (pIndex) {
+        public long get(int index) {
+            return switch (index) {
                 case 0 -> FuMO25BlockEntity.this.energyHandler.map(EnergyStorage::getEnergyStored).orElse(0);
                 case 1 -> FuMO25BlockEntity.this.type.ordinal();
                 case 2 -> FuMO25BlockEntity.this.time;
@@ -83,14 +83,14 @@ public class FuMO25BlockEntity extends BlockEntity implements MenuProvider, GeoB
         }
 
         @Override
-        public void set(int pIndex, long pValue) {
-            switch (pIndex) {
+        public void set(int index, long value) {
+            switch (index) {
                 case 0 ->
-                        FuMO25BlockEntity.this.energyHandler.ifPresent(handler -> handler.receiveEnergy((int) pValue, false));
-                case 1 -> FuMO25BlockEntity.this.type = FuncType.values()[(int) pValue];
-                case 2 -> FuMO25BlockEntity.this.time = (int) pValue;
-                case 3 -> FuMO25BlockEntity.this.powered = pValue == 1;
-                case 4 -> FuMO25BlockEntity.this.tick = (int) pValue;
+                        FuMO25BlockEntity.this.energyHandler.ifPresent(handler -> handler.receiveEnergy((int) value, false));
+                case 1 -> FuMO25BlockEntity.this.type = FuncType.values()[(int) value];
+                case 2 -> FuMO25BlockEntity.this.time = (int) value;
+                case 3 -> FuMO25BlockEntity.this.powered = value == 1;
+                case 4 -> FuMO25BlockEntity.this.tick = (int) value;
             }
         }
 
