@@ -59,20 +59,11 @@ object ClientMouseHandler {
     @JvmField
     var mouseYMoveTick: Double = 0.0
 
-    private fun notInGame(): Boolean {
-        val mc = mc
-        if (mc.player == null) return true
-        if (mc.overlay != null) return true
-        if (mc.screen != null) return true
-        if (!mc.mouseHandler.isMouseGrabbed) return true
-        return !mc.isWindowActive
-    }
-
     @SubscribeEvent
     fun handleClientTick(event: ClientTickEvent.Post) {
         val player = localPlayer ?: return
 
-        if (notInGame()) {
+        if (notInGame) {
             speedX = 0.0
             speedY = 0.0
             lerpSpeedX = 0.0
@@ -88,7 +79,7 @@ object ClientMouseHandler {
         if (stack.`is`(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked")) {
             val drone = EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone")) ?: return
 
-            if (notInGame()) {
+            if (notInGame) {
                 sendPacketToServer(MouseMoveMessage(0.0, 0.0))
                 return
             }
@@ -106,7 +97,7 @@ object ClientMouseHandler {
         if (vehicle is VehicleEntity && player == vehicle.firstPassenger
             && (vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)
         ) {
-            if (notInGame()) {
+            if (notInGame) {
                 sendPacketToServer(MouseMoveMessage(0.0, 0.0))
                 return
             }
@@ -166,7 +157,7 @@ object ClientMouseHandler {
     fun handleClientTick(event: ViewportEvent.ComputeCameraAngles) {
         val player = localPlayer ?: return
 
-        if (notInGame()) {
+        if (notInGame) {
             freeCameraYaw = 0.0
             freeCameraPitch = 0.0
             return
