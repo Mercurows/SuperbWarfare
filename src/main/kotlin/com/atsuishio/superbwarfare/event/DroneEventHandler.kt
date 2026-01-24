@@ -1,10 +1,10 @@
-package com.atsuishio.superbwarfare.event;
+package com.atsuishio.superbwarfare.event
 
 /**
  * Code based on @Mafuyu404's <a href="https://github.com/Mafuyu404/DiligentStalker">DiligentStalker</a>
  */
 //@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID, value = Dist.CLIENT)
-public class DroneEventHandler {
+object DroneEventHandler {
 
 //    @SubscribeEvent
 //    public static void onClientTick(TickEvent.ClientTickEvent event) {
