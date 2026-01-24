@@ -53,7 +53,6 @@ import net.neoforged.neoforge.common.util.TriState
 import net.neoforged.neoforge.event.entity.living.*
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent
-import net.neoforged.neoforge.network.PacketDistributor
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -323,7 +322,7 @@ object LivingEventHandler {
             }
 
             SoundTool.playLocalSound(sourceEntity, ModSounds.TARGET_DOWN.get(), 3f, 1f)
-            PacketDistributor.sendToPlayer(sourceEntity, ClientIndicatorMessage(2, 8))
+            sendPacketTo(sourceEntity, ClientIndicatorMessage(2, 8))
         }
     }
 
@@ -337,7 +336,7 @@ object LivingEventHandler {
                     || damagesource.`is`(ModDamageTypes.MINE) || damagesource.`is`(ModDamageTypes.PROJECTILE_EXPLOSION))
         ) {
             SoundTool.playLocalSound(sourceEntity, ModSounds.INDICATION.get(), 1f, 1f)
-            PacketDistributor.sendToPlayer(sourceEntity, ClientIndicatorMessage(0, 5))
+            sendPacketTo(sourceEntity, ClientIndicatorMessage(0, 5))
         }
     }
 
@@ -511,7 +510,7 @@ object LivingEventHandler {
 
         if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
             if (isHeadshotDamage(source)) {
-                PacketDistributor.sendToAllPlayers(
+                sendPacketToAll(
                     LivingGunKillMessage(
                         attacker.id,
                         entity.id,
@@ -520,7 +519,7 @@ object LivingEventHandler {
                     )
                 )
             } else {
-                PacketDistributor.sendToAllPlayers(
+                sendPacketToAll(
                     LivingGunKillMessage(
                         attacker.id,
                         entity.id,
