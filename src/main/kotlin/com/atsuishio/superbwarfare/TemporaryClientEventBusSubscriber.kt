@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.client.ClickHandler
-import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
@@ -20,7 +19,6 @@ import net.minecraftforge.fml.common.Mod
 fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
         ClickHandler::class.java,
-        ClientRenderHandler::class.java,
         ParachuteRenderer::class.java,
         ContainerBlockPreview::class.java,
         ModSellWarningScreen::class.java,
