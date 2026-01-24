@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.NBTTool
-import com.atsuishio.superbwarfare.tools.`is`
 import net.minecraft.nbt.Tag
 
 object ArtilleryIndicatorFireMessage : ServerPacketPayload() {
@@ -18,7 +17,7 @@ object ArtilleryIndicatorFireMessage : ServerPacketPayload() {
         val player = sender()
         var stack = player.mainHandItem
 
-        if (player.mainHandItem.`is`(ModItems.MONITOR, ModItems.ARTILLERY_INDICATOR)) {
+        if (player.mainHandItem.`is`(ModItems.MONITOR.get()) && player.offhandItem.`is`(ModItems.ARTILLERY_INDICATOR.get())) {
             stack = player.offhandItem
         }
 
