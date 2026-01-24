@@ -8,7 +8,9 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import net.neoforged.neoforge.network.handling.IPayloadHandler
+import net.neoforged.neoforge.network.registration.PayloadRegistrar
 
 val payloadTypeMap = mutableMapOf<Class<*>, CustomPacketPayload.Type<*>>()
 
@@ -54,14 +56,25 @@ private inline fun <reified T : PacketPayload> playTo(reg: (CustomPacketPayload.
 }
 
 private inline fun <reified T : ServerPacketPayload> playToServer() {
-    playTo<T> { type, codec, handler -> NetworkRegistry.playToServer(type, codec, handler) }
+    playTo<T> { type, codec, handler ->
+        registrar!!.playToServer<T>(type, codec, handler)
+    }
 }
 
 private inline fun <reified T : ClientPacketPayload> playToClient() {
-    playTo<T> { type, codec, handler -> NetworkRegistry.playToClient(type, codec, handler) }
+    playTo<T> { type, codec, handler ->
+        registrar!!.playToClient<T>(type, codec, handler)
+    }
 }
 
-fun register() {
+private var registrar: PayloadRegistrar? = null
+
+fun initializeNetwork(event: RegisterPayloadHandlersEvent) {
+    registrar = event.registrar("1")
+    registerPayloads()
+}
+
+private fun registerPayloads() {
     playToClient<ClientIndicatorMessage>()
     playToClient<ClientSetMotionMessage>()
     playToClient<DataSyncMessage>()
@@ -101,4 +114,22 @@ fun register() {
     playToServer<MeleeAttackMessage>()
     playToServer<MouseMoveMessage>()
     playToServer<ParachuteMessage>()
+    playToServer<PlayerStopRidingMessage>()
+    playToServer<RadarChangeModeMessage>()
+    playToServer<RadarSetPosMessage>()
+    playToServer<RadarSetTargetMessage>()
+    playToServer<ReloadMessage>()
+    playToServer<SeekingWeaponWarningMessage>()
+    playToServer<SensitivityMessage>()
+    playToServer<SetFiringParametersMessage>()
+    playToServer<SetPerkLevelMessage>()
+    playToServer<ShootMessage>()
+    playToServer<ShowChargingRangeMessage>()
+    playToServer<SwitchScopeMessage>()
+    playToServer<SwitchVehicleWeaponMessage>()
+    playToServer<UnloadMessage>()
+    playToServer<VehicleFireMessage>()
+    playToServer<VehicleMovementMessage>()
+    playToServer<WeaponZoomingMessage>()
+    playToServer<ZoomMessage>()
 }

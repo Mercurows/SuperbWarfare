@@ -2,16 +2,15 @@ package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
+import com.atsuishio.superbwarfare.network.SerializedVector3f
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.toVec3
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import org.joml.Vector3f
 
 @Serializable
 data class ClientSetMotionMessage(
-    @Contextual val motion: Vector3f,
-    @Contextual val position: Vector3f,
+    val motion: SerializedVector3f,
+    val position: SerializedVector3f,
 ) : ClientPacketPayload() {
 
     override fun PayloadContext.handler() {

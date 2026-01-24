@@ -14,7 +14,7 @@ import com.atsuishio.superbwarfare.config.COMMON_CONFIG
 import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
-import com.atsuishio.superbwarfare.network.NetworkRegistry
+import com.atsuishio.superbwarfare.network.initializeNetwork
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
 import net.minecraft.resources.ResourceLocation
 import net.neoforged.api.distmarker.Dist
@@ -72,7 +72,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         bus.addListener<FMLCommonSetupEvent> { onCommonSetup(bus, it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
 
-        bus.addListener<RegisterPayloadHandlersEvent> { NetworkRegistry.register(it) }
+        bus.addListener<RegisterPayloadHandlersEvent> { initializeNetwork(it) }
 
         registerDataTickets()
 

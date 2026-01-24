@@ -6,20 +6,19 @@ import com.atsuishio.superbwarfare.item.ArtilleryIndicator
 import com.atsuishio.superbwarfare.item.FiringParameters
 import com.atsuishio.superbwarfare.item.firingParameters
 import com.atsuishio.superbwarfare.network.PayloadContext
+import com.atsuishio.superbwarfare.network.SerializedVector3f
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.`is`
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
-import org.joml.Vector3f
 
 @Serializable
-data class DroneFireMessage(@Contextual val pos: Vector3f) : ServerPacketPayload() {
+data class DroneFireMessage(val pos: SerializedVector3f) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
         val stack = player.mainHandItem
