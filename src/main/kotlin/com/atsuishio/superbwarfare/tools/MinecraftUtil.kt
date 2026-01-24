@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.Packet
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
@@ -22,6 +23,7 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.network.PacketDistributor
+import net.minecraftforge.registries.RegistryObject
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -117,4 +119,12 @@ inline fun queueClientWorkIfDelayed(delay: Int, crossinline block: () -> Unit) {
     } else {
         block()
     }
+}
+
+fun ItemStack.`is`(vararg itemsRegistry: RegistryObject<Item>): Boolean {
+    return itemsRegistry.any { `is`(it.get()) }
+}
+
+fun ItemStack.`is`(vararg items: Item): Boolean {
+    return items.any { `is`(it) }
 }

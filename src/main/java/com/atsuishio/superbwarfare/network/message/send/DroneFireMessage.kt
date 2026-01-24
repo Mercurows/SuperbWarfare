@@ -1,0 +1,61 @@
+package com.atsuishio.superbwarfare.network.message.send
+
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator
+import com.atsuishio.superbwarfare.item.FiringParameters
+import com.atsuishio.superbwarfare.item.firingParameters
+import com.atsuishio.superbwarfare.network.PayloadContext
+import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
+import com.atsuishio.superbwarfare.tools.SoundTool
+import com.atsuishio.superbwarfare.tools.`is`
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
+import net.minecraft.ChatFormatting
+import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.Component
+import org.joml.Vector3f
+
+@Serializable
+data class DroneFireMessage(@Contextual val pos: Vector3f) : ServerPacketPayload() {
+    override fun PayloadContext.handler() {
+        val player = sender()
+        val stack = player.mainHandItem
+        val mainTag = stack.getOrCreateTag()
+
+        if (stack.`is`(ModItems.MONITOR.get()) && mainTag.getBoolean("Using") && mainTag.getBoolean("Linked")) {
+            val drone = EntityFindUtil.findDrone(player.level(), mainTag.getString("LinkedDrone")) ?: return
+            if (player.offhandItem.`is`(ModItems.FIRING_PARAMETERS, ModItems.ARTILLERY_INDICATOR)) {
+                val offStack = player.offhandItem
+
+                val (_, radius, isDepressed) = offStack.firingParameters
+
+                offStack.firingParameters = FiringParameters.Parameters(
+                    BlockPos(
+                        pos.x.toInt(),
+                        pos.y.toInt(),
+                        pos.z.toInt()
+                    ), radius, isDepressed
+                )
+
+                player.displayClientMessage(
+                    Component.translatable("tips.superbwarfare.mortar.target_pos")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(
+                            Component.literal(("[" + pos.x() + "," + pos.y() + "," + pos.z() + "]"))
+                        ), true
+                )
+
+                SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2f, 1f)
+
+                val item = offStack.item
+                if (item is ArtilleryIndicator) {
+                    item.setTarget(offStack, player)
+                }
+            } else {
+                drone.fire = true
+            }
+        }
+    }
+}

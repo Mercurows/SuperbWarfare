@@ -224,7 +224,7 @@ object DroneHudOverlay : CommonOverlay("drone_hud") {
 
                 // 射击诸元标记
                 val offStack = player.offhandItem
-                if (offStack.`is`(ModItems.FIRING_PARAMETERS.get()) || offStack.`is`(ModItems.ARTILLERY_INDICATOR.get())) {
+                if (offStack.`is`(ModItems.FIRING_PARAMETERS, ModItems.ARTILLERY_INDICATOR)) {
                     val parameters = offStack.firingParameters
                     val blockPos = parameters.pos
 

@@ -245,7 +245,7 @@ public class WeaponEditScreen extends Screen {
         @Override
         public void onPress() {
             if (!this.isActive()) return;
-            NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(this.type, !this.left));
+            NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(this.type, !this.left, false));
             ClientEventHandler.editModelShake();
         }
 

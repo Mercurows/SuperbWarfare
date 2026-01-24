@@ -358,11 +358,11 @@ public class ClickHandler {
                 }
                 if (data.get(GunProp.AMMO_CONSUMER).size() > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.getKey().getValue()) {
-                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, false));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, false, false));
                         burstFireAmount = 0;
                     }
                     if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.getKey().getValue()) {
-                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true));
+                        NetworkRegistry.PACKET_HANDLER.sendToServer(new EditMessage(5, true, false));
                         burstFireAmount = 0;
                     }
                 }
