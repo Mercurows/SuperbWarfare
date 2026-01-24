@@ -13,37 +13,22 @@ public class NetworkRegistry {
     private static void register() {
         NetworkRegistryKt.register();
 
-        playToServer(LaserShootMessage.TYPE, LaserShootMessage.STREAM_CODEC, LaserShootMessage::handler);
         playToServer(ShootMessage.TYPE, ShootMessage.STREAM_CODEC, ShootMessage::handler);
-        playToServer(DoubleJumpMessage.TYPE, DoubleJumpMessage.STREAM_CODEC, (message, context) -> DoubleJumpMessage.handler(context));
-        playToServer(ParachuteMessage.TYPE, ParachuteMessage.STREAM_CODEC, (msg, ctx) -> ParachuteMessage.handler(ctx));
         playToServer(VehicleMovementMessage.TYPE, VehicleMovementMessage.STREAM_CODEC, VehicleMovementMessage::handler);
-        playToServer(MeleeAttackMessage.TYPE, MeleeAttackMessage.STREAM_CODEC, MeleeAttackMessage::handler);
-        playToServer(LungeMineAttackMessage.TYPE, LungeMineAttackMessage.STREAM_CODEC, LungeMineAttackMessage::handler);
         playToServer(VehicleFireMessage.TYPE, VehicleFireMessage.STREAM_CODEC, VehicleFireMessage::handler);
         playToServer(RadarChangeModeMessage.TYPE, RadarChangeModeMessage.STREAM_CODEC, RadarChangeModeMessage::handler);
         playToServer(RadarSetParametersMessage.TYPE, RadarSetParametersMessage.STREAM_CODEC, RadarSetParametersMessage::handler);
         playToServer(RadarSetPosMessage.TYPE, RadarSetPosMessage.STREAM_CODEC, RadarSetPosMessage::handler);
         playToServer(RadarSetTargetMessage.TYPE, RadarSetTargetMessage.STREAM_CODEC, RadarSetTargetMessage::handler);
-        playToServer(GunReforgeMessage.TYPE, GunReforgeMessage.STREAM_CODEC, (message1, context1) -> GunReforgeMessage.handler(context1));
         playToServer(SetPerkLevelMessage.TYPE, SetPerkLevelMessage.STREAM_CODEC, SetPerkLevelMessage::handler);
         playToServer(SwitchVehicleWeaponMessage.TYPE, SwitchVehicleWeaponMessage.STREAM_CODEC, SwitchVehicleWeaponMessage::handler);
         playToServer(SwitchScopeMessage.TYPE, SwitchScopeMessage.STREAM_CODEC, SwitchScopeMessage::handler);
-        playToServer(FireKeyMessage.TYPE, FireKeyMessage.STREAM_CODEC, FireKeyMessage::handler);
         playToServer(ReloadMessage.TYPE, ReloadMessage.STREAM_CODEC, (message2, context2) -> ReloadMessage.handler(context2));
-        playToServer(FireModeMessage.TYPE, FireModeMessage.STREAM_CODEC, FireModeMessage::handler);
         playToServer(PlayerStopRidingMessage.TYPE, PlayerStopRidingMessage.STREAM_CODEC, PlayerStopRidingMessage::handler);
         playToServer(ZoomMessage.TYPE, ZoomMessage.STREAM_CODEC, ZoomMessage::handler);
-        playToServer(DroneFireMessage.TYPE, DroneFireMessage.STREAM_CODEC, DroneFireMessage::handler);
         playToServer(SetFiringParametersMessage.TYPE, SetFiringParametersMessage.STREAM_CODEC, (message, context) -> SetFiringParametersMessage.handler(context));
-        playToServer(ArtilleryIndicatorFireMessage.TYPE, ArtilleryIndicatorFireMessage.STREAM_CODEC, (message, context) -> ArtilleryIndicatorFireMessage.handler(context));
         playToServer(SensitivityMessage.TYPE, SensitivityMessage.STREAM_CODEC, SensitivityMessage::handler);
-        playToServer(EditMessage.TYPE, EditMessage.STREAM_CODEC, EditMessage::handler);
-        playToServer(InteractMessage.TYPE, InteractMessage.STREAM_CODEC, (interactMessage, context) -> InteractMessage.handler(context));
         playToServer(ShowChargingRangeMessage.TYPE, ShowChargingRangeMessage.STREAM_CODEC, ShowChargingRangeMessage::handler);
-        playToServer(DogTagFinishEditMessage.TYPE, DogTagFinishEditMessage.STREAM_CODEC, DogTagFinishEditMessage::handler);
-        playToServer(MouseMoveMessage.TYPE, MouseMoveMessage.STREAM_CODEC, MouseMoveMessage::handler);
-        playToServer(FiringParametersEditMessage.TYPE, FiringParametersEditMessage.STREAM_CODEC, FiringParametersEditMessage::handler);
         playToServer(UnloadMessage.TYPE, UnloadMessage.STREAM_CODEC, (msg, ctx) -> UnloadMessage.handler(ctx));
         playToServer(SeekingWeaponWarningMessage.TYPE, SeekingWeaponWarningMessage.STREAM_CODEC, SeekingWeaponWarningMessage::handler);
         playToServer(WeaponZoomingMessage.TYPE, WeaponZoomingMessage.STREAM_CODEC, WeaponZoomingMessage::handler);

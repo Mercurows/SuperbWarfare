@@ -1,0 +1,53 @@
+package com.atsuishio.superbwarfare.network.message.send
+
+import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
+import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
+import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpRocketEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.item.ArtilleryIndicator
+import com.atsuishio.superbwarfare.network.PayloadContext
+import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
+import com.atsuishio.superbwarfare.tools.NBTTool
+import com.atsuishio.superbwarfare.tools.`is`
+import net.minecraft.nbt.Tag
+
+object ArtilleryIndicatorFireMessage : ServerPacketPayload() {
+    override fun PayloadContext.handler() {
+        val player = sender()
+        var stack = player.mainHandItem
+
+        if (player.mainHandItem.`is`(ModItems.MONITOR, ModItems.ARTILLERY_INDICATOR)) {
+            stack = player.offhandItem
+        }
+
+        if (!stack.`is`(ModItems.ARTILLERY_INDICATOR.get())) return
+
+        val mainTag = NBTTool.getTag(stack)
+        val tags = mainTag.getList(ArtilleryIndicator.TAG_CANNON, Tag.TAG_COMPOUND.toInt())
+        if (tags.isEmpty()) {
+            mainTag.remove(ArtilleryIndicator.TAG_TYPE)
+            return
+        }
+
+        for (i in tags.indices) {
+            val tag = tags.getCompound(i)
+            val entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"))
+
+            if (entity is ArtilleryEntity) {
+                val gunData = entity.getGunData("Main")
+                if (gunData != null && (entity is MortarEntity || gunData.ammo.get() > 0)) {
+                    queueServerWork(i % 5 + 1) {
+                        entity.vehicleShoot(player, "Main")
+                        entity.resetTarget("Main")
+                    }
+                }
+            }
+
+            if (entity is SodayoPickUpRocketEntity) {
+                entity.vehicleShoot(player, "Main")
+            }
+        }
+    }
+}

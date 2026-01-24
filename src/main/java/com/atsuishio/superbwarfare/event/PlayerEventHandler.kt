@@ -10,10 +10,7 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.tools.InventoryTool
-import com.atsuishio.superbwarfare.tools.NBTTool
-import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -67,7 +64,7 @@ object PlayerEventHandler {
 
         val data = from(stack)
 
-        if ((stack.`is`(ModItems.RPG.get()) || stack.`is`(ModItems.BOCEK.get())) && data.hasEnoughAmmoToShoot(player)) {
+        if (stack.`is`(ModItems.RPG, ModItems.BOCEK) && data.hasEnoughAmmoToShoot(player)) {
             data.isEmpty.set(false)
         }
     }

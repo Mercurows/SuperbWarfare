@@ -18,12 +18,11 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
-import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.capabilities.Capabilities
 import kotlin.math.max
 import kotlin.math.min
 
-@EventBusSubscriber
+//@EventBusSubscriber
 object GunEventHandler {
     /**
      * 拉大栓

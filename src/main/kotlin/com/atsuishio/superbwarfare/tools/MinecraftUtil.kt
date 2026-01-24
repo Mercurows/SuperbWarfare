@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
@@ -22,6 +23,7 @@ import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.Event
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.network.PacketDistributor
+import net.neoforged.neoforge.registries.DeferredHolder
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -102,4 +104,12 @@ inline fun queueClientWorkIfDelayed(delay: Int, crossinline block: () -> Unit) {
     } else {
         block()
     }
+}
+
+fun ItemStack.`is`(vararg itemsRegistry: DeferredHolder<Item, out Item>): Boolean {
+    return itemsRegistry.any { `is`(it.value()) }
+}
+
+fun ItemStack.`is`(vararg items: Item): Boolean {
+    return items.any { `is`(it) }
 }
