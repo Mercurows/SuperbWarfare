@@ -195,7 +195,7 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     public void findNearEntity(Vec3 pos, Entity shooter) {
-        if (this.level() instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel) {
 
             var entities = new SeekTool.Builder(shooter)
                     .withinRange(pos, explosionRadius)

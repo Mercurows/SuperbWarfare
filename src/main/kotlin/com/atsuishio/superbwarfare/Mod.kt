@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare
 
+import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
 import com.atsuishio.superbwarfare.client.molang.MolangVariable
@@ -110,6 +111,7 @@ class Mod {
 
     private fun onCommonSetup(event: FMLCommonSetupEvent) {
         NetworkRegistry.register()
+        MOD_BUS.post(RegisterContainersEvent())
         event.enqueueWork { ModGameRules.bootstrap() }
     }
 

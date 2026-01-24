@@ -23,13 +23,7 @@ import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 
-private val module = SerializersModule {
-    contextual(ResourceLocation::class, ResourceLocationSerializer)
-    contextual(UUID::class, UUIDSerializer)
-    contextual(Vector3f::class, Vector3fSerializer)
-    contextual(Vec3::class, Vec3Serializer)
-    contextual(BlockPos::class, BlockPosSerializer)
-}
+private val module = SerializersModule {}
 
 class ByteBufEncoder(private val buf: FriendlyByteBuf) : AbstractEncoder() {
     override val serializersModule = module
@@ -121,6 +115,11 @@ class ByteBufDecoder(private val buf: FriendlyByteBuf, var elementIndex: Int = 0
 }
 
 typealias CompressedString = @Serializable(CompressedStringSerializer::class) String
+typealias SerializedUUID = @Serializable(UUIDSerializer::class) UUID
+typealias SerializedResourceLocation = @Serializable(ResourceLocationSerializer::class) ResourceLocation
+typealias SerializedVec3 = @Serializable(Vec3Serializer::class) Vec3
+typealias SerializedVector3f = @Serializable(Vector3fSerializer::class) Vector3f
+typealias SerializedBlockPos = @Serializable(BlockPosSerializer::class) BlockPos
 
 object CompressedStringSerializer : KSerializer<String> {
     override val descriptor = PrimitiveSerialDescriptor("CompressedString", PrimitiveKind.STRING)

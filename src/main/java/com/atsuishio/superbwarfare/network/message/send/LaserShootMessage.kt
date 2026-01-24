@@ -3,20 +3,19 @@ package com.atsuishio.superbwarfare.network.message.send
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.PayloadContext
+import com.atsuishio.superbwarfare.network.SerializedUUID
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.sendPacketTo
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.minecraft.sounds.SoundSource
-import java.util.*
 
 @Serializable
 data class LaserShootMessage(
     val damage: Double,
-    @Contextual val uuid: UUID,
+    val uuid: SerializedUUID,
     val headshot: Boolean,
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {

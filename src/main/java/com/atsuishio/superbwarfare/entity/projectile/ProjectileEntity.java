@@ -165,7 +165,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             if (result == null) continue;
 
             Vec3 hitPos = result.getHitPos();
-            if (hitPos == null) continue;
 
             double distanceToHit = startVec.distanceTo(hitPos);
             if (distanceToHit < closestDistance) {

@@ -1161,7 +1161,7 @@ public class ClientEventHandler {
             burstFireAmount--;
         }
 
-        for (Perk.Type type : Perk.Type.values()) {
+        for (Perk.Type type : Perk.Type.getEntries()) {
             var instance = data.perk.getInstances(type);
             customRpm = instance.stream().mapToInt(perk -> perk.perk().getModifiedCustomRPM(customRpm, data, perk)).max().orElse(customRpm);
         }
@@ -1202,7 +1202,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        NetworkRegistry.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockedEntity != null ? lockedEntity.getUUID() : null));
+        NetworkRegistry.PACKET_HANDLER.sendToServer(new ShootMessage(gunSpread, zoom, lockedEntity != null ? lockedEntity.getUUID() : null, null));
         fireRecoilTime = 10;
 
         // 真实后坐（

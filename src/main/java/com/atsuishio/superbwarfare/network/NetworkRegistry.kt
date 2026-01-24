@@ -42,7 +42,11 @@ private inline fun <reified T : ClientPacketPayload> playToClient() {
     }
 }
 
-fun register() {
+fun initializeNetwork() {
+    registerPayloads()
+}
+
+private fun registerPayloads() {
     playToClient<ClientIndicatorMessage>()
     playToClient<ClientSetMotionMessage>()
     playToClient<DataSyncMessage>()
@@ -82,4 +86,22 @@ fun register() {
     playToServer<MeleeAttackMessage>()
     playToServer<MouseMoveMessage>()
     playToServer<ParachuteMessage>()
+    playToServer<PlayerStopRidingMessage>()
+    playToServer<RadarChangeModeMessage>()
+    playToServer<RadarSetPosMessage>()
+    playToServer<RadarSetTargetMessage>()
+    playToServer<ReloadMessage>()
+    playToServer<SeekingWeaponWarningMessage>()
+    playToServer<SensitivityMessage>()
+    playToServer<SetFiringParametersMessage>()
+    playToServer<SetPerkLevelMessage>()
+    playToServer<ShootMessage>()
+    playToServer<ShowChargingRangeMessage>()
+    playToServer<SwitchScopeMessage>()
+    playToServer<SwitchVehicleWeaponMessage>()
+    playToServer<UnloadMessage>()
+    playToServer<VehicleFireMessage>()
+    playToServer<VehicleMovementMessage>()
+    playToServer<WeaponZoomingMessage>()
+    playToServer<ZoomMessage>()
 }

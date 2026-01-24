@@ -98,6 +98,8 @@ public class M18SmokeGrenadeEntity extends FastThrowableProjectile implements Ge
     @Override
     protected void onHit(HitResult result) {
         switch (result.getType()) {
+            case MISS:
+                break;
             case BLOCK:
                 BlockHitResult blockResult = (BlockHitResult) result;
                 BlockPos resultPos = blockResult.getBlockPos();

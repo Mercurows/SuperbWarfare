@@ -170,25 +170,26 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     }
 
     public void findNearEntity(Vec3 pos, Entity shooter) {
-        if (this.level() instanceof ServerLevel serverLevel) {
+        if (!(this.level() instanceof ServerLevel)) {
+            return;
+        }
 
-            var entities = new SeekTool.Builder(shooter)
-                    .withinRange(pos, explosionRadius)
-                    .notItsVehicle()
-                    .baseFilter()
-                    .noVehicle()
-                    .build();
+        var entities = new SeekTool.Builder(shooter)
+                .withinRange(pos, explosionRadius)
+                .notItsVehicle()
+                .baseFilter()
+                .noVehicle()
+                .build();
 
-            for (Entity e : entities) {
-                var dis = pos.distanceTo(e.position());
+        for (Entity e : entities) {
+            var dis = pos.distanceTo(e.position());
 
-                if (e instanceof LivingEntity living && checkNoClip(e, pos)) {
-                    if (living instanceof Player player && player.isCreative()) {
-                        return;
-                    }
-                    if (!living.level().isClientSide()) {
-                        living.addEffect(new MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE.get(), (int) (300 - 30 * dis), (int) Math.max(explosionRadius - dis, 0)), this.getOwner());
-                    }
+            if (e instanceof LivingEntity living && checkNoClip(e, pos)) {
+                if (living instanceof Player player && player.isCreative()) {
+                    return;
+                }
+                if (!living.level().isClientSide()) {
+                    living.addEffect(new MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE.get(), (int) (300 - 30 * dis), (int) Math.max(explosionRadius - dis, 0)), this.getOwner());
                 }
             }
         }
