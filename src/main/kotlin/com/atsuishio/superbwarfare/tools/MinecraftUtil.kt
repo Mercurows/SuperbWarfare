@@ -8,12 +8,17 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.Options
 import net.minecraft.client.gui.Font
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Holder
+import net.minecraft.core.component.DataComponents
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
@@ -123,3 +128,9 @@ fun ItemStack.`is`(vararg itemsRegistry: DeferredHolder<Item, out Item>): Boolea
 fun ItemStack.`is`(vararg items: Item): Boolean {
     return items.any { `is`(it) }
 }
+
+// 1.20 compat
+
+fun ItemStack.getOrCreateTag(): CompoundTag = NBTTool.getTag(this)
+fun LivingEntity.hasEffect(effect: MobEffect) = hasEffect(Holder.direct(effect))
+val ItemStack.isEdible get() = this.get(DataComponents.FOOD) != null
