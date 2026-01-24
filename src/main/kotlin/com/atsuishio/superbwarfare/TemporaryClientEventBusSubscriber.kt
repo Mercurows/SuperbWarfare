@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.client.ClickHandler
 import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
@@ -18,7 +17,6 @@ import net.minecraftforge.fml.common.Mod
 // TODO 转为kt后移除该方法和文件
 fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
-        ClickHandler::class.java,
         ParachuteRenderer::class.java,
         ContainerBlockPreview::class.java,
         ModSellWarningScreen::class.java,

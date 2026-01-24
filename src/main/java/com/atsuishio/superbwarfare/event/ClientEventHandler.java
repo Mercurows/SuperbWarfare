@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.event;
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.capability.ModCapabilities;
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
-import com.atsuishio.superbwarfare.client.ClickHandler;
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves;
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
@@ -289,7 +288,7 @@ public class ClientEventHandler {
 
         ItemStack stack = player.getMainHandItem();
 
-        if (notInGame() && !ClickHandler.switchZoom) {
+        if (notInGame() && !ClickEventHandler.switchZoom) {
             zoom = false;
         }
 
@@ -2323,7 +2322,7 @@ public class ClientEventHandler {
 //        holdingFireKey = false;
         holdingFireKeyTicks = 0;
         holdingFireKeyTicks0 = 0;
-        ClickHandler.switchZoom = false;
+        ClickEventHandler.switchZoom = false;
         burstFireAmount = 0;
         bowPullTimer = 0;
         bowPower = 0;
