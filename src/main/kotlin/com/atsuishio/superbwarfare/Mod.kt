@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
 import com.atsuishio.superbwarfare.client.molang.MolangVariable
-import com.atsuishio.superbwarfare.client.sound.ModSoundInstances
 import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
 import com.atsuishio.superbwarfare.compat.tacz.TACZGunEventHandler
 import com.atsuishio.superbwarfare.config.CLIENT_CONFIG
