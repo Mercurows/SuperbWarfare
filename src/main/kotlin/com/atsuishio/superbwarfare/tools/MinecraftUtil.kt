@@ -42,6 +42,16 @@ val font: Font get() = mc.font
 @get:OnlyIn(Dist.CLIENT)
 val options: Options get() = mc.options
 
+@get:OnlyIn(Dist.CLIENT)
+val notInGame: Boolean
+    get() {
+        if (mc.player == null) return true
+        if (mc.overlay != null) return true
+        if (mc.screen != null) return true
+        if (!mc.mouseHandler.isMouseGrabbed) return true
+        return !mc.isWindowActive
+    }
+
 operator fun BlockPos.component1() = this.x
 operator fun BlockPos.component2() = this.y
 operator fun BlockPos.component3() = this.z

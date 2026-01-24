@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator
 import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator
@@ -19,18 +19,19 @@ import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.client.event.EntityRenderersEvent.RegisterLayerDefinitions
-import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers
+import net.minecraftforge.client.event.EntityRenderersEvent
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry
 import kotlin.math.min
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber(
+    bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD,
+    value = [Dist.CLIENT]
+)
 object ClientRenderHandler {
     // TODO 正确赋值该变量
     var bulletRenderOffset: Vec3? = null
@@ -61,7 +62,7 @@ object ClientRenderHandler {
     }
 
     @SubscribeEvent
-    fun registerRenderers(event: RegisterRenderers) {
+    fun registerRenderers(event: EntityRenderersEvent.RegisterRenderers) {
         event.registerBlockEntityRenderer(ModBlockEntities.CONTAINER.get()) { _ -> ContainerBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.FUMO_25.get()) { _ -> FuMO25BlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get()) { _ -> ChargingStationBlockEntityRenderer() }
@@ -73,15 +74,19 @@ object ClientRenderHandler {
     @SubscribeEvent
     fun registerGuiOverlays(event: RegisterGuiOverlaysEvent) {
         event.registerBelowAll(KillMessageOverlay.ID, KillMessageOverlay)
-        event.registerBelow(loc(KillMessageOverlay.ID), ArmorPlateOverlay.ID, ArmorPlateOverlay)
-        event.registerBelow(loc(ArmorPlateOverlay.ID), AmmoBarOverlay.ID, AmmoBarOverlay)
-        event.registerBelow(loc(AmmoBarOverlay.ID), IFFOverlay.ID, IFFOverlay)
-        event.registerBelow(loc(IFFOverlay.ID), VehicleTeamOverlay.ID, VehicleTeamOverlay)
-        event.registerBelow(loc(VehicleTeamOverlay.ID), JavelinHudOverlay.ID, JavelinHudOverlay)
-        event.registerBelow(loc(JavelinHudOverlay.ID), IglaHudOverlay.ID, IglaHudOverlay)
-        event.registerBelow(loc(IglaHudOverlay.ID), VehicleHudOverlay.ID, VehicleHudOverlay)
-        event.registerBelow(loc(VehicleHudOverlay.ID), VehicleMainWeaponHudOverlay.ID, VehicleMainWeaponHudOverlay)
-        event.registerBelow(loc(VehicleMainWeaponHudOverlay.ID), VehicleCrosshairOverlay.ID, VehicleCrosshairOverlay)
+        event.registerBelow(Mod.loc(KillMessageOverlay.ID), ArmorPlateOverlay.ID, ArmorPlateOverlay)
+        event.registerBelow(Mod.loc(ArmorPlateOverlay.ID), AmmoBarOverlay.ID, AmmoBarOverlay)
+        event.registerBelow(Mod.loc(AmmoBarOverlay.ID), IFFOverlay.ID, IFFOverlay)
+        event.registerBelow(Mod.loc(IFFOverlay.ID), VehicleTeamOverlay.ID, VehicleTeamOverlay)
+        event.registerBelow(Mod.loc(VehicleTeamOverlay.ID), JavelinHudOverlay.ID, JavelinHudOverlay)
+        event.registerBelow(Mod.loc(JavelinHudOverlay.ID), IglaHudOverlay.ID, IglaHudOverlay)
+        event.registerBelow(Mod.loc(IglaHudOverlay.ID), VehicleHudOverlay.ID, VehicleHudOverlay)
+        event.registerBelow(Mod.loc(VehicleHudOverlay.ID), VehicleMainWeaponHudOverlay.ID, VehicleMainWeaponHudOverlay)
+        event.registerBelow(
+            Mod.loc(VehicleMainWeaponHudOverlay.ID),
+            VehicleCrosshairOverlay.ID,
+            VehicleCrosshairOverlay
+        )
         event.registerBelowAll(StaminaOverlay.ID, StaminaOverlay)
         event.registerBelowAll(AmmoCountOverlay.ID, AmmoCountOverlay)
         event.registerBelowAll(ItemRendererFixOverlay.ID, ItemRendererFixOverlay)
@@ -110,7 +115,7 @@ object ClientRenderHandler {
     }
 
     @SubscribeEvent
-    fun registerLayer(event: RegisterLayerDefinitions) {
+    fun registerLayer(event: EntityRenderersEvent.RegisterLayerDefinitions) {
         event.registerLayerDefinition(ParachuteModel.LAYER_LOCATION) { ParachuteModel.createBodyLayer() }
         event.registerLayerDefinition(ThermalImagingGogglesModel.LAYER_LOCATION) { ThermalImagingGogglesModel.createBodyLayer() }
     }

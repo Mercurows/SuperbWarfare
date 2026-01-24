@@ -10,10 +10,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.MouseMoveMessage
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.localPlayer
-import com.atsuishio.superbwarfare.tools.mc
-import com.atsuishio.superbwarfare.tools.sendPacketToServer
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.client.CameraType
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec2
@@ -62,21 +59,12 @@ object ClientMouseHandler {
     @JvmField
     var mouseYMoveTick: Double = 0.0
 
-    private fun notInGame(): Boolean {
-        val mc = mc
-        if (mc.player == null) return true
-        if (mc.overlay != null) return true
-        if (mc.screen != null) return true
-        if (!mc.mouseHandler.isMouseGrabbed) return true
-        return !mc.isWindowActive
-    }
-
     @SubscribeEvent
     fun handleClientTick(event: TickEvent.ClientTickEvent) {
         val player = localPlayer ?: return
         if (event.phase == TickEvent.Phase.START) return
 
-        if (notInGame()) {
+        if (notInGame) {
             speedX = 0.0
             speedY = 0.0
             lerpSpeedX = 0.0
@@ -94,7 +82,7 @@ object ClientMouseHandler {
             val drone =
                 EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone")) ?: return
 
-            if (notInGame()) {
+            if (notInGame) {
                 sendPacketToServer(MouseMoveMessage(0.0, 0.0))
                 return
             }
@@ -112,7 +100,7 @@ object ClientMouseHandler {
         if (vehicle is VehicleEntity && player == vehicle.firstPassenger
             && (vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)
         ) {
-            if (notInGame()) {
+            if (notInGame) {
                 sendPacketToServer(MouseMoveMessage(0.0, 0.0))
                 return
             }
@@ -172,7 +160,7 @@ object ClientMouseHandler {
     fun handleClientTick(event: ViewportEvent.ComputeCameraAngles) {
         val player = localPlayer ?: return
 
-        if (notInGame()) {
+        if (notInGame) {
             freeCameraYaw = 0.0
             freeCameraPitch = 0.0
             return
