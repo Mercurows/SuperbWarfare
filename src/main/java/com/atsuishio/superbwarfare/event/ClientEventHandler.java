@@ -538,7 +538,7 @@ public class ClientEventHandler {
                         } else {
                             if (lockOn) {
                                 if (lockingPos != null) {
-                                    PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, Optional.empty(), Optional.of(lockingPos.toVector3f())));
+                                    PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, null, lockingPos.toVector3f()));
                                 }
                                 lockOn = false;
                             }
@@ -573,7 +573,7 @@ public class ClientEventHandler {
                         } else {
                             if (lockOn) {
                                 if (lockingEntity != null) {
-                                    PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, Optional.of(lockingEntity.getUUID()), Optional.of(lockingEntity.getEyePosition().toVector3f())));
+                                    PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
                                 }
                                 lockOn = false;
                             }
@@ -609,7 +609,7 @@ public class ClientEventHandler {
                     }
 
                     if (lockOn && holdingFireKey && lockingEntity != null) {
-                        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, Optional.of(lockingEntity.getUUID()), Optional.of(lockingEntity.getEyePosition().toVector3f())));
+                        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, lockingEntity.getUUID(), lockingEntity.getEyePosition().toVector3f()));
                         holdingFireKey = false;
                     }
                 }
@@ -1162,7 +1162,7 @@ public class ClientEventHandler {
             burstFireAmount--;
         }
 
-        for (Perk.Type type : Perk.Type.values()) {
+        for (Perk.Type type : Perk.Type.getEntries()) {
             var instance = data.perk.getInstances(type);
             customRpm = instance.stream().mapToInt(perk -> perk.perk().getModifiedCustomRPM(customRpm, data, perk)).max().orElse(customRpm);
         }
@@ -1203,7 +1203,7 @@ public class ClientEventHandler {
         if (!(stack.getItem() instanceof GunItem)) return;
         var data = GunData.from(stack);
 
-        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, lockedEntity != null ? Optional.of(lockedEntity.getUUID()) : Optional.empty(), Optional.empty()));
+        PacketDistributor.sendToServer(new ShootMessage(gunSpread, zoom, lockedEntity != null ? lockedEntity.getUUID() : null, null));
         fireRecoilTime = 10;
 
         // 真实后坐（
@@ -1369,7 +1369,7 @@ public class ClientEventHandler {
 
                     // 低帧率下的开火次数补偿
                     do {
-                        PacketDistributor.sendToServer(new VehicleFireMessage(lockingEntityVehicle != null ? Optional.of(lockingEntityVehicle.getUUID()) : Optional.empty(), lockingPosVehicle != null ? Optional.of(lockingPosVehicle.toVector3f()) : Optional.empty()));
+                        PacketDistributor.sendToServer(new VehicleFireMessage(lockingEntityVehicle != null ? lockingEntityVehicle.getUUID() : null, lockingPosVehicle != null ? lockingPosVehicle.toVector3f() : null));
                         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON || zoomVehicle) {
                             playVehicleClientSounds(player, vehicle);
                         }
