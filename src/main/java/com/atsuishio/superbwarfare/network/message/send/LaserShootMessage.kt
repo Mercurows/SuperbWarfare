@@ -7,10 +7,10 @@ import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
+import com.atsuishio.superbwarfare.tools.sendPacketTo
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.minecraft.sounds.SoundSource
-import net.neoforged.neoforge.network.PacketDistributor
 import java.util.*
 
 @Serializable
@@ -33,7 +33,7 @@ data class LaserShootMessage(
             )
             player.level()
                 .playSound(null, player.blockPosition(), ModSounds.HEADSHOT.get(), SoundSource.VOICE, 0.1f, 1f)
-            PacketDistributor.sendToPlayer(player, ClientIndicatorMessage(1, 5))
+            sendPacketTo(player, ClientIndicatorMessage(1, 5))
         } else {
             DamageHandler.doDamage(
                 entity,
@@ -42,7 +42,7 @@ data class LaserShootMessage(
             )
             player.level()
                 .playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1f)
-            PacketDistributor.sendToPlayer(player, ClientIndicatorMessage(0, 5))
+            sendPacketTo(player, ClientIndicatorMessage(0, 5))
         }
         entity.invulnerableTime = 0
     }
