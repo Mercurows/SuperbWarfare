@@ -14,6 +14,10 @@
 4.  确保安装了 4.4.6-1.20.1 版本及以上的 Geckolib 模组；(0.8.0前要求4.4.4)
 5.  将模组jar文件放进mods文件夹。
 
+## 游玩教程
+
+[查看本视频](https://www.bilibili.com/video/BV1RPfaYiELB/)
+
 ## 联动
 
 安装 11.1.106-1.20.1 版本及以上的 Cloth Config 模组，即可在游戏内调整配置。
@@ -35,5 +39,6 @@ QQ群: 460300219
 [Github](https://github.com/Mercurows/SuperbWarfare)
 
 [Gitee](https://gitee.com/atsuishio/SuperbWarfare)
+
 
 [Discord](https://discord.gg/g7RVnHFDh9)
