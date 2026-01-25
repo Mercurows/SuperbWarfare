@@ -134,3 +134,6 @@ fun ItemStack.`is`(vararg items: Item): Boolean {
 fun ItemStack.getOrCreateTag(): CompoundTag = NBTTool.getTag(this)
 fun LivingEntity.hasEffect(effect: MobEffect) = hasEffect(Holder.direct(effect))
 val ItemStack.isEdible get() = this.get(DataComponents.FOOD) != null
+fun Player.getEntityReach() = entityInteractionRange()
+fun Player.getBlockReach() = blockInteractionRange()
+val Minecraft.deltaFrameTime get() = timer.gameTimeDeltaTicks
