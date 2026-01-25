@@ -142,8 +142,8 @@ dependencies {
     minecraft("net.minecraftforge:forge:1.20.1-47.2.0")
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
 
-    runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:5.4.2+1.20.1"))
-    compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:5.4.2+1.20.1:api"))
+    runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:5.14.1+1.20.1"))
+    compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:5.14.1+1.20.1:api"))
 
     implementation(fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.4.6"))
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
