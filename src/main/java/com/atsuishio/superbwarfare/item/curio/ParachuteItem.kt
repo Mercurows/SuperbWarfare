@@ -28,6 +28,23 @@ class ParachuteItem : Item(Properties().stacksTo(1).durability(600)), ICurioItem
 
     override fun curioTick(slotContext: SlotContext, stack: ItemStack) {
         val entity = slotContext.entity()
+        if (entity !is Player) {
+            val tag = stack.getOrCreateTag()
+            if (!tag.getBoolean(TAG_OPEN) && entity.deltaMovement.y < -0.6 && entity.fallDistance > 4) {
+                tag.putBoolean(TAG_OPEN, true)
+                entity.level().playSound(
+                    null,
+                    entity.x,
+                    entity.y,
+                    entity.z,
+                    ModSounds.PARACHUTE_OPEN.get(),
+                    SoundSource.PLAYERS,
+                    1f,
+                    1f
+                )
+            }
+        }
+
         if (stack.getOrCreateTag().getBoolean(TAG_OPEN)) {
             val level = entity.level()
             if ((entity.onGround() || entity.isInWater) || entity.isFallFlying || entity.vehicle != null || (entity is Player && entity.abilities.flying)) {
@@ -50,7 +67,15 @@ class ParachuteItem : Item(Properties().stacksTo(1).durability(600)), ICurioItem
                     )
                     entity.deltaMovement = entity.deltaMovement.multiply(1.03, 0.75, 1.03)
                 }
+            } else {
+                if (!entity.level().isClientSide) {
+                    entity.addDeltaMovement(
+                        Vec3(entity.lookAngle.x, 0.0, entity.lookAngle.z).normalize().scale(0.05)
+                    )
+                    entity.deltaMovement = entity.deltaMovement.multiply(1.03, 0.75, 1.03)
+                }
             }
+
             if (entity.tickCount % 40 == 0 && level is ServerLevel) {
                 stack.hurtAndBreak(1, level, entity) { }
             }
