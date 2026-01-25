@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
-import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.common.ammo.PotionMortarShell
 import com.atsuishio.superbwarfare.menu.EnergyMenu
@@ -18,7 +17,6 @@ fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
         ParachuteRenderer::class.java,
         ContainerBlockPreview::class.java,
-        ClientEventHandler::class.java,
         ModEntityRenderers::class.java,
         ModKeyMappings::class.java,
         ModParticles::class.java,

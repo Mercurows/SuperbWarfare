@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.event
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.capability.ModCapabilities
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
@@ -53,6 +52,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
@@ -61,8 +61,8 @@ import java.util.*
 import kotlin.experimental.or
 import kotlin.math.*
 
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(
-    bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.FORGE,
+@Mod.EventBusSubscriber(
+    bus = Mod.EventBusSubscriber.Bus.FORGE,
     value = [Dist.CLIENT]
 )
 object ClientEventHandler {
@@ -524,7 +524,7 @@ object ClientEventHandler {
     @JvmStatic
     fun turnOnThermalImaging() {
         ThermalShaderHandler.setActive(true)
-        mc.gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"))
+        mc.gameRenderer.loadEffect(com.atsuishio.superbwarfare.Mod.loc("shaders/post/night_vision.json"))
     }
 
     @JvmStatic
