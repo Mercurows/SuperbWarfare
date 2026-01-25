@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag
 class DoubleValue(
     private val tag: CompoundTag,
     private val name: String,
-    val defaultValue: Double = 0.0
+    var defaultValue: Double = 0.0
 ) {
     fun get(): Double {
         if (tag.contains(name)) {
