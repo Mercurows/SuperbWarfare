@@ -4,7 +4,9 @@ import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
-import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.init.ModEntityRenderers
+import com.atsuishio.superbwarfare.init.ModKeyMappings
+import com.atsuishio.superbwarfare.init.ModScreens
 import com.atsuishio.superbwarfare.item.common.ammo.PotionMortarShell
 import com.atsuishio.superbwarfare.menu.EnergyMenu
 import com.atsuishio.superbwarfare.menu.FuMO25Menu
@@ -19,8 +21,6 @@ fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
         ContainerBlockPreview::class.java,
         ModEntityRenderers::class.java,
         ModKeyMappings::class.java,
-        ModParticles::class.java,
-        ModProperties::class.java,
         ModScreens::class.java,
         PotionMortarShell::class.java,
         EnergyMenu::class.java,
