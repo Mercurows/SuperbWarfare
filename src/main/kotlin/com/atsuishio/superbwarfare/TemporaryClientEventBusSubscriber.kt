@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
-import com.atsuishio.superbwarfare.init.ModEntityRenderers
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModScreens
 import com.atsuishio.superbwarfare.item.common.ammo.PotionMortarShell
@@ -16,8 +14,6 @@ import net.minecraftforge.fml.common.Mod
 // TODO 转为kt后移除该方法和文件
 fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
-        ContainerBlockPreview::class.java,
-        ModEntityRenderers::class.java,
         ModKeyMappings::class.java,
         ModScreens::class.java,
         PotionMortarShell::class.java,
