@@ -15,9 +15,11 @@ import net.minecraft.client.renderer.entity.ItemRenderer
 import net.minecraft.client.renderer.entity.RenderLayerParent
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderLevelStageEvent
+import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import top.theillusivec4.curios.api.SlotContext
@@ -65,7 +67,7 @@ class ParachuteRenderer : ICurioRenderer {
 
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
     companion object {
-        private var firstPersonModel: ParachuteModel? = null
+        private var parachuteModel: ParachuteModel? = null
         private val TEXTURE = loc("textures/curio/parachute.png")
 
         @SubscribeEvent
@@ -81,8 +83,8 @@ class ParachuteRenderer : ICurioRenderer {
             ) {
                 stack.pushPose()
 
-                if (firstPersonModel == null) {
-                    firstPersonModel = ParachuteModel(
+                if (parachuteModel == null) {
+                    parachuteModel = ParachuteModel(
                         mc.entityModels.bakeLayer(ParachuteModel.LAYER_LOCATION)
                     )
                 }
@@ -91,9 +93,9 @@ class ParachuteRenderer : ICurioRenderer {
                 stack.mulPose(Axis.YP.rotationDegrees(player.getViewYRot(1f)))
                 stack.translate(0.0, 1.5, 0.0)
 
-                firstPersonModel!!.prepareMobModel(player, 0f, 0f, event.partialTick)
-                firstPersonModel!!.setupAnim(player, 0f, 0f, player.tickCount.toFloat(), 0f, 0f)
-                firstPersonModel!!.renderToBuffer(
+                parachuteModel!!.prepareMobModel(player, 0f, 0f, event.partialTick)
+                parachuteModel!!.setupAnim(player, 0f, 0f, player.tickCount.toFloat(), 0f, 0f)
+                parachuteModel!!.renderToBuffer(
                     stack, buffers.bufferSource().getBuffer(
                         RenderType.armorCutoutNoCull(
                             TEXTURE
@@ -103,6 +105,42 @@ class ParachuteRenderer : ICurioRenderer {
 
                 stack.popPose()
             }
+        }
+
+        @SubscribeEvent
+        fun onRenderLiving(event: RenderLivingEvent.Post<LivingEntity, EntityModel<LivingEntity>>) {
+            val entity = event.entity ?: return
+            if (entity is Player) return
+            if (!ParachuteItem.isParachuteOpen(entity)) return
+            if (!ParachuteItem.isParachuteVisible(entity)) return
+
+            val stack = event.poseStack
+            stack.pushPose()
+
+            if (parachuteModel == null) {
+                parachuteModel = ParachuteModel(
+                    mc.entityModels.bakeLayer(ParachuteModel.LAYER_LOCATION)
+                )
+            }
+
+            val buffers = mc.renderBuffers()
+
+            stack.scale(0.5f, 0.5f, 0.5f)
+            stack.mulPose(Axis.XP.rotationDegrees(180f))
+            stack.mulPose(Axis.YP.rotationDegrees(entity.getViewYRot(1f)))
+            stack.translate(0.0, -1.5, 0.0)
+
+            parachuteModel!!.prepareMobModel(entity, 0f, 0f, event.partialTick)
+            parachuteModel!!.setupAnim(entity, 0f, 0f, entity.tickCount.toFloat(), 0f, 0f)
+            parachuteModel!!.renderToBuffer(
+                stack, buffers.bufferSource().getBuffer(
+                    RenderType.armorCutoutNoCull(
+                        TEXTURE
+                    )
+                ), 0xFFFFFF, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f
+            )
+
+            stack.popPose()
         }
     }
 }
