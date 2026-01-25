@@ -336,7 +336,10 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
                 }
             } else {
                 // 如果是其他伤害，则渲染对应图标
-                if (record.damageType === DamageTypes.EXPLOSION || record.damageType === DamageTypes.PLAYER_EXPLOSION || record.damageType === ModDamageTypes.PROJECTILE_EXPLOSION || record.damageType === DamageTypes.FIREWORKS) {
+                if (record.damageType === DamageTypes.EXPLOSION || record.damageType === DamageTypes.PLAYER_EXPLOSION
+                    || record.damageType === ModDamageTypes.PROJECTILE_EXPLOSION || record.damageType === DamageTypes.FIREWORKS
+                    || record.damageType === ModDamageTypes.CUSTOM_EXPLOSION
+                ) {
                     icon = EXPLOSION
                 } else if (record.damageType === DamageTypes.PLAYER_ATTACK) {
                     icon = KNIFE
