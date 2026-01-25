@@ -176,6 +176,9 @@ dependencies {
     // 网络音乐机
     implementation(fg.deobf("curse.maven:net-music-978569:6838602"))
 
+    // 车万女仆
+    implementation(fg.deobf("curse.maven:touhou-little-maid-355044:7510714"))
+
     // 测试用mod
     // 这俩是仅客户端mod
     // implementation fg.deobf("curse.maven:oculus-581495:6020952")
