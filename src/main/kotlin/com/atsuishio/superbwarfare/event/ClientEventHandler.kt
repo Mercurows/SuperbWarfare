@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.event
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
@@ -517,7 +516,7 @@ object ClientEventHandler {
     @JvmStatic
     fun turnOnThermalImaging() {
         ThermalShaderHandler.setActive(true)
-        mc.gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"))
+        mc.gameRenderer.loadEffect(com.atsuishio.superbwarfare.Mod.loc("shaders/post/night_vision.json"))
     }
 
     @JvmStatic
