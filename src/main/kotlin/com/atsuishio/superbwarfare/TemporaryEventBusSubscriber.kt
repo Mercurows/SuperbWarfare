@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.item.Hammer
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.procedures.WelcomeProcedure
 import com.atsuishio.superbwarfare.recipe.ModPotionRecipes
-import com.atsuishio.superbwarfare.tools.ResourceOnceLogger
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
@@ -32,7 +31,6 @@ private val classes = arrayOf(
     ContainerBlockItem::class.java,
     WelcomeProcedure::class.java,
     ModPotionRecipes::class.java,
-    ResourceOnceLogger::class.java,
     TDMSavedData::class.java,
 )
 
