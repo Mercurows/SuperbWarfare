@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModScreens
@@ -21,7 +20,6 @@ fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
         FuMO25Menu::class.java,
         VectorUtil::class.java,
         ThermalShaderHandler::class.java,
-        PhosphorusFireRenderer::class.java,
     ).forEach {
         run {
             val busEnum = it.annotations.filterIsInstance<Mod.EventBusSubscriber>().firstOrNull()?.bus ?: return@run
