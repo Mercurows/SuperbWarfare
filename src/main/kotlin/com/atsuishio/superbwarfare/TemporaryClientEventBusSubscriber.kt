@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.special.ContainerBlockPreview
 import com.atsuishio.superbwarfare.client.renderer.special.PhosphorusFireRenderer
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
@@ -17,7 +16,6 @@ import net.minecraftforge.fml.common.Mod
 // TODO 转为kt后移除该方法和文件
 fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
-        ParachuteRenderer::class.java,
         ContainerBlockPreview::class.java,
         ModEntityRenderers::class.java,
         ModKeyMappings::class.java,
