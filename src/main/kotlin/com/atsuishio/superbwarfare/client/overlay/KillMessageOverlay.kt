@@ -47,7 +47,6 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
     private val LASER = loc("textures/overlay/damage_types/laser.png")
     private val VEHICLE = loc("textures/overlay/damage_types/vehicle_strike.png")
 
-
     override fun shouldRender() = super.shouldRender()
             && KillMessageConfig.SHOW_KILL_MESSAGE.get()
             && !KillMessageHandler.QUEUE.isEmpty()
@@ -359,47 +358,50 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
 
     fun getEntityName(entity: Entity): String {
         val entityName = entity.displayName.string
-        val name = arrayOf<String>(entityName)
-        if (entity is LivingEntity && entity is OwnableEntity && entity.getOwner() is Player) {
-            if (DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) {
-                name[0] = entity.displayName.string + " + " + entityName
-                CuriosApi.getCuriosInventory(entity).ifPresent { c ->
-                    c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent { s ->
-                        if (s.stack().hasCustomHoverName()) {
-                            name[0] = s.stack().getHoverName().string + " + " + entityName
+        var name: String = entityName
+        if (entity is LivingEntity && entity is OwnableEntity) {
+            val owner = entity.owner
+            if (owner is Player) {
+                if (DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) {
+                    name = owner.displayName.string + " + " + entityName
+                    CuriosApi.getCuriosInventory(owner).ifPresent { c ->
+                        c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent { s ->
+                            if (s.stack().hasCustomHoverName()) {
+                                name = s.stack().getHoverName().string + " + " + entityName
+                            }
                         }
                     }
+                } else {
+                    name = owner.displayName.string + " + " + entityName
                 }
-            } else {
-                name[0] = entity.displayName.string + " + " + entityName
             }
         } else if (entity is Player) {
-            if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0]
+            if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name
             CuriosApi.getCuriosInventory(entity).ifPresent { c ->
                 c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent { s ->
                     if (s.stack().hasCustomHoverName()) {
-                        name[0] = s.stack().getHoverName().string
+                        name = s.stack().getHoverName().string
                     }
                 }
             }
         }
-        return name[0]
+        return name
     }
 
     fun getTargetName(entity: Entity): String {
         val entityName = entity.displayName.string
-        val name = arrayOf<String>(entityName)
+        var name: String = entityName
         if (entity is Player) {
-            if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name[0]
+            if (!DisplayConfig.DOG_TAG_NAME_VISIBLE.get()) return name
             CuriosApi.getCuriosInventory(entity).ifPresent { c ->
                 c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent { s ->
                     if (s.stack().hasCustomHoverName()) {
-                        name[0] = s.stack().getHoverName().string
+                        name = s.stack().getHoverName().string
                     }
                 }
             }
         }
-        return name[0]
+        return name
     }
 
     fun getWeaponIcon(record: LivingKillRecord): ResourceLocation? {

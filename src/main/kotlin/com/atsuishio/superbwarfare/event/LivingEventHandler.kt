@@ -487,11 +487,11 @@ object LivingEventHandler {
         }
 
         if (directEntity is Projectile && directEntity.owner is LivingEntity) {
-            val owner = directEntity.owner
+            val owner = directEntity.owner as LivingEntity
             if (owner is ServerPlayer) {
                 attacker = owner
             } else if (owner is OwnableEntity && owner.owner is ServerPlayer) {
-                attacker = owner.owner
+                attacker = owner
             }
         }
 
@@ -526,11 +526,11 @@ object LivingEventHandler {
         }
 
         if (directEntity is Projectile && directEntity.owner is LivingEntity) {
-            val owner = directEntity.owner
+            val owner = directEntity.owner as LivingEntity
             if (owner is ServerPlayer) {
                 attacker = owner
             } else if (owner is OwnableEntity && owner.owner is ServerPlayer) {
-                attacker = owner.owner
+                attacker = owner
             }
         }
 
@@ -571,11 +571,11 @@ object LivingEventHandler {
         }
 
         if (directEntity is Projectile && directEntity.owner is LivingEntity) {
-            val owner = directEntity.owner
+            val owner = directEntity.owner as LivingEntity
             if (owner is ServerPlayer) {
                 attacker = owner
             } else if (owner is OwnableEntity && owner.owner is ServerPlayer) {
-                attacker = owner.owner
+                attacker = owner
             }
         }
 
