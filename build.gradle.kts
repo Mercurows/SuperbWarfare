@@ -212,6 +212,9 @@ dependencies {
     // 网络音乐机
     implementation("curse.maven:net-music-978569:6838604")
 
+    // 车万女仆
+    implementation("curse.maven:touhou-little-maid-355044:7510722")
+
     // 测试用mod
     implementation("curse.maven:better-combat-by-daedelus-639842:6532547")
     implementation("curse.maven:playeranimator-658587:6024462")

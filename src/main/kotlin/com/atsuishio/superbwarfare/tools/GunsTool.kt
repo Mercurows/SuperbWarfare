@@ -1,17 +1,16 @@
 package com.atsuishio.superbwarfare.tools
 
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.item.ItemStack
 import java.util.*
 
 object GunsTool {
     @JvmStatic
-    fun getGunDoubleTag(stack: ItemStack, name: String): Double {
-        return getGunDoubleTag(stack, name, 0.0)
+    fun getGunDoubleTag(tag: CompoundTag, name: String): Double {
+        return getGunDoubleTag(tag, name, 0.0)
     }
 
-    fun getGunDoubleTag(stack: ItemStack, name: String, defaultValue: Double): Double {
-        val data = stack.getOrCreateTag().getCompound("GunData")
+    fun getGunDoubleTag(tag: CompoundTag, name: String, defaultValue: Double): Double {
+        val data = tag.getCompound("GunData")
         if (!data.contains(name)) return defaultValue
         return data.getDouble(name)
     }

@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag
 class IntValue(
     private val tag: CompoundTag,
     private val name: String,
-    val defaultValue: Int = 0
+    var defaultValue: Int = 0
 ) {
     fun get(): Int {
         if (tag.contains(name)) {

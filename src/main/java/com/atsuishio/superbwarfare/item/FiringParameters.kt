@@ -52,7 +52,7 @@ class FiringParameters : Item(Properties().stacksTo(1)), ItemScreenProvider {
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
-        tooltipComponents: MutableList<Component?>,
+        tooltipComponents: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
         TooltipTool.addScreenProviderText(tooltipComponents)
