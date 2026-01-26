@@ -105,4 +105,7 @@ class VehicleGun : GunItem(Properties()) {
         prismTank.laserScale = data.get(GunProp.SHOOT_ANIMATION_TIME).toFloat()
         prismTank.hitBlock(result.getLocation(), data, shooter)
     }
+
+    override fun playFireSounds(data: GunData, shooter: Entity?, zoom: Boolean) {
+    }
 }
