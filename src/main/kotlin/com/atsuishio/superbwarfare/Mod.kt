@@ -57,7 +57,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         ModEntities.REGISTRY.register(bus)
         ModMobEffects.REGISTRY.register(bus)
         ModParticleTypes.REGISTRY.register(bus)
-        ModPotions.POTIONS.register(bus)
+        ModPotions.register(bus)
         ModMenuTypes.REGISTRY.register(bus)
         ModVillagers.register(bus)
         ModRecipes.register(bus)
