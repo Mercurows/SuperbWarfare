@@ -583,7 +583,6 @@ object ClientEventHandler {
             }
         } else {
             lastOperatingGunUUID = null
-            resetGunStatus()
         }
     }
 
