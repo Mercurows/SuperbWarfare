@@ -84,15 +84,14 @@ public class LuckyContainerBlockEntity extends BlockEntity implements GeoBlockEn
         if (this.location != null && this.level != null && this.level.getServer() != null) {
             ContainerDataManager dataManager = ContainerDataManager.INSTANCE;
             var list = dataManager.getEntityTypes(this.location);
-            if (list.isPresent()) {
-                var pool = list.get();
-                int sum = pool.stream().mapToInt(Pair::second).sum();
+            if (!list.isEmpty()) {
+                int sum = list.stream().mapToInt(Pair::second).sum();
                 if (sum <= 0) return null;
 
                 int rand = this.level.random.nextInt(sum);
 
                 int cumulativeWeight = 0;
-                for (var entry : pool) {
+                for (var entry : list) {
                     cumulativeWeight += entry.second();
                     if (rand < cumulativeWeight) {
                         return EntityType.byString(entry.first()).orElse(null);
