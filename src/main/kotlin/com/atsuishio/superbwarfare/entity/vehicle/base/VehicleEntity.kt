@@ -1060,7 +1060,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         val gunData = getGunData(weaponName)
         afterShoot(gunData, getShootVec(weaponName, 1f))
-        living?.let { playShootSound3p(it, weaponName) }
+        playShootSound3p(living, weaponName)
     }
 
     open fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
@@ -1085,7 +1085,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         val gunData = getGunData(seatIndex)
         afterShoot(gunData, getShootVec(living, 1f))
-        living?.let { playShootSound3p(it, seatIndex) }
+        playShootSound3p(living, seatIndex)
     }
 
     open fun afterShoot(gunData: GunData?, shootVec: Vec3) {
@@ -1117,22 +1117,22 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    open fun playShootSound3p(living: LivingEntity, weaponName: String) {
+    open fun playShootSound3p(living: LivingEntity?, weaponName: String) {
         val gunData = this.getGunData(weaponName) ?: return
         val pos = getShootPos(weaponName, 1f)
 
         playShootSound3p(living, gunData, pos)
     }
 
-    open fun playShootSound3p(living: LivingEntity, seatIndex: Int) {
+    open fun playShootSound3p(living: LivingEntity?, seatIndex: Int) {
         val gunData = this.getGunData(seatIndex) ?: return
         val pos = getShootPos(living, 1f)
 
         playShootSound3p(living, gunData, pos)
     }
 
-    open fun playShootSound3p(living: LivingEntity, gunData: GunData?, pos: Vec3?) {
-        val serverLevel = living.level() as? ServerLevel ?: return
+    open fun playShootSound3p(living: LivingEntity?, gunData: GunData?, pos: Vec3?) {
+        val serverLevel = this.level() as? ServerLevel ?: return
 
         if (gunData == null) return
 
@@ -1141,7 +1141,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         val listener: Entity?
 
-        if (living.vehicle !== this || living.vehicle == null) {
+        if (living != null && (living.vehicle !== this || living.vehicle == null)) {
             listener = null
         } else {
             val shootGunData = getGunData(living)

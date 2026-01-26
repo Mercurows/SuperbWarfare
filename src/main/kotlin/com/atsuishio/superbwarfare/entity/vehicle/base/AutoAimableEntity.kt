@@ -206,8 +206,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
         val target = EntityFindUtil.findEntity(level(), targetUUID)
 
-        val owner = this.owner
-        if (target != null && owner is Player && SeekTool.NOT_IN_SMOKE.test(target)) {
+        if (target != null && SeekTool.NOT_IN_SMOKE.test(target)) {
             if (SeekTool.IS_INVULNERABLE.test(target)
                 || getSubmergedHeight(target) >= target.bbHeight
                 || target.distanceTo(this) !in minSeekRange..maxSeekRange
@@ -245,11 +244,12 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
                 )
             }
 
+
             if (laserScale == 0f) {
                 turretAutoAimFromVector(targetVec)
                 if (calculateAngle(getShootVec(weaponName, 1f), targetVec) < 1) {
                     if (checkNoClip(target, barrelRootPos) && !data.overHeat.get()) {
-                        if (owner.level() is ServerLevel) {
+                        if (level() is ServerLevel) {
                             if (projectileTypeStr == "ray" && chargeProgress == 1f) {
                                 rayShoot(owner, target, data)
                                 changeTargetTimer = 0
@@ -336,7 +336,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         ).type != HitResult.Type.BLOCK
     }
 
-    open fun rayShoot(living: LivingEntity, target: Entity, gunData: GunData) {
+    open fun rayShoot(living: LivingEntity?, target: Entity, gunData: GunData) {
         val serverLevel = level() as ServerLevel
         ParticleTool.sendParticle(
             serverLevel,
