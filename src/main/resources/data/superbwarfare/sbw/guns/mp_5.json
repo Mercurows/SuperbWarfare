@@ -55,6 +55,7 @@
     "Fire3PVeryFar": "superbwarfare:mp_5_veryfar",
     "Fire1PSilent": "superbwarfare:mp_5_fire_1p_s",
     "Fire3PSilent": "superbwarfare:mp_5_fire_3p_s",
+    "Fire3PFarSilent": "superbwarfare:vector_far_s",
     "ReloadNormal": "superbwarfare:mp_5_reload_normal",
     "ReloadEmpty": "superbwarfare:mp_5_reload_empty",
     "CancellableSounds": [

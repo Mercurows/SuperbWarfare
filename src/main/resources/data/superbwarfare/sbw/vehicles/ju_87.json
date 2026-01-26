@@ -132,7 +132,7 @@
         "Fire3PVeryFar": "superbwarfare:mg_17_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
-      "SoundRadius": 16,
+      "SoundRadius": 24,
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.256, 0.98],
