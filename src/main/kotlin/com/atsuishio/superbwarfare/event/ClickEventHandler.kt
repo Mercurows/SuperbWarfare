@@ -246,9 +246,6 @@ object ClickEventHandler {
 
         val key = event.key
         if (key < 0) return
-        if (key == ModKeyMappings.DISMOUNT.key.value) {
-            handleDismountPress(player)
-        }
 
         if (player.isSpectator) return
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return
@@ -282,6 +279,10 @@ object ClickEventHandler {
                         }
                     }
                 }
+            }
+
+            if (key == ModKeyMappings.DISMOUNT.key.value) {
+                handleDismountPress(player)
             }
 
             if (key == Minecraft.getInstance().options.keyJump.key.value) {
