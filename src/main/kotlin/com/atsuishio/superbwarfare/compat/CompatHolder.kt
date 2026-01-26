@@ -21,7 +21,7 @@ object CompatHolder {
     fun onInterModEnqueue(event: InterModEnqueueEvent) {
         event.enqueueWork {
             hasMod(CLOTH_CONFIG) {
-                DistExecutor.safeRunWhenOn(Dist.CLIENT) { DistExecutor.SafeRunnable { ClothConfigHelper.registerScreen() } }
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT) { Runnable { ClothConfigHelper.registerScreen() } }
             }
         }
     }
