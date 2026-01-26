@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.atsuishio.superbwarfare.entity.TargetEntity
@@ -13,7 +12,6 @@ import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 
 private val classes = arrayOf(
-    CompatHolder::class.java,
     DPSGeneratorEntity::class.java,
     SenpaiEntity::class.java,
     TargetEntity::class.java,
