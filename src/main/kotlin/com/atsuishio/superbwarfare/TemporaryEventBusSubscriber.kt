@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.init.ModTabs
 import com.atsuishio.superbwarfare.init.ModVillagers
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.procedures.WelcomeProcedure
-import com.atsuishio.superbwarfare.recipe.ModPotionRecipes
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 
@@ -25,7 +24,6 @@ private val classes = arrayOf(
     ModVillagers::class.java,
     ContainerBlockItem::class.java,
     WelcomeProcedure::class.java,
-    ModPotionRecipes::class.java,
 )
 
 // TODO 转为kt后移除该方法和文件
