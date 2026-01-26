@@ -14,7 +14,6 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent
 import javax.annotation.ParametersAreNonnullByDefault
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 class PotionMortarShell : MortarShell() {
     override fun getDefaultInstance(): ItemStack {
         val stack = super.getDefaultInstance()
@@ -36,6 +35,7 @@ class PotionMortarShell : MortarShell() {
         )
     }
 
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
     companion object {
         @SubscribeEvent
         fun onRegisterColorHandlers(event: RegisterColorHandlersEvent.Item) {

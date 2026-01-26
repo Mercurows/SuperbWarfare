@@ -20,7 +20,7 @@ import org.joml.Quaternionf
 object PhosphorusFireRenderer {
     @Suppress("DEPRECATION")
     @SubscribeEvent
-    fun onRenderCurseFlame(event: RenderLivingEvent<LivingEntity, out EntityModel<LivingEntity>>) {
+    fun onRenderCurseFlame(event: RenderLivingEvent.Pre<LivingEntity, out EntityModel<LivingEntity>>) {
         val entity = event.entity
         if (!PhosphorusFireCapability.of(entity).isOnFire) return
 

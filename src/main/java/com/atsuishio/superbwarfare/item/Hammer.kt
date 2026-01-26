@@ -18,7 +18,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent.ItemCraftedEvent
 import org.joml.Math
 import javax.annotation.ParametersAreNonnullByDefault
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 open class Hammer protected constructor(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
     SwordItem(tier, properties.attributes(createAttributes(tier, attackDamage, attackSpeed))) {
 
@@ -81,6 +80,7 @@ open class Hammer protected constructor(tier: Tier, attackDamage: Int, attackSpe
         return super.hurtEnemy(stack, target, attacker)
     }
 
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
     companion object {
         @SubscribeEvent
         fun onItemCrafted(event: ItemCraftedEvent) {

@@ -13,7 +13,7 @@ val TDM_COMMAND = buildCommand("tdm") {
                 val tdm = source.level.dataStorage.computeIfAbsent(
                     SavedData.Factory(
                         { TDMSavedData() },
-                        { tag, registries -> TDMSavedData.load(tag, registries) },
+                        { tag, _ -> TDMSavedData.load(tag) },
                         null
                     ), TDMSavedData.FILE_ID
                 )
@@ -44,7 +44,7 @@ val TDM_COMMAND = buildCommand("tdm") {
                 val tdm = source.level.dataStorage.computeIfAbsent(
                     SavedData.Factory(
                         { TDMSavedData() },
-                        { tag, registries -> TDMSavedData.load(tag, registries) },
+                        { tag, _ -> TDMSavedData.load(tag) },
                         null
                     ), TDMSavedData.FILE_ID
                 )

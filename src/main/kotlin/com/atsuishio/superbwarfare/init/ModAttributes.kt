@@ -5,11 +5,9 @@ import net.minecraft.world.entity.ai.attributes.Attribute
 import net.minecraft.world.entity.ai.attributes.RangedAttribute
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.fml.event.lifecycle.FMLConstructModEvent
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent
 import net.neoforged.neoforge.registries.DeferredHolder
 import net.neoforged.neoforge.registries.DeferredRegister
-import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
 import java.util.function.Supplier
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
@@ -28,11 +26,6 @@ object ModAttributes {
                 1.0
             )).setSyncable(true)
         })
-
-    @SubscribeEvent
-    fun register(event: FMLConstructModEvent) {
-        event.enqueueWork { ATTRIBUTES.register(MOD_BUS) }
-    }
 
     @SubscribeEvent
     fun addAttributes(event: EntityAttributeModificationEvent) {
