@@ -189,13 +189,13 @@ object ResourceLocationSerializer : KSerializer<ResourceLocation> {
 
 object UUIDSerializer : KSerializer<UUID> {
     override val descriptor = buildClassSerialDescriptor("UUID") {
-        element<Long>("leastSignificantBits")
         element<Long>("mostSignificantBits")
+        element<Long>("leastSignificantBits")
     }
 
     override fun serialize(encoder: Encoder, value: UUID) {
-        encoder.encodeLong(value.leastSignificantBits)
         encoder.encodeLong(value.mostSignificantBits)
+        encoder.encodeLong(value.leastSignificantBits)
     }
 
     override fun deserialize(decoder: Decoder): UUID {
