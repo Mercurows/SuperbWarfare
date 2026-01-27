@@ -118,6 +118,7 @@ private fun registerPayloads() {
     playToServer<RadarChangeModeMessage>()
     playToServer<RadarSetPosMessage>()
     playToServer<RadarSetTargetMessage>()
+    playToServer<RadarSetParametersMessage>()
     playToServer<ReloadMessage>()
     playToServer<SeekingWeaponWarningMessage>()
     playToServer<SensitivityMessage>()
