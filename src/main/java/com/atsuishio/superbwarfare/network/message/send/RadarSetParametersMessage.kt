@@ -3,10 +3,8 @@ package com.atsuishio.superbwarfare.network.message.send
 import com.atsuishio.superbwarfare.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class RadarSetParametersMessage(val mode: Int) : ServerPacketPayload() {
+object RadarSetParametersMessage : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
 

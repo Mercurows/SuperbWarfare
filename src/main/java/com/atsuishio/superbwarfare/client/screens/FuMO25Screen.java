@@ -292,7 +292,7 @@ public class FuMO25Screen extends AbstractContainerScreen<FuMO25Menu> {
                 if (FuMO25Screen.this.currentTarget == null) return;
                 NetworkRegistry.PACKET_HANDLER.sendToServer(new RadarSetTargetMessage(FuMO25Screen.this.currentTarget.getUUID()));
             } else {
-                NetworkRegistry.PACKET_HANDLER.sendToServer(new RadarSetParametersMessage((byte) 0));
+                NetworkRegistry.PACKET_HANDLER.sendToServer(RadarSetParametersMessage.INSTANCE);
             }
         }
 
