@@ -47,5 +47,6 @@ public class ModScreens {
         event.register(ModMenuTypes.SUPERB_ITEM_INTERFACE_MENU.get(), SuperbItemInterfaceScreen::new);
         event.register(ModMenuTypes.FUMO_25_MENU.get(), FuMO25Screen::new);
         event.register(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), VehicleAssemblingScreen::new);
+        event.register(ModMenuTypes.BLUEPRINT_RESEARCH_TABLE.get(), BlueprintResearchTableScreen::new);
     }
 }

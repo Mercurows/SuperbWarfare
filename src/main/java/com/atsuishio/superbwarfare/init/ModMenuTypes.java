@@ -64,4 +64,7 @@ public class ModMenuTypes {
     public static final Supplier<MenuType<VehicleAssemblingMenu>> VEHICLE_ASSEMBLING_MENU =
             REGISTRY.register("vehicle_assembling_menu",
                     () -> IMenuTypeExtension.create((windowId, inv, data) -> new VehicleAssemblingMenu(windowId, inv)));
+    public static final Supplier<MenuType<BlueprintResearchTableMenu>> BLUEPRINT_RESEARCH_TABLE =
+            REGISTRY.register("blueprint_research_table_menu",
+                    () -> IMenuTypeExtension.create((windowId, inv, data) -> new BlueprintResearchTableMenu(windowId, inv)));
 }
