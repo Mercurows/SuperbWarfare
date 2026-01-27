@@ -1191,38 +1191,25 @@ object ClientEventHandler {
         val lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange() + customRange)
         val targetEntities =
             SeekTool.seekLivingEntities(player, player.entityInteractionRange() + customRange, angle / 2)
+        val attackList = mutableListOf<Entity>()
 
-        if (targetEntities != null && !targetEntities.isEmpty()) {
-            val nearestEntity = targetEntities
-                .filter { it != null && it.isAlive }
-                .minByOrNull {
+        if (lookingEntity != null) {
+            attackList += lookingEntity
+        }
+
+        if (!targetEntities.isEmpty()) {
+            val list = targetEntities.filter { it != null && it.isAlive && it != lookingEntity }
+                .sortedBy {
                     VectorTool.calculateAngle(
                         player.lookAngle,
                         player.eyePosition.vectorTo(it.eyePosition)
                     )
                 }
+            attackList += list
+        }
 
-            var nearest: Entity? = null
-            if (nearestEntity != null) {
-                nearest = nearestEntity
-            }
-
-            val newTargetEntities = mutableListOf<Entity>()
-            if (lookingEntity != null) {
-                newTargetEntities.add(lookingEntity)
-            }
-
-            if (nearest != null) {
-                newTargetEntities.add(nearest)
-            }
-
-            newTargetEntities.addAll(targetEntities)
-
-            for (entity in newTargetEntities) {
-                sendPacketToServer(MeleeAttackMessage(entity.getUUID()))
-            }
-        } else if (lookingEntity != null) {
-            sendPacketToServer(MeleeAttackMessage(lookingEntity.getUUID()))
+        for (entity in attackList) {
+            sendPacketToServer(MeleeAttackMessage(entity.uuid))
         }
     }
 
