@@ -38,7 +38,7 @@ public class BarbedWireBlock extends Block {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     public BarbedWireBlock() {
-        super(BlockBehaviour.Properties.of().ignitedByLava().instrument(NoteBlockInstrument.BASS).sound(SoundType.WOOD).strength(10, 2).noCollission().speedFactor(0.01f).noOcclusion().isRedstoneConductor((bs, br, bp) -> false));
+        super(BlockBehaviour.Properties.of().ignitedByLava().forceSolidOn().instrument(NoteBlockInstrument.BASS).sound(SoundType.WOOD).strength(10, 2).noCollission().speedFactor(0.01f).noOcclusion().isRedstoneConductor((bs, br, bp) -> false));
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
     }
 

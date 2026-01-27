@@ -1,7 +1,7 @@
 {
   "DefaultZoom": 3,
   "Spread": 6,
-  "RecoilX": 0.007,
+  "RecoilX": 0.003,
   "RecoilY": 0.018,
   "MaxEnergy": 24000,
   "Damage": 45,

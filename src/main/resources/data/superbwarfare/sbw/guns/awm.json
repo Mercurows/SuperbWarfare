@@ -2,7 +2,7 @@
   "MinZoom": 4,
   "MaxZoom": 8,
   "Spread": 6,
-  "RecoilX": 0.007,
+  "RecoilX": 0.003,
   "RecoilY": 0.013,
   "Damage": 36,
   "Headshot": 3,

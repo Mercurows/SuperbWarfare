@@ -2224,12 +2224,12 @@ object ClientEventHandler {
         val zoom = (1 - zoomMultiply * zoomTime).toFloat() * pose
 
         bone.posX = zoom * x * (recoilHorizon * (1.5f * firePos)).toFloat()
-        bone.posY = zoom * y * (getBoneMoveY(firePosTimer.toFloat()) * 0.25).toFloat()
+        bone.posY = zoom * y * (getBoneMoveY(firePosTimer.toFloat()) * 0.25 * (1 - 0.25 * zoomTime)).toFloat()
         bone.posZ =
             zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.5 + 0.3f * firePosZ).toFloat() * (1 - 0.25 * zoomTime).toFloat()
         bone.rotX =
             zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.4f + 0.04f * firePosZ).toFloat() * gripRecoilX * recoil *
-                    (1 - 0.75 * zoomTime).toFloat() * zoomRecoil
+                    (1 - 0.85 * zoomTime).toFloat() * zoomRecoil
         bone.rotY =
             (3 * zoom * rotY * getBoneRotY(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
                     (1 - 0.3 * zoomTime) * zoomRecoil).toFloat()
@@ -2392,7 +2392,7 @@ object ClientEventHandler {
         if (firePosTimer > 0.0) {
             val newPitch =
                 player.xRot - (140 * pose * gunRecoilX * sin(firePosTimer * PI * 2) * (2.2 - firePosTimer) * recoil * (4 / (customWeight + 4))
-                        * gripRecoilY + 4 * recoilForce * recoilForce * gunRecoilX).toFloat() * times
+                        * gripRecoilY + 4 * recoilForce * recoilForce * gunRecoilX * pose).toFloat() * times
             player.xRot = newPitch
             player.xRotO = player.xRot
         }
