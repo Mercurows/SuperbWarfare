@@ -31,4 +31,6 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder.of(LuckyContainerBlockEntity::new, ModBlocks.LUCKY_CONTAINER.get()).build(null));
     public static final RegistryObject<BlockEntityType<VehicleAssemblingTableBlockEntity>> VEHICLE_ASSEMBLING_TABLE = REGISTRY.register("vehicle_assembling_table",
             () -> BlockEntityType.Builder.of(VehicleAssemblingTableBlockEntity::new, ModBlocks.VEHICLE_ASSEMBLING_TABLE.get()).build(null));
+    public static final RegistryObject<BlockEntityType<BlueprintResearchTableBlockEntity>> BLUEPRINT_RESEARCH_TABLE = REGISTRY.register("blueprint_research_table",
+            () -> BlockEntityType.Builder.of(BlueprintResearchTableBlockEntity::new, ModBlocks.BLUEPRINT_RESEARCH_TABLE.get()).build(null));
 }
