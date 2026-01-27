@@ -53,4 +53,5 @@ public class ModBlocks {
     public static final RegistryObject<Block> CREATIVE_SUPERB_ITEM_INTERFACE = REGISTRY.register("creative_superb_item_interface", CreativeSuperbItemInterfaceBlock::new);
     public static final RegistryObject<Block> LUCKY_CONTAINER = REGISTRY.register("lucky_container", LuckyContainerBlock::new);
     public static final RegistryObject<Block> VEHICLE_ASSEMBLING_TABLE = REGISTRY.register("vehicle_assembling_table", VehicleAssemblingTableBlock::new);
+    public static final RegistryObject<Block> BLUEPRINT_RESEARCH_TABLE = REGISTRY.register("blueprint_research_table", BlueprintResearchTableBlock::new);
 }
