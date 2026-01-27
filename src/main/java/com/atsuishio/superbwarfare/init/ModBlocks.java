@@ -54,4 +54,5 @@ public class ModBlocks {
     public static final DeferredHolder<Block, CreativeSuperbItemInterfaceBlock> CREATIVE_SUPERB_ITEM_INTERFACE = REGISTRY.register("creative_superb_item_interface", CreativeSuperbItemInterfaceBlock::new);
     public static final DeferredHolder<Block, LuckyContainerBlock> LUCKY_CONTAINER = REGISTRY.register("lucky_container", () -> new LuckyContainerBlock());
     public static final DeferredHolder<Block, VehicleAssemblingTableBlock> VEHICLE_ASSEMBLING_TABLE = REGISTRY.register("vehicle_assembling_table", VehicleAssemblingTableBlock::new);
+    public static final DeferredHolder<Block, BlueprintResearchTableBlock> BLUEPRINT_RESEARCH_TABLE = REGISTRY.register("blueprint_research_table", BlueprintResearchTableBlock::new);
 }
