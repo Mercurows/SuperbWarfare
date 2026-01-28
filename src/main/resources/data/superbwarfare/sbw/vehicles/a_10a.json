@@ -57,6 +57,7 @@
     "Position": [0, 1.59, 2.775],
     "CanRotateHead": false,
     "Sensitivity": [0, 0, 0],
+    "Pose": "Pilot",
     "CameraPos": {
       "Transform": "Vehicle",
       "Position": [0, 2.794, 2.775],

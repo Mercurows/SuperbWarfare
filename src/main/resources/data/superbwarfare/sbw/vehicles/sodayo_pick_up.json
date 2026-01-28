@@ -121,6 +121,7 @@
       "MaxYaw": 70,
       "MinPitch": -30,
       "MaxPitch": 90,
+      "Pose": "Stand",
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [0, 0.75, -3]

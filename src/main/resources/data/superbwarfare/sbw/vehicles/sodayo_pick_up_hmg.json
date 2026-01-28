@@ -80,6 +80,7 @@
       "Position": [0, -1.4, -1],
       "MinPitch": -45,
       "MaxPitch": 85,
+      "Pose": "MachineGunStand",
       "CameraPos": {
         "Transform": "Barrel",
         "UseFixedCameraPos": true,

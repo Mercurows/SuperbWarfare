@@ -51,7 +51,11 @@
         "Direction": "Barrel"
       },
       "Weapons": ["Cannon", "MainMachineGun", "Missile"],
-      "Sensitivity": [0.53, 0.71, 0.9]
+      "Sensitivity": [0.53, 0.71, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
     },
     {
       "HidePassenger": true,
@@ -68,7 +72,11 @@
         "Position": [1.803125, 1.9765625, -0.8125]
       },
       "Weapons": "MG1",
-      "Sensitivity": [0.58, 0.77, 0.9]
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
     },
     {
       "HidePassenger": true,
@@ -85,7 +93,11 @@
         "Position": [-1.803125, 1.9765625, -0.8125]
       },
       "Weapons": "MG2",
-      "Sensitivity": [0.58, 0.77, 0.9]
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
     },
     {
       "HidePassenger": true,
@@ -102,7 +114,11 @@
         "Position": [1.815625, 1.9765625, -0.8125]
       },
       "Weapons": "MG3",
-      "Sensitivity": [0.58, 0.77, 0.9]
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
     },
     {
       "HidePassenger": true,
@@ -119,7 +135,11 @@
         "Position": [-1.815625, 1.9765625, -0.8125]
       },
       "Weapons": "MG4",
-      "Sensitivity": [0.58, 0.77, 0.9]
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
     },
     {
       "HidePassenger": true,
@@ -136,7 +156,11 @@
         "Position": [0.6875, 1.6015625, -4.1]
       },
       "Weapons": "MG5",
-      "Sensitivity": [0.58, 0.77, 0.9]
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
     },
     {
       "HidePassenger": true,
@@ -153,7 +177,11 @@
         "Position": [-1.50625, 1.9765625, -3.0625]
       },
       "Weapons": "MG6",
-      "Sensitivity": [0.58, 0.77, 0.9]
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
     }
   ],
   "Weapons": {

@@ -63,6 +63,7 @@
       "Transform": "Vehicle",
       "Position": [0, 1.472, 1.69],
       "Sensitivity": [0, 0, 0],
+      "Pose": "Pilot",
       "CameraPos": {
         "Transform": "Vehicle",
         "Position": [0, 2.708, 1.913],

@@ -57,7 +57,11 @@
       "MinPitch": -15,
       "MaxPitch": 32.5,
       "Weapons": ["Laser"],
-      "Sensitivity": [0.6, 0.78, 1]
+      "Sensitivity": [0.6, 0.78, 1],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [3.2, 0.375, 0]
+      }
     },
     {
       "Transform": "Vehicle",
@@ -69,7 +73,11 @@
       "MinPitch": -25,
       "MaxPitch": 80,
       "MinYaw": -105,
-      "MaxYaw": 105
+      "MaxYaw": 105,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-3.2, 0.375, 3.0625]
+      }
     }
   ],
   "Weapons": {

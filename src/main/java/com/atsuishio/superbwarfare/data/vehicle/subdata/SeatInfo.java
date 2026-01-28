@@ -18,6 +18,9 @@ public class SeatInfo {
     @SerializedName("Transform")
     public String transform = "Default";
 
+    @SerializedName("Pose")
+    public String pose = "Default";
+
     @SerializedName("Position")
     public Vec3 position = Vec3.ZERO;
 

@@ -61,6 +61,7 @@
       "Position": [0, 1.4, 1.25],
       "CanRotateHead": false,
       "Sensitivity": [0, 0, 0],
+      "Pose": "Pilot",
       "CameraPos": {
         "Transform": "Vehicle",
         "Position": [0, 2.563, 1.4],
@@ -70,7 +71,7 @@
       },
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [1.2, 0.375, 1.25],
+        "Position": [1.25, 0.375, -1.5],
         "CanEject": true,
         "EjectPosition": [0, 3, 1.25],
         "EjectDirection": "Up",

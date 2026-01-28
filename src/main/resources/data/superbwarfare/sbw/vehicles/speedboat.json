@@ -20,37 +20,56 @@
       "MinYaw": -105,
       "MaxYaw": 105,
       "CameraPos": {
-        "UseFixedCameraPos": true,
         "Transform": "Barrel",
         "ZoomPosition": [0, 0.4, -0.6],
         "Direction": "Barrel"
       },
       "Weapons": ["MachineGun"],
-      "Sensitivity": [0.75, 0.8, 1]
+      "Sensitivity": [0.75, 0.8, 1],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -4.2]
+      }
     },
     {
       "Transform": "Vehicle",
       "Position": [-0.8, 0.35, -1.2],
       "MinYaw": -90,
-      "MaxYaw": 90
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -4.2]
+      }
     },
     {
       "Transform": "Vehicle",
       "Position": [0.8, 0.35, -1.2],
       "MinYaw": -90,
-      "MaxYaw": 90
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -4.2]
+      }
     },
     {
       "Transform": "Vehicle",
       "Position": [-0.8, 0.35, -2.2],
       "MinYaw": -90,
-      "MaxYaw": 90
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -4.2]
+      }
     },
     {
       "Transform": "Vehicle",
       "Position": [0.8, 0.35, -2.2],
       "MinYaw": -90,
-      "MaxYaw": 90
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -4.2]
+      }
     }
   ],
   "Weapons": {
