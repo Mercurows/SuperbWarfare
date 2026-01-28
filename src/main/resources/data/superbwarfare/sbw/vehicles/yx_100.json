@@ -56,7 +56,11 @@
       "CanRotateHead": false,
       "MinPitch": -10,
       "MaxPitch": 30,
-      "Sensitivity": [0.52, 0.72, 0.9]
+      "Sensitivity": [0.52, 0.72, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [3, 0.375, 0]
+      }
     },
     {
       "HidePassenger": true,
@@ -75,7 +79,11 @@
       "CanRotateHead": false,
       "MinPitch": -10,
       "MaxPitch": 60,
-      "Sensitivity": [0.57, 0.75, 0.9]
+      "Sensitivity": [0.57, 0.75, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-3, 0.375, 0]
+      }
     },
     {
       "Transform": "Turret",
@@ -88,21 +96,35 @@
       "CanRotateBody": true,
       "MinPitch": -30,
       "MaxPitch": 90,
-      "Sensitivity": [0.6, 1, 1]
+      "Sensitivity": [0.6, 1, 1],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [3, 0.375, -1]
+      }
     },
     {
       "BanHand": true,
       "Transform": "Vehicle",
-      "Position": [1.125, 0.8, -5],
+      "Position": [1.125, 0.375, -5],
       "MinYaw": -95,
-      "MaxYaw": 95
+      "MaxYaw": 95,
+      "Pose": "Climb",
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [1.125, 0.375, -5]
+      }
     },
     {
       "BanHand": true,
       "Transform": "Vehicle",
-      "Position": [-1.125, 0.8, -5],
+      "Position": [-1.125, 0.375, -5],
       "MinYaw": -95,
-      "MaxYaw": 95
+      "MaxYaw": 95,
+      "Pose": "Climb",
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-1.125, 0.375, -5]
+      }
     }
   ],
   "Weapons": {

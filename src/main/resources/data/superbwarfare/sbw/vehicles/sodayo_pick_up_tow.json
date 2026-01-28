@@ -80,6 +80,7 @@
       "Position": [0.3, -1.3689, -0.6],
       "MinPitch": -20,
       "MaxPitch": 40,
+      "Pose": "Tow",
       "CameraPos": {
         "Transform": "Turret",
         "UseFixedCameraPos": true,

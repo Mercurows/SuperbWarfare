@@ -100,16 +100,10 @@
       "CanRotateHead": false,
       "MinPitch": -8,
       "MaxPitch": 60,
-      "Sensitivity": [0.55, 0.73, 1]
-    },
-    {
-      "HidePassenger": true,
-      "BanHand": true,
-      "Transform": "Vehicle",
-      "Position": [0, 1, 0],
-      "CameraPos": {
-        "UseSimulate3P": true,
-        "Simulate3PPos": [6, 1]
+      "Sensitivity": [0.55, 0.73, 1],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
       }
     },
     {
@@ -120,6 +114,10 @@
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
       }
     },
     {
@@ -130,6 +128,10 @@
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
       }
     },
     {
@@ -140,6 +142,24 @@
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
+      }
+    },
+    {
+      "HidePassenger": true,
+      "BanHand": true,
+      "Transform": "Vehicle",
+      "Position": [0, 1, 0],
+      "CameraPos": {
+        "UseSimulate3P": true,
+        "Simulate3PPos": [6, 1]
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.375, -5]
       }
     }
   ],

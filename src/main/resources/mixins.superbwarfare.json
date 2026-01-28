@@ -31,6 +31,7 @@
     "ClientPlayerEntityMixin",
     "EntityRenderDispatcherMixin",
     "GameRendererMixin",
+    "HumanoidModelMixin",
     "ItemInHandLayerMixin",
     "KeyboardInputMixin",
     "KeymappingMixin",
@@ -42,7 +43,6 @@
     "MultiPlayerGameModeMixin",
     "OverlayTextureMixin",
     "PlayerItemInHandLayerMixin",
-    "PlayerModelMixin",
     "PlayerRendererMixin"
   ],
   "minVersion": "0.8",
