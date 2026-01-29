@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.SoundInfo
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState
@@ -55,7 +54,6 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent
 import java.util.*
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 
 @EventBusSubscriber
@@ -161,7 +159,7 @@ object LivingEventHandler {
 
         // 距离衰减
         if (isGunDamage(source) && stack.item is GunItem) {
-            val data = from(stack)
+            val data = GunData.from(stack)
             val distance = entity.position().distanceTo(sourceEntity.position())
             damage = reduceDamageByDistance(amount, distance, data.damageReduceRate, data.damageReduceMinDistance)
         }
@@ -224,20 +222,21 @@ object LivingEventHandler {
         if (sourceEntity !is Player) return
         val stack = sourceEntity.mainHandItem
         if (stack.item !is GunItem) return
-        if (event.entity.type.`is`(ModTags.EntityTypes.NO_EXPERIENCE)) return
+        val entity = event.entity
+        if (entity.type.`is`(ModTags.EntityTypes.NO_EXPERIENCE)) return
 
-        val data = from(stack)
-        val amount = min(0.125 * event.amount, event.entity.maxHealth.toDouble())
+        val data = GunData.from(stack)
+        val amount = (0.5f * event.amount).coerceAtMost(entity.maxHealth)
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.`is`(ModDamageTypes.PROJECTILE_EXPLOSION)) {
-            if (data.get<Double>(GunProp.EXPLOSION_DAMAGE) > 0 || from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
+            if (data.get(GunProp.EXPLOSION_DAMAGE) > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.set(data.exp.get() + amount)
             }
         }
 
         // 再判断是不是枪械能造成的伤害
-        if (!isGunDamage(source)) return
+        if (!isGunDamage(source) && !source.`is`(DamageTypes.PLAYER_ATTACK)) return
 
         data.exp.set(data.exp.get() + amount)
         data.save()
@@ -251,18 +250,18 @@ object LivingEventHandler {
         if (stack.item !is GunItem) return
         if (event.entity.type.`is`(ModTags.EntityTypes.NO_EXPERIENCE)) return
 
-        val data = from(stack)
+        val data = GunData.from(stack)
         val amount = (20 + 2 * event.entity.maxHealth).toDouble()
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.`is`(ModDamageTypes.PROJECTILE_EXPLOSION)) {
-            if (data.get<Double>(GunProp.EXPLOSION_DAMAGE) > 0 || from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
+            if (data.get(GunProp.EXPLOSION_DAMAGE) > 0 || GunData.from(stack).perk.getLevel(ModPerks.HE_BULLET) > 0) {
                 data.exp.add(amount)
             }
         }
 
         // 再判断是不是枪械能造成的伤害
-        if (isGunDamage(source)) {
+        if (isGunDamage(source) || source.`is`(DamageTypes.PLAYER_ATTACK)) {
             data.exp.add(amount)
         }
 
@@ -289,7 +288,7 @@ object LivingEventHandler {
         if (stack.item !is GunItem) return
         if (event.entity.type.`is`(ModTags.EntityTypes.NO_EXPERIENCE)) return
 
-        val data = from(stack)
+        val data = GunData.from(stack)
         var level = data.level.get()
         var exp = data.exp.get()
         var upgradeExpNeeded = 20 * level.toDouble().pow(2.0) + 160 * level + 20
@@ -359,8 +358,9 @@ object LivingEventHandler {
                     checkCopyGuns(newStack, entity)
                 }
 
-                if (newStack.item !== oldStack.item || (newStack.item is GunItem && !from(newStack).initialized())
-                    || (oldStack.item is GunItem && !from(oldStack).initialized())
+                if (newStack.item !== oldStack.item || (newStack.item is GunItem && !GunData.from(newStack)
+                        .initialized())
+                    || (oldStack.item is GunItem && !GunData.from(oldStack).initialized())
                     || (newStack.item is GunItem && oldStack.item is GunItem && (GunsTool.getGunUUID(
                         NBTTool.getTag(
                             newStack
@@ -371,7 +371,7 @@ object LivingEventHandler {
 
                     val oldGun = oldStack.item
                     if (oldGun is GunItem) {
-                        val oldData = from(oldStack)
+                        val oldData = GunData.from(oldStack)
 
                         stopGunReloadSound(entity, oldData)
 
@@ -403,7 +403,7 @@ object LivingEventHandler {
                     }
 
                     if (newStack.item is GunItem) {
-                        val newData = from(newStack)
+                        val newData = GunData.from(newStack)
 
                         if (newData.get(GunProp.BOLT_ACTION_TIME) > 0) {
                             newData.bolt.actionTimer.reset()
@@ -445,14 +445,14 @@ object LivingEventHandler {
     }
 
     private fun checkCopyGuns(stack: ItemStack, player: Player) {
-        val data = from(stack)
+        val data = GunData.from(stack)
         if (!data.initialized()) return
         val uuid = data.gunDataTag.getUUID("UUID")
 
         for (item in player.getInventory().items) {
             if (item == stack) continue
             if (item.item is GunItem) {
-                val itemData = from(item)
+                val itemData = GunData.from(item)
                 val dataTag = itemData.gunDataTag
                 if (!dataTag.hasUUID("UUID")) continue
                 if (dataTag.getUUID("UUID") == uuid) {
@@ -559,7 +559,7 @@ object LivingEventHandler {
 
         var damage = event.amount
 
-        val data = from(stack)
+        val data = GunData.from(stack)
         for (type in Perk.Type.entries) {
             val instance = data.perk.getInstances(type)
 
@@ -602,7 +602,7 @@ object LivingEventHandler {
         val stack = attacker.mainHandItem
         if (stack.item !is GunItem) return
 
-        val data = from(stack)
+        val data = GunData.from(stack)
         for (type in Perk.Type.entries) {
             val instance = data.perk.getInstances(type)
             instance.forEach { it.perk.onKill(data, it, event.entity, source) }
