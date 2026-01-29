@@ -27,7 +27,7 @@ public class ThermalImagingGogglesItem extends Item implements ICurioItem {
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         LivingEntity living = slotContext.entity();
         if (!living.level().isClientSide) {
-            living.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 2, 0, false, false));
+            living.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 3, 0, false, false));
         }
     }
 }

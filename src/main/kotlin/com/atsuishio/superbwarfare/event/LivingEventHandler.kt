@@ -225,7 +225,7 @@ object LivingEventHandler {
         if (entity.type.`is`(ModTags.EntityTypes.NO_EXPERIENCE)) return
 
         val data = GunData.from(stack)
-        val amount = (0.125f * event.amount).coerceAtMost(entity.maxHealth)
+        val amount = (0.5f * event.amount).coerceAtMost(entity.maxHealth)
 
         // 先处理发射器类武器或高爆弹的爆炸伤害
         if (source.`is`(ModDamageTypes.PROJECTILE_EXPLOSION)) {
@@ -235,7 +235,7 @@ object LivingEventHandler {
         }
 
         // 再判断是不是枪械能造成的伤害
-        if (!DamageTypeTool.isGunDamage(source)) return
+        if (!DamageTypeTool.isGunDamage(source) && !source.`is`(DamageTypes.PLAYER_ATTACK)) return
 
         data.exp.set(data.exp.get() + amount)
         data.save()
@@ -260,7 +260,7 @@ object LivingEventHandler {
         }
 
         // 再判断是不是枪械能造成的伤害
-        if (DamageTypeTool.isGunDamage(source)) {
+        if (DamageTypeTool.isGunDamage(source) || source.`is`(DamageTypes.PLAYER_ATTACK)) {
             data.exp.add(amount)
         }
 
