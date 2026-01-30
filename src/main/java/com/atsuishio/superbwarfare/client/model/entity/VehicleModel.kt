@@ -258,25 +258,25 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
             if (isRot) {
                 return if (isL) {
                     TransformContext { bone, vehicle, _ ->
-                        val t = wrap(leftTrack + 2 * index, vehicle)
+                        val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
                         bone.rotX = -getBoneRotX(t) * Mth.DEG_TO_RAD
                     }
                 } else {
                     TransformContext { bone, vehicle, _ ->
-                        val t2 = wrap(rightTrack + 2 * index, vehicle)
+                        val t2 = wrap(rightTrack + getTrackDistance() * index, vehicle)
                         bone.rotX = -getBoneRotX(t2) * Mth.DEG_TO_RAD
                     }
                 }
             } else {
                 return if (isL) {
                     TransformContext { bone, vehicle, _ ->
-                        val t = wrap(leftTrack + 2 * index, vehicle)
+                        val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
                         bone.posY = getBoneMoveY(t)
                         bone.posZ = getBoneMoveZ(t)
                     }
                 } else {
                     TransformContext { bone, vehicle, _ ->
-                        val t2 = wrap(rightTrack + 2 * index, vehicle)
+                        val t2 = wrap(rightTrack + getTrackDistance() * index, vehicle)
                         bone.posY = getBoneMoveY(t2)
                         bone.posZ = getBoneMoveZ(t2)
                     }
@@ -357,6 +357,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     open fun getBoneRotX(t: Float) = t
     open fun getBoneMoveY(t: Float) = t
     open fun getBoneMoveZ(t: Float) = t
+    open fun getTrackDistance() = 2f
 
     protected fun wrap(value: Float, range: Int) = ((value % range) + range) % range
 

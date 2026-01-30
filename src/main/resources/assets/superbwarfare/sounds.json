@@ -4208,5 +4208,54 @@
         "name": "superbwarfare:vehicle/ju_87/ju_87_engine"
       }
     ]
+  },
+  "t_90a_reload": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/t_90a/t_90a_reload",
+        "stream": false
+      }
+    ]
+  },
+  "t_90a_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/t_90a/t_90a_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "t_90a_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/t_90a/t_90a_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "t_90a_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/t_90a/t_90a_far",
+        "stream": false
+      }
+    ]
+  },
+  "t_90a_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/t_90a/t_90a_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "t_90a_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/t_90a/t_90a_engine"
+      }
+    ]
   }
 }

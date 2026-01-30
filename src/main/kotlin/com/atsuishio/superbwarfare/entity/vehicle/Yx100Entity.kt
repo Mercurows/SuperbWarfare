@@ -36,7 +36,7 @@ class Yx100Entity(type: EntityType<Yx100Entity>, world: Level) : GeoVehicleEntit
     }
 
     override fun getTrackAnimationLength() = 80
-    override fun getTurretMaxHealth() = 100f
-    override fun getWheelMaxHealth() = 100f
-    override fun getEngineMaxHealth() = 150f
+    override fun getTurretMaxHealth() = 200f
+    override fun getWheelMaxHealth() = 200f
+    override fun getEngineMaxHealth() = 300f
 }
