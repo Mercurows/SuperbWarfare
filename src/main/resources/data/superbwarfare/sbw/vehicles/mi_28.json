@@ -80,7 +80,8 @@
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [-1.875, 0.375, 1.875]
-      }
+      },
+      "HasThermalImaging": true
     },
     {
       "Transform": "Vehicle",
@@ -101,7 +102,8 @@
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [-1.875, 0.375, 2.672]
-      }
+      },
+      "HasThermalImaging": true
     }
   ],
   "Weapons": {

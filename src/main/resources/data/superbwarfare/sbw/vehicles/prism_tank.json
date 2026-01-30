@@ -61,7 +61,8 @@
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [3.2, 0.375, 0]
-      }
+      },
+      "HasThermalImaging": true
     },
     {
       "Transform": "Vehicle",

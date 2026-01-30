@@ -121,7 +121,8 @@
       "ZoomPosition": [0, 3.574, 4.6],
       "ZoomDirection": "Barrel"
     },
-    "Weapons": ["Main"]
+    "Weapons": ["Main"],
+    "HasThermalImaging": true
   },
   "Weapons": {
     "Main": {

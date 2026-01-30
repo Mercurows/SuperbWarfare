@@ -40,7 +40,7 @@ public abstract class BlockStateMixin {
 
             //TODO 未来添加更多能穿过的方块
 
-            if (state.is(BlockTags.SWORD_EFFICIENT)) {
+            if (state.is(BlockTags.SWORD_EFFICIENT) && !state.is(BlockTags.MINEABLE_WITH_AXE)) {
                 ci.setReturnValue(Shapes.empty());
             }
 
