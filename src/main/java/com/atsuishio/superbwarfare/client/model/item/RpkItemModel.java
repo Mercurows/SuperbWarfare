@@ -35,7 +35,7 @@ public class RpkItemModel extends CustomGunModel<RpkItem> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        double fp = ClientEventHandler.firePos;
+        double fp = ClientEventHandler.boltMove;
 
         int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
 
@@ -93,8 +93,7 @@ public class RpkItemModel extends CustomGunModel<RpkItem> {
         ClientEventHandler.handleShootAnimation(shen, 1, -1, 1, 1, 1, 1, 0.5f, 0.8f);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
-
-        shuan.setPosZ(2.4f * (float) fp);
+        shuan.setPosZ(3f * (float) fp);
 
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 

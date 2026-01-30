@@ -139,7 +139,7 @@ object ClientEventHandler {
     var fireRotTimer: Double = 0.0
 
     @JvmField
-    var firePos: Double = 0.0
+    var boltMove: Double = 0.0
 
     @JvmField
     var firePosZ: Double = 0.0
@@ -262,12 +262,6 @@ object ClientEventHandler {
 
     @JvmField
     var gunMelee: Int = 0
-
-    @JvmField
-    var chamberRot: Double = 0.0
-
-    @JvmField
-    var actionMove: Double = 0.0
 
     // 按住开火键的持续tick
     @JvmField
@@ -1420,8 +1414,6 @@ object ClientEventHandler {
             fireSpread = 0.0
         }
 
-        gunPartMove(times)
-
         if (mode == FireMode.SEMI && clientTimer.getProgress() >= cooldown) {
             clientTimer.stop()
         }
@@ -1466,14 +1458,6 @@ object ClientEventHandler {
             customRpm = (customRpm + 15).coerceAtMost(500)
         }
 
-        if (item == ModItems.SENTINEL.get()) {
-            chamberRot = 1.0
-        }
-
-        if (item == ModItems.NTW_20.get()) {
-            actionMove = 1.0
-        }
-
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
             data.bolt.needed.set(true)
@@ -1484,11 +1468,6 @@ object ClientEventHandler {
 
         playGunClientSounds(player)
         handleClientShoot()
-    }
-
-    fun gunPartMove(times: Float) {
-        chamberRot = Mth.lerp(0.07 * times, chamberRot, 0.0)
-        actionMove = Mth.lerp(0.125 * times, actionMove, 0.0)
     }
 
     fun handleClientShoot() {
@@ -2084,18 +2063,22 @@ object ClientEventHandler {
     }
 
     private fun handleWeaponFire(event: ViewportEvent.ComputeCameraAngles, entity: LivingEntity) {
-        val times = (2f * customAnimSpeed * mc.deltaFrameTime.coerceAtMost(0.48f)).toFloat()
+        val times = (1.65f * customAnimSpeed * mc.deltaFrameTime.coerceAtMost(0.48f)).toFloat()
         val stack = entity.mainHandItem
         val data = GunData.from(stack)
         val amplitude = 25000.0 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X)
 
         if (fireRecoilTime > 0.0) {
             firePosTimer = 0.001
-            fireRotTimer = 0.001
+            if (fireRotTimer > 0) {
+                fireRotTimer = 0.12
+            } else {
+                fireRotTimer = 0.001
+            }
             fireRecoilTime -= 7 * times
             fireSpread += 0.1 * times
             firePosZ += (0.8 * firePosZ + 0.4) * (4 * Math.random() + 0.85) * times
-            recoilForce += 0.75
+            recoilForce += 0.5
         }
 
         fireSpread = (fireSpread - 0.1 * (fireSpread.pow(2) * times)).coerceIn(0.0, 2.0)
@@ -2116,7 +2099,15 @@ object ClientEventHandler {
             fireRotTimer = 0.0
         }
 
-        firePos = MathTool.decayingOscillation(2.5f, 2f, 0.5f, firePosTimer.toFloat()).toDouble()
+        boltMove = if (firePosTimer > 0 && firePosTimer <= 0.5) {
+            1.2 * Mth.sin(2 * Mth.PI * firePosTimer.toFloat()).toDouble()
+        } else {
+            0.0
+        }
+
+        if (boltMove > 1) {
+            boltMove = 1.0
+        }
 
         if (entity is Player && entity.isSpectator) return
 
@@ -2206,18 +2197,18 @@ object ClientEventHandler {
 
         val zoom = (1 - zoomMultiply * zoomTime).toFloat() * pose
 
-        bone.posX = zoom * x * (recoilHorizon * (1.5f * firePos)).toFloat()
+        bone.posX = zoom * x * (recoilHorizon * (1.5f * boltMove)).toFloat()
         bone.posY = zoom * y * (getBoneMoveY(firePosTimer.toFloat()) * 0.25 * (1 - 0.25 * zoomTime)).toFloat()
         bone.posZ =
-            zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.5 + 0.3f * firePosZ).toFloat() * (1 - 0.25 * zoomTime).toFloat()
+            zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.05 + 1.1f * firePosZ).toFloat() * (1 - 0.5 * zoomTime).toFloat()
         bone.rotX =
-            zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.4f + 0.04f * firePosZ).toFloat() * gripRecoilX * recoil *
+            zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.5f + 0.01f * firePosZ).toFloat() * gripRecoilX * recoil *
                     (1 - 0.85 * zoomTime).toFloat() * zoomRecoil
         bone.rotY =
             (3 * zoom * rotY * getBoneRotY(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
                     (1 - 0.3 * zoomTime) * zoomRecoil).toFloat()
         bone.rotZ =
-            (5 * zoom * rotZ * getBoneRotZ(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
+            (2 * zoom * rotZ * getBoneRotZ(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
                     (1 - 0.5 * zoomTime) * zoomRecoil).toFloat()
     }
 
@@ -2373,9 +2364,16 @@ object ClientEventHandler {
         player.yRotO = player.yRot
 
         if (firePosTimer > 0.0) {
-            val newPitch =
-                player.xRot - (140 * pose * gunRecoilX * sin(firePosTimer * PI * 2) * (2.2 - firePosTimer) * recoil * (4 / (customWeight + 4))
-                        * gripRecoilY + 4 * recoilForce * recoilForce * gunRecoilX * pose).toFloat() * times
+            var rotateX =
+                (70 * pose * gunRecoilX * sin(firePosTimer * PI * 2) * (2.2 - firePosTimer) * recoil * (4 / (customWeight + 4))
+                        * gripRecoilY + 2 * recoilForce * recoilForce * gunRecoilX * pose * recoil * (4 / (customWeight + 4))).toFloat() * times
+
+            if (rotateX < 0) {
+                rotateX *= 1.8f
+            }
+
+            val newPitch = player.xRot - rotateX
+
             player.xRot = newPitch
             player.xRotO = player.xRot
         }

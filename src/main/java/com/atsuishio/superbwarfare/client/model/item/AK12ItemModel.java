@@ -87,8 +87,8 @@ public class AK12ItemModel extends CustomGunModel<AK12Item> {
         }
 
         ClientEventHandler.handleShootAnimation(shen, 0.95f, -0.95f, 0.85f, 0.8f, 0.9f, 1, 0.5f, 0.8f);
-        GeoBone shuan = getAnimationProcessor().getBone("shuan");
-        shuan.setPosZ(2.4f * (float) ClientEventHandler.firePos);
+        var shuan = getAnimationProcessor().getBone("shuan");
+        shuan.setPosZ(3f * (float) ClientEventHandler.boltMove);
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 

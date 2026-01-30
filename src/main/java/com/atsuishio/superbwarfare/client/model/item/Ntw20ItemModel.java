@@ -36,8 +36,8 @@ public class Ntw20ItemModel extends CustomGunModel<Ntw20Item> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-
-        int type = GunData.from(stack).attachment.get(AttachmentType.SCOPE);
+        var data = GunData.from(stack);
+        int type = data.attachment.get(AttachmentType.SCOPE);
 
         float posY = switch (type) {
             case 0 -> -0.25f;
@@ -74,9 +74,8 @@ public class Ntw20ItemModel extends CustomGunModel<Ntw20Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        var data = GunData.from(stack);
-        action.setPosZ(3f * (float) ClientEventHandler.actionMove);
-        lh.setPosZ(-3f * (float) ClientEventHandler.actionMove);
+        action.setPosZ(3f * (float) ClientEventHandler.boltMove);
+        lh.setPosZ(-3f * (float) ClientEventHandler.boltMove);
 
         GeoBone l = getAnimationProcessor().getBone("l");
         GeoBone r = getAnimationProcessor().getBone("r");

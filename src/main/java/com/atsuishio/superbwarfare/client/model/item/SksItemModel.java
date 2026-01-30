@@ -21,14 +21,14 @@ public class SksItemModel extends CustomGunModel<SksItem> {
         ItemStack stack = player.getMainHandItem();
         if (shouldCancelRender(stack, animationState)) return;
 
-        GeoBone gun = getAnimationProcessor().getBone("bone");
-        GeoBone bolt = getAnimationProcessor().getBone("bolt");
-        GeoBone shuan = getAnimationProcessor().getBone("bolt2");
+        var gun = getAnimationProcessor().getBone("bone");
+//        var bolt = getAnimationProcessor().getBone("bolt");
+        var shuan = getAnimationProcessor().getBone("bolt2");
 
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fp = ClientEventHandler.firePos;
+        double fp = ClientEventHandler.boltMove;
 
         gun.setPosX(1.53f * (float) zp);
         gun.setPosY(0.34f * (float) zp - (float) (0.6f * zpz));
@@ -43,7 +43,7 @@ public class SksItemModel extends CustomGunModel<SksItem> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        shuan.setPosZ(2f * (float) fp);
+        shuan.setPosZ(3f * (float) fp);
 
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, false);
 
@@ -63,7 +63,7 @@ public class SksItemModel extends CustomGunModel<SksItem> {
             shell.setScaleX(0);
             shell.setScaleY(0);
             shell.setScaleZ(0);
-            bolt.setPosZ(2.5f);
+            shuan.setPosZ(2.5f);
         } else {
             shell.setScaleX(1);
             shell.setScaleY(1);

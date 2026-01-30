@@ -58,7 +58,7 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
                 scopeScale = Mth.lerp(
                     (0.5f * deltaFrame).toDouble(),
                     scopeScale.toDouble(),
-                    1.35f + (0.2f * ClientEventHandler.firePos)
+                    1.35f + (0.2f * ClientEventHandler.boltMove)
                 ).toFloat()
                 val f = min(screenWidth, screenHeight).toFloat()
                 val f1: Float = min(screenWidth.toFloat() / f, screenHeight.toFloat() / f) * scopeScale

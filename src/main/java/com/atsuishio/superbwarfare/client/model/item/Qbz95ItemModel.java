@@ -45,7 +45,7 @@ public class Qbz95ItemModel extends CustomGunModel<Qbz95Item> {
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
 
-        double fp = ClientEventHandler.firePos;
+        double fp = ClientEventHandler.boltMove;
 
         var data = GunData.from(stack);
         int type = data.attachment.get(AttachmentType.SCOPE);

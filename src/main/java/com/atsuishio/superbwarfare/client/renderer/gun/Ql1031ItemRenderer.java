@@ -90,7 +90,7 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
                             AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.264, 0.85, 0.06f, 255, 0, 0, 255, "dot", false);
                             AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.264, 0.85, 0.05f, 255, 255, 255, 255, "ql_front", false);
                             stack.pushPose();
-                            float spread = (float) (ClientEventHandler.gunSpread + 1 * ClientEventHandler.firePos);
+                            float spread = (float) (ClientEventHandler.gunSpread + 1 * ClientEventHandler.boltMove);
                             int gb = 255 - (int) (data.heat.get() * 2.55);
                             stack.rotateAround(Axis.ZP.rotationDegrees(45), 0, 0.264f, 0);
                             AnimationHelper.handleZoomCrossHair(currentBuffer, renderType, name, stack, bone, buffer, 0, 0.264, -0.2, 0.025f + 0.003f * spread, 255, gb, gb, 255, "ql_back", false);

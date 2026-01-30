@@ -64,11 +64,11 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
             val moveX =
                 (-32 * ClientEventHandler.turnRot[1] - (if (player.isSprinting) 100 else 67) * ClientEventHandler.movePosX + 3 * ClientEventHandler.cameraRot[2]).toFloat()
             val moveY =
-                (-32 * ClientEventHandler.turnRot[0] + 100 * ClientEventHandler.velocityY.toFloat() - (if (player.isSprinting) 100 else 67) * ClientEventHandler.movePosY - 12 * ClientEventHandler.firePos + 3 * ClientEventHandler.cameraRot[1]).toFloat()
+                (-32 * ClientEventHandler.turnRot[0] + 100 * ClientEventHandler.velocityY.toFloat() - (if (player.isSprinting) 100 else 67) * ClientEventHandler.movePosY - 12 * ClientEventHandler.boltMove + 3 * ClientEventHandler.cameraRot[1]).toFloat()
             scopeScale = Mth.lerp(
                 (0.5f * deltaFrame).toDouble(),
                 scopeScale.toDouble(),
-                1.35f + (0.2f * ClientEventHandler.firePos)
+                1.35f + (0.2f * ClientEventHandler.boltMove)
             ).toFloat()
             val f = min(w, h).toFloat()
             val f1: Float = min(w.toFloat() / f, h.toFloat() / f) * scopeScale
