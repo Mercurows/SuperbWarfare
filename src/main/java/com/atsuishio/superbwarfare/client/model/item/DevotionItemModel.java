@@ -57,7 +57,7 @@ public class DevotionItemModel extends CustomGunModel<DevotionItem> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fp = ClientEventHandler.firePos;
+        double fp = ClientEventHandler.boltMove;
 
         gun.setPosX(2.17f * (float) zp);
         gun.setPosY(0.17f * (float) zp - (float) (0.5f * zpz));

@@ -28,7 +28,7 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fp = ClientEventHandler.firePos;
+        double fp = ClientEventHandler.boltMove;
 
         gun.setPosX(1.23f * (float) zp);
 
@@ -40,13 +40,13 @@ public class M1911ItemModel extends CustomGunModel<M1911Item> {
 
         CoreGeoBone body = getAnimationProcessor().getBone("gun");
 
-        ClientEventHandler.handleShootAnimation(body, 1.25f, -2f, 1.6f, 5f, 1.3f, 1f, 0.2f, 0.8f);
+        ClientEventHandler.handleShootAnimation(body, 1.25f, -2f, 1.6f, 3f, 1.3f, 1f, 0.2f, 1.2f);
 
         CrossHairOverlay.gunRot = body.getRotZ();
         hammer.setRotX(60 * Mth.DEG_TO_RAD + (120 * Mth.DEG_TO_RAD * (float) fp));
 
         CoreGeoBone huatao = getAnimationProcessor().getBone("huatao");
-        huatao.setPosZ(2.75f * (float) ClientEventHandler.firePos);
+        huatao.setPosZ(2.75f * (float) ClientEventHandler.boltMove);
         var data = GunData.from(stack);
         if (data.holdOpen.get()) {
             huatao.setPosZ(1.5f);

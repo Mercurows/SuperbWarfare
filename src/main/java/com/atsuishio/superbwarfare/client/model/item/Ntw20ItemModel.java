@@ -74,8 +74,8 @@ public class Ntw20ItemModel extends CustomGunModel<Ntw20Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        action.setPosZ(3f * (float) ClientEventHandler.actionMove);
-        lh.setPosZ(-3f * (float) ClientEventHandler.actionMove);
+        action.setPosZ(3f * (float) ClientEventHandler.boltMove);
+        lh.setPosZ(-3f * (float) ClientEventHandler.boltMove);
 
         CoreGeoBone l = getAnimationProcessor().getBone("l");
         CoreGeoBone r = getAnimationProcessor().getBone("r");

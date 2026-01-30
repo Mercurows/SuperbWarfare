@@ -36,9 +36,7 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
         gun.setPosZ(10f * (float) zp + (float) (0.3f * zpz));
         gun.setRotZ((float) (0.05f * zpz));
         gun.setScaleZ(1f - (0.7f * (float) zp));
-
         scope.setScaleZ(1f - (0.8f * (float) zp));
-        cb.setRotZ((float) (cb.getRotZ() + times * 10 * ClientEventHandler.chamberRot));
 
         var data = GunData.from(stack);
 

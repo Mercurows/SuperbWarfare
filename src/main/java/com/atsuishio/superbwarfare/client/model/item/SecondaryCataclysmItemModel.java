@@ -26,7 +26,7 @@ public class SecondaryCataclysmItemModel extends CustomGunModel<SecondaryCatacly
         double zt = ClientEventHandler.zoomTime;
         double zp = ClientEventHandler.zoomPos;
         double zpz = ClientEventHandler.zoomPosZ;
-        double fp = ClientEventHandler.firePos;
+        double fp = ClientEventHandler.boltMove;
 
         gun.setPosX(0.9f * (float) zp);
         gun.setPosY(0.15f * (float) zp - (float) (0.2f * zpz));

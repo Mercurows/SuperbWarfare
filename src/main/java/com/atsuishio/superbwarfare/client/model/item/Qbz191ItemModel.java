@@ -91,7 +91,7 @@ public class Qbz191ItemModel extends CustomGunModel<Qbz191Item> {
         CrossHairOverlay.gunRot = shen.getRotZ();
 
         CoreGeoBone bolt = getAnimationProcessor().getBone("bolt");
-        bolt.setPosZ(3f * (float) ClientEventHandler.firePos);
+        bolt.setPosZ(3f * (float) ClientEventHandler.boltMove);
 
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 0, 0, false);
 
