@@ -2201,7 +2201,7 @@ object ClientEventHandler {
 
         val zoom = (1 - zoomMultiply * zoomTime).toFloat() * pose
 
-        bone.posX = zoom * x * (recoilHorizon * (1.5f * boltMove)).toFloat()
+        bone.posX = zoom * x * (recoilHorizon * (0.5f * firePosZ)).toFloat()
         bone.posY = zoom * y * (getBoneMoveY(firePosTimer.toFloat()) * 0.25 * (1 - 0.25 * zoomTime)).toFloat()
         bone.posZ =
             zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.05 + 1.1f * firePosZ).toFloat() * (1 - 0.5 * zoomTime).toFloat()

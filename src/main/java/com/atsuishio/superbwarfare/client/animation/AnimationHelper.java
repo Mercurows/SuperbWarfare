@@ -40,6 +40,7 @@ import static com.atsuishio.superbwarfare.event.ClientEventHandler.activeThermal
 
 public class AnimationHelper {
 
+    public static float lerpTimer;
     public static void renderPartOverBone(ModelPart model, GeoBone bone, PoseStack stack, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float alpha) {
         renderPartOverBone(model, bone, stack, buffer, packedLightIn, packedOverlayIn, 1.0f, 1.0f, 1.0f, alpha);
     }
@@ -109,7 +110,7 @@ public class AnimationHelper {
     public static void handleShootFlare(String name, PoseStack stack, ItemStack itemStack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, double size) {
         var data = GunData.from(itemStack);
 
-        if (name.equals("flare") && ClientEventHandler.firePosTimer > 0 && ClientEventHandler.firePosTimer < 0.2 && data.attachment.get(AttachmentType.BARREL) != 2) {
+        if (name.equals("flare") && ClientEventHandler.fireRotTimer > 0 && ClientEventHandler.fireRotTimer < 0.3 && data.attachment.get(AttachmentType.BARREL) != 2) {
             bone.setScaleX((float) (size + 0.8 * size * (Math.random() - 0.5)));
             bone.setScaleY((float) (size + 0.8 * size * (Math.random() - 0.5)));
             bone.setRotZ((float) (0.5 * (Math.random() - 0.5)));
@@ -136,7 +137,64 @@ public class AnimationHelper {
             vertex($$9, $$7, $$8, packedLightIn, 1, 1, 1, 0);
             vertex($$9, $$7, $$8, packedLightIn, 0, 1, 0, 0);
             stack.popPose();
+
+            lerpTimer = Mth.lerp(Minecraft.getInstance().getPartialTick(), lerpTimer, (float) ClientEventHandler.fireRotTimer * 0.667f);
+
+            handleShootSmoke(stack, bone, buffer, packedLightIn, x, y, z, height);
+            handleShootSmoke2(stack, bone, buffer, packedLightIn, x, y, z, height);
         }
+    }
+
+    public static void handleShootSmoke(PoseStack stack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, double height) {
+        stack.pushPose();
+        stack.translate(x, y + height - 0.03, -z);
+        RenderUtils.translateMatrixToBone(stack, bone);
+        RenderUtils.translateToPivotPoint(stack, bone);
+        RenderUtils.rotateMatrixAroundBone(stack, bone);
+        RenderUtils.scaleMatrixForBone(stack, bone);
+        RenderUtils.translateAwayFromPivotPoint(stack, bone);
+        PoseStack.Pose $$6 = stack.last();
+
+        Matrix4f $$7 = $$6.pose();
+        Matrix3f $$8 = $$6.normal();
+
+        stack.scale(3f + lerpTimer * 20f, 3f + lerpTimer * 20f, 1);
+
+        VertexConsumer $$9 = buffer.getBuffer(RenderType.entityTranslucentEmissive(Mod.loc("textures/particle/shoot_smoke.png")));
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 0 - 0.15f - lerpTimer, 0, 0, 1, lerpTimer);
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 1 - 0.15f - lerpTimer, 0, 1, 1, lerpTimer);
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 1 - 0.15f - lerpTimer, 1, 1, 0, lerpTimer);
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 0 - 0.15f - lerpTimer, 1, 0, 0, lerpTimer);
+
+        stack.popPose();
+    }
+
+    public static void handleShootSmoke2(PoseStack stack, GeoBone bone, MultiBufferSource buffer, int packedLightIn, double x, double y, double z, double height) {
+        stack.pushPose();
+        stack.translate(x, y + height - 0.03, -z);
+        RenderUtils.translateMatrixToBone(stack, bone);
+        RenderUtils.translateToPivotPoint(stack, bone);
+        RenderUtils.rotateMatrixAroundBone(stack, bone);
+        RenderUtils.scaleMatrixForBone(stack, bone);
+        RenderUtils.translateAwayFromPivotPoint(stack, bone);
+        PoseStack.Pose $$6 = stack.last();
+
+        Matrix4f $$7 = $$6.pose();
+        Matrix3f $$8 = $$6.normal();
+
+        stack.scale(3f + lerpTimer * 20f, 3f + lerpTimer * 20f, 1);
+
+        VertexConsumer $$9 = buffer.getBuffer(RenderType.entityTranslucentEmissive(Mod.loc("textures/particle/shoot_smoke2.png")));
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 0 + 0.15f + lerpTimer, 0, 0, 1, lerpTimer);
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 1 + 0.15f + lerpTimer, 0, 1, 1, lerpTimer);
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 1 + 0.15f + lerpTimer, 1, 1, 0, lerpTimer);
+        vertexSmoke($$9, $$7, $$8, packedLightIn, 0 + 0.15f + lerpTimer, 1, 0, 0, lerpTimer);
+
+        stack.popPose();
+    }
+
+    private static void vertexSmoke(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV, double time) {
+        pConsumer.vertex(pPose, pX - 0.5F, pY - 0.5F, 0).color(255, 255, 255, (int) (96 - 40 * time)).uv((float) pU, (float) pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0F, 1F, 0F).endVertex();
     }
 
     private static void vertex(VertexConsumer pConsumer, Matrix4f pPose, Matrix3f pNormal, int pLightmapUV, float pX, float pY, int pU, int pV) {
