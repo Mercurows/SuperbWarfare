@@ -73,6 +73,7 @@
       "EjectDirection": "Up",
       "EjectForce": 4
     },
+    "HasThermalImaging": true,
     "Weapons": ["Cannon", "Rocket", "Bomb", "Missile"]
   },
   "HudType": "@Aircraft",

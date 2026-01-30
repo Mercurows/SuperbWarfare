@@ -18,7 +18,8 @@
       "Position": [-1.0625, 3, -1.0625],
       "ZoomDirection": "Barrel"
     },
-    "Weapons": ["Main"]
+    "Weapons": ["Main"],
+    "HasThermalImaging": true
   },
   "SeekInfo": {
     "MinSeekRange": 3,

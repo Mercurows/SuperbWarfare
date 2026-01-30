@@ -47,6 +47,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get());
         this.dropSelf(ModBlocks.SUPERB_ITEM_INTERFACE.get());
         this.dropSelf(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get());
+        this.dropSelf(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get());
         this.add(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(),
                 this.applyExplosionDecay(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(
                         LootItem.lootTableItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get()).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get())

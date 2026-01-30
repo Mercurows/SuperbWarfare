@@ -34,7 +34,7 @@ public class SeatInfo {
     public Boolean canRotateHead = true;
 
     @SerializedName("HasThermalImaging")
-    public Boolean hasThermalImaging = true;
+    public Boolean hasThermalImaging = false;
 
     @SerializedName("MinPitch")
     public float minPitch = -90;

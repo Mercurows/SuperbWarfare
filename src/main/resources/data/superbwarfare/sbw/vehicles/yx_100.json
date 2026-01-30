@@ -60,7 +60,8 @@
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [3, 0.375, 0]
-      }
+      },
+      "HasThermalImaging": true
     },
     {
       "HidePassenger": true,
@@ -83,7 +84,8 @@
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [-3, 0.375, 0]
-      }
+      },
+      "HasThermalImaging": true
     },
     {
       "Transform": "Turret",
