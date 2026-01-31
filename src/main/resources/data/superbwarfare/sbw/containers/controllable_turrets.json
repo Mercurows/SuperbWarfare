@@ -2,7 +2,7 @@
   "List": [
     {
       "Type": "superbwarfare:type_63",
-      "Weight": 5
+      "Weight": 3
     },
     {
       "Type": "superbwarfare:mk_42",
@@ -19,6 +19,10 @@
     {
       "Type": "superbwarfare:hpj_11",
       "Weight": 2
+    },
+    {
+      "Type": "superbwarfare:tow",
+      "Weight": 3
     },
     "superbwarfare:annihilator"
   ]

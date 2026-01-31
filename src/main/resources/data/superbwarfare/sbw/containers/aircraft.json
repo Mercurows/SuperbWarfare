@@ -5,10 +5,24 @@
       "Weight": 3
     },
     {
-      "Type": "superbwarfare:ah_6",
+      "Type": "superbwarfare:kv_16",
       "Weight": 2
     },
-    "superbwarfare:a_10a",
-    "superbwarfare:mi_28"
+    {
+      "Type": "superbwarfare:ah_6",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:mi_28",
+      "Weight": 2
+    },
+    {
+      "Type": "superbwarfare:a_10a",
+      "Weight": 2
+    },
+    {
+      "Type": "superbwarfare:ju_87",
+      "Weight": 2
+    }
   ]
 }
