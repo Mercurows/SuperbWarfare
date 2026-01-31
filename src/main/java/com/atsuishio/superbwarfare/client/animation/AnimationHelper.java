@@ -163,7 +163,7 @@ public class AnimationHelper {
 
         stack.scale(3f + lerpTimer * 20f, 3f + lerpTimer * 20f, 1);
 
-        VertexConsumer $$9 = buffer.getBuffer(RenderType.entityTranslucentEmissive(Mod.loc("textures/particle/shoot_smoke.png")));
+        VertexConsumer $$9 = buffer.getBuffer(RenderType.entityTranslucent(Mod.loc("textures/particle/shoot_smoke.png")));
         vertexSmoke($$9, $$6, packedLightIn, 0 - 0.15f - lerpTimer, 0, 0, 1, lerpTimer);
         vertexSmoke($$9, $$6, packedLightIn, 1 - 0.15f - lerpTimer, 0, 1, 1, lerpTimer);
         vertexSmoke($$9, $$6, packedLightIn, 1 - 0.15f - lerpTimer, 1, 1, 0, lerpTimer);

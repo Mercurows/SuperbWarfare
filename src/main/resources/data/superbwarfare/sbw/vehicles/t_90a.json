@@ -57,7 +57,7 @@
       "Transform": "Turret",
       "CameraPos": {
         "Transform": "WeaponStationBarrel",
-        "ZoomPosition": [0, 0.275, 0],
+        "ZoomPosition": [0, 0.055, 2.2473],
         "Direction": "WeaponStationBarrel"
       },
       "Position": [-0.7788, 0.15, -0.3157],
@@ -102,7 +102,7 @@
       "RecoilForce": 1.0,
       "ShootShake": [8, 10, 60],
       "Spread": 0.02,
-      "ShootAnimationTime": 10,
+      "ShootAnimationTime": 20,
       "Crosshair": "@VehicleRuApc",
       "CrosshairColor": "0xFFC700",
       "Name": "weapon.superbwarfare.cannon_ap",
@@ -231,7 +231,7 @@
     "EnergyCostRate": 128,
     "WheelRotSpeed": 1.25,
     "WheelDifferential": 0.75,
-    "TrackRotSpeed": 1.6,
+    "TrackRotSpeed": 1.9,
     "TrackDifferential": 0.6,
     "MaxForwardSpeedRate": 0.95,
     "MaxBackwardSpeedRate": 0.25,
