@@ -117,6 +117,7 @@ object VehicleMotionUtils {
         }
 
         val feetPos = entity.position().subtract(Vec3(0.0, 0.1, 0.0))
+        val lowPos = feetPos.add(0.0, (entity.eyeHeight / 4).toDouble(), 0.0)
         val midPos = feetPos.add(0.0, (entity.eyeHeight / 2).toDouble(), 0.0)
         val eyePos = feetPos.add(0.0, entity.eyeHeight.toDouble(), 0.0)
 
@@ -144,7 +145,8 @@ object VehicleMotionUtils {
                 }
             }
 
-            if (obb.contains(eyePos)) {
+            if (obb.contains(midPos) || obb.contains(lowPos) || obb.contains(eyePos)) {
+                entity.isSprinting = false
                 var dx = entity.x - obb.center.x
                 var dz = entity.z - obb.center.z
                 var dMax = Mth.absMax(dx, dz)
@@ -158,8 +160,8 @@ object VehicleMotionUtils {
                     }
                     dx *= d
                     dz *= d
-                    dx *= 0.05
-                    dz *= 0.05
+                    dx *= 0.12
+                    dz *= 0.12
                     if (entity.isPushable) {
                         entity.push(dx, 0.0, dz)
                     }
@@ -175,15 +177,15 @@ object VehicleMotionUtils {
                 if (face < 0) {
                     support.negate()
                 }
+                entity.isSprinting = false
                 if (entity.isPushable) {
-                    var force = 0.1f
+                    var force = entity.deltaMovement.horizontalDistance() * 2
                     if (vehicle.deltaMovement.length() > 0.01 && Math.abs(face) != 2) {
-                        force = 0.2f
+                        force = 0.2
                     }
-                    var vec = OBB.vector3dToVec3(support).scale(force.toDouble())
-                    vec = Vec3(vec.x, Math.max(0.0, vec.y), vec.z)
+                    var vec = OBB.vector3dToVec3(support).scale(force)
+                    vec = Vec3(vec.x, 0.0, vec.z)
                     entity.setPos(entity.position().add(vec))
-                    entity.deltaMovement = entity.deltaMovement.multiply(0.2, 0.2, 0.2)
                     vehicle.hasImpulse = true
                 }
             }
