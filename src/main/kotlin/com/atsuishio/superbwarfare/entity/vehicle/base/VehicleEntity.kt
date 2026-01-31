@@ -2017,18 +2017,22 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.inertiaRotate(this.computed().inertiaRotateRate)
 
         if (this.leftTrack < 0) {
+            this.leftTrackO = this.getTrackAnimationLength().toFloat()
             this.leftTrack = this.getTrackAnimationLength().toFloat()
         }
 
         if (this.leftTrack > this.getTrackAnimationLength()) {
+            this.leftTrackO = 0f
             this.leftTrack = 0f
         }
 
         if (this.rightTrack < 0) {
+            this.rightTrackO = this.getTrackAnimationLength().toFloat()
             this.rightTrack = this.getTrackAnimationLength().toFloat()
         }
 
         if (this.rightTrack > this.getTrackAnimationLength()) {
+            this.rightTrackO = 0f
             this.rightTrack = 0f
         }
 

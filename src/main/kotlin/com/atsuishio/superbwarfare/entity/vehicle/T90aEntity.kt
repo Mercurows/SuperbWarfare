@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.entity.buildControllers
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.server.level.ServerLevel
@@ -7,6 +8,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import software.bernie.geckolib.core.animation.AnimatableManager
 import java.util.*
 
 class T90aEntity(type: EntityType<T90aEntity>, world: Level) : GeoVehicleEntity(type, world) {
@@ -14,22 +16,29 @@ class T90aEntity(type: EntityType<T90aEntity>, world: Level) : GeoVehicleEntity(
     override fun getDamageModifier() = super.getDamageModifier()
         .custom { source, damage -> getSourceAngle(source, 0.3f) * damage }
 
-//    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-//        "coax" {
-//            if (getShootAnimationTimer(0, 1) > 0) {
-//                thenPlay("animation.yx_100.fire_coax")
-//            } else {
-//                thenLoop("animation.yx_100.idle_coax")
-//            }
-//        }
-//        "passengerWeaponStation" {
-//            if (getShootAnimationTimer(1, 0) > 0) {
-//                thenPlay("animation.yx_100.fire_weapon_station")
-//            } else {
-//                thenLoop("animation.yx_100.idle_weapon_station")
-//            }
-//        }
-//    }
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
+        "cannon" {
+            if (getShootAnimationTimer(0, 0) > 0) {
+                thenPlay("animation.t_90a.fire")
+            } else {
+                thenLoop("animation.t_90a.idle")
+            }
+        }
+        "coax" {
+            if (getShootAnimationTimer(0, 1) > 0) {
+                thenPlay("animation.t_90a.fire_coax")
+            } else {
+                thenLoop("animation.t_90a.idle_coax")
+            }
+        }
+        "passengerWeaponStation" {
+            if (getShootAnimationTimer(1, 0) > 0) {
+                thenPlay("animation.t_90a.fire_weapon_station")
+            } else {
+                thenLoop("animation.t_90a.idle_weapon_station")
+            }
+        }
+    }
 
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
