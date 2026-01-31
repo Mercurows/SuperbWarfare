@@ -2,11 +2,11 @@
   "List": [
     {
       "Type": "superbwarfare:lav_150",
-      "Weight": 5
+      "Weight": 6
     },
     {
       "Type": "superbwarfare:bmp_2",
-      "Weight": 4
+      "Weight": 5
     },
     {
       "Type": "superbwarfare:wheel_chair",
@@ -18,9 +18,36 @@
     },
     {
       "Type": "superbwarfare:prism_tank",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:plz_05",
       "Weight": 2
     },
-    "superbwarfare:plz_05",
+    {
+      "Type": "superbwarfare:t_90a",
+      "Weight": 4
+    },
+    {
+      "Type": "superbwarfare:lav_ad",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:sodayo_pick_up",
+      "Weight": 1
+    },
+    {
+      "Type": "superbwarfare:sodayo_pick_up_hmg",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:sodayo_pick_up_rocket",
+      "Weight": 3
+    },
+    {
+      "Type": "superbwarfare:sodayo_pick_up_tow",
+      "Weight": 3
+    },
     "superbwarfare:yx_100"
   ]
 }

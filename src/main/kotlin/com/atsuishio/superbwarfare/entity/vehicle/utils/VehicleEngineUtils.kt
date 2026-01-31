@@ -85,8 +85,13 @@ object VehicleEngineUtils {
             power = 0f
         }
 
+        val maxPower = if (sprintInputDown) 1.25f else (if (power > 1) power - 0.002f else 1f)
+
         if (forwardInputDown) {
-            power = Math.min(power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (Mth.abs(power) / 1.02f)), 1f)
+            power = Math.min(
+                power + (if (power < 0) powerAdd * 2f else powerAdd) * (maxPower - (Mth.abs(power) / 1.02f)),
+                maxPower
+            )
         }
 
         if (backInputDown) {
@@ -126,7 +131,7 @@ object VehicleEngineUtils {
         }
 
         if (rightInputDown || leftInputDown) {
-            power *= 0.96f
+            power *= 0.97f
         }
 
         if (level() is ServerLevel) {
@@ -273,9 +278,12 @@ object VehicleEngineUtils {
             power = 0f
         }
 
+        val maxPower = if (sprintInputDown) 1.3f else (if (power > 1) power - 0.002f else 1f)
+
         if (forwardInputDown) {
             power = Math.min(
-                power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (Mth.abs(power) / 1.02f)), 1f
+                power + (if (power < 0) powerAdd * 2f else powerAdd) * (maxPower - (Mth.abs(power) / 1.02f)),
+                maxPower
             )
         }
 
@@ -466,9 +474,12 @@ object VehicleEngineUtils {
             backInputDown = false
         }
 
+        val maxPower = if (sprintInputDown) 1.3f else (if (power > 1) power - 0.002f else 1f)
+
         if (forwardInputDown) {
             power = Math.min(
-                    power + (if (power < 0) powerAdd * 2f else powerAdd) * (1 - (Mth.abs(power) / 1.02f)), 1f
+                power + (if (power < 0) powerAdd * 2f else powerAdd) * (maxPower - (Mth.abs(power) / 1.02f)),
+                maxPower
             )
         }
 
@@ -794,12 +805,10 @@ object VehicleEngineUtils {
                 }
 
                 if (energy >= energyCost) {
+                    val maxPower = if (sprintInputDown || onGround()) 2.2 else (if (power > 1) power - 0.012 else 1)
+
                     if (forwardInputDown) {
-                        power = Mth.clamp(
-                            (power + 0.0045f * powerAdd).toDouble(),
-                            -0.1,
-                            if (sprintInputDown || onGround()) 2.2 else 1.0
-                        ).toFloat()
+                        power = Mth.clamp((power + 0.0045f * powerAdd).toDouble(), -0.1, maxPower.toDouble()).toFloat()
                     }
 
                     if (backInputDown) {
@@ -1049,8 +1058,11 @@ object VehicleEngineUtils {
                 xRot = Mth.clamp(xRot + 0.1f, -89f, 89f)
             }
         } else if (passenger is Player) {
+
+            val maxPower = if (sprintInputDown || onGround()) 2.2f else (if (power > 1) power - 0.012f else 1f)
+
             if (forwardInputDown) {
-                power = Mth.clamp(power + 0.045f * powerAdd, -0.1f, (if (sprintInputDown) 2.2f else 1f))
+                power = Mth.clamp(power + 0.045f * powerAdd, -0.1f, maxPower)
             }
 
             if (backInputDown) {
