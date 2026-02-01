@@ -59,8 +59,7 @@
           "Ammo": "superbwarfare:large_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsHighExplosiveProjectile": true,
+            "ShellType": "HE",
             "Damage": 250,
             "ExplosionDamage": 160,
             "ExplosionRadius": 11,
@@ -71,8 +70,7 @@
           "Ammo": "superbwarfare:large_shell_cm",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cm_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsClusterMunitionsProjectile": true,
+            "ShellType": "CM",
             "SpreadAmount": 18,
             "SpreadAngle": 8,
             "Damage": 360,
@@ -85,8 +83,7 @@
           "Ammo": "superbwarfare:large_shell_wp",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/wp_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsWhitePhosphorusProjectile": true,
+            "ShellType": "WP",
             "SpreadAmount": 96,
             "SpreadAngle": 13,
             "Damage": 200,

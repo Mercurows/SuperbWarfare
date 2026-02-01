@@ -49,7 +49,7 @@
         "Direction": "Barrel"
       },
       "Transform": "Turret",
-      "Position": [0.834, 0.488, 0.597],
+      "Position": [1.016, -0.17, 1.164],
       "Weapons": ["Cannon", "MachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
@@ -125,7 +125,7 @@
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
-      "IsArmorPiercingProjectile": true,
+      "ShellType": "AP",
       "DefaultZoom": 3,
       "Magazine": 1,
       "EmptyReloadTime": 70,
@@ -147,8 +147,7 @@
           "Ammo": "superbwarfare:large_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsHighExplosiveProjectile": true,
+            "ShellType": "HE",
             "Velocity": 40,
             "Damage": 750,
             "ExplosionDamage": 150,
@@ -160,8 +159,7 @@
           "Ammo": "superbwarfare:large_shell_gs",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsGrapeShotProjectile": true,
+            "ShellType": "GS",
             "SpreadAmount": 36,
             "SpreadAngle": 5,
             "Velocity": 15,
@@ -244,10 +242,10 @@
       "CrosshairColor": "0x00ff66",
       "Name": "weapon.superbwarfare.30mm_cannon_ap",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:lav_150_cannon_fire_1p",
-        "Fire3P": "superbwarfare:lav_150_cannon_fire_3p",
-        "Fire3PFar": "superbwarfare:lav_150_cannon_far",
-        "Fire3PVeryFar": "superbwarfare:lav_150_cannon_veryfar",
+        "Fire1P": "superbwarfare:bmp_2_cannon_fire_1p",
+        "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
+        "Fire3PFar": "superbwarfare:mi_28_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,

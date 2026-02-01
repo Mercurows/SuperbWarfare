@@ -339,21 +339,6 @@ class GunProp<T, R> private constructor(
         val ADD_SHOOTER_DELTA_MOVEMENT = plainProp(DefaultGunData::addShooterDeltaMovement)
 
         @JvmField
-        val IS_ANTI_AIR_PROJECTILE = plainProp(DefaultGunData::isAntiAirProjectile)
-
-        @JvmField
-        val IS_ARMOR_PIERCING_PROJECTILE = plainProp(DefaultGunData::isArmorPiercingProjectile)
-
-        @JvmField
-        val IS_GRAPE_SHOT_PROJECTILE = plainProp(DefaultGunData::isGrapeShotProjectile)
-
-        @JvmField
-        val IS_WHITE_PHOSPHORUS_PROJECTILE = plainProp(DefaultGunData::isWhitePhosphorusProjectile)
-
-        @JvmField
-        val IS_HIGH_EXPLOSIVE_PROJECTILE = plainProp(DefaultGunData::isHighExplosiveProjectile)
-
-        @JvmField
-        val IS_CLUSTER_MUNITIONS_PROJECTILE = plainProp(DefaultGunData::isClusterMunitionsProjectile)
+        val SHELL_TYPE = plainProp(DefaultGunData::shellType)
     }
 }

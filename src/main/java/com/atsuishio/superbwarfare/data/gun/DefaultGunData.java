@@ -320,14 +320,6 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public int shootAnimationTime = 0;
 
     @ServerOnly
-    @SerializedName("IsAntiAirProjectile")
-    public boolean isAntiAirProjectile = false;
-
-    @ServerOnly
-    @SerializedName("IsClusterMunitionsProjectile")
-    public boolean isClusterMunitionsProjectile = false;
-
-    @ServerOnly
     @SerializedName("SpreadAmount")
     public int spreadAmount = 10;
 
@@ -336,21 +328,8 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public int spreadAngle = 15;
 
     @ServerOnly
-    @SerializedName("IsArmorPiercingProjectile")
-    public boolean isArmorPiercingProjectile = false;
-
-    @ServerOnly
-    @SerializedName("IsHighExplosiveProjectile")
-    public boolean isHighExplosiveProjectile = false;
-
-    @ServerOnly
-    @SerializedName("IsGrapeShotProjectile")
-    public boolean isGrapeShotProjectile = false;
-
-    @ServerOnly
-    @SerializedName("IsWhitePhosphorusProjectile")
-    public boolean isWhitePhosphorusProjectile = false;
-
+    @SerializedName("ShellType")
+    public String shellType = "Default";
     @SerializedName("AddShooterDeltaMovement")
     public boolean addShooterDeltaMovement = false;
 
