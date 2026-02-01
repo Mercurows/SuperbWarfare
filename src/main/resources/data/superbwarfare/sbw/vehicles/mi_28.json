@@ -354,8 +354,8 @@
     "PitchSpeed": 0.75,
     "YawSpeed": 0.85,
     "RollSpeed": 0.6,
-    "LiftSpeed": 0.8,
-    "Speed": 1.1,
+    "LiftSpeed": 1,
+    "Speed": 0.97,
     "EngineStartSound": "superbwarfare:mi_28_engine_start",
     "EngineSoundVolume": 2
   },

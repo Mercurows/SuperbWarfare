@@ -45,7 +45,7 @@
       "CanRotateHead": false,
       "MinPitch": -5,
       "MaxPitch": 20,
-      "Sensitivity": [0.52, 0.72, 0.9],
+      "Sensitivity": [0.45, 0.52, 0.8],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [3.3, 0.375, 0]
@@ -240,7 +240,7 @@
   },
   "TurretPos": [0, 1.8051, 0],
   "BarrelPos": [0, 0.4125, 1.16875],
-  "TurretTurnSpeed": [2, 3],
+  "TurretTurnSpeed": [3.3, 3.3],
   "TurretPitchRange": [-5, 20],
   "PassengerWeaponStationPos": [-0.7788, 1.0483, -0.3157],
   "PassengerWeaponStationBarrelPos": [-0.01683, 0.3366, 0.3025],
