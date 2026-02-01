@@ -250,7 +250,7 @@ object ModEntities {
     val T_90A = register("t_90a", vehicle(::T90aEntity).sized(4.62f, 2.75f))
 
     @JvmField
-    val YX_100 = register("yx_100", vehicle(::Yx100Entity).sized(4.6f, 3.25f))
+    val YX_100 = register("yx_100", vehicle(::Yx100Entity).sized(5.75f, 4.0625f))
 
     @JvmField
     val PRISM_TANK = register("prism_tank", vehicle(::PrismTankEntity).sized(5f, 2.6f))
