@@ -140,9 +140,4 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     public @NotNull SoundEvent getSound() {
         return ModSounds.ROCKET_FLY.get();
     }
-
-    @Override
-    public int getLife() {
-        return 100;
-    }
 }

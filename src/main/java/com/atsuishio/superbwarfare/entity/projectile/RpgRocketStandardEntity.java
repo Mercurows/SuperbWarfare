@@ -144,9 +144,4 @@ public class RpgRocketStandardEntity extends FastThrowableProjectile implements 
     public float getVolume() {
         return 0.2f;
     }
-
-    @Override
-    public int getLife() {
-        return 100;
-    }
 }

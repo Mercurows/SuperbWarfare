@@ -84,6 +84,7 @@
       "AvailableFireModes": "Auto",
       "AmmoType": "superbwarfare:small_shell_ap",
       "Projectile": "superbwarfare:small_cannon_shell",
+      "ProjectileLife": 60,
       "DefaultZoom": 2,
       "RPM": 1200,
       "Velocity": 35,

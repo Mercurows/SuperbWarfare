@@ -340,5 +340,8 @@ class GunProp<T, R> private constructor(
 
         @JvmField
         val SHELL_TYPE = plainProp(DefaultGunData::shellType)
+
+        @JvmField
+        val PROJECTILE_LIFE = plainProp(DefaultGunData::projectileLife)
     }
 }

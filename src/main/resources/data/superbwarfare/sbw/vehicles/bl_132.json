@@ -39,6 +39,7 @@
       "RecoilForce": 1.1,
       "ShootShake": [12, 14, 80],
       "Spread": 0.05,
+      "ProjectileLife": 800,
       "ShootAnimationTime": 30,
       "Crosshair": "@VehicleDynamicCross",
       "CrosshairZooming": "@VehicleCommonCannonZooming",

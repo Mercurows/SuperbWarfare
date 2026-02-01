@@ -177,9 +177,4 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     public boolean forceLoadChunk() {
         return true;
     }
-
-    @Override
-    public int getLife() {
-        return 40;
-    }
 }

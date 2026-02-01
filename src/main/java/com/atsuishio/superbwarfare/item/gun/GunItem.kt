@@ -772,6 +772,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             if (entity is ExplosiveProjectile) {
                 entity.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).toFloat())
                 entity.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).toFloat())
+                entity.setLife(data.get(GunProp.PROJECTILE_LIFE))
             }
 
             if (entity is WireGuideMissileEntity && shooter != null && shooter.vehicle != null) {
