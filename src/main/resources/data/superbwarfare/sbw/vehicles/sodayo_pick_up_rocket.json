@@ -67,21 +67,21 @@
       "Damage": 500,
       "ExplosionDamage": 100,
       "ExplosionRadius": 5,
-      "IsArmorPiercingProjectile": true
+      "ShellType": "AP"
     },
     "HE": {
       "Template": "@Rocket",
       "Damage": 200,
       "ExplosionDamage": 200,
       "ExplosionRadius": 12,
-      "IsHighExplosiveProjectile": true
+      "ShellType": "HE"
     },
     "CM": {
       "Template": "@Rocket",
       "Damage": 300,
       "ExplosionDamage": 300,
       "ExplosionRadius": 6,
-      "IsClusterMunitionsProjectile": true,
+      "ShellType": "CM",
       "SpreadAmount": 12
     }
   },

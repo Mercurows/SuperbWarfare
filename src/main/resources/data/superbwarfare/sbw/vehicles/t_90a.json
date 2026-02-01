@@ -90,7 +90,7 @@
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
-      "IsArmorPiercingProjectile": true,
+      "ShellType": "AP",
       "DefaultZoom": 3,
       "Magazine": 1,
       "EmptyReloadTime": 100,
@@ -112,8 +112,7 @@
           "Ammo": "superbwarfare:large_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsHighExplosiveProjectile": true,
+            "ShellType": "HE",
             "Velocity": 25,
             "Damage": 250,
             "ExplosionDamage": 120,
@@ -125,8 +124,7 @@
           "Ammo": "superbwarfare:large_shell_gs",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
-            "IsArmorPiercingProjectile": false,
-            "IsGrapeShotProjectile": true,
+            "ShellType": "gs",
             "SpreadAmount": 36,
             "SpreadAngle": 5,
             "Velocity": 15,

@@ -787,25 +787,26 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 entity.setLauncherVehicle(shooter.vehicle!!.getUUID())
             }
 
-            if (entity is SmallCannonShellEntity && data.get(GunProp.IS_ANTI_AIR_PROJECTILE)) {
+            if (entity is SmallCannonShellEntity && data.get(GunProp.SHELL_TYPE).equals("AA")) {
                 entity.antiAir(true)
             }
 
             if (entity is CannonShellEntity) {
-                if (data.get(GunProp.IS_ARMOR_PIERCING_PROJECTILE)) {
+                val type = data.get(GunProp.SHELL_TYPE)
+                if (type.equals("AP")) {
                     entity.setType(CannonShellEntity.Type.AP)
                     entity.durability(100)
-                } else if (data.get(GunProp.IS_HIGH_EXPLOSIVE_PROJECTILE)) {
+                } else if (type.equals("HE")) {
                     entity.setType(CannonShellEntity.Type.HE)
-                } else if (data.get(GunProp.IS_CLUSTER_MUNITIONS_PROJECTILE)) {
+                } else if (type.equals("CM")) {
                     entity.setType(CannonShellEntity.Type.CM)
                     entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                     entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
-                } else if (data.get(GunProp.IS_GRAPE_SHOT_PROJECTILE)) {
+                } else if (type.equals("GS")) {
                     entity.setType(CannonShellEntity.Type.GRAPE)
                     entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                     entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
-                } else if (data.get(GunProp.IS_WHITE_PHOSPHORUS_PROJECTILE)) {
+                } else if (type.equals("WP")) {
                     entity.setType(CannonShellEntity.Type.WP)
                     entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                     entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
