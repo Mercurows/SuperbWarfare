@@ -201,6 +201,7 @@
       "RecoilForce": 0.62,
       "ShootAnimationTime": 3,
       "Spread": 0.5,
+      "ProjectileLife": 40,
       "Crosshair": "@VehicleRuApc",
       "CrosshairColor": "0xFFC700",
       "Name": "weapon.superbwarfare.30mm_2a42_ap",

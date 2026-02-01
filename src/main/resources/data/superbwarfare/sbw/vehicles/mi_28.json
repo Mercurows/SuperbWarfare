@@ -122,6 +122,7 @@
       "RecoilTime": 31,
       "RecoilForce": 0.62,
       "Spread": 0.25,
+      "ProjectileLife": 40,
       "Name": "weapon.superbwarfare.30mm_2a42_ap",
       "SoundInfo": {
         "Fire1P": "superbwarfare:mi_28_cannon_fire_1p",

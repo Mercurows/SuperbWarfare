@@ -116,6 +116,7 @@
       "Damage": 45,
       "ExplosionDamage": 6,
       "ExplosionRadius": 2,
+      "ProjectileLife": 40,
       "RecoilTime": 29,
       "RecoilForce": 0.55,
       "Spread": 0.5,

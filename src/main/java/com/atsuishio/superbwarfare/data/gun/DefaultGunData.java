@@ -330,6 +330,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @ServerOnly
     @SerializedName("ShellType")
     public String shellType = "Default";
+
+    @ServerOnly
+    @SerializedName("ProjectileLife")
+    public int projectileLife = 400;
     @SerializedName("AddShooterDeltaMovement")
     public boolean addShooterDeltaMovement = false;
 

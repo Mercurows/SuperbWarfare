@@ -108,6 +108,7 @@
       "ExplosionDamage": 12,
       "ExplosionRadius": 3.5,
       "HeatPerShoot": 5,
+      "ProjectileLife": 40,
       "NaturalCooldown": 1,
       "Spread": 0.25,
       "Name": "weapon.superbwarfare.20mm_cannon",

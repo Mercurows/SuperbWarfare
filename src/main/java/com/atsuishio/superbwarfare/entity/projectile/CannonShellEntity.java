@@ -335,9 +335,4 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
     public void setSpreadAngle(int spreadAngle) {
         this.spreadAngle = spreadAngle;
     }
-
-    @Override
-    public int getLife() {
-        return 800;
-    }
 }
