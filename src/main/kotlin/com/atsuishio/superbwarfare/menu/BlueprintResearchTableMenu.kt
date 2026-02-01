@@ -6,6 +6,7 @@ import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
 
 class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, private val container: Container) :
@@ -16,6 +17,41 @@ class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, p
         playerInventory,
         SimpleContainer(CONTAINER_SIZE)
     )
+
+    init {
+        checkContainerSize(this.container, CONTAINER_SIZE)
+
+        this.addSlot(Slot(this.container, SLOT_FUEL, 31, 21))
+        this.addSlot(Slot(this.container, SLOT_INPUT, 31, 50))
+        this.addSlot(Slot(this.container, SLOT_INPUT_BASE, 119, 21))
+        this.addSlot(Slot(this.container, SLOT_INPUT_DYE, 139, 21))
+        this.addSlot(Slot(this.container, SLOT_SPECIAL, 80, 50))
+        this.addSlot(ResultSlot(this.container, SLOT_OUTPUT, 129, 50))
+
+        for (i in 0..2) {
+            for (j in 0..8) {
+                this.addSlot(
+                    Slot(
+                        playerInventory,
+                        j + i * 9 + 9,
+                        8 + j * 18,
+                        95 + i * 18
+                    )
+                )
+            }
+        }
+
+        for (k in 0..8) {
+            this.addSlot(
+                Slot(
+                    playerInventory,
+                    k,
+                    8 + k * 18,
+                    153
+                )
+            )
+        }
+    }
 
     override fun quickMoveStack(
         player: Player,
@@ -30,7 +66,7 @@ class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, p
                 if (!this.moveItemStackTo(slotItem, this.container.containerSize, this.slots.size, true)) {
                     return ItemStack.EMPTY
                 }
-            } else if (!this.moveItemStackTo(slotItem, 0, this.container.containerSize, false)) {
+            } else if (!this.moveItemStackTo(slotItem, 0, this.container.containerSize - 1, false)) {
                 return ItemStack.EMPTY
             }
 
@@ -50,5 +86,17 @@ class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, p
 
     companion object {
         const val CONTAINER_SIZE = 6
+        const val SLOT_FUEL = 0
+        const val SLOT_INPUT = 1
+        const val SLOT_INPUT_BASE = 2
+        const val SLOT_INPUT_DYE = 3
+        const val SLOT_SPECIAL = 4
+        const val SLOT_OUTPUT = 5
+    }
+
+    private class ResultSlot(container: Container, slot: Int, x: Int, y: Int) : Slot(container, slot, x, y) {
+        override fun mayPlace(pStack: ItemStack): Boolean {
+            return false
+        }
     }
 }

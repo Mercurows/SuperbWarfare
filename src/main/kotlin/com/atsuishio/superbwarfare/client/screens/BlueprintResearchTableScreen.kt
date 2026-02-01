@@ -19,6 +19,13 @@ class BlueprintResearchTableScreen(
         this.imageHeight = 177
     }
 
+    override fun renderLabels(
+        pGuiGraphics: GuiGraphics?,
+        pMouseX: Int,
+        pMouseY: Int
+    ) {
+    }
+
     override fun renderBg(
         guiGraphics: GuiGraphics,
         partialTick: Float,
