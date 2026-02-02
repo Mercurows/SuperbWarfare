@@ -16,11 +16,32 @@ class Yx100Renderer(renderManager: EntityRendererProvider.Context) :
         this.addRenderLayer(Yx100GlowLayer(this))
     }
 
-    override fun preRender(poseStack: PoseStack?, entity: Yx100Entity?, model: BakedGeoModel?, bufferSource: MultiBufferSource?, buffer: VertexConsumer?, isReRender: Boolean, partialTick: Float, packedLight: Int, packedOverlay: Int, red: Float, green: Float,
-                           blue: Float, alpha: Float) {
+    override fun preRender(
+        poseStack: PoseStack,
+        entity: Yx100Entity,
+        model: BakedGeoModel,
+        bufferSource: MultiBufferSource?,
+        buffer: VertexConsumer?,
+        isReRender: Boolean,
+        partialTick: Float,
+        packedLight: Int,
+        packedOverlay: Int,
+        color: Int
+    ) {
         val scale = 1.25f
         this.scaleHeight = scale
         this.scaleWidth = scale
-        super.preRender(poseStack, entity, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha)
+        super.preRender(
+            poseStack,
+            entity,
+            model,
+            bufferSource,
+            buffer,
+            isReRender,
+            partialTick,
+            packedLight,
+            packedOverlay,
+            color
+        )
     }
 }
