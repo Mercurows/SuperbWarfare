@@ -27,37 +27,43 @@ class ResearchingRecipe(
     val result: Result
 ) : Recipe<SimpleContainer> {
     override fun matches(
-        pContainer: SimpleContainer,
-        pLevel: Level
-    ): Boolean = false
+        container: SimpleContainer,
+        level: Level
+    ): Boolean {
+        if (level.isClientSide || container.containerSize < 4) {
+            return false
+        }
+        return input.test(container.getItem(0))
+                && base.test(container.getItem(1))
+                && addition.test(container.getItem(2))
+                && special.test(container.getItem(3))
+    }
 
-    override fun assemble(input: SimpleContainer, registries: HolderLookup.Provider): ItemStack = ItemStack.EMPTY
+    override fun assemble(input: SimpleContainer, registries: HolderLookup.Provider): ItemStack =
+        this.result.getResult().copy()
+
+    override fun isSpecial() = true
 
     override fun canCraftInDimensions(pWidth: Int, pHeight: Int) = true
 
     override fun getResultItem(registries: HolderLookup.Provider): ItemStack = this.result.getResult().copy()
 
-    override fun getSerializer(): RecipeSerializer<*> = ModRecipes.RESEARCHING_SERIALIZER.get()
+    override fun getSerializer(): RecipeSerializer<*> = TODO("RESEARCHING_SERIALIZER")
+//        ModRecipes.RESEARCHING_SERIALIZER.get()
 
     override fun getType(): RecipeType<*> = ModRecipes.RESEARCHING_TYPE.get()
 
     class Result(
-        @SerializedName("item") val item: String = "",
-        @SerializedName("tag") val tag: String = "",
-        @SerializedName("count") val count: Int = 0,
-        @SerializedName("nbt") val nbt: JsonObject? = null,
+        @SerializedName("item") var item: String = "",
+        @SerializedName("tag") var tag: String = "",
+        @SerializedName("count") var count: Int = 0,
+        @SerializedName("nbt") var nbt: JsonObject? = null,
     ) {
         @Transient
         var resultStack: ItemStack? = null
 
         @Transient
         var list: List<Item>? = null
-
-        init {
-            require(!item.isEmpty() || !tag.isEmpty()) {
-                "Either item or tag must be not empty"
-            }
-        }
 
         fun getResult(): ItemStack {
             if (this.resultStack != null) return this.resultStack!!

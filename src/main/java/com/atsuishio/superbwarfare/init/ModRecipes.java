@@ -33,8 +33,10 @@ public class ModRecipes {
             RECIPE_SERIALIZERS.register("vehicle_assembling", VehicleAssemblingRecipeSerializer::new);
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<VehicleResetRecipe>> VEHICLE_RESET_SERIALIZER =
             RECIPE_SERIALIZERS.register("vehicle_reset", () -> new SimpleCraftingRecipeSerializer<>(VehicleResetRecipe::new));
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ResearchingRecipe>> RESEARCHING_SERIALIZER =
-            RECIPE_SERIALIZERS.register("researching", ResearchingRecipe.Serializer::new);
+
+    // TODO
+//    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ResearchingRecipe>> RESEARCHING_SERIALIZER =
+//            RECIPE_SERIALIZERS.register("researching", ResearchingRecipe.Serializer::new);
 
     public static final DeferredHolder<RecipeType<?>, RecipeType<VehicleAssemblingRecipe>> VEHICLE_ASSEMBLING_TYPE =
             RECIPE_TYPES.register("vehicle_assembling", () -> new RecipeType<>() {
