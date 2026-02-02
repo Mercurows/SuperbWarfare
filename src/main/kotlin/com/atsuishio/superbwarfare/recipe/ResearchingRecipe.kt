@@ -30,14 +30,24 @@ class ResearchingRecipe(
     val result: Result
 ) : Recipe<SimpleContainer> {
     override fun matches(
-        pContainer: SimpleContainer?,
-        pLevel: Level?
-    ): Boolean = false
+        container: SimpleContainer,
+        level: Level
+    ): Boolean {
+        if (level.isClientSide || container.containerSize < 4) {
+            return false
+        }
+        return input.test(container.getItem(0))
+                && base.test(container.getItem(1))
+                && addition.test(container.getItem(2))
+                && special.test(container.getItem(3))
+    }
 
     override fun assemble(
         pContainer: SimpleContainer?,
         pRegistryAccess: RegistryAccess?
-    ): ItemStack? = ItemStack.EMPTY
+    ): ItemStack? = this.result.getResult().copy()
+
+    override fun isSpecial() = true
 
     override fun canCraftInDimensions(pWidth: Int, pHeight: Int) = true
 
@@ -50,22 +60,16 @@ class ResearchingRecipe(
     override fun getType(): RecipeType<*> = ModRecipes.RESEARCHING_TYPE.get()
 
     class Result(
-        @SerializedName("item") val item: String = "",
-        @SerializedName("tag") val tag: String = "",
-        @SerializedName("count") val count: Int = 0,
-        @SerializedName("nbt") val nbt: JsonObject? = null,
+        @SerializedName("item") var item: String = "",
+        @SerializedName("tag") var tag: String = "",
+        @SerializedName("count") var count: Int = 0,
+        @SerializedName("nbt") var nbt: JsonObject? = null,
     ) {
         @Transient
         var resultStack: ItemStack? = null
 
         @Transient
         var list: List<Item>? = null
-
-        init {
-            require(!item.isEmpty() || !tag.isEmpty()) {
-                "Either item or tag must be not empty"
-            }
-        }
 
         fun getResult(): ItemStack {
             if (this.resultStack != null) return this.resultStack!!
@@ -102,6 +106,7 @@ class ResearchingRecipe(
 
     class Serializer : RecipeSerializer<ResearchingRecipe> {
         private fun ingredientOf(json: JsonObject, name: String): Ingredient {
+            if (!json.has(name)) return Ingredient.EMPTY
             return Ingredient.fromJson(
                 if (GsonHelper.isArrayNode(json, name))
                     GsonHelper.getAsJsonArray(json, name)
@@ -117,7 +122,7 @@ class ResearchingRecipe(
             val base = ingredientOf(json, "base")
             val addition = ingredientOf(json, "addition")
             val special = ingredientOf(json, "special")
-            val time = GsonHelper.getAsInt(json, "time")
+            val time = if (json.has("time")) GsonHelper.getAsInt(json, "time") else 100
             val result = DataLoader.GSON.fromJson(json.get("result"), Result::class.java)
             return ResearchingRecipe(id, input, base, addition, special, time, result)
         }

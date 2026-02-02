@@ -1,0 +1,10 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "minecraft:apple"
+  },
+  "result": {
+    "item": "minecraft:diamond",
+    "count": 1
+  }
+}
