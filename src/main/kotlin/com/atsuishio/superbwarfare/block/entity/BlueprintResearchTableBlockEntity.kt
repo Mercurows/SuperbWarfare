@@ -180,6 +180,13 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             if (entity.hasRecipe()) {
                 val recipe = entity.getCurrentRecipe()
                 if (recipe.isEmpty) return
+//                val result = recipe.get().result
+//                val item = if (result.isRandom()) {
+//                    result.rollItem()
+//                } else {
+//                    result.getResult()
+//                }
+//                println("result=${item}")
             }
         }
     }
