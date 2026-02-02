@@ -29,12 +29,21 @@ public class ModRecipes {
             RECIPE_SERIALIZERS.register("vehicle_assembling", VehicleAssemblingRecipeSerializer::new);
     public static final RegistryObject<RecipeSerializer<VehicleResetRecipe>> VEHICLE_RESET_SERIALIZER =
             RECIPE_SERIALIZERS.register("vehicle_reset", () -> new SimpleCraftingRecipeSerializer<>(VehicleResetRecipe::new));
+    public static final RegistryObject<RecipeSerializer<ResearchingRecipe>> RESEARCHING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("researching", ResearchingRecipe.Serializer::new);
 
     public static final RegistryObject<RecipeType<VehicleAssemblingRecipe>> VEHICLE_ASSEMBLING_TYPE =
             RECIPE_TYPES.register("vehicle_assembling", () -> new RecipeType<>() {
                 @Override
                 public String toString() {
                     return Mod.MODID + ":vehicle_assembling";
+                }
+            });
+    public static final RegistryObject<RecipeType<ResearchingRecipe>> RESEARCHING_TYPE =
+            RECIPE_TYPES.register("researching", () -> new RecipeType<>() {
+                @Override
+                public String toString() {
+                    return Mod.MODID + ":researching";
                 }
             });
 
