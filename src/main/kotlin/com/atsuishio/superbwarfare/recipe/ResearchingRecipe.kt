@@ -56,7 +56,7 @@ class ResearchingRecipe(
     class Result(
         @SerializedName("item") var item: String = "",
         @SerializedName("tag") var tag: String = "",
-        @SerializedName("count") var count: Int = 0,
+        @SerializedName("count") var count: Int = 1,
         @SerializedName("nbt") var nbt: JsonObject? = null,
     ) {
         @Transient
@@ -94,6 +94,15 @@ class ResearchingRecipe(
             }
 
             return mutableListOf()
+        }
+
+        fun isRandom() = this.tag.isNotEmpty()
+
+        fun rollItem(): ItemStack {
+            if (this.isRandom()) {
+                return ItemStack(this.getResultList().random(), count)
+            }
+            return this.getResult()
         }
     }
 
