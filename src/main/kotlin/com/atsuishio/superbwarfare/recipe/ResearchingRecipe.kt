@@ -7,7 +7,6 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
-import net.minecraft.world.SimpleContainer
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.crafting.Ingredient
@@ -15,6 +14,7 @@ import net.minecraft.world.item.crafting.Recipe
 import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.level.Level
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper
 
 // TODO 怎么实现这玩意
 class ResearchingRecipe(
@@ -25,21 +25,21 @@ class ResearchingRecipe(
     val special: Ingredient,
     val time: Int,
     val result: Result
-) : Recipe<SimpleContainer> {
+) : Recipe<RecipeWrapper> {
     override fun matches(
-        container: SimpleContainer,
+        container: RecipeWrapper,
         level: Level
     ): Boolean {
-        if (level.isClientSide || container.containerSize < 4) {
-            return false
-        }
+//        if (level.isClientSide || container.containerSize < 4) {
+//            return false
+//        }
         return input.test(container.getItem(0))
                 && base.test(container.getItem(1))
                 && addition.test(container.getItem(2))
                 && special.test(container.getItem(3))
     }
 
-    override fun assemble(input: SimpleContainer, registries: HolderLookup.Provider): ItemStack =
+    override fun assemble(input: RecipeWrapper, registries: HolderLookup.Provider): ItemStack =
         this.result.getResult().copy()
 
     override fun isSpecial() = true

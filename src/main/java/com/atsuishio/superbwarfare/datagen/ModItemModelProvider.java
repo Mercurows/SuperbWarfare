@@ -248,6 +248,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         evenSimplerBlockItem(ModBlocks.AIRCRAFT_CATAPULT);
         evenSimplerBlockItem(ModBlocks.SUPERB_ITEM_INTERFACE);
         evenSimplerBlockItem(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE);
+        evenSimplerBlockItem(ModBlocks.BIOGAS_GENERATOR);
     }
 
     private void simpleMaterials(ModItems.Materials materials) {

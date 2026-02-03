@@ -48,6 +48,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get());
         this.dropSelf(ModBlocks.SUPERB_ITEM_INTERFACE.get());
         this.dropSelf(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get());
+        // TODO 改成多方块之后正确设置战利品表
         this.dropSelf(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get());
         this.add(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(),
                 this.applyExplosionDecay(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(
@@ -55,6 +56,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                                 .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(VehicleAssemblingTableBlock.BLOCK_PART, BlockPart.FLB))).otherwise(LootItem.lootTableItem(Blocks.AIR)))
                 ))
         );
+        this.dropSelf(ModBlocks.BIOGAS_GENERATOR.get());
 
         this.add(ModBlocks.CHARGING_STATION.get(), createCopyComponentsDrops(
                 ModBlocks.CHARGING_STATION.get(),
