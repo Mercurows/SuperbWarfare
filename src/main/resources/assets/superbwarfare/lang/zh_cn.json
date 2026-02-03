@@ -383,6 +383,8 @@
   "des.superbwarfare.lucky_container.location.controllable_turrets": "可操控炮塔",
   "block.superbwarfare.vehicle_assembling_table": "载具装配台",
   "des.superbwarfare.vehicle_assembly_table": "用于制作载具的站点，需要2 x 2 x 2的空间放置",
+  "block.superbwarfare.biogas_generator": "沼气发电机",
+  "des.superbwarfare.biogas_generator": "WIP",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",

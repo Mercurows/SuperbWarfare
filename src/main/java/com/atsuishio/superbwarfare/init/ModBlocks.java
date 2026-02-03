@@ -43,7 +43,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> CEMENTED_CARBIDE_BLOCK = REGISTRY.register("cemented_carbide_block",
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
     public static final RegistryObject<Block> CONTAINER = REGISTRY.register("container", ContainerBlock::new);
-    public static final RegistryObject<Block> BIOGAS_GENERATOR = REGISTRY.register("biogas_generator", BiogasGenerratorBlock::new);
+    public static final RegistryObject<Block> BIOGAS_GENERATOR = REGISTRY.register("biogas_generator", BiogasGeneratorBlock::new);
     public static final RegistryObject<Block> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
     public static final RegistryObject<Block> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", CreativeChargingStationBlock::new);
     public static final RegistryObject<Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);

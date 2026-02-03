@@ -39,7 +39,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 ModBlocks.SILVER_BLOCK.get(), ModBlocks.JUMP_PAD.get(), ModBlocks.CONTAINER.get(), ModBlocks.CHARGING_STATION.get(),
                 ModBlocks.FUMO_25.get(), ModBlocks.SMALL_CONTAINER.get(), ModBlocks.VEHICLE_DEPLOYER.get(), ModBlocks.AIRCRAFT_CATAPULT.get(),
                 ModBlocks.SUPERB_ITEM_INTERFACE.get(), ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(), ModBlocks.LUCKY_CONTAINER.get(),
-                ModBlocks.VEHICLE_ASSEMBLING_TABLE.get());
+                ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), ModBlocks.BIOGAS_GENERATOR.get());
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get());
 
         this.tag(ModTags.Blocks.SOFT_COLLISION)
