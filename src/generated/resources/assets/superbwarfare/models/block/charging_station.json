@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "superbwarfare:block/charging_station_bottom",
+    "east": "superbwarfare:block/charging_station_side",
+    "north": "superbwarfare:block/charging_station_front",
+    "particle": "superbwarfare:block/charging_station_front",
+    "south": "superbwarfare:block/charging_station_side",
+    "up": "superbwarfare:block/charging_station_top",
+    "west": "superbwarfare:block/charging_station_side"
+  }
+}
