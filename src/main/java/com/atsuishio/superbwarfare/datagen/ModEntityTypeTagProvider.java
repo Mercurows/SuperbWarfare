@@ -94,6 +94,8 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
 
         this.tag(ModTags.EntityTypes.BIOGAS_GENERATOR_WHITELIST).add(
                 EntityType.PLAYER,
+                EntityType.VILLAGER,
+                EntityType.WANDERING_TRADER,
                 ModEntities.SENPAI.get()
         ).addOptional(new ResourceLocation("touhou_little_maid", "maid"));
     }
