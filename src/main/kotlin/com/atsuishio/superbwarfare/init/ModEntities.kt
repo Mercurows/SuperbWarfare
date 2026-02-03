@@ -41,7 +41,7 @@ object ModEntities {
     val SENPAI = register(
         "senpai",
         EntityType.Builder.of(::SenpaiEntity, MobCategory.MONSTER)
-            .setTrackingRange(64).setUpdateInterval(3).sized(0.6f, 2f)
+            .setTrackingRange(64).setUpdateInterval(3).sized(0.65f, 1.7f)
     )
 
     // Misc Entities
