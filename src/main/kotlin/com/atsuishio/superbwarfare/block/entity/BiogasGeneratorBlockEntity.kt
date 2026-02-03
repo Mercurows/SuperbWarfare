@@ -8,6 +8,7 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.animal.Animal
 import net.minecraft.world.entity.animal.Cow
+import net.minecraft.world.entity.npc.AbstractVillager
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -24,7 +25,9 @@ open class BiogasGeneratorBlockEntity(pos: BlockPos, state: BlockState) :
         val above = blockPos.above()
         val state = this.level!!.getBlockState(above)
         if (!state.`is`(Blocks.COMPOSTER)) return 0F
-        val list = this.level!!.getEntities(null, AABB(above)) { it is Animal || it is SenpaiEntity }
+        val list = this.level!!.getEntities(null, AABB(above)) {
+            it.isAlive && (it is Animal || it is SenpaiEntity || it is AbstractVillager)
+        }
         if (list.isEmpty()) return 0F
         var count = 0f
         list.forEach {
@@ -40,10 +43,10 @@ open class BiogasGeneratorBlockEntity(pos: BlockPos, state: BlockState) :
                 else -> {
                     1f
                 }
-            }
+            } * it.boundingBox.size.toFloat()
         }
-        count = count.coerceAtMost(24f)
-        return count - 0.04f * count * (count - 1) / 2f
+        count = count.coerceAtMost(48f)
+        return count - count * (count - 1) / 2f / 48f
     }
 
     override fun saveAdditional(
