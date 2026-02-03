@@ -91,6 +91,11 @@ public class ModEntityTypeTagProvider extends EntityTypeTagsProvider {
                 .addOptional(new ResourceLocation("create", "gantry_contraption"))
                 .addOptional(new ResourceLocation("create", "super_glue"))
                 .addOptional(new ResourceLocation("zombiekit", "flares"));
+
+        this.tag(ModTags.EntityTypes.BIOGAS_GENERATOR_WHITELIST).add(
+                EntityType.PLAYER,
+                ModEntities.SENPAI.get()
+        ).addOptional(new ResourceLocation("touhou_little_maid", "maid"));
     }
 
     public static TagKey<EntityType<?>> forgeTag(String name) {

@@ -2,12 +2,12 @@ package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
+import com.atsuishio.superbwarfare.init.ModTags
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.animal.Animal
 import net.minecraft.world.entity.animal.Cow
-import net.minecraft.world.entity.npc.AbstractVillager
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -25,7 +25,7 @@ open class BiogasGeneratorBlockEntity(pos: BlockPos, state: BlockState) :
         val state = this.level!!.getBlockState(above)
         if (!state.`is`(Blocks.COMPOSTER)) return 0F
         val list = this.level!!.getEntities(null, AABB(above)) {
-            it.isAlive && (it is Animal || it is SenpaiEntity || it is AbstractVillager)
+            it.isAlive && (it is Animal || it.type.`is`(ModTags.EntityTypes.BIOGAS_GENERATOR_WHITELIST))
         }
         if (list.isEmpty()) return 0F
         var count = 0f
