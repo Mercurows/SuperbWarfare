@@ -44,6 +44,7 @@ public class ModBlocks {
     public static final DeferredHolder<Block, Block> CEMENTED_CARBIDE_BLOCK = REGISTRY.register("cemented_carbide_block",
             () -> new Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()));
     public static final DeferredHolder<Block, ContainerBlock> CONTAINER = REGISTRY.register("container", () -> new ContainerBlock());
+    public static final DeferredHolder<Block, BiogasGeneratorBlock> BIOGAS_GENERATOR = REGISTRY.register("biogas_generator", BiogasGeneratorBlock::new);
     public static final DeferredHolder<Block, ChargingStationBlock> CHARGING_STATION = REGISTRY.register("charging_station", ChargingStationBlock::new);
     public static final DeferredHolder<Block, CreativeChargingStationBlock> CREATIVE_CHARGING_STATION = REGISTRY.register("creative_charging_station", () -> new CreativeChargingStationBlock());
     public static final DeferredHolder<Block, FuMO25Block> FUMO_25 = REGISTRY.register("fumo_25", FuMO25Block::new);

@@ -1,0 +1,21 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "0": "superbwarfare:block/biogas_charging_station",
+    "particle": "superbwarfare:block/biogas_charging_station"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 8, 8, 16], "texture": "#0"},
+        "east": {"uv": [0, 8, 8, 16], "texture": "#0"},
+        "south": {"uv": [0, 8, 8, 16], "texture": "#0"},
+        "west": {"uv": [0, 8, 8, 16], "texture": "#0"},
+        "up": {"uv": [8, 0, 16, 8], "texture": "#0"},
+        "down": {"uv": [8, 8, 16, 16], "texture": "#0"}
+      }
+    }
+  ]
+}
