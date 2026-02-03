@@ -1,6 +1,8 @@
 {
   "values": [
     "minecraft:player",
+    "minecraft:villager",
+    "minecraft:wandering_trader",
     "superbwarfare:senpai",
     {
       "id": "touhou_little_maid:maid",
