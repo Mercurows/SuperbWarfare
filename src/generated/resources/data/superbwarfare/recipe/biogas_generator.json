@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "b": {
+      "item": "minecraft:hopper"
+    },
+    "c": {
+      "item": "minecraft:tinted_glass"
+    },
+    "d": {
+      "item": "minecraft:cauldron"
+    },
+    "e": {
+      "item": "superbwarfare:cell"
+    },
+    "f": {
+      "item": "minecraft:blast_furnace"
+    }
+  },
+  "pattern": [
+    "aba",
+    "cdc",
+    "efe"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:biogas_generator"
+  }
+}

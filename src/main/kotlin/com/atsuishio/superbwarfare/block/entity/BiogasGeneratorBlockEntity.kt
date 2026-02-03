@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
 import net.neoforged.neoforge.capabilities.Capabilities
+import net.neoforged.neoforge.energy.IEnergyStorage
 
 open class BiogasGeneratorBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.BIOGAS_GENERATOR.get(), pos, state) {
@@ -73,15 +74,17 @@ open class BiogasGeneratorBlockEntity(pos: BlockPos, state: BlockState) :
                 entity.power = entity.checkAndGetPowerLevel()
                 entity.setChanged()
             }
+            val list = mutableListOf<IEnergyStorage>()
             for (face in Direction.entries) {
                 if (face == Direction.UP) continue
 
                 level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(face), face)?.let {
                     if (it.canReceive() && it.energyStored < it.maxEnergyStored) {
-                        it.receiveEnergy((entity.power * ENERGY_RATE).toInt(), false)
+                        list += it
                     }
                 }
             }
+            list.forEach { it.receiveEnergy((entity.power * ENERGY_RATE / list.size).toInt(), false) }
         }
     }
 }
