@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.block
 
+import com.atsuishio.superbwarfare.block.entity.BiogasGeneratorBlockEntity
+import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.mojang.serialization.MapCodec
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
@@ -17,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 
 @Suppress("OVERRIDE_DEPRECATION")
-class BiogasGeneratorBlock :
+open class BiogasGeneratorBlock :
     BaseEntityBlock(Properties.of().sound(SoundType.METAL).strength(3.0f).requiresCorrectToolForDrops()) {
 
     override fun appendHoverText(
@@ -40,7 +42,7 @@ class BiogasGeneratorBlock :
     }
 
     override fun newBlockEntity(pPos: BlockPos, pState: BlockState): BlockEntity? {
-        return null
+        return BiogasGeneratorBlockEntity(pPos, pState)
     }
 
     override fun <T : BlockEntity?> getTicker(
@@ -48,9 +50,12 @@ class BiogasGeneratorBlock :
         pState: BlockState,
         pBlockEntityType: BlockEntityType<T?>
     ): BlockEntityTicker<T?>? {
-//        if (!pLevel.isClientSide) {
-//            return createTickerHelper(pBlockEntityType, ModBlockEntities.CHARGING_STATION.get(), ChargingStationBlockEntity::serverTick);
-//        }
+        if (!pLevel.isClientSide) {
+            return createTickerHelper(
+                pBlockEntityType, ModBlockEntities.BIOGAS_GENERATOR.get(),
+                BiogasGeneratorBlockEntity::serverTick
+            )
+        }
         return null
     }
 }

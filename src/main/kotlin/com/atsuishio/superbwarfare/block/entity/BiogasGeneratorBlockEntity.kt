@@ -1,0 +1,84 @@
+package com.atsuishio.superbwarfare.block.entity
+
+import com.atsuishio.superbwarfare.entity.SenpaiEntity
+import com.atsuishio.superbwarfare.init.ModBlockEntities
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.core.HolderLookup
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.entity.animal.Animal
+import net.minecraft.world.entity.animal.Cow
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.phys.AABB
+import net.neoforged.neoforge.capabilities.Capabilities
+
+open class BiogasGeneratorBlockEntity(pos: BlockPos, state: BlockState) :
+    BlockEntity(ModBlockEntities.BIOGAS_GENERATOR.get(), pos, state) {
+    var power: Float = 0f
+
+    fun checkAndGetPowerLevel(): Float {
+        if (this.level == null) return 0F
+        val above = blockPos.above()
+        val state = this.level!!.getBlockState(above)
+        if (!state.`is`(Blocks.COMPOSTER)) return 0F
+        val list = this.level!!.getEntities(null, AABB(above)) { it is Animal || it is SenpaiEntity }
+        if (list.isEmpty()) return 0F
+        var count = 0f
+        list.forEach {
+            count += when (it) {
+                is SenpaiEntity -> {
+                    2f
+                }
+
+                is Cow -> {
+                    1.5f
+                }
+
+                else -> {
+                    1f
+                }
+            }
+        }
+        count = count.coerceAtMost(24f)
+        return count - 0.04f * count * (count - 1) / 2f
+    }
+
+    override fun saveAdditional(
+        tag: CompoundTag,
+        registries: HolderLookup.Provider
+    ) {
+        super.saveAdditional(tag, registries)
+        tag.putFloat("Power", this.power)
+    }
+
+    override fun loadAdditional(
+        tag: CompoundTag,
+        registries: HolderLookup.Provider
+    ) {
+        super.loadAdditional(tag, registries)
+        this.power = tag.getFloat("Power")
+    }
+
+    companion object {
+        const val ENERGY_RATE: Int = 64
+
+        fun serverTick(level: Level, pos: BlockPos, state: BlockState, entity: BiogasGeneratorBlockEntity) {
+            if (level.gameTime % 20 == 0L) {
+                entity.power = entity.checkAndGetPowerLevel()
+                entity.setChanged()
+            }
+            for (face in Direction.entries) {
+                if (face == Direction.UP) continue
+
+                level.getCapability(Capabilities.EnergyStorage.BLOCK, pos.relative(face), face)?.let {
+                    if (it.canReceive() && it.energyStored < it.maxEnergyStored) {
+                        it.receiveEnergy((entity.power * ENERGY_RATE).toInt(), false)
+                    }
+                }
+            }
+        }
+    }
+}

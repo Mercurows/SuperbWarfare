@@ -38,4 +38,6 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder.of(VehicleAssemblingTableBlockEntity::new, ModBlocks.VEHICLE_ASSEMBLING_TABLE.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BlueprintResearchTableBlockEntity>> BLUEPRINT_RESEARCH_TABLE = REGISTRY.register("blueprint_research_table",
             () -> BlockEntityType.Builder.of(BlueprintResearchTableBlockEntity::new, ModBlocks.BLUEPRINT_RESEARCH_TABLE.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BiogasGeneratorBlockEntity>> BIOGAS_GENERATOR = REGISTRY.register("biogas_generator",
+            () -> BlockEntityType.Builder.of(BiogasGeneratorBlockEntity::new, ModBlocks.BIOGAS_GENERATOR.get()).build(null));
 }
