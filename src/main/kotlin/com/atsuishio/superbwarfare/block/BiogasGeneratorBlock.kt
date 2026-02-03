@@ -1,0 +1,56 @@
+package com.atsuishio.superbwarfare.block
+
+import com.mojang.serialization.MapCodec
+import net.minecraft.ChatFormatting
+import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.Component
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.RenderShape
+import net.minecraft.world.level.block.SoundType
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.BlockEntityTicker
+import net.minecraft.world.level.block.entity.BlockEntityType
+import net.minecraft.world.level.block.state.BlockState
+
+@Suppress("OVERRIDE_DEPRECATION")
+class BiogasGeneratorBlock :
+    BaseEntityBlock(Properties.of().sound(SoundType.METAL).strength(3.0f).requiresCorrectToolForDrops()) {
+
+    override fun appendHoverText(
+        stack: ItemStack,
+        context: Item.TooltipContext,
+        tooltipComponents: MutableList<Component>,
+        tooltipFlag: TooltipFlag
+    ) {
+        tooltipComponents.add(
+            Component.translatable("des.superbwarfare.biogas_generator").withStyle(ChatFormatting.GRAY)
+        )
+    }
+
+    val codec: MapCodec<BiogasGeneratorBlock> = simpleCodec { _ -> BiogasGeneratorBlock() }
+
+    override fun codec(): MapCodec<out BaseEntityBlock> = codec
+
+    override fun getRenderShape(pState: BlockState): RenderShape {
+        return RenderShape.MODEL
+    }
+
+    override fun newBlockEntity(pPos: BlockPos, pState: BlockState): BlockEntity? {
+        return null
+    }
+
+    override fun <T : BlockEntity?> getTicker(
+        pLevel: Level,
+        pState: BlockState,
+        pBlockEntityType: BlockEntityType<T?>
+    ): BlockEntityTicker<T?>? {
+//        if (!pLevel.isClientSide) {
+//            return createTickerHelper(pBlockEntityType, ModBlockEntities.CHARGING_STATION.get(), ChargingStationBlockEntity::serverTick);
+//        }
+        return null
+    }
+}

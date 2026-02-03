@@ -402,6 +402,7 @@ object ModItems {
     @JvmField val VEHICLE_ASSEMBLING_TABLE = registerBlock("vehicle_assembling_table") { VehicleAssemblingTableBlockItem() }
     // TODO 换成自定义的block item
     @JvmField val BLUEPRINT_RESEARCH_TABLE = registerBlock(ModBlocks.BLUEPRINT_RESEARCH_TABLE)
+    @JvmField val BIOGAS_GENERATOR = registerBlock(ModBlocks.BIOGAS_GENERATOR)
     // @formatter:on
 
     /**
