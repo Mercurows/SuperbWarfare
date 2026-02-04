@@ -105,7 +105,9 @@
       "DefaultZoom": 3,
       "Magazine": 1,
       "EmptyReloadTime": 100,
-      "Velocity": 27,
+      "Velocity": 20,
+      "ProjectileLife": 50,
+      "Gravity": 0.03,
       "Damage": 700,
       "ExplosionDamage": 80,
       "ExplosionRadius": 4,
@@ -124,7 +126,7 @@
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
             "ShellType": "HE",
-            "Velocity": 25,
+            "Velocity": 15,
             "Damage": 250,
             "ExplosionDamage": 120,
             "ExplosionRadius": 10,
@@ -135,7 +137,7 @@
           "Ammo": "superbwarfare:large_shell_gs",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
-            "ShellType": "gs",
+            "ShellType": "GS",
             "SpreadAmount": 36,
             "SpreadAngle": 5,
             "Velocity": 15,
@@ -312,7 +314,6 @@
   },
   "EngineSound": "superbwarfare:yx_100_engine",
   "HudType": "@Land",
-  "InertiaRotateRate": 1.2,
   "TerrainCompat": [
     [1.88, 0, 2.246], [-1.88, 0, 2.246],
     [1.88, 0, 1.11], [-1.88, 0, 1.11],
