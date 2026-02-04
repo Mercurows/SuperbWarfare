@@ -14,7 +14,7 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class M1A2Layer extends GeoRenderLayer<M1A2Entity> {
 
-    private static final ResourceLocation LAYER = Mod.loc("textures/entity/t_90a_e.png");
+    private static final ResourceLocation LAYER = Mod.loc("textures/entity/m_1a_2_e.png");
 
     public M1A2Layer(GeoRenderer<M1A2Entity> entityRenderer) {
         super(entityRenderer);
