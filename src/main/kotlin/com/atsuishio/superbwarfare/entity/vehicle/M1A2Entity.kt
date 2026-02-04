@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.buildControllers
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.level.Level
@@ -51,4 +52,7 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : GeoVehicleEntity(
     override fun getTurretMaxHealth() = 100f
     override fun getWheelMaxHealth() = 100f
     override fun getEngineMaxHealth() = 150f
+
+    override val customTurretMinPitch: Float
+        get() = if (Mth.abs(turretYRot) > 135) ((Mth.abs(turretYRot) - 135) * 0.4f).coerceAtMost(7f) else 0f
 }

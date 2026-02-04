@@ -52,7 +52,7 @@
       "Position": [1.016, -0.17, 1.164],
       "Weapons": ["Cannon", "MachineGun"],
       "CanRotateHead": false,
-      "MinPitch": -10,
+      "MinPitch": -4,
       "MaxPitch": 30,
       "Sensitivity": [0.52, 0.72, 0.9],
       "DismountInfo": {
@@ -383,7 +383,7 @@
   "TurretPos": [0.0, 2.632, -0.539],
   "BarrelPos": [0.0, 0.704, 0.810],
   "TurretTurnSpeed": [7, 6],
-  "TurretPitchRange": [-10, 30],
+  "TurretPitchRange": [-4, 30],
   "PassengerWeaponStationPos": [-0.948, 1.431, -0.716],
   "PassengerWeaponStationBarrelPos": [0.0, 0.450, 0.069],
   "PassengerWeaponStationTurnSpeed": [15, 15],
