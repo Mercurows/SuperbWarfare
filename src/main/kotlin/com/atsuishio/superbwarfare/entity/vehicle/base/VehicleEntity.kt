@@ -2413,6 +2413,18 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.clampRotation(entity)
     }
 
+    open val customTurretMinPitch: Float
+        /**
+         * @return 自定义炮塔最低俯角
+         */
+        get() = 0f
+
+    open val customTurretMaxPitch: Float
+        /**
+         * @return 自定义炮塔最大仰角
+         */
+        get() = 0f
+
     private fun clampRotation(entity: Entity) {
         val index = getSeatIndex(entity)
         val seats = computed().seats()
@@ -2427,8 +2439,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             vec3 = getTransformDirectionFromString(1f, entity, "Turret")
         }
 
-        val minPitch = -seat.maxPitch
-        val maxPitch = -seat.minPitch
+        val minPitch = -seat.maxPitch + customTurretMaxPitch
+        val maxPitch = -seat.minPitch - customTurretMinPitch
         val f = Mth.wrapDegrees(entity.xRot - -getXRotFromVector(vec3)).toFloat()
         val f1 = Mth.clamp(f, minPitch, maxPitch)
         entity.xRotO += f1 - f
