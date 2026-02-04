@@ -7,9 +7,9 @@
     "2 superbwarfare:medium_battery_pack",
     "2 superbwarfare:track",
     "superbwarfare:large_motor",
-    "minecraft:green_dye"
+    "minecraft:sand"
   ],
   "result": {
-    "entity": "superbwarfare:t_90a"
+    "entity": "superbwarfare:m_1a_2"
   }
 }

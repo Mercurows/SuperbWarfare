@@ -18,7 +18,7 @@
 				{
 					"name": "base",
 					"parent": "root",
-					"pivot": [0, -0.2, -9]
+					"pivot": [0, 12, 0]
 				},
 				{
 					"name": "turret",
@@ -119,7 +119,7 @@
 					]
 				},
 				{
-					"name": "2a46m_1",
+					"name": "barrel_action",
 					"parent": "barrelRot",
 					"pivot": [0, 40.25, -22.875],
 					"cubes": [
@@ -171,7 +171,7 @@
 				},
 				{
 					"name": "bone8",
-					"parent": "2a46m_1",
+					"parent": "barrel_action",
 					"pivot": [0, 40.25, -81.5],
 					"cubes": [
 						{
@@ -218,7 +218,7 @@
 				},
 				{
 					"name": "octagon4",
-					"parent": "2a46m_1",
+					"parent": "barrel_action",
 					"pivot": [0, 40.25, -108],
 					"cubes": [
 						{

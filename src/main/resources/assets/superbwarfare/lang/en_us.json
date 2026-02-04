@@ -628,6 +628,7 @@
   "entity.superbwarfare.kv_16": "KV-16 Ghost Fighter",
   "entity.superbwarfare.ju_87": "Ju-87 Stuka Bomber",
   "entity.superbwarfare.t_90a": "T-90A MBT",
+  "entity.superbwarfare.m_1a_2": "M1A2 MBT",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
@@ -801,6 +802,7 @@
   "info.superbwarfare.kv_16": "The KV-16 \"Ghost\" fighter is a rudimentary aircraft cobbled together from oil drums and scrap materials. Despite its unassuming appearance, it has managed to shoot down multiple enemy aircraft in the battles defending our sacred capital's airspace, relying on its ghostly maneuvers. Its elusive operations strike fear into the hearts of enemy pilots, earning it the name \"Ghost.",
   "info.superbwarfare.ju_87": "The Ju-87 \"Stuka\" was a famed German dive bomber of WWII. Known for its fixed undercarriage and the terrifying siren howl during dives, it inflicted significant psychological fear on ground troops. It was used for precision strikes against key ground targets like tanks and fortifications, serving as a crucial aerial fire support element in the \"Blitzkrieg.",
   "info.superbwarfare.t_90a": "The T-90A is a Russian main third-generation battle tank. Its primary armament is a 125mm smoothbore gun, supplemented by coaxial and anti-aircraft machine guns. Designed to destroy all types of armored targets, providing excellent comprehensive protection and cross-country mobility",
+  "info.superbwarfare.m_1a_2": "The M1A2 Abrams is the main battle tank in active U.S. military service. Armed with a 120mm smoothbore gun and equipped with advanced digital fire control systems and depleted uranium armor, it is designed for high-intensity ground combat, renowned for its accurate firepower, superior protection, and mobility",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",

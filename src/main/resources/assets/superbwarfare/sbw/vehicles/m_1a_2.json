@@ -1,0 +1,7 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/t_90a.animation.json",
+    "Model": "superbwarfare:geo/m_1a_2.geo.json",
+    "Texture": "superbwarfare:textures/entity/m_1a_2.png"
+  }
+}
