@@ -4257,5 +4257,45 @@
         "name": "superbwarfare:vehicle/t_90a/t_90a_engine"
       }
     ]
+  },
+  "m_1a_2_reload": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/m_1a_2/m_1a_2_reload",
+        "stream": false
+      }
+    ]
+  },
+  "m_1a_2_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/m_1a_2/m_1a_2_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "m_1a_2_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/m_1a_2/m_1a_2_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "m_1a_2_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/m_1a_2/m_1a_2_far",
+        "stream": false
+      }
+    ]
+  },
+  "m_1a_2_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/m_1a_2/m_1a_2_veryfar",
+        "stream": false
+      }
+    ]
   }
 }

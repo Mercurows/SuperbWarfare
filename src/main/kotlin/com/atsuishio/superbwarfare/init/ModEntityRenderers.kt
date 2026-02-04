@@ -93,5 +93,6 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.KV_16.get()) { Kv16Renderer(it) }
         event.registerEntityRenderer(ModEntities.JU_87.get()) { Ju87Renderer(it) }
         event.registerEntityRenderer(ModEntities.T_90A.get()) { T90aRenderer(it) }
+        event.registerEntityRenderer(ModEntities.M_1A_2.get()) { M1A2Renderer(it) }
     }
 }

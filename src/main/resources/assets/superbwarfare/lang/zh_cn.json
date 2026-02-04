@@ -628,6 +628,7 @@
   "entity.superbwarfare.kv_16": "KV-16 “幽灵” 战斗机",
   "entity.superbwarfare.ju_87": "Ju-87 斯图卡轰炸机",
   "entity.superbwarfare.t_90a": "T-90A主战坦克",
+  "entity.superbwarfare.m_1a_2": "M1A2主战坦克",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -799,6 +800,7 @@
   "info.superbwarfare.kv_16": "KV-16 “幽灵” 战斗机是一款由铁桶和废旧材料拼凑起来的简易飞行器，虽然看上去毫不起眼，但她却能够凭借其神出鬼没的行踪，在保卫我们神圣首都领空的战斗中击落多架来袭敌机，令敌军飞行员心惊胆战，因此被誉为“幽灵”",
   "info.superbwarfare.ju_87": "Ju-87“斯图卡”是二战中著名的德军俯冲轰炸机。其标志性的固定式起落架和俯冲时发出的凄厉呼啸声，对地面敌军造成巨大心理威慑。它主要用于精确打击坦克、工事等关键地面目标，是“闪电战”中的重要空中火力支柱",
   "info.superbwarfare.t_90a": "T-90A是俄罗斯主力三代坦克。主武器为125毫米滑膛炮，辅助武器为同轴与高射机枪。专为摧毁各类装甲目标设计，具备优异的综合防护与越野机动性",
+  "info.superbwarfare.m_1a_2": "M1A2“艾布拉姆斯”是美军现役主战坦克。主武器为120毫米滑膛炮，配备先进的数字化火控系统与贫铀装甲，专为高强度地面对抗设计，以精准的火力、卓越的防护和机动性著称",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",
