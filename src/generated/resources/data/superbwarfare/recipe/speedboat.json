@@ -4,7 +4,7 @@
   "inputs": [
     "2 #superbwarfare:storage_blocks/steel",
     "#minecraft:boats",
-    "superbwarfare:m_2_hb",
+    "superbwarfare:light_armament_module",
     "superbwarfare:small_battery_pack",
     "superbwarfare:large_propeller",
     "superbwarfare:large_motor"

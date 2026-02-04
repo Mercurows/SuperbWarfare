@@ -1812,11 +1812,11 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
             VehicleAssemblingRecipeBuilder.entity(ModEntities.SPEEDBOAT.get(), VehicleAssemblingRecipe.Category.WATER)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 2)
                 .require(ItemTags.BOATS)
-                .require(ModItems.M_2_HB.get())
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
                 .require(ModItems.SMALL_BATTERY_PACK.get())
                 .require(ModItems.LARGE_PROPELLER.get())
                 .require(ModItems.LARGE_MOTOR.get())
-                .unlockedBy(getHasName(ModItems.M_2_HB.get()), has(ModItems.M_2_HB.get()))
+                .unlockedBy(getHasName(ModItems.LIGHT_ARMAMENT_MODULE.get()), has(ModItems.LIGHT_ARMAMENT_MODULE.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.SPEEDBOAT.get())))
             VehicleAssemblingRecipeBuilder.entity(
                 ModEntities.TINY_SPEEDBOAT.get(),
@@ -1842,7 +1842,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .require(Items.BUCKET, 2)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 1)
                 .require(ItemTags.PLANKS, 2)
-                .require(ModItems.M_2_HB.get(), 2)
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
                 .require(ModItems.SMALL_BATTERY_PACK.get())
                 .require(ModItems.LARGE_PROPELLER.get(), 1)
                 .require(ModItems.LARGE_MOTOR.get())
@@ -1895,7 +1895,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .require(ModItems.MEDIUM_BATTERY_PACK.get())
                 .require(ModItems.WHEEL.get(), 4)
                 .require(ModItems.LARGE_MOTOR.get())
-                .require(ModItems.M_2_HB.get())
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.SODAYO_PICK_UP_HMG.get())))
             VehicleAssemblingRecipeBuilder.entity(

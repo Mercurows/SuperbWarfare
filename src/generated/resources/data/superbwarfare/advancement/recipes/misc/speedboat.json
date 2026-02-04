@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_m_2_hb": {
+    "has_light_armament_module": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:m_2_hb"
+            "items": "superbwarfare:light_armament_module"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_m_2_hb"
+      "has_light_armament_module"
     ]
   ],
   "rewards": {
