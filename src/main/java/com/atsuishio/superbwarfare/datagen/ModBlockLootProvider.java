@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.datagen;
 
+import com.atsuishio.superbwarfare.block.BlueprintResearchTableBlock;
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock;
 import com.atsuishio.superbwarfare.block.property.BlockPart;
 import com.atsuishio.superbwarfare.init.ModBlocks;
@@ -10,6 +11,7 @@ import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -47,8 +49,12 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get());
         this.dropSelf(ModBlocks.SUPERB_ITEM_INTERFACE.get());
         this.dropSelf(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get());
-        // TODO 改成多方块之后正确设置战利品表
-        this.dropSelf(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get());
+        this.add(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get(),
+                this.applyExplosionDecay(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(
+                        LootItem.lootTableItem(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get()).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get())
+                                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(BlueprintResearchTableBlock.PART, BedPart.FOOT))).otherwise(LootItem.lootTableItem(Blocks.AIR)))
+                ))
+        );
         this.add(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(),
                 this.applyExplosionDecay(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(
                         LootItem.lootTableItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get()).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get())
