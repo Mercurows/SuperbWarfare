@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:item/blueprint_research_table",
+  "textures": {
+    "particle": "minecraft:block/white_concrete"
+  }
+}

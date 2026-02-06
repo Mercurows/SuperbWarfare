@@ -400,8 +400,7 @@ object ModItems {
         ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.id.path
     ) { BlockItem(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(), Item.Properties().rarity(Rarity.EPIC)) }
     @JvmField val VEHICLE_ASSEMBLING_TABLE = registerBlock("vehicle_assembling_table") { VehicleAssemblingTableBlockItem() }
-    // TODO 换成自定义的block item
-    @JvmField val BLUEPRINT_RESEARCH_TABLE = registerBlock(ModBlocks.BLUEPRINT_RESEARCH_TABLE)
+    @JvmField val BLUEPRINT_RESEARCH_TABLE = registerBlock("blueprint_research_table") { BlueprintResearchTableBlockItem() }
     @JvmField val BIOGAS_GENERATOR = registerBlock(ModBlocks.BIOGAS_GENERATOR)
     // @formatter:on
 

@@ -385,6 +385,8 @@
   "des.superbwarfare.vehicle_assembly_table": "Used to make vehicles, requires a 2 x 2 x 2 space to be placed",
   "block.superbwarfare.biogas_generator": "Biogas Generator",
   "des.superbwarfare.biogas_generator": "Count the number of specific entities inside the composter placed above it. The higher the number, the higher power generation efficiency",
+  "block.superbwarfare.blueprint_research_table": "Blueprint Research Table",
+  "des.superbwarfare.blueprint_research_table": "WIP",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",

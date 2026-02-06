@@ -68,6 +68,7 @@ object ClientRenderHandler {
         event.registerBlockEntityRenderer(ModBlockEntities.SMALL_CONTAINER.get()) { _ -> SmallContainerBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.LUCKY_CONTAINER.get()) { _ -> LuckyContainerBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.VEHICLE_ASSEMBLING_TABLE.get()) { _ -> VehicleAssemblingTableBlockEntityRenderer() }
+        event.registerBlockEntityRenderer(ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.get()) { _ -> BlueprintResearchTableBlockEntityRenderer() }
     }
 
     @SubscribeEvent
@@ -108,7 +109,7 @@ object ClientRenderHandler {
     }
 
     @SubscribeEvent
-    fun onClientSetup(event: FMLClientSetupEvent?) {
+    fun onClientSetup(event: FMLClientSetupEvent) {
         CuriosRendererRegistry.register(ModItems.PARACHUTE.get()) { ParachuteRenderer() }
         CuriosRendererRegistry.register(ModItems.THERMAL_IMAGING_GOGGLES.get()) { ThermalImagingGogglesRenderer() }
     }

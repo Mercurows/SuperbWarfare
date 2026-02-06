@@ -3,11 +3,16 @@ package com.atsuishio.superbwarfare.block
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.mojang.serialization.MapCodec
+import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.Containers
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -33,6 +38,17 @@ class BlueprintResearchTableBlock : BaseEntityBlock(Properties.of().strength(2f)
         }
     }
 
+    override fun appendHoverText(
+        stack: ItemStack,
+        context: Item.TooltipContext,
+        tooltipComponents: MutableList<Component>,
+        tooltipFlag: TooltipFlag
+    ) {
+        tooltipComponents.add(
+            Component.translatable("des.superbwarfare.blueprint_research_table").withStyle(ChatFormatting.GRAY)
+        )
+    }
+
     private fun openContainer(level: Level, pos: BlockPos, player: Player) {
         val entity = level.getBlockEntity(pos) as? BlueprintResearchTableBlockEntity ?: return
         player.openMenu(entity)
@@ -48,8 +64,8 @@ class BlueprintResearchTableBlock : BaseEntityBlock(Properties.of().strength(2f)
     override fun <T : BlockEntity?> getTicker(
         pLevel: Level,
         pState: BlockState,
-        pBlockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
+        pBlockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
         if (!pLevel.isClientSide) {
             return createTickerHelper(
                 pBlockEntityType,
