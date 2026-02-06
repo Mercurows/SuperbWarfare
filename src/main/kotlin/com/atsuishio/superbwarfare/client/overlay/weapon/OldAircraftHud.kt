@@ -45,8 +45,8 @@ object OldAircraftHud {
     private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private val BOMB_RING = loc("textures/overlay/crosshair/rex_circle.png")
 
-    private var mouseX = 0f;
-    private var mouseY = 0f;
+    private var mouseX = 0f
+    private var mouseY = 0f
 
     fun render(
         vehicle: VehicleEntity,
@@ -89,7 +89,7 @@ object OldAircraftHud {
         val result = player.level().clip(
             ClipContext(
                 shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player
+                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
             )
         )
         val hitPos = result.getLocation()

@@ -4297,5 +4297,46 @@
         "stream": false
       }
     ]
+  },
+  "bradley_cannon_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/bradley/bradley_cannon_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "bradley_cannon_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/bradley/bradley_cannon_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "bradley_cannon_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/bradley/bradley_cannon_far",
+        "stream": false
+      }
+    ]
+  },
+  "bradley_cannon_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/bradley/bradley_cannon_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "bradley_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/bradley/bradley_engine"
+      }
+    ]
   }
 }
