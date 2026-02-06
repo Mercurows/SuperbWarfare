@@ -1,0 +1,7 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/lav_150.animation.json",
+    "Model": "superbwarfare:geo/bradley.geo.json",
+    "Texture": "superbwarfare:textures/entity/bradley.png"
+  }
+}

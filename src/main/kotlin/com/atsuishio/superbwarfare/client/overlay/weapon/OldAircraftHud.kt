@@ -91,7 +91,7 @@ object OldAircraftHud {
         val result = player.level().clip(
             ClipContext(
                 shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player
+                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
             )
         )
         val hitPos = result.getLocation()

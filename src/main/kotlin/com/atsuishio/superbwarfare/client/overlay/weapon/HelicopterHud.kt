@@ -183,7 +183,7 @@ object HelicopterHud {
                         vehicle.getShootPosForHud(player, partialTick),
                         vehicle.getShootPosForHud(player, partialTick)
                             .add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                        ClipContext.Block.OUTLINE,
+                        ClipContext.Block.VISUAL,
                         ClipContext.Fluid.NONE,
                         player
                     )
@@ -265,7 +265,7 @@ object HelicopterHud {
             val result = player.level().clip(
                 ClipContext(
                     shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                    ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player
+                    ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
                 )
             )
             val hitPos = result.getLocation()
@@ -286,7 +286,7 @@ object HelicopterHud {
                     vehicle.level().clip(
                         ClipContext(
                             vehicle.position(), vehicle.position().add(Vec3(0.0, -1.0, 0.0).scale(100.0)),
-                            ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, vehicle
+                            ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, vehicle
                         )
                     ).blockPos
                 ))
@@ -298,7 +298,7 @@ object HelicopterHud {
                             vehicle.position(),
                             vehicle.position()
                                 .add(vehicle.deltaMovement.add(0.0, 0.06, 0.0).normalize().scale(100.0)),
-                            ClipContext.Block.OUTLINE,
+                            ClipContext.Block.VISUAL,
                             ClipContext.Fluid.ANY,
                             vehicle
                         )
