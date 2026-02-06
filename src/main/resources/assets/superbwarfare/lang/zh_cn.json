@@ -385,6 +385,8 @@
   "des.superbwarfare.vehicle_assembly_table": "用于制作载具的站点，需要2 x 2 x 2的空间放置",
   "block.superbwarfare.biogas_generator": "沼气发电机",
   "des.superbwarfare.biogas_generator": "检测其上方放置的堆肥桶内部的特定生物数量，数量越多发电效率越高",
+  "block.superbwarfare.blueprint_research_table": "蓝图研究台",
+  "des.superbwarfare.blueprint_research_table": "WIP",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",
