@@ -347,20 +347,18 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, world: Level
             SynchedEntityData.defineId(DPSGeneratorEntity::class.java, EntityDataSerializers.INT)
 
         @SubscribeEvent
-        fun onTargetDown(event: LivingDeathEvent) {
-            val entity = event.entity
+        fun onDPSGeneratorDown(event: LivingDeathEvent) {
+            val entity = event.entity as? DPSGeneratorEntity ?: return
             // 不处理/kill伤害
             if (event.source.`is`(DamageTypes.GENERIC_KILL)) return
             val sourceEntity = event.source.entity
 
-            if (entity is DPSGeneratorEntity) {
-                event.setCanceled(true)
-                entity.health = 0.00001f
+            event.setCanceled(true)
+            entity.health = 0.00001f
 
-                if (sourceEntity is Player) {
-                    SoundTool.playLocalSound(sourceEntity, ModSounds.TARGET_DOWN.get(), 1f, 1f)
-                    entity.downTime = 40
-                }
+            if (sourceEntity is Player) {
+                SoundTool.playLocalSound(sourceEntity, ModSounds.TARGET_DOWN.get(), 1f, 1f)
+                entity.downTime = 40
             }
         }
 

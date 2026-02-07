@@ -181,6 +181,7 @@ open class TargetEntity(type: EntityType<TargetEntity>, world: Level) : LivingEn
 
     override fun getPickResult() = ItemStack(ModItems.TARGET_DEPLOYER.get())
 
+    @EventBusSubscriber
     companion object {
         @JvmField
         val DOWN_TIME: EntityDataAccessor<Int> =
