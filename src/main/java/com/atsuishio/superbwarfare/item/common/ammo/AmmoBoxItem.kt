@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.SoundTool
+import com.atsuishio.superbwarfare.tools.getOrCreateTag
 import com.atsuishio.superbwarfare.tools.plus
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -17,6 +18,8 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.ClickAction
+import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
@@ -26,6 +29,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class AmmoBoxItem : Item(Properties().stacksTo(1)) {
+    // TODO 优化这一坨反人类逻辑
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(hand)
 
@@ -139,5 +143,48 @@ class AmmoBoxItem : Item(Properties().stacksTo(1)) {
                 add(ammoType.serializationName)
             }
         }
+    }
+
+    override fun overrideStackedOnOther(stack: ItemStack, slot: Slot, action: ClickAction, player: Player): Boolean {
+        if (action == ClickAction.SECONDARY) {
+            val slotItem = slot.item
+            val tag = stack.getOrCreateTag()
+            val selectedType = tag.getString("Type").ifEmpty { "All" }
+
+            val types = buildList {
+                if (selectedType == "All" || tag.getBoolean("IsDrop")) {
+                    addAll(Ammo.entries.toTypedArray())
+                } else {
+                    add(Ammo.getType(selectedType))
+                }
+            }.filterNotNull()
+
+            if (slotItem.isEmpty) {
+                for (type in types) {
+                    val storedCount = type.get(stack)
+                    if (storedCount == 0) return false
+
+                    val countToStore = storedCount.coerceAtMost(type.itemStack.maxStackSize)
+
+                    repeat(countToStore) {
+                        slot.safeInsert(type.itemStack)
+                    }
+
+                    type.add(stack, -countToStore)
+                    return true
+                }
+                return false
+            }
+
+            val ammo = slotItem.item
+            if (ammo is AmmoSupplierItem) {
+                val ammoType = ammo.type
+                ammoType.add(stack, slotItem.count)
+                slot.safeTake(slotItem.count, ammoType.limit - ammoType.get(stack), player)
+                return true
+            }
+        }
+
+        return false
     }
 }
