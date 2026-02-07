@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.init.ModLootModifier
-import com.atsuishio.superbwarfare.init.ModTabs
 import com.atsuishio.superbwarfare.init.ModVillagers
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.procedures.WelcomeProcedure
@@ -16,7 +15,6 @@ private val classes = arrayOf(
     SenpaiEntity::class.java,
     TargetEntity::class.java,
     ModLootModifier::class.java,
-    ModTabs::class.java,
     ModVillagers::class.java,
     ContainerBlockItem::class.java,
     WelcomeProcedure::class.java,
