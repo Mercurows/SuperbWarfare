@@ -171,6 +171,11 @@ class AmmoBoxItem : Item(Properties().stacksTo(1)) {
                     }
 
                     type.add(stack, -countToStore)
+
+                    if (player is ServerPlayer) {
+                        SoundTool.playLocalSound(player, ModSounds.FIRE_RATE.get(), SoundSource.PLAYERS, 1f, 1f)
+                    }
+
                     return true
                 }
                 return false
@@ -179,8 +184,14 @@ class AmmoBoxItem : Item(Properties().stacksTo(1)) {
             val ammo = slotItem.item
             if (ammo is AmmoSupplierItem) {
                 val ammoType = ammo.type
-                ammoType.add(stack, slotItem.count)
-                slot.safeTake(slotItem.count, ammoType.limit - ammoType.get(stack), player)
+                val addCount = slotItem.count.coerceAtMost(ammoType.limit - ammoType.get(stack))
+                ammoType.add(stack, addCount)
+                slot.safeTake(slotItem.count, addCount, player)
+
+                if (player is ServerPlayer) {
+                    SoundTool.playLocalSound(player, ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 1f, 1f)
+                }
+
                 return true
             }
         }
