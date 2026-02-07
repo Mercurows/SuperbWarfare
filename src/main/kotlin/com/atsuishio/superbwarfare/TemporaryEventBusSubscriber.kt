@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
-import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.init.ModLootModifier
 import com.atsuishio.superbwarfare.init.ModVillagers
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
@@ -11,9 +9,7 @@ import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 
 private val classes = arrayOf(
-    DPSGeneratorEntity::class.java,
     SenpaiEntity::class.java,
-    TargetEntity::class.java,
     ModLootModifier::class.java,
     ModVillagers::class.java,
     ContainerBlockItem::class.java,
