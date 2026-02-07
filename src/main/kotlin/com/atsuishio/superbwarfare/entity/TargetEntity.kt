@@ -206,7 +206,7 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
     }
 
     @Mod.EventBusSubscriber
-    companion object Target {
+    companion object {
         @JvmField
         val DOWN_TIME: EntityDataAccessor<Int> =
             SynchedEntityData.defineId(TargetEntity::class.java, EntityDataSerializers.INT)

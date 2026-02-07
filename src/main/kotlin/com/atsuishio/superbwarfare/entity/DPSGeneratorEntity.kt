@@ -395,7 +395,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
             SynchedEntityData.defineId(DPSGeneratorEntity::class.java, EntityDataSerializers.INT)
 
         @SubscribeEvent
-        fun onTargetDown(event: LivingDeathEvent) {
+        fun onDPSGeneratorDown(event: LivingDeathEvent) {
             val entity = event.entity as? DPSGeneratorEntity ?: return
             // 不处理/kill伤害
             if (event.source.`is`(DamageTypes.GENERIC_KILL)) return
