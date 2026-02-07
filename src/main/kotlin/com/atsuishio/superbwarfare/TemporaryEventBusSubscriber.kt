@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.atsuishio.superbwarfare.init.ModLootModifier
 import com.atsuishio.superbwarfare.init.ModVillagers
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
@@ -9,7 +8,6 @@ import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 
 private val classes = arrayOf(
-    SenpaiEntity::class.java,
     ModLootModifier::class.java,
     ModVillagers::class.java,
     ContainerBlockItem::class.java,
