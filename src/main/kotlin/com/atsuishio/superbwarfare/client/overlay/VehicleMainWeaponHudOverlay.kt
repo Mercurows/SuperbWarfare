@@ -14,7 +14,8 @@ import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
@@ -161,8 +162,8 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 if (e.type.`is`(ModTags.EntityTypes.DECOY)) continue
 
                 val pos3 = lerpGetEntityBoundingBoxCenter(e, partialTick)
-                if (VectorUtil.canSee(pos3) && !seekInfo.onlyLockBlock) {
-                    val point = VectorUtil.worldToScreen(pos3)
+                if (pos3.canBeSeen() && !seekInfo.onlyLockBlock) {
+                    val point = pos3.worldToScreen()
                     val lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e === targetEntity
                     val nearest =
                         e === (if (ClientEventHandler.seekingEntityVehicle == null) nearestEntity else ClientEventHandler.seekingEntityVehicle)
@@ -202,9 +203,9 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                                     )
                                 )
                             )
-                            val point0 = VectorUtil.worldToScreen(shootPos)
+                            val point0 = shootPos.worldToScreen()
 
-                            if (VectorUtil.canSee(shootPos)) {
+                            if (shootPos.canBeSeen()) {
                                 poseStack.pushPose()
                                 val x0 = point0.x.toFloat()
                                 val y0 = point0.y.toFloat()
@@ -358,8 +359,8 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             val pos = ClientEventHandler.lockingPosVehicle
             if (pos != null) {
                 val lockOn = ClientEventHandler.lockOnVehicle
-                val point = VectorUtil.worldToScreen(pos)
-                if (VectorUtil.canSee(pos)) {
+                val point = pos.worldToScreen()
+                if (pos.canBeSeen()) {
                     poseStack.pushPose()
                     val x = point.x.toFloat()
                     val y = point.y.toFloat()

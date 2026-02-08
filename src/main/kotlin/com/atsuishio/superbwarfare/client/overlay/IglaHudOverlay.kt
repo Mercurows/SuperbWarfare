@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
@@ -63,7 +63,7 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
             val f1: Float = min(screenWidth.toFloat() / f, screenHeight.toFloat() / f) * scopeScale
             val i = Mth.floor(f * f1).toFloat()
             val j = Mth.floor(f * f1).toFloat()
-            val pCross = VectorUtil.worldToScreen(camera.position.add(Vec3(camera.lookVector)))
+            val pCross = (camera.position.add(Vec3(camera.lookVector))).worldToScreen()
             val x0 = pCross.x.toFloat() + 4 * moveX
             val y0 = pCross.y.toFloat() + 4 * moveY
 
@@ -125,8 +125,8 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
                 )
 
                 if (targetEntity != null) {
-                    val pos = lerpGetEntityBoundingBoxCenter(targetEntity, deltaFrame)
-                    val point = VectorUtil.worldToScreen(pos)
+                    val pos = lerpGetEntityBoundingBoxCenter(targetEntity, partialTick)
+                    val point = pos.worldToScreen()
                     val x = point.x.toFloat()
                     val y = point.y.toFloat()
                     poseStack.pushPose()

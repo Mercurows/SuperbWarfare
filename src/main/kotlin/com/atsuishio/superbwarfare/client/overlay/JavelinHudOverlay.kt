@@ -10,7 +10,8 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.renderer.GameRenderer
@@ -138,8 +139,8 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
 
                 if (ClientEventHandler.guideType == 0) {
                     for (e in entities) {
-                        val pos = lerpGetEntityBoundingBoxCenter(e, deltaTracker.getGameTimeDeltaPartialTick(true))
-                        val point = VectorUtil.worldToScreen(pos)
+                        val pos = lerpGetEntityBoundingBoxCenter(e, partialTick)
+                        val point = pos.worldToScreen()
                         val lockOn = ClientEventHandler.lockOn && e === targetEntity
                         val nearest = e === nearestEntity
 
@@ -166,8 +167,8 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
                     val pos = ClientEventHandler.lockingPos
                     val lockOn = ClientEventHandler.lockOn
                     if (pos != null) {
-                        val point = VectorUtil.worldToScreen(pos)
-                        if (VectorUtil.canSee(pos)) {
+                        val point = pos.worldToScreen()
+                        if (pos.canBeSeen()) {
                             poseStack.pushPose()
                             val x = point.x.toFloat()
                             val y = point.y.toFloat()

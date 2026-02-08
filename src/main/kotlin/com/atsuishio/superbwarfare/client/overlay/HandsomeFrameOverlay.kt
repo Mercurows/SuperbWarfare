@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.renderer.GameRenderer
@@ -65,7 +65,7 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
                     ),
                     Mth.lerp(deltaTracker.getGameTimeDeltaPartialTick(true).toDouble(), e.zo, e.z)
                 )
-                val point = VectorUtil.worldToScreen(pos)
+                val point = pos.worldToScreen()
 
                 val lockOn = e === targetEntity
                 val isNearestEntity = e === nearestEntity

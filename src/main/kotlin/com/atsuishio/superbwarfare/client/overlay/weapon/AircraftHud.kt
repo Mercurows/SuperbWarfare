@@ -9,12 +9,9 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.FormatTool
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
-import com.atsuishio.superbwarfare.tools.VectorUtil
-import com.atsuishio.superbwarfare.tools.mc
-import com.atsuishio.superbwarfare.tools.plus
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -129,12 +126,12 @@ object AircraftHud {
             posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
         }
 
-        val p = VectorUtil.worldToScreen(pos)
-        val pCross = VectorUtil.worldToScreen(posCross)
+        val p = pos.worldToScreen()
+        val pCross = posCross.worldToScreen()
 
         // 投弹准星
         if (bomb && ClientEventHandler.zoomVehicle) {
-            if (VectorUtil.canSee(posCross)) {
+            if (posCross.canBeSeen()) {
                 val f = Math.min(screenWidth, screenHeight).toFloat()
                 val f1 = Math.min(screenWidth.toFloat() / f, screenHeight.toFloat() / f)
                 val i = Mth.floor(f * f1)
@@ -188,10 +185,7 @@ object AircraftHud {
 
         poseStack.pushPose()
 
-        if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && VectorUtil.canSee(
-                pos
-            )
-        ) {
+        if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && pos.canBeSeen()) {
             val x = p.x.toFloat()
             val y = p.y.toFloat()
 
@@ -277,63 +271,63 @@ object AircraftHud {
             poseStack.translate(x.toDouble(), y.toDouble(), 0.0)
             //时速
             guiGraphics.drawString(
-                    mc.font, Component.literal(format0D(vehicle.deltaMovement.length() * 72)),
-                    -105, -61, color, false
+                mc.font, Component.literal(format0D(vehicle.deltaMovement.length() * 72)),
+                -105, -61, color, false
             )
 
             //高度
             guiGraphics.drawString(
-                    mc.font, Component.literal(format0D(vehicle.y)),
-                    75, -61, color, false
+                mc.font, Component.literal(format0D(vehicle.y)),
+                75, -61, color, false
             )
 
             //垂直速度
             guiGraphics.drawString(
-                    mc.font,
-                    Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy.toDouble())),
-                    -96,
-                    60,
-                    color,
-                    false
+                mc.font,
+                Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpVy.toDouble())),
+                -96,
+                60,
+                color,
+                false
             )
             //加速度
             lerpG =
-                    Mth.lerp((0.1f * partialTick).toDouble(), lerpG.toDouble(), vehicle.getAcceleration() / 9.8).toFloat()
+                Mth.lerp((0.1f * partialTick).toDouble(), lerpG.toDouble(), vehicle.getAcceleration() / 9.8).toFloat()
             guiGraphics.drawString(mc.font, Component.literal("M"), -105, 70, color, false)
             guiGraphics.drawString(mc.font, Component.literal("0.2"), -96, 70, color, false)
             guiGraphics.drawString(mc.font, Component.literal("G"), -105, 78, color, false)
             guiGraphics.drawString(
-                    mc.font,
-                    Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG.toDouble())),
-                    -96,
-                    78,
-                    color,
-                    false
+                mc.font,
+                Component.literal(FormatTool.DECIMAL_FORMAT_1ZZ.format(lerpG.toDouble())),
+                -96,
+                78,
+                color,
+                false
             )
 
             // 热诱弹
             if (vehicle.hasDecoy()) {
                 if (vehicle.decoyReady) {
                     guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.flare.ready").append(
-                                    Component.literal(
-                                            " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
-                                    )
-                            ),
-                            72,
-                            0,
-                            color,
-                            false
+                        Minecraft.getInstance().font,
+                        Component.translatable("tips.superbwarfare.flare.ready").append(
+                            Component.literal(
+                                " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
+                            )
+                        ),
+                        72,
+                        0,
+                        color,
+                        false
                     )
                 } else {
                     guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.flare.reloading"),
-                            72,
-                            0,
-                            0xFF0000,
-                            false
+                        Minecraft.getInstance().font,
+                        Component.translatable("tips.superbwarfare.flare.reloading"),
+                        72,
+                        0,
+                        0xFF0000,
+                        false
                     )
                 }
             }
@@ -344,21 +338,21 @@ object AircraftHud {
             val component = vehicle.firstPersonAmmoComponent(gunData, player)
 
             guiGraphics.drawString(
-                    mc.font, component, -mc.font.width(component) / 2, 91,
-                    getGradientColor(color, 0xFF0000, heat, 2), false
+                mc.font, component, -mc.font.width(component) / 2, 91,
+                getGradientColor(color, 0xFF0000, heat, 2), false
             )
 
             // 能量警告
             if (vehicle.hasEnergyStorage()) {
                 if (vehicle.energy < 0.02 * vehicle.maxEnergy) {
                     guiGraphics.drawString(
-                            mc.font, Component.literal("NO POWER!"),
-                            -144, 14, -65536, false
+                        mc.font, Component.literal("NO POWER!"),
+                        -144, 14, -65536, false
                     )
                 } else if (vehicle.energy < 0.2 * vehicle.maxEnergy) {
                     guiGraphics.drawString(
-                            mc.font, Component.literal("LOW POWER"),
-                            -144, 14, 0xFF6B00, false
+                        mc.font, Component.literal("LOW POWER"),
+                        -144, 14, 0xFF6B00, false
                     )
                 }
             }
@@ -485,7 +479,7 @@ object AircraftHud {
 
         poseStack.pushPose()
 
-        if (VectorUtil.canSee(posCross)) {
+        if (posCross.canBeSeen()) {
             val x = pCross.x.toFloat()
             val y = pCross.y.toFloat()
 
@@ -528,7 +522,18 @@ object AircraftHud {
                 } else {
                     mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
                     mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
-                    RenderHelper.preciseBlit(guiGraphics, BOMB_RING, x - 8 + mouseX, y - 8 + mouseY, 0f, 0f, 16f, 16f, 16f, 16f)
+                    RenderHelper.preciseBlit(
+                        guiGraphics,
+                        BOMB_RING,
+                        x - 8 + mouseX,
+                        y - 8 + mouseY,
+                        0f,
+                        0f,
+                        16f,
+                        16f,
+                        16f,
+                        16f
+                    )
                 }
 
                 poseStack.pushPose()

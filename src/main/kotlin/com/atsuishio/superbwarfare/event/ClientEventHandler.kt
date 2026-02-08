@@ -50,6 +50,7 @@ import net.neoforged.neoforge.client.event.*
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers
 import net.neoforged.neoforge.common.util.TriState
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
+import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.animation.AnimationProcessor
 import software.bernie.geckolib.cache.`object`.GeoBone
@@ -163,7 +164,7 @@ object ClientEventHandler {
     var droneFovLerp: Double = 1.0
 
     @JvmField
-    var fov: Double = 0.0
+    var currentFov: Double = 0.0
 
     @JvmField
     var bowPullTimer: Double = 0.0
@@ -405,6 +406,16 @@ object ClientEventHandler {
 
     @JvmField
     var activeThermalImaging: Boolean = false
+
+    // 原VectorUtil的属性
+    @JvmField
+    var fov: Double = 70.0
+
+    @JvmField
+    var modelViewMatrix: Matrix4f? = null
+
+    @JvmField
+    var projectionMatrix: Matrix4f? = null
 
     private var lastX: Float = 0f
     private var lastY: Float = 0f
@@ -2485,6 +2496,13 @@ object ClientEventHandler {
         bowPullPos = 0.5 * cos(PI * (bowPullTimer.coerceIn(0.0, 1.0).pow(2) - 1).pow(2)) + 0.5
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    fun captureFov(event: ViewportEvent.ComputeFov) {
+        if (event.usedConfiguredFov()) {
+            fov = event.fov
+        }
+    }
+
     @SubscribeEvent
     fun onFovUpdate(event: ViewportEvent.ComputeFov) {
         val player = localPlayer ?: return
@@ -2493,7 +2511,7 @@ object ClientEventHandler {
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player) && zoomVehicle) {
             event.fov /= vehicle.getDefaultZoom(player)
-            fov = event.fov
+            currentFov = event.fov
             return
         }
 
@@ -2533,7 +2551,7 @@ object ClientEventHandler {
                 event.fov /= (1 + p * (customZoom - 1))
             } else if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK)
                 event.fov /= (1 + p * 0.01)
-            fov = event.fov
+            currentFov = event.fov
 
             // 智慧芯片
             if (zoom && !notInGame && drawTime < 0.01 && !isEditing) {
@@ -2626,7 +2644,7 @@ object ClientEventHandler {
         ) {
             droneFovLerp = Mth.lerp(0.1 * getDelta(), droneFovLerp, droneFov)
             event.fov /= droneFovLerp
-            fov = event.fov
+            currentFov = event.fov
         }
     }
 
