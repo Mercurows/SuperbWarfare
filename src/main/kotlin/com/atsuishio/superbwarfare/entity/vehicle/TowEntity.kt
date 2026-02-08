@@ -108,8 +108,8 @@ class TowEntity(type: EntityType<TowEntity>, world: Level) : GeoVehicleEntity(ty
         }
     }
 
-    override fun getRetrieveItems(): MutableList<ItemStack?> {
-        val list = ArrayList<ItemStack?>()
+    override fun getRetrieveItems(): List<ItemStack> {
+        val list = arrayListOf<ItemStack>()
         list.add(ItemStack(ModItems.TOW_DEPLOYER.get()))
 
         val data = getGunData(0)
