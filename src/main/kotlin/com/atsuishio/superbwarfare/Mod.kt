@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
 import net.minecraft.resources.ResourceLocation
-import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.TickEvent.ClientTickEvent
@@ -24,7 +23,6 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
-import net.minecraftforge.fml.loading.FMLEnvironment
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import software.bernie.geckolib.network.SerializableDataTicket
@@ -45,9 +43,6 @@ class Mod {
         }
 
         val bus = MOD_BUS
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            manuallyRegisterClientEventSubscribers(bus)
-        }
 
         ModPerks.register(bus)
         ModSerializers.REGISTRY.register(bus)
