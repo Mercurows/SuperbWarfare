@@ -116,6 +116,7 @@ class Mod {
     private fun onClientSetup(event: FMLClientSetupEvent) {
         MouseMovementHandler.init()
         MolangVariable.register()
+        event.enqueueWork { ModScreens.register() }
         event.enqueueWork { ModSoundInstances.init() }
     }
 

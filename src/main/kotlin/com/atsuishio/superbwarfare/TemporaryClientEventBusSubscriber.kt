@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
-import com.atsuishio.superbwarfare.init.ModScreens
 import com.atsuishio.superbwarfare.menu.EnergyMenu
 import com.atsuishio.superbwarfare.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.tools.VectorUtil
@@ -13,7 +12,6 @@ import net.minecraftforge.fml.common.Mod
 fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
         ModKeyMappings::class.java,
-        ModScreens::class.java,
         EnergyMenu::class.java,
         FuMO25Menu::class.java,
         VectorUtil::class.java,
