@@ -7,11 +7,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.VectorTool
-import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
-import com.atsuishio.superbwarfare.tools.canBeSeen
-import com.atsuishio.superbwarfare.tools.worldToScreen
+import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
@@ -139,6 +135,6 @@ object IFFOverlay : CommonOverlay("iff") {
     fun calculateAngle(entityA: Entity, camera: Camera): Double {
         val v1 = camera.position.vectorTo(entityA.position())
         val v2 = Vec3(camera.lookVector)
-        return calculateAngle(v1, v2)
+        return v1.angleTo(v2)
     }
 }

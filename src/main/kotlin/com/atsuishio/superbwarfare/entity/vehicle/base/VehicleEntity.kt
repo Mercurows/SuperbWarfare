@@ -1883,24 +1883,22 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 mob.lookAt(target, 30f, 30f)
                 val rpm = Math.ceil(20f / (vehicleWeaponRpm(mob).toFloat() / 60)).toInt()
                 if (tickCount % rpm == 0 && canShoot(mob) &&
-                    VectorTool.calculateAngle(
-                        getShootDirectionForHud(mob, 1f), getShootPos(mob, 1f).vectorTo(
-                            lerpGetEntityBoundingBoxCenter(target, 1f)
-                        )
+                    getShootDirectionForHud(mob, 1f).angleTo(
+                        getShootPos(mob, 1f).vectorTo(lerpGetEntityBoundingBoxCenter(target, 1f))
                     ) < 4
                 ) {
                     vehicleShoot(mob, target.getUUID(), null)
                 }
             }
             if (mob is Player && level() is ServerLevel) {
-                if (tickCount %5 == 0) {
+                if (tickCount % 5 == 0) {
                     val gunData: GunData? = getGunData(mob)
                     if (gunData != null) {
                         if (gunData.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
                             if (!canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT))) {
                                 mob.displayClientMessage(
-                                        Component.translatable("tips.superbwarfare.not.enough.energy"),
-                                        true
+                                    Component.translatable("tips.superbwarfare.not.enough.energy"),
+                                    true
                                 )
                             }
                         } else {
@@ -1908,11 +1906,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                                 val stack = gunData.selectedAmmoConsumer().stack()
                                 if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
                                     mob.displayClientMessage(
-                                            Component.translatable("tips.superbwarfare.need.ammo")
-                                                    .append(
-                                                            Component.literal("[").append(stack.hoverName).append("]")
-                                                                    .withStyle(ChatFormatting.YELLOW)
-                                                    ), true
+                                        Component.translatable("tips.superbwarfare.need.ammo")
+                                            .append(
+                                                Component.literal("[").append(stack.hoverName).append("]")
+                                                    .withStyle(ChatFormatting.YELLOW)
+                                            ), true
                                     )
                                 }
                             }
@@ -1922,7 +1920,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
                 val index: Int = getSeatIndex(mob)
                 val seat: SeatInfo = computed().seats()[index]
-                if (mob.getCapability(ModCapabilities.PLAYER_VARIABLE, null).orElse(PlayerVariable()).activeThermalImaging && seat.hasThermalImaging) {
+                if (mob.getCapability(ModCapabilities.PLAYER_VARIABLE, null)
+                        .orElse(PlayerVariable()).activeThermalImaging && seat.hasThermalImaging
+                ) {
                     mob.addEffect(MobEffectInstance(MobEffects.NIGHT_VISION, 5, 0, false, false))
                 }
             }
@@ -2437,7 +2437,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         var vec3 = getTransformDirection(1f, entity)
 
         if ((seat.transform == "Barrel" && turretControllerIndex == getSeatIndex(entity)) ||
-                (seat.transform == "WeaponStationBarrel" && passengerWeaponStationControllerIndex == getSeatIndex(entity))) {
+            (seat.transform == "WeaponStationBarrel" && passengerWeaponStationControllerIndex == getSeatIndex(entity))
+        ) {
             vec3 = getTransformDirectionFromString(1f, entity, "Turret")
         }
 
@@ -2484,7 +2485,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    open fun getTransformDirection(ticks: Float, entity: Entity) : Vec3{
+    open fun getTransformDirection(ticks: Float, entity: Entity): Vec3 {
         val index = getSeatIndex(entity)
         val seat = computed().seats()[index]
         val passengerRot = seat.orientation
@@ -2494,7 +2495,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return Vec3(posO.x, posO.y, posO.z).vectorTo(Vec3(pos.x, pos.y, pos.z))
     }
 
-    open fun getTransformDirectionNoOrientation(ticks: Float, entity: Entity) : Vec3{
+    open fun getTransformDirectionNoOrientation(ticks: Float, entity: Entity): Vec3 {
         val index = getSeatIndex(entity)
         val seat = computed().seats()[index]
         val transform = getTransformFromString(seat.transform, ticks)
@@ -2503,7 +2504,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return Vec3(posO.x, posO.y, posO.z).vectorTo(Vec3(pos.x, pos.y, pos.z))
     }
 
-    open fun getTransformDirectionFromString(ticks: Float, entity: Entity, string: String) : Vec3{
+    open fun getTransformDirectionFromString(ticks: Float, entity: Entity, string: String): Vec3 {
         val index = getSeatIndex(entity)
         val seat = computed().seats()[index]
         val passengerRot = seat.orientation
@@ -2571,8 +2572,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         vectorTransform["Up"] = Function { ticks -> this.getUpVec(ticks) }
         vectorTransform["Default"] = Function { partialTicks -> this.getViewVector(partialTicks) }
 
-        rotationTransform["WeaponStation"] = Function { tick -> VectorTool.combineRotationsPassengerWeaponStation(tick, this) }
-        rotationTransform["WeaponStationBarrel"] = Function { tick -> VectorTool.combineRotationsPassengerWeaponStationBarrel(tick, this) }
+        rotationTransform["WeaponStation"] =
+            Function { tick -> VectorTool.combineRotationsPassengerWeaponStation(tick, this) }
+        rotationTransform["WeaponStationBarrel"] =
+            Function { tick -> VectorTool.combineRotationsPassengerWeaponStationBarrel(tick, this) }
         rotationTransform["Turret"] = Function { tick -> VectorTool.combineRotationsTurret(tick, this) }
         rotationTransform["Barrel"] = Function { tick -> VectorTool.combineRotationsBarrel(tick, this) }
         rotationTransform["RotationsYaw"] = Function { tick -> VectorTool.combineRotationsYaw(tick, this) }

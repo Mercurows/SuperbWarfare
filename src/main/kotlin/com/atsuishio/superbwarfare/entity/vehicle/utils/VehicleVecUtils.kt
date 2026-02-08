@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
-import com.atsuishio.superbwarfare.tools.VectorTool
+import com.atsuishio.superbwarfare.tools.angleTo
 import com.mojang.math.Axis
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
@@ -61,7 +61,7 @@ object VehicleVecUtils {
     fun calculateAngle(move: Vec3, view: Vec3): Double {
         val nMove = move.multiply(1.0, 0.0, 1.0).normalize()
         val nView = view.multiply(1.0, 0.0, 1.0).normalize()
-        return VectorTool.calculateAngle(nMove, nView)
+        return nMove.angleTo(nView)
     }
 
     fun entityEyePos(entity: Entity, partialTicks: Float): Vec3 {

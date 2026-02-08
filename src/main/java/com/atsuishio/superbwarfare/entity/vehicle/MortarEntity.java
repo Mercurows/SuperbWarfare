@@ -14,7 +14,7 @@ import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
-import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.atsuishio.superbwarfare.tools.VectorToolKt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.nbt.CompoundTag;
@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector;
-
 
 public class MortarEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
@@ -231,7 +230,7 @@ public class MortarEntity extends ArtilleryEntity {
         setTargetPos(parameters.pos());
         setDepressed(parameters.isDepressed());
         setRadius(parameters.radius());
-        Vec3 randomPos = VectorTool.randomPos(getTargetPos().getCenter(), getRadius()).add(0, -1, 0);
+        Vec3 randomPos = VectorToolKt.randomPos(getTargetPos().getCenter(), getRadius()).add(0, -1, 0);
         Vec3 flatTrajectory = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), getDepressed());
         Vec3 highTrajectory = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), !getDepressed());
 
@@ -275,7 +274,7 @@ public class MortarEntity extends ArtilleryEntity {
 
     @Override
     public void resetTarget(@NotNull String weaponName) {
-        Vec3 randomPos = VectorTool.randomPos(getTargetPos().getCenter(), getRadius()).add(0, -1, 0);
+        Vec3 randomPos = VectorToolKt.randomPos(getTargetPos().getCenter(), getRadius()).add(0, -1, 0);
         Vec3 launchVector = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), getDepressed());
         this.look(randomPos);
 
