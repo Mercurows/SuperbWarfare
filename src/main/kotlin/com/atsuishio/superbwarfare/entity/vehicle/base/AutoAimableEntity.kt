@@ -310,7 +310,8 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
                     && !(target is Player && (target.isSpectator || target.isCreative))
                     && ((target is LivingEntity && target is Enemy && target.health > 0)
                     || isThreateningEntity(target, size, pos)
-                    || basicEnemyFilter(target))
+                    || basicEnemyFilter(target)
+                    || (target is LivingEntity && (target.lastAttacker == this.owner || this.owner?.lastAttacker == target)))
                     && SeekTool.NOT_IN_SMOKE.test(target)
                     && !SeekTool.IN_BLACKLIST.test(target)
         }
