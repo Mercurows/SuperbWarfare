@@ -14,7 +14,7 @@ import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
-import com.atsuishio.superbwarfare.tools.VectorTool.randomPos
+import com.atsuishio.superbwarfare.tools.randomPos
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -137,7 +137,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         depressed = parameters.isDepressed
         radius = parameters.radius
         val distance = targetPos.center.distanceTo(getShootPos(weaponName, 1f))
-        val randomPos = randomPos(targetPos.center, radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
+        val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
         val launchVector = calculateLaunchVector(
             getShootPos(weaponName, 1f),
             randomPos,
@@ -195,7 +195,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
 
     open fun resetTarget(weaponName: String) {
         val distance = targetPos.center.distanceTo(getShootPos(weaponName, 1f))
-        val randomPos = randomPos(targetPos.center, radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
+        val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
         val launchVector = calculateLaunchVector(
             getShootPos(weaponName, 1f),
             randomPos,

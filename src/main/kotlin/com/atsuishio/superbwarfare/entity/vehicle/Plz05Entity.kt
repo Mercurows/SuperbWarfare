@@ -2,9 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.buildControllers
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
-import com.atsuishio.superbwarfare.tools.VectorTool
+import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.toVec3
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
@@ -20,7 +19,7 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity
         if (getNthEntity(turretControllerIndex) == null) {
             if (deltaMovement.horizontalDistanceSqr() > 0.007) {
                 shootVec = getViewVec(this, 1f).toVector3f()
-                if (VectorTool.calculateAngle(shootVec.toVec3(), getShootVec("Main", 1f)) < 0.1) {
+                if (shootVec.toVec3().angleTo(getShootVec("Main", 1f)) < 0.1) {
                     lockTurret = true
                 }
             }

@@ -705,8 +705,7 @@ object ClientEventHandler {
 
                         //锁定失败
                         if (lockingPos != null &&
-                            (VectorTool.calculateAngle(
-                                player.lookAngle,
+                            (player.lookAngle.angleTo(
                                 player.eyePosition.vectorTo(lockingPos)
                             ) > seekAngle || !noClip(player, lockingPos!!))
                         ) {
@@ -742,18 +741,18 @@ object ClientEventHandler {
                         }
 
                         //锁定失败
-                        if (seekingEntity != null && (VectorTool.calculateAngle(
-                                player.lookAngle,
-                                player.eyePosition.vectorTo(
-                                    VectorTool.lerpGetEntityBoundingBoxCenter(
-                                        seekingEntity!!,
-                                        1f
-                                    )
-                                )
-                            ) > seekAngle || !SeekTool.NOT_IN_SMOKE.test(seekingEntity) || !noClip(
-                                player,
-                                seekingEntity!!
-                            ))
+                        if (seekingEntity != null && (
+                                    player.lookAngle.angleTo(
+                                        player.eyePosition.vectorTo(
+                                            VectorTool.lerpGetEntityBoundingBoxCenter(
+                                                seekingEntity!!,
+                                                1f
+                                            )
+                                        )
+                                    ) > seekAngle || !SeekTool.NOT_IN_SMOKE.test(seekingEntity) || !noClip(
+                                        player,
+                                        seekingEntity!!
+                                    ))
                         ) {
                             seekFailure(player)
                         }
@@ -801,11 +800,13 @@ object ClientEventHandler {
                     }
 
                     // 锁定失败
-                    if (seekingEntity != null && (VectorTool.calculateAngle(
-                            player.lookAngle,
+                    if (seekingEntity != null && (player.lookAngle.angleTo(
                             player.eyePosition
                                 .vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(seekingEntity!!, 1f))
-                        ) > seekAngle || !SeekTool.NOT_IN_SMOKE.test(seekingEntity) || !noClip(player, seekingEntity!!))
+                        ) > seekAngle || !SeekTool.NOT_IN_SMOKE.test(seekingEntity) || !noClip(
+                            player,
+                            seekingEntity!!
+                        ))
                     ) {
                         seekFailure(player)
                     }
@@ -925,10 +926,8 @@ object ClientEventHandler {
             }
 
             // 锁定失败
-            if (lockingPosVehicle != null && (VectorTool.calculateAngle(
-                    seekVec,
-                    cameraPos.vectorTo(lockingPosVehicle)
-                ) > seekAngle || !noClip(player, lockingPosVehicle!!))
+            if (lockingPosVehicle != null && (seekVec.angleTo(cameraPos.vectorTo(lockingPosVehicle)) > seekAngle
+                        || !noClip(player, lockingPosVehicle!!))
             ) {
                 seekFailure(player)
             }
@@ -976,9 +975,13 @@ object ClientEventHandler {
 
         // 锁定失败
         if (seekingEntityVehicle != null &&
-            (VectorTool.calculateAngle(
-                seekVec,
-                cameraPos.vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(seekingEntityVehicle!!, 1f))
+            (seekVec.angleTo(
+                cameraPos.vectorTo(
+                    VectorTool.lerpGetEntityBoundingBoxCenter(
+                        seekingEntityVehicle!!,
+                        1f
+                    )
+                )
             ) > seekAngle
                     || !SeekTool.NOT_IN_SMOKE.test(seekingEntityVehicle)
                     || !noClip(player, seekingEntityVehicle!!))
@@ -1205,10 +1208,7 @@ object ClientEventHandler {
         if (!targetEntities.isEmpty()) {
             val list = targetEntities.filter { it != null && it.isAlive && it != lookingEntity }
                 .sortedBy {
-                    VectorTool.calculateAngle(
-                        player.lookAngle,
-                        player.eyePosition.vectorTo(it.eyePosition)
-                    )
+                    player.lookAngle.angleTo(player.eyePosition.vectorTo(it.eyePosition))
                 }
             attackList += list
         }

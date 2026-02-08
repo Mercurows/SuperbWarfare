@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transfor
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.OBB
-import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
+import com.atsuishio.superbwarfare.tools.angleTo
 import com.mojang.math.Axis
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -243,7 +243,7 @@ object VehicleMotionUtils {
             val f1: Double
 
             val v0 = vec3.subtract(entity.deltaMovement)
-            if (calculateAngle(v0, vehicle.position().vectorTo(entity.position())) > 90) return
+            if (v0.angleTo(vehicle.position().vectorTo(entity.position())) > 90) return
 
             if (vehicle.deltaMovement.lengthSqr() < 0.09) return
 

@@ -1882,10 +1882,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 mob.lookAt(target, 30f, 30f)
                 val rpm = Math.ceil(20f / (vehicleWeaponRpm(mob).toFloat() / 60)).toInt()
                 if (tickCount % rpm == 0 && canShoot(mob) &&
-                    VectorTool.calculateAngle(
-                        getShootDirectionForHud(mob, 1f), getShootPos(mob, 1f).vectorTo(
-                            lerpGetEntityBoundingBoxCenter(target, 1f)
-                        )
+                    getShootDirectionForHud(mob, 1f).angleTo(
+                        getShootPos(mob, 1f).vectorTo(lerpGetEntityBoundingBoxCenter(target, 1f))
                     ) < 4
                 ) {
                     vehicleShoot(mob, target.getUUID(), null)

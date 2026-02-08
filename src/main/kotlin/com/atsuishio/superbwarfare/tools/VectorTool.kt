@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
 import com.mojang.math.Axis
 import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
@@ -22,6 +21,7 @@ import org.joml.Vector3i
 import org.joml.Vector4d
 import java.lang.Math
 import kotlin.math.acos
+import kotlin.math.sqrt
 
 operator fun Vec3.plus(other: Vec3): Vec3 = add(other)
 operator fun Vec3.minus(other: Vec3): Vec3 = subtract(other)
@@ -68,8 +68,30 @@ fun Vec3.canBeSeen(): Boolean {
     val cameraPos = camera.position
     val viewVec = Vec3(camera.lookVector)
     val v1 = cameraPos.vectorTo(this)
-    return calculateAngle(v1, viewVec) < ClientEventHandler.fov + 10
+    return v1.angleTo(viewVec) < ClientEventHandler.fov + 10
 }
+
+fun Vec3.angleTo(other: Vec3): Double {
+    val dot = this.dot(other)
+    // 检查点积是否为0（垂直情况）
+    if (dot == 0.0) return 90.0
+
+    val thisLengthSq = this.lengthSqr()
+    val otherLengthSq = other.lengthSqr()
+
+    return if (thisLengthSq > 0.0 && otherLengthSq > 0.0) {
+        Math.toDegrees(acos((dot / sqrt(thisLengthSq * otherLengthSq)).coerceIn(-1.0, 1.0)))
+    } else {
+        0.0
+    }
+}
+
+fun Vec3.randomPos(radius: Int) =
+    this + Vec3(
+        Math.random() * radius,
+        0.0,
+        0.0,
+    ).yRot((360 * Math.random()).toFloat() * Mth.DEG_TO_RAD)
 
 fun Vector3f.toVec3() = Vec3(x.toDouble(), y.toDouble(), z.toDouble())
 fun Vector3d.toVec3() = Vec3(x, y, z)
@@ -83,13 +105,7 @@ operator fun Vec2.unaryMinus(): Vec2 = negated()
 object VectorTool {
     @JvmStatic
     fun calculateAngle(start: Vec3, end: Vec3): Double {
-        val startLength = start.length()
-        val endLength = end.length()
-        return if (startLength > 0 && endLength > 0) {
-            Math.toDegrees(acos((start.dot(end) / (startLength * endLength)).coerceIn(-1.0, 1.0)))
-        } else {
-            0.0
-        }
+        return start.angleTo(end)
     }
 
     @JvmStatic
@@ -176,14 +192,6 @@ object VectorTool {
         return combineRotationsPassengerWeaponStation(partialTicks, entity)
             .mul(Quaterniond(passengerWeaponStationPitchRot))
     }
-
-    @JvmStatic
-    fun randomPos(originPos: Vec3, radius: Int) =
-        originPos + Vec3(
-            Math.random() * radius,
-            0.0,
-            0.0,
-        ).yRot((360 * Math.random()).toFloat() * Mth.DEG_TO_RAD)
 
     @JvmStatic
     fun isInLiquid(level: Level, position: Vec3): Boolean {
