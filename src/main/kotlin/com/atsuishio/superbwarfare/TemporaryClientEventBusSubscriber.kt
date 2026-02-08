@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.menu.FuMO25Menu
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
@@ -9,7 +8,6 @@ import net.minecraftforge.fml.common.Mod
 fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
         FuMO25Menu::class.java,
-        ThermalShaderHandler::class.java,
     ).forEach {
         run {
             val busEnum = it.annotations.filterIsInstance<Mod.EventBusSubscriber>().firstOrNull()?.bus ?: return@run
