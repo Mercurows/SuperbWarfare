@@ -45,7 +45,6 @@ class Mod {
         }
 
         val bus = MOD_BUS
-        manuallyRegisterEventSubscribers(bus)
         if (FMLEnvironment.dist == Dist.CLIENT) {
             manuallyRegisterClientEventSubscribers(bus)
         }
