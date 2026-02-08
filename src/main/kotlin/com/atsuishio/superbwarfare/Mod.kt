@@ -42,9 +42,11 @@ private typealias Task = AbstractMap.SimpleEntry<Runnable, Int>
 @Mod(com.atsuishio.superbwarfare.Mod.MODID)
 class Mod(bus: IEventBus, container: ModContainer) {
     init {
-        container.registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG)
-        container.registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG)
-        container.registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG)
+        with(container) {
+            registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG)
+            registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG)
+            registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG)
+        }
 
         ModPerks.register(bus)
         ModSerializers.REGISTRY.register(bus)
