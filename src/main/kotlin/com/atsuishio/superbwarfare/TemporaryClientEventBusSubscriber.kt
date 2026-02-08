@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
-import com.atsuishio.superbwarfare.menu.EnergyMenu
 import com.atsuishio.superbwarfare.menu.FuMO25Menu
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
@@ -9,7 +8,6 @@ import net.minecraftforge.fml.common.Mod
 // TODO 转为kt后移除该方法和文件
 fun manuallyRegisterClientEventSubscribers(modBus: IEventBus) {
     arrayOf(
-        EnergyMenu::class.java,
         FuMO25Menu::class.java,
         ThermalShaderHandler::class.java,
     ).forEach {

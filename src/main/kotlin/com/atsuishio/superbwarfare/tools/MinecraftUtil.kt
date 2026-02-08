@@ -102,6 +102,10 @@ fun sendPacketTo(player: Player, packet: Any) {
     }
 }
 
+fun sendPacketTo(target: PacketDistributor.PacketTarget, packet: Any) {
+    NetworkRegistry.PACKET_HANDLER.send(target, packet)
+}
+
 fun sendPacketToAll(packet: Any) {
     NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.ALL.noArg(), packet)
 }
