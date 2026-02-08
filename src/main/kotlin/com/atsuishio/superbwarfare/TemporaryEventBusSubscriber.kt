@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare
 
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.procedures.WelcomeProcedure
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 
 private val classes = arrayOf(
-    ContainerBlockItem::class.java,
     WelcomeProcedure::class.java,
 )
 
