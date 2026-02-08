@@ -3970,7 +3970,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     /**
      * 撬棍shift+右键收回载具时返还的物品
      */
-    open fun getRetrieveItems() = listOf(ContainerBlockItem.createInstance(this))
+    open fun getRetrieveItems(): List<ItemStack> = listOf(ContainerBlockItem.createInstance(this))
 
     open val hudColor: Int
         get() = computed().hudColor.get()

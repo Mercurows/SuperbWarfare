@@ -108,8 +108,8 @@ class TowEntity(type: EntityType<TowEntity>, world: Level) : GeoVehicleEntity(ty
         }
     }
 
-    override fun getRetrieveItems(): MutableList<ItemStack?> {
-        val list = ArrayList<ItemStack?>()
+    override fun getRetrieveItems(): List<ItemStack> {
+        val list = arrayListOf<ItemStack>()
         list.add(ItemStack(ModItems.TOW_DEPLOYER.get()))
 
         val data = getGunData(0)
@@ -133,8 +133,10 @@ class TowEntity(type: EntityType<TowEntity>, world: Level) : GeoVehicleEntity(ty
         reloadCooldown = coolDown
 
         // 尾焰伤害
-        for (entity in level().getEntities(EntityTypeTest.forClass(Entity::class.java), ab) {
-            target -> target !== this && target !== getFirstPassenger() && target.vehicle == null }
+        for (entity in level().getEntities(
+            EntityTypeTest.forClass(Entity::class.java),
+            ab
+        ) { target -> target !== this && target !== getFirstPassenger() && target.vehicle == null }
         ) {
             entity.hurt(
                 ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), living),
