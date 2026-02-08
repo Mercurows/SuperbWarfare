@@ -212,7 +212,7 @@ object DroneHudOverlay : CommonOverlay("drone_hud") {
                             Mth.lerp(partialTick.toDouble(), e.yo + e.eyeHeight, e.eyeY),
                             Mth.lerp(partialTick.toDouble(), e.zo, e.z)
                         )
-                        val point = VectorUtil.worldToScreen(pos)
+                        val point = pos.worldToScreen()
                         poseStack.pushPose()
                         val x = point.x.toFloat()
                         val y = point.y.toFloat()
@@ -246,8 +246,8 @@ object DroneHudOverlay : CommonOverlay("drone_hud") {
 
                     // 标记位置
                     val pos = Vec3(targetX, targetY, targetZ)
-                    if (VectorUtil.canSee(pos)) {
-                        val point = VectorUtil.worldToScreen(pos)
+                    if (pos.canBeSeen()) {
+                        val point = pos.worldToScreen()
                         val x = point.x.toFloat()
                         val y = point.y.toFloat()
                         RenderHelper.preciseBlit(
@@ -271,9 +271,9 @@ object DroneHudOverlay : CommonOverlay("drone_hud") {
                         for (m in tags.indices) {
                             val tag = tags.getCompound(m)
                             val e = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"))
-                            if (e != null && VectorUtil.canSee(e.position())) {
+                            if (e != null && e.position().canBeSeen()) {
                                 val posF = lerpGetEntityBoundingBoxCenter(e, partialTick)
-                                val pointF = VectorUtil.worldToScreen(posF)
+                                val pointF = posF.worldToScreen()
                                 val xf = pointF.x.toFloat()
                                 val yf = pointF.y.toFloat()
 
@@ -294,13 +294,13 @@ object DroneHudOverlay : CommonOverlay("drone_hud") {
                     }
                 }
             } else {
-                if (VectorUtil.canSee(player.position())) {
+                if (player.position().canBeSeen()) {
                     var team: Entity? = player
                     if (player.vehicle != null) {
                         team = player.vehicle
                     }
                     val pos = lerpGetEntityBoundingBoxCenter(team!!, partialTick)
-                    val point = VectorUtil.worldToScreen(pos)
+                    val point = pos.worldToScreen()
                     val xf = point.x.toFloat()
                     val yf = point.y.toFloat()
 

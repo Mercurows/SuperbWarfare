@@ -8,8 +8,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
 import com.atsuishio.superbwarfare.tools.mc
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -112,12 +113,12 @@ object OldAircraftHud {
             posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
         }
 
-        val p = VectorUtil.worldToScreen(pos)
-        val pCross = VectorUtil.worldToScreen(posCross)
+        val p = pos.worldToScreen()
+        val pCross = posCross.worldToScreen()
 
         // 投弹准星
         if (bomb && ClientEventHandler.zoomVehicle) {
-            if (VectorUtil.canSee(posCross)) {
+            if (posCross.canBeSeen()) {
                 val f = Math.min(screenWidth, screenHeight).toFloat()
                 val f1 = Math.min(screenWidth.toFloat() / f, screenHeight.toFloat() / f)
                 val i = Mth.floor(f * f1)
@@ -171,10 +172,7 @@ object OldAircraftHud {
 
         poseStack.pushPose()
 
-        if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && VectorUtil.canSee(
-                pos
-            )
-        ) {
+        if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && pos.canBeSeen()) {
             val x = p.x.toFloat()
             val y = p.y.toFloat()
 
@@ -202,7 +200,7 @@ object OldAircraftHud {
 
         poseStack.pushPose()
 
-        if (VectorUtil.canSee(posCross)) {
+        if (posCross.canBeSeen()) {
             val x = pCross.x.toFloat()
             val y = pCross.y.toFloat()
 

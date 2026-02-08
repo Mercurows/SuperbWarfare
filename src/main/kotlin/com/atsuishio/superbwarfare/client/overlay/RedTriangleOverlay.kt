@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
@@ -37,7 +37,7 @@ object RedTriangleOverlay : CommonOverlay("red_triangle") {
                 ),
                 Mth.lerp(partialTick.toDouble(), idf.zo, idf.z)
             )
-            val point = VectorUtil.worldToScreen(pos)
+            val point = pos.worldToScreen()
 
             poseStack.pushPose()
             val x = point.x.toFloat()

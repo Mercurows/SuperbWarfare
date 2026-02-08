@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpRocketEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.OBB
 import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
@@ -36,7 +36,7 @@ object SodayoRocketInfoOverlay : CommonOverlay("sodayo_rocket_info") {
                 }
 
                 val pos = OBB.vector3dToVec3(lookingEntity.barrel[i].center)
-                val point = VectorUtil.worldToScreen(pos)
+                val point = pos.worldToScreen()
 
                 poseStack.pushPose()
                 val x = point.x.toFloat()

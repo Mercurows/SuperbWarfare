@@ -7,13 +7,15 @@ import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
@@ -30,7 +32,6 @@ import kotlin.math.max
 object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
 
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
-
 
     override fun RenderContext.render() {
         var viewVec = Vec3(camera.lookVector)
@@ -83,8 +84,8 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
 
             val centerPos = lerpGetEntityBoundingBoxCenter(lookingEntity, partialTick)
 
-            if (VectorUtil.canSee(pos)) {
-                val point = VectorUtil.worldToScreen(pos)
+            if (pos.canBeSeen()) {
+                val point = pos.worldToScreen()
 
                 val x = point.x.toFloat()
                 val y = point.y.toFloat()
@@ -93,7 +94,8 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 poseStack.translate(x, y - 12, 0f)
 
                 val size =
-                    Mth.clamp((50 / VectorUtil.fov) * 0.9f * max((512 - entityRange) / 512, 0.1), 0.4, 1.0).toFloat()
+                    Mth.clamp((50 / ClientEventHandler.fov) * 0.9f * max((512 - entityRange) / 512, 0.1), 0.4, 1.0)
+                        .toFloat()
                 poseStack.scale(size, size, size)
                 val font = gui.getMinecraft().font
 
@@ -196,8 +198,8 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 poseStack.popPose()
             }
 
-            if (lookingEntity is AutoAimableEntity && VectorUtil.canSee(centerPos) && player.distanceTo(lookingEntity) < 4) {
-                val point = VectorUtil.worldToScreen(centerPos)
+            if (lookingEntity is AutoAimableEntity && centerPos.canBeSeen() && player.distanceTo(lookingEntity) < 4) {
+                val point = centerPos.worldToScreen()
 
                 val x = point.x.toFloat()
                 val y = point.y.toFloat()

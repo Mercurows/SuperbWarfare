@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
 import com.mojang.math.Axis
 import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
@@ -10,10 +12,14 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.joml.Vector3f
 import org.joml.Vector3i
+import org.joml.Vector4d
+import java.lang.Math
 import kotlin.math.acos
 
 operator fun Vec3.plus(other: Vec3): Vec3 = add(other)
@@ -24,8 +30,46 @@ operator fun Vec3.unaryMinus(): Vec3 = reverse()
 
 fun Vec3.toVector3d() = Vector3d(x, y, z)
 fun Vec3.toVector3i() = Vector3i(x.toInt(), y.toInt(), z.toInt())
-
 fun Vec3.toBlockPos() = BlockPos(x.toInt(), y.toInt(), z.toInt())
+
+/**
+ * 将世界坐标转换为屏幕坐标
+ *
+ * 感谢 Minecraft-Ping-Wheel 开源
+ *
+ * https://github.com/LukenSkyne/Minecraft-Ping-Wheel/blob/138295954dab9d2451ad19e16d8d413ef018a2d8/common/src/main/java/nx/pingwheel/common/helper/MathUtils.java#L15>
+ */
+@OnlyIn(Dist.CLIENT)
+fun Vec3.worldToScreen(): Vec3 {
+    val window = mc.window
+    val camera = mc.gameRenderer.mainCamera
+    val worldPosRel = Vector4d(camera.position.reverse().add(this).toVector3f(), 1.0)
+    worldPosRel.mul(ClientEventHandler.modelViewMatrix)
+    worldPosRel.mul(ClientEventHandler.projectionMatrix)
+
+    val depth = worldPosRel.w
+
+    if (depth != 0.0) {
+        worldPosRel.div(depth)
+    }
+
+    return Vec3(
+        window.guiScaledWidth * (0.5f + worldPosRel.x * 0.5f),
+        window.guiScaledHeight * (0.5f - worldPosRel.y * 0.5f),
+        depth
+    )
+}
+
+@OnlyIn(Dist.CLIENT)
+@JvmName("canSee")
+fun Vec3.canBeSeen(): Boolean {
+    val camera = mc.gameRenderer.mainCamera
+    val cameraPos = camera.position
+    val viewVec = Vec3(camera.lookVector)
+    val v1 = cameraPos.vectorTo(this)
+    return calculateAngle(v1, viewVec) < ClientEventHandler.fov + 10
+}
+
 fun Vector3f.toVec3() = Vec3(x.toDouble(), y.toDouble(), z.toDouble())
 fun Vector3d.toVec3() = Vec3(x, y, z)
 fun Vector3i.toVec3() = Vec3(x.toDouble(), y.toDouble(), z.toDouble())
@@ -83,8 +127,8 @@ object VectorTool {
         val turretYawRot = Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.turretYRotO, entity.turretYRot))
         val turretPitchRot = Axis.XP.rotationDegrees(entity.turretCustomPitch)
         return combineRotations(partialTicks, entity)
-                .mul(Quaterniond(turretPitchRot))
-                .mul(Quaterniond(turretYawRot))
+            .mul(Quaterniond(turretPitchRot))
+            .mul(Quaterniond(turretYawRot))
     }
 
     @JvmStatic
@@ -96,10 +140,12 @@ object VectorTool {
 
     @JvmStatic
     fun combineRotationsPassengerWeaponStation(partialTicks: Float, entity: VehicleEntity): Quaterniond {
-        val passengerWeaponStationYawRot = Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.gunYRotO, entity.gunYRot)
-                - Mth.lerp(partialTicks, entity.turretYRotO, entity.turretYRot))
+        val passengerWeaponStationYawRot = Axis.YP.rotationDegrees(
+            Mth.lerp(partialTicks, entity.gunYRotO, entity.gunYRot)
+                    - Mth.lerp(partialTicks, entity.turretYRotO, entity.turretYRot)
+        )
         return combineRotationsTurret(partialTicks, entity)
-                .mul(Quaterniond(passengerWeaponStationYawRot))
+            .mul(Quaterniond(passengerWeaponStationYawRot))
     }
 
     @JvmStatic
@@ -120,13 +166,14 @@ object VectorTool {
         val pitch = entity.getPitch(partialTicks)
         val roll = entity.getRoll(partialTicks)
 
-        val barrelPitch = Mth.clamp(-Mth.lerp(partialTicks, entity.gunXRotO, entity.gunXRot) - r * pitch - r2 * roll,
-                entity.passengerWeaponMinPitch, entity.passengerWeaponMaxPitch
+        val barrelPitch = Mth.clamp(
+            -Mth.lerp(partialTicks, entity.gunXRotO, entity.gunXRot) - r * pitch - r2 * roll,
+            entity.passengerWeaponMinPitch, entity.passengerWeaponMaxPitch
         )
 
         val passengerWeaponStationPitchRot = Axis.XP.rotationDegrees(-barrelPitch)
         return combineRotationsPassengerWeaponStation(partialTicks, entity)
-                .mul(Quaterniond(passengerWeaponStationPitchRot))
+            .mul(Quaterniond(passengerWeaponStationPitchRot))
     }
 
     @JvmStatic

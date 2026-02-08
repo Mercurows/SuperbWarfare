@@ -13,7 +13,7 @@ import com.atsuishio.superbwarfare.tools.OBB
 import com.atsuishio.superbwarfare.tools.RangeTool.getRange
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.commands.arguments.EntityAnchorArgument
@@ -90,7 +90,7 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
                 }
 
                 val pos = OBB.vector3dToVec3(lookingEntity.barrel[i].center)
-                val point = VectorUtil.worldToScreen(pos)
+                val point = pos.worldToScreen()
 
                 poseStack.pushPose()
                 val x = point.x.toFloat()

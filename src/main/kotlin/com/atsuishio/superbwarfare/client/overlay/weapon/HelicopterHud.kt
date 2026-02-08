@@ -15,7 +15,8 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
 import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -279,7 +280,7 @@ object HelicopterHud {
             }
 
             val pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
-            val screenPos = VectorUtil.worldToScreen(pos)
+            val screenPos = pos.worldToScreen()
             val speed = vehicle.deltaMovement.length() * 72
             val height = vehicle.position().distanceTo(
                 (Vec3.atLowerCornerOf(
@@ -499,8 +500,7 @@ object HelicopterHud {
                     x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
                     y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
                 )
-            } else if (VectorUtil.canSee(pos)) {
-
+            } else if (pos.canBeSeen()) {
                 mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
                 mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
                 RenderHelper.preciseBlit(guiGraphics, RING, x - 8 + mouseX, y - 8 + mouseY, 0f, 0f, 16f, 16f, 16f, 16f)

@@ -11,7 +11,8 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.CameraType
@@ -71,8 +72,8 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
                 // 标记位置
                 val parameters = stack.firingParameters
                 val pos = parameters.pos.center
-                val point = VectorUtil.worldToScreen(pos)
-                if (VectorUtil.canSee(pos)) {
+                val point = pos.worldToScreen()
+                if (pos.canBeSeen()) {
                     val x = point.x.toFloat()
                     val y = point.y.toFloat()
                     RenderHelper.preciseBlit(
@@ -96,8 +97,8 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
                     val entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"))
                     if (entity != null) {
                         val posF = lerpGetEntityBoundingBoxCenter(entity, partialTick)
-                        val pointF = VectorUtil.worldToScreen(posF)
-                        if (VectorUtil.canSee(posF)) {
+                        val pointF = posF.worldToScreen()
+                        if (posF.canBeSeen()) {
                             val xf = pointF.x.toFloat()
                             val yf = pointF.y.toFloat()
                             RenderHelper.preciseBlit(

@@ -12,8 +12,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.ResourceOnceLogger
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
 import com.atsuishio.superbwarfare.tools.toFormattedString
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -143,7 +144,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         }
 
         val pos = shootPos.add(entity.getShootDirectionForHud(player, partialTick).scale(dis))
-        val p = VectorUtil.worldToScreen(pos)
+        val p = pos.worldToScreen()
 
         // 渲染第一人称
         if (Minecraft.getInstance().options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
@@ -176,7 +177,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                 val x = p.x.toFloat()
                 val y = p.y.toFloat()
 
-                if (crosshairPath == "@VehicleDynamicCross" && VectorUtil.canSee(pos)) {
+                if (crosshairPath == "@VehicleDynamicCross" && pos.canBeSeen()) {
                     RenderHelper.blit(
                         poseStack,
                         texture,
@@ -209,10 +210,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                         scaledMinWH,
                         color
                     )
-                } else if ((crosshairPath == "@AirCraftCommon" || crosshairPath == "@VehicleLaserCannon" || crosshairPath == "@VehicleCommonGunDynamic") && VectorUtil.canSee(
-                        pos
-                    )
-                ) {
+                } else if ((crosshairPath == "@AirCraftCommon" || crosshairPath == "@VehicleLaserCannon" || crosshairPath == "@VehicleCommonGunDynamic") && pos.canBeSeen()) {
                     RenderHelper.blit(
                         poseStack,
                         texture,
@@ -326,7 +324,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
             poseStack.popPose()
         } else if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
             // 渲染第三人称
-            if (VectorUtil.canSee(pos) && !((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER) && player === entity.getFirstPassenger())) {
+            if (pos.canBeSeen() && !((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER) && player === entity.getFirstPassenger())) {
                 val x = p.x.toFloat()
                 val y = p.y.toFloat()
 

@@ -10,7 +10,8 @@ import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
-import com.atsuishio.superbwarfare.tools.VectorUtil
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
@@ -53,7 +54,7 @@ object IFFOverlay : CommonOverlay("iff") {
                     .friendly()
                     .build()
                 for (e in entities) {
-                    if (e != null && e !== player && VectorUtil.canSee(e.position()) && e !== player.vehicle) {
+                    if (e != null && e !== player && e.position().canBeSeen() && e !== player.vehicle) {
                         var team: Entity? = e
                         if (e.vehicle != null) {
                             team = e.vehicle
@@ -77,7 +78,7 @@ object IFFOverlay : CommonOverlay("iff") {
                         }
 
                         val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
-                        val point = VectorUtil.worldToScreen(pos)
+                        val point = pos.worldToScreen()
                         val xf = point.x.toFloat()
                         val yf = point.y.toFloat()
                         val icon: ResourceLocation = getResourceLocation(team)

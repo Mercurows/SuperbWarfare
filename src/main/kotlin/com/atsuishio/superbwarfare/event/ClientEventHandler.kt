@@ -45,6 +45,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.*
+import net.minecraftforge.client.event.ViewportEvent.ComputeFov
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.event.TickEvent
@@ -53,6 +54,7 @@ import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
+import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
@@ -169,7 +171,7 @@ object ClientEventHandler {
     var droneFovLerp: Double = 1.0
 
     @JvmField
-    var fov: Double = 0.0
+    var currentFov: Double = 0.0
 
     @JvmField
     var bowPullTimer: Double = 0.0
@@ -411,6 +413,16 @@ object ClientEventHandler {
 
     @JvmField
     var activeThermalImaging: Boolean = false
+
+    // 原VectorUtil的属性
+    @JvmField
+    var fov: Double = 70.0
+
+    @JvmField
+    var modelViewMatrix: Matrix4f? = null
+
+    @JvmField
+    var projectionMatrix: Matrix4f? = null
 
     private var lastX: Float = 0f
     private var lastY: Float = 0f
@@ -2488,6 +2500,13 @@ object ClientEventHandler {
         bowPullPos = 0.5 * cos(PI * (bowPullTimer.coerceIn(0.0, 1.0).pow(2) - 1).pow(2)) + 0.5
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    fun captureFov(event: ComputeFov) {
+        if (event.usedConfiguredFov()) {
+            fov = event.fov
+        }
+    }
+
     @SubscribeEvent
     fun onFovUpdate(event: ViewportEvent.ComputeFov) {
         val player = localPlayer ?: return
@@ -2496,7 +2515,7 @@ object ClientEventHandler {
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player) && zoomVehicle) {
             event.fov /= vehicle.getDefaultZoom(player)
-            fov = event.fov
+            currentFov = event.fov
             return
         }
 
@@ -2536,7 +2555,7 @@ object ClientEventHandler {
                 event.fov /= (1 + p * (customZoom - 1))
             } else if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK)
                 event.fov /= (1 + p * 0.01)
-            fov = event.fov
+            currentFov = event.fov
 
             // 智慧芯片
             if (zoom && !notInGame && drawTime < 0.01 && !isEditing) {
@@ -2629,7 +2648,7 @@ object ClientEventHandler {
         ) {
             droneFovLerp = Mth.lerp(0.1 * getDelta(), droneFovLerp, droneFov)
             event.fov /= droneFovLerp
-            fov = event.fov
+            currentFov = event.fov
         }
     }
 
