@@ -322,7 +322,9 @@
   "DestroyInfo": {
     "ParticleType": "Giant",
     "ExplosionDamage": 200,
-    "ExplosionRadius": 16
+    "ExplosionRadius": 16,
+    "SympatheticDetonation": true,
+    "SympatheticDetonationForce": 1.8
   },
   "ThirdPersonCameraPos": [-0.8669625, 1.5, 5],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/m_1a_2_icon.png",

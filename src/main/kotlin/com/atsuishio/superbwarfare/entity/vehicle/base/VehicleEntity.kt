@@ -39,6 +39,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
+import com.atsuishio.superbwarfare.tools.VectorTool.combineRotationsTurret
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import com.google.common.collect.ImmutableList
@@ -102,6 +103,7 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.wrapper.InvWrapper
+import net.minecraftforge.registries.ForgeRegistries
 import org.joml.*
 import java.util.*
 import java.util.function.Consumer
@@ -3016,11 +3018,28 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             explosion.explode()
         }
 
+        if (hasTurret() && destroyInfo.sympatheticDetonation) {
+            val turretWreckEntity = TurretWreckEntity(ModEntities.TURRET_WRECK.get(), level())
+            if (turretPos != null) {
+                val pos = turretPos?.let { position().add(it) }
+                pos?.let { turretWreckEntity.setPos(it.x, pos.y, pos.z) }
+            } else {
+                turretWreckEntity.setPos(this.x, this.eyeY, this.z)
+            }
 
-        val turretWreckEntity = TurretWreckEntity(ModEntities.TURRET_WRECK.get(), level())
-        turretWreckEntity.setPos(this.x, this.eyeY, this.z)
-        turretWreckEntity.deltaMovement = getUpVec(1f).scale(1.0)
-        level().addFreshEntity(turretWreckEntity)
+            val dir = getUpVec(1f).add(deltaMovement + Vec3(0.0, this.computed().gravity, 0.0))
+
+            turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(random.triangle(0.0, 0.0172275 * 10.toDouble()), random.triangle(0.0, 0.0172275 * 10.toDouble()), random.triangle(0.0, 0.0172275 * 10.toDouble())).scale(destroyInfo.sympatheticDetonationForce.toDouble())
+
+            val quaterniond = combineRotationsTurret(1f, this)
+            turretWreckEntity.VehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()
+            turretWreckEntity.BarrelPitch = this.getTurretPitch(1f)
+            turretWreckEntity.yRot = -getYRotFromVector(getBarrelVector(1f)).toFloat()
+            turretWreckEntity.setQuaternion0(quaterniond)
+            turretWreckEntity.setQuaternion(quaterniond)
+            level().addFreshEntity(turretWreckEntity)
+        }
+
 
         this.discard()
     }

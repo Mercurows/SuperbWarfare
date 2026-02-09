@@ -12,8 +12,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -24,6 +28,8 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
         this.shadowRadius = 1f;
     }
 
+    public Quaterniond quaterniond;
+
     @Override
     public RenderType getRenderType(TurretWreckEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
@@ -33,12 +39,13 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
     public void renderRecursively(PoseStack poseStack, TurretWreckEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
         // TODO 加个缓存
-        var type = EntityType.byString(animatable.getWreckageType());
+        var type = EntityType.byString(animatable.getVehicleName());
         if (type.isEmpty()) return;
         var entity = type.get().create(animatable.level());
         if (entity == null) return;
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
         if (entity instanceof VehicleEntity vehicle && entity instanceof GeoAnimatable geoAnimatable && renderer instanceof GeoEntityRenderer geoEntityRenderer) {
+
             var model = geoEntityRenderer.getGeoModel();
             if (!(model instanceof VehicleModel vehicleModel)) return;
 
@@ -51,19 +58,29 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
             var optionalBone = bakedModel.getBone("turret");
             if (optionalBone.isEmpty()) return;
 
+            var barrelBone = bakedModel.getBone("barrel");
+            barrelBone.ifPresent(geoBone -> geoBone.setRotX(-animatable.getBarrelPitch() * Mth.DEG_TO_RAD));
+
+            Vec3 turretPos = vehicle.getTurretPos();
+
+            poseStack.pushPose();
+
+            if (turretPos != null) {
+                poseStack.translate(turretPos.x, -turretPos.y, turretPos.z);
+            }
+
             var tBone = optionalBone.get();
             var source = bufferSource.getBuffer(RenderType.entityTranslucent(textureResource));
             geoEntityRenderer.renderCubesOfBone(poseStack, tBone, source, packedLight, packedOverlay, red, green, blue, alpha);
             geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+            poseStack.popPose();
         }
     }
 
     @Override
     public void render(TurretWreckEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entityIn.getYaw(partialTicks)));
-        poseStack.mulPose(Axis.XP.rotationDegrees(entityIn.getPitch(partialTicks)));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(entityIn.getRoll(partialTicks)));
+        poseStack.mulPose(new Quaternionf(entityIn.getQuaternion(partialTicks)));
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
     }
