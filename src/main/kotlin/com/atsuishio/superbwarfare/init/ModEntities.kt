@@ -44,6 +44,12 @@ object ModEntities {
             .setTrackingRange(64).setUpdateInterval(3).sized(0.65f, 1.7f).eyeHeight(1.75f)
     )
 
+    @JvmField
+    val STEEL_COIL = register(
+        "steel_coil", EntityType.Builder.of(::SteelCoilEntity, MobCategory.MISC)
+            .sized(2f, 2f)
+    )
+
     // Misc Entities
     @JvmField
     val LASER = register(
@@ -224,8 +230,6 @@ object ModEntities {
     @JvmField
     val TOW = register("tow", vehicle(::TowEntity).sized(0.5f, 1.35f))
 
-//    val STEEL_COIL = register("steel_coil", vehicle(::SteelCoilEntity).sized(2f, 2f))
-
     // Boats
     @JvmField
     val SPEEDBOAT = register("speedboat", vehicle(::SpeedboatEntity).sized(3.0f, 2.0f))
@@ -357,5 +361,6 @@ object ModEntities {
         event.put(TARGET.get(), TargetEntity.createAttributes().build())
         event.put(DPS_GENERATOR.get(), DPSGeneratorEntity.createAttributes().build())
         event.put(SENPAI.get(), SenpaiEntity.createAttributes().build())
+        event.put(STEEL_COIL.get(), SteelCoilEntity.createAttributes().build())
     }
 }

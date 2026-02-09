@@ -85,7 +85,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.SODAYO_PICK_UP_ROCKET.get()) { SodayoPickUpRocketRenderer(it) }
         event.registerEntityRenderer(ModEntities.SODAYO_PICK_UP_TOW.get()) { SodayoPickUpTowRenderer(it) }
         event.registerEntityRenderer(ModEntities.TOW.get()) { TowRenderer(it) }
-        //        event.registerEntityRenderer(ModEntities.STEEL_COIL.get(), SteelCoilRenderer::new);
+        event.registerEntityRenderer(ModEntities.STEEL_COIL.get()) { SteelCoilRenderer(it) }
         event.registerEntityRenderer(ModEntities.MI_28.get()) { Mi28Renderer(it) }
         event.registerEntityRenderer(ModEntities.KH_39.get()) { Kh39Renderer(it) }
         event.registerEntityRenderer(ModEntities.PLZ_05.get()) { Plz05Renderer(it) }
