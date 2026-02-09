@@ -22,6 +22,8 @@
       "Velocity": 6000000000,
       "Gravity": 0,
       "Damage": 350,
+      "ExplosionDamage": 60,
+      "ExplosionRadius": 10,
       "Spread": 0,
       "ShootAnimationTime": 5,
       "AmmoType": "FE",
