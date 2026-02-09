@@ -71,6 +71,8 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         return lodModel
     }
 
+    fun getPreciseModelResource(vehicle: T): ResourceLocation? = getDefault(vehicle).model.model
+
     protected var textureCache: ResourceLocation? = null
 
     @Deprecated("Deprecated in Java")
@@ -96,6 +98,8 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         textureCache = lodTexture
         return lodTexture
     }
+
+    fun getPreciseTextureResource(vehicle: T): ResourceLocation? = getDefault(vehicle).model.texture
 
     fun getLODLevel(vehicle: T): Int {
         val defaultData: DefaultVehicleResource = getDefault(vehicle)

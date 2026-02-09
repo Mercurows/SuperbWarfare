@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.TurretWreckModel;
+import com.atsuishio.superbwarfare.client.model.entity.VehicleModel;
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -30,19 +32,28 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
     @Override
     public void renderRecursively(PoseStack poseStack, TurretWreckEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
-        // TODO 测试用，用好了给这个删了
-        var type = EntityType.byString("superbwarfare:lav_150");
+        // TODO 加个缓存
+        var type = EntityType.byString(animatable.getWreckageType());
         if (type.isEmpty()) return;
-        var vehicle = type.get().create(animatable.level());
-        if (vehicle == null) return;
-        var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(vehicle);
-        if (vehicle instanceof GeoAnimatable geoAnimatable && renderer instanceof GeoEntityRenderer geoEntityRenderer) {
+        var entity = type.get().create(animatable.level());
+        if (entity == null) return;
+        var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
+        if (entity instanceof VehicleEntity vehicle && entity instanceof GeoAnimatable geoAnimatable && renderer instanceof GeoEntityRenderer geoEntityRenderer) {
             var model = geoEntityRenderer.getGeoModel();
-            var bakedModel = model.getBakedModel(model.getModelResource(geoAnimatable));
+            if (!(model instanceof VehicleModel vehicleModel)) return;
+
+            var modelResource = vehicleModel.getPreciseModelResource(vehicle);
+            if (modelResource == null) return;
+            var textureResource = vehicleModel.getPreciseTextureResource(vehicle);
+            if (textureResource == null) return;
+
+            var bakedModel = vehicleModel.getBakedModel(modelResource);
             var optionalBone = bakedModel.getBone("turret");
             if (optionalBone.isEmpty()) return;
+
             var tBone = optionalBone.get();
-            var source = bufferSource.getBuffer(RenderType.entityTranslucent(model.getTextureResource(geoAnimatable)));
+            var source = bufferSource.getBuffer(RenderType.entityTranslucent(textureResource));
+            geoEntityRenderer.renderCubesOfBone(poseStack, tBone, source, packedLight, packedOverlay, color);
             geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, color);
         }
     }
