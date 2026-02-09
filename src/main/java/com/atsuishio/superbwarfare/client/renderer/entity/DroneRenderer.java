@@ -1,4 +1,3 @@
-
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.layer.vehicle.DroneLayer;
@@ -14,7 +13,9 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
@@ -32,15 +33,36 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
     }
 
     @Override
-    public void defaultRender(PoseStack poseStack, DroneEntity animatable, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTick, int packedLight) {
-        poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-animatable.getYaw(partialTick)));
-        poseStack.mulPose(Axis.XP.rotationDegrees(animatable.getBodyPitch(partialTick)));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(animatable.getRoll(partialTick)));
-        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
+    public void renderRecursively(PoseStack poseStack, DroneEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
 
-        if (Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(animatable.position()) > 0.0625) {
-            renderAttachments(animatable, yaw, partialTick, poseStack, bufferSource, packedLight);
+        // TODO 测试用，用好了给这个删了
+        var type = EntityType.byString(animatable.wreckageType);
+        if (type.isEmpty()) return;
+        var vehicle = type.get().create(animatable.level());
+        if (vehicle == null) return;
+        var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(vehicle);
+        if (vehicle instanceof GeoAnimatable geoAnimatable && renderer instanceof GeoEntityRenderer geoEntityRenderer) {
+            var model = geoEntityRenderer.getGeoModel();
+            var bakedModel = model.getBakedModel(model.getModelResource(geoAnimatable));
+            var optionalBone = bakedModel.getBone("turret");
+            if (optionalBone.isEmpty()) return;
+            var tBone = optionalBone.get();
+            var source = bufferSource.getBuffer(RenderType.entityTranslucent(model.getTextureResource(geoAnimatable)));
+            geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, color);
+        }
+    }
+
+    @Override
+    public void render(DroneEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entityIn.getYaw(partialTicks)));
+        poseStack.mulPose(Axis.XP.rotationDegrees(entityIn.getBodyPitch(partialTicks)));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(entityIn.getRoll(partialTicks)));
+        super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
+
+        if (Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(entityIn.position()) > 0.0625) {
+            renderAttachments(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         }
 
         poseStack.popPose();

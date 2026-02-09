@@ -85,6 +85,8 @@ public class DroneEntity extends GeoVehicleEntity {
     public int holdTickY;
     public int holdTickZ;
 
+    public String wreckageType = "superbwarfare:mk_42";
+
     public DroneEntity(EntityType<DroneEntity> type, Level world) {
         super(type, world);
     }
