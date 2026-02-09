@@ -95,5 +95,6 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.T_90A.get()) { T90aRenderer(it) }
         event.registerEntityRenderer(ModEntities.M_1A_2.get()) { M1A2Renderer(it) }
         event.registerEntityRenderer(ModEntities.BRADLEY.get()) { BradleyRenderer(it) }
+        event.registerEntityRenderer(ModEntities.TURRET_WRECK.get()) { TurretWreckRenderer(it) }
     }
 }

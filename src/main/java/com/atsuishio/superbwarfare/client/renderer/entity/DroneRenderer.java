@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.layer.vehicle.DroneLayer;
 import com.atsuishio.superbwarfare.client.model.entity.DroneModel;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,8 +13,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoAnimatable;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import static com.atsuishio.superbwarfare.entity.vehicle.DroneEntity.*;
@@ -30,27 +27,6 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
     @Override
     public RenderType getRenderType(DroneEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
         return RenderType.entityTranslucent(getTextureLocation(animatable));
-    }
-
-    @Override
-    public void renderRecursively(PoseStack poseStack, DroneEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
-
-        // TODO 测试用，用好了给这个删了
-        var type = EntityType.byString(animatable.wreckageType);
-        if (type.isEmpty()) return;
-        var vehicle = type.get().create(animatable.level());
-        if (vehicle == null) return;
-        var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(vehicle);
-        if (vehicle instanceof GeoAnimatable geoAnimatable && renderer instanceof GeoEntityRenderer geoEntityRenderer) {
-            var model = geoEntityRenderer.getGeoModel();
-            var bakedModel = model.getBakedModel(model.getModelResource(geoAnimatable));
-            var optionalBone = bakedModel.getBone("turret");
-            if (optionalBone.isEmpty()) return;
-            var tBone = optionalBone.get();
-            var source = bufferSource.getBuffer(RenderType.entityTranslucent(model.getTextureResource(geoAnimatable)));
-            geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, color);
-        }
     }
 
     @Override
