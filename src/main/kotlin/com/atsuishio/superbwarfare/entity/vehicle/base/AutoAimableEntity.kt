@@ -11,17 +11,18 @@ import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getSubmergedHeight
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
-import com.atsuishio.superbwarfare.tools.DamageHandler
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
 import com.atsuishio.superbwarfare.world.TDMSavedData
+import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
@@ -368,7 +369,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         target.invulnerableTime = 0
 
         if (gunData.get(GunProp.EXPLOSION_RADIUS) > 0) {
-            causeLaserExplode(pos, gunData, living)
+            findNearEntity(pos, gunData, living)
         }
 
         if (Math.random() < 0.25 && target is LivingEntity) {
@@ -391,6 +392,82 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         this.consumeEnergy(gunData.get(GunProp.AMMO_COST_PER_SHOOT))
     }
 
+    fun findNearEntity(vec: Vec3, gunData: GunData, shooter: Entity?) {
+        val serverLevel = level() as? ServerLevel ?: return
+
+        val aoeDamage = gunData.get(GunProp.EXPLOSION_DAMAGE)
+        val range = gunData.get(GunProp.EXPLOSION_RADIUS)
+
+        val entities = SeekTool.Builder(this)
+                .withinRange(vec, range)
+                .notItsVehicle()
+                .baseFilter()
+                .smokeFilter()
+                .noVehicle()
+                .differentTeam()
+                .build()
+
+        for (e in entities) {
+            val dis = vec.distanceTo(e.eyePosition)
+            var i = 0f
+            while (i < dis) {
+                val toVec = vec.vectorTo(e.eyePosition).normalize()
+                val pos = vec.add(toVec.scale(i.toDouble()))
+                ParticleTool.sendParticle(
+                        serverLevel,
+                        ParticleTypes.END_ROD,
+                        pos.x,
+                        pos.y,
+                        pos.z,
+                        1,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        true
+                )
+                i += 0.2f
+            }
+
+            ParticleTool.sendParticle(
+                    serverLevel,
+                    ParticleTypes.LAVA,
+                    e.x,
+                    e.eyeY,
+                    e.z,
+                    4,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.15,
+                    true
+            )
+            DamageHandler.doDamage(
+                    e,
+                    ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter),
+                    (aoeDamage - Mth.clamp(dis / range, 0.0, 0.75) * aoeDamage).toFloat()
+            )
+
+            if (shooter is ServerPlayer) {
+                val holder = Holder.direct(ModSounds.INDICATION.get())
+                shooter.connection.send(
+                        ClientboundSoundPacket(
+                                holder,
+                                SoundSource.PLAYERS,
+                                shooter.x,
+                                shooter.y,
+                                shooter.z,
+                                1f,
+                                1f,
+                                shooter.level().random.nextLong()
+                        )
+                )
+                shooter.sendPacket(ClientIndicatorMessage(0, 5))
+            }
+        }
+    }
+
+    // TODO 自定义溅射类型（散射or爆炸）
     private fun causeLaserExplode(vec3: Vec3, gunData: GunData, living: Entity?) {
         val radius = gunData.get(GunProp.EXPLOSION_RADIUS).toFloat()
 
@@ -405,14 +482,14 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         }
 
         createCustomExplosion()
-            .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
-            .radius(radius)
-            .attacker(living)
-            .position(vec3)
-            .withParticleType(particleType)
-            .explode()
+                .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
+                .radius(radius)
+                .attacker(living)
+                .position(vec3)
+                .withParticleType(particleType)
+                .explode()
     }
-
+    
     private fun causeAirExplode(vec3: Vec3?) {
         createCustomExplosion()
             .damage(5f)
