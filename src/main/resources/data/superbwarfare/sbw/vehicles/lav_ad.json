@@ -298,7 +298,8 @@
   "DestroyInfo": {
     "ParticleType": "Huge",
     "ExplosionDamage": 120,
-    "ExplosionRadius": 7
+    "ExplosionRadius": 7,
+    "SympatheticDetonation": true
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav_ad_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
