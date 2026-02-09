@@ -23,6 +23,7 @@ import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
+import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
@@ -3014,6 +3015,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             explosion.explode()
         }
+
+
+        val turretWreckEntity = TurretWreckEntity(ModEntities.TURRET_WRECK.get(), level())
+        turretWreckEntity.setPos(this.x, this.eyeY, this.z)
+        turretWreckEntity.deltaMovement = getUpVec(1f).scale(1.0)
+        level().addFreshEntity(turretWreckEntity)
 
         this.discard()
     }
