@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.model.entity
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
-import com.atsuishio.superbwarfare.client.model.entity.VehicleModel.TransformContext
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource
@@ -71,6 +70,8 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         return lodModel
     }
 
+    fun getPreciseModelResource(vehicle: T): ResourceLocation? = getDefault(vehicle).model.model
+
     protected var textureCache: ResourceLocation? = null
 
     override fun getTextureResource(vehicle: T): ResourceLocation? {
@@ -95,6 +96,8 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         textureCache = lodTexture
         return lodTexture
     }
+
+    fun getPreciseTextureResource(vehicle: T): ResourceLocation? = getDefault(vehicle).model.texture
 
     fun getLODLevel(vehicle: T): Int {
         val defaultData: DefaultVehicleResource = getDefault(vehicle)
@@ -240,7 +243,8 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
                             vehicle.gunXRotO,
                             vehicle.gunXRot
                         ) * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD,
-                            vehicle.passengerWeaponMinPitch * Mth.DEG_TO_RAD, vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
+                        vehicle.passengerWeaponMinPitch * Mth.DEG_TO_RAD,
+                        vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
                     )
                 }
             }
