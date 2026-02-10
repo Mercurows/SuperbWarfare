@@ -113,7 +113,7 @@
       "Projectile": "superbwarfare:small_cannon_shell",
       "DefaultZoom": 3,
       "RPM": 300,
-      "Velocity": 25,
+      "Velocity": 18,
       "Damage": 65,
       "ExplosionDamage": 8,
       "ExplosionRadius": 2,
@@ -141,7 +141,7 @@
           "Ammo": "superbwarfare:small_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_he.png",
-            "Velocity": 18,
+            "Velocity": 15,
             "Damage": 15,
             "ExplosionDamage": 18,
             "ExplosionRadius": 5,
@@ -171,7 +171,7 @@
       "ExplosionDamage": 42,
       "ExplosionRadius": 6,
       "Gravity": 0.02,
-      "Velocity": 16,
+      "Velocity": 9,
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.161, -0.113],

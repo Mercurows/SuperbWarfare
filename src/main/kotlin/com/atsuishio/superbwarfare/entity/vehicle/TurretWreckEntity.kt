@@ -32,8 +32,10 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import org.joml.Matrix4d
 import org.joml.Quaterniond
 import org.joml.Quaternionf
+import org.joml.Vector4d
 import software.bernie.geckolib.animatable.GeoEntity
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.AnimatableManager
@@ -71,6 +73,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
     open var qyO = 0f
     open var qzO = 0f
     open var qwO = 1f
+    open var supportByVehicle = false
 
     override fun canBeCollidedWith(): Boolean {
         return true
@@ -176,18 +179,27 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         qwO = QuaternionW
         super.baseTick()
 
-
         this.move(MoverType.SELF, this.deltaMovement)
         var f = 0.98f
-        if (this.onGround()) {
+        if (this.onGround() || supportByVehicle) {
             val pos = this.blockPosBelowThatAffectsMyMovement
             f = level().getBlockState(pos).getFriction(this.level(), pos, this) * 0.98f
 
-            val targetRotation = Quaternionf().rotationXYZ(0f, -yRot * Mth.DEG_TO_RAD, 0f)
-            val lerpFactor = 0.5f
-            this.lerpRotationToTarget(targetRotation, lerpFactor)
+//            val targetRotation = Quaternionf().rotationXYZ(0f, -yRot * Mth.DEG_TO_RAD, 0f)
+//            val lerpFactor = 0.5f
+//            this.lerpRotationToTarget(targetRotation, lerpFactor)
+
+            var rot = 0.6f
+
+            if (getUpVec(1f).y < 0) {
+                rot = -0.6f
+            }
+
+            setQuaternion(Quaterniond(getQuaternion(1f).rotateX(rot * getFrontVec(1f).y.toFloat())))
+            setQuaternion(Quaterniond(getQuaternion(1f).rotateZ(rot * getRightVec(1f).y.toFloat())))
+            supportByVehicle = false
         } else {
-            setQuaternion(Quaterniond(getQuaternion(1f).rotateX(0.02f * deltaMovement.y.toFloat())))
+            setQuaternion(Quaterniond(getQuaternion(1f).rotateX(0.015f + 0.002f * deltaMovement.y.toFloat())))
         }
 //
 //        for (player in getPlayer(level())) {
@@ -275,9 +287,9 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
             explosion.keepBlock()
             explosion.explode()
 
-            val mortar = ItemEntity(level(), x, (y + 1), z, ItemStack(ModItems.STEEL_BLOCK.get()))
-            mortar.setPickUpDelay(10)
-            level().addFreshEntity(mortar)
+            val block = ItemEntity(level(), x, (y + 1), z, ItemStack(ModItems.STEEL_BLOCK.get()))
+            block.setPickUpDelay(10)
+            level().addFreshEntity(block)
         }
     }
 
@@ -337,4 +349,46 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
 
     override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar?) {}
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache = this.cache
+
+    fun getWreckTransform(partialTicks: Float): Matrix4d {
+        val transform = Matrix4d()
+        transform.translate(
+            Mth.lerp(partialTicks.toDouble(), xo, x),
+            Mth.lerp(partialTicks.toDouble(), yo + 0.6, y + 0.6),
+            Mth.lerp(partialTicks.toDouble(), zo, z)
+        )
+        transform.rotate(getQuaternion(partialTicks))
+        return transform
+    }
+
+    open fun getUpVec(ticks: Float): Vec3 {
+        val transform = getWreckTransform(ticks)
+        val force0 = transformPosition(transform, 0.0, 0.0, 0.0)
+        val force1 = transformPosition(transform, 0.0, 1.0, 0.0)
+        return Vec3(force0.x, force0.y, force0.z).vectorTo(Vec3(force1.x, force1.y, force1.z))
+    }
+
+    open fun getFrontVec(ticks: Float): Vec3 {
+        val transform = getWreckTransform(ticks)
+        val force0 = transformPosition(transform, 0.0, 0.0, 0.0)
+        val force1 = transformPosition(transform, 0.0, 0.0, 1.0)
+        return Vec3(force0.x, force0.y, force0.z).vectorTo(Vec3(force1.x, force1.y, force1.z))
+    }
+
+    open fun getRightVec(ticks: Float): Vec3 {
+        val transform = getWreckTransform(ticks)
+        val force0 = transformPosition(transform, 0.0, 0.0, 0.0)
+        val force1 = transformPosition(transform, -1.0, 0.0, 0.0)
+        return Vec3(force0.x, force0.y, force0.z).vectorTo(Vec3(force1.x, force1.y, force1.z))
+    }
+
+//    open fun getAxisAngle(ticks: Float): FloatArray {
+//        val x = -VehicleVecUtils.getXRotFromVector(getUpVec(ticks))
+//        val y = -VehicleVecUtils.getZRotFromVector(getUpVec(ticks))
+//        return floatArrayOf(x, y, z)
+//    }
+
+    open fun transformPosition(transform: Matrix4d, x: Double, y: Double, z: Double): Vector4d {
+        return transform.transform(Vector4d(x, y, z, 1.0))
+    }
 }

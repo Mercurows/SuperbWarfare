@@ -112,7 +112,7 @@
       "Projectile": "superbwarfare:small_cannon_shell",
       "DefaultZoom": 3,
       "RPM": 300,
-      "Velocity": 25,
+      "Velocity": 18,
       "Damage": 45,
       "ExplosionDamage": 6,
       "ExplosionRadius": 2,
@@ -141,7 +141,7 @@
           "Ammo": "superbwarfare:small_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_20mm_he.png",
-            "Velocity": 18,
+            "Velocity": 15,
             "Damage": 13,
             "ExplosionDamage": 14,
             "ExplosionRadius": 4,

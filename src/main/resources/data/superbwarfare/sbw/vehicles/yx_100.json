@@ -129,7 +129,7 @@
       "DefaultZoom": 3,
       "Magazine": 1,
       "EmptyReloadTime": 70,
-      "Velocity": 50,
+      "Velocity": 35,
       "Damage": 1500,
       "ExplosionDamage": 120,
       "ExplosionRadius": 5,
@@ -149,7 +149,7 @@
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
             "ShellType": "HE",
-            "Velocity": 40,
+            "Velocity": 30,
             "Damage": 750,
             "ExplosionDamage": 150,
             "ExplosionRadius": 11,
@@ -200,7 +200,7 @@
       "RPM": 450,
       "Damage": 40,
       "BypassesArmor": 0.6,
-      "Velocity": 25,
+      "Velocity": 22,
       "RecoilTime": 16,
       "RecoilForce": 0.05,
       "HeatPerShoot": 5,
@@ -230,7 +230,7 @@
       "ProjectileLife": 40,
       "DefaultZoom": 3,
       "RPM": 300,
-      "Velocity": 20,
+      "Velocity": 15,
       "Damage": 60,
       "ExplosionDamage": 6,
       "ExplosionRadius": 2,
@@ -258,7 +258,7 @@
           "Ammo": "superbwarfare:small_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_he.png",
-            "Velocity": 16,
+            "Velocity": 13,
             "Damage": 25,
             "ExplosionDamage": 18,
             "ExplosionRadius": 4.5,
@@ -270,7 +270,7 @@
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_gs.png",
             "Spread": 3,
-            "Velocity": 11,
+            "Velocity": 9,
             "Damage": 10,
             "ProjectileAmount": 16,
             "DamageReduce": {

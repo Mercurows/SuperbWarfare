@@ -87,7 +87,7 @@
       "ProjectileLife": 60,
       "DefaultZoom": 2,
       "RPM": 1200,
-      "Velocity": 35,
+      "Velocity": 24,
       "Damage": 35,
       "ExplosionDamage": 10,
       "ExplosionRadius": 4,
@@ -124,7 +124,7 @@
       "ExplosionDamage": 40,
       "ExplosionRadius": 5,
       "Gravity": 0.02,
-      "Velocity": 16,
+      "Velocity": 11,
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.18, 0.1],

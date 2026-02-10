@@ -38,8 +38,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.VectorTool.combineRotationsTurret
-import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import com.google.common.collect.ImmutableList
 import com.mojang.math.Axis
@@ -1921,7 +1919,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 val rpm = Math.ceil(20f / (vehicleWeaponRpm(mob).toFloat() / 60)).toInt()
                 if (tickCount % rpm == 0 && canShoot(mob) &&
                     getShootDirectionForHud(mob, 1f).angleTo(
-                        getShootPos(mob, 1f).vectorTo(lerpGetEntityBoundingBoxCenter(target, 1f))
+                        getShootPos(mob, 1f).vectorTo(VectorTool.lerpGetEntityBoundingBoxCenter(target, 1f))
                     ) < 4
                 ) {
                     vehicleShoot(mob, target.getUUID(), null)
@@ -3051,13 +3049,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             val dir = getUpVec(1f).add(deltaMovement + Vec3(0.0, this.computed().gravity, 0.0))
 
+            val rdm = (Math.random() - 0.5) * 0.4 + 1
             turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(
-                random.triangle(0.0, 0.0172275 * 10.toDouble()),
-                random.triangle(0.0, 0.0172275 * 10.toDouble()),
-                random.triangle(0.0, 0.0172275 * 10.toDouble())
-            ).scale(destroyInfo.sympatheticDetonationForce.toDouble())
+                random.triangle(0.0, 0.0172275 * 12.toDouble()),
+                random.triangle(0.0, 0.0172275 * 12.toDouble()),
+                random.triangle(0.0, 0.0172275 * 12.toDouble())
+            ).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
 
-            val quaterniond = combineRotationsTurret(1f, this)
+            val quaterniond = VectorTool.combineRotationsTurret(1f, this)
             turretWreckEntity.VehicleName = BuiltInRegistries.ENTITY_TYPE.getKey(this.type).toString()
             turretWreckEntity.xRot = this.getTurretPitch(1f)
             turretWreckEntity.yRot = -getYRotFromVector(getBarrelVector(1f)).toFloat()

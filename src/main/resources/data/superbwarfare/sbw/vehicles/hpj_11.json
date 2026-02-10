@@ -38,7 +38,7 @@
       "ShellType": "AA",
       "DefaultZoom": 3,
       "RPM": 1200,
-      "Velocity": 30,
+      "Velocity": 25,
       "ProjectileLife": 20,
       "Gravity": 0.03,
       "Damage": 25,

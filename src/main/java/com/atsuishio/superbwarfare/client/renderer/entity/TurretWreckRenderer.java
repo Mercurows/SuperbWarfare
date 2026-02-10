@@ -16,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -85,8 +86,29 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
     @Override
     public void render(TurretWreckEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        poseStack.mulPose(new Quaternionf(entityIn.getQuaternion(partialTicks)));
+        poseStack.rotateAround(new Quaternionf(entityIn.getQuaternion(partialTicks)), 0, 0.6f, 0);
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
+
+        if (this.entityRenderDispatcher.shouldRenderHitBoxes() && !entityIn.isInvisible() && !Minecraft.getInstance().showOnlyReducedInfo()) {
+            var pose = poseStack.last();
+            var matrix4f = pose.pose();
+            var matrix3f = pose.normal();
+            var buffer = bufferIn.getBuffer(RenderType.lines());
+
+            Vec3 frontVec = entityIn.getFrontVec(partialTicks);
+            renderAxis(entityIn, pose, matrix4f, frontVec, buffer, 0, 0, 255);
+
+            Vec3 upVec = entityIn.getUpVec(partialTicks);
+            renderAxis(entityIn, pose, matrix4f, upVec, buffer, 0, 255, 0);
+
+            Vec3 RightVec = entityIn.getRightVec(partialTicks);
+            renderAxis(entityIn, pose, matrix4f, RightVec, buffer, 255, 0, 0);
+        }
+    }
+
+    public void renderAxis(TurretWreckEntity entityIn, PoseStack.Pose pose, Matrix4f matrix4f, Vec3 vec3, VertexConsumer buffer, int r, int g, int b) {
+        buffer.addVertex(matrix4f, 0.0F, 0.6F, 0.0F).setColor(r, g, b, 255).setNormal(pose, (float) vec3.x, (float) vec3.y, (float) vec3.z);
+        buffer.addVertex(matrix4f, (float) (vec3.x * 4.0D), (float) ((double) entityIn.getEyeHeight() + vec3.y * 4.0D), (float) (vec3.z * 4.0D)).setColor(r, g, b, 255).setNormal(pose, (float) vec3.x, (float) vec3.y, (float) vec3.z);
     }
 }
