@@ -741,7 +741,7 @@ object VehicleEngineUtils {
             ) / 90, 0.01, 0.99
         ).toFloat()
 
-        if (isWreck) {
+        if (isWreck && onGround()) {
             deltaMovement = deltaMovement.multiply(0.9, 1.0, 0.9)
         }
 
