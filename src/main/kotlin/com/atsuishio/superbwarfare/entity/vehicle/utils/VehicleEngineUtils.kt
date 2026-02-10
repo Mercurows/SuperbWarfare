@@ -538,7 +538,9 @@ object VehicleEngineUtils {
         if (onGround()) {
             deltaMovement = deltaMovement.multiply(0.8, 1.0, 0.8)
         } else {
-            setZRot(roll * (if (backInputDown) 0.9f else 0.99f))
+            if (!sympatheticDetonated) {
+                setZRot(roll * (if (backInputDown) 0.9f else 0.99f))
+            }
             val f = Mth.clamp(
                 0.92499f - 0.015 * deltaMovement.length() + (0.07 * speed) + 0.00001f * Mth.abs(
                     90 - VehicleVecUtils.calculateAngle(
@@ -581,9 +583,13 @@ object VehicleEngineUtils {
                 backInputDown = false
                 upInputDown = false
                 downInputDown = false
-                setZRot(roll * 0.99f)
-                xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
-                deltaMovement.multiply(0.96, 0.98, 0.96)
+
+                if (!isWreck) {
+                    setZRot(roll * 0.99f)
+                    xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
+//                    deltaMovement.multiply(0.96, 0.98, 0.96)
+                }
+
                 if (!hasPassenger) {
                     power *= 0.995f
                 }
@@ -662,17 +668,22 @@ object VehicleEngineUtils {
                     holdPowerTick = 0
                 }
             }
-        } else if (!onGround() && engineStartOver) {
-            power = Math.max(power - 0.0003f, 0.01f)
-            destroyRot += 0.08f
+        } else if (engineStartOver) {
+            power = Math.max(power - (if (isWreck) 0.0006f else 0.0003f), if (onGround()) 0f else 0.01f)
 
-            diffX = 45 - xRot
-            diffZ = -20 - roll
+            if (onGround()) {
+                destroyRot *= 0.99f
+            } else {
+                destroyRot += if (isWreck) 0.06f else 0.03f
+            }
 
-            xRot += diffX * 0.05f * synchedPropellerRot
+            diffX = -35 - xRot
+            diffZ = -60 - roll
+
+            xRot += diffX * 0.2f * synchedPropellerRot
             yRot += destroyRot
-            setZRot(roll + diffZ * 0.1f * synchedPropellerRot)
-            deltaMovement = deltaMovement.add(0.0, -destroyRot * 0.004, 0.0)
+            setZRot(roll + diffZ * 0.75f * synchedPropellerRot)
+            deltaMovement = deltaMovement.add(0.0, -destroyRot * 0.0008, 0.0)
         }
 
         if (mainEngineDamaged) {
@@ -729,6 +740,10 @@ object VehicleEngineUtils {
                 ).toFloat()
             ) / 90, 0.01, 0.99
         ).toFloat()
+
+        if (isWreck) {
+            deltaMovement = deltaMovement.multiply(0.9, 1.0, 0.9)
+        }
 
         val forward = deltaMovement.dot(getViewVector(1f)) > 0
         deltaMovement = deltaMovement.add(
@@ -922,9 +937,14 @@ object VehicleEngineUtils {
                     roll
                 ) * Mth.clamp(mouseMoveSpeedY * 3, -15f, 15f)
             flap3Rot = flapY * 5
-        } else if (!onGround()) {
-            power = Math.max(power - 0.0003f, 0.02f)
-            destroyRot += 0.1f
+        } else {
+            power = Math.max(power - if (onGround()) 0.03f else 0.0003f, if (onGround()) 0f else 0.02f)
+            if (onGround()) {
+                destroyRot *= 0.95f
+            } else {
+                destroyRot += 0.1f
+            }
+
             val diffX: Float = 90 - xRot
             xRot += diffX * 0.001f * destroyRot
             setZRot(roll - destroyRot)

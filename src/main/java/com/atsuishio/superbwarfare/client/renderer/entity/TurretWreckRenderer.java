@@ -2,8 +2,11 @@ package com.atsuishio.superbwarfare.client.renderer.entity;
 
 import com.atsuishio.superbwarfare.client.model.entity.TurretWreckModel;
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModel;
+import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener;
+import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler;
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -27,8 +30,6 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
         super(renderManager, new TurretWreckModel());
         this.shadowRadius = 1f;
     }
-
-    public Quaterniond quaterniond;
 
     @Override
     public RenderType getRenderType(TurretWreckEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
@@ -59,7 +60,15 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
             if (optionalBone.isEmpty()) return;
 
             var barrelBone = bakedModel.getBone("barrel");
-            barrelBone.ifPresent(geoBone -> geoBone.setRotX(-animatable.getBarrelPitch() * Mth.DEG_TO_RAD));
+            barrelBone.ifPresent(geoBone -> geoBone.setRotX(-animatable.xRotO * Mth.DEG_TO_RAD));
+
+            var passerWeaponPitch = bakedModel.getBone("passengerWeaponStationPitch");
+            passerWeaponPitch.ifPresent(geoBone -> geoBone.setRotX(0));
+
+            var passerWeaponYaw = bakedModel.getBone("passengerWeaponStationYaw");
+            passerWeaponYaw.ifPresent(geoBone -> geoBone.setRotY(0));
+
+            optionalBone.get().setHidden(false);
 
             Vec3 turretPos = vehicle.getTurretPos();
 
@@ -71,8 +80,8 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
 
             var tBone = optionalBone.get();
             var source = bufferSource.getBuffer(RenderType.entityTranslucent(textureResource));
-            geoEntityRenderer.renderCubesOfBone(poseStack, tBone, source, packedLight, packedOverlay, red, green, blue, alpha);
-            geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+            geoEntityRenderer.renderCubesOfBone(poseStack, tBone, source, packedLight, packedOverlay, 0.3f, 0.3f, 0.3f, alpha);
+            geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, 0.3f, 0.3f, 0.3f, alpha);
             poseStack.popPose();
         }
     }

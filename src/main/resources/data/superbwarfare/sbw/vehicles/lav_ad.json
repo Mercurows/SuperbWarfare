@@ -299,7 +299,8 @@
     "ParticleType": "Huge",
     "ExplosionDamage": 120,
     "ExplosionRadius": 7,
-    "SympatheticDetonation": true
+    "SympatheticDetonation": true,
+    "SympatheticDetonationChance": 0.1
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav_ad_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",

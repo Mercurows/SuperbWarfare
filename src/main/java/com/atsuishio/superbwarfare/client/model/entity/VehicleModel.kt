@@ -180,10 +180,12 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
             }
 
             "turret" -> {
-                return TransformContext { bone, _, _ ->
+                return TransformContext { bone, vehicle, _ ->
                     bone.rotY = turretYRot * Mth.DEG_TO_RAD
                     val turretLaser = animationProcessor.getBone("turretLaser")
                     turretLaser?.rotY = bone.rotY
+
+                    bone.isHidden = vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated
                 }
             }
 

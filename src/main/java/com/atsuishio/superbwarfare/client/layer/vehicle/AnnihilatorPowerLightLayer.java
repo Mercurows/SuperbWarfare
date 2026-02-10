@@ -23,6 +23,7 @@ public class AnnihilatorPowerLightLayer extends GeoRenderLayer<AnnihilatorEntity
 
     @Override
     public void render(PoseStack poseStack, AnnihilatorEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+        if (animatable.isWreck()) return;
         RenderType glowRenderType = RenderType.eyes(LAYER);
         float red = 1 - Mth.clamp(2.5f * animatable.getEnergy()/ animatable.getMaxEnergy(),0,1);
         float green = Mth.clamp(2.5f * animatable.getEnergy()/ animatable.getMaxEnergy(),0,1);

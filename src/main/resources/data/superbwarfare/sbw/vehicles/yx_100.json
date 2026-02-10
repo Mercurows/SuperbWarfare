@@ -429,7 +429,8 @@
     "ExplosionDamage": 200,
     "ExplosionRadius": 16,
     "SympatheticDetonation": true,
-    "SympatheticDetonationForce": 1.6
+    "SympatheticDetonationForce": 1.6,
+    "SympatheticDetonationChance": 0.2
   },
   "ThirdPersonCameraPos": [-1.084, 1.875, 6.25],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/yx_100_icon.png",

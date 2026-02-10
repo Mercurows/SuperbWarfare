@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
+import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.lerpAngle
@@ -42,9 +43,9 @@ object VehicleMotionUtils {
      */
     fun preventStacking(vehicle: VehicleEntity) {
         val entities = vehicle.level().getEntities(
-            EntityTypeTest.forClass(VehicleEntity::class.java),
+            EntityTypeTest.forClass(Entity::class.java),
             vehicle.boundingBox.inflate(6.0)
-        ) { entity: VehicleEntity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity.vehicle == null }
+        ) { entity: Entity -> entity !== vehicle && entity.tickCount > 3 && !vehicle.getPassengers().contains(entity) && entity.vehicle == null }
 
         for (entity in entities) {
             if (entity.boundingBox.intersects(vehicle.boundingBox)) {
@@ -86,7 +87,7 @@ object VehicleMotionUtils {
             .stream().filter { entity ->
                 if (entity!!.isAlive && vehicle.isInObb(entity, vehicle.deltaMovement)) {
                     val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
-                    return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is LivingEntity && !(entity is Player && entity.isSpectator))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get()
+                    return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5) || (entity is LivingEntity && !(entity is Player && entity.isSpectator))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get()
                         .contains(type.toString())
                 }
                 false
@@ -212,7 +213,7 @@ object VehicleMotionUtils {
                 .stream().filter { entity ->
                     if (entity.isAlive && vehicle.isInObb(entity, vec3)) {
                         val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
-                        return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is LivingEntity && !(entity is Player && entity.isSpectator))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get()
+                        return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5) || (entity is LivingEntity && !(entity is Player && entity.isSpectator))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get()
                             .contains(type.toString())
                     }
                     false
@@ -226,7 +227,7 @@ object VehicleMotionUtils {
                 .stream().filter { entity ->
                     if (entity.isAlive) {
                         val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
-                        return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart
+                        return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
                                 || (entity is LivingEntity && !(entity is Player && entity.isSpectator)))
                                 || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
                     }

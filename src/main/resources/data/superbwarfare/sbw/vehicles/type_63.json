@@ -69,7 +69,8 @@
   "DestroyInfo": {
     "ParticleType": "Medium",
     "ExplosionDamage": 20,
-    "ExplosionRadius": 2
+    "ExplosionRadius": 2,
+    "NoWreck": true
   },
   "HasLowHealthWarning": false,
   "SelfHurtPercent": 0,

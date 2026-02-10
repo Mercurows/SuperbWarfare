@@ -28,7 +28,8 @@
     "ExplosionDamage": 10,
     "ExplosionRadius": 2,
     "ExplodePassengers": false,
-    "ExplodeBlocks": false
+    "ExplodeBlocks": false,
+    "NoWreck": true
   },
   "ThirdPersonCameraPos": [0, 0, 0.1],
   "HasLowHealthWarning": false,

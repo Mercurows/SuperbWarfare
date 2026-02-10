@@ -206,6 +206,7 @@ public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implem
             item.setPickUpDelay(50);
             this.level().addFreshEntity(item);
         }
+        discard();
     }
 
     @Override

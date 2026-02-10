@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.capability.ModCapabilities
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage
@@ -105,6 +106,7 @@ import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.wrapper.InvWrapper
 import net.minecraftforge.registries.ForgeRegistries
 import org.joml.*
+import org.joml.Random
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
@@ -901,6 +903,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(LASER_SCALE, 0f)
             define(LASER_SCALE_O, 0f)
             define(CHARGE_PROGRESS, 0f)
+            define(IS_WRECK, false)
+            define(SYMPATHETIC_DETONATED, false)
         }
     }
 
@@ -1321,6 +1325,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             serverYaw = compound.getFloat("ServerYaw")
             serverPitch = compound.getFloat("ServerPitch")
+
+            isWreck = compound.getBoolean("IsWreck")
+            sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
         }
 
         val selectedWeaponTag = compound.get("SelectedWeapon")
@@ -1407,6 +1414,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             compound.put("Energy", energyStorage.serializeNBT())
         }
 
+        compound.putBoolean("IsWreck", isWreck)
+        compound.putBoolean("SympatheticDetonated", sympatheticDetonated)
+
         this.resizeItems()
         ContainerHelper.saveAllItems(compound, this.itemStacks)
     }
@@ -1466,6 +1476,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     this.lastDriver
                 ) && this.lastDriver?.team != null
             ) {
+                return InteractionResult.PASS
+            }
+
+            if (isWreck) {
                 return InteractionResult.PASS
             }
 
@@ -1576,7 +1590,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun heal(pHealAmount: Float) {
         if (this.level() is ServerLevel) {
-            this.health += pHealAmount
+            if (health > 0) {
+                this.health += pHealAmount
+            } else {
+                this.health -= pHealAmount
+            }
         }
     }
 
@@ -1599,7 +1617,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 attacker.sendPacket(ClientIndicatorMessage(3, 5))
             }
 
-            if (pHealAmount > 0 && this.health > 0 && send) {
+            if (pHealAmount > 0 && send) {
                 repairCoolDown = maxRepairCoolDown()
                 val passengers = this.getPassengers()
                 for (entity in passengers) {
@@ -1620,14 +1638,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 }
             }
 
-            this.health -= pHealAmount
+            this.health -= Math.min(pHealAmount, getMaxHealth() + 1)
         }
     }
 
     open var health: Float
         get() = this.entityData.get(HEALTH)
         set(value) {
-            this.entityData.set(HEALTH, value.coerceIn(0f, this.getMaxHealth()))
+            this.entityData.set(HEALTH, value.coerceIn(-this.getMaxHealth() - 10, this.getMaxHealth()))
         }
 
     open fun getMaxHealth() = computed().maxHealth
@@ -1828,19 +1846,37 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         this.handleClientSync()
 
-        if (this.level() is ServerLevel && this.health <= 0) {
+        if (this.level() is ServerLevel && this.health <= 0 && !isWreck) {
+            isWreck = true
             destroy()
         }
 
-        this.travel()
+        if (isWreck) {
+            ejectPassengers()
+            if (health <= -getMaxHealth()) {
+                this.discard()
+                val explosion = createCustomExplosion()
+                        .radius(0f)
+                        .damage(0f)
+                        .withParticleType(ParticleTool.ParticleType.SMALL)
+                explosion.keepBlock()
+                explosion.explode()
+            }
+            if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && (onGround() || isInFluidType) && !sympatheticDetonated) {
+                sympatheticDetonated = true
+                val destroyInfo = computed().destroyInfo
+                vehcileExploesion(destroyInfo, false)
+            }
+        }
 
+        this.travel()
 
         if (this.health <= computed.selfHurtPercent * this.getMaxHealth()) {
             // 血量过低时自动扣血
             this.onHurt(computed.selfHurtAmount, this.lastAttacker, false)
         } else {
             // 呼吸回血
-            if (repairCoolDown == 0) {
+            if (repairCoolDown == 0 && health > 0) {
                 this.heal(repairAmount())
             }
         }
@@ -2015,7 +2051,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         val terrainCompat = this.computed().terrainCompat
         if (terrainCompat != null) {
-            this.terrainCompact(terrainCompat)
+            if (!((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && isWreck)) {
+                this.terrainCompact(terrainCompat)
+            }
         }
         this.inertiaRotate(this.computed().inertiaRotateRate)
 
@@ -2372,7 +2410,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
-        if (this.health < 0.1f * this.getMaxHealth() && tickCount % 13 == 0) {
+        if (health > 0 && health < 0.1f * this.getMaxHealth() && tickCount % 13 == 0) {
             this.level().playSound(null, this.onPos, ModSounds.NO_HEALTH.get(), SoundSource.PLAYERS, 1f, 1f)
         } else if (this.health >= 0.1f && this.health < 0.4f * this.getMaxHealth() && tickCount % 10 == 0) {
             this.level().playSound(null, this.onPos, ModSounds.LOW_HEALTH.get(), SoundSource.PLAYERS, 1f, 1f)
@@ -3001,24 +3039,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
-        val radius = destroyInfo.explosionRadius
-        if (radius > 0) {
-            val damage = destroyInfo.explosionDamage
-            val particleType = destroyInfo.particleType
-
-            val explosion = createCustomExplosion()
-                .radius(radius)
-                .damage(damage)
-                .withParticleType(particleType)
-
-            if (!destroyInfo.explodeBlocks) {
-                explosion.keepBlock()
-            }
-
-            explosion.explode()
+        if (vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) {
+            vehcileExploesion(destroyInfo, true)
+        } else {
+            vehcileExploesion(destroyInfo, false)
         }
 
-        if (hasTurret() && destroyInfo.sympatheticDetonation) {
+        if (hasTurret() && destroyInfo.sympatheticDetonation && Math.random() < destroyInfo.sympatheticDetonationChance) {
+            sympatheticDetonated = true
             val turretWreckEntity = TurretWreckEntity(ModEntities.TURRET_WRECK.get(), level())
             if (turretPos != null) {
                 val pos = turretPos?.let { position().add(it) }
@@ -3033,15 +3061,35 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             val quaterniond = combineRotationsTurret(1f, this)
             turretWreckEntity.VehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()
-            turretWreckEntity.BarrelPitch = this.getTurretPitch(1f)
+            turretWreckEntity.xRot = this.getTurretPitch(1f)
             turretWreckEntity.yRot = -getYRotFromVector(getBarrelVector(1f)).toFloat()
             turretWreckEntity.setQuaternion0(quaterniond)
             turretWreckEntity.setQuaternion(quaterniond)
             level().addFreshEntity(turretWreckEntity)
         }
 
+        if (destroyInfo.NoWreck) {
+            discard()
+        }
+    }
 
-        this.discard()
+    open fun vehcileExploesion(destroyInfo: DestroyInfo, mini: Boolean) {
+        val radius = destroyInfo.explosionRadius
+        if (radius > 0) {
+            val damage = if (mini) 0.25f * destroyInfo.explosionDamage else destroyInfo.explosionDamage
+            val particleType = if (mini) ParticleTool.ParticleType.MEDIUM else destroyInfo.particleType
+
+            val explosion = createCustomExplosion()
+                    .radius(if (mini) 0.5f * radius else radius)
+                    .damage(damage)
+                    .withParticleType(particleType)
+
+            if (!destroyInfo.explodeBlocks || mini) {
+                explosion.keepBlock()
+            }
+
+            explosion.explode()
+        }
     }
 
     open fun createCustomExplosion(): CustomExplosion.Builder = CustomExplosion.Builder(this)
@@ -3049,14 +3097,17 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     protected fun crashPassengers() {
         for (entity in this.getPassengers()) {
-            if (entity is LivingEntity) {
-                repeat(VehicleConfig.AIR_CRASH_EXPLOSION_COUNT.get()) {
-                    val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
-                    entity.invulnerableTime = 0
-                    entity.hurt(
-                        ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker),
-                        VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get().toFloat()
-                    )
+            entity.stopRiding()
+            queueServerWork(1) {
+                if (entity is LivingEntity) {
+                    repeat(VehicleConfig.AIR_CRASH_EXPLOSION_COUNT.get()) {
+                        val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
+                        entity.invulnerableTime = 0
+                        entity.hurt(
+                                ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker),
+                                VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get().toFloat()
+                        )
+                    }
                 }
             }
         }
@@ -3065,18 +3116,21 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     protected fun explodePassengers() {
         for (entity in this.getPassengers()) {
             if (entity !is LivingEntity) continue
-
-            repeat(VehicleConfig.SELF_EXPLOSION_COUNT.get()) {
-                val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
-                entity.invulnerableTime = 0
-                entity.hurt(
-                    ModDamageTypes.causeVehicleExplosionDamage(
-                        this.level().registryAccess(),
-                        null,
-                        tempAttacker
-                    ), VehicleConfig.SELF_EXPLOSION_DAMAGE.get().toFloat()
-                )
+            entity.stopRiding()
+            queueServerWork(1) {
+                repeat(VehicleConfig.SELF_EXPLOSION_COUNT.get()) {
+                    val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
+                    entity.invulnerableTime = 0
+                    entity.hurt(
+                            ModDamageTypes.causeVehicleExplosionDamage(
+                                    this.level().registryAccess(),
+                                    null,
+                                    tempAttacker
+                            ), VehicleConfig.SELF_EXPLOSION_DAMAGE.get().toFloat()
+                    )
+                }
             }
+
         }
     }
 
@@ -3877,7 +3931,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this.level().registryAccess(),
                         this,
                         driver ?: this
-                    ), ((40 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)).toFloat()
+                    ), if (isWreck) 0f else ((40 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
@@ -3892,7 +3946,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this.level().registryAccess(),
                         this,
                         driver ?: this
-                    ), (60 * ((lastTickSpeed - 0.5) * (lastTickSpeed - 0.5))).toFloat()
+                    ), if (isWreck) 0f else (60 * ((lastTickSpeed - 0.5) * (lastTickSpeed - 0.5))).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
@@ -3908,7 +3962,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this,
                         driver ?: this
                     ),
-                    (96 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))).toFloat()
+                        if (isWreck) 0f else (96 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))).toFloat()
                 )
                 if (!this.level().isClientSide) {
                     this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
@@ -4042,6 +4096,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open var yawWhileShoot by YAW_WHILE_SHOOT
     open var hornVolume by HORN_VOLUME
+
+    open var isWreck by IS_WRECK
+    open var sympatheticDetonated by SYMPATHETIC_DETONATED
 
     open val hornSound: SoundEvent
         get() = this.computed().hornSound
@@ -4319,6 +4376,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         @JvmField
         val CHARGE_PROGRESS: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val IS_WRECK: EntityDataAccessor<Boolean> =
+                SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
+        val SYMPATHETIC_DETONATED: EntityDataAccessor<Boolean> =
+                SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         // Map SeatIndex -> GunData
         protected val GUN_DATA_MAP: EntityDataAccessor<Map<String, GunData>> =

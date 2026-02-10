@@ -41,7 +41,8 @@
     "ParticleType": "Medium",
     "ExplosionDamage": 15,
     "ExplosionRadius": 2,
-    "CrashPassengers": true
+    "CrashPassengers": true,
+    "NoWreck": true
   },
   "ThirdPersonCameraPos": [-0.5, 0, 1],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/tom_6_icon.png",

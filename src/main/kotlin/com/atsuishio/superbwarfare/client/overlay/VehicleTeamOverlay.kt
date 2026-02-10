@@ -152,7 +152,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     }
                 } else {
                     val player1 = lookingEntity.getFirstPassenger()
-                    if (lookingEntity.maxPassengers > 0 && player1 is Player) {
+                    if ((lookingEntity as VehicleEntity).maxPassengers > 0 && player1 is Player) {
                         color = player1.teamColor
                         val team = player.team
                         if (team is PlayerTeam) {
@@ -184,12 +184,14 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, -3f, 40.5f, -2f, 0f, argb)
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, 2f, 40.5f, 3f, 0f, argb)
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), 40.5f, -3f, 41.5f, 3f, 0f, argb)
+                val health = (lookingEntity as VehicleEntity).health
+                val maxHealth = (lookingEntity as VehicleEntity).getMaxHealth()
                 RenderHelper.fill(
                     guiGraphics,
                     RenderType.guiOverlay(),
                     -40f,
                     -1.5f,
-                    -40 + 80 * (lookingEntity.health / lookingEntity.getMaxHealth()),
+                    -40 + 80 * ((if ((lookingEntity as VehicleEntity).isWreck) (health + maxHealth) else health) / maxHealth),
                     1.5f,
                     0f,
                     argb

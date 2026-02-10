@@ -659,8 +659,8 @@ public class DroneEntity extends GeoVehicleEntity {
                         }
                     });
         }
-
         super.destroy();
+        discard();
     }
 
     private void kamikazeExplosion() {

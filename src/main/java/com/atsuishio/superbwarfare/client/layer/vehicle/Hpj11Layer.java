@@ -23,6 +23,7 @@ public class Hpj11Layer extends GeoRenderLayer<Hpj11Entity> {
 
     @Override
     public void render(PoseStack poseStack, Hpj11Entity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+        if (animatable.isWreck()) return;
         RenderType glowRenderType = ModRenderTypes.MUZZLE_FLASH_TYPE.apply(LAYER);
         getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
     }

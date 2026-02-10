@@ -327,6 +327,7 @@ public class MortarEntity extends ArtilleryEntity {
             }
         }
         super.destroy();
+        discard();
     }
 
     @Override
