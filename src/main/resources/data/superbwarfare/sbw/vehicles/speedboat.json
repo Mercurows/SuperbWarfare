@@ -83,7 +83,7 @@
       "RPM": 450,
       "Damage": 40,
       "BypassesArmor": 0.6,
-      "Velocity": 25,
+      "Velocity": 22,
       "RecoilTime": 20,
       "RecoilForce": 0.1,
       "HeatPerShoot": 5,

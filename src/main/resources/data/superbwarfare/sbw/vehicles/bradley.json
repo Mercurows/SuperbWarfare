@@ -145,7 +145,7 @@
       "AvailableFireModes": "Auto",
       "DefaultZoom": 3,
       "RPM": 250,
-      "Velocity": 25,
+      "Velocity": 18,
       "Damage": 65,
       "ExplosionDamage": 8,
       "ExplosionRadius": 2,
@@ -175,7 +175,7 @@
           "Ammo": "superbwarfare:small_shell_he",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_25mm_he.png",
-            "Velocity": 18,
+            "Velocity": 15,
             "Damage": 15,
             "ExplosionDamage": 18,
             "ExplosionRadius": 5,

@@ -3057,7 +3057,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
             val dir = getUpVec(1f).add(deltaMovement + Vec3(0.0, this.computed().gravity, 0.0))
 
-            turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(random.triangle(0.0, 0.0172275 * 10.toDouble()), random.triangle(0.0, 0.0172275 * 10.toDouble()), random.triangle(0.0, 0.0172275 * 10.toDouble())).scale(destroyInfo.sympatheticDetonationForce.toDouble())
+            val rdm = (Math.random() - 0.5) * 0.4 + 1
+            turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(random.triangle(0.0, 0.0172275 * 12.toDouble()), random.triangle(0.0, 0.0172275 * 12.toDouble()), random.triangle(0.0, 0.0172275 * 12.toDouble())).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
 
             val quaterniond = combineRotationsTurret(1f, this)
             turretWreckEntity.VehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()

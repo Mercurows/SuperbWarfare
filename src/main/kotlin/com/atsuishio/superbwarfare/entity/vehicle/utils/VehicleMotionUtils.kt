@@ -117,6 +117,10 @@ object VehicleMotionUtils {
             return
         }
 
+        if (entity is TurretWreckEntity) {
+            entity.supportByVehicle = true
+        }
+
         val feetPos = entity.position().subtract(Vec3(0.0, 0.1, 0.0))
         val lowPos = feetPos.add(0.0, (entity.eyeHeight / 4).toDouble(), 0.0)
         val midPos = feetPos.add(0.0, (entity.eyeHeight / 2).toDouble(), 0.0)
