@@ -314,7 +314,7 @@ object ModEntities {
     val TRUCK = register("truck", vehicle(::TruckEntity).sized(2.6f, 3f))
 
     @JvmField
-    val TURRET_WRECK = register("turret_wreck", vehicle(::TurretWreckEntity).sized(3f, 1f))
+    val TURRET_WRECK = register("turret_wreck", vehicle(::TurretWreckEntity).sized(3.5f, 1.25f))
 
     private fun <T : Entity> register(
         name: String,

@@ -73,7 +73,10 @@
   "DestroyInfo": {
     "ParticleType": "Huge",
     "ExplosionDamage": 120,
-    "ExplosionRadius": 6
+    "ExplosionRadius": 6,
+    "SympatheticDetonation": true,
+    "SympatheticDetonationForce": 1.4,
+    "SympatheticDetonationChance": 0.8
   },
   "EngineType": "Fixed",
   "HasLowHealthWarning": false,

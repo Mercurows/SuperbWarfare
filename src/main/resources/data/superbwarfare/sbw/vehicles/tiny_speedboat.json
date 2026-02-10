@@ -53,7 +53,8 @@
     "ExplosionDamage": 15,
     "ExplosionRadius": 2,
     "ExplodePassengers": false,
-    "ExplodeBlocks": false
+    "ExplodeBlocks": false,
+    "NoWreck": true
   },
   "EngineType": "Ship",
   "EngineInfo": {

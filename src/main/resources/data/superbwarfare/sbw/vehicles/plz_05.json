@@ -211,7 +211,8 @@
     "ExplosionDamage": 250,
     "ExplosionRadius": 18,
     "SympatheticDetonation": true,
-    "SympatheticDetonationForce": 1.3
+    "SympatheticDetonationForce": 1.3,
+    "SympatheticDetonationChance": 0.3
   },
   "HudType": "@Land",
   "InertiaRotateRate": 0.8,

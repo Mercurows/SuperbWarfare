@@ -383,7 +383,8 @@
     "ExplosionDamage": 160,
     "ExplosionRadius": 8,
     "SympatheticDetonation": true,
-    "SympatheticDetonationForce": 2.2
+    "SympatheticDetonationForce": 2.2,
+    "SympatheticDetonationChance": 0.3
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/bmp_2_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",

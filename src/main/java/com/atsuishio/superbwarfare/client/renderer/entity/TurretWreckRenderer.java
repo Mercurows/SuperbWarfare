@@ -11,11 +11,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -26,8 +26,6 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
         super(renderManager, new TurretWreckModel());
         this.shadowRadius = 1f;
     }
-
-    public Quaterniond quaterniond;
 
     @Override
     public RenderType getRenderType(TurretWreckEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
@@ -58,7 +56,15 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
             if (optionalBone.isEmpty()) return;
 
             var barrelBone = bakedModel.getBone("barrel");
-            barrelBone.ifPresent(geoBone -> geoBone.setRotX(-animatable.getBarrelPitch() * Mth.DEG_TO_RAD));
+            barrelBone.ifPresent(geoBone -> geoBone.setRotX(-animatable.xRotO * Mth.DEG_TO_RAD));
+
+            var passerWeaponPitch = bakedModel.getBone("passengerWeaponStationPitch");
+            passerWeaponPitch.ifPresent(geoBone -> geoBone.setRotX(0));
+
+            var passerWeaponYaw = bakedModel.getBone("passengerWeaponStationYaw");
+            passerWeaponYaw.ifPresent(geoBone -> geoBone.setRotY(0));
+
+            optionalBone.get().setHidden(false);
 
             Vec3 turretPos = vehicle.getTurretPos();
 
@@ -70,8 +76,9 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
 
             var tBone = optionalBone.get();
             var source = bufferSource.getBuffer(RenderType.entityTranslucent(textureResource));
-            geoEntityRenderer.renderCubesOfBone(poseStack, tBone, source, packedLight, packedOverlay, color);
-            geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, color);
+            var c = FastColor.ARGB32.color(FastColor.ARGB32.alpha(color), (int) (FastColor.ARGB32.red(color) * 0.3F), (int) (FastColor.ARGB32.green(color) * 0.3F), (int) (FastColor.ARGB32.blue(color) * 0.3F));
+            geoEntityRenderer.renderCubesOfBone(poseStack, tBone, source, packedLight, packedOverlay, c);
+            geoEntityRenderer.renderChildBones(poseStack, geoAnimatable, tBone, renderType, bufferSource, source, isReRender, partialTick, packedLight, packedOverlay, c);
             poseStack.popPose();
         }
     }

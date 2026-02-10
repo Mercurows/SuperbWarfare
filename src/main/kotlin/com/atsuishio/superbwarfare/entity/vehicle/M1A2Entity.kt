@@ -55,4 +55,8 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : GeoVehicleEntity(
 
     override val customTurretMinPitch: Float
         get() = if (Mth.abs(turretYRot) > 135) ((Mth.abs(turretYRot) - 135) * 0.4f).coerceAtMost(7f) else 0f
+
+    override fun baseTick() {
+        super.baseTick()
+    }
 }

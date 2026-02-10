@@ -166,6 +166,7 @@ class TowEntity(type: EntityType<TowEntity>, world: Level) : GeoVehicleEntity(ty
             level.addFreshEntity(mortar)
         }
         super.destroy()
+        this.discard()
     }
 
     companion object {

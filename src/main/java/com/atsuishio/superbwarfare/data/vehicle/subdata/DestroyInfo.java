@@ -29,6 +29,12 @@ public class DestroyInfo {
     @SerializedName("SympatheticDetonationForce")
     public float sympatheticDetonationForce = 1.5f;
 
+    @SerializedName("SympatheticDetonationChance")
+    public float sympatheticDetonationChance = 0.5f;
+
+    @SerializedName("NoWreck")
+    public boolean NoWreck = false;
+
     public DestroyInfo(boolean crashPassengers, boolean explodePassengers, boolean explodeBlocks, float explosionDamage, float explosionRadius, ParticleTool.ParticleType particleType) {
         this.crashPassengers = crashPassengers;
         this.explodePassengers = explodePassengers;

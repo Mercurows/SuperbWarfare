@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
+import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.vertex.PoseStack
@@ -31,12 +33,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         texture: ResourceLocation,
         bufferSource: MultiBufferSource?,
         partialTick: Float
-    ): RenderType? = RenderType.entityTranslucent(
-        if (ClientEventHandler.activeThermalImaging) SmartTextureBrightener.getSmartBrightenedTexture(
-            getTextureLocation(vehicle),
-            3f
-        ) else getTextureLocation(vehicle)
-    )
+    ): RenderType? = RenderType.entityTranslucent(getTextureLocation(vehicle))
 
 
     override fun render(
@@ -106,5 +103,19 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
 
             return pCamera.isVisible(aabb)
         }
+    }
+
+    override fun getTextureLocation(animatable: T): ResourceLocation {
+        val res = super.getTextureLocation(animatable)
+        if (ClientEventHandler.activeThermalImaging) {
+            return SmartTextureBrightener.getSmartBrightenedTexture(res, 3f)
+        } else if (animatable.isWreck) {
+            if ((animatable.vehicleType == VehicleType.AIRPLANE || animatable.vehicleType == VehicleType.HELICOPTER) && animatable.sympatheticDetonated) {
+                return TextureBrightnessHandler.getBrightenedTexture(res, 0.3f)
+            } else {
+                return res
+            }
+        }
+        return res
     }
 }
