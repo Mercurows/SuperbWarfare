@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
@@ -30,7 +29,6 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent
 import software.bernie.geckolib.animatable.GeoEntity
@@ -46,7 +44,6 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-@EventBusSubscriber(modid = Mod.MODID)
 open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, world: Level) : LivingEntity(type, world),
     GeoEntity {
     private val cache = GeckoLibUtil.createInstanceCache(this)
@@ -299,14 +296,12 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, world: Level
         return this.cache
     }
 
-    protected val energyStorage: SyncedEntityEnergyStorage =
+    val energyStorage =
         SyncedEntityEnergyStorage(5120, 0, 2560, this.entityData, ENERGY)
 
     init {
         this.noCulling = true
     }
-
-    fun getEnergyStorage() = this.energyStorage
 
     val maxEnergy: Int
         get() = when (this.generatorLevel) {

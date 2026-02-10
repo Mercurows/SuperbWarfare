@@ -13,7 +13,8 @@ public class ModLootTableProvider {
     public static LootTableProvider create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         return new LootTableProvider(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(ModBlockLootProvider::new, LootContextParamSets.BLOCK),
-                new LootTableProvider.SubProviderEntry(provider -> new ModCustomLootProvider(), LootContextParamSets.CHEST)
+                new LootTableProvider.SubProviderEntry(provider -> new ModCustomLootProvider(), LootContextParamSets.CHEST),
+                new LootTableProvider.SubProviderEntry(ModEntityLootProvider::new, LootContextParamSets.ENTITY)
         ), registries);
     }
 }

@@ -129,6 +129,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             }, ModItems.CONTAINER)
         }
 
+        @JvmStatic
         fun createInstance(entity: Entity): ItemStack {
             val stack = ItemStack(ModBlocks.CONTAINER.get())
 
@@ -148,6 +149,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             return stack
         }
 
+        @JvmStatic
         fun createInstance(entityType: EntityType<*>): ItemStack {
             val stack = ItemStack(ModBlocks.CONTAINER.get())
             val data = stack.get(DataComponents.BLOCK_ENTITY_DATA)

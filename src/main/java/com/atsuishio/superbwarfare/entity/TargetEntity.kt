@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -37,7 +36,6 @@ import software.bernie.geckolib.animation.PlayState
 import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
 
-@EventBusSubscriber(modid = Mod.MODID)
 open class TargetEntity(type: EntityType<TargetEntity>, world: Level) : LivingEntity(type, world), GeoEntity {
     private val cache = GeckoLibUtil.createInstanceCache(this)
     open var downTime by DOWN_TIME

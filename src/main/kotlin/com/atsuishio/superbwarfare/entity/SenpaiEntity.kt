@@ -7,7 +7,6 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.DifficultyInstance
 import net.minecraft.world.damagesource.DamageSource
@@ -25,8 +24,6 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal
 import net.minecraft.world.entity.monster.Monster
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.ServerLevelAccessor
 import net.minecraft.world.level.block.state.BlockState
@@ -38,7 +35,6 @@ import software.bernie.geckolib.animation.AnimationState
 import software.bernie.geckolib.animation.PlayState
 import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(type, level), GeoEntity {
     private val cache = GeckoLibUtil.createInstanceCache(this)
@@ -104,20 +100,6 @@ open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(
         this.targetSelector.addGoal(6, NearestAttackableTargetGoal(this, Player::class.java, false, false))
     }
 
-
-    @ParametersAreNonnullByDefault
-    override fun dropCustomDeathLoot(level: ServerLevel, damageSource: DamageSource, recentlyHit: Boolean) {
-        super.dropCustomDeathLoot(level, damageSource, recentlyHit)
-
-        val random = Math.random()
-        if (random < 0.01) {
-            this.spawnAtLocation(ItemStack(Items.ENCHANTED_GOLDEN_APPLE))
-        } else if (random < 0.2) {
-            this.spawnAtLocation(ItemStack(Items.GOLDEN_APPLE))
-        } else {
-            this.spawnAtLocation(ItemStack(Items.APPLE))
-        }
-    }
 
     public override fun getAmbientSound(): SoundEvent? {
         return ModSounds.IDLE.get()

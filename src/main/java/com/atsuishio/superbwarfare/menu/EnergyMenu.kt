@@ -18,7 +18,6 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Close
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 abstract class EnergyMenu(pMenuType: MenuType<*>?, id: Int, containerData: ContainerEnergyData) :
     AbstractContainerMenu(pMenuType, id) {
     private val containerEnergyDataSlots: MutableList<ContainerEnergyDataSlot> = Lists.newArrayList()
@@ -56,6 +55,7 @@ abstract class EnergyMenu(pMenuType: MenuType<*>?, id: Int, containerData: Conta
         this.containerEnergyDataSlots[id].set(data.toLong())
     }
 
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
     companion object {
         @SubscribeEvent
         fun onContainerOpened(event: Open) {

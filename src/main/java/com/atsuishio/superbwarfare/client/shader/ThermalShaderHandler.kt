@@ -10,15 +10,12 @@ import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
-import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 
 /**
  * Code based on YWZJ Team
  */
-@EventBusSubscriber(value = [Dist.CLIENT], bus = EventBusSubscriber.Bus.GAME)
 class ThermalShaderHandler : ResourceManagerReloadListener {
     override fun onResourceManagerReload(resourceManager: ResourceManager) {
         cleanup()
