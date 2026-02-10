@@ -4,16 +4,17 @@ import com.atsuishio.superbwarfare.client.renderer.gun.RepairToolItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
-import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.*;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModParticleTypes;
+import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.BatteryItem;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
-import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.world.phys.EntityResult;
 import net.minecraft.client.model.HumanoidModel;
@@ -160,11 +161,6 @@ public class RepairToolItem extends GunGeoItem {
                 vehicle.heal(0.5f + 0.0025f * vehicle.getMaxHealth());
             }
 
-            if (vehicle.isWreck() && vehicle.tickCount %7 == 0 && shooter instanceof Player player) {
-                var stack = new ItemStack(ModItems.STEEL_INGOT.get());
-                InventoryTool.insertItem(player, stack, 1);
-            }
-
             this.summonRayHitParticle(level, null, pos, shootDirection.scale(-1).normalize());
         } else if (target instanceof LivingEntity living) {
             if (target.getType().is(ModTags.EntityTypes.CAN_REPAIR) && !shooter.isShiftKeyDown()) {
@@ -189,11 +185,6 @@ public class RepairToolItem extends GunGeoItem {
             float damage = data.get(GunProp.DAMAGE).floatValue();
             DamageHandler.doDamage(target, ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), damage);
             target.invulnerableTime = 0;
-
-            if (target instanceof TurretWreckEntity turretWreck && turretWreck.tickCount %4 == 0 && shooter instanceof Player player) {
-                var stack = new ItemStack(ModItems.STEEL_INGOT.get());
-                InventoryTool.insertItem(player, stack, 1);
-            }
 
             if (shooter instanceof ServerPlayer player) {
                 player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
