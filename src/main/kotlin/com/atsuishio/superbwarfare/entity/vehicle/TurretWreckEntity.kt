@@ -3,6 +3,8 @@ package com.atsuishio.superbwarfare.entity.vehicle
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
+import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -21,6 +23,7 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MoverType
@@ -81,12 +84,15 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         return !this.isRemoved
     }
 
-//    private val DAMAGE_MODIFIER = createDefaultModifier()
-//            .multiply(0.5f)
+    private val DAMAGE_MODIFIER = createDefaultModifier()
+        .multiply(0.02f, ModDamageTypes.CUSTOM_EXPLOSION)
+        .multiply(0.02f, ModDamageTypes.MINE)
+        .multiply(0.02f, ModDamageTypes.PROJECTILE_EXPLOSION)
+        .multiply(0.02f, DamageTypes.EXPLOSION)
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
-//        var amount = amount
-//        amount = DAMAGE_MODIFIER.compute(source, amount)
+        var amount = amount
+        amount = DAMAGE_MODIFIER.compute(source, amount)
         entityData.set(HEALTH, entityData.get(HEALTH) - amount)
         if (level() is ServerLevel) {
             val serverLevel = level() as ServerLevel
@@ -257,6 +263,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         }
 
         this.deltaMovement = deltaMovement.multiply(f.toDouble(), 0.98, f.toDouble()).add(0.0, -0.04, 0.0)
+        health -= 0.1f
 
         if (health <= 0) {
             this.discard()

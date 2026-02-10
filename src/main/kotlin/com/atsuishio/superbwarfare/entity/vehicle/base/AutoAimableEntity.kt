@@ -211,7 +211,8 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
             if (SeekTool.IS_INVULNERABLE.test(target)
                 || getSubmergedHeight(target) >= target.bbHeight
                 || target.distanceTo(this) !in minSeekRange..maxSeekRange
-                || target is LivingEntity && target.health <= 0
+                || (target is LivingEntity && target.health <= 0)
+                || (target is VehicleEntity && target.isWreck)
                 || target === this
                 || target is TargetEntity
                 || target.isInWater
@@ -312,7 +313,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
                     && ((target is LivingEntity && target is Enemy && target.health > 0)
                     || isThreateningEntity(target, size, pos)
                     || basicEnemyFilter(target)
-                    || (target is LivingEntity && (target.lastAttacker == this.owner || this.owner?.lastAttacker == target)))
+                    || (target is LivingEntity && (target.lastAttacker == this.owner || this.owner?.lastAttacker == target) && target != this.owner))
                     && SeekTool.NOT_IN_SMOKE.test(target)
                     && !SeekTool.IN_BLACKLIST.test(target)
         }

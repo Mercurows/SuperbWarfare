@@ -35,7 +35,6 @@ public class TurretWreckRenderer extends GeoEntityRenderer<TurretWreckEntity> {
     @Override
     public void renderRecursively(PoseStack poseStack, TurretWreckEntity animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, color);
-        // TODO 加个缓存
         var type = EntityType.byString(animatable.getVehicleName());
         if (type.isEmpty()) return;
         var entity = type.get().create(animatable.level());
