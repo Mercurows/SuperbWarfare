@@ -123,10 +123,13 @@ public enum Ammo {
     }
 
     public boolean set(CompoundTag tag, int count) {
-        if (count < 0) count = 0;
         if (count > getAmmoBoxLimit()) return false;
 
-        tag.putInt(this.serializationName, count);
+        if (count <= 0) {
+            tag.remove(this.serializationName);
+        } else {
+            tag.putInt(this.serializationName, count);
+        }
         return true;
     }
 

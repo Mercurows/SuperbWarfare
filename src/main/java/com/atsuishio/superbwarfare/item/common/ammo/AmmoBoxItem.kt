@@ -26,7 +26,7 @@ import kotlin.math.min
 var ItemStack.ammoBoxData: AmmoBoxItem.AmmoBoxData
     get() {
         val tag = getOrCreateTag()
-        val map = Ammo.entries.associateWith { it.get(tag) }
+        val map = Ammo.entries.associateWith { it.get(tag) }.filterValues { it > 0 }
         return AmmoBoxItem.AmmoBoxData(Ammo.getType(tag.getString("Type")), tag.getBoolean("IsDrop"), map)
     }
     set(value) {
