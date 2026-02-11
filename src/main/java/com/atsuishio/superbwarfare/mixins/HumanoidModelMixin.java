@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import org.spongepowered.asm.mixin.Final;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = HumanoidModel.class)
-public class HumanoidModelMixin {
+public abstract class HumanoidModelMixin {
 
     @Shadow
     @Final
@@ -79,34 +80,12 @@ public class HumanoidModelMixin {
             if (seat.pose.equals("Tow")) {
                 this.head.xRot = 0;
                 this.hat.xRot = 0;
-                this.head.y = 0;
-                this.hat.y = 0;
-                this.head.z = -4;
-                this.hat.z = -4;
 
                 this.leftArm.yRot = 45 * Mth.DEG_TO_RAD;
                 this.leftArm.xRot = -115 * Mth.DEG_TO_RAD;
 
                 this.rightArm.yRot = 25 * Mth.DEG_TO_RAD;
                 this.rightArm.xRot = -115 * Mth.DEG_TO_RAD;
-
-                this.leftLeg.xRot = 0 * Mth.DEG_TO_RAD;
-                this.leftLeg.yRot = 0 * Mth.DEG_TO_RAD;
-                this.leftLeg.zRot = 0 * Mth.DEG_TO_RAD;
-                this.leftLeg.z = -6f;
-                this.leftLeg.y = 5.4f;
-
-                this.rightLeg.xRot = 85 * Mth.DEG_TO_RAD;
-                this.rightLeg.yRot = 0 * Mth.DEG_TO_RAD;
-                this.rightLeg.zRot = 0 * Mth.DEG_TO_RAD;
-                this.rightLeg.z = -4f;
-                this.rightLeg.y = 14;
-
-                this.body.xRot = 20 * Mth.DEG_TO_RAD;
-                this.body.z = -5;
-
-                this.leftArm.z = -5;
-                this.rightArm.z = -5;
             }
 
             // BF6的坦克挂票
