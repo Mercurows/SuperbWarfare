@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.api.event.PreKillEvent.Indicator
 import com.atsuishio.superbwarfare.api.event.PreKillEvent.SendKillMessage
-import com.atsuishio.superbwarfare.component.ModDataComponents
 import com.atsuishio.superbwarfare.config.common.GameplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
@@ -16,7 +15,7 @@ import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
-import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo
+import com.atsuishio.superbwarfare.item.common.ammo.ammoBoxData
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage
@@ -647,8 +646,7 @@ object LivingEventHandler {
             type.set(cap, 0)
         }
 
-        val info = AmmoBoxInfo("All", true)
-        stack.set(ModDataComponents.AMMO_BOX_INFO, info)
+        stack.ammoBoxData = stack.ammoBoxData.asDrop()
 
         player.setData(ModAttachments.PLAYER_VARIABLE, cap)
         cap.sync(player)

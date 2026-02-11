@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.recipe
 
-import com.atsuishio.superbwarfare.component.ModDataComponents
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoBoxItem
+import com.atsuishio.superbwarfare.item.common.ammo.ammoBoxData
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.NonNullList
 import net.minecraft.world.item.ItemStack
@@ -30,10 +30,7 @@ class AmmoBoxExtractAmmoRecipe(pCategory: CraftingBookCategory) : CustomRecipe(p
             }
         }
 
-        val data = ammoBoxItem.get(ModDataComponents.AMMO_BOX_INFO) ?: return false
-
-        val typeString = data.type
-        val type = Ammo.getType(typeString) ?: return false
+        val type = ammoBoxItem.ammoBoxData.type ?: return false
 
         return type.get(ammoBoxItem) > 0
     }
@@ -44,8 +41,7 @@ class AmmoBoxExtractAmmoRecipe(pCategory: CraftingBookCategory) : CustomRecipe(p
 
         for (item in input.items()) {
             if (item.item is AmmoBoxItem) {
-                val data = item.get(ModDataComponents.AMMO_BOX_INFO)!!
-                type = Ammo.getType(data.type)
+                type = item.ammoBoxData.type
                 break
             }
         }
@@ -63,8 +59,7 @@ class AmmoBoxExtractAmmoRecipe(pCategory: CraftingBookCategory) : CustomRecipe(p
             if (item.item is AmmoBoxItem) {
                 val ammoBox = item.copy()
 
-                val data = ammoBox.get(ModDataComponents.AMMO_BOX_INFO)!!
-                val type = Ammo.getType(data.type)!!
+                val type = ammoBox.ammoBoxData.type!!
 
                 type.add(ammoBox, -1)
                 remaining[i] = ammoBox

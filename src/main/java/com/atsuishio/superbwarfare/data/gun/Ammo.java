@@ -4,11 +4,11 @@ import com.atsuishio.superbwarfare.capability.player.PlayerVariable;
 import com.atsuishio.superbwarfare.config.server.AmmoConfigKt;
 import com.atsuishio.superbwarfare.init.ModAttachments;
 import com.atsuishio.superbwarfare.init.ModItems;
+import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
@@ -16,11 +16,11 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 public enum Ammo {
-    HANDGUN(ChatFormatting.GREEN, ModItems.HANDGUN_AMMO::get),
-    RIFLE(ChatFormatting.AQUA, ModItems.RIFLE_AMMO::get),
-    SHOTGUN(ChatFormatting.RED, ModItems.SHOTGUN_AMMO::get),
-    SNIPER(ChatFormatting.GOLD, ModItems.SNIPER_AMMO::get),
-    HEAVY(ChatFormatting.LIGHT_PURPLE, ModItems.HEAVY_AMMO::get);
+    HANDGUN(ChatFormatting.GREEN, ModItems.HANDGUN_AMMO),
+    RIFLE(ChatFormatting.AQUA, ModItems.RIFLE_AMMO),
+    SHOTGUN(ChatFormatting.RED, ModItems.SHOTGUN_AMMO),
+    SNIPER(ChatFormatting.GOLD, ModItems.SNIPER_AMMO),
+    HEAVY(ChatFormatting.LIGHT_PURPLE, ModItems.HEAVY_AMMO);
 
     /**
      * 翻译字段名称，如 item.superbwarfare.ammo.rifle
@@ -43,12 +43,12 @@ public enum Ammo {
     /**
      * 该类型弹药默认的Item
      */
-    public final Supplier<Item> defaultItemSupplier;
+    public final Supplier<AmmoSupplierItem> defaultItemSupplier;
 
     public final ChatFormatting color;
     public DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> dataComponent;
 
-    Ammo(ChatFormatting color, Supplier<Item> defaultItemSupplier) {
+    Ammo(ChatFormatting color, Supplier<AmmoSupplierItem> defaultItemSupplier) {
         this.color = color;
         this.defaultItemSupplier = defaultItemSupplier;
 
@@ -74,10 +74,12 @@ public enum Ammo {
         this.serializationName = builder + "Ammo";
     }
 
+    /** 玩家弹药存储上限 */
     public int getLimit() {
         return AmmoConfigKt.limit(this);
     }
 
+    /** 弹药盒弹药存储上限 */
     public int getAmmoBoxLimit() {
         return AmmoConfigKt.ammoBoxLimit(this);
     }
@@ -87,7 +89,11 @@ public enum Ammo {
     }
 
     public ItemStack getItemStack(int count) {
-        return new ItemStack(defaultItemSupplier.get(), count);
+        return new ItemStack(getItem(), count);
+    }
+
+    public AmmoSupplierItem getItem() {
+        return defaultItemSupplier.get();
     }
 
     public static Ammo getType(String name) {
