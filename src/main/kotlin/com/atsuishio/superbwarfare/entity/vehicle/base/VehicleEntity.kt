@@ -2096,6 +2096,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val obb = obbInfo.getOBB()
             val worldPos = this.transformPosition(transform, obbInfo.position.x, obbInfo.position.y, obbInfo.position.z)
 
+            if (hasTurret() && sympatheticDetonated && (obbInfo.transform.equals("Turret") || obbInfo.transform.equals("Barrel"))) {
+                obb.setExtents(Vector3d(0.0, 0.0, 0.0))
+            }
+
             obb.center.set(Vec3(worldPos.x, worldPos.y, worldPos.z).toVector3d())
             obb.updateRotation(this.getRotationFromString(obbInfo.rotation))
         }

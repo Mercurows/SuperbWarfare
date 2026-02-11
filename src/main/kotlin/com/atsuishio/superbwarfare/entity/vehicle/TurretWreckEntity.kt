@@ -1,23 +1,19 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
-import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
-import com.atsuishio.superbwarfare.init.ModDamageTypes
-import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModParticleTypes
-import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.item.common.ammo.MortarShell
-import com.atsuishio.superbwarfare.tools.CustomExplosion
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.VectorUtils
+import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -30,13 +26,15 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.MoverType
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.entity.projectile.Snowball
+import net.minecraft.world.entity.vehicle.Boat
+import net.minecraft.world.entity.vehicle.Minecart
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.SnowballItem
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4d
 import org.joml.Quaterniond
@@ -74,6 +72,9 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
     open var qzO = 0f
     open var qwO = 1f
     open var supportByVehicle = false
+    open var lastTickSpeed = 0.0
+    open var lastTickVerticalSpeed = 0.0
+    open var collisionCoolDown = 0
 
     override fun canBeCollidedWith(): Boolean {
         return true
@@ -144,6 +145,13 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         qyO = QuaternionY
         qzO = QuaternionZ
         qwO = QuaternionW
+
+        lastTickSpeed = Vec3(this.deltaMovement.x, this.deltaMovement.y + 0.04, this.deltaMovement.z).length()
+        lastTickVerticalSpeed = this.deltaMovement.y + 0.04
+        if (collisionCoolDown > 0) {
+            collisionCoolDown--
+        }
+
         super.baseTick()
 
         this.move(MoverType.SELF, this.deltaMovement)
@@ -242,7 +250,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         }
 
         this.deltaMovement = deltaMovement.multiply(f.toDouble(), 0.98, f.toDouble()).add(0.0, -0.04, 0.0)
-        health -= 0.1f
+        health -= 0.05f
 
         if (health <= 0) {
             this.discard()
@@ -258,6 +266,8 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
             block.setPickUpDelay(10)
             level().addFreshEntity(block)
         }
+
+        crushEntities()
     }
 
     open fun addRandomParticle(
@@ -355,5 +365,130 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
 
     open fun transformPosition(transform: Matrix4d, x: Double, y: Double, z: Double): Vector4d {
         return transform.transform(Vector4d(x, y, z, 1.0))
+    }
+
+    override fun move(movementType: MoverType, movement: Vec3) {
+        super.move(movementType, movement)
+
+        if (lastTickSpeed < 0.3 || collisionCoolDown > 0) return
+
+        if (verticalCollision) {
+            if (Mth.abs(lastTickVerticalSpeed.toFloat()) > 0.4) {
+
+                if (!this.level().isClientSide) {
+                    this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
+                }
+                this.bounceVertical(
+                        Direction.getNearest(
+                                this.deltaMovement.x(),
+                                this.deltaMovement.y(),
+                                this.deltaMovement.z()
+                        ).opposite
+                )
+            }
+        }
+
+        if (this.horizontalCollision) {
+
+            this.bounceHorizontal(
+                    Direction.getNearest(
+                            this.deltaMovement.x(),
+                            this.deltaMovement.y(),
+                            this.deltaMovement.z()
+                    ).opposite
+            )
+            if (!this.level().isClientSide) {
+                this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
+            }
+        }
+    }
+
+    fun bounceHorizontal(direction: Direction) {
+        when (direction.axis) {
+            Direction.Axis.X -> deltaMovement = deltaMovement.multiply(0.8, 0.99, 0.99)
+            Direction.Axis.Z -> deltaMovement = deltaMovement.multiply(0.99, 0.99, 0.8)
+            else -> {}
+        }
+    }
+
+    fun bounceVertical(direction: Direction) {
+        collisionCoolDown = 4
+        if (direction.axis === Direction.Axis.Y) {
+            deltaMovement = deltaMovement.multiply(0.9, -0.8, 0.9)
+        }
+    }
+
+    fun crushEntities() {
+        if (this.isRemoved) return
+        val vec3 = this.deltaMovement
+        val entities: List<Entity>?
+
+        val frontBox = this.boundingBox.move(vec3)
+        entities = this.level().getEntities(EntityTypeTest.forClass(Entity::class.java), frontBox) { entity -> entity !== this && entity!!.vehicle == null}
+                .stream().filter { entity ->
+                    if (entity.isAlive) {
+                        val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
+                        return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
+                                || (entity is LivingEntity && !(entity is Player && entity.isSpectator)))
+                                || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
+                    }
+                    false
+                }
+                .toList()
+
+        for (entity in entities) {
+            val entitySize = entity.boundingBox.getSize()
+            val thisSize = this.boundingBox.getSize()
+            val f: Double
+            val f1: Double
+
+            val v0 = vec3.subtract(entity.deltaMovement)
+            if (v0.angleTo(this.position().vectorTo(entity.position())) > 90) return
+
+            if (this.deltaMovement.lengthSqr() < 0.09) return
+
+            if (entity is LivingEntity && entity.hasEffect(ModMobEffects.STRIKE_PROTECTION.get())) {
+                continue
+            }
+
+            if (entity is VehicleEntity) {
+                f = Mth.clamp((entity.mass / 3).toDouble(), 0.25, 4.0)
+                f1 = Mth.clamp((3 / entity.mass).toDouble(), 0.25, 4.0)
+            } else {
+                f = Mth.clamp(entitySize / thisSize, 0.25, 4.0)
+                f1 = Mth.clamp(thisSize / entitySize, 0.25, 4.0)
+            }
+
+            val length = v0.length().toFloat()
+            val velAdd = v0.normalize().scale(0.8 * length)
+
+            if (length <= 0.3) {
+                continue
+            }
+
+            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
+
+            DamageHandler.doDamage(
+                    entity,
+                    ModDamageTypes.causeVehicleStrikeDamage(
+                            this.level().registryAccess(),
+                            this, this),
+                    (f1 * 80 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)).toFloat()
+            )
+
+            this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z)
+
+            if (entity is VehicleEntity) {
+                val vec31 = this.deltaMovement.normalize().scale(velAdd.length())
+                entity.pushNew(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z)
+            } else {
+                val vec31 = this.deltaMovement.normalize().scale(velAdd.length())
+                entity.push(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z)
+            }
+        }
+    }
+
+    open fun pushNew(pX: Double, pY: Double, pZ: Double) {
+        this.deltaMovement = this.deltaMovement.add(pX, pY, pZ)
     }
 }

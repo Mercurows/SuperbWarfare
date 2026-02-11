@@ -259,7 +259,7 @@ object VehicleMotionUtils {
 
             if (entity is VehicleEntity) {
                 f = Mth.clamp((entity.mass / vehicle.mass).toDouble(), 0.25, 4.0)
-                f1 = Mth.clamp((vehicle.mass / vehicle.mass).toDouble(), 0.25, 4.0)
+                f1 = Mth.clamp((vehicle.mass / entity.mass).toDouble(), 0.25, 4.0)
             } else {
                 f = Mth.clamp(entitySize / thisSize, 0.25, 4.0)
                 f1 = Mth.clamp(thisSize / entitySize, 0.25, 4.0)
