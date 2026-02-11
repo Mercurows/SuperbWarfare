@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.recipe
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoBoxItem
+import com.atsuishio.superbwarfare.item.common.ammo.ammoBoxData
 import net.minecraft.core.NonNullList
 import net.minecraft.core.RegistryAccess
 import net.minecraft.resources.ResourceLocation
@@ -30,10 +31,7 @@ class AmmoBoxExtractAmmoRecipe(id: ResourceLocation, category: CraftingBookCateg
             }
         }
 
-        val data = ammoBoxItem.tag ?: return false
-
-        val typeString = data.getString("Type")
-        val type = Ammo.getType(typeString) ?: return false
+        val type = ammoBoxItem.ammoBoxData.type ?: return false
 
         return type.get(ammoBoxItem) > 0
     }
@@ -42,9 +40,9 @@ class AmmoBoxExtractAmmoRecipe(id: ResourceLocation, category: CraftingBookCateg
     override fun assemble(input: CraftingContainer, registryAccess: RegistryAccess): ItemStack {
         var type: Ammo? = null
 
-        for (stack in input.items) {
-            if (stack.item is AmmoBoxItem) {
-                type = Ammo.getType(stack.getOrCreateTag().getString("Type"))
+        for (item in input.items) {
+            if (item.item is AmmoBoxItem) {
+                type = item.ammoBoxData.type
                 break
             }
         }
@@ -62,7 +60,7 @@ class AmmoBoxExtractAmmoRecipe(id: ResourceLocation, category: CraftingBookCateg
             if (item.item is AmmoBoxItem) {
                 val ammoBox = item.copy()
 
-                val type = Ammo.getType(item.getOrCreateTag().getString("Type"))!!
+                val type = ammoBox.ammoBoxData.type!!
 
                 type.add(ammoBox, -1)
                 remaining[i] = ammoBox

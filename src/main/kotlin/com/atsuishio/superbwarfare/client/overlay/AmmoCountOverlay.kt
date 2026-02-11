@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.common.ammo.AmmoSupplierItem
+import com.atsuishio.superbwarfare.item.common.ammo.ammoBoxData
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
@@ -82,9 +83,10 @@ object AmmoCountOverlay : CommonOverlay("ammo_count") {
             var boxAmmoSelected = false
 
             if (isAmmoBox) {
-                val ammoBoxType = stack.getOrCreateTag().getString("Type")
+                val ammoBoxType = stack.ammoBoxData.type
+
                 boxAmmoCount = type.get(stack)
-                if (ammoBoxType == "All" || ammoBoxType == type.serializationName) {
+                if (ammoBoxType == null || ammoBoxType == type) {
                     boxAnimator.forward(currentTime)
                     boxAmmoSelected = true
                 } else {

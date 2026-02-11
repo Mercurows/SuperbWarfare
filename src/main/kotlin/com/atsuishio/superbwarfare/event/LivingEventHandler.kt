@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.item.common.ammo.ammoBoxData
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage
@@ -630,8 +631,7 @@ object LivingEventHandler {
             type.set(cap, 0)
         }
 
-        stack.getOrCreateTag().putBoolean("All", true)
-        stack.getOrCreateTag().putBoolean("IsDrop", true)
+        stack.ammoBoxData = stack.ammoBoxData.asDrop()
 
         cap.sync(player)
         event.drops += ItemEntity(player.level(), player.x, player.y + 1, player.z, stack)
