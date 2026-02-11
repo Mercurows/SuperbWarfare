@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
@@ -2441,23 +2442,25 @@ object ClientEventHandler {
 
         val lookingEntity = SeekTool.seekEntity(player, 520.0, 5.0)
         val range: Double =
-            if (lookingEntity != null) {
-                player.distanceTo(lookingEntity).coerceAtLeast(0.01f).toDouble()
-            } else {
-                player.position().distanceTo(
-                    (Vec3.atLowerCornerOf(
-                        player.level().clip(
-                            ClipContext(
-                                player.eyePosition,
-                                player.eyePosition.add(player.lookAngle.scale(520.0)),
-                                ClipContext.Block.OUTLINE,
-                                ClipContext.Fluid.NONE,
-                                player
-                            )
-                        ).blockPos
-                    ))
-                ).coerceAtLeast(0.01)
-            }
+                if (lookingEntity != null) {
+                    player.distanceTo(lookingEntity).coerceAtLeast(0.01f).toDouble()
+                } else {
+                    player.position().distanceTo(
+                            (Vec3.atLowerCornerOf(
+                                    player.level().clip(
+                                            ClipContext(
+                                                    player.eyePosition,
+                                                    player.eyePosition.add(player.lookAngle.scale(520.0)),
+                                                    ClipContext.Block.OUTLINE,
+                                                    ClipContext.Fluid.NONE,
+                                                    player
+                                            )
+                                    ).blockPos
+                            ))
+                    ).coerceAtLeast(0.01)
+                }
+
+        lookDistance = Mth.lerp(0.2 * times, lookDistance, range)
 
         lookDistance = Mth.lerp(0.2 * times, lookDistance, range)
 
@@ -2468,18 +2471,23 @@ object ClientEventHandler {
                 0.0
             }
 
-        event.pitch = (pitch + cameraRot[0] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.2 else 0.0) * turnRot[0]
+        var r = 1
+
+        if (mc.options.cameraType != CameraType.FIRST_PERSON) {
+            r = 0
+        }
+
+        event.pitch = (pitch + cameraRot[0] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.2 else 0.0) * turnRot[0] * r
                 + 3 * velocityY).toFloat()
         if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK) {
-            event.yaw = (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1]
-                    - (if (cameraLocation > 0.0) 1.0 else -1.0) * angle * zoomPos).toFloat()
+            event.yaw = (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r - angle * zoomPos).toFloat()
         } else {
             event.yaw =
-                (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1]).toFloat()
+                (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r).toFloat()
         }
 
         cameraRoll =
-            (roll + cameraRot[2] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.35 else 0.0) * turnRot[2]).toFloat()
+            (roll + cameraRot[2] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.35 else 0.0) * turnRot[2] * r).toFloat()
     }
 
     private fun handleBowPullAnimation(entity: LivingEntity, stack: ItemStack) {

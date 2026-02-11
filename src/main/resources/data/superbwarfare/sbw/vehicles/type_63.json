@@ -7,7 +7,7 @@
   "TurretPitchRange": [-5, 60],
   "BarrelPos": [0, 0.65, -0.203125],
   "Weapons": {
-    "@Rocket": {
+    "Main": {
       "Velocity": 10,
       "Gravity": 0.05,
       "Spread": 0.5,
@@ -19,21 +19,21 @@
       "SoundRadius": 8
     },
     "AP": {
-      "Template": "@Rocket",
+      "Template": "Main",
       "Damage": 500,
       "ExplosionDamage": 100,
       "ExplosionRadius": 5,
       "ShellType": "AA"
     },
     "HE": {
-      "Template": "@Rocket",
+      "Template": "Main",
       "Damage": 200,
       "ExplosionDamage": 200,
       "ExplosionRadius": 12,
       "ShellType": "HE"
     },
     "CM": {
-      "Template": "@Rocket",
+      "Template": "Main",
       "Damage": 300,
       "ExplosionDamage": 300,
       "ExplosionRadius": 6,

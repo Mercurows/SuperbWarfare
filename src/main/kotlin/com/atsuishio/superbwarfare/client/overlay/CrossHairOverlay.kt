@@ -86,12 +86,18 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         var moveX = 0f
         var moveY = 0f
 
+        var r = 1
+
+        if (com.atsuishio.superbwarfare.tools.mc.options.cameraType != CameraType.FIRST_PERSON) {
+            r = 0
+        }
+
         // 平滑准星
         if (DisplayConfig.FLOAT_CROSS_HAIR.get() && vehicle == null) {
             moveX =
-                (-6 * ClientEventHandler.turnRot[1] - (if (player.isSprinting) 10 else 6) * ClientEventHandler.movePosX).toFloat()
+                (-6 * ClientEventHandler.turnRot[1] * r - (if (player.isSprinting) 10 else 6) * ClientEventHandler.movePosX).toFloat()
             moveY =
-                (-6 * ClientEventHandler.turnRot[0] + 6 * ClientEventHandler.velocityY.toFloat() - (if (player.isSprinting) 10 else 6) * ClientEventHandler.movePosY - 0.25 * ClientEventHandler.boltMove).toFloat()
+                (-6 * ClientEventHandler.turnRot[0] * r + 6 * ClientEventHandler.velocityY.toFloat() - (if (player.isSprinting) 10 else 6) * ClientEventHandler.movePosY - 0.25 * ClientEventHandler.boltMove).toFloat()
             // 判断RC是否加载，用于适配动态准星
             if (RealCameraCompatHolder.hasMod()) {
                 moveX = RealCameraCompatHolder.getCompatMoveX(moveX)
