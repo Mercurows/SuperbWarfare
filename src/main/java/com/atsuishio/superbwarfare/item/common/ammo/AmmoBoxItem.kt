@@ -44,7 +44,7 @@ var ItemStack.ammoBoxData: AmmoBoxItem.AmmoBoxData
         this@ammoBoxData.set(ModDataComponents.AMMO_BOX_INFO, info)
 
         value.storedAmmo.forEach { (ammo, count) ->
-            this@ammoBoxData.set(ammo.dataComponent.get(), count)
+            ammo.set(this, count)
         }
     }
 

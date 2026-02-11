@@ -114,7 +114,11 @@ public enum Ammo {
     public boolean set(ItemStack stack, int count) {
         if (count > getAmmoBoxLimit()) return false;
 
-        stack.set(this.dataComponent, count);
+        if (count <= 0) {
+            stack.remove(this.dataComponent);
+        } else {
+            stack.set(this.dataComponent, count);
+        }
         return true;
     }
 
@@ -131,7 +135,11 @@ public enum Ammo {
         if (count < 0) count = 0;
         if (count > getAmmoBoxLimit()) return false;
 
-        tag.putInt(this.serializationName, count);
+        if (count == 0) {
+            tag.remove(this.serializationName);
+        } else {
+            tag.putInt(this.serializationName, count);
+        }
         return true;
     }
 
