@@ -146,8 +146,8 @@ public class AnimationHelper {
 
             lerpTimer = Mth.lerp(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), lerpTimer, (float) ClientEventHandler.fireRotTimer * 0.667f);
 
-            handleShootSmoke(stack, bone, buffer, packedLightIn, x, y, z, height);
-            handleShootSmoke2(stack, bone, buffer, packedLightIn, x, y, z, height);
+//            handleShootSmoke(stack, bone, buffer, packedLightIn, x, y, z, height);
+//            handleShootSmoke2(stack, bone, buffer, packedLightIn, x, y, z, height);
         }
     }
 

@@ -307,6 +307,15 @@ public class ParticleTool {
         spawnCircularParticles(level, pos, u, v, count, radius, particle, direct, speed);
     }
 
+    public static void spawnDirectionalParticles(int count, double radius, Level level, ParticleOptions particle, Vec3 direct, Vec3 pos, double speed) {
+        Vec3 direction = direct.normalize();
+        Vec3 randomPerp = getRandomPerpendicular(direction);
+        Vec3 u = randomPerp.normalize();
+        Vec3 v = direction.cross(u).normalize();
+
+        spawnCircularParticles(level, pos, u, v, count, radius, particle, direct, speed);
+    }
+
     private static Vec3 getRandomPerpendicular(Vec3 dir) {
         Vec3 candidate1 = new Vec3(dir.y, -dir.x, 0); // 在XY平面垂直
         if (candidate1.lengthSqr() > 1e-4) return candidate1;
@@ -325,10 +334,37 @@ public class ParticleTool {
         }
     }
 
+    private static void spawnCircularParticles(Level level, Vec3 center, Vec3 u, Vec3 v, int count, double radius, ParticleOptions particle, Vec3 direct, double speed) {
+        for (int i = 0; i < count; i++) {
+            double theta = 2 * Math.PI * i / count;
+            double xOffset = radius * (Math.cos(theta) * u.x + Math.sin(theta) * v.x);
+            double yOffset = radius * (Math.cos(theta) * u.y + Math.sin(theta) * v.y);
+            double zOffset = radius * (Math.cos(theta) * u.z + Math.sin(theta) * v.z);
+
+            Vec3 pos = center.add(xOffset, yOffset, zOffset);
+            spawnParticle(level, pos, particle, direct, center, speed);
+        }
+    }
+
     private static void spawnParticle(ServerLevel level, Vec3 pos, ParticleOptions particle, Vec3 direct, Vec3 originPos, double speed) {
         Vec3 v0 = originPos.vectorTo(pos).normalize().add(direct.scale(6));
         sendParticle(level, particle, pos.x, pos.y, pos.z,
                 0, v0.x, v0.y, v0.z, speed, true);
+    }
+
+    private static void spawnParticle(Level level, Vec3 pos, ParticleOptions particle, Vec3 direct, Vec3 originPos, double speed) {
+        Vec3 v0 = originPos.vectorTo(pos).normalize().add(direct.scale(6));
+        sendParticle(level, particle, pos.x, pos.y, pos.z, v0.x, v0.y, v0.z, speed);
+    }
+
+    public static void sendParticle(Level level, ParticleOptions particle, double x, double y, double z, double xOffset, double yOffset, double zOffset, double speed) {
+        Vec3 vec3 = new Vec3(xOffset, yOffset, zOffset).normalize().scale(speed * (0.75 + Math.random() * 0.5));
+        level.addAlwaysVisibleParticle(particle,
+                true,
+                x, y, z,
+                vec3.x,
+                vec3.y,
+                vec3.z);
     }
 
     public static void spawnBarrelSmoke(int count, ServerLevel level, Vec3 v0, Vec3 pos) {

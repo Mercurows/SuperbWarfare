@@ -1328,9 +1328,9 @@ object ClientEventHandler {
         }
 
         if (!item.canShoot(data, player)) {
-            if (!data.meleeOnly()) {
-                holdingFireKey = false
-            }
+//            if (!data.meleeOnly()) {
+//                holdingFireKey = false
+//            }
             burstFireAmount = 0
         }
 
