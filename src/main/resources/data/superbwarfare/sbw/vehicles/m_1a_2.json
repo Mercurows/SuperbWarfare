@@ -260,6 +260,7 @@
       "SoundRadius": 16
     }
   },
+  "InertiaRotateRate": 1.2,
   "EngineType": "Track",
   "EngineInfo": {
     "Buoyancy": 0,

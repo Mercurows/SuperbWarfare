@@ -519,7 +519,7 @@ object ClickEventHandler {
                 }
             } else {
                 sendPacketToServer(FireKeyMessage(0, ClientEventHandler.bowPower, ClientEventHandler.zoom))
-                if ((!data.reloading() && !data.charging() && !data.bolt.needed.get()) && ClientEventHandler.drawTime < 0.01) {
+                if ( ClientEventHandler.drawTime < 0.01) {
                     val fireMode = data.selectedFireModeInfo().mode
                     if (fireMode == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {

@@ -43,9 +43,9 @@ object VehicleMotionUtils {
      */
     fun preventStacking(vehicle: VehicleEntity) {
         val entities = vehicle.level().getEntities(
-            EntityTypeTest.forClass(Entity::class.java),
+            EntityTypeTest.forClass(VehicleEntity::class.java),
             vehicle.boundingBox.inflate(6.0)
-        ) { entity: Entity -> entity !== vehicle && entity.tickCount > 3 && !vehicle.getPassengers().contains(entity) && entity.vehicle == null }
+        ) { entity: VehicleEntity -> entity !== vehicle && !vehicle.getPassengers().contains(entity) && entity.vehicle == null }
 
         for (entity in entities) {
             if (entity.boundingBox.intersects(vehicle.boundingBox)) {
@@ -127,14 +127,6 @@ object VehicleMotionUtils {
         val eyePos = feetPos.add(0.0, entity.eyeHeight.toDouble(), 0.0)
 
         for (obb in vehicle.getOBBs()) {
-            if (entity is Player && entity.onGround() && entity.isCrouching && entity.level() is ServerLevel) {
-                // 推车
-                vehicle.setDeltaMovement(
-                    vehicle.deltaMovement.add(entity.forward).normalize()
-                        .scale(entity.deltaMovement.length() * 3)
-                )
-            }
-
             if (obb.contains(feetPos)) {
                 if (!entity.noPhysics && !vehicle.noPhysics) {
                     val gravity = Math.max(entity.deltaMovement.y, 0.0)
@@ -182,6 +174,15 @@ object VehicleMotionUtils {
                 if (face < 0) {
                     support.negate()
                 }
+
+                if (entity is Player && entity.onGround() && entity.isCrouching && entity.level() is ServerLevel) {
+                    // 推车
+                    vehicle.setDeltaMovement(
+                            vehicle.deltaMovement.add(OBB.vector3dToVec3(support).normalize().multiply(-1.0, 0.0, -1.0)).normalize()
+                                    .scale(entity.deltaMovement.length())
+                    )
+                }
+
                 entity.isSprinting = false
                 if (entity.isPushable) {
                     var force = entity.deltaMovement.horizontalDistance() * 2

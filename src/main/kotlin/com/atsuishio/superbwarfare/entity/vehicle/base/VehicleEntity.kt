@@ -6,7 +6,9 @@ import com.atsuishio.superbwarfare.capability.ModCapabilities
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
+import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
+import com.atsuishio.superbwarfare.client.particle.FireStarParticle
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
@@ -2222,6 +2224,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun handlePartHealth() {
+        if (this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && health < 0.05 * getMaxHealth() && !(sympatheticDetonated)) {
+            turretHealth = 0f
+            mainEngineHealth = 0f
+            subEngineHealth = 0f
+        }
         if (turretHealth < 0) {
             turretDamaged = true
         } else if (turretHealth > 0.95 * this.getTurretMaxHealth()) {
@@ -2408,6 +2415,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     0.01f,
                     1
                 )
+
+                if (computed().destroyInfo.sympatheticDetonation && health < 0.05 * getMaxHealth() && this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && !(sympatheticDetonated)) {
+                    ParticleTool.spawnDirectionalParticles((12 + 10 * random).toInt(), 0.05 * random.toDouble(), level(), CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f), getUpVec(1f), turretBurnEffectPos(), 4.5 + random)
+                    ParticleTool.spawnDirectionalParticles((4 + 4 * random).toInt(), 0.8 * random.toDouble(), level(), ModParticleTypes.FIRE_STAR.get(), getUpVec(1f), turretBurnEffectPos(), 0.4 + random)
+                    ParticleTool.spawnDirectionalParticles((4 + 4 * random).toInt(), 0.8 * random.toDouble(), level(), ParticleTypes.LAVA, getUpVec(1f), turretBurnEffectPos(), 0.4 + random)
+                    ParticleTool.spawnDirectionalParticles((4 + 4 * random).toInt(), 0.8 * random.toDouble(), level(), ParticleTypes.FLAME, getUpVec(1f), turretBurnEffectPos(), 0.4 + random)
+                }
             }
             if (this.tickCount % 15 == 0) {
                 this.level().playSound(null, this.onPos, SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1f, 1f)
@@ -2419,6 +2433,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         } else if (this.health >= 0.1f && this.health < 0.4f * this.getMaxHealth() && tickCount % 10 == 0) {
             this.level().playSound(null, this.onPos, ModSounds.LOW_HEALTH.get(), SoundSource.PLAYERS, 1f, 1f)
         }
+    }
+
+    open fun turretBurnEffectPos(): Vec3 {
+        return eyePosition
     }
 
     open fun playLowHealthParticle() {

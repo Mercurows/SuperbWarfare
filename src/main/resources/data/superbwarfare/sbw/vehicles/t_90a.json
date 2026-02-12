@@ -225,6 +225,7 @@
     }
   },
   "HUDColor": "0xFFC700",
+  "InertiaRotateRate": 1.2,
   "EngineType": "Track",
   "EngineInfo": {
     "Buoyancy": 0,
