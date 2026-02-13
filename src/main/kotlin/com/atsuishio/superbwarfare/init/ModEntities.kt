@@ -248,7 +248,7 @@ object ModEntities {
     val LAV_AD = register("lav_ad", vehicle(::LavAdEntity).sized(2.8f, 3.1f))
 
     @JvmField
-    val BMP_2 = register("bmp_2", vehicle(::Bmp2Entity).sized(4f, 2.3f))
+    val BMP_2 = register("bmp_2", vehicle(::Bmp2Entity).sized(3.6f, 2.1f))
 
     @JvmField
     val BRADLEY = register("bradley", vehicle(::BradleyEntity).sized(3.6f, 2.3f))
