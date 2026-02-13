@@ -12,7 +12,8 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.AddReloadListenerEvent
 
-class ContainerDataManager : SimpleJsonResourceReloadListener(GSON, DIRECTORY) {
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+object ContainerDataManager : SimpleJsonResourceReloadListener(Gson(), "sbw/containers") {
     private val containerData: MutableMap<ResourceLocation, MutableList<Pair<String, Int>>> = hashMapOf()
 
     override fun apply(
@@ -47,18 +48,8 @@ class ContainerDataManager : SimpleJsonResourceReloadListener(GSON, DIRECTORY) {
         return containerData[id] ?: mutableListOf()
     }
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
-    companion object {
-        @JvmField
-        var INSTANCE: ContainerDataManager = ContainerDataManager()
-
-        private val GSON = Gson()
-        private const val DIRECTORY = "sbw/containers"
-
-        @SubscribeEvent
-        fun onAddReloadListeners(event: AddReloadListenerEvent) {
-            INSTANCE = ContainerDataManager()
-            event.addListener(INSTANCE)
-        }
+    @SubscribeEvent
+    fun onAddReloadListeners(event: AddReloadListenerEvent) {
+        event.addListener(this)
     }
 }
