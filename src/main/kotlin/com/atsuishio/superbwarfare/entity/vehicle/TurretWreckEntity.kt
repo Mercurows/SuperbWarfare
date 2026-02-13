@@ -326,13 +326,13 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
                 .withParticleType(ParticleTool.ParticleType.SMALL)
                 .keepBlock().explode()
 
-            this.createWreckageLoot()
+            this.generateWreckageLoot()
         }
 
         crushEntities()
     }
 
-    open fun createWreckageLoot() {
+    open fun generateWreckageLoot() {
         val data = WreckageLootDataManager.getLootData(ResourceLocation(this.vehicleName)) ?: return
         val pools = data.pools
         if (pools.isEmpty()) return

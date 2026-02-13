@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
+import com.atsuishio.superbwarfare.data.loot.WreckageLootDataManager
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*
@@ -55,6 +56,7 @@ import net.minecraft.core.Holder
 import net.minecraft.core.NonNullList
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.IntArrayTag
 import net.minecraft.nbt.IntTag
@@ -65,6 +67,7 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.network.syncher.SynchedEntityData.DataValue
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -113,6 +116,7 @@ import java.util.function.Function
 import java.util.function.Supplier
 import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.*
+import kotlin.random.Random
 
 abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
     VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity, OBBEntity {
@@ -240,7 +244,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var obb = listOf<OBBInfo>()
         protected set
     open var engineInfo: EngineInfo? = null
-        public set
 
     protected var interpolationSteps = 0
     protected var xO = 0.0
@@ -334,6 +337,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var destroyRot = 0f
 
     open var jumpCoolDown = 0
+
+    open var lastDamageSource: DamageSource? = null
+        get() {
+            if (this.level().gameTime - this.lastDamageStamp > 40L) {
+                this.lastDamageSource = null
+            }
+            return field
+        }
+    open var lastDamageStamp: Long = 0
 
     private fun initOBB() {
         this.obb = data().getDefault().copy().obb.filterNotNull().toList()
@@ -716,7 +728,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         orderedPassengers[index] = null
         this.passengers =
-            ImmutableList.copyOf<Entity?>(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }
+            ImmutableList.copyOf(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }
                 .toList())
 
         pPassenger.boardingCooldown = 60
@@ -842,7 +854,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun shouldSendHitSounds() = true
 
     protected lateinit var energyStorage: SyncedEntityEnergyStorage
-    protected var energyOptional: LazyOptional<IEnergyStorage> = LazyOptional.of<IEnergyStorage> { energyStorage }
+    protected var energyOptional: LazyOptional<IEnergyStorage> = LazyOptional.of { energyStorage }
 
     var isInitialized: Boolean
         protected set
@@ -1212,7 +1224,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return this.computed().seats().stream()
             .filter { seat: SeatInfo? -> !seat!!.weapons().isEmpty() }
             .flatMap { seat: SeatInfo? -> seat!!.weapons().stream() }
-            .filter { name: String? -> name != null && !name.isEmpty() }
+            .filter { name: String? -> !name.isNullOrEmpty() }
             .anyMatch { name -> this.getGunData(name) != null }
     }
 
@@ -1301,34 +1313,32 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.getMaxHealth()
         }
 
-        with(entityData) {
-            turretHealth = compound.getFloat("TurretHealth")
-            leftWheelHealth = compound.getFloat("LeftWheelHealth")
-            rightWheelHealth = compound.getFloat("RightWheelHealth")
-            mainEngineHealth = compound.getFloat("MainEngineHealth")
-            subEngineHealth = compound.getFloat("SubEngineHealth")
+        turretHealth = compound.getFloat("TurretHealth")
+        leftWheelHealth = compound.getFloat("LeftWheelHealth")
+        rightWheelHealth = compound.getFloat("RightWheelHealth")
+        mainEngineHealth = compound.getFloat("MainEngineHealth")
+        subEngineHealth = compound.getFloat("SubEngineHealth")
 
-            turretDamaged = compound.getBoolean("TurretDamaged")
-            leftWheelDamaged = compound.getBoolean("LeftWheelDamaged")
-            rightWheelDamaged = compound.getBoolean("RightWheelDamaged")
-            mainEngineDamaged = compound.getBoolean("MainEngineDamaged")
-            subEngineDamaged = compound.getBoolean("SubEngineDamaged")
+        turretDamaged = compound.getBoolean("TurretDamaged")
+        leftWheelDamaged = compound.getBoolean("LeftWheelDamaged")
+        rightWheelDamaged = compound.getBoolean("RightWheelDamaged")
+        mainEngineDamaged = compound.getBoolean("MainEngineDamaged")
+        subEngineDamaged = compound.getBoolean("SubEngineDamaged")
 
-            power = compound.getFloat("Power")
-            decoyReady = compound.getBoolean("DecoyReady")
-            synchedGearRot = compound.getFloat("GearRot")
-            gearUp = compound.getBoolean("GearUp")
-            synchedPropellerRot = compound.getFloat("PropellerRot")
-            chargeProgress = compound.getFloat("ChargeProgress")
-            lastAttackerUUID = compound.getString("LastAttacker")
-            lastDriverUUID = compound.getString("LastDriver")
+        power = compound.getFloat("Power")
+        decoyReady = compound.getBoolean("DecoyReady")
+        synchedGearRot = compound.getFloat("GearRot")
+        gearUp = compound.getBoolean("GearUp")
+        synchedPropellerRot = compound.getFloat("PropellerRot")
+        chargeProgress = compound.getFloat("ChargeProgress")
+        lastAttackerUUID = compound.getString("LastAttacker")
+        lastDriverUUID = compound.getString("LastDriver")
 
-            serverYaw = compound.getFloat("ServerYaw")
-            serverPitch = compound.getFloat("ServerPitch")
+        serverYaw = compound.getFloat("ServerYaw")
+        serverPitch = compound.getFloat("ServerPitch")
 
-            isWreck = compound.getBoolean("IsWreck")
-            sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
-        }
+        isWreck = compound.getBoolean("IsWreck")
+        sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
 
         val selectedWeaponTag = compound.get("SelectedWeapon")
         val selected = if (selectedWeaponTag is IntArrayTag) {
@@ -1856,16 +1866,16 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (health <= -getMaxHealth()) {
                 this.discard()
                 val explosion = createCustomExplosion()
-                        .radius(0f)
-                        .damage(0f)
-                        .withParticleType(ParticleTool.ParticleType.SMALL)
+                    .radius(0f)
+                    .damage(0f)
+                    .withParticleType(ParticleTool.ParticleType.SMALL)
                 explosion.keepBlock()
                 explosion.explode()
             }
             if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && (onGround() || isInFluidType) && !sympatheticDetonated) {
                 sympatheticDetonated = true
                 val destroyInfo = computed().destroyInfo
-                vehcileExploesion(destroyInfo, false)
+                vehicleExplosion(destroyInfo, false)
             }
         }
 
@@ -2415,10 +2425,42 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 )
 
                 if (computed().destroyInfo.sympatheticDetonation && health < 0.05 * getMaxHealth() && this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && !(sympatheticDetonated)) {
-                    ParticleTool.spawnDirectionalParticles((12 + 10 * random).toInt(), 0.05 * random.toDouble(), level(), CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f), getUpVec(1f), turretBurnEffectPos(), 4.5 + random)
-                    ParticleTool.spawnDirectionalParticles((4 + 4 * random).toInt(), 0.8 * random.toDouble(), level(), ModParticleTypes.FIRE_STAR.get(), getUpVec(1f), turretBurnEffectPos(), 0.4 + random)
-                    ParticleTool.spawnDirectionalParticles((4 + 4 * random).toInt(), 0.8 * random.toDouble(), level(), ParticleTypes.LAVA, getUpVec(1f), turretBurnEffectPos(), 0.4 + random)
-                    ParticleTool.spawnDirectionalParticles((4 + 4 * random).toInt(), 0.8 * random.toDouble(), level(), ParticleTypes.FLAME, getUpVec(1f), turretBurnEffectPos(), 0.4 + random)
+                    ParticleTool.spawnDirectionalParticles(
+                        (12 + 10 * random).toInt(),
+                        0.05 * random.toDouble(),
+                        level(),
+                        CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f),
+                        getUpVec(1f),
+                        turretBurnEffectPos(),
+                        4.5 + random
+                    )
+                    ParticleTool.spawnDirectionalParticles(
+                        (4 + 4 * random).toInt(),
+                        0.8 * random.toDouble(),
+                        level(),
+                        ModParticleTypes.FIRE_STAR.get(),
+                        getUpVec(1f),
+                        turretBurnEffectPos(),
+                        0.4 + random
+                    )
+                    ParticleTool.spawnDirectionalParticles(
+                        (4 + 4 * random).toInt(),
+                        0.8 * random.toDouble(),
+                        level(),
+                        ParticleTypes.LAVA,
+                        getUpVec(1f),
+                        turretBurnEffectPos(),
+                        0.4 + random
+                    )
+                    ParticleTool.spawnDirectionalParticles(
+                        (4 + 4 * random).toInt(),
+                        0.8 * random.toDouble(),
+                        level(),
+                        ParticleTypes.FLAME,
+                        getUpVec(1f),
+                        turretBurnEffectPos(),
+                        0.4 + random
+                    )
                 }
             }
             if (this.tickCount % 15 == 0) {
@@ -2493,7 +2535,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val index = getSeatIndex(entity)
         val seats = computed().seats()
         if (index < 0 || index >= seats.size) return
-        val seat = seats.get(index)
+        val seat = seats[index]
 
         var vec3 = getTransformDirection(1f, entity)
 
@@ -2686,7 +2728,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun getRotationFromString(string: String?, ticks: Float): Quaterniond {
         return rotationTransform
-            .getOrDefault(string, rotationTransform.get("Default"))!!
+            .getOrDefault(string, rotationTransform["Default"])!!
             .apply(ticks)
     }
 
@@ -3060,9 +3102,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         if (vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) {
-            vehcileExploesion(destroyInfo, true)
+            vehicleExplosion(destroyInfo, true)
         } else {
-            vehcileExploesion(destroyInfo, false)
+            vehicleExplosion(destroyInfo, false)
         }
 
         if (hasTurret() && destroyInfo.sympatheticDetonation && Math.random() < destroyInfo.sympatheticDetonationChance) {
@@ -3078,7 +3120,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val dir = getUpVec(1f).add(deltaMovement + Vec3(0.0, this.computed().gravity, 0.0))
 
             val rdm = (Math.random() - 0.5) * 0.4 + 1
-            turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(random.triangle(0.0, 0.0172275 * 12.toDouble()), random.triangle(0.0, 0.0172275 * 12.toDouble()), random.triangle(0.0, 0.0172275 * 12.toDouble())).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
+            turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(
+                random.triangle(0.0, 0.0172275 * 12.toDouble()),
+                random.triangle(0.0, 0.0172275 * 12.toDouble()),
+                random.triangle(0.0, 0.0172275 * 12.toDouble())
+            ).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
 
             val quaterniond = combineRotationsTurret(1f, this)
             turretWreckEntity.vehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()
@@ -3089,21 +3135,23 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             level().addFreshEntity(turretWreckEntity)
         }
 
-        if (destroyInfo.NoWreck) {
+        if (destroyInfo.noWreck) {
             discard()
+        } else {
+            this.generateWreckageLoot()
         }
     }
 
-    open fun vehcileExploesion(destroyInfo: DestroyInfo, mini: Boolean) {
+    open fun vehicleExplosion(destroyInfo: DestroyInfo, mini: Boolean) {
         val radius = destroyInfo.explosionRadius
         if (radius > 0) {
             val damage = if (mini) 0.25f * destroyInfo.explosionDamage else destroyInfo.explosionDamage
             val particleType = if (mini) ParticleTool.ParticleType.MEDIUM else destroyInfo.particleType
 
             val explosion = createCustomExplosion()
-                    .radius(if (mini) 0.5f * radius else radius)
-                    .damage(damage)
-                    .withParticleType(particleType)
+                .radius(if (mini) 0.5f * radius else radius)
+                .damage(damage)
+                .withParticleType(particleType)
 
             if (!destroyInfo.explodeBlocks || mini) {
                 explosion.keepBlock()
@@ -3125,8 +3173,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
                         entity.invulnerableTime = 0
                         entity.hurt(
-                                ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker),
-                                VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get().toFloat()
+                            ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker),
+                            VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get().toFloat()
                         )
                     }
                 }
@@ -3143,11 +3191,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
                     entity.invulnerableTime = 0
                     entity.hurt(
-                            ModDamageTypes.causeVehicleExplosionDamage(
-                                    this.level().registryAccess(),
-                                    null,
-                                    tempAttacker
-                            ), VehicleConfig.SELF_EXPLOSION_DAMAGE.get().toFloat()
+                        ModDamageTypes.causeVehicleExplosionDamage(
+                            this.level().registryAccess(),
+                            null,
+                            tempAttacker
+                        ), VehicleConfig.SELF_EXPLOSION_DAMAGE.get().toFloat()
                     )
                 }
             }
@@ -3952,7 +4000,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this.level().registryAccess(),
                         this,
                         driver ?: this
-                    ), if (isWreck) 0f else ((40 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)).toFloat()
+                    ),
+                    if (isWreck) 0f else ((40 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
@@ -3983,7 +4032,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this,
                         driver ?: this
                     ),
-                        if (isWreck) 0f else (96 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))).toFloat()
+                    if (isWreck) 0f else (96 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))).toFloat()
                 )
                 if (!this.level().isClientSide) {
                     this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
@@ -4185,6 +4234,38 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun getEnergyDataAccessor() = ENERGY
+
+    open fun generateWreckageLoot() {
+        val data = WreckageLootDataManager.getLootData(this.type) ?: return
+        val pools = data.pools
+        if (pools.isEmpty()) return
+        pools.forEach { pool ->
+            val entries = pool.entries
+            if (entries.isEmpty()) return@forEach
+            val source = pool.source
+            if (source != "@Default") {
+                val lastSource = this.lastDamageSource ?: return@forEach
+                val parsedLoc = ResourceLocation.tryParse(source) ?: return@forEach
+                val damageType = ResourceKey.create(Registries.DAMAGE_TYPE, parsedLoc)
+                if (!lastSource.`is`(damageType)) return@forEach
+            }
+
+            val random = Random.nextDouble()
+            repeat(pool.rolls) {
+                entries.forEach { entry ->
+                    val chance =
+                        entry.chance * if (this.hasTurret() && this.sympatheticDetonated) (1.0 - VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()) else 1.0
+                    if (random > chance) return@forEach
+                    val name = entry.name
+                    val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: return@forEach
+                    val count = entry.count
+                    val entity = ItemEntity(level(), x, (y + 1), z, ItemStack(item, count))
+                    entity.setPickUpDelay(10)
+                    level().addFreshEntity(entity)
+                }
+            }
+        }
+    }
 
     companion object {
         const val TAG_SEAT_INDEX: String = "SBWSeatIndex"
@@ -4400,11 +4481,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         @JvmField
         val IS_WRECK: EntityDataAccessor<Boolean> =
-                SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         @JvmField
         val SYMPATHETIC_DETONATED: EntityDataAccessor<Boolean> =
-                SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         // Map SeatIndex -> GunData
         protected val GUN_DATA_MAP: EntityDataAccessor<Map<String, GunData>> =

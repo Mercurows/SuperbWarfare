@@ -10,9 +10,11 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener
 import net.minecraft.util.profiling.ProfilerFiller
+import net.minecraft.world.entity.EntityType
 import net.minecraftforge.event.AddReloadListenerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
+import net.minecraftforge.registries.ForgeRegistries
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE)
 object WreckageLootDataManager : SimpleJsonResourceReloadListener(Gson(), "sbw/loot") {
@@ -37,6 +39,10 @@ object WreckageLootDataManager : SimpleJsonResourceReloadListener(Gson(), "sbw/l
 
     fun getLootData(id: ResourceLocation): WreckageLootData? {
         return data[id]
+    }
+
+    fun getLootData(type: EntityType<*>): WreckageLootData? {
+        return data[ForgeRegistries.ENTITY_TYPES.getKey(type)]
     }
 
     @SubscribeEvent
