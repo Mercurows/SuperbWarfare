@@ -6,10 +6,12 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener
 import net.minecraft.util.profiling.ProfilerFiller
+import net.minecraft.world.entity.EntityType
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.AddReloadListenerEvent
@@ -37,6 +39,10 @@ object WreckageLootDataManager : SimpleJsonResourceReloadListener(Gson(), "sbw/l
 
     fun getLootData(id: ResourceLocation): WreckageLootData? {
         return data[id]
+    }
+
+    fun getLootData(type: EntityType<*>): WreckageLootData? {
+        return data[BuiltInRegistries.ENTITY_TYPE.getKey(type)]
     }
 
     @SubscribeEvent
