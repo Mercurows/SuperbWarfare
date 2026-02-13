@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -45,26 +44,47 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.stream.StreamSupport
-import kotlin.streams.toList
-
 
 open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) : Entity(type, world), GeoEntity {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+
     companion object {
         @JvmField
-        val QUATERNIOND_X: EntityDataAccessor<Float> = SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
-        val QUATERNIOND_Y: EntityDataAccessor<Float> = SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
-        val QUATERNIOND_Z: EntityDataAccessor<Float> = SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
-        val QUATERNIOND_W: EntityDataAccessor<Float> = SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
-        val VEHICLE_NAME: EntityDataAccessor<String> = SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.STRING)
-        val HEALTH: EntityDataAccessor<Float> = SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
+        val QUATERNION_X: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val QUATERNION_Y: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val QUATERNION_Z: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val QUATERNION_W: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val VEHICLE_NAME: EntityDataAccessor<String> =
+            SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.STRING)
+
+        @JvmField
+        val HEALTH: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(TurretWreckEntity::class.java, EntityDataSerializers.FLOAT)
+
+        private val DAMAGE_MODIFIER = createDefaultModifier()
+            .multiply(0.02f, ModDamageTypes.CUSTOM_EXPLOSION)
+            .multiply(0.02f, ModDamageTypes.MINE)
+            .multiply(0.02f, ModDamageTypes.PROJECTILE_EXPLOSION)
+            .multiply(0.02f, DamageTypes.EXPLOSION)
     }
 
-    open var QuaternionX by QUATERNIOND_X
-    open var QuaternionY by QUATERNIOND_Y
-    open var QuaternionZ by QUATERNIOND_Z
-    open var QuaternionW by QUATERNIOND_W
-    open var VehicleName by VEHICLE_NAME
+    open var quaternionX by QUATERNION_X
+    open var quaternionY by QUATERNION_Y
+    open var quaternionZ by QUATERNION_Z
+    open var quaternionW by QUATERNION_W
+    open var vehicleName by VEHICLE_NAME
     open var health by HEALTH
 
     open var qxO = 0f
@@ -88,63 +108,88 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         return !this.isRemoved
     }
 
-    private val DAMAGE_MODIFIER = createDefaultModifier()
-            .multiply(0.02f, ModDamageTypes.CUSTOM_EXPLOSION)
-            .multiply(0.02f, ModDamageTypes.MINE)
-            .multiply(0.02f, ModDamageTypes.PROJECTILE_EXPLOSION)
-            .multiply(0.02f, DamageTypes.EXPLOSION)
-
     override fun hurt(source: DamageSource, amount: Float): Boolean {
         var amount = amount
         amount = DAMAGE_MODIFIER.compute(source, amount)
         entityData.set(HEALTH, entityData.get(HEALTH) - amount)
         if (level() is ServerLevel) {
             val serverLevel = level() as ServerLevel
-            serverLevel.playSound(null, BlockPos.containing(position()), ModSounds.HIT.get(), SoundSource.PLAYERS, 1f, 1f)
-            ParticleTool.sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), position().x, eyeY, position().z, 2, 0.0, 0.0, 0.0, 0.2, false)
-            ParticleTool.sendParticle(serverLevel, ParticleTypes.SMOKE, position().x, eyeY, position().z, 2, 0.0, 0.0, 0.0, 0.01, false)
+            serverLevel.playSound(
+                null,
+                BlockPos.containing(position()),
+                ModSounds.HIT.get(),
+                SoundSource.PLAYERS,
+                1f,
+                1f
+            )
+            ParticleTool.sendParticle(
+                serverLevel,
+                ModParticleTypes.FIRE_STAR.get(),
+                position().x,
+                eyeY,
+                position().z,
+                2,
+                0.0,
+                0.0,
+                0.0,
+                0.2,
+                false
+            )
+            ParticleTool.sendParticle(
+                serverLevel,
+                ParticleTypes.SMOKE,
+                position().x,
+                eyeY,
+                position().z,
+                2,
+                0.0,
+                0.0,
+                0.0,
+                0.01,
+                false
+            )
         }
         return super.hurt(source, amount)
     }
 
     override fun defineSynchedData() {
-        entityData.define(QUATERNIOND_X, 0f)
-        entityData.define(QUATERNIOND_Y, 0f)
-        entityData.define(QUATERNIOND_Z, 0f)
-        entityData.define(QUATERNIOND_W, 1f)
+        entityData.define(QUATERNION_X, 0f)
+        entityData.define(QUATERNION_Y, 0f)
+        entityData.define(QUATERNION_Z, 0f)
+        entityData.define(QUATERNION_W, 1f)
         entityData.define(VEHICLE_NAME, "GunMu")
         entityData.define(HEALTH, 100f)
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
-        entityData.set(QUATERNIOND_X, compound.getFloat("Qx"))
-        entityData.set(QUATERNIOND_Y, compound.getFloat("Qy"))
-        entityData.set(QUATERNIOND_Z, compound.getFloat("Qz"))
-        entityData.set(QUATERNIOND_W, compound.getFloat("Qw"))
+        entityData.set(QUATERNION_X, compound.getFloat("Qx"))
+        entityData.set(QUATERNION_Y, compound.getFloat("Qy"))
+        entityData.set(QUATERNION_Z, compound.getFloat("Qz"))
+        entityData.set(QUATERNION_W, compound.getFloat("Qw"))
         entityData.set(VEHICLE_NAME, compound.getString("VehicleName"))
         entityData.set(HEALTH, compound.getFloat("Health"))
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
-        compound.putFloat("Qx", entityData.get(QUATERNIOND_X))
-        compound.putFloat("Qy", entityData.get(QUATERNIOND_Y))
-        compound.putFloat("Qz", entityData.get(QUATERNIOND_Z))
-        compound.putFloat("Qw", entityData.get(QUATERNIOND_W))
+        compound.putFloat("Qx", entityData.get(QUATERNION_X))
+        compound.putFloat("Qy", entityData.get(QUATERNION_Y))
+        compound.putFloat("Qz", entityData.get(QUATERNION_Z))
+        compound.putFloat("Qw", entityData.get(QUATERNION_W))
         compound.putString("VehicleName", entityData.get(VEHICLE_NAME))
         compound.putFloat("Health", entityData.get(HEALTH))
     }
 
     fun getPlayer(level: Level?): List<Entity> {
         return StreamSupport.stream(EntityFindUtil.getEntities(level).all.spliterator(), false)
-                .filter { e: Entity -> e is Player }
-                .toList()
+            .filter { e: Entity -> e is Player }
+            .toList()
     }
 
     override fun baseTick() {
-        qxO = QuaternionX
-        qyO = QuaternionY
-        qzO = QuaternionZ
-        qwO = QuaternionW
+        qxO = quaternionX
+        qyO = quaternionY
+        qzO = quaternionZ
+        qwO = quaternionW
 
         lastTickSpeed = Vec3(this.deltaMovement.x, this.deltaMovement.y + 0.04, this.deltaMovement.z).length()
         lastTickVerticalSpeed = this.deltaMovement.y + 0.04
@@ -170,8 +215,8 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
                 rot = -0.6f
             }
 
-            setQuaternion(Quaterniond(getQuaternion(1f).rotateX( rot * getFrontVec(1f).y.toFloat())))
-            setQuaternion(Quaterniond(getQuaternion(1f).rotateZ( rot * getRightVec(1f).y.toFloat())))
+            setQuaternion(Quaterniond(getQuaternion(1f).rotateX(rot * getFrontVec(1f).y.toFloat())))
+            setQuaternion(Quaterniond(getQuaternion(1f).rotateZ(rot * getRightVec(1f).y.toFloat())))
             supportByVehicle = false
         } else {
             setQuaternion(Quaterniond(getQuaternion(1f).rotateX(0.015f + 0.002f * deltaMovement.y.toFloat())))
@@ -195,54 +240,54 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         if (level().isClientSide) {
             val random = 2 * (this.random.nextFloat() - 0.5f)
             addRandomParticle(
-                    ParticleTypes.LARGE_SMOKE,
-                    Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
-                    0.35f * this.bbWidth,
-                    level(),
-                    0.01f,
-                    1
+                ParticleTypes.LARGE_SMOKE,
+                Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
+                0.35f * this.bbWidth,
+                level(),
+                0.01f,
+                1
             )
             addRandomParticle(
-                    ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
-                    0.35f * this.bbWidth,
-                    level(),
-                    0.005f,
-                    1
+                ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
+                0.35f * this.bbWidth,
+                level(),
+                0.005f,
+                1
             )
             addRandomParticle(
-                    CustomCloudOption(
-                            1f,
-                            0.1f,
-                            0f,
-                            (240 + 40 * random).toInt(),
-                            2.5f + 0.5f * random,
-                            -0.07f,
-                            true,
-                            true
-                    ),
-                    Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
-                    0.35f * this.bbWidth,
-                    level(),
-                    0.01f,
-                    1
+                CustomCloudOption(
+                    1f,
+                    0.1f,
+                    0f,
+                    (240 + 40 * random).toInt(),
+                    2.5f + 0.5f * random,
+                    -0.07f,
+                    true,
+                    true
+                ),
+                Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
+                0.35f * this.bbWidth,
+                level(),
+                0.01f,
+                1
             )
             addRandomParticle(
-                    CustomCloudOption(
-                            1f,
-                            0.35f,
-                            0f,
-                            (80 + 40 * random).toInt(),
-                            1.5f + 0.5f * random,
-                            -0.07f,
-                            false,
-                            true
-                    ),
-                    Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
-                    0.3f * this.bbWidth,
-                    level(),
-                    0.01f,
-                    1
+                CustomCloudOption(
+                    1f,
+                    0.35f,
+                    0f,
+                    (80 + 40 * random).toInt(),
+                    1.5f + 0.5f * random,
+                    -0.07f,
+                    false,
+                    true
+                ),
+                Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
+                0.3f * this.bbWidth,
+                level(),
+                0.01f,
+                1
             )
         }
         if (this.tickCount % 15 == 0) {
@@ -256,9 +301,9 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
             this.discard()
 
             val explosion = createCustomExplosion()
-                    .radius(0f)
-                    .damage(0f)
-                    .withParticleType(ParticleTool.ParticleType.SMALL)
+                .radius(0f)
+                .damage(0f)
+                .withParticleType(ParticleTool.ParticleType.SMALL)
             explosion.keepBlock()
             explosion.explode()
 
@@ -271,29 +316,30 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
     }
 
     open fun addRandomParticle(
-            particleOptions: ParticleOptions,
-            pos: Vec3,
-            randomPos: Float,
-            level: Level,
-            speed: Float,
-            count: Int
+        particleOptions: ParticleOptions,
+        pos: Vec3,
+        randomPos: Float,
+        level: Level,
+        speed: Float,
+        count: Int
     ) {
         val randomX = 2 * (this.random.nextFloat() - 0.5f)
         val randomY = 2 * (this.random.nextFloat() - 0.5f)
         val randomZ = 2 * (this.random.nextFloat() - 0.5f)
         repeat(count) {
             level.addAlwaysVisibleParticle(
-                    particleOptions,
-                    true,
-                    pos.x + randomPos * randomX,
-                    pos.y + randomPos * randomY,
-                    pos.z + randomPos * randomZ,
-                    (randomX * speed).toDouble(),
-                    (randomY * speed).toDouble(),
-                    (randomZ * speed).toDouble()
+                particleOptions,
+                true,
+                pos.x + randomPos * randomX,
+                pos.y + randomPos * randomY,
+                pos.z + randomPos * randomZ,
+                (randomX * speed).toDouble(),
+                (randomY * speed).toDouble(),
+                (randomZ * speed).toDouble()
             )
         }
     }
+
     open fun createCustomExplosion(): CustomExplosion.Builder = CustomExplosion.Builder(this).attacker(null)
 
     private fun lerpRotationToTarget(targetRotation: Quaternionf, lerpFactor: Float) {
@@ -302,23 +348,26 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         this.setQuaternion(Quaterniond(currentRotation))
     }
 
-    open fun setQuaternion0(quaterniond: Quaterniond) {
-        qxO = quaterniond.x.toFloat()
-        qyO = quaterniond.y.toFloat()
-        qzO = quaterniond.z.toFloat()
-        qwO = quaterniond.w.toFloat()
-    }
-    open fun setQuaternion(quaterniond: Quaterniond) {
-        QuaternionX = quaterniond.x.toFloat()
-        QuaternionY = quaterniond.y.toFloat()
-        QuaternionZ = quaterniond.z.toFloat()
-        QuaternionW = quaterniond.w.toFloat()
+    open fun setQuaternion0(quaternion: Quaterniond) {
+        qxO = quaternion.x.toFloat()
+        qyO = quaternion.y.toFloat()
+        qzO = quaternion.z.toFloat()
+        qwO = quaternion.w.toFloat()
     }
 
-    open fun getQuaternion(tickDelta: Float) = Quaternionf(Mth.lerp(tickDelta, qxO, QuaternionX),
-            Mth.lerp(tickDelta, qyO, QuaternionY),
-            Mth.lerp(tickDelta, qzO, QuaternionZ),
-            Mth.lerp(tickDelta, qwO, QuaternionW))
+    open fun setQuaternion(quaternion: Quaterniond) {
+        quaternionX = quaternion.x.toFloat()
+        quaternionY = quaternion.y.toFloat()
+        quaternionZ = quaternion.z.toFloat()
+        quaternionW = quaternion.w.toFloat()
+    }
+
+    open fun getQuaternion(tickDelta: Float) = Quaternionf(
+        Mth.lerp(tickDelta, qxO, quaternionX),
+        Mth.lerp(tickDelta, qyO, quaternionY),
+        Mth.lerp(tickDelta, qzO, quaternionZ),
+        Mth.lerp(tickDelta, qwO, quaternionW)
+    )
 
     override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar?) {
     }
@@ -328,9 +377,9 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
     fun getWreckTransform(partialTicks: Float): Matrix4d {
         val transform = Matrix4d()
         transform.translate(
-                Mth.lerp(partialTicks.toDouble(), xo, x),
-                Mth.lerp(partialTicks.toDouble(), yo + 0.6, y + 0.6),
-                Mth.lerp(partialTicks.toDouble(), zo, z)
+            Mth.lerp(partialTicks.toDouble(), xo, x),
+            Mth.lerp(partialTicks.toDouble(), yo + 0.6, y + 0.6),
+            Mth.lerp(partialTicks.toDouble(), zo, z)
         )
         transform.rotate(getQuaternion(partialTicks))
         return transform
@@ -374,28 +423,26 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
 
         if (verticalCollision) {
             if (Mth.abs(lastTickVerticalSpeed.toFloat()) > 0.4) {
-
                 if (!this.level().isClientSide) {
                     this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
                 }
                 this.bounceVertical(
-                        Direction.getNearest(
-                                this.deltaMovement.x(),
-                                this.deltaMovement.y(),
-                                this.deltaMovement.z()
-                        ).opposite
+                    Direction.getNearest(
+                        this.deltaMovement.x(),
+                        this.deltaMovement.y(),
+                        this.deltaMovement.z()
+                    ).opposite
                 )
             }
         }
 
         if (this.horizontalCollision) {
-
             this.bounceHorizontal(
-                    Direction.getNearest(
-                            this.deltaMovement.x(),
-                            this.deltaMovement.y(),
-                            this.deltaMovement.z()
-                    ).opposite
+                Direction.getNearest(
+                    this.deltaMovement.x(),
+                    this.deltaMovement.y(),
+                    this.deltaMovement.z()
+                ).opposite
             )
             if (!this.level().isClientSide) {
                 this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
@@ -424,17 +471,20 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         val entities: List<Entity>?
 
         val frontBox = this.boundingBox.move(vec3)
-        entities = this.level().getEntities(EntityTypeTest.forClass(Entity::class.java), frontBox) { entity -> entity !== this && entity!!.vehicle == null}
-                .stream().filter { entity ->
-                    if (entity.isAlive) {
-                        val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
-                        return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
-                                || (entity is LivingEntity && !(entity is Player && entity.isSpectator)))
-                                || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
-                    }
-                    false
+        entities = this.level().getEntities(
+            EntityTypeTest.forClass(Entity::class.java),
+            frontBox
+        ) { entity -> entity !== this && entity!!.vehicle == null }
+            .stream().filter { entity ->
+                if (entity.isAlive) {
+                    val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
+                    return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
+                            || (entity is LivingEntity && !(entity is Player && entity.isSpectator)))
+                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
                 }
-                .toList()
+                false
+            }
+            .toList()
 
         for (entity in entities) {
             val entitySize = entity.boundingBox.getSize()
@@ -469,11 +519,12 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
             this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
 
             DamageHandler.doDamage(
-                    entity,
-                    ModDamageTypes.causeVehicleStrikeDamage(
-                            this.level().registryAccess(),
-                            this, this),
-                    (f1 * 80 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)).toFloat()
+                entity,
+                ModDamageTypes.causeVehicleStrikeDamage(
+                    this.level().registryAccess(),
+                    this, this
+                ),
+                (f1 * 80 * (Mth.abs(length) - 0.3) * (Mth.abs(length) - 0.3)).toFloat()
             )
 
             this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z)

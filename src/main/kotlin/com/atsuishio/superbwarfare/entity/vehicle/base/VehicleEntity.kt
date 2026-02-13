@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
-import com.atsuishio.superbwarfare.client.particle.FireStarParticle
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
@@ -108,7 +107,6 @@ import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.wrapper.InvWrapper
 import net.minecraftforge.registries.ForgeRegistries
 import org.joml.*
-import org.joml.Random
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
@@ -3083,7 +3081,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(random.triangle(0.0, 0.0172275 * 12.toDouble()), random.triangle(0.0, 0.0172275 * 12.toDouble()), random.triangle(0.0, 0.0172275 * 12.toDouble())).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
 
             val quaterniond = combineRotationsTurret(1f, this)
-            turretWreckEntity.VehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()
+            turretWreckEntity.vehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()
             turretWreckEntity.xRot = this.getTurretPitch(1f)
             turretWreckEntity.yRot = -getYRotFromVector(getBarrelVector(1f)).toFloat()
             turretWreckEntity.setQuaternion0(quaterniond)
