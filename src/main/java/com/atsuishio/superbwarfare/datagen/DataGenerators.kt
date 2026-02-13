@@ -10,7 +10,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent
     bus = EventBusSubscriber.Bus.MOD
 )
 object DataGenerators {
-
     @SubscribeEvent
     fun gatherData(event: GatherDataEvent) {
         val generator = event.generator
@@ -43,5 +42,6 @@ object DataGenerators {
             ModAdvancementProvider(packOutput, lookupProvider, existingFileHelper)
         )
         generator.addProvider(event.includeServer(), ModPerkTagProvider(packOutput, lookupProvider, existingFileHelper))
+        generator.addProvider(event.includeServer(), ModWreckageLootProvider(packOutput, existingFileHelper))
     }
 }
