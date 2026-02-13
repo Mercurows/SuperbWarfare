@@ -81,6 +81,12 @@ object VehicleConfig {
     }
 
     @JvmField
+    val TURRET_WRECKAGE_LOOT_RATE = buildServerConfig {
+        comment("The rate of recycling loot items from turret wreckage")
+        defineInRange("turret_wreckage_loot_rate", 0.3, 0.0, 1.0)
+    }
+
+    @JvmField
     val REPAIR_COOLDOWN = buildServerConfig {
         push("repair")
 
@@ -93,5 +99,4 @@ object VehicleConfig {
         comment("The default amount of health restored per tick when a vehicle is self-repairing")
         defineInRange("repair_amount", 0.05, -100000000.0, 100000000.0).also { pop(2) }
     }
-
 }

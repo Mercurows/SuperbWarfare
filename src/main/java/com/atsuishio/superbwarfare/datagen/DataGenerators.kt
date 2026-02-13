@@ -9,7 +9,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
     bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD
 )
 object DataGenerators {
-
     @SubscribeEvent
     fun gatherData(event: GatherDataEvent) {
         val generator = event.generator
@@ -39,5 +38,6 @@ object DataGenerators {
         )
         generator.addProvider(event.includeServer(), ModAdvancementProvider(packOutput, existingFileHelper))
         generator.addProvider(event.includeServer(), ModPerkTagProvider(packOutput, lookupProvider, existingFileHelper))
+        generator.addProvider(event.includeServer(), ModWreckageLootProvider(packOutput, existingFileHelper))
     }
 }

@@ -1,0 +1,12 @@
+{
+  "ID": "superbwarfare:bmp_2",
+  "Pools": [
+    {
+      "Entries": [
+        {
+          "Name": "superbwarfare:steel_ingot"
+        }
+      ]
+    }
+  ]
+}

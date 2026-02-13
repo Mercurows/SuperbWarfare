@@ -17,10 +17,12 @@ import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
@@ -102,6 +104,14 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
     open var lastTickSpeed = 0.0
     open var lastTickVerticalSpeed = 0.0
     open var collisionCoolDown = 0
+    open var lastDamageSource: DamageSource? = null
+        get() {
+            if (this.level().gameTime - this.lastDamageStamp > 40L) {
+                this.lastDamageSource = null
+            }
+            return field
+        }
+    open var lastDamageStamp: Long = 0
 
     override fun canBeCollidedWith(): Boolean {
         return true
@@ -155,6 +165,9 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
                 0.01,
                 false
             )
+
+            this.lastDamageSource = source
+            this.lastDamageStamp = level().gameTime
         }
         return super.hurt(source, amount)
     }
@@ -326,12 +339,18 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         pools.forEach { pool ->
             val entries = pool.entries
             if (entries.isEmpty()) return@forEach
-            // TODO 把damageSource判定加一下
+            val source = pool.source
+            if (source != "@Default") {
+                val lastSource = this.lastDamageSource ?: return@forEach
+                val parsedLoc = ResourceLocation.tryParse(source) ?: return@forEach
+                val damageType = ResourceKey.create(Registries.DAMAGE_TYPE, parsedLoc)
+                if (!lastSource.`is`(damageType)) return@forEach
+            }
 
             val random = Random.nextDouble()
             repeat(pool.rolls) {
                 entries.forEach { entry ->
-                    if (random > entry.chance) return@forEach
+                    if (random > entry.chance * VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()) return@forEach
                     val name = entry.name
                     val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: return@forEach
                     val count = entry.count

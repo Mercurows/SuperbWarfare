@@ -1,8 +1,11 @@
 package com.atsuishio.superbwarfare.data.loot
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.tools.toKxJson
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener
@@ -24,24 +27,8 @@ object WreckageLootDataManager : SimpleJsonResourceReloadListener(Gson(), "sbw/l
         pObject.forEach { (id, json) ->
             try {
                 val obj = json.asJsonObject
-                val poolsList = mutableListOf<WreckageLootData.Pool>()
-                val pools = obj.getAsJsonArray("Pools")
-                for (pool in pools) {
-                    val poolObj = pool.asJsonObject
-                    val rolls = poolObj.get("Rolls").asInt
-                    val source = poolObj.get("Source").asString
-                    val entriesList = mutableListOf<WreckageLootData.Entry>()
-                    val entries = poolObj.getAsJsonArray("Entries")
-                    for (entry in entries) {
-                        val entryObj = entry.asJsonObject
-                        val name = entryObj.get("Name").asString
-                        val count = entryObj.get("Count").asInt
-                        val chance = entryObj.get("Chance").asDouble
-                        entriesList.add(WreckageLootData.Entry(name, count, chance))
-                    }
-                    poolsList.add(WreckageLootData.Pool(entriesList, rolls, source))
-                }
-                data[id] = WreckageLootData(poolsList)
+                val json = Json.decodeFromJsonElement<WreckageLootData>(obj.toKxJson())
+                data[id] = json
             } catch (_: Exception) {
                 Mod.LOGGER.error("Failed to load wreckage loot data for {}", id)
             }
