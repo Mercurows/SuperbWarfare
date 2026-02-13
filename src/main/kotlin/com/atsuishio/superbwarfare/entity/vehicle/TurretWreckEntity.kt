@@ -2,11 +2,15 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.data.loot.WreckageLootDataManager
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
-import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.init.ModParticleTypes
+import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -17,6 +21,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -35,6 +40,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.registries.ForgeRegistries
 import org.joml.Matrix4d
 import org.joml.Quaterniond
 import org.joml.Quaternionf
@@ -44,6 +50,7 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.stream.StreamSupport
+import kotlin.random.Random
 
 open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) : Entity(type, world), GeoEntity {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
@@ -300,19 +307,40 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         if (health <= 0) {
             this.discard()
 
-            val explosion = createCustomExplosion()
+            CustomExplosion.Builder(this).attacker(null)
                 .radius(0f)
                 .damage(0f)
                 .withParticleType(ParticleTool.ParticleType.SMALL)
-            explosion.keepBlock()
-            explosion.explode()
+                .keepBlock().explode()
 
-            val block = ItemEntity(level(), x, (y + 1), z, ItemStack(ModItems.STEEL_BLOCK.get()))
-            block.setPickUpDelay(10)
-            level().addFreshEntity(block)
+            this.createWreckageLoot()
         }
 
         crushEntities()
+    }
+
+    open fun createWreckageLoot() {
+        val data = WreckageLootDataManager.getLootData(ResourceLocation(this.vehicleName)) ?: return
+        val pools = data.pools
+        if (pools.isEmpty()) return
+        pools.forEach { pool ->
+            val entries = pool.entries
+            if (entries.isEmpty()) return@forEach
+            // TODO 把damageSource判定加一下
+
+            val random = Random.nextDouble()
+            repeat(pool.rolls) {
+                entries.forEach { entry ->
+                    if (random > entry.chance) return@forEach
+                    val name = entry.name
+                    val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: return@forEach
+                    val count = entry.count
+                    val entity = ItemEntity(level(), x, (y + 1), z, ItemStack(item, count))
+                    entity.setPickUpDelay(10)
+                    level().addFreshEntity(entity)
+                }
+            }
+        }
     }
 
     open fun addRandomParticle(
@@ -339,8 +367,6 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
             )
         }
     }
-
-    open fun createCustomExplosion(): CustomExplosion.Builder = CustomExplosion.Builder(this).attacker(null)
 
     private fun lerpRotationToTarget(targetRotation: Quaternionf, lerpFactor: Float) {
         val currentRotation: Quaternionf = this.getQuaternion(1f)
