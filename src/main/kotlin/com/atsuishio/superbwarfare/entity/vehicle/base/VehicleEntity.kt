@@ -39,6 +39,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
+import com.atsuishio.superbwarfare.tools.VectorTool.combineRotationsTurret
 import com.atsuishio.superbwarfare.world.TDMSavedData
 import com.google.common.collect.ImmutableList
 import com.mojang.math.Axis
@@ -3105,8 +3106,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 random.triangle(0.0, 0.0172275 * 12.toDouble())
             ).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
 
-            val quaterniond = VectorTool.combineRotationsTurret(1f, this)
-            turretWreckEntity.VehicleName = BuiltInRegistries.ENTITY_TYPE.getKey(this.type).toString()
+            val quaterniond = combineRotationsTurret(1f, this)
+            turretWreckEntity.vehicleName = BuiltInRegistries.ENTITY_TYPE.getKey(this.type).toString()
             turretWreckEntity.xRot = this.getTurretPitch(1f)
             turretWreckEntity.yRot = -getYRotFromVector(getBarrelVector(1f)).toFloat()
             turretWreckEntity.setQuaternion0(quaterniond)
