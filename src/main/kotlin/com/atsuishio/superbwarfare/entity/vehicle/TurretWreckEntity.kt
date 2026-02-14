@@ -349,11 +349,13 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
                 val parsedLoc = ResourceLocation.tryParse(source) ?: return@forEach
                 val damageType = ResourceKey.create(Registries.DAMAGE_TYPE, parsedLoc)
                 if (!lastSource.`is`(damageType)) return@forEach
+            } else if (this.lastDamageSource?.`is`(ModDamageTypes.REPAIR_TOOL) == true) {
+                return@forEach
             }
 
             repeat(pool.rolls) {
-                val random = Random.nextDouble()
                 entries.forEach { entry ->
+                    val random = Random.nextDouble()
                     val chance = if (type == WreckageLootData.Pool.Type.DEFAULT) {
                         entry.chance * VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()
                     } else {
