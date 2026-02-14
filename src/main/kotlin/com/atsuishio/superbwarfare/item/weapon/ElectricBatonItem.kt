@@ -44,7 +44,7 @@ class ElectricBatonItem : SwordItem(ModItemTier.STEEL, 2, -2.5f, Properties().du
         }
     }
 
-    override fun initCapabilities(stack: ItemStack?, tag: CompoundTag?): ICapabilityProvider {
+    override fun initCapabilities(stack: ItemStack, tag: CompoundTag?): ICapabilityProvider {
         return ItemEnergyProvider(stack, energyCapacity())
     }
 
