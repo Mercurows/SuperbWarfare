@@ -1,0 +1,58 @@
+package com.atsuishio.superbwarfare.item.armor
+
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.renderer.armor.UsChestIotvArmorRenderer
+import com.atsuishio.superbwarfare.init.ModAttributes
+import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
+import com.google.common.collect.HashMultimap
+import com.google.common.collect.Multimap
+import net.minecraft.client.model.HumanoidModel
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.ai.attributes.Attribute
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
+import net.minecraft.world.item.ItemStack
+import net.minecraftforge.client.extensions.common.IClientItemExtensions
+import software.bernie.geckolib.renderer.GeoArmorRenderer
+import java.util.*
+import java.util.function.Consumer
+import kotlin.math.max
+
+class UsChestIotvItem : GeoArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
+    override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
+        consumer.accept(object : IClientItemExtensions {
+            private var renderer: GeoArmorRenderer<*>? = null
+
+            override fun getHumanoidArmorModel(
+                livingEntity: LivingEntity?,
+                itemStack: ItemStack?,
+                equipmentSlot: EquipmentSlot?,
+                original: HumanoidModel<*>?
+            ): HumanoidModel<*> {
+                if (this.renderer == null) this.renderer = UsChestIotvArmorRenderer()
+                this.renderer!!.prepForRender(livingEntity, itemStack, equipmentSlot, original)
+                return this.renderer!!
+            }
+        })
+    }
+
+    override fun getAttributeModifiers(
+        slot: EquipmentSlot,
+        stack: ItemStack
+    ): Multimap<Attribute, AttributeModifier> {
+        var map = super.getDefaultAttributeModifiers(slot)
+        val uuid = UUID(slot.toString().hashCode().toLong(), 0)
+        if (slot == EquipmentSlot.CHEST) {
+            map = HashMultimap.create<Attribute, AttributeModifier>(map)
+            map.put(
+                ModAttributes.BULLET_RESISTANCE.get(), AttributeModifier(
+                    uuid,
+                    Mod.ATTRIBUTE_MODIFIER,
+                    0.5 * max(0.0, 1 - stack.damageValue.toDouble() / stack.maxDamage),
+                    AttributeModifier.Operation.ADDITION
+                )
+            )
+        }
+        return map
+    }
+}
