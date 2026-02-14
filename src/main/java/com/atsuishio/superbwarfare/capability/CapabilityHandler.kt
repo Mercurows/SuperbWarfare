@@ -40,14 +40,6 @@ object CapabilityHandler {
 
         if (entity !is Player) return
 
-        event.addCapability(
-            LaserCapability.ID,
-            createProvider(
-                LazyOptional.of { LaserCapability.LaserCapabilityImpl() },
-                ModCapabilities.LASER_CAPABILITY
-            )
-        )
-
         if (entity !is FakePlayer) {
             event.addCapability(
                 PlayerVariable.ID,

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.api.event.PreKillEvent
-import com.atsuishio.superbwarfare.capability.LaserCapability
 import com.atsuishio.superbwarfare.capability.ModCapabilities
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.config.common.GameplayConfig
@@ -106,16 +105,12 @@ object LivingEventHandler {
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {
-        val entity = event.entity ?: return
+        if (event.entity == null) return
 
         killIndication(event)
         handleGunPerksWhenDeath(event)
         handlePlayerKillEntity(event)
         giveKillExpToWeapon(event)
-
-        if (entity is Player) {
-            handlePlayerBeamReset(entity)
-        }
     }
 
     fun handleVehicleHurt(event: LivingHurtEvent) {
@@ -350,8 +345,6 @@ object LivingEventHandler {
 
             val oldStack = event.from
             val newStack = event.to
-
-            entity.getCapability(ModCapabilities.LASER_CAPABILITY).ifPresent(LaserCapability.ILaserCapability::stop)
 
             if (entity is ServerPlayer) {
                 if (newStack.item is GunItem) {
@@ -672,10 +665,6 @@ object LivingEventHandler {
             player.giveExperiencePoints(event.droppedExperience)
             event.isCanceled = true
         }
-    }
-
-    fun handlePlayerBeamReset(player: Player) {
-        player.getCapability(ModCapabilities.LASER_CAPABILITY).ifPresent(LaserCapability.ILaserCapability::end)
     }
 
     @SubscribeEvent

@@ -52,12 +52,6 @@ object ModEntities {
 
     // Misc Entities
     @JvmField
-    val LASER = register(
-        "laser",
-        misc(::LaserEntity).sized(0.1f, 0.1f).fireImmune().setUpdateInterval(1)
-    )
-
-    @JvmField
     val FLARE_DECOY = register(
         "flare_decoy",
         misc(::FlareDecoyEntity).setTrackingRange(64).setUpdateInterval(1).noSave().sized(1f, 1f)
