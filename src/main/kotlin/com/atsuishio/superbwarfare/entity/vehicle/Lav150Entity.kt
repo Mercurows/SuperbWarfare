@@ -9,7 +9,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager
 class Lav150Entity(type: EntityType<Lav150Entity>, world: Level) : GeoVehicleEntity(type, world) {
 
     override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
+        .custom { source, damage -> getSourceAngle(source, 0.15f) * damage }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         "cannon" {

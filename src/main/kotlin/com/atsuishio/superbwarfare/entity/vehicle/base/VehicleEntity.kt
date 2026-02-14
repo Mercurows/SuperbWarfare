@@ -1467,12 +1467,16 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         if (player.isShiftKeyDown && stack.`is`(ModTags.Items.TOOLS_CROWBAR) && this.getPassengers().isEmpty()) {
-            for (item in this.getRetrieveItems()) {
-                ItemHandlerHelper.giveItemToPlayer(player, item)
+            if (isWreck) {
+                return InteractionResult.PASS
+            } else {
+                for (item in this.getRetrieveItems()) {
+                    ItemHandlerHelper.giveItemToPlayer(player, item)
+                }
+                this.remove(RemovalReason.DISCARDED)
+                this.discard()
+                return InteractionResult.SUCCESS
             }
-            this.remove(RemovalReason.DISCARDED)
-            this.discard()
-            return InteractionResult.SUCCESS
         } else if (!player.isShiftKeyDown && this.maxPassengers > 0) {
             val entities = getPassengers()
             for (passenger in entities) {
