@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.item.ArmorPlate
 import com.atsuishio.superbwarfare.item.BatteryItem
 import com.atsuishio.superbwarfare.item.C4BombItem
-import com.atsuishio.superbwarfare.item.ElectricBaton
 import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem
+import com.atsuishio.superbwarfare.item.weapon.ElectricBatonItem
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
@@ -110,30 +110,29 @@ object ModTabs {
         })
 
     @JvmStatic
-    val ITEM_TAB: DeferredHolder<CreativeModeTab, CreativeModeTab> = TABS.register(
-        "item",
-        Supplier {
-            builder()
-                .title(Component.translatable("item_group.superbwarfare.item"))
-                .icon { ItemStack(ModItems.TARGET_DEPLOYER.get()) }
-                .displayItems { param, output ->
-                    ModItems.ITEMS.getEntries().forEach { registryObject ->
-                        val item = registryObject.get()
-                        output.accept(item)
+    val ITEM_TAB: DeferredHolder<CreativeModeTab, CreativeModeTab> = TABS.register("item", Supplier {
+        builder()
+            .title(Component.translatable("item_group.superbwarfare.item"))
+            .icon { ItemStack(ModItems.TARGET_DEPLOYER.get()) }
+            .withTabsBefore(AMMO_TAB.getKey())
+            .displayItems { param, output ->
+                ModItems.ITEMS.getEntries().forEach { registryObject ->
+                    val item = registryObject.get()
+                    output.accept(item)
 
-                        if (item === ModItems.ARMOR_PLATE.get()) {
-                            output.accept(ArmorPlate.getInfiniteInstance())
-                        }
-                        if (item is BatteryItem) {
-                            output.accept(item.makeFullEnergyStack())
-                        }
-                        if (item === ModItems.ELECTRIC_BATON.get()) {
-                            output.accept(ElectricBaton.makeFullEnergyStack())
-                        }
+                    if (item === ModItems.ARMOR_PLATE.get()) {
+                        output.accept(ArmorPlate.getInfiniteInstance())
+                    }
+                    if (item is BatteryItem) {
+                        output.accept(item.makeFullEnergyStack())
+                    }
+                    if (item === ModItems.ELECTRIC_BATON.get()) {
+                        output.accept(ElectricBatonItem.makeFullEnergyStack())
                     }
                 }
-                .build()
-        })
+            }
+            .build()
+    })
 
     @JvmStatic
     val BLOCK_TAB: DeferredHolder<CreativeModeTab, CreativeModeTab> = TABS.register(

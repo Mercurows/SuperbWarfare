@@ -1,8 +1,9 @@
-package com.atsuishio.superbwarfare.item
+package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.tools.NBTTool
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -14,11 +15,11 @@ import net.minecraft.world.item.Tier
 import net.minecraft.world.item.TooltipFlag
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.event.entity.player.PlayerEvent.ItemCraftedEvent
+import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import org.joml.Math
 import javax.annotation.ParametersAreNonnullByDefault
 
-open class Hammer protected constructor(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
+open class HammerItem(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
     SwordItem(tier, properties.attributes(createAttributes(tier, attackDamage, attackSpeed))) {
 
     constructor(tier: Tier, attackDamage: Int, attackSpeed: Float, maxDamage: Int) : this(
@@ -28,7 +29,6 @@ open class Hammer protected constructor(tier: Tier, attackDamage: Int, attackSpe
         CustomDamageProperty(maxDamage)
     )
 
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
@@ -83,7 +83,7 @@ open class Hammer protected constructor(tier: Tier, attackDamage: Int, attackSpe
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
     companion object {
         @SubscribeEvent
-        fun onItemCrafted(event: ItemCraftedEvent) {
+        fun onItemCraftedByHammer(event: PlayerEvent.ItemCraftedEvent) {
             val item = event.crafting
             val container = event.inventory
             val player = event.entity
