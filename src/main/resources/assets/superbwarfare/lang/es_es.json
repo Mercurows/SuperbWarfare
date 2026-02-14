@@ -496,8 +496,6 @@
     "item.superbwarfare.grenade_40mm": "Granada de 40mm",
     "des.superbwarfare.c4_bomb.time": "Explosivo Temporizado",
     "des.superbwarfare.c4_bomb.control": "Explosivo Remoto",
-    "commands.config.tactical_sprint.enabled": "Carrera táctica activada",
-    "commands.config.tactical_sprint.disabled": "Carrera táctica desactivada",
     "superbwarfare.advancement.main.boomstick_melee": "¡Este es mi Boomstick!",
     "item.superbwarfare.hpj_11_blueprint": "Plano de H/PJ-11 CIWS",
     "config.superbwarfare.client.display.weapon_screen_shake": "Intensidad de Sacudida de Pantalla por Armas",
