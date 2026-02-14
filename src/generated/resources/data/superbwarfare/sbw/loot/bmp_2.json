@@ -21,6 +21,34 @@
           "Name": "superbwarfare:large_motor"
         }
       ],
+      "Source": "superbwarfare:repair_tool",
+      "Type": "complete"
+    },
+    {
+      "Entries": [
+        {
+          "Chance": 0.2,
+          "Count": 8,
+          "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:medium_armament_module"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:medium_battery_pack"
+        },
+        {
+          "Chance": 0.2,
+          "Count": 2,
+          "Name": "superbwarfare:track"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:large_motor"
+        }
+      ],
       "Type": "complete"
     },
     {
@@ -30,6 +58,21 @@
           "Name": "superbwarfare:steel_block"
         },
         {
+          "Name": "superbwarfare:medium_armament_module"
+        }
+      ],
+      "Source": "superbwarfare:repair_tool",
+      "Type": "turret_only"
+    },
+    {
+      "Entries": [
+        {
+          "Chance": 0.2,
+          "Count": 2,
+          "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.2,
           "Name": "superbwarfare:medium_armament_module"
         }
       ],
@@ -49,6 +92,30 @@
           "Name": "superbwarfare:track"
         },
         {
+          "Name": "superbwarfare:large_motor"
+        }
+      ],
+      "Source": "superbwarfare:repair_tool",
+      "Type": "vehicle_only"
+    },
+    {
+      "Entries": [
+        {
+          "Chance": 0.2,
+          "Count": 6,
+          "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:medium_battery_pack"
+        },
+        {
+          "Chance": 0.2,
+          "Count": 2,
+          "Name": "superbwarfare:track"
+        },
+        {
+          "Chance": 0.2,
           "Name": "superbwarfare:large_motor"
         }
       ],

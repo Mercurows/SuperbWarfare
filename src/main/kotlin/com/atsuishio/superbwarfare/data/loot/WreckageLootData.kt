@@ -3,7 +3,9 @@ package com.atsuishio.superbwarfare.data.loot
 import com.atsuishio.superbwarfare.network.SerializedResourceLocation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.damagesource.DamageType
 import net.minecraft.world.item.Item
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -19,7 +21,7 @@ class WreckageLootData(
         @SerialName("Source") val source: String = "@Default",
         @SerialName("Type") val type: Type = Type.DEFAULT
     ) {
-        class Builder(val rolls: Int = 1, val source: String = "@Default", var type: Type = Type.DEFAULT) {
+        class Builder(val rolls: Int = 1, var source: String = "@Default", var type: Type = Type.DEFAULT) {
             val entries = mutableListOf<Entry>()
 
             fun addEntry(entry: Entry): Builder {
@@ -29,6 +31,11 @@ class WreckageLootData(
 
             fun addEntry(vararg entry: Entry): Builder {
                 entries.addAll(entry)
+                return this
+            }
+
+            fun source(source: ResourceKey<DamageType>): Builder {
+                this.source = source.location().toString()
                 return this
             }
 

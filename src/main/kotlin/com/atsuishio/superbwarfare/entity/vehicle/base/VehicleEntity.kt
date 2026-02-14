@@ -1588,6 +1588,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
+        this.lastDamageSource = source
+        this.lastDamageStamp = level().gameTime
+
         this.onHurt(computedAmount, source.entity, true)
         return super.hurt(source, computedAmount)
     }
@@ -1870,12 +1873,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             ejectPassengers()
             if (health <= -getMaxHealth()) {
                 this.discard()
-                val explosion = createCustomExplosion()
+                createCustomExplosion()
                     .radius(0f)
                     .damage(0f)
                     .withParticleType(ParticleTool.ParticleType.SMALL)
-                explosion.keepBlock()
-                explosion.explode()
+                    .keepBlock()
+                    .explode()
+
+                this.generateWreckageLoot()
             }
             if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && (onGround() || isInFluidType) && !sympatheticDetonated) {
                 sympatheticDetonated = true
@@ -3133,19 +3138,17 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 random.triangle(0.0, 0.0172275 * 12.toDouble())
             ).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
 
-            val quaterniond = combineRotationsTurret(1f, this)
+            val quaternion = combineRotationsTurret(1f, this)
             turretWreckEntity.vehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()
             turretWreckEntity.xRot = this.getTurretPitch(1f)
             turretWreckEntity.yRot = -getYRotFromVector(getBarrelVector(1f)).toFloat()
-            turretWreckEntity.setQuaternion0(quaterniond)
-            turretWreckEntity.setQuaternion(quaterniond)
+            turretWreckEntity.setQuaternion0(quaternion)
+            turretWreckEntity.setQuaternion(quaternion)
             level().addFreshEntity(turretWreckEntity)
         }
 
         if (destroyInfo.noWreck) {
             discard()
-        } else {
-            this.generateWreckageLoot()
         }
     }
 
@@ -4257,11 +4260,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 val parsedLoc = ResourceLocation.tryParse(source) ?: return@poolLoop
                 val damageType = ResourceKey.create(Registries.DAMAGE_TYPE, parsedLoc)
                 if (!lastSource.`is`(damageType)) return@poolLoop
+            } else if (this.lastDamageSource?.`is`(ModDamageTypes.REPAIR_TOOL) == true) {
+                return@poolLoop
             }
 
             repeat(pool.rolls) {
-                val random = Random.nextDouble()
                 entries.forEach { entry ->
+                    val random = Random.nextDouble()
                     val chance =
                         if (type == WreckageLootData.Pool.Type.VEHICLE_ONLY) {
                             if (this.hasTurret() && this.sympatheticDetonated) {
