@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
+import com.atsuishio.superbwarfare.data.loot.WreckageLootData
 import com.atsuishio.superbwarfare.data.loot.WreckageLootDataManager
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier
@@ -4190,22 +4191,39 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val data = WreckageLootDataManager.getLootData(this.type) ?: return
         val pools = data.pools
         if (pools.isEmpty()) return
-        pools.forEach { pool ->
+        pools.forEach poolLoop@{ pool ->
+            val type = pool.type
+            if (type == WreckageLootData.Pool.Type.TURRET_ONLY) return@poolLoop
             val entries = pool.entries
-            if (entries.isEmpty()) return@forEach
+            if (entries.isEmpty()) return@poolLoop
             val source = pool.source
             if (source != "@Default") {
-                val lastSource = this.lastDamageSource ?: return@forEach
-                val parsedLoc = ResourceLocation.tryParse(source) ?: return@forEach
+                val lastSource = this.lastDamageSource ?: return@poolLoop
+                val parsedLoc = ResourceLocation.tryParse(source) ?: return@poolLoop
                 val damageType = ResourceKey.create(Registries.DAMAGE_TYPE, parsedLoc)
-                if (!lastSource.`is`(damageType)) return@forEach
+                if (!lastSource.`is`(damageType)) return@poolLoop
             }
 
-            val random = Random.nextDouble()
             repeat(pool.rolls) {
+                val random = Random.nextDouble()
                 entries.forEach { entry ->
                     val chance =
-                        entry.chance * if (this.hasTurret() && this.sympatheticDetonated) (1.0 - VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()) else 1.0
+                        if (type == WreckageLootData.Pool.Type.VEHICLE_ONLY) {
+                            if (this.hasTurret() && this.sympatheticDetonated) {
+                                entry.chance
+                            } else return@poolLoop
+                        } else if (type == WreckageLootData.Pool.Type.COMPLETE) {
+                            if (this.hasTurret()) {
+                                if (this.sympatheticDetonated) return@poolLoop
+                                else entry.chance
+                            } else {
+                                entry.chance
+                            }
+                        } else {
+                            if (this.hasTurret() && this.sympatheticDetonated) (1.0 - VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get())
+                            else 1.0
+                        }
+
                     if (random > chance) return@forEach
                     val name = entry.name
                     val item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(name))
