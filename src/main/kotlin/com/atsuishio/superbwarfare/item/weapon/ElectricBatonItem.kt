@@ -48,7 +48,7 @@ class ElectricBatonItem : SwordItem(
     override fun getMaxEnergy(stack: ItemStack) = MAX_ENERGY
 
     @ParametersAreNonnullByDefault
-    override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack?> {
+    override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(usedHand)
 
         if (player.isShiftKeyDown) {
@@ -65,7 +65,7 @@ class ElectricBatonItem : SwordItem(
                 ), true
             )
         }
-        return InteractionResultHolder.fail<ItemStack?>(stack)
+        return InteractionResultHolder.fail(stack)
     }
 
     override fun isBarVisible(stack: ItemStack): Boolean {
