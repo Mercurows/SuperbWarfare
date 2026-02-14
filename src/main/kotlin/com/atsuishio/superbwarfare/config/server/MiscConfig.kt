@@ -3,18 +3,10 @@ package com.atsuishio.superbwarfare.config.server
 import com.atsuishio.superbwarfare.config.buildServerConfig
 
 object MiscConfig {
-
-    // TODO 是否考虑重命名该属性？
-    @JvmField
-    val TACTICAL_SPRINT = buildServerConfig {
-        push("misc")
-
-        comment("Set true to enable tactical sprint")
-        define("allow_tactical_sprint", false)
-    }
-
     @JvmField
     val SEND_KILL_FEEDBACK = buildServerConfig {
+        push("misc")
+
         comment("Set true to enable kill feedback sending")
         define("send_kill_feedback", true)
     }

@@ -18,7 +18,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(ExplosionConfig::EXPLOSION_DESTROY)
     booleanConfig(ExplosionConfig::EXTRA_EXPLOSION_EFFECT)
 
-    booleanConfig(ProjectileConfig::BLOCK_DESTROY)
+    booleanConfig(ProjectileConfig::PROJECTILE_DESTROY_BLOCKS)
 
     booleanConfig(VehicleConfig::COLLECT_DROPS_BY_CRASHING)
     booleanConfig(VehicleConfig::VEHICLE_ITEM_PICKUP)
