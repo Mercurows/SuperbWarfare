@@ -4,9 +4,55 @@
     {
       "Entries": [
         {
-          "Name": "superbwarfare:steel_ingot"
+          "Count": 8,
+          "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Name": "superbwarfare:medium_armament_module"
+        },
+        {
+          "Name": "superbwarfare:medium_battery_pack"
+        },
+        {
+          "Count": 2,
+          "Name": "superbwarfare:track"
+        },
+        {
+          "Name": "superbwarfare:large_motor"
         }
-      ]
+      ],
+      "Type": "complete"
+    },
+    {
+      "Entries": [
+        {
+          "Count": 2,
+          "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Name": "superbwarfare:medium_armament_module"
+        }
+      ],
+      "Type": "turret_only"
+    },
+    {
+      "Entries": [
+        {
+          "Count": 6,
+          "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Name": "superbwarfare:medium_battery_pack"
+        },
+        {
+          "Count": 2,
+          "Name": "superbwarfare:track"
+        },
+        {
+          "Name": "superbwarfare:large_motor"
+        }
+      ],
+      "Type": "vehicle_only"
     }
   ]
 }

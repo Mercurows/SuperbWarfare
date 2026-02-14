@@ -4220,8 +4220,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                                 entry.chance
                             }
                         } else {
-                            if (this.hasTurret() && this.sympatheticDetonated) (1.0 - VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get())
-                            else 1.0
+                            entry.chance * if (this.hasTurret() && this.sympatheticDetonated) (1.0 - VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()) else 1.0
                         }
 
                     if (random > chance) return@forEach
