@@ -110,16 +110,12 @@ object LivingEventHandler {
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {
-        val entity = event.entity ?: return
+        if (event.entity == null) return
 
         killIndication(event)
         handleGunPerksWhenDeath(event)
         handlePlayerKillEntity(event)
         giveKillExpToWeapon(event)
-
-        if (entity is Player) {
-            handlePlayerBeamReset(entity)
-        }
     }
 
     private fun handleVehicleHurt(event: LivingIncomingDamageEvent) {
@@ -349,8 +345,6 @@ object LivingEventHandler {
 
             val oldStack = event.from
             val newStack = event.to
-
-            entity.getCapability(ModCapabilities.LASER_CAPABILITY)?.stop()
 
             if (entity is ServerPlayer) {
                 if (newStack.item is GunItem) {
@@ -690,10 +684,6 @@ object LivingEventHandler {
             player.giveExperiencePoints(event.droppedExperience)
             event.setCanceled(true)
         }
-    }
-
-    fun handlePlayerBeamReset(player: Player) {
-        player.getCapability(ModCapabilities.LASER_CAPABILITY)?.end()
     }
 
     @SubscribeEvent

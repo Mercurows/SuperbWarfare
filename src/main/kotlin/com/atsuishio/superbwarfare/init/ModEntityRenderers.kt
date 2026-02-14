@@ -32,7 +32,6 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get()) { M18SmokeGrenadeRenderer(it) }
         event.registerEntityRenderer(ModEntities.MLE_1934.get()) { Mle1934Renderer(it) }
         event.registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get()) { JavelinMissileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.LASER.get()) { LaserEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.ANNIHILATOR.get()) { AnnihilatorRenderer(it) }
         event.registerEntityRenderer(ModEntities.SPEEDBOAT.get()) { SpeedboatRenderer(it) }
         event.registerEntityRenderer(ModEntities.TINY_SPEEDBOAT.get()) { TinySpeedboatRenderer(it) }

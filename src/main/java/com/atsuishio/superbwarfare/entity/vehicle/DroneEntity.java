@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.vehicle;
 import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData;
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity;
-import com.atsuishio.superbwarfare.entity.projectile.LaserEntity;
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -536,7 +535,7 @@ public class DroneEntity extends GeoVehicleEntity {
         var level = this.level();
         for (var target : level.getEntitiesOfClass(Entity.class, aabb, e -> true)) {
             if (this != target && target != null
-                    && !(target instanceof ItemEntity || target instanceof Projectile || target instanceof ProjectileEntity || target instanceof LaserEntity
+                    && !(target instanceof ItemEntity || target instanceof Projectile || target instanceof ProjectileEntity
                     || target.getType().is(ModTags.EntityTypes.DECOY) || target instanceof AreaEffectCloud || target instanceof C4Entity)) {
                 hitEntityCrash(controller, target);
             }
