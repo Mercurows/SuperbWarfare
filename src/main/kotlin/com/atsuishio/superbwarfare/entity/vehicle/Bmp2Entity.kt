@@ -9,7 +9,7 @@ import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 class Bmp2Entity(type: EntityType<Bmp2Entity>, world: Level) : GeoVehicleEntity(type, world) {
 
     override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.4f) * damage }
+        .custom { source, damage -> getSourceAngle(source, 0.15f) * damage }
 
     override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
         "cannon" {

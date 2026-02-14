@@ -9,7 +9,7 @@ import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 class Bl132Entity(type: EntityType<Bl132Entity>, world: Level) : ArtilleryEntity(type, world) {
 
     override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.5f) * damage }
+        .custom { source, damage -> getSourceAngle(source, 0.1f) * damage }
 
     override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
         for (i in 1..4) {
