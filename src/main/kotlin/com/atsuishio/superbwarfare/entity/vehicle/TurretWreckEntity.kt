@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.data.loot.WreckageLootData
 import com.atsuishio.superbwarfare.data.loot.WreckageLootDataManager
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
@@ -337,6 +338,9 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         val pools = data.pools
         if (pools.isEmpty()) return
         pools.forEach { pool ->
+            val type = pool.type
+            if (type == WreckageLootData.Pool.Type.VEHICLE_ONLY || type == WreckageLootData.Pool.Type.COMPLETE) return@forEach
+
             val entries = pool.entries
             if (entries.isEmpty()) return@forEach
             val source = pool.source
@@ -347,10 +351,16 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
                 if (!lastSource.`is`(damageType)) return@forEach
             }
 
-            val random = Random.nextDouble()
             repeat(pool.rolls) {
+                val random = Random.nextDouble()
                 entries.forEach { entry ->
-                    if (random > entry.chance * VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()) return@forEach
+                    val chance = if (type == WreckageLootData.Pool.Type.DEFAULT) {
+                        entry.chance * VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()
+                    } else {
+                        entry.chance
+                    }
+                    if (random > chance) return@forEach
+
                     val name = entry.name
                     val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: return@forEach
                     val count = entry.count

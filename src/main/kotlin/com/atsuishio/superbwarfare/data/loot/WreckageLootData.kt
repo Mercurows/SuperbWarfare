@@ -16,11 +16,10 @@ class WreckageLootData(
     class Pool(
         @SerialName("Entries") val entries: List<Entry> = listOf(),
         @SerialName("Rolls") val rolls: Int = 1,
-        @SerialName("Source") val source: String = "@Default"
+        @SerialName("Source") val source: String = "@Default",
+        @SerialName("Type") val type: Type = Type.DEFAULT
     ) {
-        constructor(builder: Builder) : this(builder.entries, builder.rolls, builder.source)
-
-        class Builder(val rolls: Int = 1, val source: String = "@Default") {
+        class Builder(val rolls: Int = 1, val source: String = "@Default", var type: Type = Type.DEFAULT) {
             val entries = mutableListOf<Entry>()
 
             fun addEntry(entry: Entry): Builder {
@@ -28,9 +27,29 @@ class WreckageLootData(
                 return this
             }
 
-            fun build(): Pool {
-                return Pool(entries, rolls, source)
+            fun type(type: Type): Builder {
+                this.type = type
+                return this
             }
+
+            fun build(): Pool {
+                return Pool(entries, rolls, source, type)
+            }
+        }
+
+        @Serializable
+        enum class Type {
+            @SerialName("turret_only")
+            TURRET_ONLY,
+
+            @SerialName("vehicle_only")
+            VEHICLE_ONLY,
+
+            @SerialName("complete")
+            COMPLETE,
+
+            @SerialName("default")
+            DEFAULT,
         }
 
     }
