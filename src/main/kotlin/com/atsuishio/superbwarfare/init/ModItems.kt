@@ -234,11 +234,11 @@ object ModItems {
     @JvmField val DEFUSER = registerItem("defuser") { Defuser() }
     @JvmField val ARMOR_PLATE = registerItem("armor_plate") { ArmorPlate() }
 
-    @JvmField val RU_HELMET_6B47 = registerItem("ru_helmet_6b47") { RuHelmet6b47() }
-    @JvmField val RU_CHEST_6B43 = registerItem("ru_chest_6b43") { RuChest6b43() }
-    @JvmField val US_HELMET_PASGT = registerItem("us_helmet_pasgt") { UsHelmetPasgt() }
-    @JvmField val US_CHEST_IOTV = registerItem("us_chest_iotv") { UsChestIotv() }
-    @JvmField val GE_HELMET_M_35 = registerItem("ge_helmet_m_35") { GeHelmetM35() }
+    @JvmField val RU_HELMET_6B47 = registerItem("ru_helmet_6b47") { RuHelmet6b47Item() }
+    @JvmField val RU_CHEST_6B43 = registerItem("ru_chest_6b43") { RuChest6b43Item() }
+    @JvmField val US_HELMET_PASGT = registerItem("us_helmet_pasgt") { UsHelmetPasgtItem() }
+    @JvmField val US_CHEST_IOTV = registerItem("us_chest_iotv") { UsChestIotvItem() }
+    @JvmField val GE_HELMET_M_35 = registerItem("ge_helmet_m_35") { GeHelmetM35Item() }
     @JvmField val PARACHUTE = registerItem("parachute") { ParachuteItem() }
     @JvmField val THERMAL_IMAGING_GOGGLES = registerItem("thermal_imaging_goggles") { ThermalImagingGogglesItem() }
 
