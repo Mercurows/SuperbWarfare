@@ -27,6 +27,11 @@ class WreckageLootData(
                 return this
             }
 
+            fun addEntry(vararg entry: Entry): Builder {
+                entries.addAll(entry)
+                return this
+            }
+
             fun type(type: Type): Builder {
                 this.type = type
                 return this
@@ -71,6 +76,11 @@ class WreckageLootData(
 
         fun addPool(pool: Pool): Builder {
             pools.add(pool)
+            return this
+        }
+
+        fun addPool(vararg pool: Pool): Builder {
+            pools.addAll(pool)
             return this
         }
 
