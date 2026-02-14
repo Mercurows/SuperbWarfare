@@ -2430,13 +2430,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 )
 
                 if (computed().destroyInfo.sympatheticDetonation && health < 0.05 * getMaxHealth() && this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && !(sympatheticDetonated)) {
+                    val pos = turretBurnEffectPos()
+                    val dir = getUpVec(1f)
                     ParticleTool.spawnDirectionalParticles(
                         (12 + 10 * random).toInt(),
                         0.05 * random.toDouble(),
                         level(),
                         CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f),
-                        getUpVec(1f),
-                        turretBurnEffectPos(),
+                        dir,
+                        pos,
                         4.5 + random
                     )
                     ParticleTool.spawnDirectionalParticles(
@@ -2444,8 +2446,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         0.8 * random.toDouble(),
                         level(),
                         ModParticleTypes.FIRE_STAR.get(),
-                        getUpVec(1f),
-                        turretBurnEffectPos(),
+                        dir,
+                        pos,
                         0.4 + random
                     )
                     ParticleTool.spawnDirectionalParticles(
@@ -2453,8 +2455,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         0.8 * random.toDouble(),
                         level(),
                         ParticleTypes.LAVA,
-                        getUpVec(1f),
-                        turretBurnEffectPos(),
+                        dir,
+                        pos,
                         0.4 + random
                     )
                     ParticleTool.spawnDirectionalParticles(
@@ -2462,8 +2464,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         0.8 * random.toDouble(),
                         level(),
                         ParticleTypes.FLAME,
-                        getUpVec(1f),
-                        turretBurnEffectPos(),
+                        dir,
+                        pos,
                         0.4 + random
                     )
                 }
@@ -2480,8 +2482,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    open fun turretBurnEffectPos(): Vec3 {
-        return eyePosition
+    open fun turretBurnEffectPos(): Vec3? {
+        return turretPos
     }
 
     open fun playLowHealthParticle() {
