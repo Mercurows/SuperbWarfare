@@ -31,6 +31,7 @@ import com.atsuishio.superbwarfare.item.gun.special.BocekItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun
+import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import net.minecraft.core.registries.Registries
@@ -202,17 +203,17 @@ object ModItems {
     @JvmField val KNIFE = registerItem("knife") {
         SwordItem(ModItemTier.STEEL, 0, -1.8F, Item.Properties().durability(1200))
     }
-    @JvmField val HAMMER = registerItem("hammer") { Hammer(Tiers.IRON, 11, -3.2f, Item.Properties().durability(400)) }
-    @JvmField val GOLDEN_HAMMER = registerItem("golden_hammer") { Hammer(Tiers.GOLD, 11, -3.2f, Item.Properties().durability(150)) }
-    @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { Hammer(ModItemTier.STEEL, 9, -3.2f, Item.Properties().durability(600)) }
-    @JvmField val DIAMOND_HAMMER = registerItem("diamond_hammer") { Hammer(Tiers.DIAMOND, 12, -3.2f, Item.Properties().durability(1500)) }
-    @JvmField val CEMENTED_CARBIDE_HAMMER = registerItem("cemented_carbide_hammer") { Hammer(ModItemTier.CEMENTED_CARBIDE, 8, -3.2f, Item.Properties().durability(2000)) }
-    @JvmField val NETHERITE_HAMMER = registerItem("netherite_hammer") { NetheriteHammer() }
+    @JvmField val HAMMER = registerItem("hammer") { HammerItem(Tiers.IRON, 11, -3.2f, Item.Properties().durability(400)) }
+    @JvmField val GOLDEN_HAMMER = registerItem("golden_hammer") { HammerItem(Tiers.GOLD, 11, -3.2f, Item.Properties().durability(150)) }
+    @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { HammerItem(ModItemTier.STEEL, 9, -3.2f, Item.Properties().durability(600)) }
+    @JvmField val DIAMOND_HAMMER = registerItem("diamond_hammer") { HammerItem(Tiers.DIAMOND, 12, -3.2f, Item.Properties().durability(1500)) }
+    @JvmField val CEMENTED_CARBIDE_HAMMER = registerItem("cemented_carbide_hammer") { HammerItem(ModItemTier.CEMENTED_CARBIDE, 8, -3.2f, Item.Properties().durability(2000)) }
+    @JvmField val NETHERITE_HAMMER = registerItem("netherite_hammer") { NetheriteHammerItem() }
 
-    @JvmField val T_BATON = registerItem("t_baton") { TBaton() }
-    @JvmField val ELECTRIC_BATON = registerItem("electric_baton") { ElectricBaton() }
-    @JvmField val STEEL_PIPE = registerItem("steel_pipe") { SteelPipe() }
-    @JvmField val CROWBAR = registerItem("crowbar") { Crowbar() }
+    @JvmField val T_BATON = registerItem("t_baton") { TBatonItem() }
+    @JvmField val ELECTRIC_BATON = registerItem("electric_baton") { ElectricBatonItem() }
+    @JvmField val STEEL_PIPE = registerItem("steel_pipe") { SteelPipeItem() }
+    @JvmField val CROWBAR = registerItem("crowbar") { CrowbarItem() }
     @JvmField val DEFUSER = registerItem("defuser") { Defuser() }
     @JvmField val ARMOR_PLATE = registerItem("armor_plate") { ArmorPlate() }
 

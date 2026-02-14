@@ -4,9 +4,9 @@ import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.item.ArmorPlate
 import com.atsuishio.superbwarfare.item.BatteryItem
 import com.atsuishio.superbwarfare.item.C4BombItem
-import com.atsuishio.superbwarfare.item.ElectricBaton
 import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem
+import com.atsuishio.superbwarfare.item.weapon.ElectricBatonItem
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
@@ -106,7 +106,7 @@ object ModTabs {
                         output.accept(item.makeFullEnergyStack())
                     }
                     if (item === ModItems.ELECTRIC_BATON.get()) {
-                        output.accept(ElectricBaton.makeFullEnergyStack())
+                        output.accept(ElectricBatonItem.makeFullEnergyStack())
                     }
                 }
             }

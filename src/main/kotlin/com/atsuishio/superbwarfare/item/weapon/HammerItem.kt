@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item
+package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -13,12 +13,12 @@ import net.minecraft.world.item.SwordItem
 import net.minecraft.world.item.Tier
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
-import net.minecraftforge.event.entity.player.PlayerEvent.ItemCraftedEvent
+import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber
+import net.minecraftforge.fml.common.Mod
 import org.joml.Math
 
-open class Hammer(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
+open class HammerItem(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
     SwordItem(tier, attackDamage, attackSpeed, properties) {
     override fun appendHoverText(
         pStack: ItemStack,
@@ -63,10 +63,10 @@ open class Hammer(tier: Tier, attackDamage: Int, attackSpeed: Float, properties:
         return super.hurtEnemy(pStack, pTarget, pAttacker)
     }
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE)
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
     companion object {
         @SubscribeEvent
-        fun onItemCrafted(event: ItemCraftedEvent) {
+        fun onItemCraftedByHammer(event: PlayerEvent.ItemCraftedEvent) {
             val item = event.crafting
             val container = event.inventory
             val player = event.entity ?: return
