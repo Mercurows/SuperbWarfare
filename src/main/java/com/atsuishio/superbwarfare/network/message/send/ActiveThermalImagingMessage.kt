@@ -9,6 +9,6 @@ import kotlinx.serialization.Serializable
 data class ActiveThermalImagingMessage(val active: Boolean) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
-        PlayerVariable.modify(player) { cap -> cap!!.activeThermalImaging = active }
+        PlayerVariable.modify(player) { it.activeThermalImaging = active }
     }
 }
