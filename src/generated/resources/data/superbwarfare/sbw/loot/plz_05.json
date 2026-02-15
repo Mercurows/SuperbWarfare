@@ -1,0 +1,23 @@
+{
+  "ID": "superbwarfare:plz_05",
+  "Pools": [
+    {
+      "Entries": [
+        {
+          "Name": "superbwarfare:steel_block"
+        }
+      ],
+      "Source": "superbwarfare:repair_tool",
+      "Type": "complete"
+    },
+    {
+      "Entries": [
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:steel_block"
+        }
+      ],
+      "Type": "complete"
+    }
+  ]
+}

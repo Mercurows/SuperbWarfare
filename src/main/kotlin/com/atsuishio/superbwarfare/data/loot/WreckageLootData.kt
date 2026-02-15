@@ -86,8 +86,18 @@ class WreckageLootData(
             return this
         }
 
+        fun addPool(pool: Pool.Builder): Builder {
+            pools.add(pool.build())
+            return this
+        }
+
         fun addPool(vararg pool: Pool): Builder {
             pools.addAll(pool)
+            return this
+        }
+
+        fun addPool(vararg pool: Pool.Builder): Builder {
+            pool.forEach { pools.add(it.build()) }
             return this
         }
 

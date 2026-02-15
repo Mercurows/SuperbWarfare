@@ -2,10 +2,12 @@ package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.data.loot.WreckageLootData
 import com.atsuishio.superbwarfare.datagen.base.SbwWreckageLootProvider
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import net.minecraft.data.PackOutput
+import net.minecraft.world.entity.EntityType
 import net.minecraftforge.common.data.ExistingFileHelper
 
 typealias LootBuilder = WreckageLootData.Builder
@@ -17,6 +19,11 @@ class ModWreckageLootProvider(output: PackOutput, existingFileHelper: ExistingFi
     SbwWreckageLootProvider(output, existingFileHelper) {
 
     override fun generate() {
+        createDefaultLoot(ModEntities.A_10A.get())
+        createDefaultLoot(ModEntities.AH_6.get())
+        createDefaultLoot(ModEntities.ANNIHILATOR.get())
+        createDefaultLoot(ModEntities.BL_132.get())
+
         this.add(
             ModEntities.BMP_2.get(),
             LootBuilder()
@@ -66,7 +73,47 @@ class ModWreckageLootProvider(output: PackOutput, existingFileHelper: ExistingFi
                         ).build(),
                 )
         )
+
+        createDefaultLoot(ModEntities.BRADLEY.get())
+        createDefaultLoot(ModEntities.HPJ_11.get())
+        createDefaultLoot(ModEntities.JU_87.get())
+        createDefaultLoot(ModEntities.KV_16.get())
+        createDefaultLoot(ModEntities.LAV_150.get())
+        createDefaultLoot(ModEntities.LAV_AD.get())
+        createDefaultLoot(ModEntities.M_1A_2.get())
+        createDefaultLoot(ModEntities.MI_28.get())
+        createDefaultLoot(ModEntities.MK_42.get())
+        createDefaultLoot(ModEntities.MLE_1934.get())
+        createDefaultLoot(ModEntities.PLZ_05.get())
+        createDefaultLoot(ModEntities.PRISM_TANK.get())
+        createDefaultLoot(ModEntities.SODAYO_PICK_UP.get())
+        createDefaultLoot(ModEntities.SODAYO_PICK_UP_HMG.get())
+        createDefaultLoot(ModEntities.SODAYO_PICK_UP_ROCKET.get())
+        createDefaultLoot(ModEntities.SODAYO_PICK_UP_TOW.get())
+        createDefaultLoot(ModEntities.SPEEDBOAT.get())
+        createDefaultLoot(ModEntities.T_90A.get())
+        createDefaultLoot(ModEntities.TRUCK.get())
+        createDefaultLoot(ModEntities.WAVEFORCE_TOWER.get())
+        createDefaultLoot(ModEntities.YX_100.get())
     }
 
     override fun getName(): String = "Superb Warfare Wreckage Loot"
+
+    private fun createDefaultLoot(type: EntityType<out VehicleEntity>) {
+        this.add(
+            type,
+            LootBuilder()
+                .addPool(
+                    PoolBuilder(type = Type.COMPLETE)
+                        .source(ModDamageTypes.REPAIR_TOOL)
+                        .addEntry(
+                            Entry(ModItems.STEEL_BLOCK.get(), 1, 1.0),
+                        ),
+                    PoolBuilder(type = Type.COMPLETE)
+                        .addEntry(
+                            Entry(ModItems.STEEL_BLOCK.get(), 1, 0.2),
+                        ),
+                )
+        )
+    }
 }
