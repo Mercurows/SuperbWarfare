@@ -1610,8 +1610,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (this.level() is ServerLevel) {
             if (health > 0) {
                 this.health += pHealAmount
-            } else {
-                this.health -= pHealAmount
             }
         }
     }

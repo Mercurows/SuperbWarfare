@@ -157,8 +157,10 @@ public class RepairToolItem extends GunGeoItem {
                     player.level().playSound(null, player.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 0.1f, 1);
                     NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), new ClientIndicatorMessage(0, 5));
                 }
-            } else {
+            } else if (!vehicle.isWreck()) {
                 vehicle.heal(0.5f + 0.0025f * vehicle.getMaxHealth());
+            } else {
+                vehicle.hurt(ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), 0.5f + 0.0025f * vehicle.getMaxHealth());
             }
 
             this.summonRayHitParticle(level, null, pos, shootDirection.scale(-1).normalize());
