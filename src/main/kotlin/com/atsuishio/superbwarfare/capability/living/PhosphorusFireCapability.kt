@@ -28,6 +28,7 @@ class PhosphorusFireCapability : INBTSerializable<CompoundTag> {
         val ID: ResourceLocation = loc("phosphorus_fire_capability")
         const val TAG_PHOSPHORUS_FIRE: String = "SbwPhosphorusFire"
 
+        @JvmStatic
         fun of(living: LivingEntity): PhosphorusFireCapability {
             return living.getCapability(ModCapabilities.PHOSPHORUS_FIRE_CAPABILITY)
                 .orElseGet { PhosphorusFireCapability() }
