@@ -198,7 +198,7 @@ public class Blu43Entity extends Entity implements GeoEntity, OwnableEntity {
             var frontBox = getBoundingBox().inflate(0.2);
             boolean trigger = false;
 
-            var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox, entity -> entity != this && !(entity instanceof HangingEntity) && entity.getBoundingBox().getSize() > 0.4).stream().toList();
+            var entities = level().getEntities(EntityTypeTest.forClass(Entity.class), frontBox, entity -> entity != this && !(entity instanceof Player player && player.isSpectator()) && !(entity instanceof HangingEntity) && entity.getBoundingBox().getSize() > 0.4).stream().toList();
 
             for (var entity : entities) {
                 if (entity != null) {
