@@ -2399,8 +2399,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         if (this.health <= 0.1 * this.getMaxHealth()) {
+            val random = 2 * (this.random.nextFloat() - 0.5f)
             if (level().isClientSide) {
-                val random = 2 * (this.random.nextFloat() - 0.5f)
                 addRandomParticle(
                     ParticleTypes.LARGE_SMOKE,
                     Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
@@ -2451,6 +2451,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     0.01f,
                     1
                 )
+            }
 
                 //TODO 为啥喷过火的载具下次重新加载时会继续喷火
 
@@ -2465,46 +2466,55 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 }
 
                 if (turretBurnTimer > 0 && !sympatheticDetonated) {
-                    val pos = turretBurnEffectPos()
-                    val dir = getUpVec(1f)
-                    ParticleTool.spawnDirectionalParticles(
-                        (12 + 10 * random).toInt(),
-                        0.05 * random.toDouble(),
-                        level(),
-                        CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f),
-                        dir,
-                        pos,
-                        4.5 + random
-                    )
-                    ParticleTool.spawnDirectionalParticles(
-                        (4 + 4 * random).toInt(),
-                        0.8 * random.toDouble(),
-                        level(),
-                        ModParticleTypes.FIRE_STAR.get(),
-                        dir,
-                        pos,
-                        0.4 + random
-                    )
-                    ParticleTool.spawnDirectionalParticles(
-                        (4 + 4 * random).toInt(),
-                        0.8 * random.toDouble(),
-                        level(),
-                        ParticleTypes.LAVA,
-                        dir,
-                        pos,
-                        0.4 + random
-                    )
-                    ParticleTool.spawnDirectionalParticles(
-                        (4 + 4 * random).toInt(),
-                        0.8 * random.toDouble(),
-                        level(),
-                        ParticleTypes.FLAME,
-                        dir,
-                        pos,
-                        0.4 + random
-                    )
+                    if (level().isClientSide) {
+                        val pos = turretBurnEffectPos()
+                        val dir = getUpVec(1f)
+                        ParticleTool.spawnDirectionalParticles(
+                            (12 + 10 * random).toInt(),
+                            0.05 * random.toDouble(),
+                            level(),
+                            CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f),
+                            dir,
+                            pos,
+                            4.5 + random
+                        )
+                        ParticleTool.spawnDirectionalParticles(
+                            (4 + 4 * random).toInt(),
+                            0.8 * random.toDouble(),
+                            level(),
+                            ModParticleTypes.FIRE_STAR.get(),
+                            dir,
+                            pos,
+                            0.4 + random
+                        )
+                        ParticleTool.spawnDirectionalParticles(
+                            (4 + 4 * random).toInt(),
+                            0.8 * random.toDouble(),
+                            level(),
+                            ParticleTypes.LAVA,
+                            dir,
+                            pos,
+                            0.4 + random
+                        )
+                        ParticleTool.spawnDirectionalParticles(
+                            (4 + 4 * random).toInt(),
+                            0.8 * random.toDouble(),
+                            level(),
+                            ParticleTypes.FLAME,
+                            dir,
+                            pos,
+                            0.4 + random
+                        )
+                    }
+
+                    if (turretBurnTimer == 400) {
+                        this.level().playSound(null, onPos, ModSounds.TURRET_BURN_START.get(), SoundSource.BLOCKS, 4f, 1f + 0.05f * random)
+                    }
+                    if (turretBurnTimer % 5 == 0) {
+                        this.level().playSound(null, onPos, ModSounds.TURRET_BURN.get(), SoundSource.BLOCKS, 1.5f, 1f + 0.05f * random)
+                    }
                 }
-            }
+
             if (this.tickCount % 15 == 0) {
                 this.level().playSound(null, this.onPos, SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1f, 1f)
             }

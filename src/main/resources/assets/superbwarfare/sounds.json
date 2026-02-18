@@ -4320,5 +4320,29 @@
         "name": "superbwarfare:vehicle/bradley/bradley_engine"
       }
     ]
+  },
+  "turret_burn_start": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/common/turret_burn_start"
+      }
+    ]
+  },
+  "turret_burn": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/common/turret_burn_01"
+      },
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/common/turret_burn_02"
+      },
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/common/turret_burn_03"
+      }
+    ]
   }
 }
