@@ -1868,7 +1868,20 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         if (isWreck) {
-            ejectPassengers()
+            if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && (onGround() || isInFluidType) && !sympatheticDetonated) {
+                sympatheticDetonated = true
+                val destroyInfo = computed().destroyInfo
+                if (destroyInfo.explodePassengers) {
+                    if (this.crash && destroyInfo.crashPassengers) {
+                        crashPassengers()
+                    } else {
+                        explodePassengers()
+                    }
+                }
+                vehicleExplosion(destroyInfo)
+                ejectPassengers()
+            }
+
             if (health <= -getMaxHealth()) {
                 this.discard()
                 createCustomExplosion()
@@ -1880,10 +1893,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
                 this.generateWreckageLoot()
             }
-            if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && (onGround() || isInFluidType) && !sympatheticDetonated) {
-                sympatheticDetonated = true
-                val destroyInfo = computed().destroyInfo
-                vehicleExplosion(destroyInfo, false)
+
+            if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER) {
+                ejectPassengers()
             }
         }
 
@@ -2240,61 +2252,68 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun handlePartHealth() {
-        if (this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && health < 0.05 * getMaxHealth() && !(sympatheticDetonated)) {
+        if (this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && health < 0.05 * getMaxHealth()) {
             turretHealth = 0f
             mainEngineHealth = 0f
             subEngineHealth = 0f
         }
-        if (turretHealth < 0) {
+        if ((vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRPLANE) && health < 0.05 * getMaxHealth()) {
+            mainEngineHealth = 0f
+            subEngineHealth = 0f
+        }
+
+        if (turretHealth <= 0) {
             turretDamaged = true
         } else if (turretHealth > 0.95 * this.getTurretMaxHealth()) {
             turretDamaged = false
         }
 
-        if (leftWheelHealth < 0) {
+        if (leftWheelHealth <= 0) {
             leftWheelDamaged = true
         } else if (leftWheelHealth > 0.95 * this.getWheelMaxHealth()) {
             leftWheelDamaged = false
         }
 
-        if (rightWheelHealth < 0) {
+        if (rightWheelHealth <= 0) {
             rightWheelDamaged = true
         } else if (rightWheelHealth > 0.95 * this.getWheelMaxHealth()) {
             rightWheelDamaged = false
         }
 
-        if (mainEngineHealth < 0) {
+        if (mainEngineHealth <= 0) {
             mainEngineDamaged = true
         } else if (mainEngineHealth > 0.95 * this.getEngineMaxHealth()) {
             mainEngineDamaged = false
         }
 
-        if (subEngineHealth < 0) {
+        if (subEngineHealth <= 0) {
             subEngineDamaged = true
         } else if (subEngineHealth > 0.95 * this.getEngineMaxHealth()) {
             subEngineDamaged = false
         }
 
-        turretHealth = Math.min(
-            turretHealth + 0.0025f * this.getTurretMaxHealth(),
-            this.getTurretMaxHealth()
-        )
-        leftWheelHealth = Math.min(
-            leftWheelHealth + 0.0025f * this.getWheelMaxHealth(),
-            this.getWheelMaxHealth()
-        )
-        rightWheelHealth = Math.min(
-            rightWheelHealth + 0.0025f * this.getWheelMaxHealth(),
-            this.getWheelMaxHealth()
-        )
-        mainEngineHealth = Math.min(
-            mainEngineHealth + 0.0025f * this.getEngineMaxHealth(),
-            this.getEngineMaxHealth()
-        )
-        subEngineHealth = Math.min(
-            subEngineHealth + 0.0025f * this.getEngineMaxHealth(),
-            this.getEngineMaxHealth()
-        )
+        if (!isWreck) {
+            turretHealth = Math.min(
+                turretHealth + 0.0025f * this.getTurretMaxHealth(),
+                this.getTurretMaxHealth()
+            )
+            leftWheelHealth = Math.min(
+                leftWheelHealth + 0.0025f * this.getWheelMaxHealth(),
+                this.getWheelMaxHealth()
+            )
+            rightWheelHealth = Math.min(
+                rightWheelHealth + 0.0025f * this.getWheelMaxHealth(),
+                this.getWheelMaxHealth()
+            )
+            mainEngineHealth = Math.min(
+                mainEngineHealth + 0.0025f * this.getEngineMaxHealth(),
+                this.getEngineMaxHealth()
+            )
+            subEngineHealth = Math.min(
+                subEngineHealth + 0.0025f * this.getEngineMaxHealth(),
+                this.getEngineMaxHealth()
+            )
+        }
     }
 
     open fun addRandomParticle(
@@ -2324,7 +2343,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun defaultPartDamageEffect(pos: Vec3) {
         if (level().isClientSide) {
-            addRandomParticle(ModParticleTypes.FIRE_STAR.get(), pos, 0f, level(), 0.25f, 5)
+            addRandomParticle(ModParticleTypes.FIRE_STAR.get(), pos, 0f, level(), 0.25f, 1)
             addRandomParticle(ParticleTypes.LARGE_SMOKE, pos, 0.5f, level(), 0.001f, 1)
         }
     }
@@ -3103,18 +3122,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun destroy() {
         val destroyInfo = computed().destroyInfo
 
-        if (destroyInfo.explodePassengers) {
-            if (this.crash && destroyInfo.crashPassengers) {
-                crashPassengers()
-            } else {
-                explodePassengers()
+        if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER) {
+            if (destroyInfo.explodePassengers) {
+                if (this.crash && destroyInfo.crashPassengers) {
+                    crashPassengers()
+                } else {
+                    explodePassengers()
+                }
             }
-        }
-
-        if (vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) {
-            vehicleExplosion(destroyInfo, true)
-        } else {
-            vehicleExplosion(destroyInfo, false)
+            vehicleExplosion(destroyInfo)
         }
 
         if (hasTurret() && destroyInfo.sympatheticDetonation && Math.random() < destroyInfo.sympatheticDetonationChance) {
@@ -3150,22 +3166,24 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    open fun vehicleExplosion(destroyInfo: DestroyInfo, mini: Boolean) {
+    open fun vehicleExplosion(destroyInfo: DestroyInfo) {
         val radius = destroyInfo.explosionRadius
         if (radius > 0) {
-            val damage = if (mini) 0.25f * destroyInfo.explosionDamage else destroyInfo.explosionDamage
-            val particleType = if (mini) ParticleTool.ParticleType.MEDIUM else destroyInfo.particleType
+            queueServerWork(1) {
+                val damage = destroyInfo.explosionDamage
+                val particleType = destroyInfo.particleType
 
-            val explosion = createCustomExplosion()
-                .radius(if (mini) 0.5f * radius else radius)
-                .damage(damage)
-                .withParticleType(particleType)
+                val explosion = createCustomExplosion()
+                    .radius(radius)
+                    .damage(damage)
+                    .withParticleType(particleType)
 
-            if (!destroyInfo.explodeBlocks || mini) {
-                explosion.keepBlock()
+                if (!destroyInfo.explodeBlocks) {
+                    explosion.keepBlock()
+                }
+
+                explosion.explode()
             }
-
-            explosion.explode()
         }
     }
 
@@ -3174,17 +3192,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     protected fun crashPassengers() {
         for (entity in this.getPassengers()) {
-            entity.stopRiding()
-            queueServerWork(1) {
-                if (entity is LivingEntity) {
-                    repeat(VehicleConfig.AIR_CRASH_EXPLOSION_COUNT.get()) {
-                        val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
-                        entity.invulnerableTime = 0
-                        entity.hurt(
-                            ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker),
-                            VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get().toFloat()
-                        )
-                    }
+            if (entity is LivingEntity) {
+                repeat(VehicleConfig.AIR_CRASH_EXPLOSION_COUNT.get()) {
+                    val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
+                    entity.invulnerableTime = 0
+                    entity.hurt(
+                        ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker),
+                        VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get().toFloat()
+                    )
                 }
             }
         }
@@ -3193,21 +3208,17 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     protected fun explodePassengers() {
         for (entity in this.getPassengers()) {
             if (entity !is LivingEntity) continue
-            entity.stopRiding()
-            queueServerWork(1) {
-                repeat(VehicleConfig.SELF_EXPLOSION_COUNT.get()) {
-                    val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
-                    entity.invulnerableTime = 0
-                    entity.hurt(
-                        ModDamageTypes.causeVehicleExplosionDamage(
-                            this.level().registryAccess(),
-                            null,
-                            tempAttacker
-                        ), VehicleConfig.SELF_EXPLOSION_DAMAGE.get().toFloat()
-                    )
-                }
+            repeat(VehicleConfig.SELF_EXPLOSION_COUNT.get()) {
+                val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
+                entity.invulnerableTime = 0
+                entity.hurt(
+                    ModDamageTypes.causeVehicleExplosionDamage(
+                        this.level().registryAccess(),
+                        null,
+                        tempAttacker
+                    ), VehicleConfig.SELF_EXPLOSION_DAMAGE.get().toFloat()
+                )
             }
-
         }
     }
 
@@ -3996,7 +4007,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         super.move(movementType, movement)
 
-        if (lastTickSpeed < 0.3 || collisionCoolDown > 0 || this is DroneEntity) return
+        if (lastTickSpeed < 0.2 || collisionCoolDown > 0 || this is DroneEntity) return
         val driver = this.lastDriver
 
         if (verticalCollision) {
@@ -4009,7 +4020,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this,
                         driver ?: this
                     ),
-                    if (isWreck) 0f else ((40 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3)).toFloat()
+                    if (isWreck) 0f else ((4 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.2) * (lastTickSpeed - 0.2)).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
@@ -4024,7 +4035,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this.level().registryAccess(),
                         this,
                         driver ?: this
-                    ), if (isWreck) 0f else (60 * ((lastTickSpeed - 0.5) * (lastTickSpeed - 0.5))).toFloat()
+                    ), if (isWreck) 0f else (6 * ((lastTickSpeed - 0.2) * (lastTickSpeed - 0.2))).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
@@ -4033,14 +4044,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this.deltaMovement.z()
                     ).opposite
                 )
-            } else if (Mth.abs(lastTickVerticalSpeed.toFloat()) > 0.4) {
+            } else if (Mth.abs(lastTickVerticalSpeed.toFloat()) > 0.2) {
                 this.hurt(
                     ModDamageTypes.causeVehicleStrikeDamage(
                         this.level().registryAccess(),
                         this,
                         driver ?: this
                     ),
-                    if (isWreck) 0f else (96 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.3) * (lastTickSpeed - 0.3))).toFloat()
+                    if (isWreck) 0f else (24 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.2) * (lastTickSpeed - 0.2))).toFloat()
                 )
                 if (!this.level().isClientSide) {
                     this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
@@ -4061,7 +4072,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     this.level().registryAccess(),
                     this,
                     driver ?: this
-                ), (126 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
+                ), (18 * ((lastTickSpeed - 0.2) * (lastTickSpeed - 0.2))).toFloat()
             )
             this.bounceHorizontal(
                 Direction.getNearest(

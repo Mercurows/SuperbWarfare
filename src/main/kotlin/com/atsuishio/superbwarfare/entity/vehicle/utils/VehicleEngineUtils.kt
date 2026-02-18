@@ -674,7 +674,7 @@ object VehicleEngineUtils {
             if (onGround()) {
                 destroyRot *= 0.99f
             } else {
-                destroyRot += if (isWreck) 0.06f else 0.03f
+                destroyRot += if (isWreck) 0.09f else 0.03f
             }
 
             diffX = -35 - xRot
@@ -683,7 +683,7 @@ object VehicleEngineUtils {
             xRot += diffX * 0.2f * synchedPropellerRot
             yRot += destroyRot
             setZRot(roll + diffZ * 0.75f * synchedPropellerRot)
-            deltaMovement = deltaMovement.add(0.0, -destroyRot * 0.0008, 0.0)
+//            deltaMovement = deltaMovement.add(0.0, -destroyRot * 0.0008, 0.0)
         }
 
         if (mainEngineDamaged) {
