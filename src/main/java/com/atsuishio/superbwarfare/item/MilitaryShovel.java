@@ -20,8 +20,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public class MilitaryShovel extends ShovelItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public MilitaryShovel(Properties pProperties) {
-        super(ModItemTier.STEEL, pProperties.rarity(Rarity.RARE).durability(500).attributes(createAttributes(ModItemTier.STEEL, 2F, -3F)));
+    public MilitaryShovel() {
+        super(ModItemTier.STEEL, new CustomDamageProperty(500).rarity(Rarity.RARE).attributes(createAttributes(ModItemTier.STEEL, 5, -2.6F)));
     }
 
 

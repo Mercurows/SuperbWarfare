@@ -231,7 +231,7 @@ object ModItems {
     @JvmField val ELECTRIC_BATON = registerItem("electric_baton") { ElectricBatonItem() }
     @JvmField val STEEL_PIPE = registerItem("steel_pipe") { SteelPipeItem() }
     @JvmField val CROWBAR = registerItem("crowbar") { CrowbarItem() }
-    @JvmField val MILITARY_SHOVEL = registerItem("military_shovel") { MilitaryShovel(Item.Properties()) }
+    @JvmField val MILITARY_SHOVEL = registerItem("military_shovel") { MilitaryShovel() }
     @JvmField val DEFUSER = registerItem("defuser") { Defuser() }
     @JvmField val ARMOR_PLATE = registerItem("armor_plate") { ArmorPlate() }
 
