@@ -333,6 +333,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var destroyRot = 0f
 
     open var jumpCoolDown = 0
+    open var deltaMovementO: Vec3? = null
 
     open var lastDamageSource: DamageSource? = null
         get() {
@@ -1805,6 +1806,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         flap2RRotO = this.flap2RRot
         flap3RotO = this.flap3Rot
         gearRotO = this.gearRot
+        deltaMovementO = deltaMovement
 
         super.baseTick()
 
