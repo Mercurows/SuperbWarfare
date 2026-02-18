@@ -167,8 +167,6 @@ object ModSounds {
 
     @JvmField val PTKM_1R_DEPLOY = register("ptkm_1r_deploy")
 
-    @JvmField val TERRAIN = register("terrain")
-    @JvmField val PULL_UP = register("pull_up")
     @JvmField val KNIFE_FLESH = register("knife_flesh")
     @JvmField val NIGHT_VISION_ACTIVATE = register("night_vision_activate")
 

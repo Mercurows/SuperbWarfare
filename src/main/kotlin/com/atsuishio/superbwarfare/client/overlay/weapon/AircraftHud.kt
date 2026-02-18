@@ -111,7 +111,7 @@ object AircraftHud {
                 ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
             )
         )
-        val hitPos = result.getLocation()
+        val hitPos = result.location
 
         var dis = shootPos.distanceTo(hitPos)
 
@@ -501,52 +501,6 @@ object AircraftHud {
                 poseStack.popPose()
             }
         }
-
-        val speed = vehicle.deltaMovement.length() * 72
-        val height = vehicle.position().distanceTo(
-            (Vec3.atLowerCornerOf(
-                vehicle.level().clip(
-                    ClipContext(
-                        vehicle.position(), vehicle.position().add(Vec3(0.0, -1.0, 0.0).scale(160.0)),
-                        ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, vehicle
-                    )
-                ).blockPos
-            ))
-        )
-        val blockInWay = vehicle.position().distanceTo(
-            (Vec3.atLowerCornerOf(
-                vehicle.level().clip(
-                    ClipContext(
-                        vehicle.position(),
-                        vehicle.position().add(vehicle.deltaMovement.add(0.0, 0.06, 0.0).normalize().scale(160.0)),
-                        ClipContext.Block.VISUAL,
-                        ClipContext.Fluid.ANY,
-                        vehicle
-                    )
-                ).blockPos
-            ))
-        )
-
-        if (lerpVy < -42) {
-            guiGraphics.drawString(
-                Minecraft.getInstance().font, Component.literal("SINK RATE, PULL UP!"),
-                screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false
-            )
-            if (player.tickCount % 30 == 0) {
-                player.level()
-                    .playLocalSound(player.onPos, ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3f, 1f, false)
-            }
-        } else if (((lerpVy < -10 || (lerpVy < -3 && speed > 170)) && height < 30) || (speed > 100 && blockInWay < 144)) {
-            guiGraphics.drawString(
-                Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
-                screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false
-            )
-            if (player.tickCount % 30 == 0) {
-                player.level()
-                    .playLocalSound(player.onPos, ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3f, 1f, false)
-            }
-        }
-
         poseStack.popPose()
         poseStack.popPose()
     }

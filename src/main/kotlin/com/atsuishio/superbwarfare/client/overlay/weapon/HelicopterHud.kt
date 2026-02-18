@@ -282,30 +282,7 @@ object HelicopterHud {
             val pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
             val screenPos = pos.worldToScreen()
             val speed = vehicle.deltaMovement.length() * 72
-            val height = vehicle.position().distanceTo(
-                (Vec3.atLowerCornerOf(
-                    vehicle.level().clip(
-                        ClipContext(
-                            vehicle.position(), vehicle.position().add(Vec3(0.0, -1.0, 0.0).scale(100.0)),
-                            ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, vehicle
-                        )
-                    ).blockPos
-                ))
-            )
-            val blockInWay = vehicle.position().distanceTo(
-                (Vec3.atLowerCornerOf(
-                    vehicle.level().clip(
-                        ClipContext(
-                            vehicle.position(),
-                            vehicle.position()
-                                .add(vehicle.deltaMovement.add(0.0, 0.06, 0.0).normalize().scale(100.0)),
-                            ClipContext.Block.VISUAL,
-                            ClipContext.Fluid.ANY,
-                            vehicle
-                        )
-                    ).blockPos
-                ))
-            )
+
 
             val x = screenPos.x.toFloat()
             val y = screenPos.y.toFloat()
@@ -434,7 +411,7 @@ object HelicopterHud {
                     Component.literal(format0D(lerpVy.toDouble(), "m/s")),
                     screenWidth / 2 + 146,
                     (screenHeight / 2f - 3 - Math.max(lerpVy, -24f) * 2.5).toInt(),
-                    (if (lerpVy < -24 || ((lerpVy < -10 || (lerpVy < -1 && speed > 100)) && height < 36) || (speed > 40 && blockInWay < 72)) -65536 else color),
+                    (if (lerpVy < -24) -65536 else color),
                     false
                 )
                 guiGraphics.drawString(
@@ -549,26 +526,6 @@ object HelicopterHud {
 
                 poseStack.popPose()
                 poseStack.popPose()
-            }
-
-            if (lerpVy < -16) {
-                guiGraphics.drawString(
-                    Minecraft.getInstance().font, Component.literal("SINK RATE，PULL UP!"),
-                    screenWidth / 2 - 53, screenHeight / 2 + 24, -65536, false
-                )
-                if (player.tickCount % 30 == 0) {
-                    player.level()
-                        .playLocalSound(player.onPos, ModSounds.PULL_UP.get(), SoundSource.PLAYERS, 3f, 1f, false)
-                }
-            } else if (((lerpVy < -10 || (lerpVy < -3 && speed > 100)) && height < 36) || (speed > 72 && blockInWay < 72)) {
-                guiGraphics.drawString(
-                    Minecraft.getInstance().font, Component.literal("TERRAIN TERRAIN"),
-                    screenWidth / 2 - 42, screenHeight / 2 + 24, -65536, false
-                )
-                if (player.tickCount % 30 == 0) {
-                    player.level()
-                        .playLocalSound(player.onPos, ModSounds.TERRAIN.get(), SoundSource.PLAYERS, 3f, 1f, false)
-                }
             }
             poseStack.popPose()
         }
