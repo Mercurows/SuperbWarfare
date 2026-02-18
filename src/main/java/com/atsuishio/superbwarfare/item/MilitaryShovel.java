@@ -41,7 +41,7 @@ public class MilitaryShovel extends ShovelItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public MilitaryShovel(Properties pProperties) {
-        super(ModItemTier.STEEL, 2F, -3.0F, pProperties.rarity(Rarity.RARE).durability(500));
+        super(ModItemTier.STEEL, 5F, -2.6F, pProperties.rarity(Rarity.RARE).durability(500));
     }
 
 
