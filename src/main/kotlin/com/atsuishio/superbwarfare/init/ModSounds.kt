@@ -149,6 +149,7 @@ object ModSounds {
     @JvmField val VEHICLE_STRIKE = register("vehicle_strike")
     @JvmField val TURRET_BURN_START = register("turret_burn_start")
     @JvmField val TURRET_BURN = register("turret_burn")
+    @JvmField val HELI_CRASH = register("heli_crash")
 
     // drone
     @JvmField val DRONE_ENGINE = register("drone_engine")

@@ -24,6 +24,8 @@ object ModSoundInstances {
             Consumer { mc.soundManager.play(HornSoundInstance.VehicleHornSound(it)) }
         VehicleEntity.playStukaSound =
             Consumer { mc.soundManager.play(VehicleSoundInstance.StukaSound(it)) }
+        VehicleEntity.playHeliCrashSound =
+            Consumer { mc.soundManager.play(VehicleSoundInstance.HeliCrashSound(it)) }
 //        VehicleEntity.playInCarMusic = vehicle -> {
 //            if (NetMusicCompatHolder.canPlayMusic(vehicle)) {
 //                NetMusicCompatHolder.playMusic(vehicle);

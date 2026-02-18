@@ -4344,5 +4344,14 @@
         "name": "superbwarfare:vehicle/common/turret_burn_03"
       }
     ]
+  },
+  "heli_crash": {
+    "sounds": [
+      {
+        "attenuation_distance": 160,
+        "stream": true,
+        "name": "superbwarfare:vehicle/common/heli_crash"
+      }
+    ]
   }
 }

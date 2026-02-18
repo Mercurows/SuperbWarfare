@@ -669,21 +669,21 @@ object VehicleEngineUtils {
                 }
             }
         } else if (engineStartOver) {
-            power = Math.max(power - (if (isWreck) 0.0006f else 0.0003f), if (onGround()) 0f else 0.01f)
+            power = Math.max(power - (if (isWreck) 0.0006f else 0.0003f), if (onGround()) 0f else 0.04f)
 
-            if (onGround()) {
-                destroyRot *= 0.99f
-            } else {
-                destroyRot += if (isWreck) 0.09f else 0.03f
+            if (!onGround()) {
+                destroyRot += if (isWreck) 0.2f else 0.06f
             }
 
-            diffX = -35 - xRot
-            diffZ = -60 - roll
+            destroyRot *= if (onGround()) 0.99f else 0.994f
+
+            diffX = -15 - xRot
+            diffZ = -35 - roll
 
             xRot += diffX * 0.2f * synchedPropellerRot
             yRot += destroyRot
             setZRot(roll + diffZ * 0.75f * synchedPropellerRot)
-//            deltaMovement = deltaMovement.add(0.0, -destroyRot * 0.0008, 0.0)
+            deltaMovement = deltaMovement.add(getViewVector(1f).scale(-0.006f * destroyRot.toDouble()))
         }
 
         if (mainEngineDamaged) {
