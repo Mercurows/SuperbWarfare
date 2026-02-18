@@ -1,0 +1,7 @@
+{
+  "Model": {
+    "Animation": "superbwarfare:animations/lav_150.animation.json",
+    "Model": "superbwarfare:geo/lav_25.geo.json",
+    "Texture": "superbwarfare:textures/entity/lav_25.png"
+  }
+}

@@ -589,6 +589,7 @@
   "entity.superbwarfare.mi_28": "Mi-28 Attack helicopter",
   "entity.superbwarfare.lav_150": "LAV-150 Commando",
   "entity.superbwarfare.lav_ad": "LAV-AD AAV",
+  "entity.superbwarfare.lav_25": "LAV-25",
   "entity.minecraft.villager.superbwarfare.armory": "Armory",
   "entity.superbwarfare.tom_6": "Tom F6F",
   "entity.superbwarfare.melon_bomb": "Melon Bomb",
@@ -807,6 +808,7 @@
   "info.superbwarfare.t_90a": "The T-90A is a Russian main third-generation battle tank. Its primary armament is a 125mm smoothbore gun, supplemented by coaxial and anti-aircraft machine guns. Designed to destroy all types of armored targets, providing excellent comprehensive protection and cross-country mobility",
   "info.superbwarfare.m_1a_2": "The M1A2 Abrams is the main battle tank in active U.S. military service. Armed with a 120mm smoothbore gun and equipped with advanced digital fire control systems and depleted uranium armor, it is designed for high-intensity ground combat, renowned for its accurate firepower, superior protection, and mobility",
   "info.superbwarfare.bradley": "The M2 Bradley is the current U.S. infantry fighting vehicle. Its primary armament consists of a 25mm chain gun and a TOW anti-tank missile launcher. Designed to transport infantry and provide them with potent direct fire support, it also possesses anti-armor capability, and is known for its balanced mobility and protection",
+  "info.superbwarfare.lav_25": "The LAV-25 is a U.S. wheeled infantry fighting vehicle. Its primary armament consists of a 25mm chain gun. Designed for reconnaissance, rapid assault, and infantry transport missions, it features amphibious capability and excellent on-road mobility, renowned for its high tactical flexibility",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",

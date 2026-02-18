@@ -1,0 +1,14 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "land",
+  "inputs": [
+    "7 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:medium_armament_module",
+    "superbwarfare:medium_battery_pack",
+    "8 superbwarfare:wheel",
+    "superbwarfare:large_motor"
+  ],
+  "result": {
+    "entity": "superbwarfare:lav_25"
+  }
+}
