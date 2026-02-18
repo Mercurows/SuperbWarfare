@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/military_shovel.item",
+  "textures": {
+    "layer0": "superbwarfare:item/military_shovel"
+  }
+}
