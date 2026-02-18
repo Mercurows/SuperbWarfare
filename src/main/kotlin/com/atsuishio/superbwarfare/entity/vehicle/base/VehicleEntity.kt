@@ -1341,11 +1341,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
 
-        isWreck = compound.getBoolean("IsWreck")
-        sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
-        turretBurned = compound.getBoolean("TurretBurned")
-        turretBurnTimer = compound.getInt("TurretBurnTimer")
-
         val selectedWeaponTag = compound.get("SelectedWeapon")
         val selected = if (selectedWeaponTag is IntArrayTag) {
             selectedWeaponTag.asIntArray
@@ -1429,11 +1424,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (this.hasEnergyStorage()) {
             compound.put("Energy", energyStorage.serializeNBT())
         }
-
-        compound.putBoolean("IsWreck", isWreck)
-        compound.putBoolean("SympatheticDetonated", sympatheticDetonated)
-        compound.putBoolean("TurretBurned", turretBurned)
-        compound.putInt("TurretBurnTimer", turretBurnTimer)
 
         this.resizeItems()
         ContainerHelper.saveAllItems(compound, this.itemStacks)
@@ -2462,8 +2452,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     0.01f,
                     1
                 )
-
-                //TODO 为啥喷过火的载具下次重新加载时会继续喷火
 
                 if (computed().destroyInfo.sympatheticDetonation
                     && health < 0.05 * getMaxHealth() && this.hasTurret()
