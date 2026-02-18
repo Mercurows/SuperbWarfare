@@ -912,6 +912,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(CHARGE_PROGRESS, 0f)
             define(IS_WRECK, false)
             define(SYMPATHETIC_DETONATED, false)
+            define(TURRET_BURNED, false)
+            define(TURRET_BURN_TIMER, 0)
         }
     }
 
@@ -1336,6 +1338,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         isWreck = compound.getBoolean("IsWreck")
         sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
+        turretBurned = compound.getBoolean("TurretBurned")
+        turretBurnTimer = compound.getInt("TurretBurnTimer")
 
         val selectedWeaponTag = compound.get("SelectedWeapon")
         val selected = if (selectedWeaponTag is IntArrayTag) {
@@ -1425,6 +1429,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         compound.putBoolean("IsWreck", isWreck)
         compound.putBoolean("SympatheticDetonated", sympatheticDetonated)
+        compound.putBoolean("TurretBurned", turretBurned)
+        compound.putInt("TurretBurnTimer", turretBurnTimer)
 
         this.resizeItems()
         ContainerHelper.saveAllItems(compound, this.itemStacks, this.level().registryAccess())
@@ -2102,6 +2108,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.rightTrack = 0f
         }
 
+        if (turretBurnTimer > 0) {
+            turretBurnTimer--
+        }
+
         lowHealthWarning()
         this.refreshDimensions()
 
@@ -2442,7 +2452,19 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     1
                 )
 
-                if (computed().destroyInfo.sympatheticDetonation && health < 0.05 * getMaxHealth() && this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && !(sympatheticDetonated)) {
+                //TODO 为啥喷过火的载具下次重新加载时会继续喷火
+
+                if (computed().destroyInfo.sympatheticDetonation
+                    && health < 0.05 * getMaxHealth() && this.hasTurret()
+                    && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK)
+                    && !sympatheticDetonated
+                    && !turretBurned)
+                {
+                    turretBurned = true
+                    turretBurnTimer = 400
+                }
+
+                if (turretBurnTimer > 0 && !sympatheticDetonated) {
                     val pos = turretBurnEffectPos()
                     val dir = getUpVec(1f)
                     ParticleTool.spawnDirectionalParticles(
@@ -2496,7 +2518,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun turretBurnEffectPos(): Vec3? {
-        return turretPos
+        val pos = turretPos
+        val worldPosition = pos?.let { transformPosition(getVehicleTransform(1f),
+                pos.x, pos.y, it.z
+            )
+        }
+        return worldPosition?.let { Vec3(it.x, worldPosition.y, worldPosition.z) }
     }
 
     open fun playLowHealthParticle() {
@@ -4137,6 +4164,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open var isWreck by IS_WRECK
     open var sympatheticDetonated by SYMPATHETIC_DETONATED
+    open var turretBurned by TURRET_BURNED
+    open var turretBurnTimer by TURRET_BURN_TIMER
 
     open val hornSound: SoundEvent
         get() = this.computed().hornSound
@@ -4472,6 +4501,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         @JvmField
         val SYMPATHETIC_DETONATED: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
+        val TURRET_BURNED: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
+        val TURRET_BURN_TIMER: EntityDataAccessor<Int> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.INT)
 
         // Map SeatIndex -> GunData
         protected val GUN_DATA_MAP: EntityDataAccessor<Map<String, GunData>> =
