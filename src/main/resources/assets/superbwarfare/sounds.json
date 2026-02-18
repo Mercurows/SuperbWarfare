@@ -4032,24 +4032,6 @@
       }
     ]
   },
-  "terrain": {
-    "sounds": [
-      {
-        "attenuation_distance": 64,
-        "stream": true,
-        "name": "superbwarfare:vehicle/common/terrain"
-      }
-    ]
-  },
-  "pull_up": {
-    "sounds": [
-      {
-        "attenuation_distance": 64,
-        "stream": true,
-        "name": "superbwarfare:vehicle/common/pull_up"
-      }
-    ]
-  },
   "lav_ad_fire": {
     "sounds": [
       {
