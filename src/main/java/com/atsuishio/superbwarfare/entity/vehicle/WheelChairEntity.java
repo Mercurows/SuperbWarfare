@@ -1,8 +1,10 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.advancement.CriteriaRegister;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModItems;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -17,7 +19,6 @@ import org.joml.Math;
 import java.util.List;
 
 public class WheelChairEntity extends GeoVehicleEntity {
-
     public WheelChairEntity(EntityType<WheelChairEntity> type, Level world) {
         super(type, world);
     }
@@ -71,5 +72,26 @@ public class WheelChairEntity extends GeoVehicleEntity {
         ) {
             CriteriaRegister.OTTO_SPRINT.trigger(player);
         }
+    }
+
+    @Override
+    public void bounceHorizontal(@NotNull Direction direction) {
+        for (Entity entity: getPassengers()) {
+            if (entity != null) {
+                entity.stopRiding();
+                double speed = getDeltaMovementO().length();
+                if (speed > 0.4) {
+                    Vec3 dir = getDeltaMovementO().normalize().add(getUpVec(1).scale(0.6));
+                    Mod.queueServerWork(1, () -> {
+                        if (entity instanceof Player player && player.level().isClientSide) {
+                            player.setDeltaMovement(dir.normalize().scale(speed));
+                        } else {
+                            entity.setDeltaMovement(dir.normalize().scale(speed));
+                        }
+                    });
+                }
+            }
+        }
+        super.bounceHorizontal(direction);
     }
 }
