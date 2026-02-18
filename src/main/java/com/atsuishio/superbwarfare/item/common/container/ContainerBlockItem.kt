@@ -105,6 +105,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             event.add(ModEntities.TINY_SPEEDBOAT)
             event.add(ModEntities.SPEEDBOAT)
             event.add(ModEntities.LAV_150)
+            event.add(ModEntities.LAV_25)
             event.add(ModEntities.BMP_2)
             event.add(ModEntities.BRADLEY)
             event.add(ModEntities.LAV_AD)

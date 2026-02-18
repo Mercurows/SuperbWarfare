@@ -236,10 +236,13 @@ object ModEntities {
     val WHEEL_CHAIR = register("wheel_chair", vehicle(::WheelChairEntity).sized(1.0f, 1.0f))
 
     @JvmField
-    val LAV_150 = register("lav_150", vehicle(::Lav150Entity).sized(2.8f, 3.1f))
+    val LAV_150 = register("lav_150", vehicle(::Lav150Entity).sized(2.8f, 2.45f))
 
     @JvmField
-    val LAV_AD = register("lav_ad", vehicle(::LavAdEntity).sized(2.8f, 3.1f))
+    val LAV_AD = register("lav_ad", vehicle(::LavAdEntity).sized(2.8f, 2.35f))
+
+    @JvmField
+    val LAV_25 = register("lav_25", vehicle(::Lav25Entity).sized(2.8f, 2.35f))
 
     @JvmField
     val BMP_2 = register("bmp_2", vehicle(::Bmp2Entity).sized(3.6f, 2.1f))
