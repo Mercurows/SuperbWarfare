@@ -280,6 +280,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     private var wasEngineRunning = false
     private var wasHornWorking = false
     private var wasStuka = false
+    private var wasHeliCrash = false
 
     //    private var wasInCarMusicPlaying = false;
     private var wasFiring = false
@@ -1745,6 +1746,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 playStukaSound.accept(this)
             }
 
+            if (!this.wasHeliCrash && this.heliCrash() && vehicleType == VehicleType.HELICOPTER) {
+                playHeliCrashSound.accept(this)
+            }
+
             //            if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
 //                playInCarMusic.accept(this);
 //            }
@@ -1770,6 +1775,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.wasEngineRunning = this.engineRunning()
         this.wasHornWorking = this.hornWorking()
         this.wasStuka = this.stuka()
+
+        if (vehicleType == VehicleType.HELICOPTER) {
+            this.wasHeliCrash = this.heliCrash()
+        }
+
 
         //        this.wasInCarMusicPlaying = this.inCarMusicPlaying();
         turretYRotO = this.turretYRot
@@ -4205,6 +4215,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun stuka() = xRot > 5 && xRot < 175 && deltaMovement.y < -0.4 && !onGround()
 
+    open fun heliCrash() = vehicleType == VehicleType.HELICOPTER && health < getMaxHealth() * 0.1f && !onGround()
+
     open val vehicleType: VehicleType?
         get() = computed().type
 
@@ -4395,6 +4407,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         @JvmField
         var playStukaSound: Consumer<VehicleEntity?> = Consumer { }
+
+        @JvmField
+        var playHeliCrashSound: Consumer<VehicleEntity?> = Consumer { }
 
         //    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
         //    };

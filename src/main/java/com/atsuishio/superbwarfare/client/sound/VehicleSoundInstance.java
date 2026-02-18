@@ -175,4 +175,26 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
             return (float) Mth.clamp((-mobileVehicle.getDeltaMovement().y - 0.4) * angle * 0.2, 0F, 5F);
         }
     }
+
+    public static class HeliCrashSound extends VehicleSoundInstance {
+
+        public HeliCrashSound(VehicleEntity mobileVehicle) {
+            super(ModSounds.HELI_CRASH.get(), Minecraft.getInstance(), mobileVehicle);
+        }
+
+        @Override
+        protected boolean canPlay(VehicleEntity mobileVehicle) {
+            return mobileVehicle.engineRunning() && mobileVehicle.heliCrash();
+        }
+
+        @Override
+        protected float getPitch(VehicleEntity mobileVehicle) {
+            return 0.85f + (float) Mth.clamp((mobileVehicle.getDeltaMovement().y + 0.3) * -0.5f, 0F, 0.5F);
+        }
+
+        @Override
+        protected float getVolume(VehicleEntity mobileVehicle) {
+            return (float) Mth.clamp((mobileVehicle.getDeltaMovement().y + 0.3) * -0.25f, 0F, 5F);
+        }
+    }
 }
