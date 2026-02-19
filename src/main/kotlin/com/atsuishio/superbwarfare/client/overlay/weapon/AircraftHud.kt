@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicatorDynamic
+import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -104,6 +105,7 @@ object AircraftHud {
             .toFloat()
         diffY = Mth.lerp(partialTick.toDouble(), diffY.toDouble(), ClientMouseHandler.lerpSpeedX).toFloat()
         diffX = Mth.lerp(partialTick.toDouble(), diffX.toDouble(), ClientMouseHandler.lerpSpeedY).toFloat()
+        val speed = vehicle.deltaMovement.length() * 72
 
         val shootPos = vehicle.getShootPosForHud(player, partialTick)
 
@@ -242,7 +244,7 @@ object AircraftHud {
             poseStack.translate(x.toDouble(), y.toDouble(), 0.0)
             //时速
             guiGraphics.drawString(
-                mc.font, Component.literal(format0D(vehicle.deltaMovement.length() * 72)),
+                mc.font, Component.literal(format0D(speed)),
                 -105, -61, color, false
             )
 
@@ -389,8 +391,10 @@ object AircraftHud {
         poseStack.pushPose()
 
         if (posCross.canBeSeen()) {
-            val x = pCross.x.toFloat()
-            val y = pCross.y.toFloat()
+            var x = pCross.x.toFloat()
+            var y = pCross.y.toFloat()
+            val xCross = x
+            val yCross = y
 
             if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && (gunData.get(
                     GunProp.CROSSHAIR
@@ -421,59 +425,168 @@ object AircraftHud {
                     color
                 )
             } else if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
-
-                var cross = CROSSHAIR_3P
-                var size = 16f
-
                 if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
-                    cross = BOMB_RING
-                    size = 24f
-                } else {
-                    mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
-                    mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
                     RenderHelper.preciseBlit(
                         guiGraphics,
                         BOMB_RING,
-                        x - 8 + mouseX,
-                        y - 8 + mouseY,
+                        xCross - 12f,
+                        yCross - 12f,
                         0f,
                         0f,
-                        16f,
-                        16f,
-                        16f,
-                        16f
+                        24f,
+                        24f,
+                        24f,
+                        24f
                     )
+                    x = p.x.toFloat()
+                    y = p.y.toFloat()
                 }
+
+                mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
+                mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
+                RenderHelper.preciseBlit(guiGraphics,
+                    HelicopterHud.RING, x - 2 + mouseX, y - 2 + mouseY, 0f, 0f, 4f, 4f, 4f, 4f)
+
+                val originPos = Vec3(x.toDouble(), y.toDouble(), 0.0)
+                val ringPos = Vec3(x + mouseX.toDouble(), y + mouseY.toDouble(), 0.0)
+
+                val distance = ringPos.distanceTo(originPos)
+                var i = 0.0
+                while (i < distance - 3) {
+                    val toVec = ringPos.vectorTo(originPos).normalize()
+                    val p0 = ringPos.add(toVec.scale(i))
+                    RenderHelper.blit(
+                        poseStack,
+                        HelicopterHud.BLOCK,
+                        (p0.x - 0.25).toFloat(),
+                        (p0.y - 0.25).toFloat(),
+                        0f,
+                        0f,
+                        0.5f,
+                        0.5f,
+                        0.5f,
+                        0.5f,
+                        -1
+                    )
+                    i += 3
+                }
+
+                val pitch = vehicle.getPitch(partialTick)
+                RenderHelper.blit(
+                    poseStack,
+                    HUD_LINE_3P,
+                    x - 96,
+                    y - 48,
+                    0f,
+                    144 + 1.36f * pitch,
+                    192f,
+                    96f,
+                    192f,
+                    384f,
+                    -1
+                )
+
+                RenderHelper.blit(
+                    poseStack,
+                    ROLL_HUD_3P,
+                    x - 48,
+                    y - 48,
+                    0f,
+                    0f,
+                    96f,
+                    96f,
+                    96f,
+                    96f,
+                    -1
+                )
 
                 poseStack.pushPose()
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
+                RenderHelper.preciseBlit(guiGraphics,
+                    HelicopterHud.CROSSHAIR_3P, x - 34, y - 8.5f, 0f, 0f, 68f, 17f, 68f, 17f)
+                renderKillIndicatorDynamic(
+                    guiGraphics,
+                    x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
+                    y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+                )
+
+                //
                 poseStack.pushPose()
                 poseStack.translate(x, y, 0f)
                 poseStack.scale(0.75f, 0.75f, 1f)
+                guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    Component.translatable(format0D(vehicle.getRoll(partialTick).toDouble()) + "°"),
+                    -42,
+                    -9,
+                    -1,
+                    false
+                )
+                guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    Component.translatable(format0D(vehicle.y) + "m"),
+                    -42,
+                    2,
+                    -1,
+                    false
+                )
 
-                val heat = vehicle.getWeaponHeat(player) / 100f
-                val component = vehicle.thirdPersonAmmoComponent(gunData, player)
+                poseStack.popPose()
+                //
 
-                guiGraphics.drawString(mc.font, component, 25, -9, Mth.hsvToRgb(0f, heat, 1f), false)
+                poseStack.popPose()
+
+                // 时速
+                //
+                poseStack.pushPose()
+                poseStack.translate(x, y, 0f)
+                poseStack.scale(0.75f, 0.75f, 1f)
+                guiGraphics.drawString(
+                    mc.font,
+                    Component.literal(format0D(speed, "km/h")),
+                    -60,
+                    -52,
+                    -1,
+                    false
+                )
+
+                val component = Component.literal(format0D(lerpVy.toDouble()) + "m/s")
+                val font = Minecraft.getInstance().font
+
+                guiGraphics.drawString(font, component, 60 - font.width(component), -52, -1, false)
+                poseStack.popPose()
+
+                poseStack.pushPose()
+                poseStack.translate(x, y + 50, 0f)
+                poseStack.scale(0.75f, 0.75f, 1f)
+
+                VehicleMainWeaponHudOverlay.renderWeaponInfoThirdAir(guiGraphics, vehicle, player, gunData, font)
+
                 if (vehicle.hasDecoy()) {
                     if (vehicle.decoyReady) {
+                        val componentReady = Component.translatable("tips.superbwarfare.flare.ready").append(
+                            Component.literal(
+                                " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
+                            )
+                        )
+                        val length = font.width(componentReady)
+
                         guiGraphics.drawString(
                             Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.flare.ready").append(
-                                Component.literal(
-                                    " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
-                                )
-                            ),
-                            25,
+                            componentReady,
+                            -length / 2,
                             1,
                             -1,
                             false
                         )
                     } else {
+                        val componentReloading = Component.translatable("tips.superbwarfare.flare.reloading")
+                        val length = font.width(componentReloading)
+
                         guiGraphics.drawString(
                             Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.flare.reloading"),
-                            25,
+                            componentReloading,
+                            -length / 2,
                             1,
                             0xFF0000,
                             false
@@ -481,25 +594,6 @@ object AircraftHud {
                     }
                 }
 
-                poseStack.popPose()
-                RenderHelper.preciseBlit(
-                    guiGraphics,
-                    cross,
-                    x - 0.5f * size,
-                    y - 0.5f * size,
-                    0f,
-                    0f,
-                    size,
-                    size,
-                    size,
-                    size
-                )
-
-                renderKillIndicatorDynamic(
-                    guiGraphics,
-                    x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                    y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-                )
                 poseStack.popPose()
             }
         }

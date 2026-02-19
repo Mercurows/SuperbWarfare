@@ -462,6 +462,23 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
         guiGraphics.drawString(font, component, 30, -9, Mth.hsvToRgb(0f, heat, 1f), false)
     }
 
+    @JvmStatic
+    fun renderWeaponInfoThirdAir(
+        guiGraphics: GuiGraphics,
+        vehicle: VehicleEntity,
+        player: Player?,
+        data: GunData,
+        font: Font
+    ) {
+        if (!vehicle.hasWeapon()) return
+
+        val heat = vehicle.getWeaponHeat(player) / 100f
+        val component = vehicle.thirdPersonAmmoComponent(data, player)
+        val length = font.width(component)
+
+        guiGraphics.drawString(font, component, -length / 2, -9, Mth.hsvToRgb(0f, heat, 1f), false)
+    }
+
     fun getAroundPos(direction: Vec3, center: Vec3, radius: Double): Vec3 {
         var direction = direction
         direction = direction.normalize()
