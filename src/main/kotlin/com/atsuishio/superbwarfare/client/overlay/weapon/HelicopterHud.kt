@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.tools.FormatTool
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
 import com.atsuishio.superbwarfare.tools.TraceTool
@@ -52,8 +53,8 @@ object HelicopterHud {
     private val LINE = loc("textures/overlay/vehicle/land/line.png")
 
     private val COMPASS = loc("textures/overlay/vehicle/base/compass.png")
-    private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
-    private val RING = loc("textures/overlay/crosshair/rex_circle.png")
+    private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera_2.png")
+    private val RING = loc("textures/overlay/vehicle/aircraft/rex_circle.png")
 
     private var scopeScale = 1f
     private var lerpVy = 1f
@@ -396,7 +397,7 @@ object HelicopterHud {
                     poseStack,
                     HELI_VY_MOVE,
                     screenWidth.toFloat() / 2 + 138,
-                    (screenHeight.toFloat() / 2 - 3 - Math.max(lerpVy, -24f) * 2.5f),
+                    (screenHeight.toFloat() / 2 - 3 - Mth.clamp(lerpVy * 3, -24f, 24f) * 2.5f),
                     0f,
                     0f,
                     8f,
@@ -410,8 +411,8 @@ object HelicopterHud {
                     Minecraft.getInstance().font,
                     Component.literal(format0D(lerpVy.toDouble(), "m/s")),
                     screenWidth / 2 + 146,
-                    (screenHeight / 2f - 3 - Math.max(lerpVy, -24f) * 2.5).toInt(),
-                    (if (lerpVy < -24) -65536 else color),
+                    (screenHeight / 2f - 3 - Mth.clamp(lerpVy * 3, -24f, 24f) * 2.5).toInt(),
+                    (if (lerpVy < -12) -65536 else color),
                     false
                 )
                 guiGraphics.drawString(
@@ -480,20 +481,67 @@ object HelicopterHud {
             } else if (pos.canBeSeen()) {
                 mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
                 mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
-                RenderHelper.preciseBlit(guiGraphics, RING, x - 8 + mouseX, y - 8 + mouseY, 0f, 0f, 16f, 16f, 16f, 16f)
+                RenderHelper.preciseBlit(guiGraphics, RING, x - 2 + mouseX, y - 2 + mouseY, 0f, 0f, 4f, 4f, 4f, 4f)
+
+                val pitch = vehicle.getPitch(partialTick)
+                RenderHelper.blit(
+                    poseStack,
+                    AircraftHud.HUD_LINE_3P,
+                    x - 96,
+                    y - 48,
+                    0f,
+                    144 + 1.36f * pitch,
+                    192f,
+                    96f,
+                    192f,
+                    384f,
+                    -1
+                )
+
+                RenderHelper.blit(
+                    poseStack,
+                    AircraftHud.ROLL_HUD_3P,
+                    x - 96,
+                    y - 96,
+                    0f,
+                    0f,
+                    192f,
+                    192f,
+                    192f,
+                    192f,
+                    -1
+                )
 
                 poseStack.pushPose()
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
-                RenderHelper.preciseBlit(guiGraphics, CROSSHAIR_3P, x - 8, y - 8, 0f, 0f, 16f, 16f, 16f, 16f)
+                RenderHelper.preciseBlit(guiGraphics, CROSSHAIR_3P, x - 32, y - 8, 0f, 0f, 64f, 16f, 64f, 16f)
                 renderKillIndicatorDynamic(
                     guiGraphics,
                     x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
                     y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
                 )
 
+                //
+                poseStack.pushPose()
+                poseStack.translate(x, y, 0f)
+                poseStack.scale(0.75f, 0.75f, 1f)
+                guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    Component.translatable(format0D(vehicle.getRoll(partialTick).toDouble())),
+                    -44,
+                    -9,
+                    -1,
+                    false
+                )
+
+                poseStack.popPose()
+                //
+
+                poseStack.popPose()
+
                 poseStack.pushPose()
 
-                poseStack.translate(x, y, 0f)
+                poseStack.translate(x - 42, y + 50, 0f)
                 poseStack.scale(0.75f, 0.75f, 1f)
 
                 renderWeaponInfoThird(guiGraphics, vehicle, player, data, mc.font)
@@ -524,7 +572,6 @@ object HelicopterHud {
                     }
                 }
 
-                poseStack.popPose()
                 poseStack.popPose()
             }
             poseStack.popPose()

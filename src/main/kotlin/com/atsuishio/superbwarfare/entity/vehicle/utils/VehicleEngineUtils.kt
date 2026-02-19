@@ -542,12 +542,7 @@ object VehicleEngineUtils {
                 setZRot(roll * (if (backInputDown) 0.9f else 0.99f))
             }
             val f = Mth.clamp(
-                0.92499f - 0.015 * deltaMovement.length() + (0.07 * speed) + 0.00001f * Mth.abs(
-                    90 - VehicleVecUtils.calculateAngle(
-                        deltaMovement,
-                        getViewVector(1f)
-                    ).toFloat()
-                ) / 90, 0.01, 0.99
+                0.93499f - 0.01 * deltaMovement.lengthSqr() + (0.07 * speed) + 0.001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.999
             ).toFloat()
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).scale(
@@ -701,10 +696,8 @@ object VehicleEngineUtils {
             )
         }
 
-        val force = getUpVec(1f)
-
         deltaMovement = deltaMovement.add(
-            force.scale((synchedPropellerRot * lift * 0.75f).toDouble())
+            getUpVec(1f).scale((synchedPropellerRot * lift * 0.66f).toDouble())
         )
 
         if (power > 0.04f) {
