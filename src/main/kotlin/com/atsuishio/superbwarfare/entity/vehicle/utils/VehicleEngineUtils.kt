@@ -551,7 +551,7 @@ object VehicleEngineUtils {
                 setZRot(roll * (if (backInputDown) 0.9f else 0.99f))
             }
             val f = Mth.clamp(
-                0.93499f - 0.01 * deltaMovement.lengthSqr() + (0.07 * speed) + 0.001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.999
+                0.93499f - 0.01 * deltaMovement.lengthSqr() + (0.07 * speed) + 0.001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
             ).toFloat()
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).scale(
