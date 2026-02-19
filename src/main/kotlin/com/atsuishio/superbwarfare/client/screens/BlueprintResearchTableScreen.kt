@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
+import com.atsuishio.superbwarfare.menu.BlueprintResearchTableMenu
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
