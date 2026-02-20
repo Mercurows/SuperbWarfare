@@ -20,6 +20,7 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
 import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.ai.control.MoveControl
 import net.minecraft.world.entity.npc.Villager
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
@@ -42,6 +43,8 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
     open var targetUUID by TARGET_UUID
     open var targetPosition = Vec3(0.0, 0.0, 0.0)
     open var currentPosition = Vec3(0.0, 0.0, 0.0)
+    open var startCrush = false
+    open var restartCrushTimer = 0
 
     override fun defineSynchedData() {
         super.defineSynchedData()
@@ -88,19 +91,19 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
     }
 
     //村民测试
-//    open fun seekNearLivingEntity(
-//        seekRange: Double,
-//    ) = level().getEntitiesOfClass(Villager::class.java, AABB(position(), position()).inflate(seekRange)) { true }
-//        .sortedBy { it.distanceToSqr(position()) }
-//        .find { target -> target.distanceToSqr(this) <= seekRange * seekRange
-//        }
-
     open fun seekNearLivingEntity(
         seekRange: Double,
-    ) = level().getEntitiesOfClass(Player::class.java, AABB(position(), position()).inflate(seekRange)) { true }
+    ) = level().getEntitiesOfClass(Villager::class.java, AABB(position(), position()).inflate(seekRange)) { true }
         .sortedBy { it.distanceToSqr(position()) }
-        .find { target -> target.distanceToSqr(this) <= seekRange * seekRange && !(target.isSpectator || target.isCreative)
+        .find { target -> target.distanceToSqr(this) <= seekRange * seekRange
         }
+
+//    open fun seekNearLivingEntity(
+//        seekRange: Double,
+//    ) = level().getEntitiesOfClass(Player::class.java, AABB(position(), position()).inflate(seekRange)) { true }
+//        .sortedBy { it.distanceToSqr(position()) }
+//        .find { target -> target.distanceToSqr(this) <= seekRange * seekRange && !(target.isSpectator || target.isCreative)
+//        }
 
     override fun baseTick() {
         wheelRotO = wheelRot
@@ -109,7 +112,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         val c = 4f * Mth.PI
         val t = c / speed
         val rpt = 360f / t
-        wheelRot += 2 * rpt
+        wheelRot += Mth.PI * rpt
 
         if (tickCount % 10 == 0 && target == null) {
             val player = seekNearLivingEntity(attributes.getValue(Attributes.FOLLOW_RANGE))
@@ -119,19 +122,37 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         }
 
         if (target != null) {
-            if (!target!!.isAlive || (target is Player && ((target as Player).isCreative || (target as Player).isSpectator))) {
-                setTarget(null as LivingEntity?)
-                return
-            }
+            val targetPos = target!!.position().add(position().vectorTo(target!!.position()).normalize().scale(Math.max(position().distanceTo(target!!.position()), 12.0)))
 
-            val targetPos = target!!.position().add(position().vectorTo(target!!.position()).normalize().add(target!!.deltaMovement.x * 20, 0.0, target!!.deltaMovement.z * 20).normalize().scale(12.0))
-            if (tickCount % 22 == 0) {
+            if (!startCrush) {
                 targetPosition = targetPos
                 currentPosition = position()
-
+                startCrush = true
+                restartCrushTimer = 0
             }
-            val s = ((position().distanceToSqr(targetPosition) / (currentPosition.distanceToSqr(targetPosition))))
-            this.moveControl.setWantedPosition(targetPosition.x, targetPosition.y, targetPosition.z, 6 * Mth.clamp(Mth.sin(Mth.PI * s.toFloat()).toDouble(), 0.4, 2.0))
+
+            if (startCrush) {
+                restartCrushTimer ++
+
+                val d0: Double = target!!.position().x - this.x
+                val d1: Double = target!!.position().z - this.z
+
+                if (attackableEntity(target!!)) {
+                    val f9 = (Mth.atan2(d1, d0) * (180f / Math.PI.toFloat()).toDouble()).toFloat() - 90.0f
+                    this.yRot = rotlerp(this.yRot, f9, 3.0f)
+                }
+
+                val s = (position().distanceToSqr(targetPosition) / (currentPosition.distanceToSqr(targetPosition)))
+
+                this.moveControl.setWantedPosition(targetPosition.x, targetPosition.y, targetPosition.z, 5 * Mth.clamp(Mth.sin(Mth.PI * s.toFloat()).toDouble(), 0.4, 1.0))
+                if (position().distanceToSqr(targetPosition) < 2 || restartCrushTimer > 100) {
+                    if (!attackableEntity(target!!)) {
+                        setTarget(null as LivingEntity?)
+                    }
+                    startCrush = false
+                    restartCrushTimer = 0
+                }
+            }
         }
 
 //        val targetPlayer = EntityFindUtil.findEntity(level(), targetUUID)
@@ -147,6 +168,29 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
 //            this.moveControl.setWantedPosition(player.position().x, player.position().y, player.position().z, 2.0)
 //        }
         crushEntities()
+    }
+
+    fun attackableEntity(entity: Entity):Boolean {
+        return !(!entity.isAlive || (entity is Player && (entity.isCreative || entity.isSpectator)))
+    }
+    protected fun rotlerp(pSourceAngle: Float, pTargetAngle: Float, pMaximumChange: Float): Float {
+        var f = Mth.wrapDegrees(pTargetAngle - pSourceAngle)
+        if (f > pMaximumChange) {
+            f = pMaximumChange
+        }
+
+        if (f < -pMaximumChange) {
+            f = -pMaximumChange
+        }
+
+        var f1 = pSourceAngle + f
+        if (f1 < 0.0f) {
+            f1 += 360.0f
+        } else if (f1 > 360.0f) {
+            f1 -= 360.0f
+        }
+
+        return f1
     }
 
     fun getRotaion(ticks: Float): Float {
@@ -228,7 +272,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
                     this.level().registryAccess(),
                     this, this
                 ),
-                (f1 * 80 * (Mth.abs(length) - 0.2) * (Mth.abs(length) - 0.2)).toFloat()
+                (f1 * 120 * (Mth.abs(length) - 0.2) * (Mth.abs(length) - 0.2)).toFloat()
             )
 
             this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z)
