@@ -46,7 +46,6 @@ object AircraftHud {
 
     var bombHitPosX: Double = 0.0
     var bombHitPosY: Double = 0.0
-    var bombHitPosZ: Double = 0.0
 
     private val BOMB_SCOPE = loc("textures/overlay/vehicle/aircraft/bomb_scope.png")
     private val BOMB_SCOPE_PITCH = loc("textures/overlay/vehicle/aircraft/bomb_scope_pitch.png")
@@ -130,10 +129,7 @@ object AircraftHud {
         var posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
 
         if (bomb) {
-            bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosX, vehicle.bombHitPos(player).x)
-            bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosY, vehicle.bombHitPos(player).y)
-            bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosZ, vehicle.bombHitPos(player).z)
-            posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
+            posCross = vehicle.bombHitPos(player)
         }
 
         val p = pos.worldToScreen()
@@ -438,7 +434,7 @@ object AircraftHud {
 
         poseStack.pushPose()
 
-        if (posCross.canBeSeen()) {
+        if (pos.canBeSeen()) {
             var x = pCross.x.toFloat()
             var y = pCross.y.toFloat()
             val xCross = x
@@ -474,11 +470,14 @@ object AircraftHud {
                 )
             } else if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
                 if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
+                    bombHitPosX = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosX, xCross.toDouble())
+                    bombHitPosY = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosY, yCross.toDouble())
+
                     RenderHelper.preciseBlit(
                         guiGraphics,
                         BOMB_RING,
-                        xCross - 12f,
-                        yCross - 12f,
+                        bombHitPosX.toFloat() - 12f,
+                        bombHitPosY.toFloat() - 12f,
                         0f,
                         0f,
                         24f,

@@ -697,23 +697,19 @@ object VehicleEngineUtils {
 
         val f = Mth.clamp(
             Math.max(
-                (if (onGround()) 0.96f else 1f) + (0.05 * 1 / resistance) - 0.0085 * deltaMovement.lengthSqr(), 0.5
-            ) + 0.00015f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.995
+                (if (onGround()) 0.8600f else 0.8609f) + (0.05 * 1 / resistance) - 0.0015 * deltaMovement.lengthSqr(), 0.5
+            ) + 0.0001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
         ).toFloat()
 
         if (isWreck && onGround()) {
             deltaMovement = deltaMovement.multiply(0.9, 1.0, 0.9)
         }
 
-//        val forward = deltaMovement.dot(getViewVector(1f)) > 0
-//        deltaMovement = deltaMovement.add(
-//            getViewVector(1f)
-//                .scale((if (forward) 0.1 else 0.03) * deltaMovement.dot(getViewVector(1f)))
-//        )
-
-        val v0 = deltaMovement.normalize().vectorTo(getViewVector(1f))
-        deltaMovement = deltaMovement.add(v0.normalize().scale(deltaMovement.length() * 0.045))
-
+        val forward = deltaMovement.dot(getViewVector(1f)) > 0
+        deltaMovement = deltaMovement.add(
+            getViewVector(1f)
+                .scale((if (forward) 0.1 else -0.03) * deltaMovement.dot(getViewVector(1f)))
+        )
         deltaMovement = deltaMovement.multiply(f.toDouble(), f.toDouble(), f.toDouble())
 
         if (isInFluidType && tickCount % 4 == 0) {
@@ -770,7 +766,7 @@ object VehicleEngineUtils {
                     val maxPower = if (sprintInputDown || onGround()) 3 else (if (power > 1) power - 0.012 else 1)
 
                     if (forwardInputDown) {
-                        power = Mth.clamp((power + 0.0045f * powerAdd).toDouble(), -0.1, maxPower.toDouble()).toFloat() }
+                        power = Mth.clamp((power + 0.006f * powerAdd).toDouble(), -0.1, maxPower.toDouble()).toFloat() }
 
                     if (backInputDown) {
                         power = Math.max(

@@ -39,7 +39,6 @@ object OldAircraftHud {
 
     var bombHitPosX: Double = 0.0
     var bombHitPosY: Double = 0.0
-    var bombHitPosZ: Double = 0.0
 
     private val BOMB_SCOPE = loc("textures/overlay/vehicle/aircraft/bomb_scope.png")
     private val BOMB_SCOPE_PITCH = loc("textures/overlay/vehicle/aircraft/bomb_scope_pitch.png")
@@ -107,10 +106,7 @@ object OldAircraftHud {
         var posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
 
         if (bomb) {
-            bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosX, vehicle.bombHitPos(player).x)
-            bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosY, vehicle.bombHitPos(player).y)
-            bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosZ, vehicle.bombHitPos(player).z)
-            posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
+            posCross = vehicle.bombHitPos(player)
         }
 
         val p = pos.worldToScreen()
@@ -253,19 +249,38 @@ object OldAircraftHud {
                     }
                 }
 
+                bombHitPosX = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosX, x.toDouble())
+                bombHitPosY = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosY, y.toDouble())
+
                 poseStack.popPose()
-                RenderHelper.preciseBlit(
-                    guiGraphics,
-                    cross,
-                    x - 0.5f * size,
-                    y - 0.5f * size,
-                    0f,
-                    0f,
-                    size,
-                    size,
-                    size,
-                    size
-                )
+
+                if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
+                    RenderHelper.preciseBlit(
+                        guiGraphics,
+                        cross,
+                        bombHitPosX.toFloat() - 0.5f * size,
+                        bombHitPosY.toFloat() - 0.5f * size,
+                        0f,
+                        0f,
+                        size,
+                        size,
+                        size,
+                        size
+                    )
+                } else {
+                    RenderHelper.preciseBlit(
+                        guiGraphics,
+                        cross,
+                        x - 0.5f * size,
+                        y - 0.5f * size,
+                        0f,
+                        0f,
+                        size,
+                        size,
+                        size,
+                        size
+                    )
+                }
 
                 renderKillIndicatorDynamic(
                     guiGraphics,
