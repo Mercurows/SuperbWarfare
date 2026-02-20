@@ -1,38 +1,64 @@
 package com.atsuishio.superbwarfare.entity
 
+import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.tools.DamageHandler
+import com.atsuishio.superbwarfare.tools.angleTo
 import net.minecraft.core.NonNullList
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.*
-import net.minecraft.world.entity.Mob.createMobAttributes
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
 import net.minecraft.world.entity.ai.attributes.Attributes
-import net.minecraft.world.entity.ai.goal.FloatGoal
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal
-import net.minecraft.world.entity.monster.Monster
+import net.minecraft.world.entity.npc.Villager
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.vehicle.Boat
+import net.minecraft.world.entity.vehicle.Minecart
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.entity.EntityTypeTest
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkHooks
 import software.bernie.geckolib.animatable.GeoEntity
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 
-open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : PathfinderMob(type, level), GeoEntity {
+open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mob(type, level), GeoEntity {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
     var wheelRot = 0f
     var wheelRotO = 0f
+    open var targetUUID by TARGET_UUID
+    open var targetPosition = Vec3(0.0, 0.0, 0.0)
+    open var currentPosition = Vec3(0.0, 0.0, 0.0)
 
-    override fun aiStep() {
-        super.aiStep()
-        this.updateSwingTime()
+    override fun defineSynchedData() {
+        super.defineSynchedData()
+        with (entityData) { define(TARGET_UUID, "")
+        }
+    }
+
+    override fun canCollideWith(pEntity: Entity): Boolean {
+        return false
+    }
+
+    override fun canBeCollidedWith(): Boolean {
+        return true
+    }
+
+    override fun isPushable(): Boolean {
+        return false
     }
 
     override fun getArmorSlots(): Iterable<ItemStack?> {
@@ -61,23 +87,77 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
         return NetworkHooks.getEntitySpawningPacket(this)
     }
 
-    override fun registerGoals() {
-        super.registerGoals()
-        this.goalSelector.addGoal(1, object : MeleeAttackGoal(this, 1.4, false) {
-            override fun getAttackReachSqr(entity: LivingEntity): Double {
-                return (this.mob.bbWidth * this.mob.bbWidth + entity.bbWidth).toDouble()
+    //村民测试
+//    open fun seekNearLivingEntity(
+//        seekRange: Double,
+//    ) = level().getEntitiesOfClass(Villager::class.java, AABB(position(), position()).inflate(seekRange)) { true }
+//        .sortedBy { it.distanceToSqr(position()) }
+//        .find { target -> target.distanceToSqr(this) <= seekRange * seekRange
+//        }
+
+    open fun seekNearLivingEntity(
+        seekRange: Double,
+    ) = level().getEntitiesOfClass(Player::class.java, AABB(position(), position()).inflate(seekRange)) { true }
+        .sortedBy { it.distanceToSqr(position()) }
+        .find { target -> target.distanceToSqr(this) <= seekRange * seekRange && !(target.isSpectator || target.isCreative)
+        }
+
+    override fun baseTick() {
+        wheelRotO = wheelRot
+        super.baseTick()
+        val speed = deltaMovement.dot(forward).toFloat()
+        val c = 4f * Mth.PI
+        val t = c / speed
+        val rpt = 360f / t
+        wheelRot += 2 * rpt
+
+        if (tickCount % 10 == 0 && target == null) {
+            val player = seekNearLivingEntity(attributes.getValue(Attributes.FOLLOW_RANGE))
+            if (player != null) {
+                setTarget(player)
             }
-        })
-        this.targetSelector.addGoal(2, HurtByTargetGoal(this).setAlertOthers())
-//        this.goalSelector.addGoal(3, RandomLookAroundGoal(this))
-        this.goalSelector.addGoal(3, FloatGoal(this))
-//        this.goalSelector.addGoal(5, RandomStrollGoal(this, 0.8))
-        this.targetSelector.addGoal(4, NearestAttackableTargetGoal(this, Player::class.java, false, false))
+        }
+
+        if (target != null) {
+            if (!target!!.isAlive || (target is Player && ((target as Player).isCreative || (target as Player).isSpectator))) {
+                setTarget(null as LivingEntity?)
+                return
+            }
+
+            val targetPos = target!!.position().add(position().vectorTo(target!!.position()).normalize().add(target!!.deltaMovement.x * 20, 0.0, target!!.deltaMovement.z * 20).normalize().scale(12.0))
+            if (tickCount % 22 == 0) {
+                targetPosition = targetPos
+                currentPosition = position()
+
+            }
+            val s = ((position().distanceToSqr(targetPosition) / (currentPosition.distanceToSqr(targetPosition))))
+            this.moveControl.setWantedPosition(targetPosition.x, targetPosition.y, targetPosition.z, 6 * Mth.clamp(Mth.sin(Mth.PI * s.toFloat()).toDouble(), 0.4, 2.0))
+        }
+
+//        val targetPlayer = EntityFindUtil.findEntity(level(), targetUUID)
+//
+//        if (tickCount % 10 == 0 && targetPlayer == null) {
+//            val player = seekNearLivingEntity(attributes.getValue(Attributes.FOLLOW_RANGE))
+//            if (player != null) {
+//                targetUUID = player.stringUUID
+//            }
+//        }
+//
+//        if (player != null) {
+//            this.moveControl.setWantedPosition(player.position().x, player.position().y, player.position().z, 2.0)
+//        }
+        crushEntities()
     }
 
-    override fun getMobType(): MobType = MobType.UNDEFINED
+    fun getRotaion(ticks: Float): Float {
+        return Mth.lerp(ticks, wheelRotO, wheelRot)
+    }
 
     companion object {
+        @JvmField
+        val TARGET_UUID: EntityDataAccessor<String> =
+            SynchedEntityData.defineId(SteelCoilEntity::class.java, EntityDataSerializers.STRING)
+
         fun createAttributes(): AttributeSupplier.Builder {
             return createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
@@ -89,17 +169,81 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
         }
     }
 
-    override fun baseTick() {
-        wheelRotO = wheelRot
-        super.baseTick()
-        val speed = deltaMovement.dot(forward).toFloat()
-        val c = 4f * Mth.PI
-        val t = c / speed
-        val rpt = 360f / t
-        wheelRot += 2 * rpt
+    fun crushEntities() {
+        if (this.isRemoved) return
+        val vec3 = this.deltaMovement
+        val entities: List<Entity>?
+
+        val frontBox = this.boundingBox.move(vec3)
+        entities = this.level().getEntities(
+            EntityTypeTest.forClass(Entity::class.java),
+            frontBox
+        ) { entity -> entity !== this && entity!!.vehicle == null }
+            .stream().filter { entity ->
+                if (entity.isAlive) {
+                    val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
+                    return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
+                            || (entity is LivingEntity && !(entity is Player && entity.isSpectator)))
+                            || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
+                }
+                false
+            }
+            .toList()
+
+        for (entity in entities) {
+            val entitySize = entity.boundingBox.getSize()
+            val thisSize = this.boundingBox.getSize()
+            val f: Double
+            val f1: Double
+
+            val v0 = vec3.subtract(entity.deltaMovement)
+            if (v0.angleTo(this.position().vectorTo(entity.position())) > 90) return
+
+            if (this.deltaMovement.lengthSqr() < 0.04) return
+
+            if (entity is LivingEntity && entity.hasEffect(ModMobEffects.STRIKE_PROTECTION.get())) {
+                continue
+            }
+
+            if (entity is VehicleEntity) {
+                f = Mth.clamp((entity.mass / 30).toDouble(), 0.25, 4.0)
+                f1 = Mth.clamp((30 / entity.mass).toDouble(), 0.25, 4.0)
+            } else {
+                f = Mth.clamp(2 * entitySize / thisSize, 0.25, 4.0)
+                f1 = Mth.clamp(thisSize / 2 * entitySize, 0.25, 4.0)
+            }
+
+            val length = v0.length().toFloat()
+            val velAdd = v0.normalize().scale(0.8 * length)
+
+            if (length <= 0.2) {
+                continue
+            }
+
+            this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
+
+            DamageHandler.doDamage(
+                entity,
+                ModDamageTypes.causeVehicleStrikeDamage(
+                    this.level().registryAccess(),
+                    this, this
+                ),
+                (f1 * 80 * (Mth.abs(length) - 0.2) * (Mth.abs(length) - 0.2)).toFloat()
+            )
+
+            this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z)
+
+            if (entity is VehicleEntity) {
+                val vec31 = this.deltaMovement.normalize().scale(velAdd.length())
+                entity.pushNew(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z)
+            } else {
+                val vec31 = this.deltaMovement.normalize().scale(velAdd.length())
+                entity.push(f1 * vec31.x, f1 * vec31.y, f1 * vec31.z)
+            }
+        }
     }
 
-    fun getRotaion(ticks: Float): Float {
-        return Mth.lerp(ticks, wheelRotO, wheelRot)
+    open fun pushNew(pX: Double, pY: Double, pZ: Double) {
+        this.deltaMovement = this.deltaMovement.add(pX, pY, pZ)
     }
 }
