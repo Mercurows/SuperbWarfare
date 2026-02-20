@@ -334,7 +334,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var destroyRot = 0f
 
     open var jumpCoolDown = 0
-    open var deltaMovementO: Vec3? = null
+    open var deltaMovementO = Vec3(0.0, 0.0, 0.0)
 
     open var lastDamageSource: DamageSource? = null
         get() {
@@ -2808,7 +2808,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun bombHitPos(entity: Entity?): Vec3 {
         val gunData = getGunData(entity)
-        return if (gunData != null) {
+        return if (gunData != null && level().isClientSide) {
             ProjectileCalculator.calculatePreciseImpactPoint(
                 level(),
                 getShootPosForHud(entity, 1f),
