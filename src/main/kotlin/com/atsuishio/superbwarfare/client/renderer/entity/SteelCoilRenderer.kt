@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.SteelCoilEntity
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
+import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import software.bernie.geckolib.renderer.GeoEntityRenderer
 
@@ -30,5 +31,9 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) : GeoEnti
 
     override fun shouldShowName(animatable: SteelCoilEntity): Boolean {
         return animatable.hasCustomName()
+    }
+
+    override fun getPackedOverlay(animatable: SteelCoilEntity?, u: Float): Int {
+        return OverlayTexture.pack(OverlayTexture.u(u), OverlayTexture.v(false))
     }
 }
