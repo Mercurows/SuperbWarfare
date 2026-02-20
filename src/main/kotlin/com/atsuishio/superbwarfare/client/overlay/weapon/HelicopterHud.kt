@@ -38,8 +38,8 @@ object HelicopterHud {
     private val HELI_BASE = loc("textures/overlay/vehicle/helicopter/heli_base.png")
     private val ROLL_IND = loc("textures/overlay/vehicle/helicopter/roll_ind.png")
     private val HELI_LINE = loc("textures/overlay/vehicle/helicopter/heli_line.png")
-    private val HELI_POWER_RULER = loc("textures/overlay/vehicle/helicopter/heli_power_ruler.png")
-    private val HELI_POWER = loc("textures/overlay/vehicle/helicopter/heli_power.png")
+    val HELI_POWER_RULER = loc("textures/overlay/vehicle/helicopter/heli_power_ruler.png")
+    val HELI_POWER = loc("textures/overlay/vehicle/helicopter/heli_power.png")
     private val HELI_VY_MOVE = loc("textures/overlay/vehicle/helicopter/heli_vy_move.png")
     private val SPEED_FRAME = loc("textures/overlay/vehicle/helicopter/speed_frame.png")
     private val CROSSHAIR_IND = loc("textures/overlay/vehicle/helicopter/crosshair_ind.png")
@@ -54,7 +54,7 @@ object HelicopterHud {
 
     private var scopeScale = 1f
     private var lerpVy = 1f
-    private var lerpPower = 1f
+    private var lerpPower = 0f
 
     private var mouseX = 0f
     private var mouseY = 0f
@@ -395,18 +395,18 @@ object HelicopterHud {
                 )
 
                 val power = vehicle.power
-                lerpPower = Mth.lerp(0.001f * partialTick, lerpPower, power)
+                lerpPower = Mth.lerp(0.5f * partialTick, lerpPower, power)
                 RenderHelper.preciseBlitWithColor(
                     guiGraphics,
                     HELI_POWER,
                     screenWidth.toFloat() / 2 + 130f,
-                    (screenHeight.toFloat() / 2 - 64 + 124 - power * 980),
+                    (screenHeight.toFloat() / 2 - 64 + 124 - lerpPower * 980),
                     0f,
                     0f,
                     4f,
-                    power * 980,
+                    lerpPower * 980,
                     4f,
-                    power * 980,
+                    lerpPower * 980,
                     color
                 )
 

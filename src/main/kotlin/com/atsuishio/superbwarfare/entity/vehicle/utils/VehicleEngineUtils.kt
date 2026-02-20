@@ -781,10 +781,10 @@ object VehicleEngineUtils {
                     }
                 }
 
-                if (!forwardInputDown && !backInputDown) {
-                    power *= 0.996f
-                    deltaMovement = deltaMovement.multiply(0.996, 1.0, 0.996)
-                }
+//                if (!forwardInputDown && !backInputDown) {
+//                    power *= 0.996f
+//                    deltaMovement = deltaMovement.multiply(0.996, 1.0, 0.996)
+//                }
 
                 if (!onGround()) {
                     if (rightInputDown) {
@@ -814,7 +814,7 @@ object VehicleEngineUtils {
                 }
             }
 
-            val rotSpeed = 1.5f + 1.2f * Mth.abs(calculateY(roll))
+            val rotSpeed = 1.5f + 0.9f * Mth.abs(calculateY(roll))
 
             val addY = Mth.clamp(
                 Math.max(
@@ -829,7 +829,7 @@ object VehicleEngineUtils {
             val addZ = deltaRot - (if (onGround()) 0f else 0.02f) * mouseMoveSpeedX * deltaMovement
                 .dot(getViewVector(1f)).toFloat()
 
-            yRot += yawSpeed * addY * (if (onGround()) 0.4f else 1f)
+            yRot += yawSpeed * addY * (if (onGround()) 0.25f else 0.75f)
             if (!onGround()) {
                 xRot += pitchSpeed * addX
                 setZRot(roll - rollSpeed * addZ)
