@@ -40,24 +40,14 @@ object VehicleEngineUtils {
         }
 
         if (onGround()) {
-            val f0 = 0.54f + 0.25f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90
+            val f0 = 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
             )
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
         } else if (isInFluidType) {
-            val f1 = 0.74f + 0.09f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90
+            val f1 = 0.74f + 0.09f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
@@ -193,24 +183,14 @@ object VehicleEngineUtils {
         }
 
         if (onGround()) {
-            val f0 = 0.54f + 0.25f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90
+            val f0 = 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
             )
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
         } else if (isInFluidType) {
-            val f1 = 0.74f + 0.09f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90
+            val f1 = 0.74f + 0.09f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
@@ -379,15 +359,7 @@ object VehicleEngineUtils {
         if (onGround()) {
             deltaMovement = deltaMovement.multiply(0.2, 0.99, 0.2)
         } else if (isInFluidType) {
-            val f = (0.835f - (0.04f * min(
-                VehicleVecUtils.getSubmergedHeight(this),
-                bbHeight.toDouble()
-            )) + 0.005f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90).toFloat()
+            val f = (0.835f - 0.04f * min(VehicleVecUtils.getSubmergedHeight(this), bbHeight.toDouble()) + 0.005f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()))
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
@@ -726,12 +698,7 @@ object VehicleEngineUtils {
         val f = Mth.clamp(
             Math.max(
                 (if (onGround()) 0.8600f else 0.8609f) + (0.05 * 1 / resistance) - 0.0015 * deltaMovement.lengthSqr(), 0.5
-            ) + 0.0001f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90, 0.01, 0.99
+            ) + 0.0001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
         ).toFloat()
 
         if (isWreck && onGround()) {
@@ -997,12 +964,7 @@ object VehicleEngineUtils {
         val f = Mth.clamp(
             Math.max(
                 (if (onGround()) 0.715f else 0.77f) - 0.005 * deltaMovement.length(), 0.5
-            ) + 0.001f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90, 0.01, 0.99
+            ) + 0.001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
         ).toFloat()
 
         val forward = deltaMovement.dot(getViewVector(1f)) > 0
@@ -1161,24 +1123,14 @@ object VehicleEngineUtils {
         }
 
         if (onGround()) {
-            val f0 = 0.63f + 0.25f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90
+            val f0 = 0.63f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
             )
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
         } else if (isInFluidType) {
-            val f1 = 0.74f + 0.09f * Mth.abs(
-                90 - VehicleVecUtils.calculateAngle(
-                    deltaMovement,
-                    getViewVector(1f)
-                ).toFloat()
-            ) / 90
+            val f1 = 0.74f + 0.09f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
