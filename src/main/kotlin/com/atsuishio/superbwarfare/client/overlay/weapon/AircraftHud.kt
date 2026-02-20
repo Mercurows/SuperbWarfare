@@ -61,13 +61,14 @@ object AircraftHud {
     private val COMPASS_IND = loc("textures/overlay/vehicle/aircraft/compass_ind.png")
     private val HELICOPTER_ROLL_IND = loc("textures/overlay/vehicle/helicopter/roll_ind.png")
     private val HELICOPTER_SPEED_FRAME = loc("textures/overlay/vehicle/helicopter/speed_frame.png")
+    val POWER_RULER = loc("textures/overlay/vehicle/aircraft/power_ruler.png")
 
     private val COMPASS = loc("textures/overlay/vehicle/base/compass.png")
-    private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private val BOMB_RING = loc("textures/overlay/crosshair/rex_circle.png")
 
-    private var mouseX = 0f;
-    private var mouseY = 0f;
+    private var mouseX = 0f
+    private var mouseY = 0f
+    private var lerpPower = 0f
 
     fun render(
         vehicle: VehicleEntity,
@@ -237,6 +238,53 @@ object AircraftHud {
             poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y + 48, 0f)
             RenderHelper.blit(poseStack, HELICOPTER_ROLL_IND, x - 4, y + 144, 0f, 0f, 8f, 8f, 8f, 8f, color)
             poseStack.popPose()
+
+            val power = vehicle.power
+            lerpPower = Mth.lerp(0.5f * partialTick, lerpPower, power)
+
+            RenderHelper.blit(
+                poseStack,
+                HelicopterHud.HELI_POWER,
+                x - 105f,
+                (y - 57f + 124f - Math.min(lerpPower, 1f) * 117.6f),
+                0f,
+                0f,
+                4f,
+                Math.min(lerpPower, 1f) * 117.6f,
+                4f,
+                Math.min(lerpPower, 1f) * 117.6f,
+                color
+            )
+
+            if (lerpPower > 1) {
+                RenderHelper.blit(
+                    poseStack,
+                    HelicopterHud.HELI_POWER,
+                    x - 105f,
+                    (y - 57f + 124f - (lerpPower - 1f) * 58.8f),
+                    0f,
+                    0f,
+                    4f,
+                    (lerpPower - 1f) * 58.8f,
+                    4f,
+                    (lerpPower - 1f) * 58.8f,
+                    0xFF6B00
+                )
+            }
+
+            RenderHelper.blit(
+                poseStack,
+                POWER_RULER,
+                x - 135f,
+                y - 57f,
+                0f,
+                0f,
+                64f,
+                128f,
+                64f,
+                128f,
+                color
+            )
 
             //一些文本
 
