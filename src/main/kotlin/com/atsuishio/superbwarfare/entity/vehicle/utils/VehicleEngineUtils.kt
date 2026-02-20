@@ -693,7 +693,7 @@ object VehicleEngineUtils {
 
     @JvmStatic
     fun VehicleEntity.aircraftEngine(engineInfo: EngineInfo.Aircraft) {
-        val powerAdd = engineInfo.increment
+        var powerAdd = engineInfo.increment
         val powerReduce = engineInfo.decrement
         val pitchSpeed = engineInfo.pitchSpeed
         val yawSpeed = engineInfo.yawSpeed
@@ -706,19 +706,23 @@ object VehicleEngineUtils {
 
         val f = Mth.clamp(
             Math.max(
-                (if (onGround()) 0.8600f else 0.8609f) + (0.05 * 1 / resistance) - 0.0015 * deltaMovement.lengthSqr(), 0.5
-            ) + 0.0001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
+                (if (onGround()) 0.96f else 1f) + (0.05 * 1 / resistance) - 0.0085 * deltaMovement.lengthSqr(), 0.5
+            ) + 0.00015f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.995
         ).toFloat()
 
         if (isWreck && onGround()) {
             deltaMovement = deltaMovement.multiply(0.9, 1.0, 0.9)
         }
 
-        val forward = deltaMovement.dot(getViewVector(1f)) > 0
-        deltaMovement = deltaMovement.add(
-            getViewVector(1f)
-                .scale((if (forward) 0.1 else 0.03) * deltaMovement.dot(getViewVector(1f)))
-        )
+//        val forward = deltaMovement.dot(getViewVector(1f)) > 0
+//        deltaMovement = deltaMovement.add(
+//            getViewVector(1f)
+//                .scale((if (forward) 0.1 else 0.03) * deltaMovement.dot(getViewVector(1f)))
+//        )
+
+        val v0 = deltaMovement.normalize().vectorTo(getViewVector(1f))
+        deltaMovement = deltaMovement.add(v0.normalize().scale(deltaMovement.length() * 0.045))
+
         deltaMovement = deltaMovement.multiply(f.toDouble(), f.toDouble(), f.toDouble())
 
         if (isInFluidType && tickCount % 4 == 0) {
@@ -765,6 +769,10 @@ object VehicleEngineUtils {
                 if (!engineStart && forwardInputDown && power > 0.01f) {
                     engineStart = true
                     level().playSound(null, this, engineInfo.engineStartSound, soundSource, 3f, 1f)
+                }
+
+                if (sprintInputDown || onGround()) {
+                    powerAdd *= 1.6f
                 }
 
                 if (energy >= energyCost) {
@@ -814,7 +822,7 @@ object VehicleEngineUtils {
                 }
             }
 
-            val rotSpeed = 1.5f + 0.9f * Mth.abs(calculateY(roll))
+            val rotSpeed = 1.5f + 1.2f * Mth.abs(calculateY(roll))
 
             val addY = Mth.clamp(
                 Math.max(
@@ -826,10 +834,10 @@ object VehicleEngineUtils {
                     Math.max(deltaMovement.dot(getViewVector(1f)) - 0.24, 0.15).toFloat(), 0.15f
                 ) * mouseMoveSpeedY, -3.5f, 3.5f
             )
-            val addZ = deltaRot - (if (onGround()) 0f else 0.02f) * mouseMoveSpeedX * deltaMovement
+            val addZ = deltaRot - (if (onGround()) 0f else 0.01f) * mouseMoveSpeedX * deltaMovement
                 .dot(getViewVector(1f)).toFloat()
 
-            yRot += yawSpeed * addY * (if (onGround()) 0.25f else 0.75f)
+            yRot += yawSpeed * addY * (if (onGround()) 0.25f else 0.95f)
             if (!onGround()) {
                 xRot += pitchSpeed * addX
                 setZRot(roll - rollSpeed * addZ)
@@ -973,15 +981,13 @@ object VehicleEngineUtils {
 
         val f = Mth.clamp(
             Math.max(
-                (if (onGround()) 0.715f else 0.77f) - 0.005 * deltaMovement.length(), 0.5
-            ) + 0.001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
+                (if (onGround()) 0.96f else 1f) - 0.013 * deltaMovement.lengthSqr(), 0.5
+            ) + 0.0001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
         ).toFloat()
 
-        val forward = deltaMovement.dot(getViewVector(1f)) > 0
-        deltaMovement = deltaMovement.add(
-            getViewVector(1f)
-                .scale((if (forward) 0.227 else 0.1) * deltaMovement.dot(getViewVector(1f)))
-        )
+        val v0 = deltaMovement.normalize().vectorTo(getViewVector(1f))
+        deltaMovement = deltaMovement.add(v0.normalize().scale(deltaMovement.length() * 0.05))
+
         deltaMovement = deltaMovement.multiply(f.toDouble(), f.toDouble(), f.toDouble())
 
         if (isInFluidType && tickCount % 4 == 0) {
