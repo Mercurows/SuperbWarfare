@@ -12,8 +12,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent
 object ModScreens {
     @SubscribeEvent
     fun clientLoad(event: RegisterMenuScreensEvent) {
-        event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ::ReforgingTableScreen)
-        event.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ::ChargingStationScreen)
+        event.register(ModMenuTypes.MEDIUM_VEHICLE_CONTAINER_MENU.get(), ::MediumVehicleContainerScreen)
 
         event.register(ModMenuTypes.VEHICLE_MENU_MINI.get()) { menu, inventory, title ->
             VehicleScreen(menu, inventory, title, VehicleContainerType.MINI)
@@ -46,6 +45,8 @@ object ModScreens {
             VehicleScreen(menu, inventory, title, VehicleContainerType.HUGE)
         }
 
+        event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ::ReforgingTableScreen)
+        event.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ::ChargingStationScreen)
         event.register(ModMenuTypes.SUPERB_ITEM_INTERFACE_MENU.get(), ::SuperbItemInterfaceScreen)
         event.register(ModMenuTypes.FUMO_25_MENU.get(), ::FuMO25Screen)
         event.register(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), ::VehicleAssemblingScreen)

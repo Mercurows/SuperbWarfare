@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.inventory.menu.MediumVehicleContainerMenu;
 import com.atsuishio.superbwarfare.menu.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.inventory.MenuType;
@@ -19,6 +20,9 @@ public class ModMenuTypes {
     public static final Supplier<MenuType<ChargingStationMenu>> CHARGING_STATION_MENU =
             REGISTRY.register("charging_station_menu",
                     () -> IMenuTypeExtension.create((windowId, inv, data) -> new ChargingStationMenu(windowId, inv)));
+
+    public static final Supplier<MenuType<MediumVehicleContainerMenu>> MEDIUM_VEHICLE_CONTAINER_MENU =
+            REGISTRY.register("medium_vehicle_container", () -> MediumVehicleContainerMenu.TYPE);
 
     public static final Supplier<MenuType<VehicleMenu>> VEHICLE_MENU_MINI =
             REGISTRY.register("vehicle_menu_mini",

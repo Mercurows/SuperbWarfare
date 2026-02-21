@@ -43,7 +43,6 @@ import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.block.entity.HopperBlockEntity
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.common.NeoForge
@@ -609,7 +608,8 @@ object LivingEventHandler {
         if (vehicle is VehicleEntity) {
             val pickUp = event.itemEntity
             if (!vehicle.level().isClientSide) {
-                HopperBlockEntity.addItem(vehicle, pickUp)
+                // TODO 完成载具物品拾取
+//                HopperBlockEntity.addItem(vehicle, pickUp)
             }
             event.setCanPickup(TriState.FALSE)
         }
@@ -665,7 +665,7 @@ object LivingEventHandler {
 
         drops.forEach {
             val stack = it.item
-            InventoryTool.insertItem(vehicle.itemStacks, stack)
+            InventoryTool.insertItem(vehicle.inventory.getItems(), stack)
 
             if (stack.count <= 0) {
                 player.drop(stack, false)

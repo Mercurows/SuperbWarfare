@@ -16,7 +16,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -132,11 +131,6 @@ public class Type63Entity extends GeoVehicleEntity {
         this.entityData.set(TARGET_PITCH, compound.getFloat("Pitch"));
         this.entityData.set(TARGET_YAW, compound.getFloat("Yaw"));
         setChanged();
-    }
-
-    @Override
-    public int getMaxStackSize(@NotNull ItemStack stack) {
-        return 1;
     }
 
     @Override
@@ -397,10 +391,10 @@ public class Type63Entity extends GeoVehicleEntity {
         return false;
     }
 
-    @Override
-    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
-        return false;
-    }
+//    @Override
+//    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+//        return false;
+//    }
 
     @Override
     public @NotNull List<OBB> getOBBs() {
