@@ -160,6 +160,7 @@
     "BodyPitchRate": 1.1,
     "BodyRollRate": 1.0
   },
+  "VehicleContainerType": "Small",
   "ThirdPersonCameraPos": [0, 1.5, 3],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png",

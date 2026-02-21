@@ -1,14 +1,14 @@
 package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.inventory.menu.MediumVehicleContainerMenu
+import com.atsuishio.superbwarfare.inventory.menu.SmallVehicleContainerMenu
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 
-class MediumVehicleContainerScreen(menu: MediumVehicleContainerMenu, inventory: Inventory, title: Component) :
-    AbstractVehicleContainerScreen<MediumVehicleContainerMenu>(menu, inventory, title) {
+class SmallVehicleContainerScreen(menu: SmallVehicleContainerMenu, inventory: Inventory, title: Component) :
+    AbstractVehicleContainerScreen<SmallVehicleContainerMenu>(menu, inventory, title) {
     override fun renderBg(
         guiGraphics: GuiGraphics,
         pPartialTick: Float,
@@ -22,6 +22,6 @@ class MediumVehicleContainerScreen(menu: MediumVehicleContainerMenu, inventory: 
     }
 
     companion object {
-        val TEXTURE: ResourceLocation = Mod.loc("textures/gui/vehicle/inventory/medium.png")
+        val TEXTURE: ResourceLocation = Mod.loc("textures/gui/vehicle/inventory/small.png")
     }
 }

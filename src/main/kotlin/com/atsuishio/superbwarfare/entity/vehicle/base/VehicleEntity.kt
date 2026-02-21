@@ -37,6 +37,7 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
 import com.atsuishio.superbwarfare.inventory.menu.MediumVehicleContainerMenu
+import com.atsuishio.superbwarfare.inventory.menu.SmallVehicleContainerMenu
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
@@ -614,6 +615,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
+    // TODO 继续把menu搞完
     open fun createMenu(
         pContainerId: Int,
         pPlayerInventory: Inventory,
@@ -623,20 +625,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val computed = computed()
             val type = computed.vehicleContainerType
             if (type == null || !type.hasMenu()) return null
-            return MediumVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
+            return when (type) {
+                VehicleContainerType.SMALL -> SmallVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
+                else -> MediumVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
+            }
         }
         return null
     }
-
-//    override fun stopOpen(pPlayer: Player) {
-//        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer))
-//    }
-
-//    override fun getItemStacks() = this.items
-//
-//    override fun clearItemStacks() {
-//        this.items.clear()
-//    }
 
     // container end
     // 自定义骑乘

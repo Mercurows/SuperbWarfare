@@ -9,11 +9,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HasCustomInventoryScreen;
@@ -217,6 +219,13 @@ public class VehicleAssemblingTableVehicleEntity extends GeoVehicleEntity implem
     @Override
     public void openCustomInventoryScreen(@NotNull Player player) {
         player.openMenu(this);
+    }
+
+    @Override
+    public void openMenu(@NotNull Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(new SimpleMenuProvider(this, Component.empty()));
+        }
     }
 
     @Override
