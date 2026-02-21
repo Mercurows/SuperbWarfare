@@ -9,10 +9,12 @@ import net.minecraftforge.common.extensions.IForgeMenuType
 
 class MediumVehicleContainerMenu(id: Int, inventory: Inventory, entityId: Int) :
     AbstractVehicleContainerMenu(TYPE, id, inventory, entityId) {
+    override fun getRows(): Int = 6
+
     override fun addVehicleInventory() {
-        for (r in 0 until 6) {
+        for (r in 0 until getRows()) {
             for (c in 0 until 9) {
-                this.addSlot(VehicleSlot(this.vehicle, c + r * 9, 88 + c * 18, 20 + r * 18))
+                this.addSlot(VehicleSlot(this.vehicle, c + r * 9, 8 + c * 18, 18 + r * 18))
             }
         }
     }
@@ -27,7 +29,7 @@ class MediumVehicleContainerMenu(id: Int, inventory: Inventory, entityId: Int) :
             val stack2 = slot.item
             stack1 = stack2.copy()
             if (index < 36) {
-                if (!this.moveItemStackTo(stack2, 36, this.slots.size - 1, false)) {
+                if (!this.moveItemStackTo(stack2, 36, this.slots.size, false)) {
                     return ItemStack.EMPTY
                 }
             } else if (!this.moveItemStackTo(stack2, 0, 36, true)) {
