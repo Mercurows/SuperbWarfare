@@ -15,7 +15,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -285,10 +284,10 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
         return false;
     }
 
-    @Override
-    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
-        return false;
-    }
+//    @Override
+//    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+//        return false;
+//    }
 
     @Override
     public @NotNull List<OBB> getOBBs() {

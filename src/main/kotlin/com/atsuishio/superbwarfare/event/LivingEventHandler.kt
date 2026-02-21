@@ -39,7 +39,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Explosion
-import net.minecraft.world.level.block.entity.HopperBlockEntity
 import net.minecraftforge.event.entity.living.*
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
 import net.minecraftforge.event.level.ExplosionEvent
@@ -592,7 +591,8 @@ object LivingEventHandler {
         if (vehicle is VehicleEntity) {
             val pickUp = event.item
             if (!vehicle.level().isClientSide) {
-                HopperBlockEntity.addItem(vehicle, pickUp)
+                // TODO 完成载具物品拾取
+//                HopperBlockEntity.addItem(vehicle, pickUp)
             }
             event.isCanceled = true
         }
@@ -647,7 +647,7 @@ object LivingEventHandler {
 
         drops.forEach {
             val stack = it.item
-            InventoryTool.insertItem(vehicle.itemStacks, stack)
+            InventoryTool.insertItem(vehicle.inventory.getItems(), stack)
 
             if (stack.count <= 0) {
                 player.drop(stack, false)

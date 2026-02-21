@@ -37,8 +37,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotF
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
+import com.atsuishio.superbwarfare.inventory.menu.MediumVehicleContainerMenu
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
-import com.atsuishio.superbwarfare.menu.VehicleMenu
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
@@ -77,7 +78,10 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.util.RandomSource
-import net.minecraft.world.*
+import net.minecraft.world.ContainerHelper
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
@@ -88,10 +92,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.AbstractArrow
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.entity.projectile.ProjectileUtil
-import net.minecraft.world.entity.vehicle.ContainerEntity
 import net.minecraft.world.entity.vehicle.DismountHelper
 import net.minecraft.world.inventory.AbstractContainerMenu
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
@@ -108,7 +110,7 @@ import net.minecraftforge.common.util.FakePlayer
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.ItemHandlerHelper
-import net.minecraftforge.items.wrapper.InvWrapper
+import net.minecraftforge.network.NetworkHooks
 import net.minecraftforge.registries.ForgeRegistries
 import org.joml.*
 import java.util.*
@@ -120,7 +122,7 @@ import kotlin.math.*
 import kotlin.random.Random
 
 abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
-    VehiclePropertyModifier, HasCustomInventoryScreen, ContainerEntity, OBBEntity {
+    VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity {
 
     open var gunDataMap: Map<String, GunData>
         get() {
@@ -417,128 +419,139 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var mouseMoveSpeedY by MOUSE_SPEED_Y
 
     // container start
-    private var itemHandler = LazyOptional.of { InvWrapper(this) }
+    val inventory = VehicleContainerHandler(9 * 17, this)
+    private var itemHandler = LazyOptional.of { this.inventory }
     protected var items: NonNullList<ItemStack> = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
 
     protected fun resizeItems() {
+//        val newSize = this.getContainerSize()
+//        val currentSize = this.items.size
+//
+//        if (newSize == currentSize) {
+//            return
+//        }
+//
+//        if (newSize > currentSize) {
+//            val newItems = NonNullList.withSize(newSize, ItemStack.EMPTY)
+//            for (i in 0..<currentSize) {
+//                newItems[i] = this.items[i]
+//            }
+//            this.items = newItems
+//        } else {
+//            // TODO 解决超出容量的物品没有正确保存/掉落的问题
+//            for (i in newSize..<currentSize) {
+//                val excessStack = this.items[i]
+//                if (!excessStack.isEmpty) {
+//                    this.spawnAtLocation(excessStack.copy())
+//                }
+//            }
+//
+//            val newItems = NonNullList.withSize(newSize, ItemStack.EMPTY)
+//            for (i in 0..<newSize) {
+//                newItems[i] = this.items[i]
+//            }
+//            this.items = newItems
+//        }
+//
+//        this.setChanged()
         val newSize = this.getContainerSize()
-        val currentSize = this.items.size
+        val oldSize = inventory.slots
+        if (newSize == oldSize) return
 
-        if (newSize == currentSize) {
-            return
+        val oldStacks = NonNullList.withSize(oldSize, ItemStack.EMPTY)
+        for (i in 0 until oldSize) {
+            oldStacks[i] = inventory.getStackInSlot(i)
         }
 
-        if (newSize > currentSize) {
-            val newItems = NonNullList.withSize(newSize, ItemStack.EMPTY)
-            for (i in 0..<currentSize) {
-                newItems[i] = this.items[i]
-            }
-            this.items = newItems
-        } else {
-            // TODO 解决超出容量的物品没有正确保存/掉落的问题
-            for (i in newSize..<currentSize) {
-                val excessStack = this.items[i]
-                if (!excessStack.isEmpty) {
-                    this.spawnAtLocation(excessStack.copy())
+        inventory.setSize(newSize)
+
+        for (i in 0 until minOf(oldSize, newSize)) {
+            inventory.setStackInSlot(i, oldStacks[i])
+        }
+
+        if (newSize < oldSize) {
+            for (i in newSize until oldSize) {
+                val stack = oldStacks[i]
+                if (!stack.isEmpty) {
+                    spawnAtLocation(stack, 0.5f)
                 }
             }
-
-            val newItems = NonNullList.withSize(newSize, ItemStack.EMPTY)
-            for (i in 0..<newSize) {
-                newItems[i] = this.items[i]
-            }
-            this.items = newItems
-        }
-
-        this.setChanged()
-    }
-
-    /**
-     * 计算当前载具内指定物品的数量
-     *
-     * @param item 物品类型
-     * @return 物品数量
-     */
-    override fun countItem(item: Item): Int {
-        if (!this.hasContainer()) return 0
-        return InventoryTool.countItem(this.items, item)
-    }
-
-    /**
-     * 判断载具内是否包含指定物品
-     *
-     * @param item 物品类型
-     */
-    open fun hasItem(item: Item): Boolean {
-        if (!this.hasContainer()) return false
-
-        return countItem(item) > 0
-    }
-
-    /**
-     * 消耗载具内指定物品
-     *
-     * @param item  物品类型
-     * @param count 要消耗的数量
-     * @return 成功消耗的物品数量
-     */
-    open fun consumeItem(item: Item, count: Int): Int {
-        if (!this.hasContainer()) return 0
-
-        return InventoryTool.consumeItem(this.items, item, count)
-    }
-
-    /**
-     * 尝试插入指定物品指定数量，如果载具内已满则生成掉落物
-     *
-     * @param item  物品类型
-     * @param count 要插入的数量
-     */
-    open fun insertItem(item: Item, count: Int) {
-        if (!this.hasContainer()) return
-
-        val rest = InventoryTool.insertItem(this.items, item, count, this.maxStackSize)
-
-        if (rest > 0) {
-            val stackToDrop = ItemStack(item, rest)
-            this.level().addFreshEntity(ItemEntity(this.level(), this.x, this.y, this.z, stackToDrop))
         }
     }
+
+//    /**
+//     * 计算当前载具内指定物品的数量
+//     *
+//     * @param item 物品类型
+//     * @return 物品数量
+//     */
+//    override fun countItem(item: Item): Int {
+//        if (!this.hasContainer()) return 0
+//        return InventoryTool.countItem(this.items, item)
+//    }
+
+//    /**
+//     * 判断载具内是否包含指定物品
+//     *
+//     * @param item 物品类型
+//     */
+//    open fun hasItem(item: Item): Boolean {
+//        if (!this.hasContainer()) return false
+//
+//        return countItem(item) > 0
+//    }
+
+//    /**
+//     * 消耗载具内指定物品
+//     *
+//     * @param item  物品类型
+//     * @param count 要消耗的数量
+//     * @return 成功消耗的物品数量
+//     */
+//    open fun consumeItem(item: Item, count: Int): Int {
+//        if (!this.hasContainer()) return 0
+//
+//        return InventoryTool.consumeItem(this.items, item, count)
+//    }
+
+//    /**
+//     * 尝试插入指定物品指定数量，如果载具内已满则生成掉落物
+//     *
+//     * @param item  物品类型
+//     * @param count 要插入的数量
+//     */
+//    open fun insertItem(item: Item, count: Int) {
+//        if (!this.hasContainer()) return
+//
+//        val rest = InventoryTool.insertItem(this.items, item, count, this.maxStackSize)
+//
+//        if (rest > 0) {
+//            val stackToDrop = ItemStack(item, rest)
+//            this.level().addFreshEntity(ItemEntity(this.level(), this.x, this.y, this.z, stackToDrop))
+//        }
+//    }
 
     // TODO 0.8.9重置物品栏
-    override fun getContainerSize(): Int {
-        val type = computed().vehicleContainerType ?: return 0
-        if (type.hasMenu()) return 102
-        return computed().vehicleContainerType.size
+    open fun getContainerSize(): Int {
+        return computed().vehicleContainerType?.size ?: 0
     }
 
-    override fun getItem(slot: Int): ItemStack {
+    fun getItem(slot: Int): ItemStack {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY
-        return this.items[slot]
+        return this.inventory.getStackInSlot(slot)
     }
 
-    override fun removeItem(slot: Int, pAmount: Int): ItemStack {
+    fun removeItem(slot: Int, pAmount: Int): ItemStack {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY
-
-        return ContainerHelper.removeItem(this.items, slot, pAmount)
+        return this.inventory.extractItem(slot, pAmount, false)
     }
 
-    override fun removeItemNoUpdate(slot: Int): ItemStack {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return ItemStack.EMPTY
+    open var maxStackSize: Int = 64
 
-        val stack = this.items[slot]
-        if (stack.isEmpty) {
-            return ItemStack.EMPTY
-        } else {
-            this.items[slot] = ItemStack.EMPTY
-            return stack
-        }
-    }
-
-    override fun setItem(slot: Int, pStack: ItemStack) {
+    fun setItem(slot: Int, pStack: ItemStack) {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return
 
-        val limit = Math.min(this.maxStackSize, pStack.maxStackSize)
+        val limit = min(this.maxStackSize, pStack.maxStackSize)
         if (!pStack.isEmpty && pStack.count > limit) {
             Mod.LOGGER.warn(
                 "try inserting ItemStack {} exceeding the maximum stack size: {}, clamped to {}",
@@ -548,67 +561,67 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             )
             pStack.count = limit
         }
-        this.items[slot] = pStack
+        this.inventory.setStackInSlot(slot, pStack)
     }
 
-    override fun setChanged() {}
+    open fun setChanged() {}
 
-    override fun stillValid(pPlayer: Player): Boolean {
-        return this.hasContainer() && !this.isRemoved && this.position().closerThan(pPlayer.position(), 8.0)
+
+    fun clearContent() {
+        this.inventory.clear()
     }
-
-    override fun clearContent() {
-        this.items.clear()
-    }
-
-    override fun isEmpty() = this.items.all { it.isEmpty }
 
     open fun hasContainer() = this.getContainerSize() > 0
 
-    override fun canPlaceItem(slot: Int, stack: ItemStack): Boolean {
+    open fun canPlaceItem(slot: Int, stack: ItemStack): Boolean {
         if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false
 
-        val currentStack = this.items[slot]
+        val currentStack = this.inventory.getStackInSlot(slot)
         if (!currentStack.isEmpty && currentStack.item !== stack.item) return false
 
         val currentCount = currentStack.count
         val stackCount = stack.count
         val combinedCount = currentCount + stackCount
-        if (combinedCount > this.maxStackSize || combinedCount > stack.maxStackSize) return false
-
-        return super.canPlaceItem(slot, stack)
+        return !(combinedCount > this.maxStackSize || combinedCount > stack.maxStackSize)
     }
 
-    override fun canTakeItem(target: Container, slot: Int, stack: ItemStack): Boolean {
-        if (!this.hasContainer() || slot >= this.getContainerSize() || slot < 0) return false
-        return super.canTakeItem(target, slot, stack)
+    fun canTakeItem(slot: Int): Boolean {
+        return this.hasContainer() && slot in 0 until this.getContainerSize()
     }
 
     override fun remove(pReason: RemovalReason) {
         if (!this.level().isClientSide && pReason != RemovalReason.DISCARDED) {
-            Containers.dropContents(this.level(), this, this)
+//            Containers.dropContents(this.level(), this, this)
+            for (i in 0 until inventory.slots) {
+                val stack = inventory.getStackInSlot(i)
+                if (!stack.isEmpty) {
+                    spawnAtLocation(stack, 0.5f)
+                }
+            }
         }
         super.remove(pReason)
     }
 
-    override fun openCustomInventoryScreen(pPlayer: Player) {
-        pPlayer.openMenu(this)
-        if (!pPlayer.level().isClientSide) {
-            this.gameEvent(GameEvent.CONTAINER_OPEN, pPlayer)
+    override fun openCustomInventoryScreen(player: Player) {
+        if (player is ServerPlayer) {
+            this.openMenu(player)
         }
     }
 
-    override fun getLootTable(): ResourceLocation? = null
-
-    override fun setLootTable(lootTable: ResourceLocation?) {}
-
-    override fun getLootTableSeed() = 0L
-
-    override fun setLootTableSeed(pLootTableSeed: Long) {}
-
     open fun hasMenu() = computed().vehicleContainerType.hasMenu()
 
-    override fun createMenu(
+    open fun openMenu(player: Player) {
+        if (player is ServerPlayer) {
+            NetworkHooks.openScreen(
+                player, SimpleMenuProvider(
+                    { containerId, inv, player -> createMenu(containerId, inv, player) },
+                    Component.translatable(this.type.descriptionId)
+                )
+            ) { buf -> buf.writeInt(this.id) }
+        }
+    }
+
+    open fun createMenu(
         pContainerId: Int,
         pPlayerInventory: Inventory,
         pPlayer: Player
@@ -617,38 +630,20 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val computed = computed()
             val type = computed.vehicleContainerType
             if (type == null || !type.hasMenu()) return null
-
-            //            var upgrade = computed.hasUpgradeSlots;
-//            var menu = switch (type) {
-//                case MINI ->
-//                        upgrade ? ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MINI.get();
-//                case SMALL ->
-//                        upgrade ? ModMenuTypes.VEHICLE_MENU_SMALL_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_SMALL.get();
-//                case MEDIUM ->
-//                        upgrade ? ModMenuTypes.VEHICLE_MENU_MEDIUM_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_MEDIUM.get();
-//                case LARGE ->
-//                        upgrade ? ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_LARGE.get();
-//                case HUGE ->
-//                        upgrade ? ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get() : ModMenuTypes.VEHICLE_MENU_HUGE.get();
-//                default -> null;
-//            };
-//            if (menu == null) return null;
-//
-//            return new VehicleMenu(menu, pContainerId, pPlayerInventory, this, type.getRow(), type.getCol(), upgrade);
-            return VehicleMenu(ModMenuTypes.VEHICLE_MENU_HUGE.get(), pContainerId, pPlayerInventory, this, 6, 17, false)
+            return MediumVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
         }
         return null
     }
 
-    override fun stopOpen(pPlayer: Player) {
-        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer))
-    }
+//    override fun stopOpen(pPlayer: Player) {
+//        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(pPlayer))
+//    }
 
-    override fun getItemStacks() = this.items
-
-    override fun clearItemStacks() {
-        this.items.clear()
-    }
+//    override fun getItemStacks() = this.items
+//
+//    override fun clearItemStacks() {
+//        this.items.clear()
+//    }
 
     // container end
     // 自定义骑乘
@@ -1367,7 +1362,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         this.resizeItems()
-        ContainerHelper.loadAllItems(compound, this.itemStacks)
+        if (compound.contains("Inventory")) {
+            this.inventory.deserializeNBT(compound.getCompound("Inventory"))
+        } else {
+            val items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
+            ContainerHelper.loadAllItems(compound, items)
+            this.inventory.setItems(items)
+        }
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -1437,14 +1438,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         compound.putInt("TurretBurnTimer", turretBurnTimer)
 
         this.resizeItems()
-        ContainerHelper.saveAllItems(compound, this.itemStacks)
+        compound.put("Inventory", this.inventory.serializeNBT())
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         if (player.vehicle === this) return InteractionResult.PASS
 
         if (this.hasMenu() && player.isShiftKeyDown && !player.mainHandItem.`is`(ModTags.Items.TOOLS_CROWBAR)) {
-            player.openMenu(this)
+            this.openMenu(player)
             return InteractionResult.sidedSuccess(player.level().isClientSide)
         }
 
@@ -2066,7 +2067,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
-            for (stack in this.itemStacks) {
+            for (stack in this.inventory.getItems()) {
                 val neededEnergy: Int = this.maxEnergy - this.energy
                 if (neededEnergy <= 0) break
 
@@ -2474,67 +2475,81 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 )
             }
 
-                //TODO 为啥喷过火的载具下次重新加载时会继续喷火
+            //TODO 为啥喷过火的载具下次重新加载时会继续喷火
 
-                if (computed().destroyInfo.sympatheticDetonation
-                    && health < 0.05 * getMaxHealth() && this.hasTurret()
-                    && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK)
-                    && !sympatheticDetonated
-                    && !turretBurned)
-                {
-                    turretBurned = true
-                    turretBurnTimer = 400
+            if (computed().destroyInfo.sympatheticDetonation
+                && health < 0.05 * getMaxHealth() && this.hasTurret()
+                && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK)
+                && !sympatheticDetonated
+                && !turretBurned
+            ) {
+                turretBurned = true
+                turretBurnTimer = 400
+            }
+
+            if (turretBurnTimer > 0 && !sympatheticDetonated) {
+                if (level().isClientSide) {
+                    val pos = turretBurnEffectPos()
+                    val dir = getUpVec(1f)
+                    ParticleTool.spawnDirectionalParticles(
+                        (12 + 10 * random).toInt(),
+                        0.05 * random.toDouble(),
+                        level(),
+                        CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f),
+                        dir,
+                        pos,
+                        4.5 + random
+                    )
+                    ParticleTool.spawnDirectionalParticles(
+                        (4 + 4 * random).toInt(),
+                        0.8 * random.toDouble(),
+                        level(),
+                        ModParticleTypes.FIRE_STAR.get(),
+                        dir,
+                        pos,
+                        0.4 + random
+                    )
+                    ParticleTool.spawnDirectionalParticles(
+                        (4 + 4 * random).toInt(),
+                        0.8 * random.toDouble(),
+                        level(),
+                        ParticleTypes.LAVA,
+                        dir,
+                        pos,
+                        0.4 + random
+                    )
+                    ParticleTool.spawnDirectionalParticles(
+                        (4 + 4 * random).toInt(),
+                        0.8 * random.toDouble(),
+                        level(),
+                        ParticleTypes.FLAME,
+                        dir,
+                        pos,
+                        0.4 + random
+                    )
                 }
 
-                if (turretBurnTimer > 0 && !sympatheticDetonated) {
-                    if (level().isClientSide) {
-                        val pos = turretBurnEffectPos()
-                        val dir = getUpVec(1f)
-                        ParticleTool.spawnDirectionalParticles(
-                            (12 + 10 * random).toInt(),
-                            0.05 * random.toDouble(),
-                            level(),
-                            CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f),
-                            dir,
-                            pos,
-                            4.5 + random
-                        )
-                        ParticleTool.spawnDirectionalParticles(
-                            (4 + 4 * random).toInt(),
-                            0.8 * random.toDouble(),
-                            level(),
-                            ModParticleTypes.FIRE_STAR.get(),
-                            dir,
-                            pos,
-                            0.4 + random
-                        )
-                        ParticleTool.spawnDirectionalParticles(
-                            (4 + 4 * random).toInt(),
-                            0.8 * random.toDouble(),
-                            level(),
-                            ParticleTypes.LAVA,
-                            dir,
-                            pos,
-                            0.4 + random
-                        )
-                        ParticleTool.spawnDirectionalParticles(
-                            (4 + 4 * random).toInt(),
-                            0.8 * random.toDouble(),
-                            level(),
-                            ParticleTypes.FLAME,
-                            dir,
-                            pos,
-                            0.4 + random
-                        )
-                    }
-
-                    if (turretBurnTimer == 400) {
-                        this.level().playSound(null, onPos, ModSounds.TURRET_BURN_START.get(), SoundSource.BLOCKS, 4f, 1f + 0.05f * random)
-                    }
-                    if (turretBurnTimer % 5 == 0) {
-                        this.level().playSound(null, onPos, ModSounds.TURRET_BURN.get(), SoundSource.BLOCKS, 1.5f, 1f + 0.05f * random)
-                    }
+                if (turretBurnTimer == 400) {
+                    this.level().playSound(
+                        null,
+                        onPos,
+                        ModSounds.TURRET_BURN_START.get(),
+                        SoundSource.BLOCKS,
+                        4f,
+                        1f + 0.05f * random
+                    )
                 }
+                if (turretBurnTimer % 5 == 0) {
+                    this.level().playSound(
+                        null,
+                        onPos,
+                        ModSounds.TURRET_BURN.get(),
+                        SoundSource.BLOCKS,
+                        1.5f,
+                        1f + 0.05f * random
+                    )
+                }
+            }
 
             if (this.tickCount % 15 == 0) {
                 this.level().playSound(null, this.onPos, SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1f, 1f)
@@ -2550,7 +2565,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun turretBurnEffectPos(): Vec3? {
         val pos = turretPos
-        val worldPosition = pos?.let { transformPosition(getVehicleTransform(1f),
+        val worldPosition = pos?.let {
+            transformPosition(
+                getVehicleTransform(1f),
                 pos.x, pos.y, it.z
             )
         }
@@ -2757,7 +2774,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             Function { tick -> VectorTool.combineRotationsPassengerWeaponStation(tick, this) }
         rotationTransform["WeaponStationBarrel"] =
             Function { tick -> VectorTool.combineRotationsPassengerWeaponStationBarrel(tick, this) }
-        rotationTransform["Turret"] = Function { tick -> VectorTool.combineRotationsTurret(tick, this) }
+        rotationTransform["Turret"] = Function { tick -> combineRotationsTurret(tick, this) }
         rotationTransform["Barrel"] = Function { tick -> VectorTool.combineRotationsBarrel(tick, this) }
         rotationTransform["RotationsYaw"] = Function { tick -> VectorTool.combineRotationsYaw(tick, this) }
         rotationTransform["Default"] = Function { tick -> VectorTool.combineRotations(tick, this) }
@@ -3992,7 +4009,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     override fun reviveCaps() {
         super.reviveCaps()
         if (this.hasContainer()) {
-            itemHandler = LazyOptional.of { InvWrapper(this) }
+            itemHandler = LazyOptional.of { this.inventory }
         }
         if (this.hasEnergyStorage()) {
             energyOptional = LazyOptional.of { VehicleEnergyStorage(this) }

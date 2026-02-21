@@ -6,6 +6,10 @@ import net.minecraft.client.gui.screens.MenuScreens
 
 object ModScreens {
     fun register() {
+        MenuScreens.register(ModMenuTypes.MEDIUM_VEHICLE_CONTAINER_MENU.get()) { menu, inv, title ->
+            MediumVehicleContainerScreen(menu, inv, title)
+        }
+
         MenuScreens.register(ModMenuTypes.VEHICLE_MENU_MINI.get()) { menu, inventory, title ->
             VehicleScreen(
                 menu,

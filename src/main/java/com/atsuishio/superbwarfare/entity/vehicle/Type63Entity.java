@@ -17,7 +17,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -30,8 +29,8 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -393,10 +392,10 @@ public class Type63Entity extends GeoVehicleEntity {
         return false;
     }
 
-    @Override
-    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
-        return false;
-    }
+//    @Override
+//    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
+//        return false;
+//    }
 
     @Override
     public @NotNull List<OBB> getOBBs() {
