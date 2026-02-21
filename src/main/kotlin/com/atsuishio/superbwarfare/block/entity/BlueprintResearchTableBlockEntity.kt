@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.init.ModBlockEntities
-import com.atsuishio.superbwarfare.menu.BlueprintResearchTableMenu
+import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
 import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
 import com.atsuishio.superbwarfare.tools.isSameItemStack
 import net.minecraft.core.BlockPos

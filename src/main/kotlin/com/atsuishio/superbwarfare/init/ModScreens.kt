@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.screens.*
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -13,37 +12,6 @@ object ModScreens {
     @SubscribeEvent
     fun clientLoad(event: RegisterMenuScreensEvent) {
         event.register(ModMenuTypes.MEDIUM_VEHICLE_CONTAINER_MENU.get(), ::MediumVehicleContainerScreen)
-
-        event.register(ModMenuTypes.VEHICLE_MENU_MINI.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.MINI)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.MINI)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_SMALL.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.SMALL)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_SMALL_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.SMALL)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_MEDIUM.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.MEDIUM)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_MEDIUM_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.MEDIUM)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_LARGE.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.LARGE)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.LARGE)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_HUGE.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.HUGE)
-        }
-        event.register(ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(menu, inventory, title, VehicleContainerType.HUGE)
-        }
 
         event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ::ReforgingTableScreen)
         event.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ::ChargingStationScreen)
