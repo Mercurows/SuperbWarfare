@@ -1,94 +1,12 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.client.screens.*
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleContainerType
 import net.minecraft.client.gui.screens.MenuScreens
 
 object ModScreens {
     fun register() {
         MenuScreens.register(ModMenuTypes.MEDIUM_VEHICLE_CONTAINER_MENU.get()) { menu, inv, title ->
             MediumVehicleContainerScreen(menu, inv, title)
-        }
-
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_MINI.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.MINI
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_MINI_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.MINI
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_SMALL.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.SMALL
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_SMALL_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.SMALL
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_MEDIUM.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.MEDIUM
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_MEDIUM_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.MEDIUM
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_LARGE.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.LARGE
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_LARGE_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.LARGE
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_HUGE.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.HUGE
-            )
-        }
-        MenuScreens.register(ModMenuTypes.VEHICLE_MENU_HUGE_UPGRADE.get()) { menu, inventory, title ->
-            VehicleScreen(
-                menu,
-                inventory,
-                title,
-                VehicleContainerType.HUGE
-            )
         }
 
         MenuScreens.register(ModMenuTypes.REFORGING_TABLE_MENU.get()) { pMenu, pPlayerInventory, pTitle ->
