@@ -4,9 +4,9 @@ import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.inventory.MenuType
 import net.minecraftforge.common.extensions.IForgeMenuType
 
-class MediumVehicleContainerMenu(id: Int, inventory: Inventory, entityId: Int) :
+class SmallVehicleContainerMenu(id: Int, inventory: Inventory, entityId: Int) :
     AbstractVehicleContainerMenu(TYPE, id, inventory, entityId) {
-    override fun getRows(): Int = 6
+    override fun getRows(): Int = 3
 
     override fun addVehicleInventory() {
         for (r in 0 until getRows()) {
@@ -18,7 +18,7 @@ class MediumVehicleContainerMenu(id: Int, inventory: Inventory, entityId: Int) :
 
     companion object {
         @JvmField
-        val TYPE: MenuType<MediumVehicleContainerMenu> =
-            IForgeMenuType.create { id, inventory, buf -> MediumVehicleContainerMenu(id, inventory, buf.readInt()) }
+        val TYPE: MenuType<SmallVehicleContainerMenu> =
+            IForgeMenuType.create { id, inventory, buf -> SmallVehicleContainerMenu(id, inventory, buf.readInt()) }
     }
 }
