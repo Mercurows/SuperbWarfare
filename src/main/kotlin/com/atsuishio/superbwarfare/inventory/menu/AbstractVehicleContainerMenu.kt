@@ -20,17 +20,20 @@ abstract class AbstractVehicleContainerMenu(type: MenuType<*>?, id: Int, invento
     }
 
     open fun addPlayerInventory(inventory: Inventory) {
+        val i = (getRows() - 4) * 18
         for (r in 0 until 3) {
             for (c in 0 until 9) {
-                this.addSlot(Slot(inventory, c + r * 9 + 9, 88 + c * 18, 174 + r * 18))
+                this.addSlot(Slot(inventory, c + r * 9 + 9, 8 + c * 18, 103 + r * 18 + i))
             }
         }
         for (c in 0 until 9) {
-            this.addSlot(Slot(inventory, c, 88 + c * 18, 232))
+            this.addSlot(Slot(inventory, c, 8 + c * 18, 161 + i))
         }
     }
 
     abstract fun addVehicleInventory()
+
+    open fun getRows(): Int = 3
 
     override fun stillValid(pPlayer: Player): Boolean {
         if (vehicle == null) return false
