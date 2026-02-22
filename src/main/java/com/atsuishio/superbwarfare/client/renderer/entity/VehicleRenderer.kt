@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.VehicleDamageLayer
 import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
 import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
@@ -19,8 +18,6 @@ import net.minecraft.world.phys.Vec3
 import software.bernie.geckolib.core.animatable.GeoAnimatable
 import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
-import software.bernie.geckolib.renderer.GeoRenderer
-import software.bernie.geckolib.renderer.layer.GeoRenderLayer
 
 
 abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context, model: GeoModel<T>) :
