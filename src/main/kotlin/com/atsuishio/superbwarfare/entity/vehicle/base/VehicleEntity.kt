@@ -419,7 +419,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var mouseMoveSpeedY by MOUSE_SPEED_Y
 
     // container start
-    val inventory = VehicleContainerHandler(9 * 17, this)
+    val inventory = VehicleContainerHandler(6 * 17, this)
     private var itemHandler = LazyOptional.of { this.inventory }
     protected var items: NonNullList<ItemStack> = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
 

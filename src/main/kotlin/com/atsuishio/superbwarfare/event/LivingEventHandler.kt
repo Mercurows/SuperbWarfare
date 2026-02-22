@@ -587,15 +587,24 @@ object LivingEventHandler {
     @SubscribeEvent
     fun onPickup(event: EntityItemPickupEvent) {
         if (!VehicleConfig.VEHICLE_ITEM_PICKUP.get()) return
-        val vehicle = event.entity.vehicle
-        if (vehicle is VehicleEntity) {
-            val pickUp = event.item
-            if (!vehicle.level().isClientSide) {
-                // TODO 完成载具物品拾取
-//                HopperBlockEntity.addItem(vehicle, pickUp)
+        val entity = event.entity
+        val vehicle = entity.vehicle as? VehicleEntity ?: return
+        val pickUp = event.item
+        if (!vehicle.level().isClientSide) {
+            val stack = pickUp.item.copy()
+            val oldCount = stack.count
+            val count = InventoryTool.insertItem(vehicle.inventory.getItems(), stack)
+
+            pickUp.discard()
+
+            if (oldCount > count && entity is Player) {
+                val item = ItemStack(stack.item, oldCount - count)
+                if (!entity.addItem(item)) {
+                    entity.drop(item, false)
+                }
             }
-            event.isCanceled = true
         }
+        event.isCanceled = true
     }
 
     @SubscribeEvent
