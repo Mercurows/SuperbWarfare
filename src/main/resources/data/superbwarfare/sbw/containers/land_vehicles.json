@@ -52,6 +52,10 @@
       "Type": "superbwarfare:sodayo_pick_up_tow",
       "Weight": 3
     },
+    {
+      "Type": "superbwarfare:lav_25",
+      "Weight": 5
+    },
     "superbwarfare:yx_100"
   ]
 }

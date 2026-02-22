@@ -4,7 +4,28 @@
     {
       "Entries": [
         {
-          "Name": "superbwarfare:steel_block"
+          "Count": 2,
+          "Name": "minecraft:bucket"
+        },
+        {
+          "Count": 4,
+          "Name": "superbwarfare:steel_ingot"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:light_armament_module"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:small_battery_pack"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:propeller"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:large_motor"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -13,8 +34,13 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
-          "Name": "superbwarfare:steel_block"
+          "Count": 2,
+          "Name": "minecraft:bucket"
+        },
+        {
+          "Chance": 0.5,
+          "Count": 4,
+          "Name": "superbwarfare:steel_ingot"
         }
       ],
       "Type": "complete"

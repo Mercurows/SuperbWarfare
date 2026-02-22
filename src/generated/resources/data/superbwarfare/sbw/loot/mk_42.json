@@ -4,7 +4,12 @@
     {
       "Entries": [
         {
+          "Count": 3,
           "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:cannon_core"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -13,7 +18,8 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
+          "Chance": 0.5,
+          "Count": 3,
           "Name": "superbwarfare:steel_block"
         }
       ],

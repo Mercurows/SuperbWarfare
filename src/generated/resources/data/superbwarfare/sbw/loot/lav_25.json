@@ -1,5 +1,5 @@
 {
-  "ID": "superbwarfare:yx_100",
+  "ID": "superbwarfare:lav_25",
   "Pools": [
     {
       "Entries": [
@@ -8,20 +8,13 @@
           "Name": "superbwarfare:steel_block"
         },
         {
-          "Count": 12,
-          "Name": "superbwarfare:cemented_carbide_block"
-        },
-        {
-          "Chance": 0.5,
-          "Name": "superbwarfare:heavy_armament_module"
-        },
-        {
           "Chance": 0.5,
           "Name": "superbwarfare:medium_armament_module"
         },
         {
           "Chance": 0.5,
-          "Name": "superbwarfare:track"
+          "Count": 4,
+          "Name": "superbwarfare:wheel"
         },
         {
           "Chance": 0.5,
@@ -29,7 +22,7 @@
         },
         {
           "Chance": 0.2,
-          "Name": "superbwarfare:large_battery_pack"
+          "Name": "superbwarfare:medium_battery_pack"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -41,11 +34,6 @@
           "Chance": 0.5,
           "Count": 4,
           "Name": "superbwarfare:steel_block"
-        },
-        {
-          "Chance": 0.5,
-          "Count": 12,
-          "Name": "superbwarfare:cemented_carbide_block"
         }
       ],
       "Type": "complete"
@@ -53,20 +41,11 @@
     {
       "Entries": [
         {
-          "Count": 2,
           "Name": "superbwarfare:steel_block"
         },
         {
           "Chance": 0.5,
-          "Name": "superbwarfare:heavy_armament_module"
-        },
-        {
-          "Chance": 0.5,
           "Name": "superbwarfare:medium_armament_module"
-        },
-        {
-          "Count": 3,
-          "Name": "superbwarfare:cemented_carbide_block"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -76,13 +55,7 @@
       "Entries": [
         {
           "Chance": 0.5,
-          "Count": 2,
           "Name": "superbwarfare:steel_block"
-        },
-        {
-          "Chance": 0.5,
-          "Count": 3,
-          "Name": "superbwarfare:cemented_carbide_block"
         }
       ],
       "Type": "turret_only"
@@ -90,16 +63,13 @@
     {
       "Entries": [
         {
-          "Count": 2,
+          "Count": 3,
           "Name": "superbwarfare:steel_block"
         },
         {
-          "Count": 9,
-          "Name": "superbwarfare:cemented_carbide_block"
-        },
-        {
           "Chance": 0.5,
-          "Name": "superbwarfare:track"
+          "Count": 4,
+          "Name": "superbwarfare:wheel"
         },
         {
           "Chance": 0.5,
@@ -107,7 +77,7 @@
         },
         {
           "Chance": 0.2,
-          "Name": "superbwarfare:large_battery_pack"
+          "Name": "superbwarfare:medium_battery_pack"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -117,13 +87,8 @@
       "Entries": [
         {
           "Chance": 0.5,
-          "Count": 2,
+          "Count": 3,
           "Name": "superbwarfare:steel_block"
-        },
-        {
-          "Chance": 0.5,
-          "Count": 9,
-          "Name": "superbwarfare:cemented_carbide_block"
         }
       ],
       "Type": "vehicle_only"

@@ -5,6 +5,22 @@
       "Entries": [
         {
           "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:light_armament_module"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:large_propeller"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:large_motor"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:small_battery_pack"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -13,7 +29,7 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
+          "Chance": 0.5,
           "Name": "superbwarfare:steel_block"
         }
       ],
