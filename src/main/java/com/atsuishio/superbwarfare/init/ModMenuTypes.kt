@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
-import com.atsuishio.superbwarfare.inventory.menu.MediumVehicleContainerMenu
-import com.atsuishio.superbwarfare.inventory.menu.SmallVehicleContainerMenu
+import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.menu.*
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.inventory.AbstractContainerMenu
@@ -37,10 +35,16 @@ object ModMenuTypes {
         register("charging_station_menu") { windowId, inv, _ -> ChargingStationMenu(windowId, inv) }
 
     @JvmField
+    val MINI_VEHICLE_CONTAINER_MENU = register("mini_vehicle_container") { MiniVehicleContainerMenu.TYPE }
+
+    @JvmField
     val SMALL_VEHICLE_CONTAINER_MENU = register("small_vehicle_container") { SmallVehicleContainerMenu.TYPE }
 
     @JvmField
     val MEDIUM_VEHICLE_CONTAINER_MENU = register("medium_vehicle_container") { MediumVehicleContainerMenu.TYPE }
+
+    @JvmField
+    val LARGE_VEHICLE_CONTAINER_MENU = register("large_vehicle_container") { LargeVehicleContainerMenu.TYPE }
 
     @JvmField
     val SUPERB_ITEM_INTERFACE_MENU =
