@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.menu.ReforgingTableMenu;
+import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu;
 import com.atsuishio.superbwarfare.network.message.send.GunReforgeMessage;
 import com.atsuishio.superbwarfare.network.message.send.SetPerkLevelMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
