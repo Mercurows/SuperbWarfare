@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.screens;
 
-import com.atsuishio.superbwarfare.menu.SuperbItemInterfaceMenu;
+import com.atsuishio.superbwarfare.inventory.menu.SuperbItemInterfaceMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;

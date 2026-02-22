@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
-import com.atsuishio.superbwarfare.menu.EnergyMenu
+import com.atsuishio.superbwarfare.inventory.menu.EnergyMenu
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.localPlayer

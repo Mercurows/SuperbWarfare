@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.block.entity;
 
 import com.atsuishio.superbwarfare.block.SuperbItemInterfaceBlock;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
-import com.atsuishio.superbwarfare.menu.SuperbItemInterfaceMenu;
+import com.atsuishio.superbwarfare.inventory.menu.SuperbItemInterfaceMenu;
 import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
