@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
-import com.atsuishio.superbwarfare.inventory.menu.MediumVehicleContainerMenu
-import com.atsuishio.superbwarfare.inventory.menu.SmallVehicleContainerMenu
+import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.menu.*
 import net.minecraft.world.inventory.MenuType
 import net.minecraftforge.common.extensions.IForgeMenuType
@@ -28,12 +26,20 @@ object ModMenuTypes {
         }
 
     @JvmField
+    val MINI_VEHICLE_CONTAINER_MENU: RegistryObject<MenuType<MiniVehicleContainerMenu>> =
+        REGISTRY.register("mini_vehicle_container") { MiniVehicleContainerMenu.TYPE }
+
+    @JvmField
     val SMALL_VEHICLE_CONTAINER_MENU: RegistryObject<MenuType<SmallVehicleContainerMenu>> =
         REGISTRY.register("small_vehicle_container") { SmallVehicleContainerMenu.TYPE }
 
     @JvmField
     val MEDIUM_VEHICLE_CONTAINER_MENU: RegistryObject<MenuType<MediumVehicleContainerMenu>> =
         REGISTRY.register("medium_vehicle_container") { MediumVehicleContainerMenu.TYPE }
+
+    @JvmField
+    val LARGE_VEHICLE_CONTAINER_MENU: RegistryObject<MenuType<LargeVehicleContainerMenu>> =
+        REGISTRY.register("large_vehicle_container") { LargeVehicleContainerMenu.TYPE }
 
     @JvmField
     val SUPERB_ITEM_INTERFACE_MENU: RegistryObject<MenuType<SuperbItemInterfaceMenu>> =

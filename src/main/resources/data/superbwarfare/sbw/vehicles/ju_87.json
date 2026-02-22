@@ -279,6 +279,7 @@
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/ju_87_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "VehicleContainerType": "Mini",
   "Type": "Airplane",
   "EngineType": "Aircraft",
   "EngineInfo": {
