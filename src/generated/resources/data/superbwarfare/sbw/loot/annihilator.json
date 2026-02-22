@@ -4,7 +4,21 @@
     {
       "Entries": [
         {
+          "Count": 12,
           "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.5,
+          "Count": 16,
+          "Name": "superbwarfare:laser_unit"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:large_battery_pack"
+        },
+        {
+          "Count": 3,
+          "Name": "minecraft:netherite_block"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -13,8 +27,13 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
+          "Chance": 0.5,
+          "Count": 12,
           "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.25,
+          "Name": "minecraft:netherite_block"
         }
       ],
       "Type": "complete"

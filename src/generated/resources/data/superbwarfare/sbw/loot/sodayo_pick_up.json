@@ -5,6 +5,19 @@
       "Entries": [
         {
           "Name": "superbwarfare:steel_block"
+        },
+        {
+          "Chance": 0.5,
+          "Count": 2,
+          "Name": "superbwarfare:wheel"
+        },
+        {
+          "Chance": 0.5,
+          "Name": "superbwarfare:large_motor"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:medium_battery_pack"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -13,7 +26,7 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
+          "Chance": 0.5,
           "Name": "superbwarfare:steel_block"
         }
       ],

@@ -3,7 +3,6 @@
   "category": "civilian",
   "inputs": [
     "3 #superbwarfare:storage_blocks/steel",
-    "minecraft:chest",
     "superbwarfare:medium_battery_pack",
     "4 superbwarfare:wheel",
     "superbwarfare:large_motor",

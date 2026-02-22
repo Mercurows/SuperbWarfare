@@ -70,7 +70,7 @@ public class ModCapabilities {
             // 物品
             event.registerEntity(Capabilities.ItemHandler.ENTITY,
                     entity,
-                    (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasContainer()) ? new InvWrapper(vehicle) : null
+                    (obj, ctx) -> (obj instanceof VehicleEntity vehicle && vehicle.hasContainer()) ? vehicle.getInventory() : null
             );
         }
 

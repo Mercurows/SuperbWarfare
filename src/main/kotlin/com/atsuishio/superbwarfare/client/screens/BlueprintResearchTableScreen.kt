@@ -20,7 +20,7 @@ class BlueprintResearchTableScreen(
     }
 
     override fun renderLabels(
-        pGuiGraphics: GuiGraphics?,
+        pGuiGraphics: GuiGraphics,
         pMouseX: Int,
         pMouseY: Int
     ) {

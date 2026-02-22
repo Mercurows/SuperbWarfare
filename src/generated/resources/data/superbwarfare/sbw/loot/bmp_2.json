@@ -4,21 +4,24 @@
     {
       "Entries": [
         {
-          "Count": 8,
+          "Count": 4,
           "Name": "superbwarfare:steel_block"
         },
         {
+          "Chance": 0.5,
           "Name": "superbwarfare:medium_armament_module"
         },
         {
-          "Name": "superbwarfare:medium_battery_pack"
-        },
-        {
-          "Count": 2,
+          "Chance": 0.5,
           "Name": "superbwarfare:track"
         },
         {
+          "Chance": 0.5,
           "Name": "superbwarfare:large_motor"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:medium_battery_pack"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -27,26 +30,9 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
-          "Count": 8,
+          "Chance": 0.5,
+          "Count": 4,
           "Name": "superbwarfare:steel_block"
-        },
-        {
-          "Chance": 0.2,
-          "Name": "superbwarfare:medium_armament_module"
-        },
-        {
-          "Chance": 0.2,
-          "Name": "superbwarfare:medium_battery_pack"
-        },
-        {
-          "Chance": 0.2,
-          "Count": 2,
-          "Name": "superbwarfare:track"
-        },
-        {
-          "Chance": 0.2,
-          "Name": "superbwarfare:large_motor"
         }
       ],
       "Type": "complete"
@@ -54,10 +40,10 @@
     {
       "Entries": [
         {
-          "Count": 2,
           "Name": "superbwarfare:steel_block"
         },
         {
+          "Chance": 0.5,
           "Name": "superbwarfare:medium_armament_module"
         }
       ],
@@ -67,13 +53,8 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
-          "Count": 2,
+          "Chance": 0.5,
           "Name": "superbwarfare:steel_block"
-        },
-        {
-          "Chance": 0.2,
-          "Name": "superbwarfare:medium_armament_module"
         }
       ],
       "Type": "turret_only"
@@ -81,18 +62,20 @@
     {
       "Entries": [
         {
-          "Count": 6,
+          "Count": 3,
           "Name": "superbwarfare:steel_block"
         },
         {
-          "Name": "superbwarfare:medium_battery_pack"
-        },
-        {
-          "Count": 2,
+          "Chance": 0.5,
           "Name": "superbwarfare:track"
         },
         {
+          "Chance": 0.5,
           "Name": "superbwarfare:large_motor"
+        },
+        {
+          "Chance": 0.2,
+          "Name": "superbwarfare:medium_battery_pack"
         }
       ],
       "Source": "superbwarfare:repair_tool",
@@ -101,22 +84,9 @@
     {
       "Entries": [
         {
-          "Chance": 0.2,
-          "Count": 6,
+          "Chance": 0.5,
+          "Count": 3,
           "Name": "superbwarfare:steel_block"
-        },
-        {
-          "Chance": 0.2,
-          "Name": "superbwarfare:medium_battery_pack"
-        },
-        {
-          "Chance": 0.2,
-          "Count": 2,
-          "Name": "superbwarfare:track"
-        },
-        {
-          "Chance": 0.2,
-          "Name": "superbwarfare:large_motor"
         }
       ],
       "Type": "vehicle_only"
