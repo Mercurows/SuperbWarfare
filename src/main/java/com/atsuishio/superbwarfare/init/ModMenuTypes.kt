@@ -47,6 +47,9 @@ object ModMenuTypes {
     val LARGE_VEHICLE_CONTAINER_MENU = register("large_vehicle_container") { LargeVehicleContainerMenu.TYPE }
 
     @JvmField
+    val HUGE_VEHICLE_CONTAINER_MENU = register("huge_vehicle_container") { HugeVehicleContainerMenu.TYPE }
+
+    @JvmField
     val SUPERB_ITEM_INTERFACE_MENU =
         register("superb_item_interface_menu") { windowId, inv, _ -> SuperbItemInterfaceMenu(windowId, inv) }
 

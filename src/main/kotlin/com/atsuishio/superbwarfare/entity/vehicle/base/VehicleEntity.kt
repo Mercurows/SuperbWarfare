@@ -36,10 +36,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
-import com.atsuishio.superbwarfare.inventory.menu.LargeVehicleContainerMenu
-import com.atsuishio.superbwarfare.inventory.menu.MediumVehicleContainerMenu
-import com.atsuishio.superbwarfare.inventory.menu.MiniVehicleContainerMenu
-import com.atsuishio.superbwarfare.inventory.menu.SmallVehicleContainerMenu
+import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
@@ -617,7 +614,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-    // TODO 继续把menu搞完
     open fun createMenu(
         pContainerId: Int,
         pPlayerInventory: Inventory,
@@ -632,7 +628,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 VehicleContainerType.SMALL -> SmallVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
                 VehicleContainerType.MEDIUM -> MediumVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
                 VehicleContainerType.LARGE -> LargeVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
-                else -> MediumVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
+                VehicleContainerType.HUGE -> HugeVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
+                else -> null
             }
         }
         return null
