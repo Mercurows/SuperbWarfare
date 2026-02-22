@@ -15,6 +15,7 @@ import net.minecraftforge.client.event.ScreenEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.fml.loading.LoadingModList
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 
@@ -80,6 +81,7 @@ class SnapshotWarningScreen(val lastScreen: Screen) : Screen(
 
         @SubscribeEvent(priority = EventPriority.HIGH)
         fun onTitleScreenOpen(event: ScreenEvent.Init.Post) {
+            if (!FMLEnvironment.production) return
             if (firstTimeStart || event.screen !is TitleScreen) return
             val version = getVersion() ?: return
             if (!version.toString().lowercase().contains("snapshot")) return
