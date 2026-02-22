@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.TargetLayer;
+import com.atsuishio.superbwarfare.client.layer.misc.TargetLayer;
 import com.atsuishio.superbwarfare.client.model.entity.TargetModel;
 import com.atsuishio.superbwarfare.entity.TargetEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
