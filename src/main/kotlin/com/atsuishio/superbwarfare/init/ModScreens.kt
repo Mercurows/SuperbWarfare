@@ -17,6 +17,9 @@ object ModScreens {
         MenuScreens.register(ModMenuTypes.LARGE_VEHICLE_CONTAINER_MENU.get()) { menu, inv, title ->
             LargeVehicleContainerScreen(menu, inv, title)
         }
+        MenuScreens.register(ModMenuTypes.HUGE_VEHICLE_CONTAINER_MENU.get()) { menu, inv, title ->
+            HugeVehicleContainerScreen(menu, inv, title)
+        }
 
         MenuScreens.register(ModMenuTypes.REFORGING_TABLE_MENU.get()) { pMenu, pPlayerInventory, pTitle ->
             ReforgingTableScreen(

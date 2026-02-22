@@ -42,6 +42,10 @@ object ModMenuTypes {
         REGISTRY.register("large_vehicle_container") { LargeVehicleContainerMenu.TYPE }
 
     @JvmField
+    val HUGE_VEHICLE_CONTAINER_MENU: RegistryObject<MenuType<HugeVehicleContainerMenu>> =
+        REGISTRY.register("huge_vehicle_container") { HugeVehicleContainerMenu.TYPE }
+
+    @JvmField
     val SUPERB_ITEM_INTERFACE_MENU: RegistryObject<MenuType<SuperbItemInterfaceMenu>> =
         REGISTRY.register("superb_item_interface_menu") {
             IForgeMenuType.create { windowId, inv, _ -> SuperbItemInterfaceMenu(windowId, inv) }
