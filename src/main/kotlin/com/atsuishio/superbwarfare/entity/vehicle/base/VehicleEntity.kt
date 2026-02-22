@@ -413,7 +413,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var mouseMoveSpeedY by MOUSE_SPEED_Y
 
     // container start
-    val inventory = VehicleContainerHandler(9 * 17, this)
+    val inventory = VehicleContainerHandler(6 * 17, this)
     protected var items: NonNullList<ItemStack> = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
 
     protected fun resizeItems() {

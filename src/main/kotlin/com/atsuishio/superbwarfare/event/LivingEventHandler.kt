@@ -46,7 +46,6 @@ import net.minecraft.world.item.ItemStack
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.common.NeoForge
-import net.neoforged.neoforge.common.util.TriState
 import net.neoforged.neoforge.event.entity.living.*
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent
@@ -604,15 +603,27 @@ object LivingEventHandler {
     @SubscribeEvent
     fun onPickup(event: ItemEntityPickupEvent.Pre) {
         if (!VehicleConfig.VEHICLE_ITEM_PICKUP.get()) return
-        val vehicle = event.player.vehicle
-        if (vehicle is VehicleEntity) {
-            val pickUp = event.itemEntity
-            if (!vehicle.level().isClientSide) {
-                // TODO 完成载具物品拾取
-//                HopperBlockEntity.addItem(vehicle, pickUp)
+        val entity = event.player
+        val vehicle = entity.vehicle as? VehicleEntity ?: return
+        val pickUp = event.itemEntity
+        if (!vehicle.level().isClientSide) {
+            val stack = pickUp.item.copy()
+            val oldCount = stack.count
+
+            // TODO 正确实现setCanPickup
+
+            val count = InventoryTool.insertItem(vehicle.inventory.getItems(), stack)
+
+            pickUp.discard()
+
+            if (oldCount > count && entity is Player) {
+                val item = ItemStack(stack.item, oldCount - count)
+                if (!entity.addItem(item)) {
+                    entity.drop(item, false)
+                }
             }
-            event.setCanPickup(TriState.FALSE)
         }
+//        event.isCanceled = true
     }
 
     @SubscribeEvent

@@ -11,7 +11,7 @@ class HugeVehicleContainerMenu(id: Int, inventory: Inventory, entityId: Int) :
     override fun addVehicleInventory() {
         for (r in 0 until getRows()) {
             for (c in 0 until 17) {
-                this.addSlot(VehicleSlot(this.vehicle, c + r * 13, 8 + c * 18 - 72, 18 + r * 18))
+                this.addSlot(VehicleSlot(this.vehicle, c + r * 17, 8 + c * 18 - 72, 18 + r * 18))
             }
         }
     }
