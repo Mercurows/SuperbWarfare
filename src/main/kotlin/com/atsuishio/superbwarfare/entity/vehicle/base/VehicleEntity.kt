@@ -419,7 +419,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     // container start
     val inventory = VehicleContainerHandler(6 * 17, this)
     private var itemHandler = LazyOptional.of { this.inventory }
-    protected var items: NonNullList<ItemStack> = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
+
+    open fun getItems() = this.inventory.getItems()
 
     protected fun resizeItems() {
         val newSize = this.getContainerSize()
