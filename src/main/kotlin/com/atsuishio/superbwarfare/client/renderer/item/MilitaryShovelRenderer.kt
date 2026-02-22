@@ -1,0 +1,7 @@
+package com.atsuishio.superbwarfare.client.renderer.item
+
+import com.atsuishio.superbwarfare.client.model.item.MilitaryShovelModel
+import com.atsuishio.superbwarfare.item.MilitaryShovel
+import software.bernie.geckolib.renderer.GeoItemRenderer
+
+class MilitaryShovelRenderer : GeoItemRenderer<MilitaryShovel>(MilitaryShovelModel())
