@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.block.entity;
 import com.atsuishio.superbwarfare.block.FuMO25Block;
 import com.atsuishio.superbwarfare.init.ModBlockEntities;
 import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.menu.FuMO25Menu;
+import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu;
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import net.minecraft.core.BlockPos;

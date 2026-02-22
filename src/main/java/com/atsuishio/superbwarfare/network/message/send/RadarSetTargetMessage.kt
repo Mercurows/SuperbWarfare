@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
-import com.atsuishio.superbwarfare.menu.FuMO25Menu
+import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.SerializedUUID
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
