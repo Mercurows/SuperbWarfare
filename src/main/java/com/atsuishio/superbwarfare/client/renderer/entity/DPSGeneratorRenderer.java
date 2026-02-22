@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity;
 
-import com.atsuishio.superbwarfare.client.layer.DPSGeneratorLayer;
+import com.atsuishio.superbwarfare.client.layer.misc.DPSGeneratorLayer;
 import com.atsuishio.superbwarfare.client.model.entity.DPSGeneratorModel;
 import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
