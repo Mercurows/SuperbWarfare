@@ -177,7 +177,7 @@
     "@superbwarfare:mortar_shell * 4",
     "@#superbwarfare:aa_missile * 1.5"
   ],
-  "VehicleContainerType": "Huge",
+  "VehicleContainerType": "Small",
   "DestroyInfo": {
     "ParticleType": "Large",
     "ExplosionDamage": 40,
