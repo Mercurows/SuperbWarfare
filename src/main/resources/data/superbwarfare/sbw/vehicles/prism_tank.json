@@ -199,6 +199,7 @@
   "ThirdPersonCameraPos": [1, 1, 4],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/prism_tank_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
+  "VehicleContainerType": "Small",
   "Type": "Tank",
   "CollisionLevel": {
     "Level": 3,

@@ -405,6 +405,7 @@
   "HUDColor": "0xFFC700",
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/mi_28_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "VehicleContainerType": "Small",
   "Type": "Helicopter",
   "HudType": "@Helicopter",
   "TerrainCompat": [[-0.963, 0, 1.296], [0.963, 0, 1.296], [0, 0.435, -8.325]],

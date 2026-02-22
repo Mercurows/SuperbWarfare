@@ -128,7 +128,7 @@
     "@superbwarfare:gun_grenade * 1.5"
   ],
   "ThirdPersonCameraPos": [0, 1.3, 10],
-  "VehicleContainerType": "Small",
+  "VehicleContainerType": "Mini",
   "EngineType": "Fixed",
   "DestroyInfo": {
     "ParticleType": "Medium",
