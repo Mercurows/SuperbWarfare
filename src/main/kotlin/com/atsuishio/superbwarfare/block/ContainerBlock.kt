@@ -202,9 +202,7 @@ open class ContainerBlock :
         else box(0.0, 0.0, 0.0, 16.0, 15.0, 16.0)
     }
 
-    override fun codec(): MapCodec<out BaseEntityBlock?> {
-        return simpleCodec { _ -> ContainerBlock() }
-    }
+    override fun codec() = CODEC
 
     override fun getRenderShape(state: BlockState): RenderShape {
         return RenderShape.ENTITYBLOCK_ANIMATED
@@ -246,6 +244,9 @@ open class ContainerBlock :
 
         @JvmField
         val OPENED: BooleanProperty = BooleanProperty.create("opened")
+
+        @JvmField
+        val CODEC: MapCodec<ContainerBlock> = simpleCodec { _ -> ContainerBlock() }
 
         @JvmStatic
         fun canOpen(pLevel: Level, pPos: BlockPos, entityType: EntityType<*>?, tag: CompoundTag?): Boolean {

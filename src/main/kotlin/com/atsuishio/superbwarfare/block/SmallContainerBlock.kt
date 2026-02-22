@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.block
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.block.entity.LuckyContainerBlockEntity
+import com.atsuishio.superbwarfare.block.entity.SmallContainerBlockEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
@@ -10,7 +10,6 @@ import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.component.DataComponents
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.InteractionHand
@@ -32,12 +31,13 @@ import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 import javax.annotation.ParametersAreNonnullByDefault
 
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
-class LuckyContainerBlock :
+open class SmallContainerBlock :
     BaseEntityBlock(Properties.of().sound(SoundType.METAL).strength(3.0f).noOcclusion().requiresCorrectToolForDrops()) {
     init {
         this.registerDefaultState(
@@ -57,15 +57,17 @@ class LuckyContainerBlock :
         hand: InteractionHand,
         hitResult: BlockHitResult
     ): ItemInteractionResult {
-        if (level.isClientSide
-            || state.getValue(OPENED)
-            || (level.getBlockEntity(pos) !is LuckyContainerBlockEntity)
-        ) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        val blockEntity = level.getBlockEntity(pos)
+        if (level.isClientSide || state.getValue(OPENED) || (blockEntity !is SmallContainerBlockEntity)) {
+            return ItemInteractionResult.FAIL
+        }
 
         if (!stack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
             player.displayClientMessage(Component.translatable("des.superbwarfare.container.fail.crowbar"), true)
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+            return ItemInteractionResult.FAIL
         }
+
+        blockEntity.player = player
 
         level.setBlockAndUpdate(pos, state.setValue(OPENED, true))
         level.playSound(
@@ -77,7 +79,7 @@ class LuckyContainerBlock :
             1f
         )
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        return ItemInteractionResult.SUCCESS
     }
 
     override fun <T : BlockEntity?> getTicker(
@@ -86,11 +88,11 @@ class LuckyContainerBlock :
         pBlockEntityType: BlockEntityType<T?>
     ): BlockEntityTicker<T?>? {
         if (!pLevel.isClientSide) {
-            return createTickerHelper<LuckyContainerBlockEntity?, T?>(
+            return createTickerHelper<SmallContainerBlockEntity?, T?>(
                 pBlockEntityType,
-                ModBlockEntities.LUCKY_CONTAINER.get()
+                ModBlockEntities.SMALL_CONTAINER.get()
             ) { pLevel, pPos, pState, blockEntity ->
-                LuckyContainerBlockEntity.serverTick(
+                SmallContainerBlockEntity.serverTick(
                     pLevel,
                     pPos,
                     pState,
@@ -109,34 +111,55 @@ class LuckyContainerBlock :
         tooltipFlag: TooltipFlag
     ) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag)
-        val component = stack.get(DataComponents.BLOCK_ENTITY_DATA)
-        val tag = if (component == null) CompoundTag() else component.copyTag()
 
-        var location = tag.getString("Location")
-        if (location.startsWith(Mod.MODID)) {
-            val split: Array<String?> =
-                location.split((Mod.MODID + ":").toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            if (split.size == 2) {
-                location = "location." + split[1]
+        val data = stack.get(DataComponents.CONTAINER_LOOT)
+        if (data != null) {
+            var lootTable = data.lootTable().location().toString()
+            if (lootTable.startsWith(Mod.MODID + ":containers/")) {
+                val split = lootTable.split((Mod.MODID + ":containers/").toRegex()).dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
+                if (split.size == 2) {
+                    lootTable = "loot." + split[1]
+                }
+                tooltipComponents.add(
+                    Component.translatable("des.superbwarfare.small_container.$lootTable")
+                        .withStyle(ChatFormatting.GRAY)
+                )
+            } else {
+                val seed = data.seed()
+                if (seed != 0L && seed % 205 == 0L) {
+                    tooltipComponents.add(
+                        Component.translatable("des.superbwarfare.small_container.special")
+                            .withStyle(ChatFormatting.GRAY)
+                    )
+                } else {
+                    tooltipComponents.add(
+                        Component.translatable("des.superbwarfare.small_container.random")
+                            .withStyle(ChatFormatting.GRAY)
+                    )
+                }
             }
+        } else {
             tooltipComponents.add(
-                Component.translatable("des.superbwarfare.lucky_container.$location").withStyle(ChatFormatting.GRAY)
+                Component.translatable("des.superbwarfare.small_container").withStyle(ChatFormatting.GRAY)
             )
         }
     }
 
-    @ParametersAreNonnullByDefault
     override fun getShape(state: BlockState, world: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape {
-        return if (state.getValue(OPENED)) box(1.0, 0.0, 1.0, 15.0, 14.0, 15.0)
-        else box(0.0, 0.0, 0.0, 16.0, 15.0, 16.0)
+        return if (state.getValue(FACING) == Direction.NORTH || state.getValue(FACING) == Direction.SOUTH) {
+            if (state.getValue(OPENED)) box(1.0, 0.0, 2.0, 15.0, 12.0, 14.0)
+            else box(0.0, 0.0, 1.0, 16.0, 13.5, 15.0)
+        } else if (state.getValue(OPENED)) box(2.0, 0.0, 1.0, 14.0, 12.0, 15.0)
+        else box(1.0, 0.0, 0.0, 15.0, 13.5, 16.0)
     }
 
     override fun getRenderShape(state: BlockState): RenderShape {
         return RenderShape.ENTITYBLOCK_ANIMATED
     }
 
-    override fun newBlockEntity(blockPos: BlockPos, blockState: BlockState): BlockEntity {
-        return LuckyContainerBlockEntity(blockPos, blockState)
+    override fun newBlockEntity(blockPos: BlockPos, blockState: BlockState): BlockEntity? {
+        return SmallContainerBlockEntity(blockPos, blockState)
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block?, BlockState?>) {
@@ -149,17 +172,26 @@ class LuckyContainerBlock :
             .setValue(OPENED, false)
     }
 
-    @ParametersAreNonnullByDefault
-    override fun getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState): ItemStack {
-        val itemstack = super.getCloneItemStack(level, pos, state)
-        level.getBlockEntity(pos, ModBlockEntities.LUCKY_CONTAINER.get())
+    override fun getCloneItemStack(
+        state: BlockState,
+        target: HitResult,
+        level: LevelReader,
+        pos: BlockPos,
+        player: Player
+    ): ItemStack {
+        val stack = super.getCloneItemStack(state, target, level, pos, player)
+
+        level.getBlockEntity(pos, ModBlockEntities.SMALL_CONTAINER.get())
             .ifPresent { blockEntity ->
-                blockEntity.saveToItem(itemstack, level.registryAccess())
+                blockEntity.saveToItem(stack, level.registryAccess())
             }
-        return itemstack
+        return stack
     }
 
-    override fun codec() = CODEC
+
+    override fun codec(): MapCodec<out BaseEntityBlock?> {
+        return CODEC
+    }
 
     companion object {
         @JvmField
@@ -169,6 +201,7 @@ class LuckyContainerBlock :
         val OPENED: BooleanProperty = BooleanProperty.create("opened")
 
         @JvmField
-        val CODEC: MapCodec<LuckyContainerBlock> = simpleCodec { _ -> LuckyContainerBlock() }
+        val CODEC: MapCodec<SmallContainerBlock> = simpleCodec { _ -> SmallContainerBlock() }
     }
 }
+

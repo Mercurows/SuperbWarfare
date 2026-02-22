@@ -96,9 +96,7 @@ open class VehicleDeployerBlock :
         return VehicleDeployerBlockEntity(pos, state)
     }
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return simpleCodec { _ -> VehicleDeployerBlock() }
-    }
+    override fun codec() = CODEC
 
     override fun getRenderShape(pState: BlockState): RenderShape {
         return RenderShape.MODEL
@@ -115,5 +113,8 @@ open class VehicleDeployerBlock :
 
         @JvmField
         val TRIGGERED: BooleanProperty = BlockStateProperties.TRIGGERED
+
+        @JvmField
+        val CODEC: MapCodec<VehicleDeployerBlock> = simpleCodec { _ -> VehicleDeployerBlock() }
     }
 }
