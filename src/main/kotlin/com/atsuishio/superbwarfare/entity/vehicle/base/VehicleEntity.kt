@@ -412,7 +412,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     // container start
     val inventory = VehicleContainerHandler(6 * 17, this)
-    protected var items: NonNullList<ItemStack> = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
+
+    open fun getItems() = this.inventory.getItems()
 
     protected fun resizeItems() {
         val newSize = this.getContainerSize()

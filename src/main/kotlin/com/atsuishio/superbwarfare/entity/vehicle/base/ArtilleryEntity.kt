@@ -229,7 +229,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         if (gunData != null && level() is ServerLevel && controller is Player) {
             val ammoCount = InventoryTool.countItem(controller, gunData.selectedAmmoConsumer().stack().item)
             if (ammoCount > 0) {
-                val inStack = this.items.first()
+                val inStack = this.getItems().first()
                 val count = inStack.count
 
                 if (count < Math.min(this.maxStackSize, inStack.maxStackSize)) {
