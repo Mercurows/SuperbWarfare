@@ -14,6 +14,7 @@ import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.EventPriority
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.fml.loading.FMLEnvironment
 import net.neoforged.fml.loading.LoadingModList
 import net.neoforged.neoforge.client.event.ScreenEvent
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
@@ -80,6 +81,7 @@ class SnapshotWarningScreen(val lastScreen: Screen) : Screen(
 
         @SubscribeEvent(priority = EventPriority.HIGH)
         fun onTitleScreenOpen(event: ScreenEvent.Init.Post) {
+            if (!FMLEnvironment.production) return
             if (firstTimeStart || event.screen !is TitleScreen) return
             val version = getVersion() ?: return
             if (!version.toString().lowercase().contains("snapshot")) return
