@@ -284,11 +284,6 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
         return false;
     }
 
-//    @Override
-//    public boolean canTakeItem(@NotNull Container target, int slot, @NotNull ItemStack stack) {
-//        return false;
-//    }
-
     @Override
     public @NotNull List<OBB> getOBBs() {
         return List.of(this.barrel[0], this.barrel[1], this.barrel[2], this.barrel[3], this.barrel[4], this.barrel[5], this.barrel[6], this.barrel[7], this.barrel[8], this.barrel[9], this.barrel[10], this.barrel[11],

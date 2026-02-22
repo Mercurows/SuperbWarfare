@@ -269,8 +269,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     protected var damageDebugResultReceiver: Player? = null
     private var previousVelocity: Vec3 = Vec3.ZERO
 
-//    protected var acceleration = 0.0
-
     open var decoyReloadCoolDown = 0
 
     open var lastTickSpeed = 0.0
@@ -417,36 +415,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     protected var items: NonNullList<ItemStack> = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY)
 
     protected fun resizeItems() {
-//        val newSize = this.getContainerSize()
-//        val currentSize = this.items.size
-//
-//        if (newSize == currentSize) {
-//            return
-//        }
-//
-//        if (newSize > currentSize) {
-//            val newItems = NonNullList.withSize(newSize, ItemStack.EMPTY)
-//            for (i in 0..<currentSize) {
-//                newItems[i] = this.items[i]
-//            }
-//            this.items = newItems
-//        } else {
-//            // TODO 解决超出容量的物品没有正确保存/掉落的问题
-//            for (i in newSize..<currentSize) {
-//                val excessStack = this.items[i]
-//                if (!excessStack.isEmpty) {
-//                    this.spawnAtLocation(excessStack.copy())
-//                }
-//            }
-//
-//            val newItems = NonNullList.withSize(newSize, ItemStack.EMPTY)
-//            for (i in 0..<newSize) {
-//                newItems[i] = this.items[i]
-//            }
-//            this.items = newItems
-//        }
-//
-//        this.setChanged()
         val newSize = this.getContainerSize()
         val oldSize = inventory.slots
         if (newSize == oldSize) return
@@ -472,59 +440,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
-//    /**
-//     * 计算当前载具内指定物品的数量
-//     *
-//     * @param item 物品类型
-//     * @return 物品数量
-//     */
-//    override fun countItem(item: Item): Int {
-//        if (!this.hasContainer()) return 0
-//        return InventoryTool.countItem(this.items, item)
-//    }
-
-//    /**
-//     * 判断载具内是否包含指定物品
-//     *
-//     * @param item 物品类型
-//     */
-//    open fun hasItem(item: Item): Boolean {
-//        if (!this.hasContainer()) return false
-//
-//        return countItem(item) > 0
-//    }
-
-//    /**
-//     * 消耗载具内指定物品
-//     *
-//     * @param item  物品类型
-//     * @param count 要消耗的数量
-//     * @return 成功消耗的物品数量
-//     */
-//    open fun consumeItem(item: Item, count: Int): Int {
-//        if (!this.hasContainer()) return 0
-//
-//        return InventoryTool.consumeItem(this.items, item, count)
-//    }
-
-//    /**
-//     * 尝试插入指定物品指定数量，如果载具内已满则生成掉落物
-//     *
-//     * @param item  物品类型
-//     * @param count 要插入的数量
-//     */
-//    open fun insertItem(item: Item, count: Int) {
-//        if (!this.hasContainer()) return
-//
-//        val rest = InventoryTool.insertItem(this.items, item, count, this.maxStackSize)
-//
-//        if (rest > 0) {
-//            val stackToDrop = ItemStack(item, rest)
-//            this.level().addFreshEntity(ItemEntity(this.level(), this.x, this.y, this.z, stackToDrop))
-//        }
-//    }
-
-    // TODO 0.8.9重置物品栏
     open fun getContainerSize(): Int {
         return computed().vehicleContainerType?.size ?: 0
     }
@@ -559,7 +474,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun setChanged() {}
 
-
     fun clearContent() {
         this.inventory.clear()
     }
@@ -584,7 +498,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     override fun remove(pReason: RemovalReason) {
         if (!this.level().isClientSide && pReason != RemovalReason.DISCARDED) {
-//            Containers.dropContents(this.level(), this, this)
             for (i in 0 until inventory.slots) {
                 val stack = inventory.getStackInSlot(i)
                 if (!stack.isEmpty) {
