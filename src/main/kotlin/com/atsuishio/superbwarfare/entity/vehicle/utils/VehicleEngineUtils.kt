@@ -87,16 +87,23 @@ object VehicleEngineUtils {
         if (backInputDown) {
             power = Math.max(power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (Mth.abs(power) / 1.02f)), -1f)
             if (rightInputDown) {
-                deltaRot += steeringSpeed
-
+                holdTick++
+                deltaRot += steeringSpeed * 0.12f * Math.min(holdTick, 10)
             } else if (leftInputDown) {
-                deltaRot -= steeringSpeed
+                holdTick++
+                deltaRot -= steeringSpeed * 0.12f * Math.min(holdTick, 10)
+            } else {
+                holdTick = 0
             }
         } else {
             if (rightInputDown) {
-                deltaRot -= steeringSpeed
+                holdTick++
+                deltaRot -= steeringSpeed * 0.12f * Math.min(holdTick, 10)
             } else if (leftInputDown) {
-                deltaRot += steeringSpeed
+                holdTick++
+                deltaRot += steeringSpeed * 0.12f * Math.min(holdTick, 10)
+            } else {
+                holdTick = 0
             }
         }
 
@@ -159,6 +166,12 @@ object VehicleEngineUtils {
         }
 
         yRot = (yRot - (if (isInFluidType && !onGround()) 2.5 else 6.0) * deltaRot - i * s0).toFloat()
+
+        val direct = (90 - VehicleVecUtils.calculateAngle(deltaMovement, getViewVector(1f)).toFloat()) / 90
+        setZRot(
+            (roll + direct * deltaRot * 3 * deltaMovement.horizontalDistance()).toFloat()
+        )
+
         if (isInFluidType || onGround()) {
             val water =
                 (if (!isInFluidType && !onGround()) 0.05f else (if (isInFluidType && !onGround()) 0.3f else 1f)).toDouble()
@@ -308,13 +321,16 @@ object VehicleEngineUtils {
         }
 
         if (rightInputDown) {
-            deltaRot += steeringSpeed
+            holdTick++
+            deltaRot += steeringSpeed * 0.12f * Math.min(holdTick, 10)
         } else if (leftInputDown) {
-            deltaRot -= steeringSpeed
+            holdTick++
+            deltaRot -= steeringSpeed * 0.12f * Math.min(holdTick, 10)
+        } else {
+            holdTick = 0
         }
 
         deltaRot *= Math.max(0.78f - 0.25f * deltaMovement.horizontalDistance(), 0.1).toFloat()
-
 
         val s0 = deltaMovement.dot(getViewVector(1f))
 
@@ -335,6 +351,11 @@ object VehicleEngineUtils {
             (if (isInFluidType && !onGround()) 6 else 12) * deltaMovement
                 .horizontalDistance(), 0.0
         ) * rudderRot * (if (power > 0) 1 else -1) - i * s0).toFloat()
+
+        val direct = (90 - VehicleVecUtils.calculateAngle(deltaMovement, getViewVector(1f)).toFloat()) / 90
+        setZRot(
+            (roll - direct * deltaRot * 5 * deltaMovement.horizontalDistance()).toFloat()
+        )
 
         if (isInFluidType || onGround()) {
             val water =
@@ -472,9 +493,13 @@ object VehicleEngineUtils {
         }
 
         if (rightInputDown) {
-            deltaRot -= steeringSpeed
+            holdTick++
+            deltaRot -= steeringSpeed * 0.12f * Math.min(holdTick, 10)
         } else if (leftInputDown) {
-            deltaRot += steeringSpeed
+            holdTick++
+            deltaRot += steeringSpeed * 0.12f * Math.min(holdTick, 10)
+        } else {
+            holdTick = 0
         }
 
         deltaRot *= Math.max(0.78f - 0.25f * deltaMovement.horizontalDistance(), 0.1).toFloat()
@@ -1075,9 +1100,10 @@ object VehicleEngineUtils {
 
             if (!onGround()) {
                 if (rightInputDown) {
-                    deltaRot -= 0.6f
+                    holdTick++
+                    deltaRot -= 0.04f * Math.min(holdTick, 20)
                 } else if (leftInputDown) {
-                    deltaRot += 0.6f
+                    deltaRot += 0.04f * Math.min(holdTick, 20)
                 }
             }
         }
