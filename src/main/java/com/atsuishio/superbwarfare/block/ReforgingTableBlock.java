@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.block;
 
-import com.atsuishio.superbwarfare.menu.ReforgingTableMenu;
+import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
