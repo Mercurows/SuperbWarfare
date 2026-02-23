@@ -4,36 +4,6 @@
   ],
   "passes": [
     {
-      "name": "blur",
-      "intarget": "minecraft:main",
-      "outtarget": "swap",
-      "uniforms": [
-        {
-          "name": "BlurDir",
-          "values": [ 1.0, 0.0 ]
-        },
-        {
-          "name": "Radius",
-          "values": [1.0]
-        }
-      ]
-    },
-    {
-      "name": "blur",
-      "intarget": "swap",
-      "outtarget": "minecraft:main",
-      "uniforms": [
-        {
-          "name": "BlurDir",
-          "values": [ 0.0, 1.0 ]
-        },
-        {
-          "name": "Radius",
-          "values": [1.0]
-        }
-      ]
-    },
-    {
       "name": "color_convolve",
       "intarget": "minecraft:main",
       "outtarget": "swap",
@@ -59,11 +29,11 @@
       "uniforms": [
         {
           "name": "Resolution",
-          "values": [ 32.0 ]
+          "values": [ 48.0 ]
         },
         {
           "name": "MosaicSize",
-          "values": [3.0]
+          "values": [2.0]
         }
       ]
     }

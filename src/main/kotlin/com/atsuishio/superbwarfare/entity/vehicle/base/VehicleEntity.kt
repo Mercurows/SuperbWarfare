@@ -3757,9 +3757,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun getSensitivity(original: Double, zoom: Boolean, seatIndex: Int, isOnGround: Boolean): Double {
         val seat = computed().seats()[seatIndex]
         val sensitivity = seat.sensitivity
-        return if (zoom) sensitivity.x * original else if (Minecraft.getInstance().options.cameraType
+        val s = if (zoom) sensitivity.x * original else if (Minecraft.getInstance().options.cameraType
                 .isFirstPerson
         ) sensitivity.y * original else sensitivity.z * original
+        Minecraft.getInstance().player?.displayClientMessage(Component.literal(s.toString()), true)
+        return s
     }
 
     open val vehicleItemIcon: ResourceLocation?

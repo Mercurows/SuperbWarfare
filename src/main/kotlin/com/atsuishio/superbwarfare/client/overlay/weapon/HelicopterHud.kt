@@ -518,8 +518,8 @@ object HelicopterHud {
                 RenderHelper.preciseBlit(guiGraphics, RING, x - 2 + mouseX, y - 2 + mouseY, 0f, 0f, 4f, 4f, 4f, 4f)
 
                 val pitch = vehicle.getPitch(partialTick)
-                RenderHelper.blit(
-                    poseStack,
+                RenderHelper.preciseBlitWithColor(
+                    guiGraphics,
                     AircraftHud.HUD_LINE_3P,
                     x - 96,
                     y - 48,
@@ -532,8 +532,8 @@ object HelicopterHud {
                     -1
                 )
 
-                RenderHelper.blit(
-                    poseStack,
+                RenderHelper.preciseBlitWithColor(
+                    guiGraphics,
                     AircraftHud.ROLL_HUD_3P,
                     x - 96,
                     y - 96,
