@@ -59,10 +59,10 @@ open class VehicleAssemblingMenu @JvmOverloads constructor(
                         for (i in 0..<handler.slots) {
                             val stack = handler.getStackInSlot(i)
                             val stackCount = stack.count
-                            if (!stack.isEmpty && ingredient.getIngredient().test(stack)) {
+                            if (!stack.isEmpty && ingredient.ingredient.test(stack)) {
                                 count += stackCount
-                                if (count > ingredient.getCount()) {
-                                    val remaining = count - ingredient.getCount()
+                                if (count > ingredient.count) {
+                                    val remaining = count - ingredient.count
                                     recordCount.put(i, stackCount - remaining)
                                     break
                                 }
@@ -70,7 +70,7 @@ open class VehicleAssemblingMenu @JvmOverloads constructor(
                             }
                         }
 
-                        if (count < ingredient.getCount()) {
+                        if (count < ingredient.count) {
                             return@ifPresent
                         }
                     }

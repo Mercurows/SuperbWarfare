@@ -178,7 +178,7 @@ public class VehicleAssemblingRecipeBuilder implements RecipeBuilder {
             }
 
             json.add("inputs", jsonarray);
-            json.addProperty("category", this.category.getName());
+            json.addProperty("category", this.category.typeName);
 
             JsonObject res = new JsonObject();
             if (this.entityType != null) {

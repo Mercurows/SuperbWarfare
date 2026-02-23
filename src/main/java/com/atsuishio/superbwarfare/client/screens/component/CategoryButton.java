@@ -66,7 +66,7 @@ public class CategoryButton extends Button {
 
     public void renderTooltips(GuiGraphics pGuiGraphics, int mouseX, int mouseY) {
         if (this.isHovered()) {
-            pGuiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.category." + this.category.getName()), mouseX, mouseY);
+            pGuiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.category." + this.category.typeName), mouseX, mouseY);
         }
     }
 }

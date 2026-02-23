@@ -67,14 +67,14 @@ public class VehicleAssemblingCategory implements IRecipeCategory<VehicleAssembl
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, VehicleAssemblingRecipe recipe, IFocusGroup focuses) {
-        var res = recipe.getResult();
+        var res = recipe.result;
         builder.addSlot(RecipeIngredientRole.OUTPUT, 1, 1).addItemStack(res.getResult().copyWithCount(res.count));
 
-        for (int i = 0; i < recipe.getInputs().size(); i++) {
+        for (int i = 0; i < recipe.inputs.size(); i++) {
             if (i >= 12) return;
-            var ingredient = recipe.getInputs().get(i).getIngredient().getItems();
+            var ingredient = recipe.inputs.get(i).getIngredient().getItems();
             int finalI = i;
-            Arrays.stream(ingredient).forEach((stack) -> stack.setCount(recipe.getInputs().get(finalI).getCount()));
+            Arrays.stream(ingredient).forEach((stack) -> stack.setCount(recipe.inputs.get(finalI).count));
             builder.addSlot(RecipeIngredientRole.INPUT, 37 + (i % 6) * 18, 1 + i / 6 * 18).addItemStacks(List.of(ingredient));
         }
     }
