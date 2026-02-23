@@ -2374,8 +2374,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 )
             }
 
-            //TODO 为啥喷过火的载具下次重新加载时会继续喷火
-
             if (computed().destroyInfo.sympatheticDetonation
                 && health < 0.05 * getMaxHealth() && this.hasTurret()
                 && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK)
@@ -2386,7 +2384,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 turretBurnTimer = 400
             }
 
-            if (turretBurnTimer > 0 && !sympatheticDetonated) {
+            if (turretBurnTimer > 0 && !sympatheticDetonated && health < 0.05 * getMaxHealth()) {
                 if (level().isClientSide) {
                     val pos = turretBurnEffectPos()
                     val dir = getUpVec(1f)
@@ -2448,6 +2446,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         1f + 0.05f * random
                     )
                 }
+            }
+
+            if (health > 0.05 * getMaxHealth()) {
+                turretBurned = false
+                turretBurnTimer = 0
             }
 
             if (this.tickCount % 15 == 0) {
