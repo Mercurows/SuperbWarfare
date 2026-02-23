@@ -2,19 +2,32 @@ package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity
+import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_ADDITION
+import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_BASE
+import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_INPUT
+import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_SPECIAL
+import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
+import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
+import com.atsuishio.superbwarfare.tools.clientLevel
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.item.Item
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import kotlin.jvm.optionals.getOrNull
 
 @OnlyIn(Dist.CLIENT)
 class BlueprintResearchTableScreen(
     menu: BlueprintResearchTableMenu, playerInventory: Inventory, title: Component
 ) : AbstractContainerScreen<BlueprintResearchTableMenu>(menu, playerInventory, title) {
+    private var currentResultList: MutableList<Item> = mutableListOf()
+    private var currentPage: Int = 0
+
     init {
         this.imageWidth = 240
         this.imageHeight = 177
@@ -37,6 +50,7 @@ class BlueprintResearchTableScreen(
         val j = (this.height - this.imageHeight) / 2
         guiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight)
         this.renderProgresses(guiGraphics, mouseX, mouseY, partialTick)
+        this.renderRecipeOutputs(guiGraphics, mouseX, mouseY, partialTick)
     }
 
     override fun render(
@@ -78,7 +92,60 @@ class BlueprintResearchTableScreen(
         guiGraphics.blit(TEXTURE, i + 25, j + 42, 0, 200, (128 * progressRate).toInt(), 32)
     }
 
+    fun renderRecipeOutputs(
+        guiGraphics: GuiGraphics,
+        mouseX: Int,
+        mouseY: Int,
+        partialTick: Float
+    ) {
+        val i = (this.width - this.imageWidth) / 2
+        val j = (this.height - this.imageHeight) / 2
+
+        val recipe = this.getRecipe()
+        if (recipe == null) {
+            this.currentPage = 0
+            this.currentResultList = mutableListOf()
+            return
+        } else {
+            val result = recipe.result
+            if (!result.isRandom()) return
+            this.currentResultList = result.getResultList()
+        }
+
+        if (!this.currentResultList.isEmpty()) {
+            for (ix in 0 until PAGE_SIZE) {
+                val index = this.currentPage * PAGE_SIZE + ix
+                if (index >= this.currentResultList.size) break
+
+                guiGraphics.renderFakeItem(
+                    this.currentResultList[index].defaultInstance,
+                    i + 182 + ix % 3 * 17,
+                    j + 8 + (ix / 3) % 9 * 17
+                )
+            }
+        }
+    }
+
+    fun getRecipe(): ResearchingRecipe? {
+        val level = clientLevel ?: return null
+        val manager = level.recipeManager
+
+        val inventory = SimpleContainer(4)
+        inventory.setItem(0, this.menu.getSlot(SLOT_INPUT).item)
+        inventory.setItem(1, this.menu.getSlot(SLOT_BASE).item)
+        inventory.setItem(2, this.menu.getSlot(SLOT_ADDITION).item)
+        inventory.setItem(3, this.menu.getSlot(SLOT_SPECIAL).item)
+
+        val optionalRecipe = manager.getRecipeFor(
+            ModRecipes.RESEARCHING_TYPE.get(),
+            inventory,
+            level
+        )
+        return optionalRecipe.getOrNull()
+    }
+
     companion object {
         val TEXTURE: ResourceLocation = Mod.loc("textures/gui/blueprint_research_table.png")
+        const val PAGE_SIZE = 27
     }
 }

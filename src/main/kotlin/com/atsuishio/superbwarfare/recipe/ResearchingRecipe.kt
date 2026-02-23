@@ -33,7 +33,7 @@ class ResearchingRecipe(
         container: SimpleContainer,
         level: Level
     ): Boolean {
-        if (level.isClientSide || container.containerSize < 4) {
+        if (container.containerSize < 4) {
             return false
         }
         return input.test(container.getItem(0))
@@ -69,7 +69,7 @@ class ResearchingRecipe(
         var resultStack: ItemStack? = null
 
         @Transient
-        var list: List<Item>? = null
+        var list: MutableList<Item>? = null
 
         fun getResult(): ItemStack {
             if (this.resultStack != null) return this.resultStack!!
@@ -90,7 +90,7 @@ class ResearchingRecipe(
             return this.resultStack!!
         }
 
-        fun getResultList(): List<Item> {
+        fun getResultList(): MutableList<Item> {
             if (this.list != null) return this.list!!
             if (this.tag.isEmpty()) return mutableListOf()
 
@@ -99,6 +99,7 @@ class ResearchingRecipe(
 
             val list = mutableListOf<Item>()
             itemTag.forEach { list.add(it) }
+            list.sortBy { it.descriptionId }
             this.list = list
             return this.list!!
         }
@@ -106,7 +107,7 @@ class ResearchingRecipe(
         fun isRandom() = this.tag.isNotEmpty()
 
         fun rollItem(): ItemStack {
-            if (this.isRandom()) {
+            if (this.isRandom() && !this.getResultList().isEmpty()) {
                 return ItemStack(this.getResultList().random(), count)
             }
             return this.getResult()
