@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.block.entity.*
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.ForgeRegistries
@@ -12,10 +13,10 @@ object ModBlockEntities {
     val REGISTRY: DeferredRegister<BlockEntityType<*>> =
         DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Mod.MODID)
 
-    private fun registerBlockEntity(
+    inline fun <reified T : BlockEntity> registerBlockEntity(
         id: String,
-        blockEntity: () -> BlockEntityType<*>
-    ): RegistryObject<BlockEntityType<*>> =
+        noinline blockEntity: () -> BlockEntityType<T>
+    ): RegistryObject<BlockEntityType<T>> =
         REGISTRY.register(id, blockEntity)
 
     @JvmField
