@@ -13,6 +13,7 @@ import net.minecraft.world.item.Item.TooltipContext
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityTicker
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -21,11 +22,11 @@ import net.minecraft.world.phys.BlockHitResult
 import javax.annotation.ParametersAreNonnullByDefault
 
 class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
-    @ParametersAreNonnullByDefault
+
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
-        tooltipComponents: MutableList<Component?>,
+        tooltipComponents: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
         tooltipComponents.add(
@@ -33,9 +34,8 @@ class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
         )
     }
 
-    @ParametersAreNonnullByDefault
-    override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity {
-        return CreativeSuperbItemInterfaceBlockEntity(pos, state)
+    override fun newBlockEntity(pPos: BlockPos, pState: BlockState): BlockEntity {
+        return CreativeSuperbItemInterfaceBlockEntity(pPos, pState)
     }
 
     @ParametersAreNonnullByDefault
@@ -44,10 +44,10 @@ class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
         pState: BlockState,
         pBlockEntityType: BlockEntityType<T?>
     ): BlockEntityTicker<T?>? {
-        return if (pLevel.isClientSide) null else createTickerHelper<CreativeSuperbItemInterfaceBlockEntity?, T?>(
+        return if (pLevel.isClientSide) null else createTickerHelper(
             pBlockEntityType,
             ModBlockEntities.CREATIVE_SUPERB_ITEM_INTERFACE.get(),
-            BlockEntityTicker { level: Level?, pos: BlockPos?, state: BlockState?, blockEntity: CreativeSuperbItemInterfaceBlockEntity? ->
+            BlockEntityTicker { level, pos, state, blockEntity ->
                 CreativeSuperbItemInterfaceBlockEntity.serverTick(
                     level,
                     pos,
@@ -100,5 +100,5 @@ class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
         val CODEC: MapCodec<CreativeSuperbItemInterfaceBlock> = simpleCodec { _ -> CreativeSuperbItemInterfaceBlock() }
     }
 
-    override fun codec() = CODEC
+    override fun codec(): MapCodec<out BaseEntityBlock> = CODEC
 }

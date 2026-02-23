@@ -292,7 +292,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, world: Level
         entityCap.extractEnergy(extracted, false)
     }
 
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache? {
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
         return this.cache
     }
 

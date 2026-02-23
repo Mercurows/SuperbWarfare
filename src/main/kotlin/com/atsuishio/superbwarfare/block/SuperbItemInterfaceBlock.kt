@@ -172,7 +172,7 @@ open class SuperbItemInterfaceBlock : BaseEntityBlock(
         )
     }
 
-    override fun codec() = CODEC
+    override fun codec(): MapCodec<out BaseEntityBlock> = CODEC
 
     companion object {
         @JvmField
