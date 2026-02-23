@@ -100,6 +100,8 @@ class BlueprintResearchTableMenu(
 
     fun getFuel() = this.containerData.get(2)
 
+    fun getMaxProcessTick() = this.containerData.get(3)
+
     companion object {
         const val CONTAINER_SIZE = 6
         const val SLOT_FUEL = 0

@@ -40,6 +40,8 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     var tick: Int = 0
     var lastSelectedIndex: Int = 0
     var fuel: Int = 0
+    var maxProcessTick: Int = 100
+        get() = field.coerceAtLeast(1)
 
     protected val dataAccess: ContainerData = object : ContainerData {
         override fun get(index: Int): Int {
@@ -47,6 +49,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                 0 -> this@BlueprintResearchTableBlockEntity.tick
                 1 -> this@BlueprintResearchTableBlockEntity.lastSelectedIndex
                 2 -> this@BlueprintResearchTableBlockEntity.fuel
+                3 -> this@BlueprintResearchTableBlockEntity.maxProcessTick
                 else -> 0
             }
         }
@@ -56,6 +59,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                 0 -> this@BlueprintResearchTableBlockEntity.tick = value
                 1 -> this@BlueprintResearchTableBlockEntity.lastSelectedIndex = value
                 2 -> this@BlueprintResearchTableBlockEntity.fuel = value
+                3 -> this@BlueprintResearchTableBlockEntity.maxProcessTick = value
             }
         }
 
@@ -144,6 +148,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
 
         if (pSlot != SLOT_FUEL && pSlot != SLOT_OUTPUT && !flag) {
             this.setChanged()
+            this.resetProgress()
         }
     }
 
@@ -195,6 +200,10 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             return false
         }
 
+        if (recipe.get().result.isRandom() && !this.items[SLOT_OUTPUT].isEmpty) {
+            return false
+        }
+
         val result = recipe.get().result.getResult()
         return canInsertAmountIntoOutputSlot(result.count) && canInsertItemIntoOutputSlot(result.item)
     }
@@ -213,13 +222,19 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             return
         }
 
-        val result: ItemStack = recipe.get().result.getResult()
+        val result = recipe.get().result
+        val item = if (result.isRandom()) result.rollItem() else result.getResult()
 
         val input = this.items[SLOT_INPUT]
         input.shrink(1)
 
         val output = this.items[SLOT_OUTPUT]
-        this.items[SLOT_OUTPUT] = ItemStack(result.item, output.count + result.count)
+        this.items[SLOT_OUTPUT] = ItemStack(item.item, output.count + result.count)
+    }
+
+    fun resetProgress() {
+        this.tick = 0
+        this.maxProcessTick = 100
     }
 
     companion object {
@@ -230,7 +245,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         const val SLOT_SPECIAL = 4
         const val SLOT_OUTPUT = 5
 
-        const val MAX_DATA_COUNT = 3
+        const val MAX_DATA_COUNT = 4
 
         @JvmField
         val MAX_FUEL: Int = MiscConfig.BLUEPRINT_RESEARCH_TABLE_MAX_FUEL.get()
@@ -243,16 +258,23 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                 fuelItem.shrink(1)
                 entity.fuel++
                 entity.setChanged()
-            } else if (entity.hasRecipe()) {
+            }
+            // TODO 想办法判断一下是否处于手动模式
+            if (entity.fuel > 0 && entity.hasRecipe()) {
                 val recipe = entity.getCurrentRecipe()
                 if (recipe.isEmpty) return
-//                val result = recipe.get().result
-//                val item = if (result.isRandom()) {
-//                    result.rollItem()
-//                } else {
-//                    result.getResult()
-//                }
-//                println("result=${item}")
+                entity.maxProcessTick = recipe.get().time
+
+                if (entity.tick < entity.maxProcessTick) {
+                    entity.tick++
+                } else {
+                    entity.craftItem()
+                    entity.resetProgress()
+                    entity.fuel--
+                    entity.setChanged()
+                }
+            } else if (entity.maxProcessTick != 100) {
+                entity.resetProgress()
             }
         }
     }
