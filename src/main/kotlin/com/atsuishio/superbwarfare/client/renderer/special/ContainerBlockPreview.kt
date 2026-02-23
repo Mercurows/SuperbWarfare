@@ -79,7 +79,7 @@ object ContainerBlockPreview {
         val endY = aabb.maxY.toFloat() + 0.001f - pos.y
         val endZ = aabb.maxZ.toFloat() + 0.001f - pos.z
 
-        val hasEnoughSpace = ContainerBlock.canOpen(level, pos, entityType)
+        val hasEnoughSpace = ContainerBlock.canOpen(level, pos, entityType, entityTag)
 
         val red = if (hasEnoughSpace) 0 else 1
         val green = 1 - red

@@ -125,7 +125,7 @@ public class CreativeChargingStationBlock extends BaseEntityBlock {
                 return InteractionResult.SUCCESS;
             }
 
-            station.showRange = !station.showRange;
+            station.setShowRange(!station.getShowRange());
             level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
             return InteractionResult.SUCCESS;
         }

@@ -3852,7 +3852,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         data.aircraftCameraPos.y + 0.1 * ClientMouseHandler.custom3pDistanceLerp,
                         data.aircraftCameraPos.z - ClientMouseHandler.custom3pDistanceLerp
                     )
-                    return CameraTool.getMaxZoom(transform, maxCameraPosition)
+                    return maxCameraPosition.maxZoom(transform)
                 }
             }
             return null

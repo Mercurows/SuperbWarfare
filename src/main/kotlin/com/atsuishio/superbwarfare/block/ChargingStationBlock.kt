@@ -87,10 +87,10 @@ open class ChargingStationBlock :
         pBlockEntityType: BlockEntityType<T?>
     ): BlockEntityTicker<T?>? {
         if (!pLevel.isClientSide) {
-            return createTickerHelper<ChargingStationBlockEntity?, T?>(
+            return createTickerHelper(
                 pBlockEntityType,
                 ModBlockEntities.CHARGING_STATION.get(),
-                BlockEntityTicker { pLevel: Level?, pPos: BlockPos?, pState: BlockState?, blockEntity: ChargingStationBlockEntity? ->
+                BlockEntityTicker { pLevel, pPos, pState, blockEntity ->
                     ChargingStationBlockEntity.serverTick(
                         pLevel,
                         pPos,

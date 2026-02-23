@@ -100,103 +100,6 @@ open class ChargingStationBlockEntity(pos: BlockPos, state: BlockState) :
         }
     }
 
-    fun serverTick(
-        pLevel: Level,
-        pPos: BlockPos,
-        pState: BlockState,
-        blockEntity: ChargingStationBlockEntity
-    ) {
-        if (blockEntity.showRange != pState.getValue(ChargingStationBlock.SHOW_RANGE)) {
-            pLevel.setBlockAndUpdate(
-                pPos,
-                pState.setValue(ChargingStationBlock.SHOW_RANGE, blockEntity.showRange)
-            )
-            setChanged(pLevel, pPos, pState)
-        }
-
-        val handler = blockEntity.getEnergyStorage(null)
-
-        val energy = handler.energyStored
-        if (energy > 0) {
-            blockEntity.chargeEntity(handler)
-        }
-        if (handler.energyStored > 0) {
-            blockEntity.chargeItemStack(handler)
-        }
-        if (handler.energyStored > 0) {
-            blockEntity.chargeBlock(handler)
-        }
-
-        if (blockEntity.fuelTick > 0) {
-            blockEntity.fuelTick--
-            if (energy < handler.maxEnergyStored) {
-                handler.receiveEnergy(CHARGE_SPEED, false)
-            }
-        } else if (!blockEntity.getItem(SLOT_FUEL).isEmpty) {
-            if (handler.energyStored >= handler.maxEnergyStored) return
-
-            val fuel: ItemStack = blockEntity.getItem(SLOT_FUEL)
-            val burnTime = fuel.getBurnTime(RecipeType.SMELTING)
-
-            val fuelEnergy = fuel.getCapability(Capabilities.EnergyStorage.ITEM)
-
-            if (fuelEnergy != null) {
-                // 优先当作电池处理
-                val energyToExtract = min(CHARGE_OTHER_SPEED, handler.maxEnergyStored - handler.energyStored)
-                if (fuelEnergy.canExtract() && handler.canReceive()) {
-                    handler.receiveEnergy(fuelEnergy.extractEnergy(energyToExtract, false), false)
-                }
-
-                blockEntity.setChanged()
-            } else if (burnTime > 0) {
-                // 其次尝试作为燃料处理
-                blockEntity.fuelTick = burnTime
-                blockEntity.maxFuelTick = burnTime
-
-                if (fuel.hasCraftingRemainingItem()) {
-                    if (fuel.count <= 1) {
-                        blockEntity.setItem(SLOT_FUEL, fuel.craftingRemainingItem)
-                    } else {
-                        val copy = fuel.craftingRemainingItem.copy()
-                        copy.count = 1
-
-                        val itemEntity = ItemEntity(
-                            pLevel,
-                            pPos.x + 0.5,
-                            pPos.y + 0.2,
-                            pPos.z + 0.5,
-                            copy
-                        )
-                        pLevel.addFreshEntity(itemEntity)
-
-                        fuel.shrink(1)
-                    }
-                } else {
-                    fuel.shrink(1)
-                }
-
-                blockEntity.setChanged()
-            } else if (fuel.get(DataComponents.FOOD) != null) {
-                // 最后作为食物处理
-                val foodComponent = fuel.get(DataComponents.FOOD) ?: return
-
-                val nutrition = foodComponent.nutrition()
-                val saturation = foodComponent.saturation() * 2.0f * nutrition
-                var tick = nutrition * 80 + (saturation * 200).toInt()
-
-                if (fuel.hasCraftingRemainingItem()) {
-                    tick += 400
-                }
-
-                fuel.shrink(1)
-
-                blockEntity.fuelTick = tick
-                blockEntity.maxFuelTick = tick
-                blockEntity.setChanged()
-            }
-        }
-    }
-
     private fun chargeEntity(handler: IEnergyStorage) {
         val level = this.level ?: return
         if (level.gameTime % 20 != 0L) return
@@ -250,10 +153,6 @@ open class ChargingStationBlockEntity(pos: BlockPos, state: BlockState) :
                 this.setChanged()
             }
         }
-    }
-
-    fun getItems(): NonNullList<ItemStack> {
-        return this.items
     }
 
     override fun applyImplicitComponents(componentInput: DataComponentInput) {
@@ -413,5 +312,104 @@ open class ChargingStationBlockEntity(pos: BlockPos, state: BlockState) :
 
         @JvmField
         val CHARGE_RADIUS: Int = MiscConfig.CHARGING_STATION_CHARGE_RADIUS.get()
+
+        @JvmStatic
+        fun serverTick(
+            pLevel: Level,
+            pPos: BlockPos,
+            pState: BlockState,
+            blockEntity: ChargingStationBlockEntity
+        ) {
+            if (blockEntity.showRange != pState.getValue(ChargingStationBlock.SHOW_RANGE)) {
+                pLevel.setBlockAndUpdate(
+                    pPos,
+                    pState.setValue(ChargingStationBlock.SHOW_RANGE, blockEntity.showRange)
+                )
+                setChanged(pLevel, pPos, pState)
+            }
+
+            val handler = blockEntity.getEnergyStorage(null)
+
+            val energy = handler.energyStored
+            if (energy > 0) {
+                blockEntity.chargeEntity(handler)
+            }
+            if (handler.energyStored > 0) {
+                blockEntity.chargeItemStack(handler)
+            }
+            if (handler.energyStored > 0) {
+                blockEntity.chargeBlock(handler)
+            }
+
+            if (blockEntity.fuelTick > 0) {
+                blockEntity.fuelTick--
+                if (energy < handler.maxEnergyStored) {
+                    handler.receiveEnergy(CHARGE_SPEED, false)
+                }
+            } else if (!blockEntity.getItem(SLOT_FUEL).isEmpty) {
+                if (handler.energyStored >= handler.maxEnergyStored) return
+
+                val fuel: ItemStack = blockEntity.getItem(SLOT_FUEL)
+                val burnTime = fuel.getBurnTime(RecipeType.SMELTING)
+
+                val fuelEnergy = fuel.getCapability(Capabilities.EnergyStorage.ITEM)
+
+                if (fuelEnergy != null) {
+                    // 优先当作电池处理
+                    val energyToExtract = min(CHARGE_OTHER_SPEED, handler.maxEnergyStored - handler.energyStored)
+                    if (fuelEnergy.canExtract() && handler.canReceive()) {
+                        handler.receiveEnergy(fuelEnergy.extractEnergy(energyToExtract, false), false)
+                    }
+
+                    blockEntity.setChanged()
+                } else if (burnTime > 0) {
+                    // 其次尝试作为燃料处理
+                    blockEntity.fuelTick = burnTime
+                    blockEntity.maxFuelTick = burnTime
+
+                    if (fuel.hasCraftingRemainingItem()) {
+                        if (fuel.count <= 1) {
+                            blockEntity.setItem(SLOT_FUEL, fuel.craftingRemainingItem)
+                        } else {
+                            val copy = fuel.craftingRemainingItem.copy()
+                            copy.count = 1
+
+                            val itemEntity = ItemEntity(
+                                pLevel,
+                                pPos.x + 0.5,
+                                pPos.y + 0.2,
+                                pPos.z + 0.5,
+                                copy
+                            )
+                            pLevel.addFreshEntity(itemEntity)
+
+                            fuel.shrink(1)
+                        }
+                    } else {
+                        fuel.shrink(1)
+                    }
+
+                    blockEntity.setChanged()
+                } else if (fuel.get(DataComponents.FOOD) != null) {
+                    // 最后作为食物处理
+                    val foodComponent = fuel.get(DataComponents.FOOD) ?: return
+
+                    val nutrition = foodComponent.nutrition()
+                    val saturation = foodComponent.saturation() * 2.0f * nutrition
+                    var tick = nutrition * 80 + (saturation * 200).toInt()
+
+                    if (fuel.hasCraftingRemainingItem()) {
+                        tick += 400
+                    }
+
+                    fuel.shrink(1)
+
+                    blockEntity.fuelTick = tick
+                    blockEntity.maxFuelTick = tick
+                    blockEntity.setChanged()
+                }
+            }
+        }
+
     }
 }

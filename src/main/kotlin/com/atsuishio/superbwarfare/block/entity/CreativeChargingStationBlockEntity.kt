@@ -102,6 +102,7 @@ open class CreativeChargingStationBlockEntity(pos: BlockPos, state: BlockState) 
     companion object {
         const val CHARGE_RADIUS: Int = 8
 
+        @JvmStatic
         fun serverTick(
             pLevel: Level,
             pPos: BlockPos,

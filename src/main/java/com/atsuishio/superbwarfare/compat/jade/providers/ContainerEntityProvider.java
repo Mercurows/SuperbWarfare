@@ -37,7 +37,7 @@ public enum ContainerEntityProvider implements IBlockComponentProvider {
         }
 
         // 空间不足提示
-        if (!ContainerBlock.canOpen(blockAccessor.getLevel(), container.getBlockPos(), container.entityType)) {
+        if (!ContainerBlock.canOpen(blockAccessor.getLevel(), container.getBlockPos(), container.entityType, container.entityTag)) {
             iTooltip.add(Component.translatable("des.superbwarfare.container.fail.open").withStyle(ChatFormatting.RED));
         }
 
