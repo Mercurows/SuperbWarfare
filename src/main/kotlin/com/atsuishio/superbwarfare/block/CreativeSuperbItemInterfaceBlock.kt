@@ -41,7 +41,7 @@ class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
         pState: BlockState,
         pBlockEntityType: BlockEntityType<T?>
     ): BlockEntityTicker<T?>? {
-        return if (pLevel.isClientSide) null else createTickerHelper<CreativeSuperbItemInterfaceBlockEntity?, T?>(
+        return if (pLevel.isClientSide) null else createTickerHelper<CreativeSuperbItemInterfaceBlockEntity, T?>(
             pBlockEntityType,
             ModBlockEntities.CREATIVE_SUPERB_ITEM_INTERFACE.get()
         ) { level, pos, state, blockEntity ->
