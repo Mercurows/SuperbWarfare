@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.VehicleAssemblingTableBlockItem;
+import com.atsuishio.superbwarfare.item.blockitem.VehicleAssemblingTableBlockItem;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

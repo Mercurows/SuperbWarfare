@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item
+package com.atsuishio.superbwarfare.item.blockitem
 
 import com.atsuishio.superbwarfare.client.tooltip.component.ChargingStationImageComponent
 import com.atsuishio.superbwarfare.component.ModDataComponents

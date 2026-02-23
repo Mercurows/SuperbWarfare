@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity
 import com.atsuishio.superbwarfare.block.property.BlockPart
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity
-import com.atsuishio.superbwarfare.item.VehicleAssemblingTableBlockItem
+import com.atsuishio.superbwarfare.item.blockitem.VehicleAssemblingTableBlockItem
 import com.mojang.serialization.MapCodec
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
