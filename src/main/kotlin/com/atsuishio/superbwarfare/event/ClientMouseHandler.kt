@@ -12,11 +12,14 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.MouseMoveMessage
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.client.CameraType
+import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec2
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent
 import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.client.event.ViewportEvent
 import kotlin.math.abs
@@ -248,4 +251,10 @@ object ClientMouseHandler {
 
         return original
     }
+
+//    @SubscribeEvent
+//    fun handlePlayerTurn(event: CalculatePlayerTurnEvent) {
+//        event.mouseSensitivity = changeSensitivity(event.mouseSensitivity)
+//        Minecraft.getInstance().player?.displayClientMessage(Component.literal(event.mouseSensitivity.toString()), true)
+//    }
 }

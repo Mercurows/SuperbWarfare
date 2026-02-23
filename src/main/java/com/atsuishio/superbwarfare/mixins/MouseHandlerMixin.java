@@ -1,13 +1,28 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import net.minecraft.client.MouseHandler;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 /**
  * Author: MrCrayfish
  */
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin {
+
+    @Unique
+    private static double sbw$x;
+    @Unique
+    private static double sbw$y;
+
+    @ModifyVariable(method = "turnPlayer(D)V", at = @At(value = "STORE", opcode = Opcodes.DSTORE), ordinal = 1)
+    private double sensitivity(double original) {
+        return ClientMouseHandler.INSTANCE.changeSensitivity(original);
+    }
 
 //    @Unique
 //    private static double sbw121$x;
