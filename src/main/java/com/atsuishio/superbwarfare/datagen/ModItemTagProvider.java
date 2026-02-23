@@ -7,6 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -90,6 +91,8 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(Tags.Items.ARMORS_HELMETS).add(ModItems.RU_HELMET_6B47.get(), ModItems.US_HELMET_PASGT.get(), ModItems.GE_HELMET_M_35.get());
         this.tag(Tags.Items.ARMORS_CHESTPLATES).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get());
+
+        this.tag(ModTags.Items.RESEARCH_FUEL).add(Items.GUNPOWDER, Items.GLOWSTONE_DUST, Items.REDSTONE, Items.SUGAR);
 
         // 专门给其他模组添加动画用的枪械武器分类 tag
         this.tag(ModTags.Items.ANIMATED_PISTOL).add(

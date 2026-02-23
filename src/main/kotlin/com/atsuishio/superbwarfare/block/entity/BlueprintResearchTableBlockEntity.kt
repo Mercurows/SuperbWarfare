@@ -1,18 +1,22 @@
 package com.atsuishio.superbwarfare.block.entity
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModRecipes
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
 import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
 import com.atsuishio.superbwarfare.tools.isSameItemStack
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.NonNullList
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.world.*
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.ContainerData
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -24,12 +28,58 @@ import software.bernie.geckolib.core.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 
-
 open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.get(), pos, state), GeoBlockEntity,
     WorldlyContainer, MenuProvider {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
     protected val items: NonNullList<ItemStack> = NonNullList.withSize(6, ItemStack.EMPTY)
+
+    var tick: Int = 0
+    var lastSelectedIndex: Int = 0
+    var fuel: Int = 0
+
+    protected val dataAccess: ContainerData = object : ContainerData {
+        override fun get(index: Int): Int {
+            return when (index) {
+                0 -> this@BlueprintResearchTableBlockEntity.tick
+                1 -> this@BlueprintResearchTableBlockEntity.lastSelectedIndex
+                2 -> this@BlueprintResearchTableBlockEntity.fuel
+                else -> 0
+            }
+        }
+
+        override fun set(index: Int, value: Int) {
+            when (index) {
+                0 -> this@BlueprintResearchTableBlockEntity.tick = value
+                1 -> this@BlueprintResearchTableBlockEntity.lastSelectedIndex = value
+                2 -> this@BlueprintResearchTableBlockEntity.fuel = value
+            }
+        }
+
+        override fun getCount(): Int {
+            return MAX_DATA_COUNT
+        }
+    }
+
+    override fun load(tag: CompoundTag) {
+        super.load(tag)
+
+        this.tick = tag.getInt("Tick")
+        this.lastSelectedIndex = tag.getInt("LastSelectedIndex")
+        this.fuel = tag.getInt("Fuel")
+
+        ContainerHelper.loadAllItems(tag, this.items)
+    }
+
+    override fun saveAdditional(tag: CompoundTag) {
+        super.saveAdditional(tag)
+
+        tag.putInt("Tick", this.tick)
+        tag.putInt("LastSelectedIndex", this.lastSelectedIndex)
+        tag.putInt("Fuel", this.fuel)
+
+        ContainerHelper.saveAllItems(tag, this.items)
+    }
 
     override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar) {
     }
@@ -112,7 +162,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         pPlayerInventory: Inventory,
         pPlayer: Player
     ): AbstractContainerMenu {
-        return BlueprintResearchTableMenu(pContainerId, pPlayerInventory, this)
+        return BlueprintResearchTableMenu(pContainerId, pPlayerInventory, this, this.dataAccess)
     }
 
     private fun getCurrentRecipe(): Optional<ResearchingRecipe> {
@@ -176,8 +226,20 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         const val SLOT_SPECIAL = 4
         const val SLOT_OUTPUT = 5
 
+        const val MAX_DATA_COUNT = 3
+
+        @JvmField
+        val MAX_FUEL: Int = MiscConfig.BLUEPRINT_RESEARCH_TABLE_MAX_FUEL.get()
+
         fun serverTick(level: Level, pos: BlockPos, state: BlockState, entity: BlueprintResearchTableBlockEntity) {
-            if (entity.hasRecipe()) {
+            if (entity.fuel < MAX_FUEL) {
+                val fuelItem = entity.getItem(SLOT_FUEL)
+                if (fuelItem.isEmpty || !fuelItem.`is`(ModTags.Items.RESEARCH_FUEL)) return
+
+                fuelItem.shrink(1)
+                entity.fuel++
+                entity.setChanged()
+            } else if (entity.hasRecipe()) {
                 val recipe = entity.getCurrentRecipe()
                 if (recipe.isEmpty) return
 //                val result = recipe.get().result
