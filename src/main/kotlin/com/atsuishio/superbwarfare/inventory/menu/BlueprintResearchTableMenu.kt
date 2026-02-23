@@ -1,17 +1,24 @@
 package com.atsuishio.superbwarfare.inventory.menu
 
+import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity
 import com.atsuishio.superbwarfare.init.ModMenuTypes
+import com.atsuishio.superbwarfare.init.ModTags
 import net.minecraft.world.Container
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.ContainerData
+import net.minecraft.world.inventory.SimpleContainerData
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
 
-class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, private val container: Container) :
-    AbstractContainerMenu(ModMenuTypes.BLUEPRINT_RESEARCH_TABLE.get(), containerId) {
-
+class BlueprintResearchTableMenu(
+    containerId: Int,
+    playerInventory: Inventory,
+    private val container: Container,
+    private val containerData: ContainerData = SimpleContainerData(BlueprintResearchTableBlockEntity.MAX_DATA_COUNT)
+) : AbstractContainerMenu(ModMenuTypes.BLUEPRINT_RESEARCH_TABLE.get(), containerId) {
     constructor(containerId: Int, playerInventory: Inventory) : this(
         containerId,
         playerInventory,
@@ -20,13 +27,16 @@ class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, p
 
     init {
         checkContainerSize(this.container, CONTAINER_SIZE)
+        checkContainerDataCount(this.containerData, BlueprintResearchTableBlockEntity.MAX_DATA_COUNT)
 
-        this.addSlot(Slot(this.container, SLOT_FUEL, 31, 21))
+        this.addSlot(FuelSlot(this.container, SLOT_FUEL, 31, 21))
         this.addSlot(Slot(this.container, SLOT_INPUT, 31, 50))
         this.addSlot(Slot(this.container, SLOT_INPUT_BASE, 119, 21))
         this.addSlot(Slot(this.container, SLOT_INPUT_DYE, 139, 21))
         this.addSlot(Slot(this.container, SLOT_SPECIAL, 80, 50))
         this.addSlot(ResultSlot(this.container, SLOT_OUTPUT, 129, 50))
+
+        this.addDataSlots(this.containerData)
 
         for (i in 0..2) {
             for (j in 0..8) {
@@ -84,6 +94,12 @@ class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, p
         return this.container.stillValid(pPlayer)
     }
 
+    fun getTick() = this.containerData.get(0)
+
+    fun getLastSelectedIndex() = this.containerData.get(1)
+
+    fun getFuel() = this.containerData.get(2)
+
     companion object {
         const val CONTAINER_SIZE = 6
         const val SLOT_FUEL = 0
@@ -97,6 +113,12 @@ class BlueprintResearchTableMenu(containerId: Int, playerInventory: Inventory, p
     private class ResultSlot(container: Container, slot: Int, x: Int, y: Int) : Slot(container, slot, x, y) {
         override fun mayPlace(pStack: ItemStack): Boolean {
             return false
+        }
+    }
+
+    private class FuelSlot(container: Container, slot: Int, x: Int, y: Int) : Slot(container, slot, x, y) {
+        override fun mayPlace(pStack: ItemStack): Boolean {
+            return pStack.`is`(ModTags.Items.RESEARCH_FUEL)
         }
     }
 }

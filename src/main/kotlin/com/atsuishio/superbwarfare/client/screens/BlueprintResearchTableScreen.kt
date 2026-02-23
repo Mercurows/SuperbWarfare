@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -35,6 +36,7 @@ class BlueprintResearchTableScreen(
         val i = (this.width - this.imageWidth) / 2
         val j = (this.height - this.imageHeight) / 2
         guiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight)
+        this.renderProgresses(guiGraphics, mouseX, mouseY, partialTick)
     }
 
     override fun render(
@@ -46,6 +48,22 @@ class BlueprintResearchTableScreen(
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick)
         super.render(guiGraphics, mouseX, mouseY, partialTick)
         this.renderTooltip(guiGraphics, mouseX, mouseY)
+    }
+
+    fun renderProgresses(
+        guiGraphics: GuiGraphics,
+        mouseX: Int,
+        mouseY: Int,
+        partialTick: Float
+    ) {
+        val i = (this.width - this.imageWidth) / 2
+        val j = (this.height - this.imageHeight) / 2
+
+        if (this.menu.getSlot(BlueprintResearchTableMenu.SLOT_FUEL).hasItem()) {
+            guiGraphics.blit(TEXTURE, i + 29, j + 19, 0, 178, 35, 20)
+        }
+        val fuelRate = this.menu.getFuel() / BlueprintResearchTableBlockEntity.MAX_FUEL.toDouble()
+        guiGraphics.blit(TEXTURE, i + 68, j + 27, 11, 237, (40 * fuelRate).toInt(), 4)
     }
 
     companion object {

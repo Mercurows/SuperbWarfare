@@ -91,9 +91,14 @@ object MiscConfig {
     }
 
     @JvmField
+    val BLUEPRINT_RESEARCH_TABLE_MAX_FUEL = buildServerConfig {
+        comment("The max fuel count of blueprint research table")
+        defineInRange("blueprint_research_table_max_fuel", 8, 1, 128)
+    }
+
+    @JvmField
     val SMOKE_HIDE_TARGET = buildServerConfig {
         comment("Set true to allow smoke to prevent entities from being set as target")
         define("smoke_hide_target", false).also { pop() }
     }
-
 }
