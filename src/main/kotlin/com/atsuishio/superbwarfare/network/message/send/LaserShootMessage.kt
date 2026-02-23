@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.SerializedUUID
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import kotlinx.serialization.Serializable
 import net.minecraft.sounds.SoundSource
@@ -25,8 +25,7 @@ data class LaserShootMessage(
         val entity = EntityFindUtil.findEntity(level, uuid.toString()) ?: return
 
         if (headshot) {
-            DamageHandler.doDamage(
-                entity,
+            entity.forceHurt(
                 ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), player, player),
                 (2 * damage).toFloat()
             )
@@ -34,8 +33,7 @@ data class LaserShootMessage(
                 .playSound(null, player.blockPosition(), ModSounds.HEADSHOT.get(), SoundSource.VOICE, 0.1f, 1f)
             sendPacketTo(player, ClientIndicatorMessage(1, 5))
         } else {
-            DamageHandler.doDamage(
-                entity,
+            entity.forceHurt(
                 ModDamageTypes.causeLaserDamage(level.registryAccess(), player, player),
                 damage.toFloat()
             )

@@ -9,9 +9,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.lerpAngle
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition
 import com.atsuishio.superbwarfare.init.*
-import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.OBB
 import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.mojang.math.Axis
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -279,8 +279,7 @@ object VehicleMotionUtils {
             vehicle.level().playSound(null, vehicle, ModSounds.VEHICLE_STRIKE.get(), vehicle.soundSource, 1f, 1f)
 
             if (entity is LivingEntity) {
-                DamageHandler.doDamage(
-                    entity,
+                entity.forceHurt(
                     ModDamageTypes.causeVehicleStrikeDamage(
                         vehicle.level().registryAccess(),
                         vehicle,
@@ -386,9 +385,10 @@ object VehicleMotionUtils {
      */
     fun collideBlocks(vehicle: VehicleEntity) {
         if (!VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get()
-                && !VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()
-                && !VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()
-                && !VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()) return
+            && !VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()
+            && !VehicleConfig.COLLISION_DESTROY_HARD_BLOCKS.get()
+            && !VehicleConfig.COLLISION_DESTROY_BLOCKS_BEASTLY.get()
+        ) return
 
         val collisionLevel = vehicle.computed().collisionLevel
         val limits = collisionLevel.powerLimits

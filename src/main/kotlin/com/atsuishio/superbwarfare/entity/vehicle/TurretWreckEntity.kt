@@ -573,8 +573,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
 
             this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
 
-            DamageHandler.doDamage(
-                entity,
+            entity.forceHurt(
                 ModDamageTypes.causeVehicleStrikeDamage(
                     this.level().registryAccess(),
                     this, this

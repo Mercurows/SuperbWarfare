@@ -1105,21 +1105,18 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             iCustomKnockback.`superbWarfare$setKnockbackStrength`(0.0)
 
             if (result.headshot) {
-                DamageHandler.doDamage(
-                    target,
+                target.forceHurt(
                     ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), null, shooter),
                     damage * headshot
                 )
                 type = 1
             } else if (result.legShot) {
-                DamageHandler.doDamage(
-                    target,
+                target.forceHurt(
                     ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter),
                     damage * 0.5f
                 )
             } else {
-                DamageHandler.doDamage(
-                    target,
+                target.forceHurt(
                     ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter),
                     damage
                 )
@@ -1130,21 +1127,18 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             iCustomKnockback.`superbWarfare$resetKnockbackStrength`()
         } else {
             if (result.headshot) {
-                DamageHandler.doDamage(
-                    target,
+                target.forceHurt(
                     ModDamageTypes.causeLaserHeadshotDamage(level.registryAccess(), null, shooter),
                     damage * headshot
                 )
                 type = 1
             } else if (result.legShot) {
-                DamageHandler.doDamage(
-                    target,
+                target.forceHurt(
                     ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter),
                     damage * 0.5f
                 )
             } else {
-                DamageHandler.doDamage(
-                    target,
+                target.forceHurt(
                     ModDamageTypes.causeLaserDamage(level.registryAccess(), null, shooter),
                     damage
                 )

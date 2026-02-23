@@ -6,9 +6,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
@@ -206,8 +206,7 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
                 0.15,
                 true
             )
-            DamageHandler.doDamage(
-                e,
+            e.forceHurt(
                 ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter),
                 (aoeDamage - Mth.clamp(dis / range, 0.0, 0.75) * aoeDamage).toFloat()
             )

@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.plus
 import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.BlockPos
@@ -74,8 +74,7 @@ class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>,
         })
 
         // 命中伤害
-        DamageHandler.doDamage(
-            entity,
+        entity.forceHurt(
             ModDamageTypes.causeSuperStarHitDamage(level.registryAccess(), this, this.owner),
             damage
         )
@@ -83,8 +82,7 @@ class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>,
 
         // 斩切伤害
         queueServerWork(2) {
-            DamageHandler.doDamage(
-                entity,
+            entity.forceHurt(
                 ModDamageTypes.causeSuperStarSlashDamage(level.registryAccess(), this, this.owner),
                 explosionDamage
             )

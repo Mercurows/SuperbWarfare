@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -267,8 +267,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
 
             this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
 
-            DamageHandler.doDamage(
-                entity,
+            entity.forceHurt(
                 ModDamageTypes.causeVehicleStrikeDamage(
                     this.level().registryAccess(),
                     this, this
