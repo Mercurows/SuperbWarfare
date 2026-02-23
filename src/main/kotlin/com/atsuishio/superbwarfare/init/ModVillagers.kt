@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.init
 
-import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.google.common.collect.ImmutableSet
 import net.minecraft.world.entity.ai.village.poi.PoiType
 import net.minecraft.world.entity.npc.VillagerProfession

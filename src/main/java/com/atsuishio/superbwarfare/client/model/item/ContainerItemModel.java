@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.item.container.ContainerBlockItem;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

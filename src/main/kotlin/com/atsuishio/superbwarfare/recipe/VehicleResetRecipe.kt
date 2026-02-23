@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.recipe
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import net.minecraft.core.RegistryAccess
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType

@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.decorator
 
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.tools.clientLevel
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics

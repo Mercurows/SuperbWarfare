@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.decorator
 
 import com.atsuishio.superbwarfare.client.RenderHelper
-import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.resources.ResourceLocation

@@ -5,13 +5,10 @@ import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
 import com.atsuishio.superbwarfare.item.*
 import com.atsuishio.superbwarfare.item.armor.*
-import com.atsuishio.superbwarfare.item.common.BlueprintItem
-import com.atsuishio.superbwarfare.item.common.MaterialPack
-import com.atsuishio.superbwarfare.item.common.MedicalKitItem
 import com.atsuishio.superbwarfare.item.common.ammo.*
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem
-import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem
-import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.curio.DogTagItem
 import com.atsuishio.superbwarfare.item.curio.IffItem
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem
@@ -31,6 +28,8 @@ import com.atsuishio.superbwarfare.item.gun.special.BocekItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun
+import com.atsuishio.superbwarfare.item.material.BlueprintItem
+import com.atsuishio.superbwarfare.item.material.MaterialPackItem
 import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
@@ -279,10 +278,10 @@ object ModItems {
     @JvmField val CEMENTED_CARBIDE_MATERIALS = registerMaterials("cemented_carbide")
     @JvmField val NETHERITE_MATERIALS = registerMaterials("netherite")
 
-    @JvmField val COMMON_MATERIAL_PACK = registerItem("common_material_pack") { MaterialPack(Rarity.COMMON) }
-    @JvmField val RARE_MATERIAL_PACK = registerItem("rare_material_pack") { MaterialPack(Rarity.RARE) }
-    @JvmField val EPIC_MATERIAL_PACK = registerItem("epic_material_pack") { MaterialPack(Rarity.EPIC) }
-    @JvmField val LEGENDARY_MATERIAL_PACK = registerItem("legendary_material_pack") { MaterialPack(legendary) }
+    @JvmField val COMMON_MATERIAL_PACK = registerItem("common_material_pack") { MaterialPackItem(Rarity.COMMON) }
+    @JvmField val RARE_MATERIAL_PACK = registerItem("rare_material_pack") { MaterialPackItem(Rarity.RARE) }
+    @JvmField val EPIC_MATERIAL_PACK = registerItem("epic_material_pack") { MaterialPackItem(Rarity.EPIC) }
+    @JvmField val LEGENDARY_MATERIAL_PACK = registerItem("legendary_material_pack") { MaterialPackItem(legendary) }
 
     @JvmField val LIGHT_ARMAMENT_MODULE = registerItem("light_armament_module") { Item(Item.Properties().rarity(Rarity.RARE)) }
     @JvmField val MEDIUM_ARMAMENT_MODULE = registerItem("medium_armament_module") { Item(Item.Properties().rarity(Rarity.EPIC)) }

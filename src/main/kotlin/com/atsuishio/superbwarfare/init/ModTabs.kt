@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.item.ArmorPlate
 import com.atsuishio.superbwarfare.item.BatteryItem
 import com.atsuishio.superbwarfare.item.C4BombItem
-import com.atsuishio.superbwarfare.item.common.container.LuckyContainerBlockItem
-import com.atsuishio.superbwarfare.item.common.container.SmallContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
+import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.weapon.ElectricBatonItem
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.Registries
@@ -139,12 +139,12 @@ object ModTabs {
 
                 output.accept(ModItems.LUCKY_CONTAINER.get())
                 LuckyContainerBlockItem.LUCKY_CONTAINERS.stream()
-                    .map { it.get() }
+                    .map { it() }
                     .forEach { output.accept(it) }
 
                 output.accept(ModItems.SMALL_CONTAINER.get())
                 SmallContainerBlockItem.SMALL_CONTAINERS.stream()
-                    .map { it.get() }
+                    .map { it() }
                     .forEach { output.accept(it) }
             }
             .build()
