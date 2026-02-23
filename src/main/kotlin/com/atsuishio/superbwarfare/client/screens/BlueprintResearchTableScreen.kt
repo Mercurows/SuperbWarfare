@@ -59,11 +59,23 @@ class BlueprintResearchTableScreen(
         val i = (this.width - this.imageWidth) / 2
         val j = (this.height - this.imageHeight) / 2
 
+        // 燃料槽的红色外框
         if (this.menu.getSlot(BlueprintResearchTableMenu.SLOT_FUEL).hasItem()) {
             guiGraphics.blit(TEXTURE, i + 29, j + 19, 0, 178, 35, 20)
         }
+
+        // 燃料条
         val fuelRate = this.menu.getFuel() / BlueprintResearchTableBlockEntity.MAX_FUEL.toDouble()
         guiGraphics.blit(TEXTURE, i + 68, j + 27, 11, 237, (40 * fuelRate).toInt(), 4)
+
+        // 输出槽的蓝色指示灯
+        if (this.menu.getSlot(BlueprintResearchTableMenu.SLOT_OUTPUT).hasItem()) {
+            guiGraphics.blit(TEXTURE, i + 127, j + 40, 11, 234, 20, 2)
+        }
+
+        // 整体进度条
+        val progressRate = (this.menu.getTick() / this.menu.getMaxProcessTick().toDouble()).coerceIn(0.0, 1.0)
+        guiGraphics.blit(TEXTURE, i + 25, j + 42, 0, 200, (128 * progressRate).toInt(), 32)
     }
 
     companion object {
