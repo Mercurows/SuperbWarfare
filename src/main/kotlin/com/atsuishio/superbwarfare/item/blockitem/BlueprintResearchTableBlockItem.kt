@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item
+package com.atsuishio.superbwarfare.item.blockitem
 
 import com.atsuishio.superbwarfare.client.renderer.item.BlueprintResearchingTableBlockItemRenderer
 import com.atsuishio.superbwarfare.init.ModBlocks

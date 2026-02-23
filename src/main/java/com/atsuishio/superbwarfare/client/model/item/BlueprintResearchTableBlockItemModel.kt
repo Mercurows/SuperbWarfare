@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.item
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.item.BlueprintResearchTableBlockItem
+import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
 import net.minecraft.resources.ResourceLocation
 import software.bernie.geckolib.model.GeoModel
 

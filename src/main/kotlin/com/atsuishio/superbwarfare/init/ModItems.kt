@@ -5,6 +5,10 @@ import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
 import com.atsuishio.superbwarfare.item.*
 import com.atsuishio.superbwarfare.item.armor.*
+import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
+import com.atsuishio.superbwarfare.item.blockitem.ChargingStationBlockItem
+import com.atsuishio.superbwarfare.item.blockitem.CreativeChargingStationBlockItem
+import com.atsuishio.superbwarfare.item.blockitem.VehicleAssemblingTableBlockItem
 import com.atsuishio.superbwarfare.item.common.ammo.*
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
@@ -35,6 +39,7 @@ import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import net.minecraft.core.registries.Registries
 import net.minecraft.world.item.*
+import net.minecraft.world.item.Item.Properties
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.DispenserBlock
 import net.minecraftforge.common.ForgeSpawnEggItem
@@ -377,12 +382,14 @@ object ModItems {
     @JvmField val SILVER_BLOCK = registerBlock(ModBlocks.SILVER_BLOCK)
     @JvmField val CEMENTED_CARBIDE_BLOCK = registerBlock(ModBlocks.CEMENTED_CARBIDE_BLOCK)
     @JvmField val FUMO_25 = registerBlock(ModBlocks.FUMO_25)
-    @JvmField val VEHICLE_DEPLOYER = registerBlock("vehicle_deployer") { VehicleDeployerBlockItem() }
+    @JvmField val VEHICLE_DEPLOYER = registerBlock(ModBlocks.VEHICLE_DEPLOYER.id.path) {
+        BlockItem(ModBlocks.VEHICLE_DEPLOYER.get(), Properties().stacksTo(1).rarity(Rarity.EPIC))
+    }
     @JvmField val AIRCRAFT_CATAPULT = registerBlock(ModBlocks.AIRCRAFT_CATAPULT)
     @JvmField val SUPERB_ITEM_INTERFACE = registerBlock(ModBlocks.SUPERB_ITEM_INTERFACE)
-    @JvmField val CREATIVE_SUPERB_ITEM_INTERFACE = registerBlock(
-        ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.id.path
-    ) { BlockItem(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(), Item.Properties().rarity(Rarity.EPIC)) }
+    @JvmField val CREATIVE_SUPERB_ITEM_INTERFACE = registerBlock(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.id.path) {
+        BlockItem(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(), Item.Properties().rarity(Rarity.EPIC))
+    }
     @JvmField val VEHICLE_ASSEMBLING_TABLE = registerBlock("vehicle_assembling_table") { VehicleAssemblingTableBlockItem() }
     @JvmField val BLUEPRINT_RESEARCH_TABLE = registerBlock("blueprint_research_table") { BlueprintResearchTableBlockItem() }
     @JvmField val BIOGAS_GENERATOR = registerBlock(ModBlocks.BIOGAS_GENERATOR)
