@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.recipe.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.init.ModItems;
-import com.atsuishio.superbwarfare.item.common.container.ContainerBlockItem;
+import com.atsuishio.superbwarfare.item.container.ContainerBlockItem;
 import com.atsuishio.superbwarfare.tools.TagDataParser;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;

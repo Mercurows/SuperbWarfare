@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.common.container
+package com.atsuishio.superbwarfare.item.container
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
