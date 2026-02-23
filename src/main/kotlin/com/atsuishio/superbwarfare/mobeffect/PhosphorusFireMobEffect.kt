@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.mobeffect
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage
-import com.atsuishio.superbwarfare.tools.DamageHandler
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
@@ -33,8 +33,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
 
         val damage = 1f + 0.5f * amplifier + ((amplifier + 1) * 5f).coerceAtMost(fireLevel * (amplifier * 0.6f + 1.2f))
 
-        DamageHandler.doDamage(
-            entity,
+        entity.forceHurt(
             ModDamageTypes.causePhosphorusFireDamage(entity.level().registryAccess(), null, attacker),
             damage
         )

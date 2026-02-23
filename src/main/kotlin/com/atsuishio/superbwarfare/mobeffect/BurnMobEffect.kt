@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.tools.DamageHandler
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.registries.Registries
 import net.minecraft.server.level.ServerLevel
@@ -32,8 +32,7 @@ object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
             entity.level().getEntity(entity.persistentData.getInt(TAG_ATTACKER))
         }
 
-        DamageHandler.doDamage(
-            entity,
+        entity.forceHurt(
             ModDamageTypes.causeBurnDamage(entity.level().registryAccess(), attacker),
             0.6f + (0.3f * amplifier)
         )
@@ -59,8 +58,7 @@ object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
             return
         }
 
-        DamageHandler.doDamage(
-            living,
+        living.forceHurt(
             DamageSource(
                 living.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
                     .getHolderOrThrow(DamageTypes.IN_FIRE),

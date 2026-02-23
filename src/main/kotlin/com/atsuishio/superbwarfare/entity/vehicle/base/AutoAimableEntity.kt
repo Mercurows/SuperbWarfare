@@ -98,7 +98,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
     override fun defineSynchedData() {
         super.defineSynchedData()
-        with (entityData) {
+        with(entityData) {
             define(TARGET_UUID, "")
             define(OWNER_UUID, Optional.empty())
             define(ACTIVE, false)
@@ -362,8 +362,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
         laserLength = getShootPos("Main", 1f).distanceTo(pos).toFloat()
 
-        DamageHandler.doDamage(
-            target,
+        target.forceHurt(
             ModDamageTypes.causeLaserStaticDamage(this.level().registryAccess(), this, living),
             gunData.get(GunProp.DAMAGE).toFloat()
         )
@@ -400,13 +399,13 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         val range = gunData.get(GunProp.EXPLOSION_RADIUS)
 
         val entities = SeekTool.Builder(this)
-                .withinRange(vec, range)
-                .notItsVehicle()
-                .baseFilter()
-                .smokeFilter()
-                .noVehicle()
-                .differentTeam()
-                .build()
+            .withinRange(vec, range)
+            .notItsVehicle()
+            .baseFilter()
+            .smokeFilter()
+            .noVehicle()
+            .differentTeam()
+            .build()
 
         for (e in entities) {
             val dis = vec.distanceTo(e.eyePosition)
@@ -415,53 +414,52 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
                 val toVec = vec.vectorTo(e.eyePosition).normalize()
                 val pos = vec.add(toVec.scale(i.toDouble()))
                 ParticleTool.sendParticle(
-                        serverLevel,
-                        ParticleTypes.END_ROD,
-                        pos.x,
-                        pos.y,
-                        pos.z,
-                        1,
-                        0.0,
-                        0.0,
-                        0.0,
-                        0.0,
-                        true
+                    serverLevel,
+                    ParticleTypes.END_ROD,
+                    pos.x,
+                    pos.y,
+                    pos.z,
+                    1,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    true
                 )
                 i += 0.2f
             }
 
             ParticleTool.sendParticle(
-                    serverLevel,
-                    ParticleTypes.LAVA,
-                    e.x,
-                    e.eyeY,
-                    e.z,
-                    4,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.15,
-                    true
+                serverLevel,
+                ParticleTypes.LAVA,
+                e.x,
+                e.eyeY,
+                e.z,
+                4,
+                0.0,
+                0.0,
+                0.0,
+                0.15,
+                true
             )
-            DamageHandler.doDamage(
-                    e,
-                    ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter),
-                    (aoeDamage - Mth.clamp(dis / range, 0.0, 0.75) * aoeDamage).toFloat()
+            e.forceHurt(
+                ModDamageTypes.causeLaserDamage(this.level().registryAccess(), this, shooter),
+                (aoeDamage - Mth.clamp(dis / range, 0.0, 0.75) * aoeDamage).toFloat()
             )
 
             if (shooter is ServerPlayer) {
                 val holder = Holder.direct(ModSounds.INDICATION.get())
                 shooter.connection.send(
-                        ClientboundSoundPacket(
-                                holder,
-                                SoundSource.PLAYERS,
-                                shooter.x,
-                                shooter.y,
-                                shooter.z,
-                                1f,
-                                1f,
-                                shooter.level().random.nextLong()
-                        )
+                    ClientboundSoundPacket(
+                        holder,
+                        SoundSource.PLAYERS,
+                        shooter.x,
+                        shooter.y,
+                        shooter.z,
+                        1f,
+                        1f,
+                        shooter.level().random.nextLong()
+                    )
                 )
                 shooter.sendPacket(ClientIndicatorMessage(0, 5))
             }
@@ -483,14 +481,14 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         }
 
         createCustomExplosion()
-                .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
-                .radius(radius)
-                .attacker(living)
-                .position(vec3)
-                .withParticleType(particleType)
-                .explode()
+            .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
+            .radius(radius)
+            .attacker(living)
+            .position(vec3)
+            .withParticleType(particleType)
+            .explode()
     }
-    
+
     private fun causeAirExplode(vec3: Vec3?) {
         createCustomExplosion()
             .damage(5f)

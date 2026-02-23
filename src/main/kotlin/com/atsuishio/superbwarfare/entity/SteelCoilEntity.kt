@@ -6,8 +6,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.Packet
@@ -20,7 +20,6 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
 import net.minecraft.world.entity.ai.attributes.Attributes
-import net.minecraft.world.entity.ai.control.MoveControl
 import net.minecraft.world.entity.npc.Villager
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
@@ -48,7 +47,8 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
 
     override fun defineSynchedData() {
         super.defineSynchedData()
-        with (entityData) { define(TARGET_UUID, "")
+        with(entityData) {
+            define(TARGET_UUID, "")
         }
     }
 
@@ -95,7 +95,8 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         seekRange: Double,
     ) = level().getEntitiesOfClass(Villager::class.java, AABB(position(), position()).inflate(seekRange)) { true }
         .sortedBy { it.distanceToSqr(position()) }
-        .find { target -> target.distanceToSqr(this) <= seekRange * seekRange
+        .find { target ->
+            target.distanceToSqr(this) <= seekRange * seekRange
         }
 
 //    open fun seekNearLivingEntity(
@@ -122,7 +123,10 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         }
 
         if (target != null) {
-            val targetPos = target!!.position().add(position().vectorTo(target!!.position()).normalize().scale(Math.max(position().distanceTo(target!!.position()), 12.0)))
+            val targetPos = target!!.position().add(
+                position().vectorTo(target!!.position()).normalize()
+                    .scale(Math.max(position().distanceTo(target!!.position()), 12.0))
+            )
 
             if (!startCrush) {
                 targetPosition = targetPos
@@ -132,7 +136,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
             }
 
             if (startCrush) {
-                restartCrushTimer ++
+                restartCrushTimer++
 
                 val d0: Double = target!!.position().x - this.x
                 val d1: Double = target!!.position().z - this.z
@@ -144,7 +148,12 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
 
                 val s = (position().distanceToSqr(targetPosition) / (currentPosition.distanceToSqr(targetPosition)))
 
-                this.moveControl.setWantedPosition(targetPosition.x, targetPosition.y, targetPosition.z, 5 * Mth.clamp(Mth.sin(Mth.PI * s.toFloat()).toDouble(), 0.4, 1.0))
+                this.moveControl.setWantedPosition(
+                    targetPosition.x,
+                    targetPosition.y,
+                    targetPosition.z,
+                    5 * Mth.clamp(Mth.sin(Mth.PI * s.toFloat()).toDouble(), 0.4, 1.0)
+                )
                 if (position().distanceToSqr(targetPosition) < 2 || restartCrushTimer > 100) {
                     if (!attackableEntity(target!!)) {
                         setTarget(null as LivingEntity?)
@@ -170,9 +179,10 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         crushEntities()
     }
 
-    fun attackableEntity(entity: Entity):Boolean {
+    fun attackableEntity(entity: Entity): Boolean {
         return !(!entity.isAlive || (entity is Player && (entity.isCreative || entity.isSpectator)))
     }
+
     protected fun rotlerp(pSourceAngle: Float, pTargetAngle: Float, pMaximumChange: Float): Float {
         var f = Mth.wrapDegrees(pTargetAngle - pSourceAngle)
         if (f > pMaximumChange) {
@@ -266,8 +276,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
 
             this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
 
-            DamageHandler.doDamage(
-                entity,
+            entity.forceHurt(
                 ModDamageTypes.causeVehicleStrikeDamage(
                     this.level().registryAccess(),
                     this, this

@@ -8,9 +8,9 @@ import com.atsuishio.superbwarfare.network.SerializedUUID
 import com.atsuishio.superbwarfare.network.SerializedVec3
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.CustomExplosion
-import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.forceHurt
 import kotlinx.serialization.Serializable
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
@@ -33,8 +33,7 @@ data class LungeMineAttackMessage(
                 }
                 val lookingEntity = EntityFindUtil.findEntity(player.level(), uuid.toString())
                 if (lookingEntity != null) {
-                    DamageHandler.doDamage(
-                        lookingEntity,
+                    lookingEntity.forceHurt(
                         ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player),
                         (if (lookingEntity is VehicleEntity) 600 else 150).toFloat()
                     )

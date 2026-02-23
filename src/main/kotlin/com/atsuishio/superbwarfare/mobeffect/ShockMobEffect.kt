@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.tools.DamageHandler
+import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
@@ -46,8 +46,7 @@ object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
             entity.level().getEntity(entity.persistentData.getInt(TAG_ATTACKER))
         }
 
-        DamageHandler.doDamage(
-            entity,
+        entity.forceHurt(
             ModDamageTypes.causeShockDamage(entity.level().registryAccess(), attacker),
             2 + (1.25f * amplifier)
         )
@@ -97,8 +96,8 @@ object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
             }
         }
 
-        DamageHandler.doDamage(
-            living, ModDamageTypes.causeShockDamage(
+        living.forceHurt(
+            ModDamageTypes.causeShockDamage(
                 living.level().registryAccess(),
                 event.effectSource
             ), 2 + (1.25f * instance.amplifier)
