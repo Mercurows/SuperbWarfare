@@ -166,7 +166,7 @@ object ClientMouseHandler {
             return
         }
 
-        val times = mc.timer.getGameTimeDeltaPartialTick(true)
+        val times = mc.deltaFrameTime
 
         freeCameraYaw -= 0.2f * times * lerpSpeedX
         freeCameraPitch += 0.15f * times * lerpSpeedY
