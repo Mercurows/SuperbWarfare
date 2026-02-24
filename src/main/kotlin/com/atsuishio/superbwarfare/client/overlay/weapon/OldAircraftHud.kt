@@ -200,6 +200,17 @@ object OldAircraftHud {
             val x = pCross.x.toFloat()
             val y = pCross.y.toFloat()
 
+            var xCross = x
+            var yCross = y
+
+            if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
+                bombHitPosX = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosX, x.toDouble())
+                bombHitPosY = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosY, y.toDouble())
+                xCross = bombHitPosX.toFloat()
+                yCross = bombHitPosY.toFloat()
+            }
+
+
             if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
                 var cross = CROSSHAIR_3P
                 var size = 16f
@@ -210,13 +221,13 @@ object OldAircraftHud {
                 } else {
                     mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
                     mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
-                    RenderHelper.preciseBlit(guiGraphics, BOMB_RING, x - 8 + mouseX, y - 8 + mouseY, 0f, 0f, 16f, 16f, 16f, 16f)
+                    RenderHelper.preciseBlit(guiGraphics, BOMB_RING, xCross - 8 + mouseX, yCross - 8 + mouseY, 0f, 0f, 16f, 16f, 16f, 16f)
                 }
 
                 poseStack.pushPose()
-                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
+                poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), xCross, yCross, 0f)
                 poseStack.pushPose()
-                poseStack.translate(x, y, 0f)
+                poseStack.translate(xCross, yCross, 0f)
                 poseStack.scale(0.75f, 0.75f, 1f)
 
                 val heat = vehicle.getWeaponHeat(player) / 100f
@@ -249,17 +260,14 @@ object OldAircraftHud {
                     }
                 }
 
-                bombHitPosX = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosX, x.toDouble())
-                bombHitPosY = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosY, y.toDouble())
-
                 poseStack.popPose()
 
                 if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
                     RenderHelper.preciseBlit(
                         guiGraphics,
                         cross,
-                        bombHitPosX.toFloat() - 0.5f * size,
-                        bombHitPosY.toFloat() - 0.5f * size,
+                        xCross - 0.5f * size,
+                        yCross - 0.5f * size,
                         0f,
                         0f,
                         size,
@@ -271,8 +279,8 @@ object OldAircraftHud {
                     RenderHelper.preciseBlit(
                         guiGraphics,
                         cross,
-                        x - 0.5f * size,
-                        y - 0.5f * size,
+                        xCross - 0.5f * size,
+                        yCross - 0.5f * size,
                         0f,
                         0f,
                         size,
@@ -284,8 +292,8 @@ object OldAircraftHud {
 
                 renderKillIndicatorDynamic(
                     guiGraphics,
-                    x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                    y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+                    xCross - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
+                    yCross - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
                 )
                 poseStack.popPose()
             }

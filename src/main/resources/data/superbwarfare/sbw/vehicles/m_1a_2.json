@@ -300,7 +300,7 @@
     "minecraft:lava * 10",
     "@minecraft:tnt * 4",
     "@minecraft:tnt_minecart * 4",
-    "@#superbwarfare:aerial_bomb * 3",
+    "@#superbwarfare:aerial_bomb * 12",
     "All * 0.2",
     "superbwarfare:vehicle_strike * 2.5",
     "minecraft:explosion * 2",

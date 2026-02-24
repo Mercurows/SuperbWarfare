@@ -470,8 +470,8 @@ object AircraftHud {
                 )
             } else if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
                 if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
-                    bombHitPosX = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosX, xCross.toDouble())
-                    bombHitPosY = Mth.lerp(0.5 * partialTick.toDouble(), bombHitPosY, yCross.toDouble())
+                    bombHitPosX = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosX, xCross.toDouble())
+                    bombHitPosY = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosY, yCross.toDouble())
 
                     RenderHelper.preciseBlit(
                         guiGraphics,
