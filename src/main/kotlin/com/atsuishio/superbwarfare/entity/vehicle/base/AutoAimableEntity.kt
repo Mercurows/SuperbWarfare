@@ -489,7 +489,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
             .explode()
     }
 
-    private fun causeAirExplode(vec3: Vec3?) {
+    private fun causeAirExplode(vec3: Vec3) {
         createCustomExplosion()
             .damage(5f)
             .radius(1f)
