@@ -324,6 +324,10 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     public int spreadAmount = 10;
 
     @ServerOnly
+    @SerializedName("ApDurability")
+    public int apDurability = 50;
+
+    @ServerOnly
     @SerializedName("SpreadAngle")
     public int spreadAngle = 15;
 

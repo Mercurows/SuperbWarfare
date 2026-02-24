@@ -23,6 +23,7 @@ import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
@@ -177,11 +178,14 @@ public class CustomExplosion extends Explosion {
                 }
 
                 if (level.isInWorldBounds(blockpos) && blockpos.getCenter().distanceToSqr(center) <= effectiveRadius * effectiveRadius) {
-                    BlockState blockstate = this.level.getBlockState(blockpos);
-                    float resistance = blockstate.getBlock().defaultDestroyTime();
+                    BlockState blockState = this.level.getBlockState(blockpos);
+                    float resistance = blockState.getBlock().defaultDestroyTime();
+                    if (blockState.getSoundType() == SoundType.METAL || blockState.getSoundType() == SoundType.COPPER || blockState.getSoundType() == SoundType.NETHERITE_BLOCK) {
+                        resistance *= 3;
+                    }
                     force *= (float) (1 - (distanceSqr / (effectiveRadius * effectiveRadius)));
 
-                    if (resistance != -1 && force > resistance && this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockstate, force)) {
+                    if (resistance != -1 && force > resistance && this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockState, force)) {
                         if (level instanceof ServerLevel serverLevel) {
                             serverLevel.destroyBlock(blockpos, true);
                         }

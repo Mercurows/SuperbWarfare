@@ -248,12 +248,12 @@ public class TraceTool {
      * @param world           世界对象
      * @param start           射线起点
      * @param direction       方向向量 (不需要标准化，但长度会影响射线速度)
-     * @param maxDistance     射线最大长度
      * @param filterPredicate 可选的实体过滤器 (例如，排除发射者本身，只选择特定类型的实体)
      * @return 一个包含射线击中的所有实体的列表，以及它们与射线交点的最近距离。
      */
-    public static List<RayTraceResultEntity> getEntitiesAlongVector(Level world, Vec3 start, Vec3 direction, double maxDistance, Predicate<Entity> filterPredicate) {
+    public static List<RayTraceResultEntity> getEntitiesAlongVector(Level world, Vec3 start, Vec3 direction, Predicate<Entity> filterPredicate) {
         List<RayTraceResultEntity> hitEntities = new ArrayList<>();
+        double maxDistance = direction.length();
 
         // 1. 标准化方向向量并计算终点
         Vec3 normalizedDirection = direction.normalize();

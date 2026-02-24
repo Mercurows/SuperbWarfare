@@ -1,19 +1,21 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
+import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.TraceTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,10 +23,12 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -37,6 +41,8 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class MediumRocketEntity extends FastThrowableProjectile implements GeoEntity {
 
@@ -108,32 +114,56 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
-        if (this.level() instanceof ServerLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
+            BlockPos pos = blockHitResult.getBlockPos();
+            BlockState blockState = level().getBlockState(pos);
             if (type == Type.HE || type == Type.CM) {
                 causeExplode(blockHitResult.getLocation());
                 this.discard();
                 return;
             }
-            BlockPos resultPos = blockHitResult.getBlockPos();
-            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-            if (hardness != -1) {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                    if (firstHit) {
-                        causeExplode(blockHitResult.getLocation());
-                        firstHit = false;
-                        Mod.queueServerWork(3, this::discard);
-                    }
-                    if (ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-                        this.level().destroyBlock(resultPos, true);
-                    }
+            if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                float hardness = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
+
+                double resistance = 0.95 - Mth.clamp(hardness / 100, 0, 1);
+
+                if (blockState.canOcclude() || blockState.getSoundType() == SoundType.GLASS) {
+                    durability -= 5 + (int) (hardness);
+                }
+
+                if (blockState.getSoundType() == SoundType.STONE) {
+                    durability -= 5;
+                }
+
+                if (blockState.getSoundType() == SoundType.METAL || blockState.getSoundType() == SoundType.COPPER || blockState.getSoundType() == SoundType.NETHERITE_BLOCK) {
+                    durability -= 25;
+                }
+
+                if (hardness <= durability && hardness != -1) {
+                    this.level().destroyBlock(pos, true);
+                }
+
+                if (hardness == -1 || hardness > durability || durability <= 0) {
+                    causeExplode(pos.getCenter());
+                    discard();
+                } else {
+                    ParticleTool.cannonHitParticles(serverLevel, blockHitResult.getLocation());
+                    MediumRocketEntity mediumRocket = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), serverLevel);
+                    mediumRocket.setPos(blockHitResult.getLocation());
+                    mediumRocket.shoot(getDeltaMovement().x, getDeltaMovement().y - gravity, getDeltaMovement().z, (float) (getDeltaMovement().length() * resistance), 0);
+                    mediumRocket.setOwner(getOwner());
+                    mediumRocket.durability(durability);
+                    mediumRocket.setType(Type.AP);
+                    mediumRocket.setGravity(gravity);
+                    mediumRocket.setLife(life - tickCount);
+                    mediumRocket.setDamage((float) (damage * resistance));
+                    mediumRocket.setExplosionDamage((float) (explosionDamage * resistance));
+                    mediumRocket.setExplosionRadius((float) (explosionRadius * resistance));
+                    serverLevel.addFreshEntity(mediumRocket);
+                    discard();
                 }
             } else {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
-            }
-            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
+                destroyBlock(blockHitResult);
             }
         }
     }
@@ -142,20 +172,42 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
         super.onHitEntity(entityHitResult);
         if (tickCount < 2) return;
-        if (this.level() instanceof ServerLevel) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             Entity entity = entityHitResult.getEntity();
-            if (this.getOwner() != null && entity == this.getOwner().getVehicle() && tickCount < 2)
+            if (this.getOwner() != null && entity == this.getOwner().getVehicle())
                 return;
-            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
 
+            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
             if (entity instanceof LivingEntity) {
                 entity.invulnerableTime = 0;
             }
 
-            ParticleTool.cannonHitParticles(this.level(), this.position(), this);
-            causeExplode(entityHitResult.getLocation());
             if (entity instanceof VehicleEntity) {
+                causeExplode(entityHitResult.getLocation());
                 this.discard();
+            }
+
+            if (type == Type.AP) {
+                Vec3 pos = entity.getBoundingBox().getCenter();
+                Predicate<Entity> predicate = (entity1) -> true;
+                List<TraceTool.RayTraceResultEntity> resultEntities = TraceTool.getEntitiesAlongVector(serverLevel, pos, getDeltaMovement(), predicate);
+                double resistance = 1;
+
+                for (TraceTool.RayTraceResultEntity rayTraceResultEntity: resultEntities) {
+                    if (rayTraceResultEntity.entity != null) {
+                        resistance *= 0.95;
+                        Entity target = rayTraceResultEntity.entity;
+                        if (rayTraceResultEntity.entity != entity) {
+                            DamageHandler.doDamage(target, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), (float) (this.damage * resistance));
+                            if (target instanceof LivingEntity) {
+                                target.invulnerableTime = 0;
+                            }
+                        }
+                    }
+                }
+
+                setDeltaMovement(getDeltaMovement().scale(resistance));
+                setDamage((float) (this.damage * resistance));
             }
         }
     }
@@ -164,7 +216,6 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     public void tick() {
         super.tick();
         largeTrail();
-        destroyBlock();
 
         if (type == Type.CM) {
             // 使用Minecraft内置的光线追踪进行碰撞检测
@@ -240,5 +291,17 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
     @Override
     public boolean forceLoadChunk() {
         return true;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public void setSpreadAmount(int spreadAmount) {
+        this.spreadAmount = spreadAmount;
+    }
+
+    public void setSpreadAngle(int spreadAngle) {
+        this.spreadAngle = spreadAngle;
     }
 }

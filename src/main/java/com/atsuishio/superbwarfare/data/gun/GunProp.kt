@@ -344,5 +344,8 @@ class GunProp<T, R> private constructor(
 
         @JvmField
         val PROJECTILE_LIFE = plainProp(DefaultGunData::projectileLife)
+
+        @JvmField
+        val AP_DURABILITY = plainProp(DefaultGunData::apDurability)
     }
 }

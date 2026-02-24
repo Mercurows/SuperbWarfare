@@ -124,6 +124,7 @@
       "ExplosionDamage": 40,
       "ExplosionRadius": 5,
       "Gravity": 0.02,
+      "ProjectileLife": 60,
       "Velocity": 11,
       "ShootPos": {
         "Transform": "Vehicle",

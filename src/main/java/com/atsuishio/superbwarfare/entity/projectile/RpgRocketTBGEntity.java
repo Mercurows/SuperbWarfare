@@ -62,27 +62,7 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            BlockPos resultPos = blockHitResult.getBlockPos();
-            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-            if (hardness != -1) {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                    if (firstHit) {
-                        causeExplode(blockHitResult.getLocation());
-                        firstHit = false;
-                        Mod.queueServerWork(3, this::discard);
-                    }
-                    if (ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-                        this.level().destroyBlock(resultPos, true);
-                    }
-                }
-            } else {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
-            }
-            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
-            }
+            destroyBlock(blockHitResult);
         }
     }
 
@@ -118,8 +98,6 @@ public class RpgRocketTBGEntity extends FastThrowableProjectile implements GeoEn
         if (this.tickCount > 2) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.03, 1.03, 1.03));
         }
-
-        destroyBlock();
     }
 
     private PlayState movementPredicate(AnimationState<RpgRocketTBGEntity> event) {

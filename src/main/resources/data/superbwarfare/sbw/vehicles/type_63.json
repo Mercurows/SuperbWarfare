@@ -20,10 +20,11 @@
     },
     "AP": {
       "Template": "Main",
+      "ApDurability": 100,
       "Damage": 500,
       "ExplosionDamage": 100,
       "ExplosionRadius": 5,
-      "ShellType": "AA"
+      "ShellType": "AP"
     },
     "HE": {
       "Template": "Main",

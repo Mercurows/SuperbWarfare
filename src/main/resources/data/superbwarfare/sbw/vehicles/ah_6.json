@@ -148,6 +148,7 @@
       "ExplosionRadius": 5,
       "Gravity": 0.02,
       "Velocity": 9,
+      "ProjectileLife": 60,
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.465, 0.6],

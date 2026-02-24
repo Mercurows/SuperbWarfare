@@ -796,19 +796,29 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 val type = data.get(GunProp.SHELL_TYPE)
                 if (type.equals("AP")) {
                     entity.setType(CannonShellEntity.Type.AP)
-                    entity.durability(100)
+                    entity.durability(data.get(GunProp.AP_DURABILITY))
                 } else if (type.equals("HE")) {
                     entity.setType(CannonShellEntity.Type.HE)
                 } else if (type.equals("CM")) {
                     entity.setType(CannonShellEntity.Type.CM)
                     entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                     entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
-                } else if (type.equals("GS")) {
-                    entity.setType(CannonShellEntity.Type.GRAPE)
-                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
-                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
                 } else if (type.equals("WP")) {
                     entity.setType(CannonShellEntity.Type.WP)
+                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
+                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                }
+            }
+
+            if (entity is MediumRocketEntity) {
+                val type = data.get(GunProp.SHELL_TYPE)
+                if (type.equals("AP")) {
+                    entity.setType(MediumRocketEntity.Type.AP)
+                    entity.durability(data.get(GunProp.AP_DURABILITY))
+                } else if (type.equals("HE")) {
+                    entity.setType(MediumRocketEntity.Type.HE)
+                } else if (type.equals("CM")) {
+                    entity.setType(MediumRocketEntity.Type.CM)
                     entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                     entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
                 }

@@ -1,13 +1,13 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent;
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
+import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
-import com.atsuishio.superbwarfare.tools.ChunkLoadManager;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
+import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
@@ -41,8 +42,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static com.atsuishio.superbwarfare.tools.TraceTool.getBlocksAlongRay;
+import static com.atsuishio.superbwarfare.tools.TraceTool.getEntitiesAlongVector;
 
 public abstract class FastThrowableProjectile extends ThrowableItemProjectile implements CustomSyncMotionEntity, IEntityAdditionalSpawnData, ExplosiveProjectile {
 
@@ -196,32 +199,27 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
         );
     }
 
-    public void destroyBlock() {
-        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-            Vec3 posO = new Vec3(xo, yo, zo);
-            List<BlockPos> blockList = getBlocksAlongRay(posO, getDeltaMovement(), getDeltaMovement().length());
-            for (BlockPos pos : blockList) {
-                BlockState blockState = level().getBlockState(pos);
-                if (!blockState.is(Blocks.AIR)) {
-                    float hardness = this.level().getBlockState(pos).getBlock().defaultDestroyTime();
-
-                    double resistance = 1 - Mth.clamp(hardness / 100, 0, 0.8);
-                    setDeltaMovement(getDeltaMovement().multiply(resistance, resistance, resistance));
-
-                    if (blockState.canOcclude()) {
-                        durability -= 10 + (int) (0.5 * hardness);
-                    }
-
-                    if (hardness <= durability && hardness != -1 && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-                        this.level().destroyBlock(pos, true);
-                    }
-                    if (hardness == -1 || hardness > durability || durability <= 0) {
-                        causeExplode(pos.getCenter());
-                        discard();
-                        break;
-                    }
+    public void destroyBlock(BlockHitResult blockHitResult) {
+        BlockPos resultPos = blockHitResult.getBlockPos();
+        float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
+        if (hardness != -1) {
+            if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                if (firstHit) {
+                    causeExplode(blockHitResult.getLocation());
+                    firstHit = false;
+                    Mod.queueServerWork(3, this::discard);
+                }
+                if (ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
+                    this.level().destroyBlock(resultPos, true);
                 }
             }
+        } else {
+            causeExplode(blockHitResult.getLocation());
+            this.discard();
+        }
+        if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
+            causeExplode(blockHitResult.getLocation());
+            this.discard();
         }
     }
 

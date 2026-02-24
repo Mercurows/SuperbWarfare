@@ -99,27 +99,7 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            BlockPos resultPos = blockHitResult.getBlockPos();
-            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-            if (hardness != -1) {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                    if (firstHit) {
-                        causeExplode(blockHitResult.getLocation());
-                        firstHit = false;
-                        Mod.queueServerWork(3, this::discard);
-                    }
-                    if (ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-                        this.level().destroyBlock(resultPos, true);
-                    }
-                }
-            } else {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
-            }
-            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
-            }
+            destroyBlock(blockHitResult);
         }
     }
 
@@ -205,7 +185,6 @@ public class JavelinMissileEntity extends MissileProjectile implements GeoEntity
         }
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
-        destroyBlock();
     }
 
     private PlayState movementPredicate(AnimationState<JavelinMissileEntity> event) {

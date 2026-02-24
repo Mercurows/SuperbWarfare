@@ -27,13 +27,19 @@ data class SoundClientMessage(
 
     override fun PayloadContext.handler() {
         val player = localPlayer ?: return
-        if (player.getUUID() == sender && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)) return
+        if (player.uuid == sender && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)) return
 
         val sound = SoundEvent.createVariableRangeEvent(location)
         val distance = player.position().distanceTo(Vec3(x, y, z))
+        val delay = (distance / 17).toInt()
 
-        queueClientWorkIfDelayed((distance / 17).toInt()) {
+        if (delay == 0) {
             player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, pitch)
+        } else {
+            queueClientWorkIfDelayed(delay) {
+                player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, pitch)
+            }
         }
+
     }
 }
