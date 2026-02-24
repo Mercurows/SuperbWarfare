@@ -31,15 +31,9 @@ data class SoundClientMessage(
 
         val sound = SoundEvent.createVariableRangeEvent(location)
         val distance = player.position().distanceTo(Vec3(x, y, z))
-        val delay = (distance / 17).toInt()
 
-        if (delay == 0) {
+        queueClientWorkIfDelayed((distance / 17).toInt()) {
             player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, pitch)
-        } else {
-            queueClientWorkIfDelayed(delay) {
-                player.level().playSound(player, x, y, z, sound, SoundSource.BLOCKS, radius, pitch)
-            }
         }
-
     }
 }
