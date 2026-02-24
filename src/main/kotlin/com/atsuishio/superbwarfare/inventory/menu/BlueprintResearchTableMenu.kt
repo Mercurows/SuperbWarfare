@@ -102,6 +102,10 @@ class BlueprintResearchTableMenu(
 
     fun getMaxProcessTick() = this.containerData.get(3)
 
+    fun isActivated() = this.containerData.get(4) == 1
+
+    fun setActivated(flag: Boolean) = this.containerData.set(4, if (flag) 1 else 0)
+
     companion object {
         const val CONTAINER_SIZE = 6
         const val SLOT_FUEL = 0
