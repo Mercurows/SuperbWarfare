@@ -7,9 +7,13 @@ import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntit
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_INPUT
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_SPECIAL
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
+import com.atsuishio.superbwarfare.network.message.send.BlueprintCraftMessage
 import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
 import com.atsuishio.superbwarfare.tools.clientLevel
+import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.AbstractButton
+import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -29,6 +33,14 @@ class BlueprintResearchTableScreen(
     init {
         this.imageWidth = 240
         this.imageHeight = 177
+    }
+
+    override fun init() {
+        super.init()
+
+        val i = (this.width - this.imageWidth) / 2
+        val j = (this.height - this.imageHeight) / 2
+        this.addRenderableWidget(CraftButton(i + 73, j + 75))
     }
 
     override fun renderLabels(
@@ -147,5 +159,25 @@ class BlueprintResearchTableScreen(
     companion object {
         val TEXTURE: ResourceLocation = Mod.loc("textures/gui/blueprint_research_table.png")
         const val PAGE_SIZE = 27
+    }
+
+    private class CraftButton(x: Int, y: Int) : AbstractButton(x, y, 10, 10, Component.empty()) {
+        override fun onPress() {
+            sendPacketToServer(BlueprintCraftMessage)
+        }
+
+        override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput?) {
+        }
+
+        override fun renderWidget(
+            pGuiGraphics: GuiGraphics,
+            pMouseX: Int,
+            pMouseY: Int,
+            pPartialTick: Float
+        ) {
+            if (!this.isHovered) {
+                pGuiGraphics.blit(TEXTURE, this.x, this.y, 0, 234, 9, 9)
+            }
+        }
     }
 }

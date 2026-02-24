@@ -42,6 +42,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     var fuel: Int = 0
     var maxProcessTick: Int = 100
         get() = field.coerceAtLeast(1)
+    var activated: Boolean = false
 
     protected val dataAccess: ContainerData = object : ContainerData {
         override fun get(index: Int): Int {
@@ -50,6 +51,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                 1 -> this@BlueprintResearchTableBlockEntity.lastSelectedIndex
                 2 -> this@BlueprintResearchTableBlockEntity.fuel
                 3 -> this@BlueprintResearchTableBlockEntity.maxProcessTick
+                4 -> if (this@BlueprintResearchTableBlockEntity.activated) 1 else 0
                 else -> 0
             }
         }
@@ -60,6 +62,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                 1 -> this@BlueprintResearchTableBlockEntity.lastSelectedIndex = value
                 2 -> this@BlueprintResearchTableBlockEntity.fuel = value
                 3 -> this@BlueprintResearchTableBlockEntity.maxProcessTick = value
+                4 -> this@BlueprintResearchTableBlockEntity.activated = value == 1
             }
         }
 
@@ -73,6 +76,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         this.tick = tag.getInt("Tick")
         this.lastSelectedIndex = tag.getInt("LastSelectedIndex")
         this.fuel = tag.getInt("Fuel")
+        this.activated = tag.getBoolean("Activated")
 
         ContainerHelper.loadAllItems(tag, this.items, registries)
     }
@@ -83,6 +87,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         tag.putInt("Tick", this.tick)
         tag.putInt("LastSelectedIndex", this.lastSelectedIndex)
         tag.putInt("Fuel", this.fuel)
+        tag.putBoolean("Activated", this.activated)
 
         ContainerHelper.saveAllItems(tag, this.items, registries)
     }
@@ -235,6 +240,8 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     fun resetProgress() {
         this.tick = 0
         this.maxProcessTick = 100
+        this.activated = false
+        this.setChanged()
     }
 
     companion object {
@@ -245,7 +252,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         const val SLOT_SPECIAL = 4
         const val SLOT_OUTPUT = 5
 
-        const val MAX_DATA_COUNT = 4
+        const val MAX_DATA_COUNT = 5
 
         @JvmField
         val MAX_FUEL: Int = MiscConfig.BLUEPRINT_RESEARCH_TABLE_MAX_FUEL.get()
@@ -261,8 +268,13 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             }
             // TODO 想办法判断一下是否处于手动模式
             if (entity.fuel > 0 && entity.hasRecipe()) {
+                if (!entity.activated) return
+
                 val recipe = entity.getCurrentRecipe()
-                if (recipe.isEmpty) return
+                if (recipe.isEmpty) {
+                    entity.activated = false
+                    return
+                }
                 entity.maxProcessTick = recipe.get().time
 
                 if (entity.tick < entity.maxProcessTick) {

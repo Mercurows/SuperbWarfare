@@ -133,4 +133,5 @@ private fun registerPayloads() {
     playToServer<VehicleMovementMessage>()
     playToServer<WeaponZoomingMessage>()
     playToServer<ZoomMessage>()
+    playToServer<BlueprintCraftMessage>()
 }
