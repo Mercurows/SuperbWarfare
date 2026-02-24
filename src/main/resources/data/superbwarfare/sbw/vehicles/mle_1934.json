@@ -118,6 +118,7 @@
     "minecraft:mob_projectile * 1.5",
     "minecraft:explosion * 6",
     "minecraft:player_explosion * 6",
+    "@#superbwarfare:aerial_bomb * 3",
     "superbwarfare:custom_explosion * 2.4",
     "superbwarfare:projectile_explosion * 2",
     "superbwarfare:mine * 0.75",
