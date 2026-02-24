@@ -1,14 +1,11 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -76,27 +73,7 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
     public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
         if (this.level() instanceof ServerLevel) {
-            BlockPos resultPos = blockHitResult.getBlockPos();
-            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-            if (hardness != -1) {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                    if (firstHit) {
-                        causeExplode(blockHitResult.getLocation());
-                        firstHit = false;
-                        Mod.queueServerWork(3, this::discard);
-                    }
-                    if (ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-                        this.level().destroyBlock(resultPos, true);
-                    }
-                }
-            } else {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
-            }
-            if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                causeExplode(blockHitResult.getLocation());
-                this.discard();
-            }
+            destroyBlock(blockHitResult);
         }
     }
 
@@ -111,7 +88,6 @@ public class SmallRocketEntity extends FastThrowableProjectile implements GeoEnt
                 ParticleTool.sendParticle(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.xo, this.yo, this.zo, 10, 0.8, 0.8, 0.8, 0.01, true);
             }
         }
-        destroyBlock();
     }
 
     private PlayState movementPredicate(AnimationState<SmallRocketEntity> event) {

@@ -32,6 +32,7 @@
       "DefaultZoom": 5,
       "Velocity": 15,
       "Gravity": 0.06,
+      "ApDurability": 100,
       "Damage": 470,
       "ExplosionDamage": 125,
       "ExplosionRadius": 3.7,

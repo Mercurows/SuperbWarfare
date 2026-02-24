@@ -172,9 +172,4 @@ public class SmallCannonShellEntity extends FastThrowableProjectile implements G
     public boolean isFastMoving() {
         return false;
     }
-
-    @Override
-    public boolean forceLoadChunk() {
-        return true;
-    }
 }

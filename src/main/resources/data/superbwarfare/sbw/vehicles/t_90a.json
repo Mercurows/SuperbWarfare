@@ -97,6 +97,7 @@
       "Velocity": 20,
       "ProjectileLife": 50,
       "Gravity": 0.03,
+      "ApDurability": 100,
       "Damage": 700,
       "ExplosionDamage": 80,
       "ExplosionRadius": 4,
@@ -126,13 +127,11 @@
           "Ammo": "superbwarfare:large_shell_gs",
           "Override": {
             "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/grape_shell.png",
-            "ShellType": "GS",
-            "SpreadAmount": 36,
-            "SpreadAngle": 5,
+            "Projectile": "superbwarfare:grapeshot",
+            "Spread": 5,
+            "Damage": 18,
+            "ProjectileAmount": 36,
             "Velocity": 15,
-            "Damage": 1000,
-            "ExplosionDamage": 180,
-            "ExplosionRadius": 6,
             "Name": "weapon.superbwarfare.cannon_gs"
           }
         }

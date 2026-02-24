@@ -266,17 +266,10 @@ public class ParticleTool {
         }
     }
 
-    public static void cannonHitParticles(Level level, Vec3 pos, Entity entity) {
-        double x = pos.x + 0.5 * entity.getDeltaMovement().x;
-        double y = pos.y + 0.5 * entity.getDeltaMovement().y;
-        double z = pos.z + 0.5 * entity.getDeltaMovement().z;
-
-        if (level instanceof ServerLevel serverLevel) {
-            sendParticle(serverLevel, ParticleTypes.EXPLOSION, x, y, z, 2, 0.5, 0.5, 0.5, 1, true);
-            sendParticle(serverLevel, ParticleTypes.FLASH, x, y, z, 2, 0.2, 0.2, 0.2, 10, true);
-            sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), x, y, z, 40, 0, 0, 0, 1.5, true);
-        }
-
+    public static void cannonHitParticles(ServerLevel serverLevel, Vec3 pos) {
+        sendParticle(serverLevel, ParticleTypes.EXPLOSION, pos.x, pos.y, pos.z, 2, 0.5, 0.5, 0.5, 1, true);
+        sendParticle(serverLevel, ParticleTypes.FLASH, pos.x, pos.y, pos.z, 2, 0.2, 0.2, 0.2, 10, true);
+        sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), pos.x, pos.y, pos.z, 15, 0, 0, 0, 1.5, true);
     }
 
     public static void spawnMediumCannonMuzzleParticles(Vec3 direct, Vec3 pos, ServerLevel serverLevel, Entity entity) {

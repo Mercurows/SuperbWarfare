@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile;
 
-import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
@@ -176,13 +175,6 @@ public class MortarShellEntity extends FastThrowableProjectile implements GeoEnt
         super.onHitBlock(blockHitResult);
         BlockPos resultPos = blockHitResult.getBlockPos();
         BlockState state = this.level().getBlockState(resultPos);
-
-        if (this.level() instanceof ServerLevel && ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-            float hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime();
-            if (hardness != -1) {
-                this.level().destroyBlock(resultPos, true);
-            }
-        }
 
         if (state.getBlock() instanceof BellBlock bell) {
             bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
