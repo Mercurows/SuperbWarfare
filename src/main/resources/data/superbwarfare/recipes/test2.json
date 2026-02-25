@@ -1,0 +1,11 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "minecraft:bread"
+  },
+  "selectable": true,
+  "result": {
+    "tag": "minecraft:planks",
+    "count": 1
+  }
+}

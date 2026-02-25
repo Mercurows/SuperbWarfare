@@ -106,4 +106,5 @@ private fun registerPayloads() {
     playToServer<WeaponZoomingMessage>()
     playToServer<ZoomMessage>()
     playToServer<BlueprintCraftMessage>()
+    playToServer<BlueprintSetIndexMessage>()
 }

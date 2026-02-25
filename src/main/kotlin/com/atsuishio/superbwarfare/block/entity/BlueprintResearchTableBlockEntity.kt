@@ -235,6 +235,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
 
     fun resetProgress() {
         this.tick = 0
+        this.lastSelectedIndex = 0
         this.maxProcessTick = 100
         this.activated = false
         this.setChanged()
@@ -281,8 +282,15 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                     entity.fuel--
                     entity.setChanged()
                 }
-            } else if (entity.maxProcessTick != 100) {
-                entity.resetProgress()
+            } else {
+                if (entity.activated) {
+                    entity.activated = false
+                    entity.setChanged()
+                }
+
+                if (entity.maxProcessTick != 100) {
+                    entity.resetProgress()
+                }
             }
         }
     }

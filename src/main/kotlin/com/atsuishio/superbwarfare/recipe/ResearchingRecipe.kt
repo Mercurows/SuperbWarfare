@@ -26,6 +26,7 @@ class ResearchingRecipe(
     val base: Ingredient,
     val addition: Ingredient,
     val special: Ingredient,
+    val selectable: Boolean,
     val time: Int,
     val result: Result
 ) : Recipe<SimpleContainer> {
@@ -132,9 +133,10 @@ class ResearchingRecipe(
             val base = ingredientOf(json, "base")
             val addition = ingredientOf(json, "addition")
             val special = ingredientOf(json, "special")
+            val selectable = if (json.has("selectable")) GsonHelper.getAsBoolean(json, "selectable") else false
             val time = if (json.has("time")) GsonHelper.getAsInt(json, "time") else 100
             val result = DataLoader.GSON.fromJson(json.get("result"), Result::class.java)
-            return ResearchingRecipe(id, input, base, addition, special, time, result)
+            return ResearchingRecipe(id, input, base, addition, special, selectable, time, result)
         }
 
         override fun fromNetwork(
@@ -145,12 +147,13 @@ class ResearchingRecipe(
             val base = Ingredient.fromNetwork(buffer)
             val addition = Ingredient.fromNetwork(buffer)
             val special = Ingredient.fromNetwork(buffer)
+            val selectable = buffer.readBoolean()
             val time = buffer.readInt()
             val result = buffer.readItem()
 
             val res = Result()
             res.resultStack = result
-            return ResearchingRecipe(id, input, base, addition, special, time, res)
+            return ResearchingRecipe(id, input, base, addition, special, selectable, time, res)
         }
 
         override fun toNetwork(
@@ -161,6 +164,7 @@ class ResearchingRecipe(
             recipe.base.toNetwork(buffer)
             recipe.addition.toNetwork(buffer)
             recipe.special.toNetwork(buffer)
+            buffer.writeBoolean(recipe.selectable)
             buffer.writeInt(recipe.time)
             buffer.writeItem(recipe.result.getResult())
         }
