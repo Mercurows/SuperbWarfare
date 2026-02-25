@@ -10,11 +10,11 @@
     "item": "minecraft:lapis_lazuli"
   },
   "special": {
-    "item": "superbwarfare:directional_research_module"
+    "item": "superbwarfare:enlargement_research_module"
   },
-  "selectable": true,
+  "color": 4,
   "result": {
-    "tag": "superbwarfare:blueprint/epic",
+    "tag": "superbwarfare:enlarged/epic_blueprint",
     "count": 1
   }
 }

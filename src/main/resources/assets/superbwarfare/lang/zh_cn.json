@@ -324,6 +324,7 @@
   "item.superbwarfare.virtual_blueprint_data_chip": "虚幻蓝图数据芯片",
   "item.superbwarfare.military_shovel": "工兵铲",
   "item.superbwarfare.directional_research_module": "定向研发模块",
+  "item.superbwarfare.enlargement_research_module": "增广研发模块",
   "item.superbwarfare.effective_research_module": "高效研发模块",
   "item.superbwarfare.boost_research_module": "倍率研发模块",
 
@@ -778,6 +779,7 @@
   "container.superbwarfare.vehicle_assembling_table.assemble": "组装",
   "container.superbwarfare.vehicle_assembling_table.count": "制作数量：%1$s",
   "container.superbwarfare.mod_info": "由%1$s添加",
+  "container.superbwarfare.blueprint_research_table": "蓝图研究台",
 
   "info.superbwarfare.mod_id": "卓越前线",
   "info.superbwarfare.no_info": "[暂无信息]",

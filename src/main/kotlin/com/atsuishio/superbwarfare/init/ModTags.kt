@@ -66,6 +66,9 @@ object ModTags {
         @JvmField val VIRTUAL_BLUEPRINT = modItemTag("blueprint/virtual")
         @JvmField val CANNON_BLUEPRINT = modItemTag("blueprint/cannon")
 
+        // 用于研究台跨级配方的 tag
+        @JvmField val ENLARGED_EPIC_BLUEPRINT = modItemTag("enlarged/epic_blueprint")
+
         @JvmField val HAMMER = modItemTag("hammer")
         @JvmField val WRENCHES = commonItemTag("wrenches")
         @JvmField val TOOLS_WRENCH = commonItemTag("tools/wrench")

@@ -317,6 +317,7 @@ object ModItems {
     @JvmField val VIRTUAL_BLUEPRINT_DATA_CHIP = registerItem("virtual_blueprint_data_chip") { Item(Properties().rarity(virtual)) }
 
     @JvmField val DIRECTIONAL_RESEARCH_MODULE = registerItem("directional_research_module") { Item(Properties().rarity(Rarity.EPIC)) }
+    @JvmField val ENLARGEMENT_RESEARCH_MODULE = registerItem("enlargement_research_module") { Item(Properties().rarity(Rarity.EPIC)) }
     @JvmField val EFFECTIVE_RESEARCH_MODULE = registerItem("effective_research_module") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val BOOST_RESEARCH_MODULE = registerItem("boost_research_module") { Item(Properties().rarity(Rarity.RARE)) }
 

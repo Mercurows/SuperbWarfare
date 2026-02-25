@@ -30,6 +30,7 @@ class ResearchingRecipe(
     val addition: Ingredient,
     val special: Ingredient,
     val selectable: Boolean,
+    val color: Int,
     val time: Int,
     val result: Result
 ) : Recipe<RecipeWrapper> {
@@ -146,6 +147,7 @@ class ResearchingRecipe(
                 Ingredient.CODEC.optionalFieldOf("addition", Ingredient.EMPTY).forGetter { it.addition },
                 Ingredient.CODEC.optionalFieldOf("special", Ingredient.EMPTY).forGetter { it.special },
                 Codec.BOOL.optionalFieldOf("selectable", false).forGetter { it.selectable },
+                Codec.INT.optionalFieldOf("color", 0).forGetter { it.color },
                 Codec.INT.optionalFieldOf("time", 1200).forGetter { it.time },
                 Result.CODEC.fieldOf("result").forGetter { it.result }
             ).apply(builder, ::ResearchingRecipe)
@@ -162,12 +164,13 @@ class ResearchingRecipe(
             val addition = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
             val special = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
             val selectable = buffer.readBoolean()
+            val color = buffer.readInt()
             val time = buffer.readInt()
             val result = ItemStack.STREAM_CODEC.decode(buffer)
 
             val res = Result()
             res.resultStack = result
-            return ResearchingRecipe(input, base, addition, special, selectable, time, res)
+            return ResearchingRecipe(input, base, addition, special, selectable, color, time, res)
         }
 
         fun toNetwork(

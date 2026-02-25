@@ -190,6 +190,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP);
 
         simpleItem(ModItems.DIRECTIONAL_RESEARCH_MODULE);
+        simpleItem(ModItems.ENLARGEMENT_RESEARCH_MODULE);
         simpleItem(ModItems.EFFECTIVE_RESEARCH_MODULE);
         simpleItem(ModItems.BOOST_RESEARCH_MODULE);
 
