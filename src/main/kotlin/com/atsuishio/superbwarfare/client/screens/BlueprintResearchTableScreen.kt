@@ -162,7 +162,7 @@ class BlueprintResearchTableScreen(
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, pButton: Int): Boolean {
         if (!this.currentResultList.isEmpty()) {
-            if (this.getRecipe()?.selectable == false) return super.mouseClicked(mouseX, mouseY, pButton)
+            if (this.getRecipe()?.selectable == false || this.menu.isActivated()) return super.mouseClicked(mouseX, mouseY, pButton)
 
             val i = (this.width - this.imageWidth) / 2
             val j = (this.height - this.imageHeight) / 2

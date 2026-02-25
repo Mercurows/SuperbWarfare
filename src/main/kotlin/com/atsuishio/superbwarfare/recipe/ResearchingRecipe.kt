@@ -120,6 +120,13 @@ class ResearchingRecipe(
             return this.list!!
         }
 
+        fun getItemByIndex(index: Int): ItemStack {
+            if (this.isRandom() && this.getResultList().size > index) {
+                return ItemStack(this.getResultList()[index], count)
+            }
+            return this.getResult()
+        }
+
         fun isRandom() = this.tag.isNotEmpty()
 
         fun rollItem(): ItemStack {

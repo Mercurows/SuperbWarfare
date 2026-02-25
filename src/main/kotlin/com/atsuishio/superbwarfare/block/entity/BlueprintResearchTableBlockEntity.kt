@@ -228,7 +228,13 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         }
 
         val result = recipe.get().result
-        val item = if (result.isRandom()) result.rollItem() else result.getResult()
+        val item = if (recipe.get().selectable) {
+            result.getItemByIndex(this.lastSelectedIndex)
+        } else if (result.isRandom()) {
+            result.rollItem()
+        } else {
+            result.getResult()
+        }
 
         val input = this.items[SLOT_INPUT]
         input.shrink(1)
@@ -239,7 +245,6 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
 
     fun resetProgress() {
         this.tick = 0
-        this.lastSelectedIndex = 0
         this.maxProcessTick = 100
         this.activated = false
         this.setChanged()
@@ -267,7 +272,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                 entity.fuel++
                 entity.setChanged()
             }
-            // TODO 想办法判断一下是否处于手动模式
+
             if (entity.fuel > 0 && entity.hasRecipe()) {
                 if (!entity.activated) return
 
@@ -289,10 +294,12 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             } else {
                 if (entity.activated) {
                     entity.activated = false
+                    entity.lastSelectedIndex = 0
                     entity.setChanged()
                 }
 
                 if (entity.maxProcessTick != 100) {
+                    entity.lastSelectedIndex = 0
                     entity.resetProgress()
                 }
             }
