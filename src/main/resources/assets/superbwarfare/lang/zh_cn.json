@@ -758,6 +758,8 @@
   "tips.superbwarfare.category.misc": "杂项",
   "tips.superbwarfare.flare.ready": "干扰弹 就绪",
   "tips.superbwarfare.flare.reloading": "干扰弹 装填中",
+  "tips.superbwarfare.hanging_mode_on": "已开启悬停模式",
+  "tips.superbwarfare.hanging_mode_off": "已关闭悬停模式",
   "tips.superbwarfare.smoke.ready": "烟幕 就绪",
   "tips.superbwarfare.smoke.reloading": "烟幕 装填中",
   "tips.superbwarfare.auto_aimable_entity.active": "已激活",

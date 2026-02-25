@@ -595,6 +595,15 @@ object VehicleEngineUtils {
                     power *= 0.995f
                 }
             } else {
+                if (hangingMode) {
+                    setZRot(roll * 0.9f)
+                    xRot *= 0.9f
+                    rightInputDown = false
+                    leftInputDown = false
+                    mouseMoveSpeedX = 0f
+                    mouseMoveSpeedY = 0f
+                }
+
                 if (rightInputDown) {
                     holdTick++
                     deltaRot -= 1f * Math.min(holdTick, 7) * power
@@ -614,6 +623,7 @@ object VehicleEngineUtils {
                 )
 
                 if (onGround()) {
+                    hangingMode = false
                     setZRot(roll * 0.98f)
                     xRot *= 0.98f
                 }
@@ -626,8 +636,13 @@ object VehicleEngineUtils {
                 engineStart = false
                 engineStartOver = false
             } else {
-                val up = upInputDown || forwardInputDown
+                val up = forwardInputDown
                 val down = downInputDown
+
+                if (upInputDown) {
+                    upInputDown = false
+                    hangingMode = !hangingMode
+                }
 
                 if (!engineStart && up) {
                     engineStart = true
@@ -660,7 +675,7 @@ object VehicleEngineUtils {
                 }
 
                 if (!(up || down || backInputDown) && engineStartOver) {
-                    val force = 0.002f * deltaMovement.y().toFloat()
+                    val force = (if (hangingMode) 0.01f else 0.002f) * deltaMovement.y().toFloat()
                     power = if (deltaMovement.y() < 0) {
                         Math.min(power - force, 0.12f)
                     } else {

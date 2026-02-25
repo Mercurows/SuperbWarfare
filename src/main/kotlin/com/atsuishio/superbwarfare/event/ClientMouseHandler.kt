@@ -12,14 +12,11 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.MouseMoveMessage
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.client.CameraType
-import net.minecraft.client.Minecraft
-import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec2
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent
 import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.client.event.ViewportEvent
 import kotlin.math.abs
@@ -170,7 +167,11 @@ object ClientMouseHandler {
 
         freeCameraYaw -= 0.2f * times * lerpSpeedX
         freeCameraPitch += 0.15f * times * lerpSpeedY
-        if (!ClientEventHandler.isFreeCam(player)) {
+
+        val vehicle = player.vehicle
+        val hanging = vehicle is VehicleEntity && vehicle.vehicleType == VehicleType.HELICOPTER && vehicle.hangingMode
+
+        if (!ClientEventHandler.isFreeCam(player) && !hanging) {
             freeCameraYaw = Mth.lerp(0.6 * times, freeCameraYaw, 0.0)
             freeCameraPitch = Mth.lerp(0.6 * times, freeCameraPitch, 0.0)
         }

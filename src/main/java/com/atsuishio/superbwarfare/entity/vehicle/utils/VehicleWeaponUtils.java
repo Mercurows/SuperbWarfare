@@ -31,31 +31,16 @@ public final class VehicleWeaponUtils {
      * @param vehicle 载具
      */
     public static void adjustTurretAngle(VehicleEntity vehicle) {
-        float ySpeed = vehicle.getTurretTurnYSpeed();
-        float xSpeed = vehicle.getTurretTurnXSpeed();
-
         Entity driver = vehicle.getNthEntity(vehicle.getTurretControllerIndex());
         if (driver == null) {
             vehicle.setTurretYRotLock(0);
         } else {
-            float turretAngle = -Mth.wrapDegrees(driver.getYHeadRot() - vehicle.getYRot());
-
-            float diffY = Mth.wrapDegrees(turretAngle - vehicle.getTurretYRot());
-            float diffX = Mth.wrapDegrees(driver.getXRot() - vehicle.getTurretXRot());
-
-            vehicle.turretTurnSound(diffX, diffY, 0.95f);
-
-            if (vehicle.getEntityData().get(TURRET_DAMAGED)) {
-                ySpeed *= 0.2f;
-                xSpeed *= 0.2f;
-            }
-
-            float min = -ySpeed;
-            float max = ySpeed;
-
-            vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.95f * diffX, -xSpeed, xSpeed), -89.5f, 89.5f));
-            vehicle.setTurretYRot(vehicle.getTurretYRot() + Mth.clamp(0.9f * diffY, min, max));
-            vehicle.setTurretYRotLock(Mth.clamp(0.9f * diffY, min, max));
+//            Vec3 viewPos = driver.getEyePosition().add(driver.getViewVector(1).scale(128));
+//            if (vehicle.getBarrelPosition() != null) {
+//                Vec3 aimVec = vehicle.getBarrelPosition().vectorTo(viewPos);
+//                turretAutoAimFromVector(vehicle, driver.getViewVector(1));
+//            }
+            turretAutoAimFromVector(vehicle, driver.getViewVector(1));
         }
     }
 
@@ -82,9 +67,9 @@ public final class VehicleWeaponUtils {
         float min = -ySpeed;
         float max = ySpeed;
 
-        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.99f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
-        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.99f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
-        vehicle.setTurretYRotLock(Mth.clamp(0.9f * diffY, min, max));
+        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
+        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
+        vehicle.setTurretYRotLock(Mth.clamp(0.5f * diffY, min, max));
     }
 
     /**
