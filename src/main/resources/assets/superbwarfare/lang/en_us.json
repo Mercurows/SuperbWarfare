@@ -391,7 +391,8 @@
   "block.superbwarfare.biogas_generator": "Biogas Generator",
   "des.superbwarfare.biogas_generator": "Count the number of specific entities inside the composter placed above it. The higher the number, the higher power generation efficiency",
   "block.superbwarfare.blueprint_research_table": "Blueprint Research Table",
-  "des.superbwarfare.blueprint_research_table": "WIP",
+  "des.superbwarfare.blueprint_research_table_1": "A workbench for researching weapon blueprints, occupies 2 blocks",
+  "des.superbwarfare.blueprint_research_table_2": "The left part is used for automated input and output, and the right part can be connected to redstone signals for automated control",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",

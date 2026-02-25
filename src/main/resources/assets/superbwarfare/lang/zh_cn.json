@@ -391,7 +391,8 @@
   "block.superbwarfare.biogas_generator": "沼气发电机",
   "des.superbwarfare.biogas_generator": "检测其上方放置的堆肥桶内部的特定生物数量，数量越多发电效率越高",
   "block.superbwarfare.blueprint_research_table": "蓝图研究台",
-  "des.superbwarfare.blueprint_research_table": "WIP",
+  "des.superbwarfare.blueprint_research_table_1": "用于研发武器蓝图的工作台，占地2个方块",
+  "des.superbwarfare.blueprint_research_table_2": "左侧部分用于自动化输入输出，右侧部分可以接入红石信号进行自动化控制",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",
