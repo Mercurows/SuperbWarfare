@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity
 
+import com.atsuishio.superbwarfare.block.BlueprintResearchTableBlock
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModTags
@@ -25,6 +26,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.properties.BedPart
 import software.bernie.geckolib.animatable.GeoBlockEntity
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.AnimatableManager
@@ -99,17 +101,31 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         return cache
     }
 
-    override fun getSlotsForFace(pSide: Direction): IntArray {
-        return intArrayOf(0)
+    override fun getSlotsForFace(side: Direction): IntArray {
+        if (this.blockState.getValue(BlueprintResearchTableBlock.PART) == BedPart.HEAD) return intArrayOf()
+        return when (side) {
+            Direction.DOWN -> intArrayOf(SLOT_OUTPUT)
+            Direction.NORTH -> intArrayOf(SLOT_INPUT)
+            Direction.EAST -> intArrayOf(SLOT_BASE)
+            Direction.SOUTH -> intArrayOf(SLOT_ADDITION)
+            else -> intArrayOf(SLOT_FUEL)
+        }
     }
 
-    // TODO 完成slot相关设定
     override fun canPlaceItemThroughFace(
-        pIndex: Int,
-        pItemStack: ItemStack,
-        pDirection: Direction?
+        index: Int,
+        stack: ItemStack,
+        side: Direction?
     ): Boolean {
-        return false
+        if (this.blockState.getValue(BlueprintResearchTableBlock.PART) == BedPart.HEAD) return false
+
+        return when (side) {
+            Direction.DOWN -> index == SLOT_OUTPUT
+            Direction.NORTH -> index == SLOT_INPUT
+            Direction.EAST -> index == SLOT_BASE
+            Direction.SOUTH -> index == SLOT_ADDITION
+            else -> index == SLOT_FUEL
+        }
     }
 
     override fun canTakeItemThroughFace(
@@ -117,7 +133,8 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         pStack: ItemStack,
         pDirection: Direction
     ): Boolean {
-        return pIndex == SLOT_OUTPUT
+        if (this.blockState.getValue(BlueprintResearchTableBlock.PART) == BedPart.HEAD) return false
+        return pIndex == SLOT_OUTPUT && pDirection == Direction.DOWN
     }
 
     override fun getContainerSize(): Int {
