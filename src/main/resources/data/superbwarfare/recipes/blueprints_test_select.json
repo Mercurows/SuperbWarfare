@@ -10,7 +10,7 @@
     "item": "minecraft:lapis_lazuli"
   },
   "special": {
-    "item": "superbwarfare:target_deployer"
+    "item": "superbwarfare:directional_research_module"
   },
   "selectable": true,
   "result": {

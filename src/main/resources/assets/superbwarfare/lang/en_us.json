@@ -323,6 +323,9 @@
   "item.superbwarfare.superb_blueprint_data_chip": "Superb Blueprint Data Chip",
   "item.superbwarfare.virtual_blueprint_data_chip": "Virtual Blueprint Data Chip",
   "item.superbwarfare.military_shovel": "Military Shovel",
+  "item.superbwarfare.directional_research_module": "Directional Research Module",
+  "item.superbwarfare.effective_research_module": "Effective Research Module",
+  "item.superbwarfare.boost_research_module": "Boost Research Module",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 
