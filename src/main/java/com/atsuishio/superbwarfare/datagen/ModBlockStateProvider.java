@@ -46,6 +46,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
                         modLoc("block/vehicle_deployer_bottom"), modLoc("block/vehicle_deployer_top"))
                 .texture("particle", modLoc("block/vehicle_deployer_bottom")));
         horizontalBlock(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), new ModelFile.UncheckedModelFile(modLoc("block/vehicle_assembling_table")));
+        horizontalBlock(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get(), new ModelFile.UncheckedModelFile(modLoc("block/blueprint_research_table")));
         simpleBlock(ModBlocks.BIOGAS_GENERATOR.get(), models().cubeBottomTop("biogas_generator",
                         modLoc("block/biogas_generator_side"),
                         modLoc("block/biogas_generator_bottom"),

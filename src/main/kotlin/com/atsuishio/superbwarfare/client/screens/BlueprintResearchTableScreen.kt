@@ -267,13 +267,6 @@ class BlueprintResearchTableScreen(
             }
         }
 
-        fun isValidButton(): Boolean {
-            val recipe = this@BlueprintResearchTableScreen.getRecipe() ?: return false
-            if (!recipe.result.isRandom()) return false
-            val size = recipe.result.getResultList().size
-            return size >= PAGE_SIZE
-        }
-
         override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput?) {
         }
 

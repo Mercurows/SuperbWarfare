@@ -32,6 +32,8 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.level.block.state.properties.EnumProperty
 import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.shapes.CollisionContext
+import net.minecraft.world.phys.shapes.VoxelShape
 
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
 class BlueprintResearchTableBlock : BaseEntityBlock(Properties.of().strength(2f)) {
@@ -51,6 +53,29 @@ class BlueprintResearchTableBlock : BaseEntityBlock(Properties.of().strength(2f)
         this.registerDefaultState(
             this.stateDefinition.any().setValue(PART, BedPart.FOOT).setValue(FACING, Direction.NORTH)
         )
+    }
+
+    override fun getShape(
+        state: BlockState,
+        level: BlockGetter,
+        pos: BlockPos,
+        context: CollisionContext
+    ): VoxelShape {
+        return if (state.getValue(PART) == BedPart.FOOT) {
+            when (state.getValue(FACING)) {
+                Direction.SOUTH -> box(0.0, 0.0, 1.0, 16.0, 16.0, 16.0)
+                Direction.EAST -> box(1.0, 0.0, 0.0, 16.0, 16.0, 16.0)
+                Direction.WEST -> box(0.0, 0.0, 0.0, 15.0, 16.0, 16.0)
+                else -> box(0.0, 0.0, 0.0, 16.0, 16.0, 15.0)
+            }
+        } else {
+            when (state.getValue(FACING)) {
+                Direction.SOUTH -> box(0.0, 0.0, 0.0, 16.0, 16.0, 15.0)
+                Direction.EAST -> box(0.0, 0.0, 0.0, 15.0, 16.0, 16.0)
+                Direction.WEST -> box(1.0, 0.0, 0.0, 16.0, 16.0, 16.0)
+                else -> box(0.0, 0.0, 1.0, 16.0, 16.0, 16.0)
+            }
+        }
     }
 
     override fun isPathfindable(
