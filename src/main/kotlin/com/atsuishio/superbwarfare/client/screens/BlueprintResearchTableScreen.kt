@@ -36,6 +36,7 @@ class BlueprintResearchTableScreen(
     init {
         this.imageWidth = 240
         this.imageHeight = 177
+        this.titleLabelY = 2
     }
 
     override fun init() {
@@ -44,6 +45,8 @@ class BlueprintResearchTableScreen(
         val i = (this.width - this.imageWidth) / 2
         val j = (this.height - this.imageHeight) / 2
         this.addRenderableWidget(CraftButton(i + 73, j + 75))
+        this.addRenderableWidget(PageButton(i + 182, j + 160, false))
+        this.addRenderableWidget(PageButton(i + 207, j + 160, true))
     }
 
     override fun renderLabels(
@@ -51,6 +54,7 @@ class BlueprintResearchTableScreen(
         pMouseX: Int,
         pMouseY: Int
     ) {
+        pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false)
     }
 
     override fun renderBg(
@@ -111,6 +115,20 @@ class BlueprintResearchTableScreen(
         } else {
             guiGraphics.blit(TEXTURE, i + 99, j + 77, 19, 242, 2, 2)
         }
+
+        // 模块指示灯
+        val recipe = this.getRecipe() ?: return
+        val color = recipe.color
+        if (color == 0 || color > 4) return
+        val colorU = when (color) {
+            1, 3 -> 129
+            else -> 166
+        }
+        val colorV = when (color) {
+            1, 2 -> 178
+            else -> 203
+        }
+        guiGraphics.blit(TEXTURE, i + 70, j + 46, colorU, colorV, 36, 24)
     }
 
     fun renderRecipeOutputs(
@@ -164,7 +182,11 @@ class BlueprintResearchTableScreen(
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, pButton: Int): Boolean {
         if (!this.currentResultList.isEmpty()) {
-            if (this.getRecipe()?.selectable == false || this.menu.isActivated()) return super.mouseClicked(mouseX, mouseY, pButton)
+            if (this.getRecipe()?.selectable == false || this.menu.isActivated()) return super.mouseClicked(
+                mouseX,
+                mouseY,
+                pButton
+            )
 
             val i = (this.width - this.imageWidth) / 2
             val j = (this.height - this.imageHeight) / 2
@@ -224,6 +246,55 @@ class BlueprintResearchTableScreen(
         ) {
             if (!this.isHovered) {
                 pGuiGraphics.blit(TEXTURE, this.x, this.y, 0, 234, 9, 9)
+            }
+        }
+    }
+
+    private inner class PageButton(x: Int, y: Int, val forward: Boolean) :
+        AbstractButton(x, y, 25, 8, Component.empty()) {
+        override fun onPress() {
+            val recipe = this@BlueprintResearchTableScreen.getRecipe() ?: return
+            if (!recipe.result.isRandom()) return
+            val size = recipe.result.getResultList().size
+            if (size < PAGE_SIZE) return
+            val pages = size / PAGE_SIZE
+            if (forward) {
+                this@BlueprintResearchTableScreen.currentPage =
+                    (this@BlueprintResearchTableScreen.currentPage + 1).coerceAtMost(pages)
+            } else {
+                this@BlueprintResearchTableScreen.currentPage =
+                    (this@BlueprintResearchTableScreen.currentPage - 1).coerceAtLeast(0)
+            }
+        }
+
+        fun isValidButton(): Boolean {
+            val recipe = this@BlueprintResearchTableScreen.getRecipe() ?: return false
+            if (!recipe.result.isRandom()) return false
+            val size = recipe.result.getResultList().size
+            return size >= PAGE_SIZE
+        }
+
+        override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput?) {
+        }
+
+        override fun renderWidget(
+            pGuiGraphics: GuiGraphics,
+            pMouseX: Int,
+            pMouseY: Int,
+            pPartialTick: Float
+        ) {
+            if (!this.isHovered) return
+
+            val recipe = this@BlueprintResearchTableScreen.getRecipe() ?: return
+            if (!recipe.result.isRandom()) return
+            val size = recipe.result.getResultList().size
+            val pages = size / PAGE_SIZE
+            if (this.forward) {
+                if (this@BlueprintResearchTableScreen.currentPage < pages) {
+                    pGuiGraphics.blit(TEXTURE, this.x, this.y, 207, 178, 25, 8)
+                }
+            } else if (this@BlueprintResearchTableScreen.currentPage > 0) {
+                pGuiGraphics.blit(TEXTURE, this.x, this.y, 207, 187, 25, 8)
             }
         }
     }

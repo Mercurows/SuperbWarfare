@@ -37,7 +37,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     var tick: Int = 0
     var lastSelectedIndex: Int = 0
     var fuel: Int = 0
-    var maxProcessTick: Int = 100
+    var maxProcessTick: Int = DEFAULT_TIME
         get() = field.coerceAtLeast(1)
     var activated: Boolean = false
 
@@ -234,6 +234,10 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
 
         val input = this.items[SLOT_INPUT]
         input.shrink(1)
+        val base = this.items[SLOT_BASE]
+        base.shrink(1)
+        val addition = this.items[SLOT_ADDITION]
+        addition.shrink(1)
 
         val output = this.items[SLOT_OUTPUT]
         this.items[SLOT_OUTPUT] = ItemStack(item.item, output.count + result.count)
@@ -255,6 +259,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         const val SLOT_OUTPUT = 5
 
         const val MAX_DATA_COUNT = 5
+        const val DEFAULT_TIME = 1200
 
         @JvmField
         val MAX_FUEL: Int = MiscConfig.BLUEPRINT_RESEARCH_TABLE_MAX_FUEL.get()
@@ -294,7 +299,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                     entity.setChanged()
                 }
 
-                if (entity.maxProcessTick != 100) {
+                if (entity.maxProcessTick != DEFAULT_TIME) {
                     entity.lastSelectedIndex = 0
                     entity.resetProgress()
                 }

@@ -324,6 +324,7 @@
   "item.superbwarfare.virtual_blueprint_data_chip": "Virtual Blueprint Data Chip",
   "item.superbwarfare.military_shovel": "Military Shovel",
   "item.superbwarfare.directional_research_module": "Directional Research Module",
+  "item.superbwarfare.enlargement_research_module": "Enlargement Research Module",
   "item.superbwarfare.effective_research_module": "Effective Research Module",
   "item.superbwarfare.boost_research_module": "Boost Research Module",
 
@@ -780,6 +781,7 @@
   "container.superbwarfare.vehicle_assembling_table.assemble": "Assemble",
   "container.superbwarfare.vehicle_assembling_table.count": "Result Count: %1$s",
   "container.superbwarfare.mod_info": "Added by %1$s",
+  "container.superbwarfare.blueprint_research_table": "Blueprint Research Table",
 
   "info.superbwarfare.mod_id": "Superb Warfare",
   "info.superbwarfare.no_info": "[No Info]",

@@ -27,6 +27,7 @@ class ResearchingRecipe(
     val addition: Ingredient,
     val special: Ingredient,
     val selectable: Boolean,
+    val color: Int,
     val time: Int,
     val result: Result
 ) : Recipe<SimpleContainer> {
@@ -141,9 +142,10 @@ class ResearchingRecipe(
             val addition = ingredientOf(json, "addition")
             val special = ingredientOf(json, "special")
             val selectable = if (json.has("selectable")) GsonHelper.getAsBoolean(json, "selectable") else false
-            val time = if (json.has("time")) GsonHelper.getAsInt(json, "time") else 100
+            val color = (if (json.has("color")) GsonHelper.getAsInt(json, "color") else 0).coerceIn(0, 4)
+            val time = if (json.has("time")) GsonHelper.getAsInt(json, "time") else 1200
             val result = DataLoader.GSON.fromJson(json.get("result"), Result::class.java)
-            return ResearchingRecipe(id, input, base, addition, special, selectable, time, result)
+            return ResearchingRecipe(id, input, base, addition, special, selectable, color, time, result)
         }
 
         override fun fromNetwork(
@@ -155,12 +157,13 @@ class ResearchingRecipe(
             val addition = Ingredient.fromNetwork(buffer)
             val special = Ingredient.fromNetwork(buffer)
             val selectable = buffer.readBoolean()
+            val color = buffer.readInt()
             val time = buffer.readInt()
             val result = buffer.readItem()
 
             val res = Result()
             res.resultStack = result
-            return ResearchingRecipe(id, input, base, addition, special, selectable, time, res)
+            return ResearchingRecipe(id, input, base, addition, special, selectable, color, time, res)
         }
 
         override fun toNetwork(
@@ -172,6 +175,7 @@ class ResearchingRecipe(
             recipe.addition.toNetwork(buffer)
             recipe.special.toNetwork(buffer)
             buffer.writeBoolean(recipe.selectable)
+            buffer.writeInt(recipe.color)
             buffer.writeInt(recipe.time)
             buffer.writeItem(recipe.result.getResult())
         }

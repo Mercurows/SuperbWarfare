@@ -186,5 +186,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
         this.tag(ModTags.Items.CANNON_BLUEPRINT).add(ModItems.MK_42_BLUEPRINT.get(), ModItems.MLE_1934_BLUEPRINT.get(), ModItems.ANNIHILATOR_BLUEPRINT.get(),
                 ModItems.HPJ_11_BLUEPRINT.get(), ModItems.BL_132_BLUEPRINT.get());
+
+        this.tag(ModTags.Items.ENLARGED_EPIC_BLUEPRINT).addTags(ModTags.Items.EPIC_BLUEPRINT, ModTags.Items.LEGENDARY_BLUEPRINT);
     }
 }
