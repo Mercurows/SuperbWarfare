@@ -9,11 +9,14 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Aircraft
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Helicopter
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
+import com.atsuishio.superbwarfare.tools.font
 import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.options
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -196,6 +199,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         renderWeaponInfo(guiGraphics, entity, screenWidth, screenHeight)
         renderPassengerInfo(guiGraphics, entity, screenWidth, screenHeight)
         renderGearInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick)
+        renderHangingInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick, compatHeight)
 
         poseStack.popPose()
     }
@@ -360,6 +364,44 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         RenderHelper.preciseBlit(guiGraphics, GEAR, 86f, (h - 36).toFloat(), 0f, 0f, 32f, 32f, 32f, 32f)
 
         poseStack.popPose()
+    }
+
+    private fun renderHangingInfo(
+        guiGraphics: GuiGraphics,
+        vehicle: VehicleEntity,
+        w: Int,
+        h: Int,
+        partialTick: Float,
+        compatHeight: Int
+    ) {
+        val engineType = vehicle.computed().engineType
+        if (engineType != EngineType.HELICOPTER) return
+        val engineInfo = vehicle.engineInfo ?: return
+        if (engineInfo !is Helicopter) return
+
+        var componentReady = Component.translatable("tips.superbwarfare.hanging_mode_off").append(
+            Component.literal(
+                " [" + options.keyJump.defaultKey.displayName.string + "]"
+            )
+        )
+
+        if (vehicle.hangingMode) {
+            componentReady = Component.translatable("tips.superbwarfare.hanging_mode_on").append(
+                Component.literal(
+                    " [" + options.keyJump.defaultKey.displayName.string + "]"
+                )
+            )
+        }
+
+
+        guiGraphics.drawString(
+            Minecraft.getInstance().font,
+            componentReady,
+            85,
+            (h - 13 - compatHeight),
+            -1,
+            false
+        )
     }
 
     private fun renderWeaponInfo(guiGraphics: GuiGraphics, vehicle: VehicleEntity, w: Int, h: Int) {

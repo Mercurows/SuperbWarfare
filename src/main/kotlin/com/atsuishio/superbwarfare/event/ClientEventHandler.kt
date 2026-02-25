@@ -621,31 +621,33 @@ object ClientEventHandler {
             || (stack.`is`(ModItems.MONITOR.get()) && ItemNBTTool.getBoolean(stack, "Using", false)
                     && ItemNBTTool.getBoolean(stack, "Linked", false))
         ) {
-            if (options.keyLeft.isDown()) {
+
+            // TODO 把这些都设置成自定义按键
+            if (options.keyLeft.isDown) {
                 keys = keys or 0b000000001
             }
-            if (options.keyRight.isDown()) {
+            if (options.keyRight.isDown) {
                 keys = keys or 0b000000010
             }
-            if (options.keyUp.isDown()) {
+            if (options.keyUp.isDown) {
                 keys = keys or 0b000000100
             }
-            if (options.keyDown.isDown()) {
+            if (options.keyDown.isDown) {
                 keys = keys or 0b000001000
             }
-            if (options.keyJump.isDown()) {
+            if (options.keyJump.isDown) {
                 keys = keys or 0b000010000
             }
-            if (options.keyShift.isDown()) {
+            if (options.keyShift.isDown) {
                 keys = keys or 0b000100000
             }
-            if (ModKeyMappings.RELEASE_DECOY.isDown()) {
+            if (ModKeyMappings.RELEASE_DECOY.isDown) {
                 keys = keys or 0b001000000
             }
             if (holdFireVehicle) {
                 keys = keys or 0b010000000
             }
-            if (options.keySprint.isDown()) {
+            if (options.keySprint.isDown) {
                 keys = keys or 0b100000000
             }
         }
