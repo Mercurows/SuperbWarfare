@@ -98,6 +98,8 @@ class BlueprintResearchTableMenu(
 
     fun getLastSelectedIndex() = this.containerData.get(1)
 
+    fun setLastSelectedIndex(index: Int) = this.containerData.set(1, index)
+
     fun getFuel() = this.containerData.get(2)
 
     fun getMaxProcessTick() = this.containerData.get(3)

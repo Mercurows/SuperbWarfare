@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntit
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_SPECIAL
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
 import com.atsuishio.superbwarfare.network.message.send.BlueprintCraftMessage
+import com.atsuishio.superbwarfare.network.message.send.BlueprintSetIndexMessage
 import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
 import com.atsuishio.superbwarfare.tools.clientLevel
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
@@ -100,6 +101,14 @@ class BlueprintResearchTableScreen(
         // 整体进度条
         val progressRate = (this.menu.getTick() / this.menu.getMaxProcessTick().toDouble()).coerceIn(0.0, 1.0)
         guiGraphics.blit(TEXTURE, i + 25, j + 42, 0, 200, (128 * progressRate).toInt(), 32)
+
+        // 指示灯
+        val activated = this.menu.isActivated()
+        if (activated) {
+            guiGraphics.blit(TEXTURE, i + 91, j + 77, 11, 242, 2, 2)
+        } else {
+            guiGraphics.blit(TEXTURE, i + 99, j + 77, 19, 242, 2, 2)
+        }
     }
 
     fun renderRecipeOutputs(
@@ -127,13 +136,51 @@ class BlueprintResearchTableScreen(
                 val index = this.currentPage * PAGE_SIZE + ix
                 if (index >= this.currentResultList.size) break
 
-                guiGraphics.renderFakeItem(
-                    this.currentResultList[index].defaultInstance,
-                    i + 182 + ix % 3 * 17,
-                    j + 8 + (ix / 3) % 9 * 17
-                )
+                val itemX = i + 182 + ix % 3 * 17
+                val itemY = j + 8 + (ix / 3) % 9 * 17
+                val stack = this.currentResultList[index].defaultInstance
+
+                guiGraphics.renderFakeItem(stack, itemX, itemY)
+
+                if (recipe.selectable) {
+                    val selectedIndex = this.menu.getLastSelectedIndex()
+                    if (selectedIndex == index) {
+                        guiGraphics.blit(TEXTURE, itemX - 1, itemY - 1, 207, 215, 18, 18)
+                    }
+                }
+
+                if (mouseX in itemX..itemX + 16 && mouseY in itemY..itemY + 16) {
+                    if (recipe.selectable) {
+                        guiGraphics.blit(TEXTURE, itemX - 1, itemY - 1, 207, 196, 18, 18)
+                    }
+
+                    guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY)
+                }
             }
         }
+    }
+
+    override fun mouseClicked(mouseX: Double, mouseY: Double, pButton: Int): Boolean {
+        if (!this.currentResultList.isEmpty()) {
+            if (this.getRecipe()?.selectable == false) return super.mouseClicked(mouseX, mouseY, pButton)
+
+            val i = (this.width - this.imageWidth) / 2
+            val j = (this.height - this.imageHeight) / 2
+
+            for (ix in 0 until PAGE_SIZE) {
+                val index = this.currentPage * PAGE_SIZE + ix
+                if (index >= this.currentResultList.size) break
+
+                val itemX = i + 182 + ix % 3 * 17
+                val itemY = j + 8 + (ix / 3) % 9 * 17
+
+                if (mouseX in itemX.toDouble()..itemX + 16.0 && mouseY in itemY.toDouble()..itemY + 16.0) {
+                    sendPacketToServer(BlueprintSetIndexMessage(index))
+                }
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, pButton)
     }
 
     fun getRecipe(): ResearchingRecipe? {

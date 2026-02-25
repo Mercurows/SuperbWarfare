@@ -29,6 +29,7 @@ class ResearchingRecipe(
     val base: Ingredient,
     val addition: Ingredient,
     val special: Ingredient,
+    val selectable: Boolean,
     val time: Int,
     val result: Result
 ) : Recipe<RecipeWrapper> {
