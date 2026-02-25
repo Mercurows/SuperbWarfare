@@ -189,6 +189,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.SUPERB_BLUEPRINT_DATA_CHIP);
         simpleItem(ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP);
 
+        simpleItem(ModItems.DIRECTIONAL_RESEARCH_MODULE);
+        simpleItem(ModItems.EFFECTIVE_RESEARCH_MODULE);
+        simpleItem(ModItems.BOOST_RESEARCH_MODULE);
+
         // blueprints
         gunBlueprintItem(ModItems.TRACHELIUM_BLUEPRINT);
         gunBlueprintItem(ModItems.GLOCK_17_BLUEPRINT);
