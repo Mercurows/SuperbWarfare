@@ -296,6 +296,10 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             }
 
             if (entity.fuel > 0 && entity.hasRecipe()) {
+                if (state.getValue(BlueprintResearchTableBlock.ENABLED)) {
+                    entity.activated = true
+                }
+
                 if (!entity.activated) return
 
                 val recipe = entity.getCurrentRecipe()
