@@ -1,0 +1,20 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "superbwarfare:epic_blueprint_data_chip"
+  },
+  "base": {
+    "item": "minecraft:paper"
+  },
+  "addition": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "special": {
+    "item": "superbwarfare:target_deployer"
+  },
+  "selectable": true,
+  "result": {
+    "tag": "superbwarfare:blueprint/epic",
+    "count": 1
+  }
+}
