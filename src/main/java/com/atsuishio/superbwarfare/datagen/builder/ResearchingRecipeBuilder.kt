@@ -26,10 +26,10 @@ package com.atsuishio.superbwarfare.datagen.builder
 //    }
 //
 //    override fun unlockedBy(
-//        name: String,
-//        criterion: Criterion<*>
+//        pCriterionName: String,
+//        pCriterionTrigger: CriterionTriggerInstance
 //    ): RecipeBuilder {
-//        this.advancement.addCriterion(name, criterion)
+//        this.advancement.addCriterion(pCriterionName, pCriterionTrigger)
 //        return this
 //    }
 //
@@ -59,6 +59,7 @@ package com.atsuishio.superbwarfare.datagen.builder
 //                    addition,
 //                    special,
 //                    resultTag = resultTag,
+//                    color = color,
 //                    count = count,
 //                    selectable = selectable,
 //                    time = time,
@@ -75,6 +76,7 @@ package com.atsuishio.superbwarfare.datagen.builder
 //                    addition,
 //                    special,
 //                    resultItem,
+//                    color = color,
 //                    count = count,
 //                    selectable = selectable,
 //                    time = time,

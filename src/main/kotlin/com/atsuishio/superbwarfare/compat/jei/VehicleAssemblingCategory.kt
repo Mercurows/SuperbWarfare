@@ -30,7 +30,7 @@ class VehicleAssemblingCategory(helper: IGuiHelper) : IRecipeCategory<VehicleAss
         return this.background
     }
 
-    override fun getRecipeType(): RecipeType<VehicleAssemblingRecipe?> {
+    override fun getRecipeType(): RecipeType<VehicleAssemblingRecipe> {
         return TYPE
     }
 
@@ -65,7 +65,7 @@ class VehicleAssemblingCategory(helper: IGuiHelper) : IRecipeCategory<VehicleAss
 
     companion object {
         val TEXTURE: ResourceLocation = loc("textures/gui/jei_vehicle_assembling_table.png")
-        val TYPE: RecipeType<VehicleAssemblingRecipe?> =
-            RecipeType<VehicleAssemblingRecipe?>(loc("vehicle_assembling"), VehicleAssemblingRecipe::class.java)
+        val TYPE: RecipeType<VehicleAssemblingRecipe> =
+            RecipeType<VehicleAssemblingRecipe>(loc("vehicle_assembling"), VehicleAssemblingRecipe::class.java)
     }
 }
